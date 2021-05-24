@@ -1,35 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions, Users } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
-
-function findUsers({ rid, status, skip, limit, filter = '' }) {
-	const options = {
-		fields: {
-			name: 1,
-			username: 1,
-			nickname: 1,
-			status: 1,
-			avatarETag: 1,
-			_updatedAt: 1,
-		},
-		sort: {
-			statusConnection: -1,
-			[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
-		},
-		...skip > 0 && { skip },
-		...limit > 0 && { limit },
-	};
-
-	return Users.findByActiveUsersExcept(filter, undefined, options, undefined, [{
-		__rooms: rid,
-		...status && { status },
-	}]).fetch();
-}
+import { Subscriptions } from '../../app/models/server';
+import { hasPermission } from '../../app/authorization/server';
+import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 Meteor.methods({
-	async getUsersOfRoom(rid, showAll, { limit, skip } = {}, filter) {
+	getUsersOfRoom(rid, showAll, { limit, skip } = {}, filter) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -46,7 +22,7 @@ Meteor.methods({
 
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
-		const users = await findUsers({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter });
+		const users = findUsersOfRoom({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
 
 		return {
 			total,

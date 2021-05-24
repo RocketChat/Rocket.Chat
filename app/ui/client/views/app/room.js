@@ -351,7 +351,7 @@ Template.roomOld.helpers({
 	},
 
 	hideAvatar() {
-		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
+		return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
 	},
 	canPreview() {
 		const { room, state } = Template.instance();
@@ -782,6 +782,10 @@ Meteor.startup(() => {
 		callbacks.remove('streamNewMessage', this.data._id);
 	});
 
+	const isAtBottom = function(element, scrollThreshold = 0) {
+		return element.scrollTop + scrollThreshold >= element.scrollHeight - element.clientHeight;
+	};
+
 	Template.roomOld.onRendered(function() {
 		const { _id: rid } = this.data;
 
@@ -794,7 +798,7 @@ Meteor.startup(() => {
 		const store = NewRoomManager.getStore(rid);
 
 		const afterMessageGroup = () => {
-			if (store.scroll) {
+			if (store.scroll && !store.atBottom) {
 				wrapper.scrollTop = store.scroll;
 			} else {
 				this.sendToBottom();
@@ -802,8 +806,8 @@ Meteor.startup(() => {
 			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
 
 			wrapper.addEventListener('scroll', _.throttle(() => {
-				store.update({ scroll: wrapper.scrollTop });
-			}, 100));
+				store.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
+			}, 30));
 		};
 
 		wrapper.addEventListener('MessageGroup', afterMessageGroup);
@@ -820,7 +824,7 @@ Meteor.startup(() => {
 		const messageBox = $('.messages-box');
 
 		template.isAtBottom = function(scrollThreshold = 0) {
-			if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
+			if (isAtBottom(wrapper, scrollThreshold)) {
 				newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 				return true;
 			}
@@ -857,7 +861,6 @@ Meteor.startup(() => {
 		});
 
 		Tracker.afterFlush(() => {
-			template.sendToBottomIfNecessary();
 			wrapper.addEventListener('scroll', wheelHandler);
 		});
 

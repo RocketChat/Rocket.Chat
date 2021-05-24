@@ -27,7 +27,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 		return agent;
 	}
 
-	const user = await Users.getAgentAndAmountOngoingChats(agentId);
+	const user = await Users.getAgentAndAmountOngoingChats(agentId, departmentId);
 	if (!user) {
 		return null;
 	}
@@ -35,7 +35,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 	const { queueInfo: { chats = 0 } = {} } = user;
 	if (maxNumberSimultaneousChat <= chats) {
 		callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
-		if (options.clientAction) {
+		if (options.clientAction && !options.forwardingToDepartment) {
 			throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
 		}
 

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
-import { ClientSession } from '../app/ecdh/ClientSession';
+import { ClientSession } from '../app/ecdh/client/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
 const sessionPromise = new Promise<ClientSession | void>((resolve) => {
@@ -9,7 +9,7 @@ const sessionPromise = new Promise<ClientSession | void>((resolve) => {
 });
 
 function init(session: ClientSession): void {
-	Meteor.connection._stream._launchConnectionAsync();
+	Meteor.connection._stream.allowConnection(true);
 
 	const _didMessage = Meteor.connection._stream.socket._didMessage.bind(
 		Meteor.connection._stream.socket,
@@ -41,16 +41,23 @@ async function initEncryptedSession(): Promise<void> {
 
 		if (response.status !== 200) {
 			resolveSession();
-			return Meteor.connection._stream._launchConnectionAsync();
+			return Meteor.connection._stream.allowConnection(true);
 		}
 
-		await session.setServerKey(await response.text());
+		const data = await response.json();
+
+		if (data.success === false) {
+			resolveSession();
+			return Meteor.connection._stream.allowConnection(true);
+		}
+
+		await session.setServerKey(data.publicKeyString);
 		resolveSession(session);
 		init(session);
 	} catch (e) {
 		console.log(e);
 		resolveSession();
-		Meteor.connection._stream._launchConnectionAsync();
+		Meteor.connection._stream.allowConnection(true);
 	}
 }
 

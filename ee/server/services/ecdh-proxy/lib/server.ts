@@ -8,7 +8,7 @@ import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import mem from 'mem';
 
-import { ServerSession } from '../../../../app/ecdh/ServerSession';
+import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
 
 const app = express();
 app.use(cookieParser());
@@ -93,7 +93,10 @@ app.post('/api/ecdh_proxy/initEncryptedSession', async (req, res) => {
 		const session = await getSessionCached(req.body.clientPublicKey);
 
 		res.cookie('ecdhSession', req.body.clientPublicKey);
-		res.send(session.publicKeyString);
+		res.send({
+			success: true,
+			publicKeyString: session.publicKeyString,
+		});
 	} catch (e) {
 		res.status(400).send(e.message);
 	}

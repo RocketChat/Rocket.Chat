@@ -70,7 +70,10 @@ const TeamMembers = ({ rid }) => {
 		setState({ tab: 'AddUsers' });
 	});
 
-	const handleBack = useCallback(() => setState({}), [setState]);
+	const handleBack = useCallback(() => {
+		setState({});
+		reload();
+	}, [reload, setState]);
 
 	if (state.tab === 'UserInfo') {
 		return (
