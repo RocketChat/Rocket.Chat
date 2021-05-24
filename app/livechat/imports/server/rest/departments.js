@@ -10,12 +10,12 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const { text, enabled } = this.queryParams;
-
+		const { text, enabled, onlyMyDepartments } = this.queryParams;
 		const departments = Promise.await(findDepartments({
 			userId: this.userId,
 			text,
 			enabled,
+			onlyMyDepartments,
 			pagination: {
 				offset,
 				count,
@@ -137,7 +137,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 	get() {
-		const { selector } = this.queryParams;
+		const { selector, onlyMyDepartments } = this.queryParams;
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}
@@ -145,6 +145,7 @@ API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 		return API.v1.success(Promise.await(findDepartmentsToAutocomplete({
 			uid: this.userId,
 			selector: JSON.parse(selector),
+			onlyMyDepartments,
 		})));
 	},
 });

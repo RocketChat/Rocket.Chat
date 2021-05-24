@@ -3,7 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
-export async function findDepartments({ userId, text, enabled, pagination: { offset, count, sort } }) {
+export async function findDepartments({ userId, text, enabled, onlyMyDepartments, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -46,7 +46,7 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 	return result;
 }
 
-export async function findDepartmentsToAutocomplete({ uid, selector }) {
+export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepartments }) {
 	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
 		return { items: [] };
 	}
