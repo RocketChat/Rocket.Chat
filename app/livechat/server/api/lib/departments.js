@@ -36,13 +36,20 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	};
 }
 
-export async function findDepartmentById({ userId, departmentId, includeAgents = true }) {
+export async function findDepartmentById({ userId, departmentId, includeAgents = true, onlyMyDepartments = false }) {
 	const canViewLivechatDepartments = await hasPermissionAsync(userId, 'view-livechat-departments');
 	if (!canViewLivechatDepartments && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
+
+	let query = { _id: departmentId };
+
+	if (onlyMyDepartments) {
+		query = callbacks.run('livechat.applyDepartmentRestrictions', query);
+	}
+
 	const result = {
-		department: await LivechatDepartment.findOneById(departmentId),
+		department: await LivechatDepartment.findOne(query),
 	};
 	if (includeAgents && canViewLivechatDepartments) {
 		result.agents = await LivechatDepartmentAgents.find({ departmentId }).toArray();

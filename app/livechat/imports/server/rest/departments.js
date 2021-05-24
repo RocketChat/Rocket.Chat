@@ -61,10 +61,13 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 			_id: String,
 		});
 
+		const { onlyMyDepartments } = this.queryParams;
+
 		const { department, agents } = Promise.await(findDepartmentById({
 			userId: this.userId,
 			departmentId: this.urlParams._id,
 			includeAgents: this.queryParams.includeAgents && this.queryParams.includeAgents === 'true',
+			onlyMyDepartments: onlyMyDepartments === 'true',
 		}));
 
 		const result = { department };

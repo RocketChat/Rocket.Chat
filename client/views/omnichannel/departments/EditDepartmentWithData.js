@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -8,16 +8,20 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
 
+const useQuery = (onlyMyDepartments) => useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
+
 function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`);
+	const onlyMyDepartments = true;
+	const query = useQuery(onlyMyDepartments);
+	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`, query);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error) {
-		return <Box mbs='x16'>{t('User_not_found')}</Box>;
+	if (error || (id && !data?.department)) {
+		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
 	}
 	return <EditDepartment id={id} data={data} reload={reload} title={title} />;
 }
