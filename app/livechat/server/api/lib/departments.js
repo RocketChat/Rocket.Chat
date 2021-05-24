@@ -5,7 +5,7 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models
 import { callbacks } from '../../../../callbacks/server';
 
 
-export async function findDepartments({ userId, onlyMyDepartments, text, enabled, pagination: { offset, count, sort } }) {
+export async function findDepartments({ userId, onlyMyDepartments = false, text, enabled, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
@@ -16,7 +16,7 @@ export async function findDepartments({ userId, onlyMyDepartments, text, enabled
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query) || query;
+		query = callbacks.run('livechat.applyDepartmentRestrictions', query);
 	}
 
 	const cursor = LivechatDepartment.find(query, {
@@ -52,7 +52,7 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 	return result;
 }
 
-export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepartments }) {
+export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepartments = false }) {
 	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
 		return { items: [] };
 	}
@@ -71,7 +71,7 @@ export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepar
 	};
 
 	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions) || conditions;
+		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions);
 	}
 
 	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
