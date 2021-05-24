@@ -70,7 +70,6 @@ export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepar
 			_id: 1,
 			name: 1,
 		},
-		limit: 10,
 		sort: {
 			name: 1,
 		},
