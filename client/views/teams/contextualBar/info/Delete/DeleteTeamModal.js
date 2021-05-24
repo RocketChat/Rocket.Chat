@@ -1,26 +1,22 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
-import { StepOne, StepTwo, StepThree } from '.';
+import { StepOne, StepTwo } from '.';
 
 export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
-	const [step, setStep] = useState(1);
+	const hasRooms = rooms?.length > 0;
+
+	const [step, setStep] = useState(hasRooms ? 1 : 2);
 	const [deletedRooms, setDeletedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
-	const onContinue = useMutableCallback(() => {
-		if (step === 1 && rooms.length === 0) {
-			return setStep(3);
-		}
-		setStep(step + 1);
-	});
+	const onContinue = useCallback(() => {
+		setStep(2);
+	}, [setStep]);
 
-	const onReturn = useMutableCallback(() => {
-		if (step === 3 && rooms.length === 0) {
-			return setStep(1);
-		}
-		setStep(step - 1);
-	});
+	const onReturn = useCallback(() => {
+		setStep(1);
+	}, [setStep]);
 
 	const onChangeRoomSelection = useMutableCallback((room) => {
 		if (deletedRooms[room._id]) {
@@ -48,23 +44,8 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	if (step === 2) {
 		return (
 			<StepTwo
-				rooms={rooms}
-				onCancel={onCancel}
-				params={{}}
-				selectedRooms={deletedRooms}
-				onToggleAllRooms={onToggleAllRooms}
-				onChangeParams={(...args) => console.log(args)}
-				onConfirm={onSelectRooms}
-				onChangeRoomSelection={onChangeRoomSelection}
-			/>
-		);
-	}
-
-	if (step === 3) {
-		return (
-			<StepThree
 				onConfirm={onConfirm}
-				onReturn={onReturn}
+				onReturn={hasRooms && onReturn}
 				onCancel={onCancel}
 				deletedRooms={deletedRooms}
 				keptRooms={keptRooms}
@@ -72,7 +53,18 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 		);
 	}
 
-	return <StepOne onConfirm={onContinue} onCancel={onCancel} />;
+	return (
+		<StepOne
+			rooms={rooms}
+			onCancel={onCancel}
+			params={{}}
+			selectedRooms={deletedRooms}
+			onToggleAllRooms={onToggleAllRooms}
+			onChangeParams={(...args) => console.log(args)}
+			onConfirm={onSelectRooms}
+			onChangeRoomSelection={onChangeRoomSelection}
+		/>
+	);
 };
 
 export default DeleteTeamModal;
