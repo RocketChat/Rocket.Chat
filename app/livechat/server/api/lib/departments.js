@@ -1,16 +1,23 @@
+import { Meteor } from 'meteor/meteor';
+
 import { escapeRegExp } from '../../../../../lib/escapeRegExp';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
 
-export async function findDepartments({ userId, text, enabled, /* onlyMyDepartments,*/ pagination: { offset, count, sort } }) {
+
+export async function findDepartments({ userId, onlyMyDepartments, text, enabled, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-departments') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
 
-	const query = {
+	let query = {
 		...enabled && { enabled: Boolean(enabled) },
 		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};
+
+	if (onlyMyDepartments) {
+		query = Meteor.call('livechat:applyDepartmentRestrictions', query) || query;
+	}
 
 	const cursor = LivechatDepartment.find(query, {
 		sort: sort || { name: 1 },
