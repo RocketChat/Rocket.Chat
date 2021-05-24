@@ -20,7 +20,10 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const onChangeRoomSelection = useMutableCallback((room) => {
 		if (deletedRooms[room._id]) {
-			setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: undefined }));
+			setDeletedRooms((deletedRooms) => {
+				delete deletedRooms[room._id];
+				return { ...deletedRooms };
+			});
 			return;
 		}
 		setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: room }));
