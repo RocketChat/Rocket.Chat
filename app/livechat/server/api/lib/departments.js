@@ -51,11 +51,12 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 	return result;
 }
 
-export async function findDepartmentsToAutocomplete({ uid, selector /* , onlyMyDepartments */ }) {
+export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepartments }) {
 	if (!await hasPermissionAsync(uid, 'view-livechat-departments') && !await hasPermissionAsync(uid, 'view-l-room')) {
 		return { items: [] };
 	}
-	const { exceptions = [], conditions = {} } = selector;
+	const { exceptions = [] } = selector;
+	let { conditions = {} } = selector;
 
 	const options = {
 		fields: {
@@ -67,6 +68,10 @@ export async function findDepartmentsToAutocomplete({ uid, selector /* , onlyMyD
 			name: 1,
 		},
 	};
+
+	if (onlyMyDepartments) {
+		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions) || conditions;
+	}
 
 	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
 	return {

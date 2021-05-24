@@ -139,7 +139,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 
 API.v1.addRoute('livechat/department.autocomplete', { authRequired: true }, {
 	get() {
-		const { selector, onlyMyDepartments } = this.queryParams;
+		const { selector, onlyMyDepartments = false } = this.queryParams;
 		if (!selector) {
 			return API.v1.failure('The \'selector\' param is required');
 		}
