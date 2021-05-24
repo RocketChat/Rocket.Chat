@@ -60,7 +60,10 @@ function DepartmentsRoute() {
 		}),
 	);
 
-	const { value: data = {}, reload } = useEndpointData('livechat/department', query);
+	const { value: data = {}, reload } = useEndpointData(
+		'livechat/department?onlyMyDepartments=true',
+		query,
+	);
 
 	const header = useMemo(
 		() =>

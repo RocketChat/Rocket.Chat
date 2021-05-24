@@ -123,7 +123,12 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment value={department} onChange={handleDepartment} label={t('All')} />
+					<AutoCompleteDepartment
+						value={department}
+						onChange={handleDepartment}
+						label={t('All')}
+						onlyMyDepartments={true}
+					/>
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
