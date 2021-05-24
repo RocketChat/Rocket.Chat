@@ -68,6 +68,16 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
+		it('should hide message pins (system messages)', (done) => {
+			request.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					systemMessages: ['message_pinned'],
+				})
+				.expect(200)
+				.end(done);
+		});
 		it('should return channel basic structure', (done) => {
 			request.get(api('channels.info'))
 				.set(credentials)
@@ -129,6 +139,19 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
+		it('PINning last message', (done) => {
+			request.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
 		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
 			request.get(api('channels.info'))
 				.set(credentials)
@@ -165,19 +188,6 @@ describe('[Channels]', function() {
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
 					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
-				})
-				.end(done);
-		});
-		it('PINning last message', (done) => {
-			request.post(api('chat.pinMessage'))
-				.set(credentials)
-				.send({
-					messageId: channelMessage._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});
