@@ -6,6 +6,7 @@ import { Rooms, Subscriptions, Users } from '../../../models';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
 import { api } from '../../../../server/sdk/api';
+import { Team } from '../../../../server/sdk';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -80,6 +81,10 @@ Meteor.methods({
 				});
 			}
 		});
+
+		if (room.teamMain && room.teamId) {
+			Promise.await(Team.addMembers(userId, room.teamId, data.users));
+		}
 
 		return true;
 	},

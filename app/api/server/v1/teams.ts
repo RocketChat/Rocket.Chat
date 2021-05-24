@@ -10,6 +10,7 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/s
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
+import { ITeamMemberParams } from '../../../../server/sdk/types/ITeamService';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	get() {
@@ -243,7 +244,8 @@ API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.addMembers(this.userId, team._id, members));
+		const users = Promise.await(members.map((member: Array<ITeamMemberParams>) => Users.findOneById(member.userId)));
+		Promise.await(Meteor.call('addUsersToRoom', { rid: team.roomId, users: users.map((member: IUser) => member.username) }));
 
 		return API.v1.success();
 	},
