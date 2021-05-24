@@ -14,7 +14,7 @@ import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current, onlyMyDepartments }, [column, direction]) =>
+const useQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -38,13 +38,13 @@ function DepartmentsRoute() {
 		text: '',
 		current: 0,
 		itemsPerPage: 25,
-		onlyMyDepartments: true,
 	});
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const onlyMyDepartments = true;
+	const query = useQuery(debouncedParams, debouncedSort, onlyMyDepartments);
 	const departmentsRoute = useRoute('omnichannel-departments');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');

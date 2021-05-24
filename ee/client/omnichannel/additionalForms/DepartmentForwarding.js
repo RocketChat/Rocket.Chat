@@ -4,9 +4,13 @@ import React, { useMemo } from 'react';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
+const useQuery = (onlyMyDepartments) => useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
 export const DepartmentForwarding = ({ departmentId, value, handler, label, placeholder }) => {
 	const t = useTranslation();
-	const { value: data } = useEndpointData('livechat/department');
+	const onlyMyDepartments = true;
+	const query = useQuery(onlyMyDepartments);
+
+	const { value: data } = useEndpointData('livechat/department', query);
 
 	const options = useMemo(
 		() =>
