@@ -1270,7 +1270,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	updateGroupDMsRemovingUsernamesByUsername(username) {
+	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
 		const query = {
 			t: 'd',
 			usernames: username,
@@ -1280,6 +1280,7 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				usernames: username,
+				uids: userId,
 			},
 		};
 

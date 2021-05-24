@@ -8,6 +8,7 @@ import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
+import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -155,13 +156,7 @@ export class AppsRestApi {
 					});
 				}
 
-				const apps = manager.get().map((prl) => {
-					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageContent;
-					info.status = prl.getStatus();
-
-					return info;
-				});
+				const apps = manager.get().map(formatAppInstanceForRest);
 
 				return API.v1.success({ apps });
 			},
@@ -407,21 +402,15 @@ export class AppsRestApi {
 					return API.v1.success({ app: result.data });
 				}
 
-				const prl = manager.getOneById(this.urlParams.id);
+				const app = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({
-						app: {
-							...info,
-							status: prl.getStatus(),
-							licenseValidation: prl.getLatestLicenseValidationResult(),
-						},
-					});
+				if (!app) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				return API.v1.success({
+					app: formatAppInstanceForRest(app),
+				});
 			},
 			post() {
 				let buff;
