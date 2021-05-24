@@ -10,7 +10,9 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const { text, enabled, onlyMyDepartments } = this.queryParams;
+
+		const { text, enabled, onlyMyDepartments = false } = this.queryParams;
+
 		const departments = Promise.await(findDepartments({
 			userId: this.userId,
 			text,
