@@ -41,9 +41,7 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 				onConfirm={onBusinessHour}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

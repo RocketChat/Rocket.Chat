@@ -43,9 +43,7 @@ function AgentInfoActions({ reload }) {
 				onConfirm={onDeleteAgent}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

@@ -39,9 +39,7 @@ function RemoveDepartmentButton({ _id, reload }) {
 				onConfirm={onDeleteAgent}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

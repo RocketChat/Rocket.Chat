@@ -37,9 +37,7 @@ function MonitorsRow(props) {
 				onConfirm={onDeleteMonitor}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

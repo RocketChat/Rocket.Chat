@@ -55,9 +55,7 @@ const TriggersRow = memo(function TriggersRow(props) {
 				onConfirm={onDeleteTrigger}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

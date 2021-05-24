@@ -38,9 +38,7 @@ function RemoveManagerButton({ _id, reload }) {
 				onConfirm={onDeleteManager}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 

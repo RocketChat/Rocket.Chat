@@ -113,9 +113,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 				onConfirm={onDeleteAll}
 				onCancel={() => setModal()}
 				confirmText={t('Delete')}
-			>
-				{t('Delete_File_Warning')}
-			</GenericModal>,
+			/>,
 		);
 	});
 
