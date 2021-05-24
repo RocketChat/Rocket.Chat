@@ -242,16 +242,19 @@ export async function exportRoomMessages(rid, exportType, skip, limit, assetsPat
 		uploads: [],
 	};
 
+	const uploadIds = [];
+
 	results.forEach(Meteor.bindEnvironment((msg) => {
 		const messageObject = getMessageData(msg, hideUsers, userData, usersMap);
 
 		if (msg.file) {
-			result.uploads.push(msg.file);
+			uploadIds.push(msg.file._id);
 		}
 
 		result.messages.push(exportMessageObject(exportType, messageObject, msg.file));
 	}));
 
+	result.uploads = Uploads.findByIds(uploadIds);
 	return result;
 }
 
@@ -451,6 +454,22 @@ const generateUserAvatarFile = function(exportOperation, userData) {
 	}
 };
 
+function spliceByFileSize(fileList, size) {
+	let fileCounter = 0;
+	let sizeCounter = 0;
+
+	for (let i = 0; i < fileList.length; i++) {
+		fileCounter++;
+		sizeCounter += fileList[i].size;
+
+		if (sizeCounter > size) {
+			return fileList.splice(0, fileCounter);
+		}
+	}
+
+	return fileList.splice(0, fileList.length);
+}
+
 const continueExportOperation = async function(exportOperation) {
 	if (exportOperation.status === 'completed') {
 		return;
@@ -505,16 +524,21 @@ const continueExportOperation = async function(exportOperation) {
 		}
 
 		if (exportOperation.status === 'downloading') {
-			exportOperation.fileList.forEach((attachmentData) => {
+			const maxSizePerBatch = 10485760; // 10MB
+			const filesBatch = spliceByFileSize(exportOperation.fileList, maxSizePerBatch);
+
+			filesBatch.forEach((attachmentData) => {
 				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
-			if (await fsExists(targetFile)) {
-				await fsUnlink(targetFile);
-			}
+			if (exportOperation.fileList.length === 0) {
+				const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+				if (await fsExists(targetFile)) {
+					await fsUnlink(targetFile);
+				}
 
-			exportOperation.status = 'compressing';
+				exportOperation.status = 'compressing';
+			}
 		}
 
 		if (exportOperation.status === 'compressing') {
