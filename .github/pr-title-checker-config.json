@@ -1,0 +1,10 @@
+{
+	"LABEL": {
+	  "name": "Title needs format :)",
+	  "color": "EEEEEE"
+	},
+	"CHECKS": {
+	  "prefixes": ["Bump", "Fix:", "Improve:", "Regression:", "Patch:", "Hotfix:", "[FIX]", "[IMPROVE]", "[REGRESSION]", "[PATCH]", "[HOTFIX]", ["Snyk"]],
+	  "ignoreLabels" : ["[ignore-title]"]
+	}
+  }
