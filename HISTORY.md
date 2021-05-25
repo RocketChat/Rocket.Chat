@@ -1,4 +1,36 @@
 
+# 3.14.2
+`2021-05-25  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.25.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update README.md ([#48](https://github.com/RocketChat/Rocket.Chat/pull/48) by [@hehsiao](https://github.com/hehsiao))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@hehsiao](https://github.com/hehsiao)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.14.1
 `2021-05-19  ·  1 🎉  ·  2 🚀  ·  4 🐛  ·  3 🔍  ·  7 👩‍💻👨‍💻`
 
