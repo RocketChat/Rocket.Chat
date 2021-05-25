@@ -127,7 +127,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 						value={department}
 						onChange={handleDepartment}
 						label={t('All')}
-						onlyMyDepartments={true}
+						onlyMyDepartments
 					/>
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
