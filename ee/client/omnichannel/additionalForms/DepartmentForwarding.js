@@ -4,11 +4,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 
+const param = { onlyMyDepartments: true };
 export const DepartmentForwarding = ({ departmentId, value, handler, label, placeholder }) => {
 	const t = useTranslation();
-	const onlyMyDepartments = true;
-	const param = useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
-
 	const { value: data } = useEndpointData('livechat/department', param);
 
 	const options = useMemo(
