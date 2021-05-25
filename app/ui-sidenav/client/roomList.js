@@ -24,7 +24,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 				messageViewMode: 1,
 			},
@@ -77,11 +76,6 @@ Template.roomList.helpers({
 				query.tokens = { $exists: false };
 			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
 				query.tokens = { $exists: true };
-			}
-
-			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
-				query.prid = { $exists: false };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
@@ -152,6 +146,7 @@ const mergeSubRoom = (subscription) => {
 			usernames: 1,
 			topic: 1,
 			encrypted: 1,
+			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -188,6 +183,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -220,6 +216,7 @@ const mergeSubRoom = (subscription) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -257,6 +254,7 @@ const mergeRoomSub = (room) => {
 		teamMain,
 		uids,
 		usernames,
+		jitsiTimeout,
 
 		v,
 		transcriptRequest,
@@ -302,6 +300,7 @@ const mergeRoomSub = (room) => {
 			responseBy,
 			priorityId,
 			livechatData,
+			jitsiTimeout,
 			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
