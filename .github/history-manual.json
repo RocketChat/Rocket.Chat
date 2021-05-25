@@ -80,13 +80,22 @@
 			"matheusbsilva137"
 		]
 	}],
-	"3.13.2": [{
+	"3.12.4": [{
 		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
 		"userLogin": "sampaiodiego",
 		"contributors": [
 			"sampaiodiego",
 			"KevLehman",
 			"renatobecker"
+		]
+	}],
+	"3.13.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"KevLehman",
+			"g-thome"
 		]
 	}]
 }
