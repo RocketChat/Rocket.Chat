@@ -17,7 +17,7 @@ function EditDepartmentWithData({ id, reload, title }) {
 		return <FormSkeleton />;
 	}
 
-	if (error || !data || !data.department) {
+	if (error || (id && !data?.department)) {
 		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
 	}
 	return <EditDepartment id={id} data={data} reload={reload} title={title} />;

@@ -154,6 +154,7 @@ export class UsersRaw extends BaseRaw {
 							$and: [
 								{ $eq: ['$u._id', '$$id'] },
 								{ $eq: ['$open', true] },
+								{ $ne: ['$onHold', true] },
 								{ ...department && { $eq: ['$department', department] } },
 							],
 						},
