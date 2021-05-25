@@ -4,8 +4,8 @@ import { Settings, Users } from '../../../app/models/server';
 Migrations.add({
 	version: 225,
 	up() {
-		const hideAvatarsSetting = Settings.findById('Accounts_Default_User_Preferences_hideAvatars');
-		const hideAvatarsSidebarSetting = Settings.findById('Accounts_Default_User_Preferences_sidebarHideAvatar');
+		const hideAvatarsSetting = Settings.findOneById('Accounts_Default_User_Preferences_hideAvatars');
+		const hideAvatarsSidebarSetting = Settings.findOneById('Accounts_Default_User_Preferences_sidebarHideAvatar');
 
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarShowDiscussion');
 
@@ -27,36 +27,28 @@ Migrations.add({
 			},
 		});
 
-		const users = Users.find({}, { fields: { _id: 1, 'settings.preferences': 1 } }).fetch();
-		users.forEach((user) => {
-			if (!(user.settings && user.settings.preferences && typeof user.settings.preferences !== 'object')) {
-				return;
-			}
+		Users.update({ 'settings.preferences.hideAvatars': true }, {
+			$set: { 'settings.preferences.displayAvatars': false },
+			$unset: { 'settings.preferences.hideAvatars': 1 },
+		}, { multi: true });
 
-			const { preferences } = user.settings;
-			const { hideAvatars } = user.settings.preferences;
-			const { sidebarHideAvatar } = user.settings.preferences;
+		Users.update({ 'settings.preferences.hideAvatars': false }, {
+			$set: { 'settings.preferences.displayAvatars': true },
+			$unset: { 'settings.preferences.hideAvatars': 1 },
+		}, { multi: true });
 
-			let setValues;
-			if (preferences.hasOwnProperty('hideAvatars')) {
-				setValues = { 'settings.preferences.displayAvatars': !hideAvatars };
-			}
+		Users.update({ 'settings.preferences.sidebarHideAvatar': true }, {
+			$set: { 'settings.preferences.sidebarDisplayAvatar': false },
+			$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
+		}, { multi: true });
 
-			if (preferences.hasOwnProperty('sidebarHideAvatar')) {
-				setValues = { ...setValues, 'settings.preferences.sidebarDisplayAvatar': !sidebarHideAvatar };
-			}
+		Users.update({ 'settings.preferences.sidebarHideAvatar': false }, {
+			$set: { 'settings.preferences.sidebarDisplayAvatar': true },
+			$unset: { 'settings.preferences.sidebarHideAvatar': 1 },
+		}, { multi: true });
 
-			Users.update(
-				{ _id: user._id },
-				{
-					$set: setValues,
-					$unset: {
-						'settings.preferences.hideAvatars': 1,
-						'settings.preferences.sidebarHideAvatar': 1,
-						'settings.preferences.sidebarShowDiscussion': 1,
-					},
-				},
-			);
-		});
+		Users.update({ 'settings.preferences.sidebarShowDiscussion': { $exists: true } }, {
+			$unset: { 'settings.preferences.sidebarShowDiscussion': 1 },
+		}, { multi: true });
 	},
 });

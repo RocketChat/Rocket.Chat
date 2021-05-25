@@ -13,7 +13,11 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 import RoomTags from './RoomTags';
 import { useQuery } from './hooks';
 
-const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
+const style = {
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+	overflow: 'hidden',
+};
 
 function TeamsTable() {
 	const t = useTranslation();
@@ -48,14 +52,7 @@ function TeamsTable() {
 				>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'channelsCount'}
-					direction={sort[1]}
-					active={sort[0] === 'channelsCount'}
-					onClick={onHeaderClick}
-					sort='channelsCount'
-					style={{ width: '100px' }}
-				>
+				<GenericTable.HeaderCell key={'channelsCount'} style={{ width: '100px' }}>
 					{t('Channels')}
 				</GenericTable.HeaderCell>,
 				mediaQuery && (
@@ -79,7 +76,7 @@ function TeamsTable() {
 
 	const query = useQuery(params, sort, 'teams');
 
-	const { value: data = { result: [] } } = useEndpointData('directory', query);
+	const { value: data = {} } = useEndpointData('directory', query);
 
 	const onClick = useMemo(
 		() => (name, type) => (e) => {
