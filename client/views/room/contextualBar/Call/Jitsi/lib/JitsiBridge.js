@@ -17,6 +17,7 @@ export class JitsiBridge extends Emitter {
 		this.desktopSharingChromeExtId = desktopSharingChromeExtId;
 		this.name = name;
 		this.heartbeat = heartbeat;
+		this.window = undefined;
 	}
 
 	start(domTarget) {
@@ -59,7 +60,7 @@ export class JitsiBridge extends Emitter {
 			}, 1000);
 
 			this.once('dispose', () => clearTimeout(timer));
-
+			this.window = newWindow;
 			return newWindow.focus();
 		}
 

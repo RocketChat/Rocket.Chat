@@ -4,7 +4,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import EditInvite from './EditInvite';
 
 export default {
-	title: 'components/RoomMembers/EditInvite',
+	title: 'room/contextualBar/RoomMembers/EditInvite',
 	component: EditInvite,
 };
 
