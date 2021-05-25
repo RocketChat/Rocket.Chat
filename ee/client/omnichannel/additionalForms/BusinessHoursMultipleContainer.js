@@ -14,8 +14,6 @@ const getInitialData = (data = {}) => ({
 	departments: mapDepartments(data.departments),
 });
 
-const useQuery = (onlyMyDepartments) => useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
-
 const BusinessHoursMultipleContainer = ({
 	onChange,
 	data: initialData,
@@ -23,9 +21,9 @@ const BusinessHoursMultipleContainer = ({
 	hasChangesAndIsValid = () => {},
 }) => {
 	const onlyMyDepartments = true;
-	const query = useQuery(onlyMyDepartments);
+	const params = useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
 
-	const { value: data, phase: state } = useEndpointData('livechat/department', query);
+	const { value: data, phase: state } = useEndpointData('livechat/department', params);
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
 
