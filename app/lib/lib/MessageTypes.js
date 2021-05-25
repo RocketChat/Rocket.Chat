@@ -68,6 +68,16 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'ujt',
+		system: true,
+		message: 'User_joined_team',
+		data(message) {
+			return {
+				user: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'ut',
 		system: true,
 		message: 'User_joined_conversation',
