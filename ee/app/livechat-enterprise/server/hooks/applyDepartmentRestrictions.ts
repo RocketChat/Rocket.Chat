@@ -2,7 +2,7 @@ import { callbacks } from '../../../../../app/callbacks/server';
 import { addQueryRestrictionsToDepartmentsModel } from '../lib/query.helper';
 import { hasRole } from '../../../../../app/authorization/server/functions/hasRole';
 
-callbacks.add('livechat.applyDepartmentRestrictions', ({ originalQuery, userId } = { originalQuery: {}, userId: null }) => {
+callbacks.add('livechat.applyDepartmentRestrictions', (originalQuery = {}, { userId } = {}) => {
 	if (!userId || !hasRole(userId, 'livechat-monitor')) {
 		return originalQuery;
 	}

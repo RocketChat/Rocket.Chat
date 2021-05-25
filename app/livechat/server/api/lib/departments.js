@@ -15,7 +15,7 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', { originalQuery: query, userId });
+		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const cursor = LivechatDepartment.find(query, {
@@ -45,7 +45,7 @@ export async function findDepartmentById({ userId, departmentId, includeAgents =
 	let query = { _id: departmentId };
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query);
+		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const result = {
@@ -76,7 +76,7 @@ export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepar
 	};
 
 	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions);
+		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
 	}
 
 	const items = await LivechatDepartment.findByNameRegexWithExceptionsAndConditions(selector.term, exceptions, conditions, options).toArray();
