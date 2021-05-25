@@ -16,7 +16,7 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query);
+		query = callbacks.run('livechat.applyDepartmentRestrictions', { originalQuery: query, userId });
 	}
 
 	const cursor = LivechatDepartment.find(query, {
