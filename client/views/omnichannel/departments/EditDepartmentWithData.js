@@ -8,13 +8,11 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
 
-const useQuery = (onlyMyDepartments) => useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
-
 function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
 	const onlyMyDepartments = true;
-	const query = useQuery(onlyMyDepartments);
-	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`, query);
+	const param = useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
+	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`, param);
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
