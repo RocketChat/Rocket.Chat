@@ -50,6 +50,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	}
 
 	let room = {
+		...extraData,
 		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
 		t: type,
@@ -59,7 +60,6 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 			_id: owner._id,
 			username: owner.username,
 		},
-		...extraData,
 		ts: now,
 		ro: readOnly === true,
 	};

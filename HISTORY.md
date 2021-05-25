@@ -1,4 +1,36 @@
 
+# 3.12.6
+`2021-05-25  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.23.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Update README.md ([#48](https://github.com/RocketChat/Rocket.Chat/pull/48) by [@hehsiao](https://github.com/hehsiao))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@hehsiao](https://github.com/hehsiao)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.12.5
 `2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
@@ -634,6 +666,24 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.11.5
+`2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.18.4`
+- NPM: `6.14.8`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.22.2`
+
+### 🐛 Bug fixes
+
+
+- Livechat not retrieving messages ([#21644](https://github.com/RocketChat/Rocket.Chat/pull/21644) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 
 # 3.11.2
 `2021-02-28  ·  3 🐛  ·  3 👩‍💻👨‍💻`
