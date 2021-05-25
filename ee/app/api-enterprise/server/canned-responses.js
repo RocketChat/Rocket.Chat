@@ -66,4 +66,12 @@ API.v1.addRoute('canned-responses', { authRequired: true }, {
 		});
 		return API.v1.success();
 	},
+	delete() {
+		const { _id } = this.requestParams();
+		check(_id, String);
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('removeCannedResponse', _id);
+		});
+		return API.v1.success();
+	},
 });
