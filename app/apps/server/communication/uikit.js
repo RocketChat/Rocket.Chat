@@ -24,15 +24,15 @@ settings.get('API_CORS_Origin', (_, value) => {
 	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
 });
 
-apiServer.use(cors({
+const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || !corsEnabled || (allowListOrigins.includes('*') || allowListOrigins.includes(origin)) || origin === settings.get('Site_Url')) {
+		if (!origin || (corsEnabled && (allowListOrigins.includes('*') || allowListOrigins.includes(origin))) || origin === settings.get('Site_Url')) {
 			callback(null, true);
 		} else {
 			callback('Not allowed by CORS', false);
 		}
 	},
-}));
+};
 
 WebApp.connectHandlers.use(apiServer);
 
@@ -79,7 +79,7 @@ router.use((req, res, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/ui.interaction/', router);
+apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router);
 
 const getPayloadForType = (type, req) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {
