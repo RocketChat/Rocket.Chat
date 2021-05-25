@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps } from 'react';
+import React, { FC, ComponentProps, ReactElement } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
@@ -10,7 +10,7 @@ type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	cancelText?: string;
 	confirmText?: string;
-	title?: string;
+	title?: string | ReactElement;
 	icon?: string;
 	onCancel?: () => void;
 	onClose: () => void;

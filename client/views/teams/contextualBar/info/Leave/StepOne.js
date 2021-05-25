@@ -13,6 +13,7 @@ export const StepOne = ({
 	onChangeRoomSelection,
 	onConfirm,
 	onCancel,
+	eligibleRoomsLength,
 	selectedRooms,
 }) => {
 	const t = useTranslation();
@@ -31,6 +32,7 @@ export const StepOne = ({
 				lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
 				onToggleAllRooms={onToggleAllRooms}
 				lastOwnerRooms={lastOwnerRooms}
+				eligibleRoomsLength={eligibleRoomsLength}
 				rooms={rooms}
 				params={{}}
 				onChangeParams={() => {}}
