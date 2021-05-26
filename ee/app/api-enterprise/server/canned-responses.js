@@ -32,7 +32,7 @@ API.v1.addRoute('canned-responses', { authRequired: true }, {
 			sort,
 			count,
 			options: {
-				sort: sort || { ts: -1 },
+				sort: sort || { shortcut: -1 },
 				offset,
 				count,
 				fields,
