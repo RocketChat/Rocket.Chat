@@ -1,3 +1,5 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import CannedResponse from '../../../models/server/raw/CannedResponse';
@@ -56,4 +58,33 @@ export async function findAllCannedResponses({ userId }) {
 			},
 		],
 	}).toArray();
+}
+
+export async function findAllCannedResponsesFilter({ userId, shortcut, text, scope, createdBy, tags = [], options = {} }) {
+	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
+		throw new Error('error-not-authorized');
+	}
+	const filter = new RegExp(escapeRegExp(text), 'i');
+
+	const cursor = CannedResponse.find({
+		...shortcut && { shortcut },
+		...text && { $or: [{ name: filter }] },
+		...scope && { scope },
+		...createdBy && { $exists: createdBy },
+		...tags.length && {
+			tags: {
+				$in: tags,
+			},
+		},
+	}, {
+		sort: options.sort || { shortcut: 1 },
+		skip: options.offset,
+		limit: options.count,
+	});
+	const total = await cursor.count();
+	const cannedResponses = await cursor.toArray();
+	return {
+		cannedResponses,
+		total,
+	};
 }

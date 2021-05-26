@@ -159,6 +159,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 			case 'ul':
 				messageObject.msg = TAPi18n.__('User_left');
 				break;
+			case 'ult':
+				messageObject.msg = TAPi18n.__('User_left_team');
+				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
