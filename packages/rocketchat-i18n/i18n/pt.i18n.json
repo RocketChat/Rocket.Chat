@@ -1047,6 +1047,7 @@
   "delete-user_description": "Permissão para apagar utilizadores",
   "Deleted": "Apagado!",
   "Department": "Departamento",
+  "Department_not_found": "Departmento não encontrado",
   "Department_removed": "Departamento removido",
   "Departments": "Departamentos",
   "Deployment_ID": "ID de Desenvolvimento",
