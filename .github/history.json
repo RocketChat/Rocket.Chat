@@ -59613,26 +59613,6 @@
         }
       ]
     },
-    "3.14.2": {
-      "node_version": "12.22.1",
-      "npm_version": "6.14.1",
-      "apps_engine_version": "1.25.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": [
-        {
-          "pr": "48",
-          "title": "Update README.md",
-          "userLogin": "hehsiao",
-          "contributors": [
-            "hehsiao"
-          ]
-        }
-      ]
-    },
     "3.15.0-rc.0": {
       "node_version": "12.22.1",
       "npm_version": "6.14.1",
@@ -60749,6 +60729,107 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.12.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.4": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.14.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22135",
+          "title": "Release 3.14.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22109",
+          "title": "Regression: Add \"User left team\" message type",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add 'ult' system message type, which is sent when a user leaves a team (\"Has left the team.\").",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22126",
+          "title": "Regression: Make referrer header configurable",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22128",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "renatobecker",
+          "description": "Currently, Omnichannel Monitors just can't forward chats to a department that is part of a `Business Unit` they're not supervising. This issue is causing critical problems on customer operations since this behaviour is not by design.\r\nThe reason this issue is taking place is that, by design, Monitors just have access to departments related to the `Business Units` they're monitoring, but this restriction is designed only for Omnichannel management areas, which means in case the monitor is, also, an agent, they're supposed to be able to forward a chat to any available departments regardless the `Business Units` it's associated with.\r\nSo, initially, the restriction was implemented on the `Department Model` and, now, we're implementing the logic properly and introducing a new parameter to department endpoints, so the client will define which type of departments it needs.",
+          "contributors": [
+            "renatobecker",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22135",
+          "title": "Release 3.14.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22108",
+          "title": "regression: Migration 225 setting not being fetched correctly",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
