@@ -1,5 +1,6 @@
 import { Db, FindOneOptions, FilterQuery } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -569,7 +570,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 			_updatedAt: new Date(), // TODO how to avoid having to do this?
 		})) || [];
 
-		await this.TeamMembersModel.insertMany(membersList);
+		const users = await this.Users.findByIds(members.map((member) => member.userId), { projection: { username: 1 } }).toArray();
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		await Meteor.call('addUsersToRoom', { rid: team.roomId, users: users.map((member: IUser) => member.username) });
+
 		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
 	}
 
