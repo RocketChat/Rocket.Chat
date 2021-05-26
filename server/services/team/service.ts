@@ -1,6 +1,5 @@
 import { Db, FindOneOptions, FilterQuery } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -561,20 +560,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
-			teamId,
-			userId: member.userId,
-			roles: member.roles || [],
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		})) || [];
-
-		const users = await this.Users.findByIds(members.map((member) => member.userId), { projection: { username: 1 } }).toArray();
 		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
-		await Meteor.call('addUsersToRoom', { rid: team.roomId, users: users.map((member: IUser) => member.username) });
 
-		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
+		for await (const member of members) {
+			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			await addUserToRoom(team.roomId, user, createdBy, false);
+
+			if (member.roles) {
+				await this.addRolesToMember(teamId, member.userId, member.roles);
+			}
+		}
 	}
 
 	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
