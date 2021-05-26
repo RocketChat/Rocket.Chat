@@ -27,6 +27,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatInquiry,
+	Uploads,
 } from '../../../models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
@@ -396,6 +397,9 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:removeRoom' });
 		}
 
+		Uploads.findByRoomId(rid).forEach((file) => {
+			FileUpload.getStore('Uploads').deleteById(file._id);
+		});
 		Messages.removeByRoomId(rid);
 		Subscriptions.removeByRoomId(rid);
 		LivechatInquiry.removeByRoomId(rid);
