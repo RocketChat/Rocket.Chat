@@ -1,3 +1,4 @@
+import { Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -17,9 +18,9 @@ const RemoveUsersSecondStep = ({
 	return (
 		<GenericModal
 			variant='danger'
+			icon={<Icon name='modal-warning' size={24} color='warning' />}
 			cancelText={rooms?.length > 0 ? t('Back') : t('Cancel')}
 			confirmText={t('Remove')}
-			icon='info'
 			title={t('Confirmation')}
 			onClose={onClose}
 			onCancel={onCancel}

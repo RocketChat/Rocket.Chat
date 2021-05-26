@@ -1,3 +1,4 @@
+import { Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -8,8 +9,8 @@ export const StepTwo = ({ onConfirm, onCancel, onClose }) => {
 
 	return (
 		<GenericModal
+			icon={<Icon name='modal-warning' size={24} color='warning' />}
 			variant='danger'
-			icon='info-circled'
 			title={t('Confirmation')}
 			onConfirm={onConfirm}
 			onCancel={onCancel}
