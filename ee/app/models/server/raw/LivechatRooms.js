@@ -11,7 +11,6 @@ const applyRestrictions = (method) => function(originalFn, originalQuery, ...arg
 
 overwriteClassOnLicense('livechat-enterprise', LivechatRoomsRaw, {
 	find: applyRestrictions('find'),
-	findOne: applyRestrictions('findOne'),
 	update: applyRestrictions('update'),
 	remove: applyRestrictions('remove'),
 	updateDepartmentAncestorsById(originalFn, _id, departmentAncestors) {
