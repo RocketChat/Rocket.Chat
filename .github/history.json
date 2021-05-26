@@ -59632,6 +59632,49 @@
           ]
         }
       ]
+    },
+    "3.12.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.4": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.14.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22142",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
