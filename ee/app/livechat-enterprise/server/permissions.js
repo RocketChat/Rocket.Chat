@@ -50,4 +50,5 @@ export const createPermissions = () => {
 	Permissions.create('manage-livechat-monitors', [adminRole, livechatManagerRole]);
 	Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]);
 	Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]);
+	Permissions.create('manage-livechat-canned-messages', [adminRole, livechatManagerRole]);
 };
