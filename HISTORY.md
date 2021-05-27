@@ -1,6 +1,50 @@
 
 # 3.15.0 (Under Release Candidate Process)
 
+## 3.15.0-rc.3
+`2021-05-27  ·  1 🐛  ·  4 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Presence.get method ([#22129](https://github.com/RocketChat/Rocket.Chat/pull/22129))
+
+  closes #21873
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: discussions display on sidebar ([#22157](https://github.com/RocketChat/Rocket.Chat/pull/22157))
+
+  ### group by type active
+  ![image](https://user-images.githubusercontent.com/27704687/119741996-37a92500-be5d-11eb-8b36-4067a7a229f1.png)
+
+  ### group by type inactive
+  ![image](https://user-images.githubusercontent.com/27704687/119742054-56a7b700-be5d-11eb-8810-e31d4216f573.png)
+
+- Regression: Missing room scope on teams channels permission ([#22137](https://github.com/RocketChat/Rocket.Chat/pull/22137))
+
+- Regression: not allowed to edit roles due to a new verification ([#22159](https://github.com/RocketChat/Rocket.Chat/pull/22159))
+
+  introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905
+  ![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)
+
+- Regression: Visual issue on sort list item  ([#22158](https://github.com/RocketChat/Rocket.Chat/pull/22158))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/119743703-d84d1400-be60-11eb-97cc-c8256b2c8b07.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/119743638-b18edd80-be60-11eb-828d-22cc5e1b2f5b.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.15.0-rc.2
 `2021-05-26  ·  1 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
 
@@ -42,7 +86,7 @@
 `2021-05-21  ·  `
 
 ## 3.15.0-rc.0
-`2021-05-21  ·  8 🎉  ·  12 🚀  ·  58 🐛  ·  35 🔍  ·  35 👩‍💻👨‍💻`
+`2021-05-21  ·  8 🎉  ·  12 🚀  ·  57 🐛  ·  35 🔍  ·  34 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -195,10 +239,6 @@
   ![image](https://user-images.githubusercontent.com/45966964/116584997-3cd78a80-a918-11eb-81fa-8a7eb5318ae9.png)
 
   A label exists for Archived, and it has not been used. So I replaced it with the existing one. the label 'Archived' does not exist.
-
-- Creating roles with same name ([#21905](https://github.com/RocketChat/Rocket.Chat/pull/21905) by [@shrinish123](https://github.com/shrinish123))
-
-  Now whenever the user tries to create roles with the same name it prompts the user about it and stops from making the new Role
 
 - Custom OAuth not being completely deleted ([#21637](https://github.com/RocketChat/Rocket.Chat/pull/21637) by [@siva2204](https://github.com/siva2204))
 
@@ -560,7 +600,6 @@
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@renancleyson-dev](https://github.com/renancleyson-dev)
 - [@savish28](https://github.com/savish28)
-- [@shrinish123](https://github.com/shrinish123)
 - [@siva2204](https://github.com/siva2204)
 - [@sumukhah](https://github.com/sumukhah)
 - [@umakantv](https://github.com/umakantv)
@@ -588,6 +627,34 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.14.3
+`2021-05-26  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.25.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22142](https://github.com/RocketChat/Rocket.Chat/pull/22142))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.14.3 ([#22147](https://github.com/RocketChat/Rocket.Chat/pull/22147))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.14.2
 `2021-05-25  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
