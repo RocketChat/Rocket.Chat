@@ -398,7 +398,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				{canViewArchived && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Archived')}</Field.Label>
+							<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 							<Field.Row>
 								<ToggleSwitch
 									disabled={!canArchiveOrUnarchive}

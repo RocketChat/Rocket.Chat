@@ -75,9 +75,10 @@ Template.main.helpers({
 		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
 			return false;
 		}
+		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
 
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
-		return mandatoryRole !== undefined;
+		return mandatoryRole !== undefined && is2faEnabled;
 	},
 	CustomScriptLoggedOut: () => {
 		const script = settings.get('Custom_Script_Logged_Out') || '';

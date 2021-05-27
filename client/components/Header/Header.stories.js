@@ -9,7 +9,7 @@ import RoomAvatar from '../avatar/RoomAvatar';
 import Header from './Header';
 
 export default {
-	title: 'Chat Header',
+	title: 'room/Header',
 	component: Header,
 };
 
@@ -49,6 +49,10 @@ export const ChatHeader = () => {
 	return (
 		<SettingsContext.Provider value={settingContextValue}>
 			<Header>
+				<Header.ToolBox>
+					<Header.ToolBoxAction icon='burger' />
+					<Header.ToolBoxAction icon='back' />
+				</Header.ToolBox>
 				<Header.Avatar>{avatar}</Header.Avatar>
 				<Header.Content>
 					<Header.Content.Row>
@@ -132,6 +136,35 @@ addAction('render-action-example-badge-danger', {
 });
 
 export const WithToolboxContext = () => {
+	const icon = useRoomIcon(room);
+	const avatar = <RoomAvatar room={room} />;
+	return (
+		<SettingsContext.Provider value={settingContextValue}>
+			<Header>
+				<Header.Avatar>{avatar}</Header.Avatar>
+				<Header.Content>
+					<Header.Content.Row>
+						{icon && <Header.Icon icon={icon} />}
+						<Header.Title>{room.name}</Header.Title>
+						<Header.State onClick icon='star' />
+						<Header.State icon='key' />
+						<Header.State icon='language' />
+					</Header.Content.Row>
+					<Header.Content.Row>
+						<Header.Subtitle>{room.name}</Header.Subtitle>
+					</Header.Content.Row>
+				</Header.Content>
+				<Header.ToolBox>
+					<ToolboxProvider room={toolboxRoom}>
+						<ToolBox />
+					</ToolboxProvider>
+				</Header.ToolBox>
+			</Header>
+		</SettingsContext.Provider>
+	);
+};
+
+export const Omnichannel = () => {
 	const icon = useRoomIcon(room);
 	const avatar = <RoomAvatar room={room} />;
 	return (

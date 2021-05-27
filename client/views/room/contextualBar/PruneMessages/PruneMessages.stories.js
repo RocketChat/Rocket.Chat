@@ -4,7 +4,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import PruneMessages from './PruneMessages';
 
 export default {
-	title: 'components/PruneMessages',
+	title: 'room/contextualBar/PruneMessages',
 	component: PruneMessages,
 };
 
