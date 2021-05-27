@@ -36,7 +36,7 @@ function IntegrationsPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item selected={context === 'webhook-incoming'} onClick={goToIncoming}>
+				<Tabs.Item selected={!context || context === 'webhook-incoming'} onClick={goToIncoming}>
 					{t('Incoming')}
 				</Tabs.Item>
 				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={goToOutgoing}>
