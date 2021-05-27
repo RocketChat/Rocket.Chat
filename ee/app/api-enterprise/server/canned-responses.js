@@ -86,6 +86,6 @@ API.v1.addRoute('canned-responses.getOne', { authRequired: true }, {
 			_id,
 		}));
 
-		return API.v1.success(cannedResponse);
+		return API.v1.success({ cannedResponse });
 	},
 });
