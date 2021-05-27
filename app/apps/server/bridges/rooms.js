@@ -1,8 +1,9 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { Meteor } from 'meteor/meteor';
 
+import { Messages as MessagesRaw } from '../../../models/server/raw';
+import { Rooms, Subscriptions, Users } from '../../../models';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge {
 	constructor(orch) {
@@ -82,6 +83,47 @@ export class AppRoomBridge {
 		}
 
 		return this.orch.getConverters().get('users').convertById(room.u._id);
+	}
+
+	async getMessages(roomId, appId) {
+		this.orch.debugLog(`The App ${ appId } is getting the room's messages by room id: "${ roomId }"`);
+
+		const room = Rooms.findOneById(roomId);
+		if (!room) {
+			throw new Error(`Room could not be found by id ${ roomId }`);
+		}
+
+		const orchestrator = this.orch;
+
+		return {
+			[Symbol.asyncIterator]: function getMessageByRoomIdIterator() {
+				const cursor = MessagesRaw.findVisibleByRoomId(roomId);
+
+				return {
+					next() {
+						if (cursor.isClosed() || !cursor.hasNext()) {
+							return Promise.resolve({
+								value: undefined,
+								done: true,
+							});
+						}
+
+						return cursor.next().then((document) => ({
+							value: orchestrator.getConverters().get('messages').convertMessage(document),
+							done: false,
+						}));
+					},
+					async throw(e) {
+						throw e;
+					},
+					async return() {
+						return {
+							done: true,
+						};
+					},
+				};
+			},
+		};
 	}
 
 	async getMembers(roomId, appId) {
