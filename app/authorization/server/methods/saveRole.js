@@ -13,11 +13,15 @@ Meteor.methods({
 				action: 'Accessing_permissions',
 			});
 		}
+
 		const options = {
 			projection: { _id: 1 },
 		};
+
 		const roleExists = Roles.findOne(roleData.name, options);
-		if (roleExists) {
+		const isEditing = roleData.editing;
+
+		if (roleExists && !isEditing) {
 			throw new Meteor.Error('error-role-already-present', 'A role with this name already exists', {
 				method: 'authorization:saveRole',
 			});
