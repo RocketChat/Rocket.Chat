@@ -561,6 +561,9 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('team-does-not-exist');
+		}
 
 		for await (const member of members) {
 			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
