@@ -1,4 +1,22 @@
 
+# 3.14.4
+`2021-05-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0`
+- Apps-Engine: `1.25.0`
+
+### 🐛 Bug fixes
+
+
+- Discussion names showing a random value ([#22172](https://github.com/RocketChat/Rocket.Chat/pull/22172))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.14.3
 `2021-05-26  ·  1 🐛  ·  2 👩‍💻👨‍💻`
 
