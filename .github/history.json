@@ -59772,16 +59772,6 @@
           ]
         },
         {
-          "pr": "21905",
-          "title": "[FIX] Creating roles with same name",
-          "userLogin": "shrinish123",
-          "description": "Now whenever the user tries to create roles with the same name it prompts the user about it and stops from making the new Role",
-          "contributors": [
-            "shrinish123",
-            "web-flow"
-          ]
-        },
-        {
           "pr": "22044",
           "title": "[NEW] Remove exif metadata from uploaded files",
           "userLogin": "KevLehman",
@@ -60827,6 +60817,93 @@
           "milestone": "3.15.0",
           "contributors": [
             "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.14.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22147",
+          "title": "Release 3.14.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22142",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22159",
+          "title": "Regression: not allowed to edit roles due to a new verification",
+          "userLogin": "dougfabris",
+          "description": "introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905\r\n![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)",
+          "milestone": "3.15.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22137",
+          "title": "Regression: Missing room scope on teams channels permission",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22157",
+          "title": "Regression: discussions display on sidebar",
+          "userLogin": "dougfabris",
+          "description": "### group by type active\r\n![image](https://user-images.githubusercontent.com/27704687/119741996-37a92500-be5d-11eb-8b36-4067a7a229f1.png)\r\n\r\n### group by type inactive\r\n![image](https://user-images.githubusercontent.com/27704687/119742054-56a7b700-be5d-11eb-8810-e31d4216f573.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22158",
+          "title": "Regression: Visual issue on sort list item ",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/119743703-d84d1400-be60-11eb-97cc-c8256b2c8b07.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/119743638-b18edd80-be60-11eb-828d-22cc5e1b2f5b.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22129",
+          "title": "[FIX] Presence.get method",
+          "userLogin": "ggazzo",
+          "description": "closes #21873",
+          "contributors": [
+            "ggazzo"
           ]
         }
       ]
