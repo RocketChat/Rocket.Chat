@@ -88,3 +88,11 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 		total,
 	};
 }
+
+export async function findOneCannedResponse({ userId, _id }) {
+	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
+		throw new Error('error-not-authorized');
+	}
+	const cannedResponse = CannedResponse.findOneById(_id);
+	return cannedResponse;
+}

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
-import { findAllCannedResponses, findAllCannedResponsesFilter } from './lib/canned-responses';
+import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 
 API.v1.addRoute('canned-responses.get', { authRequired: true }, {
 	get() {
@@ -73,5 +73,19 @@ API.v1.addRoute('canned-responses', { authRequired: true }, {
 			Meteor.call('removeCannedResponse', _id);
 		});
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('canned-responses.getOne', { authRequired: true }, {
+	get() {
+		const { _id } = this.requestParams();
+		check(_id, String);
+
+		const cannedResponse = Promise.await(findOneCannedResponse({
+			userId: this.userId,
+			_id,
+		}));
+
+		return API.v1.success(cannedResponse);
 	},
 });
