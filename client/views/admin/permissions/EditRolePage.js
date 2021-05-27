@@ -24,7 +24,6 @@ const EditRolePage = ({ data }) => {
 		description: data.description || '',
 		scope: data.scope || 'Users',
 		mandatory2fa: !!data.mandatory2fa,
-		editing: true,
 	});
 
 	const saveRole = useMethod('authorization:saveRole');
