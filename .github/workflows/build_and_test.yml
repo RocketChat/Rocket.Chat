@@ -614,3 +614,103 @@ jobs:
           docker tag rocketchat/${{ matrix.service }}-service:${IMAGE_TAG} rocketchat/${{ matrix.service }}-service:${RELEASE}
           docker push rocketchat/${{ matrix.service }}-service:${RELEASE}
         fi
+
+  release_snap_amd64:
+    env:
+      SNAPCRAFT_REPO: RocketChat/rocketchat-server-snap
+      TESTS_REPO: RocketChat/rocketchat-release-tests
+    runs-on: ubuntu-18.04
+    needs: deploy
+    if: github.event_name == 'release'
+    steps:
+      - name: Parse environment variables
+        run: |
+          export ROCKETCHAT_VERSION=${{ github.event.release.tag_name }}
+          echo "CHANNEL=${ROCKETCHAT_VERSION:0:1}.x" >> $GITHUB_ENV
+          echo "ROCKETCHAT_VERSION=$ROCKETCHAT_VERSION" >> $GITHUB_ENV
+          [[ -z "$(echo ${{ env.ROCKETCHAT_VERSION }} | grep rc)" ]] && echo "CANDIDATE=false" >> $GITHUB_ENV
+
+      - name: Clone snapcraft repo
+        if: env.CANDIDATE == 'false'
+        uses: actions/checkout@v2
+        with:
+          repository: "${{ env.SNAPCRAFT_REPO }}"
+      
+      - name: Clone tests repo
+        uses: actions/checkout@v2
+        with:
+          repository: "${{ env.TESTS_REPO }}"
+          path: './test_scripts'
+          
+        id: version
+      - name: Set build version 
+        run: sed -i 's/ROCKET_CHAT_BUILD_VERSION/${{ env.ROCKETCHAT_VERSION }}/g' ./snap/snapcraft.yaml
+      
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: build
+        with:
+          path: "."
+      
+      - name: Install and test the generated snap
+        run: ./test_scripts/snap_install_test.sh ${{ steps.build.outputs.snap }}
+      
+      - name: Remove snap
+        run: sudo snap remove rocketchat-server
+      
+      - name: Publish snap to edge channel
+        uses: snapcore/action-publish@v1
+        with:
+          store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
+          snap: ${{ steps.build.outputs.snap }}
+          release: ${{ env.CHANNEL }}/edge
+      
+      - name: Test snap updating
+        run: ./test_scripts/snap_update_test.sh
+      
+      - name: Promote edge to candidate
+        run: |
+          echo "${{ secrets.SNAPCRAFT_LOGIN }}" | snapcraft login --with -
+          REVISION=$(snapcraft list-revisions rocketchat-server --arch amd64 | grep $CHANNEL/edge | cut -d' ' -f 1 | head -n 1)
+          snapcraft release rocketchat-server $REVISION $CHANNEL/candidate
+      
+      - name: Rocket.Chat Notification
+        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
+        if: env.CANDIDATE == 'false'
+        with:
+          type: ${{ job.status }}
+          job_name: '*Snapcraft build*'
+          mention: 'here'
+          mention_if: 'failure'
+          url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+
+  release_cloud:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Parse environment variables
+        run: |
+          export ROCKETCHAT_VERSION=${{ github.event.release.tag_name }}
+          echo "ROCKETCHAT_VERSION=$ROCKETCHAT_VERSION" >> $GITHUB_ENV
+          [[ -z "$(echo ${{ env.ROCKETCHAT_VERSION }} | grep rc)" ]] && echo "CANDIDATE=false" >> $GITHUB_ENV
+
+      - name: Run the packer install and test
+        uses: RocketChat/rocketchat-packer@main
+        if: env.CANDIDATE == 'false'
+        with:
+          rocketchat_version: '${{ env.ROCKETCHAT_VERSION }}'
+          do_token: ${{ secrets.do_token }}
+          aws_key_id: ${{ secrets.aws_key_id }}
+          aws_secret_key: ${{ secrets.aws_secret_key }}
+
+      - name: Rocket.Chat Notification
+        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
+        if: env.CANDIDATE == 'false'
+        with:
+          type: ${{ job.status }}
+          job_name: '*Packer image build* - [DO Marketplace](https://marketplace.digitalocean.com/vendorportal/5cbf905da6e1a17be804b006/32/edit)'
+          mention: 'here'
+          mention_if: 'failure'
+          url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
