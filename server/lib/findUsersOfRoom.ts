@@ -1,6 +1,6 @@
 import type { Mongo } from 'meteor/mongo';
 
-import { Users } from '../../app/models/server';
+import { Users } from '../models';
 import { settings } from '../../app/settings/server';
 import { IUser } from '../../definition/IUser';
 

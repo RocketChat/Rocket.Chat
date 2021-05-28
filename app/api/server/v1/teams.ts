@@ -7,7 +7,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
 

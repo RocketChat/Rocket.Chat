@@ -1,5 +1,5 @@
 import { settings } from '../../../settings/server';
-import { Users, Statistics } from '../../../models/server';
+import { Users, Statistics } from '../../../../server/models';
 import { statistics } from '../../../statistics';
 import { LICENSE_VERSION } from '../license';
 

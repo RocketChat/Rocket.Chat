@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings';
-import { LivechatInquiry } from '../../../../../app/models/server';
+import { LivechatInquiry } from '../../../../../server/models';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 

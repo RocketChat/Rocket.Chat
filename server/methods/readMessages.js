@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { markRoomAsRead } from '../lib/markRoomAsRead';
 import { canAccessRoom } from '../../app/authorization/server';
-import { Rooms } from '../../app/models/server';
+import { Rooms } from '../models';
 
 Meteor.methods({
 	readMessages(rid) {

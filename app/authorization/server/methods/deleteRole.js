@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import * as Models from '../../../models/server';
+import * as Models from '../../../../server/models';
 import { hasPermission } from '../functions/hasPermission';
 
 Meteor.methods({

@@ -1,6 +1,6 @@
 import { getURL } from '../../lib/getURL';
 import { FileUpload } from '../../../file-upload/server';
-import { Uploads } from '../../../models/server';
+import { Uploads } from '../../../../server/models';
 
 export const normalizeMessageFileUpload = (message) => {
 	if (message.file && !message.fileUpload) {

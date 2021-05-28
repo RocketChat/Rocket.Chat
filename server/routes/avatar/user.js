@@ -8,7 +8,7 @@ import {
 } from './utils';
 import { FileUpload } from '../../../app/file-upload';
 import { settings } from '../../../app/settings/server';
-import { Users, Avatars } from '../../../app/models/server';
+import { Users, Avatars } from '../../models';
 
 
 // request /avatar/@name forces returning the svg

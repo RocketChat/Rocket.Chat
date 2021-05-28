@@ -10,7 +10,7 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
-} from '../../../models/server';
+} from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { Notifications } from '../../../notifications/server';

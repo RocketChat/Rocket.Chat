@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
 import { hasPermission } from '../../../authorization/server';
-import { Imports } from '../../../models/server';
+import { Imports } from '../../../../server/models';
 import { Importers } from '../../../importer/server';
 
 API.v1.addRoute('uploadImportFile', { authRequired: true }, {

@@ -3,7 +3,7 @@ import {
 } from '../../../app/migrations/server';
 import {
 	Settings,
-} from '../../../app/models/server';
+} from '../../models';
 
 Migrations.add({
 	version: 185,

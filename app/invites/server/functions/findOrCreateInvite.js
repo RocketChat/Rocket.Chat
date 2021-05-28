@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions, Rooms } from '../../../models/server';
+import { Invites, Subscriptions, Rooms } from '../../../../server/models';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';

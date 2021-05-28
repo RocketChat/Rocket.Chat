@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { settings } from '../../../settings';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';

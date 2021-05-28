@@ -8,7 +8,7 @@ import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
+import { Messages, Rooms, Uploads, Users } from '../../models';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';

@@ -9,7 +9,7 @@ import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { IUser } from '../../../../definition/IUser';
 import { ICodeCheck } from './ICodeCheck';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { IMethodConnection } from '../../../../definition/IMethodThisType';
 
 export interface ITwoFactorOptions {

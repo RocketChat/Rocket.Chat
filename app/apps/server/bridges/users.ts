@@ -3,7 +3,7 @@ import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 

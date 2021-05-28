@@ -1,4 +1,4 @@
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '../../../../server/models';
 import { logger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { hasExternalDomain } from '../functions/helpers';

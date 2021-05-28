@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { BaseRaw } from './BaseRaw';
-import { IOmnichannelQueueStatus } from '../../../../definition/IOmnichannel';
+import { IOmnichannelQueueStatus } from '../../../definition/IOmnichannel';
 
 const UNIQUE_QUEUE_ID = 'queue';
 export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {

@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import { LivechatRooms } from '../../../../../app/models/server';
+import { LivechatRooms } from '../../../../../server/models';
 import { settings } from '../../../../../app/settings/server';
 
 const afterReturnRoomAsInquiry = ({ room }: { room: any }): void => {

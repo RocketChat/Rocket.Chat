@@ -1,7 +1,7 @@
 import { check } from 'meteor/check';
 
 import { ILicense, getLicenses, validateFormat, flatModules } from '../../app/license/server/license';
-import { Settings } from '../../../app/models/server';
+import { Settings } from '../../../server/models';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
 

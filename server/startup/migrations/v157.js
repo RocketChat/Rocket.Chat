@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 
 import { Migrations } from '../../../app/migrations/server';
-import { Settings } from '../../../app/models/server';
+import { Settings } from '../../models';
 import { settings } from '../../../app/settings/server';
 
 Migrations.add({

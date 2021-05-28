@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { actionLinks } from '../../../action-links/server';
 import { Notifications } from '../../../notifications/server';
-import { Messages, LivechatRooms } from '../../../models/server';
+import { Messages, LivechatRooms } from '../../../../server/models';
 import { settings } from '../../../settings/server';
 import { Livechat } from './Livechat';
 

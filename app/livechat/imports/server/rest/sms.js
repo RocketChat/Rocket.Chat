@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { FileUpload } from '../../../../file-upload/server';
-import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../models/server';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../../server/models';
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';

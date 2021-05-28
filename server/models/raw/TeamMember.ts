@@ -1,8 +1,8 @@
 import { Collection, FindOneOptions, Cursor, InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ITeamMember } from '../../../../definition/ITeam';
-import { IUser } from '../../../../definition/IUser';
+import { ITeamMember } from '../../../definition/ITeam';
+import { IUser } from '../../../definition/IUser';
 
 type T = ITeamMember;
 export class TeamMemberRaw extends BaseRaw<T> {

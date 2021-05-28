@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../callbacks/server';
-import { Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../../server/models';
 
 callbacks.add('beforeSaveMessage', (message, room) => {
 	// abort if room is not a discussion

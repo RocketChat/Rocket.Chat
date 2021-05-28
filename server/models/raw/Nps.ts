@@ -1,7 +1,7 @@
 import { UpdateWriteOpResult, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { INps, NPSStatus } from '../../../../definition/INps';
+import { INps, NPSStatus } from '../../../definition/INps';
 
 type T = INps;
 export class NpsRaw extends BaseRaw<T> {

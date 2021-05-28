@@ -1,6 +1,6 @@
 import { ObjectId, Collection, Cursor, FindOneOptions, UpdateWriteOpResult } from 'mongodb';
 
-import { INpsVote, INpsVoteStatus } from '../../../../definition/INps';
+import { INpsVote, INpsVoteStatus } from '../../../definition/INps';
 import { BaseRaw } from './BaseRaw';
 
 type T = INpsVote;

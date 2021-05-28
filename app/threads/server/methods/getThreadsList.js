@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../../server/models';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 

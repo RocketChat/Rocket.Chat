@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
-import { Permissions, Settings } from '../../../app/models/server';
+import { Permissions, Settings } from '../../models';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 

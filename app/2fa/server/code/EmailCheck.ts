@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 
