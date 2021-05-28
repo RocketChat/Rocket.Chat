@@ -5,7 +5,7 @@ import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponseForm from './CannedResponseForm';
 
 export default {
-	title: 'omnichannel/CannedResponseForm',
+	title: 'omnichannel/CannedResponse/CannedResponseForm',
 	component: CannedResponseForm,
 };
 

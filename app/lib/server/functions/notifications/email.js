@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings';
@@ -8,7 +9,6 @@ import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../callbacks';
 import { getURL } from '../../../../utils/server';
-import { escapeHTML } from '../../../../../lib/escapeHTML';
 
 let advice = '';
 let goToMessage = '';

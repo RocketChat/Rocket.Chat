@@ -30,7 +30,7 @@ const RoomFilesWithData = ({ rid }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems } = useFilesList(
+	const { filesList, loadMoreItems, reload } = useFilesList(
 		useMemo(() => ({ rid, type, text }), [rid, type, text]),
 	);
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
@@ -40,6 +40,7 @@ const RoomFilesWithData = ({ rid }) => {
 			try {
 				await deleteFile(_id);
 				dispatchToastMessage({ type: 'success', message: t('Deleted') });
+				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
