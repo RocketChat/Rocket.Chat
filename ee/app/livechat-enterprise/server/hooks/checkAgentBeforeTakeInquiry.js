@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks';
-import { Users } from '../../../../../app/models/server/raw';
+import { Users } from '../../../../../server/models/raw';
 import { settings } from '../../../../../app/settings';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';

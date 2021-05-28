@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations';
-import { Subscriptions, Messages } from '../../../app/models/server/raw';
+import { Subscriptions, Messages } from '../../models/raw';
 
 
 async function migrate() {

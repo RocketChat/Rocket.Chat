@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Settings } from '../../models';
-import { NotificationQueue } from '../../../app/models/server/raw';
+import { NotificationQueue } from '../../models/raw';
 
 function convertNotification(notification) {
 	try {

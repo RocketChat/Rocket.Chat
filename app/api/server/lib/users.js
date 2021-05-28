@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { Users } from '../../../models/server/raw';
+import { Users } from '../../../../server/models/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export async function findUsersToAutocomplete({ uid, selector }) {

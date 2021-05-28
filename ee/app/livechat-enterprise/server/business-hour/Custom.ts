@@ -3,9 +3,9 @@ import {
 	IBusinessHourType,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
-import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
-import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
+import { LivechatDepartmentRaw } from '../../../../../server/models/raw/LivechatDepartment';
+import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../server/models/raw';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 export interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {

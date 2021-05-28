@@ -7,7 +7,7 @@ import {
 	canAccessRoom,
 } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../models';
-import { Users } from '../../app/models/server/raw';
+import { Users } from '../models/raw';
 import { settings } from '../settings';
 import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';

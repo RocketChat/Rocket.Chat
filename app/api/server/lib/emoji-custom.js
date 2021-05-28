@@ -1,4 +1,4 @@
-import { EmojiCustom } from '../../../models/server/raw';
+import { EmojiCustom } from '../../../../server/models/raw';
 
 export async function findEmojisCustom({ query = {}, pagination: { offset, count, sort } }) {
 	const cursor = EmojiCustom.find(query, {

@@ -1,7 +1,7 @@
 import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
-import Analytics from '../../../app/models/server/models/Analytics';
+import Analytics from '../models/Analytics';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw {

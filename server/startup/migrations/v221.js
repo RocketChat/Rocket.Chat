@@ -2,8 +2,8 @@ import { MongoInternals } from 'meteor/mongo';
 import Future from 'fibers/future';
 
 import { Migrations } from '../../../app/migrations';
-import { Rooms } from '../../../app/models/server/raw';
-import { TeamRaw } from '../../../app/models/server/raw/Team';
+import { Rooms } from '../../models/raw';
+import { TeamRaw } from '../../models/raw/Team';
 import { TEAM_TYPE } from '../../../definition/ITeam';
 
 async function migrateTeamNames(fut) {

@@ -1,4 +1,4 @@
-import { EmailInbox } from '../../../models/server/raw';
+import { EmailInbox } from '../../../../server/models/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models';
 

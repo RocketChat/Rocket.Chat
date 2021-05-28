@@ -1,6 +1,6 @@
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Rooms, Messages, Users } from '../../../models/server/raw';
-import { getValue } from '../../../settings/server/raw';
+import { Rooms, Messages, Users } from '../../../../server/models/raw';
+import { getValue } from '../../../../server/settings/raw';
 
 export async function findMentionedMessages({ uid, roomId, pagination: { offset, count, sort } }) {
 	const room = await Rooms.findOneById(roomId);

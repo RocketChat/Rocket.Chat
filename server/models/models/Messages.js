@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Subscriptions from './Subscriptions';
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../settings/settings';
 
 export class Messages extends Base {
 	constructor() {

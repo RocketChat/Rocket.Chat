@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 
-import { EmailInbox, EmailMessageHistory } from '../../../app/models/server/raw';
+import { EmailInbox, EmailMessageHistory } from '../../models/raw';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';

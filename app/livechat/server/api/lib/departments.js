@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../models/server/raw';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../server/models/raw';
 import { callbacks } from '../../../../callbacks/server';
 
 
