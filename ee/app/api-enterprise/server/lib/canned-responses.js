@@ -70,7 +70,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 		...shortcut && { shortcut },
 		...text && { $or: [{ name: filter }] },
 		...scope && { scope },
-		...createdBy && { $exists: createdBy },
+		...createdBy && { 'createdBy.username': createdBy },
 		...tags.length && {
 			tags: {
 				$in: tags,
