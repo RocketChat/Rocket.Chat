@@ -1,7 +1,7 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../server/models';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 
 const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {

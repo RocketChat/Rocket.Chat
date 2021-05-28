@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../callbacks/server';
 import { Roles, Users, Settings } from '../../../../server/models';
 import { Users as UsersRaw } from '../../../models/server/raw';

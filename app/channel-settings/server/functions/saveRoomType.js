@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Messages } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
 
 export const saveRoomType = function(rid, roomType, user, sendMessage = true) {

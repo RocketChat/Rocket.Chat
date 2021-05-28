@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Roles } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 

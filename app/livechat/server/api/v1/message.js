@@ -9,7 +9,7 @@ import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { settings } from '../../../../settings/server';
+import { settings } from '../../../../../server/settings';
 
 API.v1.addRoute('livechat/message', {
 	post() {

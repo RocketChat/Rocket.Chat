@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingValue } from '../../../definition/ISetting';
+import { SettingValue } from '../../definition/ISetting';
 
 export type SettingComposedValue = {key: string; value: SettingValue};
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;

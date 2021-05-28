@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';

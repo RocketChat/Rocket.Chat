@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../server/settings';
 import { Settings } from '../../../../server/models';
 import { addLicense } from './license';
 

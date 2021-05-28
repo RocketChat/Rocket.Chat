@@ -16,7 +16,7 @@ import {
 	Integrations,
 	Statistics,
 } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';

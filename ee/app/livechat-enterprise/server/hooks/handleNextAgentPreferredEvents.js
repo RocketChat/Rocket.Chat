@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../server/models';
 
 let contactManagerPreferred = false;

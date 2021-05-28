@@ -10,7 +10,7 @@ import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 

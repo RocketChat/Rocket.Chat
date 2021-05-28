@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 Meteor.startup(function() {
 	settings.addGroup('Accounts', function() {

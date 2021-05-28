@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import { SAUMonitorClass } from '../lib/SAUMonitor';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const SAUMonitor = new SAUMonitorClass();
 

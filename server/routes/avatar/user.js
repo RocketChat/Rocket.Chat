@@ -7,7 +7,7 @@ import {
 	setCacheAndDispositionHeaders,
 } from './utils';
 import { FileUpload } from '../../../app/file-upload';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { Users, Avatars } from '../../models';
 
 

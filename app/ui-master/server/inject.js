@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Settings } from '../../models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 
 const headInjections = new ReactiveDict();
 

@@ -1,4 +1,4 @@
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { getUserPreference, getURL } from '../../../utils/server';
 import { API } from '../api';
 

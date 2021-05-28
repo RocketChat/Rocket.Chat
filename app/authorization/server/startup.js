@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Roles, Permissions, Settings } from '../../../server/models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
 
 Meteor.startup(function() {

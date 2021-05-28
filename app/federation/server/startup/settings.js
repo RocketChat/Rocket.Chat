@@ -1,7 +1,7 @@
 import { debounce } from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';

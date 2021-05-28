@@ -7,7 +7,7 @@ import mkdirp from 'mkdirp';
 
 import * as Mailer from '../../app/mailer';
 import { Messages, Users } from '../models';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 import { Message } from '../../app/ui-utils/server';
 import {
 	exportRoomMessagesToFile,

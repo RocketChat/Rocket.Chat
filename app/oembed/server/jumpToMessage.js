@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Messages, Rooms, Users } from '../../../server/models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { callbacks } from '../../callbacks/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';

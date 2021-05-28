@@ -1,7 +1,7 @@
 import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { INpsVote } from '../../../definition/INps';
 

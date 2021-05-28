@@ -3,10 +3,10 @@ import { EventEmitter } from 'events';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase } from '../../lib/settings';
-import SettingsModel from '../../../models/server/models/Settings';
-import { updateValue } from '../raw';
-import { ISetting, SettingValue } from '../../../../definition/ISetting';
+import { SettingsBase } from './SettingsBase';
+import SettingsModel from '../models/models/Settings';
+import { updateValue } from './raw';
+import { ISetting, SettingValue } from '../../definition/ISetting';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { Settings } from '../../models';
 
 Migrations.add({

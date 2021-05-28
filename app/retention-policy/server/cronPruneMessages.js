@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { debounce } from 'underscore';
 
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { Rooms } from '../../../server/models';
 import { cleanRoomHistory } from '../../lib';
 

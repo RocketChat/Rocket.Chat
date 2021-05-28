@@ -1,5 +1,5 @@
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const callbackDefinitions = [];
 

@@ -11,7 +11,7 @@ import { slashCommands } from '../../../app/utils/server';
 import { Messages, Rooms, Uploads, Users } from '../../models';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
