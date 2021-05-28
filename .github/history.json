@@ -56820,6 +56820,27 @@
           ]
         }
       ]
+    },
+    "3.12.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
