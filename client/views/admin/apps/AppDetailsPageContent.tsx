@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
-import { isTranslationKey, useTranslation } from '../../../contexts/TranslationContext';
+import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import PriceDisplay from './PriceDisplay';
@@ -81,27 +81,17 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 
 			{data.licenseValidation && (
 				<>
-					{Object.entries(data.licenseValidation.warnings).map(([key]) => {
-						const translationKey = `Apps_License_Message_${key}`;
-						return (
-							isTranslationKey(translationKey) && (
-								<Callout key={key} type='warning'>
-									{t(translationKey)}
-								</Callout>
-							)
-						);
-					})}
+					{Object.entries(data.licenseValidation.warnings).map(([key]) => (
+						<Callout key={key} type='warning'>
+							{t(`Apps_License_Message_${key}` as TranslationKey)}
+						</Callout>
+					))}
 
-					{Object.entries(data.licenseValidation.errors).map(([key]) => {
-						const translationKey = `Apps_License_Message_${key}`;
-						return (
-							isTranslationKey(translationKey) && (
-								<Callout key={key} type='danger'>
-									{t(translationKey)}
-								</Callout>
-							)
-						);
-					})}
+					{Object.entries(data.licenseValidation.errors).map(([key]) => (
+						<Callout key={key} type='danger'>
+							{t(`Apps_License_Message_${key}` as TranslationKey)}
+						</Callout>
+					))}
 				</>
 			)}
 
