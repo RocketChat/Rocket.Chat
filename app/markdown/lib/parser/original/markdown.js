@@ -1,18 +1,4 @@
-/*
- * Markdown is a named function that will parse markdown syntax
- * @param {String} msg - The message html
- */
-import { Random } from 'meteor/random';
-
-const addAsToken = (message, html) => {
-	const token = `=!=${ Random.id() }=!=`;
-	message.tokens.push({
-		token,
-		text: html,
-	});
-
-	return token;
-};
+import { addAsToken, isToken, validateAllowedTokens } from './token';
 
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
@@ -89,10 +75,13 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		url = encodeURI(url);
 
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`);
+		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`, 'link');
 	});
 
 	// Support [Text](http://link)
@@ -100,12 +89,15 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
 		const escapedUrl = encodeURI(url);
 
-		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
+		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 
 	// Support <http://link|Text>
@@ -113,9 +105,12 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		url = encodeURI(url);
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
+		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 	return msg;
 };
