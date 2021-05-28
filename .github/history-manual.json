@@ -97,5 +97,12 @@
 			"KevLehman",
 			"g-thome"
 		]
+	}],
+	"3.14.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
 	}]
 }
