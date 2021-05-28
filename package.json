@@ -102,7 +102,7 @@
 		"fast-glob": "^2.2.7",
 		"husky": "^1.2.0",
 		"i18next": "^17.3.1",
-		"inquirer": "^7.3.3",
+		"inquirer": "^8.1.0",
 		"jsdom-global": "3.0.2",
 		"less-loader": "^5.0.0",
 		"md5": "^2.3.0",
