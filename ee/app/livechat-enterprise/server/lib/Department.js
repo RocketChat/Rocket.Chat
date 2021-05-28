@@ -8,6 +8,7 @@ export const findAllDepartmentsAvailable = async (unitId, offset, count, text) =
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 
 	const cursor = LivechatDepartment.find({
+		type: { $ne: 'u' },
 		$or: [{ ancestors: { $in: [[unitId], null, []] } }, { ancestors: { $exists: false } }],
 		...text && { name: filterReg },
 
