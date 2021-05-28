@@ -7,7 +7,7 @@ import { Settings } from '../../../../server/models';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../../server/settings';
-import { setValue } from '../../../settings/server/raw';
+import { setValue } from '../../../../server/settings/raw';
 
 const fetchSettings = (query, sort, offset, count, fields) => {
 	const settings = Settings.find(query, {

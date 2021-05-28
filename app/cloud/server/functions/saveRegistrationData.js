@@ -1,4 +1,4 @@
-import { Settings } from '../../../models/server/raw';
+import { Settings } from '../../../../server/models/raw';
 import { callbacks } from '../../../callbacks';
 
 export function saveRegistrationData({

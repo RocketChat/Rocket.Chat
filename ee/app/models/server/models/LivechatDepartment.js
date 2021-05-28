@@ -1,4 +1,4 @@
-import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
+import { LivechatDepartment } from '../../../../../server/models/models/LivechatDepartment';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;

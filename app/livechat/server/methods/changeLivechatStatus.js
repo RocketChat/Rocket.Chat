@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../lib/Livechat';
 import { hasPermission } from '../../../authorization';
-import Users from '../../../models/server/models/Users';
+import Users from '../../../../server/models/models/Users';
 
 Meteor.methods({
 	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import Uploads from '../../../app/models/server/models/Uploads';
+import Uploads from '../../models/models/Uploads';
 
 Migrations.add({
 	version: 202,

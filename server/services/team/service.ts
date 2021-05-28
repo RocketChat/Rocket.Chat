@@ -5,12 +5,12 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { MessagesRaw } from '../../../app/models/server/raw/Messages';
-import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { TeamRaw } from '../../../app/models/server/raw/Team';
-import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
-import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { MessagesRaw } from '../../models/raw/Messages';
+import { RoomsRaw } from '../../models/raw/Rooms';
+import { SubscriptionsRaw } from '../../models/raw/Subscriptions';
+import { TeamRaw } from '../../models/raw/Team';
+import { TeamMemberRaw } from '../../models/raw/TeamMember';
+import { UsersRaw } from '../../models/raw/Users';
 import { IRoom } from '../../../definition/IRoom';
 import {
 	IPaginationOptions,

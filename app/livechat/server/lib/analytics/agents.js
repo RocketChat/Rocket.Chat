@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatAgentActivity } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatAgentActivity } from '../../../../../server/models/raw';
 
 const findAllAverageServiceTimeAsync = async ({
 	start,

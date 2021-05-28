@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from './hasPermission';
-import { getValue } from '../../../settings/server/raw';
+import { getValue } from '../../../../server/settings/raw';
 import { Rooms } from '../../../models';
 
 const elapsedTime = (ts) => {

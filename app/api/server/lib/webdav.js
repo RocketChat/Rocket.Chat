@@ -1,4 +1,4 @@
-import { WebdavAccounts } from '../../../models/server/raw';
+import { WebdavAccounts } from '../../../../server/models/raw';
 
 export async function findWebdavAccountsByUserId({ uid }) {
 	return {

@@ -11,6 +11,7 @@ export async function findTags({ userId, text, pagination: { offset, count, sort
 	const query = { ...text && { $or: [{ name: filterReg }, { description: filterReg }] } };
 
 	const cursor = LivechatTag.find(query, {
+
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

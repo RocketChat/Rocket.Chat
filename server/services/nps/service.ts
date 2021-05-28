@@ -2,9 +2,9 @@ import { createHash } from 'crypto';
 
 import { Db } from 'mongodb';
 
-import { NpsRaw } from '../../../app/models/server/raw/Nps';
-import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
-import { SettingsRaw } from '../../../app/models/server/raw/Settings';
+import { NpsRaw } from '../../models/raw/Nps';
+import { NpsVoteRaw } from '../../models/raw/NpsVote';
+import { SettingsRaw } from '../../models/raw/Settings';
 import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';

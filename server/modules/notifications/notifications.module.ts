@@ -1,10 +1,10 @@
 import { IStreamer, IStreamerConstructor, IPublication } from '../streamer/streamer.module';
 import { Authorization } from '../../sdk';
-import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
+import { RoomsRaw } from '../../models/raw/Rooms';
+import { SubscriptionsRaw } from '../../models/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
-import { UsersRaw } from '../../../app/models/server/raw/Users';
-import { SettingsRaw } from '../../../app/models/server/raw/Settings';
+import { UsersRaw } from '../../models/raw/Users';
+import { SettingsRaw } from '../../models/raw/Settings';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;

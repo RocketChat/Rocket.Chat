@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms } from '../../../../server/models/raw';
 import { Subscriptions } from '../../../models';
 
 export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {

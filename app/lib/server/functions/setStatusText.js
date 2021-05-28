@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
 import { Users } from '../../../../server/models';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users as UsersRaw } from '../../../../server/models/raw';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 import { api } from '../../../../server/sdk/api';

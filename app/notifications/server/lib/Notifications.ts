@@ -10,7 +10,7 @@ import {
 	Rooms as RoomsRaw,
 	Users as UsersRaw,
 	Settings as SettingsRaw,
-} from '../../../models/server/raw';
+} from '../../../../server/models/raw';
 
 // TODO: Replace this in favor of the api.broadcast
 // StreamerCentral.on('broadcast', (name, eventName, args) => {

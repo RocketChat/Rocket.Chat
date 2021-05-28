@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import Invites from '../../../models/server/models/Invites';
+import Invites from '../../../../server/models/models/Invites';
 
 export const removeInvite = (userId, invite) => {
 	if (!userId || !invite) {

@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 
 import { Migrations } from '../../../app/migrations/server';
-import { LivechatBusinessHours } from '../../../app/models/server/raw';
+import { LivechatBusinessHours } from '../../models/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
 const updateBusinessHours = async () => {

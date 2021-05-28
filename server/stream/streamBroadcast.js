@@ -10,7 +10,7 @@ import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../models';
-import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import InstanceStatusModel from '../models/models/InstanceStatus';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
 
 process.env.PORT = String(process.env.PORT).trim();

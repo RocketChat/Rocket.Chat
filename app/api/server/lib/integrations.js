@@ -1,4 +1,4 @@
-import { Integrations } from '../../../models/server/raw';
+import { Integrations } from '../../../../server/models/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const hasIntegrationsPermission = async (userId, integration) => {

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
-import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
+import LivechatRooms from '../../../../../server/models/models/LivechatRooms';
+import LivechatDepartment from '../../../../../server/models/models/LivechatDepartment';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add('livechat.afterForwardChatToDepartment', (options) => {

@@ -4,7 +4,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Permissions, Settings } from '../../models';
-import { LivechatBusinessHours } from '../../../app/models/server/raw';
+import { LivechatBusinessHours } from '../../models/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
 const migrateCollection = () => {

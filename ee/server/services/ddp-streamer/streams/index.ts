@@ -5,10 +5,10 @@ import { IRoom } from '../../../../../definition/IRoom';
 import { IUser } from '../../../../../definition/IUser';
 import { ISetting } from '../../../../../definition/ISetting';
 import { Collections, getConnection } from '../../mongo';
-import { RoomsRaw } from '../../../../../app/models/server/raw/Rooms';
-import { SubscriptionsRaw } from '../../../../../app/models/server/raw/Subscriptions';
-import { UsersRaw } from '../../../../../app/models/server/raw/Users';
-import { SettingsRaw } from '../../../../../app/models/server/raw/Settings';
+import { RoomsRaw } from '../../../../../server/models/raw/Rooms';
+import { SubscriptionsRaw } from '../../../../../server/models/raw/Subscriptions';
+import { UsersRaw } from '../../../../../server/models/raw/Users';
+import { SettingsRaw } from '../../../../../server/models/raw/Settings';
 
 const notifications = new NotificationsModule(Stream);
 
