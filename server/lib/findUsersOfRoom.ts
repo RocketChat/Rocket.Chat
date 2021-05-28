@@ -1,7 +1,7 @@
 import type { Mongo } from 'meteor/mongo';
 
 import { Users } from '../models';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 import { IUser } from '../../definition/IUser';
 
 type FindUsersParam = {

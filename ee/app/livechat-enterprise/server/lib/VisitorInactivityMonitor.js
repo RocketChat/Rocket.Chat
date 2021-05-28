@@ -2,7 +2,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { LivechatRooms, LivechatDepartment, Users, LivechatVisitors } from '../../../../../server/models';
 import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { LivechatEnterprise } from './LivechatEnterprise';

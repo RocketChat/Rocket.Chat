@@ -8,7 +8,7 @@ import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { LivechatRooms, LivechatVisitors, Messages } from '../../models';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 type FileAttachment = {
 	title: string;

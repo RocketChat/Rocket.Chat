@@ -7,7 +7,7 @@ import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 

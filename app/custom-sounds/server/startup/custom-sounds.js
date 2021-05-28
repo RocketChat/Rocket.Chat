@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { RocketChatFile } from '../../../file/server';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 export let RocketChatFileCustomSoundsInstance;
 

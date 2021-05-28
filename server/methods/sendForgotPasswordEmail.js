@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 
 Meteor.methods({
 	sendForgotPasswordEmail(to) {

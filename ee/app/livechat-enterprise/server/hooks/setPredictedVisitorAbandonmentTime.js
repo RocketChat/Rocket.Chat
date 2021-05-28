@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add('afterSaveMessage', function(message, room) {

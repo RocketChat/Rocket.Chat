@@ -1,6 +1,6 @@
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../app/callbacks/server';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { LivechatRooms } from '../../../../../server/models';
 
 let autoTransferTimeout = 0;

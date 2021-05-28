@@ -8,7 +8,7 @@ import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findR
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
-import { settings } from '../../../settings/server/index';
+import { settings } from '../../../../server/settings/index';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {

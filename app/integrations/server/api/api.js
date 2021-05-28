@@ -14,7 +14,7 @@ import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {

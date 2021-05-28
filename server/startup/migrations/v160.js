@@ -1,6 +1,6 @@
 import { Migrations } from '../../../app/migrations/server';
 import { Settings } from '../../models';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 Migrations.add({
 	version: 160,

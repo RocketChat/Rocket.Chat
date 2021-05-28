@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { IUser } from '../../definition/IUser';
 import { IPassword } from '../../definition/IPassword';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 
 /**
  * Check if a given password is the one user by given user or if the user doesn't have a password

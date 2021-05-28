@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Settings } from '../../../../server/models';
 import { hasPermission } from '../../../authorization';
 import { API } from '../api';
-import { SettingsEvents, settings } from '../../../settings/server';
+import { SettingsEvents, settings } from '../../../../server/settings';
 import { setValue } from '../../../settings/server/raw';
 
 const fetchSettings = (query, sort, offset, count, fields) => {
