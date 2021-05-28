@@ -1,4 +1,4 @@
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 
 export const getStatusText = function(userId) {
 	if (!userId) {

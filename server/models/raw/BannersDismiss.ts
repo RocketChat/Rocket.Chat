@@ -1,6 +1,6 @@
 import { Collection, Cursor, FindOneOptions } from 'mongodb';
 
-import { IBannerDismiss } from '../../../../definition/IBanner';
+import { IBannerDismiss } from '../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 type T = IBannerDismiss;

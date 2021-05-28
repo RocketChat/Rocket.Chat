@@ -1,5 +1,5 @@
 import { API } from '../../../api/server';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { logger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';

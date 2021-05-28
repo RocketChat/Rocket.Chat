@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { RocketChatAssets } from '../../../assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
 import { callbacks } from '../../../callbacks/server';

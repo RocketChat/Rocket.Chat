@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 
 import { hasRole } from '../../../authorization';
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../../server/models';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';

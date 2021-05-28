@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Users, Roles } from '../../../models/server';
+import { Users, Roles } from '../../../../server/models';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';

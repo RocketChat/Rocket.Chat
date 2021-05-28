@@ -1,4 +1,4 @@
-import { Base } from '../../../models/server';
+import { Base } from '../../../../server/models';
 import { IImportUserRecord, IImportChannelRecord } from '../definitions/IImportRecord';
 
 class ImportDataModel extends Base {

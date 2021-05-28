@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
+import { Rooms, Subscriptions, Messages } from '../../../../server/models';
 import { settings } from '../../../settings/server';
 import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
 

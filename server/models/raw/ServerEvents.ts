@@ -1,8 +1,8 @@
 import { Collection, ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IServerEvent, IServerEventType } from '../../../../definition/IServerEvent';
-import { IUser } from '../../../../definition/IUser';
+import { IServerEvent, IServerEventType } from '../../../definition/IServerEvent';
+import { IUser } from '../../../definition/IUser';
 
 export class ServerEventsRaw extends BaseRaw<IServerEvent> {
 	public readonly col!: Collection<IServerEvent>;

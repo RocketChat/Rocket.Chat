@@ -1,6 +1,6 @@
 import { Collection, Cursor, FindOneOptions } from 'mongodb';
 
-import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
+import { BannerPlatform, IBanner } from '../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
 
 type T = IBanner;

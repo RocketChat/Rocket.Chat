@@ -1,6 +1,6 @@
 import { logger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
-import { FederationRoomEvents, Subscriptions } from '../../../models/server';
+import { FederationRoomEvents, Subscriptions } from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';

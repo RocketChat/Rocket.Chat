@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { LivechatDepartmentAgents } from '../../../app/models/server';
+import { LivechatDepartmentAgents } from '../../models';
 
 const removeOrphanDepartmentAgents = async () => {
 	const orphanAgentIds = (await LivechatDepartmentAgents.model.rawCollection().aggregate([

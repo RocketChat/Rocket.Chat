@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { callbacks } from '../../../callbacks/server';
-import { LivechatAgentActivity, Sessions, Users } from '../../../models/server';
+import { LivechatAgentActivity, Sessions, Users } from '../../../../server/models';
 
 const formatDate = (dateTime = new Date()) => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),

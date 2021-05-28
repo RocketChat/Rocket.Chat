@@ -1,4 +1,4 @@
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '../../../../server/models';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { logger } from '../lib/logger';
 import { normalizers } from '../normalizers';

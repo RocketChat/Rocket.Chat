@@ -1,7 +1,7 @@
 import { Cursor, WriteOpResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ISetting } from '../../../../definition/ISetting';
+import { ISetting } from '../../../definition/ISetting';
 
 type T = ISetting;
 

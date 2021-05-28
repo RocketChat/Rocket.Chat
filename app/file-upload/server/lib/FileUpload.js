@@ -25,7 +25,7 @@ import { hasPermission } from '../../../authorization/server/functions/hasPermis
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
-import { Messages } from '../../../models/server';
+import { Messages } from '../../../../server/models';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
 

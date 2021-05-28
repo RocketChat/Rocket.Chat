@@ -8,7 +8,7 @@ import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms, CredentialTokens } from '../../../models/server';
+import { Users, Rooms, CredentialTokens } from '../../../../server/models';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
 import { _setUsername, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';

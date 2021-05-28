@@ -1,4 +1,4 @@
-import { Rooms } from '../../../models/server';
+import { Rooms } from '../../../../server/models';
 
 export const getUserSingleOwnedRooms = function(subscribedRooms) {
 	const roomsThatWillChangeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner).map(({ rid }) => rid);

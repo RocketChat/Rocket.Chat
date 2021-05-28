@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../app/models/server';
+import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../server/models';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../app/settings/server';
 

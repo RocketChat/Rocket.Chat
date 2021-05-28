@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 

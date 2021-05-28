@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { Users } from '../../../../app/models/server';
+import { Users } from '../../../../server/models';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';

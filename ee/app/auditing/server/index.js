@@ -2,7 +2,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { onLicense } from '../../license/server';
-import { Permissions, Roles } from '../../../../app/models/server';
+import { Permissions, Roles } from '../../../../server/models';
 
 onLicense('auditing', () => {
 	require('./methods');

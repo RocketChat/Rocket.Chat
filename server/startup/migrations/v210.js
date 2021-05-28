@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Messages } from '../../../app/models/server';
+import { Messages } from '../../models';
 
 Migrations.add({
 	version: 210,

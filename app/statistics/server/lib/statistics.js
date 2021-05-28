@@ -15,7 +15,7 @@ import {
 	LivechatVisitors,
 	Integrations,
 	Statistics,
-} from '../../../models/server';
+} from '../../../../server/models';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';

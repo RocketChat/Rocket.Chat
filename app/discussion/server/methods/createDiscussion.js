@@ -4,7 +4,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
-import { Messages, Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../../server/models';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { roomTypes } from '../../../utils/server';
