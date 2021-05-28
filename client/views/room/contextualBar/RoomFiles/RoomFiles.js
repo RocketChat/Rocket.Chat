@@ -86,7 +86,10 @@ function RoomFiles({
 
 				<Box w='full' h='full' flexShrink={1} overflow='hidden'>
 					<Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
 						totalCount={total}
 						endReached={
 							loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))

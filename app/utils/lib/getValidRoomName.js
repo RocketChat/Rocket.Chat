@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings';
 import { Rooms } from '../../models';
 import { validateName } from '../../lib/server/functions/validateName';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;

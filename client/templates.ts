@@ -24,6 +24,8 @@ createTemplateForComponent(
 	},
 );
 
+createTemplateForComponent('MessageBody', () => import('./components/Message/Body'));
+
 createTemplateForComponent(
 	'BroadCastMetric',
 	() => import('./components/Message/Metrics/Broadcast'),

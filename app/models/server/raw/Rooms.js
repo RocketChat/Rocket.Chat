@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
@@ -209,7 +210,7 @@ export class RoomsRaw extends BaseRaw {
 			},
 		};
 
-		return this.update(query, update, options);
+		return this.updateMany(query, update, options);
 	}
 
 	unsetTeamById(rid, options = {}) {
@@ -363,5 +364,9 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	findOneByNameOrFname(name, options = {}) {
+		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 }
