@@ -1,5 +1,5 @@
 import { Base } from './_Base';
-import { Users } from '../../../../server/models/raw';
+import { Users } from '../raw';
 
 class FederationServersModel extends Base {
 	constructor() {
