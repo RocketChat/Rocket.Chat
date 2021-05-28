@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Permissions } from '../../../models/server';
+import { Permissions } from '../../../../server/models';
 import { hasPermission } from '../functions/hasPermission';
 import { CONSTANTS, AuthorizationUtils } from '../../lib';
 

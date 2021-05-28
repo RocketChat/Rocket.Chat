@@ -5,7 +5,7 @@ import {
 	IBusinessHourWorkHour,
 	ILivechatBusinessHour,
 	LivechatBusinessHourTypes,
-} from '../../../../definition/ILivechatBusinessHour';
+} from '../../../definition/ILivechatBusinessHour';
 
 export interface IWorkHoursCronJobsItem {
 	day: string;

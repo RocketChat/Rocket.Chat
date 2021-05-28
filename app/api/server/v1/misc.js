@@ -9,7 +9,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { Info } from '../../../utils/server';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';

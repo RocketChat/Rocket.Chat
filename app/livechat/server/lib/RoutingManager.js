@@ -13,7 +13,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../../server/models';
 import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {

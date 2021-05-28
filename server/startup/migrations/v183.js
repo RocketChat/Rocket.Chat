@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { Migrations } from '../../../app/migrations';
-import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../../app/models/server';
+import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../models';
 
 const unifyRooms = (room) => {
 	// verify if other DM already exists

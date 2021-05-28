@@ -5,7 +5,7 @@ import {
 	ProgressStep,
 	ImporterWebsocket,
 } from '../../importer/server';
-import { Users } from '../../models/server';
+import { Users } from '../../../server/models';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {

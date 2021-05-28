@@ -1,6 +1,6 @@
 import { setUsername } from './setUsername';
 import { setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../../server/models';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';

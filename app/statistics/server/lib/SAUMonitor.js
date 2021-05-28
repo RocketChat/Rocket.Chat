@@ -4,7 +4,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { Sessions } from '../../../models/server';
+import { Sessions } from '../../../../server/models';
 import { Logger } from '../../../logger';
 import { aggregates } from '../../../models/server/models/Sessions';
 import { getMostImportantRole } from './getMostImportantRole';

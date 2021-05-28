@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../../server/models';
 import { getUserNotificationPreference } from '../../../utils';
 
 Meteor.methods({

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Permissions } from '../../../app/models/server';
+import { Permissions } from '../../models';
 
 Migrations.add({
 	version: 168,

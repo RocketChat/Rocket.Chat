@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
 import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavAccounts } from '../../../models/server';
+import { WebdavAccounts } from '../../../../server/models';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
 const logger = new Logger('WebDAV_Upload', {});

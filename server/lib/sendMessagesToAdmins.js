@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Users } from '../../app/models/server';
+import { Roles, Users } from '../models';
 
 export function sendMessagesToAdmins({
 	fromId = 'rocket.cat',

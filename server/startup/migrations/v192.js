@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Messages, Rooms } from '../../../app/models/server';
+import { Messages, Rooms } from '../../models';
 import { trash } from '../../../app/models/server/models/_BaseDb';
 
 Migrations.add({

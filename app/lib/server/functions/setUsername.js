@@ -3,7 +3,7 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
 import { settings } from '../../../settings';
-import { Users, Invites } from '../../../models/server';
+import { Users, Invites } from '../../../../server/models';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Invites, Users, Subscriptions } from '../../../models/server';
+import { Invites, Users, Subscriptions } from '../../../../server/models';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';

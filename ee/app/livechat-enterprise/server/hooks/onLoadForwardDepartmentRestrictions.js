@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks';
-import { LivechatDepartment } from '../../../../../app/models/server';
+import { LivechatDepartment } from '../../../../../server/models';
 
 callbacks.add('livechat.onLoadForwardDepartmentRestrictions', (options = {}) => {
 	const { departmentId } = options;

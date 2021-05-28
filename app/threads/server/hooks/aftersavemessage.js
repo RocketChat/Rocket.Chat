@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { Messages } from '../../../../server/models';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';

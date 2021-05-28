@@ -5,7 +5,7 @@ import {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { INotification } from '../../../../definition/INotification';
+import { INotification } from '../../../definition/INotification';
 
 export class NotificationQueueRaw extends BaseRaw<INotification> {
 	public readonly col!: Collection<INotification>;

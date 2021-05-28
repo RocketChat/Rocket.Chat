@@ -1,5 +1,5 @@
 import { BaseRaw } from './BaseRaw';
-import { getValue } from '../../../settings/server/raw';
+import { getValue } from '../../../app/settings/server/raw';
 
 export class LivechatRoomsRaw extends BaseRaw {
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {

@@ -1,7 +1,7 @@
 import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ITeam, TEAM_TYPE } from '../../../../definition/ITeam';
+import { ITeam, TEAM_TYPE } from '../../../definition/ITeam';
 
 type T = ITeam;
 export class TeamRaw extends BaseRaw<T> {

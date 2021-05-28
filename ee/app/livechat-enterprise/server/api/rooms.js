@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization';
-import { Subscriptions, LivechatRooms } from '../../../../../app/models/server';
+import { Subscriptions, LivechatRooms } from '../../../../../server/models';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 

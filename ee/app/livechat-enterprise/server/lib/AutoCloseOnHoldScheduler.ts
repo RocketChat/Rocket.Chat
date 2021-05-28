@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { Livechat } from '../../../../../app/livechat/server';
-import { LivechatRooms, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../server/models';
 
 const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';

@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { Users } from '../../models/server';
+import { Users } from '../../../server/models';
 import { settings } from '../../settings/server';
 import { searchProviderService } from './service/providerService';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';

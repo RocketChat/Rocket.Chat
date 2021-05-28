@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { LivechatRooms, LivechatInquiry } from '../../../app/models/server';
+import { LivechatRooms, LivechatInquiry } from '../../models';
 
 Migrations.add({
 	version: 180,

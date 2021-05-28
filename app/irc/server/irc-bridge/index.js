@@ -7,7 +7,7 @@ import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../callbacks';
 import * as servers from '../servers';
-import { Settings } from '../../../models/server';
+import { Settings } from '../../../../server/models';
 
 let removed = false;
 const updateLastPing = _.throttle(Meteor.bindEnvironment(() => {

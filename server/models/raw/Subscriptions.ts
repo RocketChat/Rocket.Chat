@@ -1,7 +1,7 @@
 import { FindOneOptions, Cursor, UpdateQuery, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ISubscription } from '../../../../definition/ISubscription';
+import { ISubscription } from '../../../definition/ISubscription';
 
 type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {

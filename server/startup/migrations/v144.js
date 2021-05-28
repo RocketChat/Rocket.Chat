@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Sessions } from '../../../app/models/server';
+import { Sessions } from '../../models';
 
 Migrations.add({
 	version: 144,

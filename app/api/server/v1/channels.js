@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../../server/models';
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';

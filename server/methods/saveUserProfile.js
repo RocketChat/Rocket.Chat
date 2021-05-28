@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
-import { Users } from '../../app/models/server';
+import { Users } from '../models';
 import { settings as rcSettings } from '../../app/settings/server';
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';

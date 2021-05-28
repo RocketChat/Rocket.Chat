@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../../server/models';
 import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';

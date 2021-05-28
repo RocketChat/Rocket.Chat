@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Avatars } from '../../../app/models/server';
+import { Avatars } from '../../models';
 
 Migrations.add({
 	version: 203,
