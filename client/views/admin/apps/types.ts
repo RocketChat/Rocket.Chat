@@ -1,5 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+type Keys = 'appId' | 'bundle' | 'expire' | 'maxSeats' | 'publicKey' | 'renewal' | 'seats';
 export type App = {
 	id: string;
 	iconFileData: string;
@@ -26,8 +27,8 @@ export type App = {
 	latest: App;
 	status?: AppStatus;
 	licenseValidation?: {
-		errors: { [key: string]: string };
-		warnings: { [key: string]: string };
+		errors: { [key in Keys]?: string };
+		warnings: { [key in Keys]?: string };
 	};
 	marketplace: unknown;
 	permissions: unknown[];

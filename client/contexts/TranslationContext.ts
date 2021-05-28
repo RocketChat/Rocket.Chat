@@ -1,6 +1,9 @@
 import { createContext, useContext } from 'react';
 
 import type keys from '../../packages/rocketchat-i18n/i18n/en.i18n.json';
+import dict from '../../packages/rocketchat-i18n/i18n/en.i18n.json';
+
+const translationKeys = Object.keys(dict);
 
 export type TranslationLanguage = {
 	name: string;
@@ -9,6 +12,9 @@ export type TranslationLanguage = {
 };
 
 export type TranslationKey = keyof typeof keys;
+
+export const isTranslationKey = (key: string): key is TranslationKey =>
+	translationKeys.includes(key);
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];
