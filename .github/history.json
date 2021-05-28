@@ -60908,7 +60908,7 @@
         }
       ]
     },
-    "3.12.6": {
+    "3.12.7": {
       "node_version": "12.18.4",
       "npm_version": "6.14.8",
       "apps_engine_version": "1.23.0",
@@ -60917,9 +60917,19 @@
         "3.6",
         "4.0"
       ],
-      "pull_requests": []
+      "pull_requests": [
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     },
-    "3.13.4": {
+    "3.13.5": {
       "node_version": "12.21.0",
       "npm_version": "6.14.8",
       "apps_engine_version": "1.24.1",
@@ -60928,25 +60938,14 @@
         "3.6",
         "4.0"
       ],
-      "pull_requests": []
-    },
-    "3.14.3": {
-      "node_version": "12.22.1",
-      "npm_version": "6.14.1",
-      "apps_engine_version": "1.25.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
       "pull_requests": [
         {
-          "pr": "22142",
-          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
           "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
           "contributors": [
-            "renatobecker",
-            "murtaza98"
+            "sampaiodiego"
           ]
         }
       ]
@@ -60961,6 +60960,90 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "22181",
+          "title": "Release 3.14.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22181",
+          "title": "Release 3.14.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22142",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22171",
+          "title": "Regression: Add i18n to license error messages",
+          "userLogin": "d-gubert",
+          "milestone": "3.15.0",
+          "contributors": [
+            "d-gubert",
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22178",
+          "title": "Bump: Fuselage 0.26.0",
+          "userLogin": "ggazzo",
+          "milestone": "3.15.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22175",
+          "title": "[FIX] Not possible accept video call if \"Hide right sidebar with click\" is enabled",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22176",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.15.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
         {
           "pr": "22172",
           "title": "[FIX] Discussion names showing a random value",
