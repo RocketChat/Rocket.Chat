@@ -71,6 +71,44 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			teamId: Match.Maybe(String),
+			teamName: Match.Maybe(String),
+			roomsToRemove: Match.Maybe([String]),
+		}));
+		const { roomsToRemove, teamId, teamName } = this.bodyParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasPermission(this.userId, 'convert-team', team.roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		const rooms: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+
+		if (rooms.length) {
+			rooms.forEach((room) => {
+				Meteor.call('eraseRoom', room);
+			});
+		}
+
+		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+		Promise.await(Team.removeAllMembersFromTeam(team._id));
+		Promise.await(Team.deleteById(team._id));
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
 		const { rooms, teamId, teamName } = this.bodyParams;
@@ -380,6 +418,9 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 
 		// Move every other room back to the workspace
 		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+
+		// Delete all team memberships
+		Team.removeAllMembersFromTeam(teamId);
 
 		// And finally delete the team itself
 		Promise.await(Team.deleteById(team._id));
