@@ -1,5 +1,5 @@
 import { BaseRaw } from './BaseRaw';
-import Sessions from '../models/Sessions';
+import Sessions from '../../../app/models/server/models/Sessions';
 
 const matchBasedOnDate = (start, end) => {
 	if (start.year === end.year && start.month === end.month) {
