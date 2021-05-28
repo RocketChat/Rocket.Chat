@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 
 import { Uploads } from '../../../models';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms } from '../../../../server/models/raw';
 import { callbacks } from '../../../callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';

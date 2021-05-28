@@ -6,11 +6,11 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 import { IUser } from '../../../definition/IUser';
 import { canAccessRoom } from './canAccessRoom';
-import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
-import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
-import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
-import { TeamRaw } from '../../../app/models/server/raw/Team';
+import { SubscriptionsRaw } from '../../models/raw/Subscriptions';
+import { SettingsRaw } from '../../models/raw/Settings';
+import { RoomsRaw } from '../../models/raw/Rooms';
+import { TeamMemberRaw } from '../../models/raw/TeamMember';
+import { TeamRaw } from '../../models/raw/Team';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';

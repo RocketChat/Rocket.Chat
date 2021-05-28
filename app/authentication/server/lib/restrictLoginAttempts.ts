@@ -1,12 +1,11 @@
 import moment from 'moment';
 
 import { ILoginAttempt } from '../ILoginAttempt';
-import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
+import { ServerEvents, Users, Rooms, Sessions } from '../../../../server/models/raw';
 import { IServerEventType } from '../../../../definition/IServerEvent';
 import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../../server/settings';
 import { addMinutesToADate } from '../../../utils/lib/date.helper';
-import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
 import { Logger } from '../../../logger/server';

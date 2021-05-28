@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations';
-import { Subscriptions, Rooms } from '../../../app/models/server/raw';
+import { Subscriptions, Rooms } from '../../models/raw';
 
 const updateSubscriptions = async () => {
 	const cursor = Subscriptions.find({ t: 'd' }, { projection: { rid: 1, u: 1 } });

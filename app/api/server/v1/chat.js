@@ -8,9 +8,9 @@ import { processWebhookMessage } from '../../../lib/server';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
-import Rooms from '../../../models/server/models/Rooms';
-import Users from '../../../models/server/models/Users';
-import Subscriptions from '../../../models/server/models/Subscriptions';
+import Rooms from '../../../../server/models/models/Rooms';
+import Users from '../../../../server/models/models/Users';
+import Subscriptions from '../../../../server/models/models/Subscriptions';
 import { settings } from '../../../settings';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 

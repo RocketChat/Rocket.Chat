@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Settings } from '../../models';
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
-import { SettingsEvents } from '../../../app/settings/server/functions/settings';
+import { SettingsEvents } from '../../settings/settings';
 
 Meteor.methods({
 	'public-settings/get'(updatedAt) {

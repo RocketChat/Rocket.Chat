@@ -9,7 +9,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../callbacks/server';
 import { Roles, Users, Settings } from '../../../../server/models';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users as UsersRaw } from '../../../../server/models/raw';
 import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
 import {

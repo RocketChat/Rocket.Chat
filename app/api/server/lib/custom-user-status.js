@@ -1,4 +1,4 @@
-import { CustomUserStatus } from '../../../models/server/raw';
+import { CustomUserStatus } from '../../../../server/models/raw';
 
 export async function findCustomUserStatus({ query = {}, pagination: { offset, count, sort } }) {
 	const cursor = await CustomUserStatus.find(query, {

@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../../models/server/raw';
+import { Users } from '../../../../../server/models/raw';
 
 async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 	const query = {};

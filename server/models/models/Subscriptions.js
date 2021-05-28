@@ -6,7 +6,7 @@ import mem from 'mem';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
-import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 
 export class Subscriptions extends Base {
 	constructor(...args) {

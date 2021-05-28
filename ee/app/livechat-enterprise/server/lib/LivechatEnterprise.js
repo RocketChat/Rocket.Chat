@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users } from '../../../../../app/models';
-import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
+import { LivechatInquiry, OmnichannelQueue } from '../../../../../server/models/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
 import { LivechatRooms, Subscriptions, Messages } from '../../../../../server/models';

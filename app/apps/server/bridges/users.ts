@@ -4,8 +4,8 @@ import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
 import { Users } from '../../../../server/models';
-import { Users as UsersRaw } from '../../../models/server/raw';
 import { AppServerOrchestrator } from '../orchestrator';
+import { Users as UsersRaw } from '../../../../server/models/raw';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function

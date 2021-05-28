@@ -1,4 +1,4 @@
-import { CustomSounds } from '../../../models/server/raw';
+import { CustomSounds } from '../../../../server/models/raw';
 
 export async function findCustomSounds({ query = {}, pagination: { offset, count, sort } }) {
 	const cursor = await CustomSounds.find(query, {

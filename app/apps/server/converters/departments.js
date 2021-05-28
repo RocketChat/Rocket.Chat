@@ -1,4 +1,4 @@
-import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
+import LivechatDepartment from '../../../../server/models/models/LivechatDepartment';
 import { transformMappedData } from '../../lib/misc/transformMappedData';
 
 export class AppDepartmentsConverter {

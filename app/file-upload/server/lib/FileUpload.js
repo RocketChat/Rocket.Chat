@@ -13,12 +13,12 @@ import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../../server/settings';
-import Uploads from '../../../models/server/models/Uploads';
-import UserDataFiles from '../../../models/server/models/UserDataFiles';
-import Avatars from '../../../models/server/models/Avatars';
-import Users from '../../../models/server/models/Users';
-import Rooms from '../../../models/server/models/Rooms';
-import Settings from '../../../models/server/models/Settings';
+import Uploads from '../../../../server/models/models/Uploads';
+import UserDataFiles from '../../../../server/models/models/UserDataFiles';
+import Avatars from '../../../../server/models/models/Avatars';
+import Users from '../../../../server/models/models/Users';
+import Rooms from '../../../../server/models/models/Rooms';
+import Settings from '../../../../server/models/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';

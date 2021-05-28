@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Subscriptions } from '../models';
-import { Messages } from '../../app/models/server/raw';
+import { Messages } from '../models/raw';
 import { settings } from '../../app/settings';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 

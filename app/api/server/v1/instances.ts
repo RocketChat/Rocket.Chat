@@ -1,7 +1,7 @@
 import { getInstanceConnection } from '../../../../server/stream/streamBroadcast';
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
-import InstanceStatus from '../../../models/server/models/InstanceStatus';
+import InstanceStatus from '../../../../server/models/models/InstanceStatus';
 import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 
 API.v1.addRoute('instances.get', { authRequired: true }, {

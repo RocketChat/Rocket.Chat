@@ -1,4 +1,4 @@
-import { OAuthApps } from '../../../models/server/raw';
+import { OAuthApps } from '../../../../server/models/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export async function findOAuthApps({ uid }) {
