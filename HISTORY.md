@@ -1,126 +1,12 @@
 
-# 3.15.0 (Under Release Candidate Process)
+# 3.15.0
+`2021-05-28  ·  8 🎉  ·  12 🚀  ·  62 🐛  ·  47 🔍  ·  34 👩‍💻👨‍💻`
 
-## 3.15.0-rc.4
-`2021-05-28  ·  3 🐛  ·  4 🔍  ·  5 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22142](https://github.com/RocketChat/Rocket.Chat/pull/22142))
-
-- Discussion names showing a random value ([#22172](https://github.com/RocketChat/Rocket.Chat/pull/22172))
-
-- Not possible accept video call if "Hide right sidebar with click" is enabled ([#22175](https://github.com/RocketChat/Rocket.Chat/pull/22175))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Bump: Fuselage 0.26.0 ([#22178](https://github.com/RocketChat/Rocket.Chat/pull/22178))
-
-- Regression: Add i18n to license error messages ([#22171](https://github.com/RocketChat/Rocket.Chat/pull/22171))
-
-- Release 3.14.4 ([#22181](https://github.com/RocketChat/Rocket.Chat/pull/22181))
-
-- Update Apps-Engine version ([#22176](https://github.com/RocketChat/Rocket.Chat/pull/22176))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@ggazzo](https://github.com/ggazzo)
-- [@murtaza98](https://github.com/murtaza98)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.15.0-rc.3
-`2021-05-27  ·  1 🐛  ·  4 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Presence.get method ([#22129](https://github.com/RocketChat/Rocket.Chat/pull/22129))
-
-  closes #21873
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: discussions display on sidebar ([#22157](https://github.com/RocketChat/Rocket.Chat/pull/22157))
-
-  ### group by type active
-  ![image](https://user-images.githubusercontent.com/27704687/119741996-37a92500-be5d-11eb-8b36-4067a7a229f1.png)
-
-  ### group by type inactive
-  ![image](https://user-images.githubusercontent.com/27704687/119742054-56a7b700-be5d-11eb-8810-e31d4216f573.png)
-
-- Regression: Missing room scope on teams channels permission ([#22137](https://github.com/RocketChat/Rocket.Chat/pull/22137))
-
-- Regression: not allowed to edit roles due to a new verification ([#22159](https://github.com/RocketChat/Rocket.Chat/pull/22159))
-
-  introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905
-  ![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)
-
-- Regression: Visual issue on sort list item  ([#22158](https://github.com/RocketChat/Rocket.Chat/pull/22158))
-
-  ### before
-  ![image](https://user-images.githubusercontent.com/27704687/119743703-d84d1400-be60-11eb-97cc-c8256b2c8b07.png)
-
-  ### after
-  ![image](https://user-images.githubusercontent.com/27704687/119743638-b18edd80-be60-11eb-828d-22cc5e1b2f5b.png)
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@dougfabris](https://github.com/dougfabris)
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.15.0-rc.2
-`2021-05-26  ·  1 🐛  ·  4 🔍  ·  6 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22128](https://github.com/RocketChat/Rocket.Chat/pull/22128))
-
-  Currently, Omnichannel Monitors just can't forward chats to a department that is part of a `Business Unit` they're not supervising. This issue is causing critical problems on customer operations since this behaviour is not by design.
-  The reason this issue is taking place is that, by design, Monitors just have access to departments related to the `Business Units` they're monitoring, but this restriction is designed only for Omnichannel management areas, which means in case the monitor is, also, an agent, they're supposed to be able to forward a chat to any available departments regardless the `Business Units` it's associated with.
-  So, initially, the restriction was implemented on the `Department Model` and, now, we're implementing the logic properly and introducing a new parameter to department endpoints, so the client will define which type of departments it needs.
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Add "User left team" message type ([#22109](https://github.com/RocketChat/Rocket.Chat/pull/22109))
-
-  - Add 'ult' system message type, which is sent when a user leaves a team ("Has left the team.").
-
-- Regression: Make referrer header configurable ([#22126](https://github.com/RocketChat/Rocket.Chat/pull/22126))
-
-- regression: Migration 225 setting not being fetched correctly ([#22108](https://github.com/RocketChat/Rocket.Chat/pull/22108))
-
-- Release 3.14.2 ([#22135](https://github.com/RocketChat/Rocket.Chat/pull/22135))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.15.0-rc.1
-`2021-05-21  ·  `
-
-## 3.15.0-rc.0
-`2021-05-21  ·  8 🎉  ·  12 🚀  ·  57 🐛  ·  35 🔍  ·  34 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.26.0`
 
 ### 🎉 New features
 
@@ -236,6 +122,14 @@
 
   In the case of server restarts, every time this event happened and the app had the `startupSetting` configured to use _recurring tasks_, they would get recreated the same number of times. In the case of a server that restarts frequently (_n_ times), there would be the same (_n_) number of tasks duplicated (and running) in the system.
 
+- **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22128](https://github.com/RocketChat/Rocket.Chat/pull/22128))
+
+  Currently, Omnichannel Monitors just can't forward chats to a department that is part of a `Business Unit` they're not supervising. This issue is causing critical problems on customer operations since this behaviour is not by design.
+  The reason this issue is taking place is that, by design, Monitors just have access to departments related to the `Business Units` they're monitoring, but this restriction is designed only for Omnichannel management areas, which means in case the monitor is, also, an agent, they're supposed to be able to forward a chat to any available departments regardless the `Business Units` it's associated with.
+  So, initially, the restriction was implemented on the `Department Model` and, now, we're implementing the logic properly and introducing a new parameter to department endpoints, so the client will define which type of departments it needs.
+
+- **ENTERPRISE:** Omnichannel Monitors can't forward chats to departments that they are not supervising ([#22142](https://github.com/RocketChat/Rocket.Chat/pull/22142))
+
 - Adding Custom Fields to show on user info check ([#20955](https://github.com/RocketChat/Rocket.Chat/pull/20955) by [@yash-rajpal](https://github.com/yash-rajpal))
 
   The setting custom fields to show under user info was not being used when rendering fields in user info. This pr adds those checks and only renders the fields mentioned under in admin -> accounts -> Custom Fields to Show in User Info.
@@ -283,6 +177,8 @@
 
   ### Table Sort Action Issue:
   ![directory](https://user-images.githubusercontent.com/27704687/116907441-f20b8a80-ac17-11eb-8790-bfce19e89a67.gif)
+
+- Discussion names showing a random value ([#22172](https://github.com/RocketChat/Rocket.Chat/pull/22172))
 
 - Dismiss button for save your encryption password dialog Issue#13557 ([#19872](https://github.com/RocketChat/Rocket.Chat/pull/19872) by [@savish28](https://github.com/savish28))
 
@@ -400,6 +296,8 @@
    - Trigger events while removing a user from a team's main channel;
    - Fix `usersCount` field in the team's main room when a user is removed from the team (`usersCount` is now decreased by 1).
 
+- Not possible accept video call if "Hide right sidebar with click" is enabled ([#22175](https://github.com/RocketChat/Rocket.Chat/pull/22175))
+
 - Notify with sound first message in queue list ([#21969](https://github.com/RocketChat/Rocket.Chat/pull/21969))
 
 - Open a new DM throwing  error 404 ([#22100](https://github.com/RocketChat/Rocket.Chat/pull/22100))
@@ -409,6 +307,10 @@
 - Permission's scope on Teams Channels ([#22083](https://github.com/RocketChat/Rocket.Chat/pull/22083))
 
   Allow moderators and owners to add or create channels on Teams Channels
+
+- Presence.get method ([#22129](https://github.com/RocketChat/Rocket.Chat/pull/22129))
+
+  closes #21873
 
 - Prevent the userInfo tab to return 'User not found' each time if a certain member of a DM group has been deleted ([#21970](https://github.com/RocketChat/Rocket.Chat/pull/21970) by [@Jeanstaquet](https://github.com/Jeanstaquet))
 
@@ -539,6 +441,8 @@
 
 - Bump actions/stale from v3.0.8 to v3.0.18 ([#21877](https://github.com/RocketChat/Rocket.Chat/pull/21877) by [@dependabot[bot]](https://github.com/dependabot[bot]))
 
+- Bump: Fuselage 0.26.0 ([#22178](https://github.com/RocketChat/Rocket.Chat/pull/22178))
+
 - Chore: Add missing 'Teams' label in the i18n files for every languages ([#21751](https://github.com/RocketChat/Rocket.Chat/pull/21751) by [@Jeanstaquet](https://github.com/Jeanstaquet))
 
   I added the missing Teams label in the i18n folder for EN, FR & NL
@@ -584,9 +488,23 @@
 
 - Merge master into develop & Set version to 3.15.0-develop ([#21847](https://github.com/RocketChat/Rocket.Chat/pull/21847))
 
+- Regression: Add "User left team" message type ([#22109](https://github.com/RocketChat/Rocket.Chat/pull/22109))
+
+  - Add 'ult' system message type, which is sent when a user leaves a team ("Has left the team.").
+
+- Regression: Add i18n to license error messages ([#22171](https://github.com/RocketChat/Rocket.Chat/pull/22171))
+
 - Regression: Add impersonate permission to app role ([#22006](https://github.com/RocketChat/Rocket.Chat/pull/22006))
 
 - regression: bump Rocket.Chat.Fuselage package with paginated selects ([#22059](https://github.com/RocketChat/Rocket.Chat/pull/22059))
+
+- Regression: discussions display on sidebar ([#22157](https://github.com/RocketChat/Rocket.Chat/pull/22157))
+
+  ### group by type active
+  ![image](https://user-images.githubusercontent.com/27704687/119741996-37a92500-be5d-11eb-8b36-4067a7a229f1.png)
+
+  ### group by type inactive
+  ![image](https://user-images.githubusercontent.com/27704687/119742054-56a7b700-be5d-11eb-8810-e31d4216f573.png)
 
 - regression: fix departments with empty ancestors not being returned ([#22068](https://github.com/RocketChat/Rocket.Chat/pull/22068))
 
@@ -602,9 +520,20 @@
 
 - Regression: Improve migration 225 ([#22099](https://github.com/RocketChat/Rocket.Chat/pull/22099))
 
+- Regression: Make referrer header configurable ([#22126](https://github.com/RocketChat/Rocket.Chat/pull/22126))
+
 - Regression: Match `name` or `fname` when fetching room to send notification for blocked log in attemps ([#22067](https://github.com/RocketChat/Rocket.Chat/pull/22067))
 
+- regression: Migration 225 setting not being fetched correctly ([#22108](https://github.com/RocketChat/Rocket.Chat/pull/22108))
+
+- Regression: Missing room scope on teams channels permission ([#22137](https://github.com/RocketChat/Rocket.Chat/pull/22137))
+
 - regression: Misspelled property in migration 225 ([#22093](https://github.com/RocketChat/Rocket.Chat/pull/22093))
+
+- Regression: not allowed to edit roles due to a new verification ([#22159](https://github.com/RocketChat/Rocket.Chat/pull/22159))
+
+  introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905
+  ![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)
 
 - regression: Select Team Modal margin ([#22030](https://github.com/RocketChat/Rocket.Chat/pull/22030))
 
@@ -612,11 +541,25 @@
 
 - regression: UserInfoTab Broken ([#22019](https://github.com/RocketChat/Rocket.Chat/pull/22019))
 
+- Regression: Visual issue on sort list item  ([#22158](https://github.com/RocketChat/Rocket.Chat/pull/22158))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/119743703-d84d1400-be60-11eb-97cc-c8256b2c8b07.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/119743638-b18edd80-be60-11eb-828d-22cc5e1b2f5b.png)
+
+- Release 3.14.2 ([#22135](https://github.com/RocketChat/Rocket.Chat/pull/22135))
+
+- Release 3.14.4 ([#22181](https://github.com/RocketChat/Rocket.Chat/pull/22181))
+
 - Remove memory leak from userData ([#22094](https://github.com/RocketChat/Rocket.Chat/pull/22094))
 
 - String helpers ([#21988](https://github.com/RocketChat/Rocket.Chat/pull/21988))
 
   It uses string helpers from a external package (`@rocket.chat/string-helpers`).
+
+- Update Apps-Engine version ([#22176](https://github.com/RocketChat/Rocket.Chat/pull/22176))
 
 - Upgrade to GitHub-native Dependabot ([#21874](https://github.com/RocketChat/Rocket.Chat/pull/21874) by [@dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 
