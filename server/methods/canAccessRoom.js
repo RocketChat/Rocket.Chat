@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { Users, Rooms } from '../models';
 import { canAccessRoom } from '../../app/authorization/server';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 
 Meteor.methods({
 	canAccessRoom(rid, userId, extraData) {

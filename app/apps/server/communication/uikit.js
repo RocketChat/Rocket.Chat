@@ -7,7 +7,7 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Users } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
 

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { IBanner, BannerPlatform } from '../../../definition/IBanner';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins.js';
 

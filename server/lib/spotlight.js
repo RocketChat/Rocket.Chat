@@ -8,7 +8,7 @@ import {
 } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../models';
 import { Users } from '../../app/models/server/raw';
-import { settings } from '../../app/settings/server';
+import { settings } from '../settings';
 import { searchableRoomTypes } from '../../app/utils/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 

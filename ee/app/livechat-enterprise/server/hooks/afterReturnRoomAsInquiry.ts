@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatRooms } from '../../../../../server/models';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 
 const afterReturnRoomAsInquiry = ({ room }: { room: any }): void => {
 	if (!room?._id || !room?.omnichannel?.predictedVisitorAbandonmentAt) {

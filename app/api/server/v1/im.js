@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../../server/models';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 

@@ -7,7 +7,7 @@ import {
 	ImporterWebsocket,
 } from '../../importer/server';
 import { Messages } from '../../models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 

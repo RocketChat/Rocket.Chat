@@ -1,4 +1,4 @@
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { Users, Statistics } from '../../../../server/models';
 import { statistics } from '../../../statistics';
 import { LICENSE_VERSION } from '../license';

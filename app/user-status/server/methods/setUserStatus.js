@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { RateLimiter, setStatusText } from '../../../lib/server';
 
 Meteor.methods({

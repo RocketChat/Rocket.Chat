@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 import { Users } from '../../../server/models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { searchProviderService } from './service/providerService';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import { api } from '../../../server/sdk/api';

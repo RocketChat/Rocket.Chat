@@ -1,5 +1,5 @@
 import { Users } from '../../../../server/models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const filterStarred = (message, uid) => {
 	// only return starred field if user has it starred

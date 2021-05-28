@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { generateUsernameSuggestion } from '../../lib';
 
 // Updates or creates a user after we authenticate with Blockstack

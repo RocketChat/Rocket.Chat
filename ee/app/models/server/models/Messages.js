@@ -1,5 +1,5 @@
 import { Messages } from '../../../../../app/models/server/models/Messages';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 
 Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function(roomId, message, user, extraData) {
 	const type = 'livechat_priority_history';

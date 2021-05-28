@@ -7,7 +7,7 @@ import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findR
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
-import { settings } from '../../../settings/server/index';
+import { settings } from '../../../../server/settings';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {

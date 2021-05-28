@@ -1,6 +1,6 @@
 import { Random } from 'meteor/random';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 

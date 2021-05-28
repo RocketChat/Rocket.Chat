@@ -4,8 +4,8 @@ import { Random } from 'meteor/random';
 let Users;
 let settings;
 if (Meteor.isServer) {
-	({ settings } = require('../../settings/server'));
-	Users = require('../../models/server/models/Users').default;
+	({ settings } = require('../../../server/settings'));
+	Users = require('../../../server/models/models/Users').default;
 } else {
 	({ settings } = require('../../settings/client'));
 }
