@@ -3,7 +3,7 @@ import React from 'react';
 import DeleteTeam, { StepOne, StepTwo, StepThree } from '.';
 
 export default {
-	title: 'components/DeleteTeamModal',
+	title: 'teams/DeleteTeamModal',
 	component: DeleteTeam,
 };
 

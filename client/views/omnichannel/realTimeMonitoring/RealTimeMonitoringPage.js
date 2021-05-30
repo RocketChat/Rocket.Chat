@@ -84,6 +84,7 @@ const RealTimeMonitoringPage = () => {
 									placeholder={t('All')}
 									value={department}
 									onChange={setDepartment}
+									onlyMyDepartments
 								/>
 							</Field.Row>
 						</Field>

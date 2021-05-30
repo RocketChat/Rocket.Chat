@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
 
@@ -17,7 +18,7 @@ export const useRoomList = (): Array<ISubscription> => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
-	const showDiscussion = useUserPreference('sidebarShowDiscussion');
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const options = useQueryOptions();
@@ -57,7 +58,7 @@ export const useRoomList = (): Array<ISubscription> => {
 					return team.add(room);
 				}
 
-				if (showDiscussion && room.prid) {
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
 				}
 
@@ -95,7 +96,10 @@ export const useRoomList = (): Array<ISubscription> => {
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			team.size && groups.set('Teams', team);
-			showDiscussion && discussion.size && groups.set('Discussions', discussion);
+			sidebarGroupByType &&
+				isDiscussionEnabled &&
+				discussion.size &&
+				groups.set('Discussions', discussion);
 			sidebarGroupByType && _private.size && groups.set('Private', _private);
 			sidebarGroupByType && _public.size && groups.set('Public', _public);
 			sidebarGroupByType && direct.size && groups.set('Direct', direct);
@@ -109,9 +113,9 @@ export const useRoomList = (): Array<ISubscription> => {
 		queue,
 		sidebarShowUnread,
 		favoritesEnabled,
-		showDiscussion,
 		sidebarGroupByType,
 		setRoomList,
+		isDiscussionEnabled,
 	]);
 
 	return roomList;

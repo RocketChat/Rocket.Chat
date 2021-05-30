@@ -13,7 +13,7 @@ import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 const TICK_WIDTH = 45;
 
-export function NewUsersSection() {
+const NewUsersSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -136,7 +136,11 @@ export function NewUsersSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }} ref={sizeRef}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
@@ -208,4 +212,6 @@ export function NewUsersSection() {
 				: <Box ref={sizeRef}><Skeleton variant='rect' height={240}/></Box>}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default NewUsersSection;
