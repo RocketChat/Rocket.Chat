@@ -3,20 +3,25 @@ import React, { useState, useCallback } from 'react';
 
 import { StepOne, StepTwo } from '.';
 
+const STEPS = {
+	LIST_ROOMS: 'LIST_ROOMS',
+	CONFIRM_DELETE: 'CONFIRM_DELETE',
+};
+
 export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const [step, setStep] = useState(() => {
 		if (rooms.length === 0) {
-			return 2;
+			return STEPS.CONFIRM_DELETE;
 		}
-		return 1;
+		return STEPS.LIST_ROOMS;
 	});
 	const [selectedRooms, setSelectedRooms] = useState({});
 
 	const lastOwnerRooms = rooms.filter(({ isLastOwner }) => isLastOwner);
 
-	const onContinue = useCallback(() => setStep(2), []);
+	const onContinue = useCallback(() => setStep(STEPS.CONFIRM_DELETE), []);
 
-	const onReturn = useCallback(() => setStep(1), []);
+	const onReturn = useCallback(() => setStep(STEPS.LIST_ROOMS), []);
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {
@@ -40,7 +45,7 @@ export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 		});
 	});
 
-	if (step === 2) {
+	if (step === STEPS.CONFIRM_DELETE) {
 		return (
 			<StepTwo
 				onConfirm={onConfirm}
