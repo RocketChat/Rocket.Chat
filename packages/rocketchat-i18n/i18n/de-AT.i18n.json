@@ -846,7 +846,6 @@
   "Custom_Scripts": "Benutzerdefinierte Skripts",
   "Custom_Sound_Add": "Fügen Sie benutzerdefinierten Sound hinzu",
   "Custom_Sound_Delete_Warning": "Das Löschen eines Sounds kann nicht rückgängig gemacht werden.",
-  "Hide_Avatars": "Avatar verstecken",
   "Custom_Sound_Error_Invalid_Sound": "Ungültiger Ton",
   "Custom_Sound_Error_Name_Already_In_Use": "Der Name des benutzerdefinierten Sounds wird bereits verwendet.",
   "Custom_Sound_Has_Been_Deleted": "Der benutzerdefinierte Sound wurde gelöscht.",

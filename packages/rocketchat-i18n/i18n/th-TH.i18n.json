@@ -844,7 +844,6 @@
   "Custom_Scripts": "สคริปต์ที่กำหนดเอง",
   "Custom_Sound_Add": "เพิ่มเสียงที่กำหนดเอง",
   "Custom_Sound_Delete_Warning": "ไม่สามารถยกเลิกการลบเสียงได้",
-  "Hide_Avatars": "ซ่อนอวตาร",
   "Custom_Sound_Error_Invalid_Sound": "เสียงไม่ถูกต้อง",
   "Custom_Sound_Error_Name_Already_In_Use": "ชื่อเสียงที่กำหนดเองมีการใช้งานอยู่แล้ว",
   "Custom_Sound_Has_Been_Deleted": "เสียงที่กำหนดเองถูกลบแล้ว",
