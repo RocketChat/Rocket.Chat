@@ -212,8 +212,8 @@ Meteor.startup(async function() {
 			if (subscription == null) {
 				return false;
 			}
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -311,8 +311,8 @@ Meteor.startup(async function() {
 			if (!subscription) {
 				return false;
 			}
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -367,8 +367,8 @@ Meteor.startup(async function() {
 			});
 		},
 		condition({ subscription, room }) {
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 			return Boolean(subscription);

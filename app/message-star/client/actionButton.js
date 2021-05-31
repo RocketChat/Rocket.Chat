@@ -30,8 +30,8 @@ Meteor.startup(function() {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
 				return false;
 			}
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 

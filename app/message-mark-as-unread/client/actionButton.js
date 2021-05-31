@@ -30,8 +30,8 @@ Meteor.startup(() => {
 			});
 		},
 		condition({ msg, u, room }) {
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 			return msg.u._id !== u._id;

@@ -131,7 +131,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		return true;
 	}
 
-	showLivechatMenuActions() {
+	isLivechatRoom() {
 		return true;
 	}
 }

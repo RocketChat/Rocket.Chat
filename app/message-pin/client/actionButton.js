@@ -31,8 +31,8 @@ Meteor.startup(function() {
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
-			const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-			if (showLivechatMenuActions) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 			return hasAtLeastOnePermission('pin-message', msg.rid);

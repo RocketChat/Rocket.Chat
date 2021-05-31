@@ -51,8 +51,8 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		return room && room.t;
 	}
 
-	showLivechatMenuActions(roomType) {
-		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].showLivechatMenuActions === 'function' && this.roomTypes[roomType].showLivechatMenuActions();
+	isLivechatRoom(roomType) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].isLivechatRoom === 'function' && this.roomTypes[roomType].isLivechatRoom();
 	}
 
 	showQuickActionButtons(roomType) {

@@ -26,8 +26,8 @@ Meteor.startup(function() {
 				});
 			},
 			condition({ subscription, room }) {
-				const showLivechatMenuActions = roomTypes.showLivechatMenuActions(room.t);
-				if (showLivechatMenuActions) {
+				const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+				if (isLivechatRoom) {
 					return false;
 				}
 				return Boolean(subscription);
