@@ -604,6 +604,7 @@
   "Cancel": "Cancelar",
   "Cancel_message_input": "Cancelar",
   "Canceled": "Cancelado",
+  "Canned_Response_Delete_Warning": "A exclusão de um modelo de resposta não pode ser desfeita.",
   "Cannot_invite_users_to_direct_rooms": "Não é possível convidar pessoas para salas diretas",
   "Cannot_open_conversation_with_yourself": "Não é possível dirigir a mensagem com você mesmo",
   "CAS_autoclose": "Autoclose Login Popup",
