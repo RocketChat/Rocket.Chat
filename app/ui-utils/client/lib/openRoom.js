@@ -104,7 +104,7 @@ export const openRoom = async function(type, name, render = true) {
 			if (type === 'd') {
 				const result = await call('createDirectMessage', ...name.split(', '));
 				if (result) {
-					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
+					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });

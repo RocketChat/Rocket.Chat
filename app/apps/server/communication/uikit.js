@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
@@ -13,6 +14,25 @@ import { UiKitCoreApp } from '../../../../server/sdk';
 const apiServer = express();
 
 apiServer.disable('x-powered-by');
+
+let corsEnabled = false;
+let allowListOrigins = [];
+
+settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
+
+settings.get('API_CORS_Origin', (_, value) => {
+	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
+});
+
+const corsOptions = {
+	origin: (origin, callback) => {
+		if (!origin || (corsEnabled && (allowListOrigins.includes('*') || allowListOrigins.includes(origin))) || origin === settings.get('Site_Url')) {
+			callback(null, true);
+		} else {
+			callback('Not allowed by CORS', false);
+		}
+	},
+};
 
 WebApp.connectHandlers.use(apiServer);
 
@@ -59,7 +79,7 @@ router.use((req, res, next) => {
 	next();
 });
 
-apiServer.use('/api/apps/ui.interaction/', router);
+apiServer.use('/api/apps/ui.interaction/', cors(corsOptions), router);
 
 const getPayloadForType = (type, req) => {
 	if (type === UIKitIncomingInteractionType.BLOCK) {

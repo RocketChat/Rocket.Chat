@@ -5,14 +5,14 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { useEndpointData } from '../hooks/useEndpointData';
 
 const AutoCompleteDepartment = (props) => {
+	const { label, onlyMyDepartments = false } = props;
+
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/department',
-		useMemo(() => ({ text: filter }), [filter]),
+		useMemo(() => ({ text: filter, onlyMyDepartments }), [filter, onlyMyDepartments]),
 	);
-
-	const { label } = props;
 
 	const options = useMemo(
 		() =>
