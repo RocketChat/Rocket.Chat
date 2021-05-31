@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { PublicSettingsCachedCollection } from '../../../../client/lib/settings/PublicSettingsCachedCollection';
-import { SettingsBase } from '../../../../server/settings/SettingsBase';
+import { SettingsBase } from '../../../../common/SettingsBase';
 import { SettingValue } from '../../../../definition/ISetting';
 
 class Settings extends SettingsBase {
