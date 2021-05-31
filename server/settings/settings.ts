@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { SettingsBase } from './SettingsBase';
+import { SettingsBase } from '../../common/SettingsBase';
 import SettingsModel from '../models/models/Settings';
 import { updateValue } from './raw';
 import { ISetting, SettingValue } from '../../definition/ISetting';
