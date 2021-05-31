@@ -1,7 +1,6 @@
 import '../app/cors/server';
 import '../app/sms';
 import '../app/analytics/server';
-import '../app/api/server';
 import '../app/apple/server';
 import '../app/assets/server';
 import '../app/authorization';
@@ -115,3 +114,4 @@ import '../app/custom/server';
 import '../app/authentication/server';
 
 import './services/2fa';
+import './api/v1';

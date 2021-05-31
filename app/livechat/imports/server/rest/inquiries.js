@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { hasPermission } from '../../../../authorization';
 import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';

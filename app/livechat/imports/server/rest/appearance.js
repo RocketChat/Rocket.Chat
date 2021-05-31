@@ -1,4 +1,4 @@
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { findAppearance } from '../../../server/api/lib/appearance';
 
 API.v1.addRoute('livechat/appearance', { authRequired: true }, {
