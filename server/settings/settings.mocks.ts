@@ -48,4 +48,4 @@ class SettingsClass {
 
 export const Settings = new SettingsClass();
 
-mock('../../../models/server/models/Settings', Settings);
+mock('../models/models/Settings', Settings);
