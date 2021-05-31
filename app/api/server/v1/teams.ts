@@ -101,9 +101,11 @@ API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
 			});
 		}
 
-		Promise.await(Team.unsetTeamIdOfRooms(team._id));
-		Promise.await(Team.removeAllMembersFromTeam(team._id));
-		Promise.await(Team.deleteById(team._id));
+		Promise.all([
+			Team.unsetTeamIdOfRooms(team._id),
+			Team.removeAllMembersFromTeam(team._id),
+			Team.deleteById(team._id),
+		]);
 
 		return API.v1.success();
 	},
