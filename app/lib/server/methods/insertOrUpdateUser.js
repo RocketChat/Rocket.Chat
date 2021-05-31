@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { saveUser } from '../functions';
-import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../server/services/2fa/twoFactorRequired';
 
 Meteor.methods({
 	insertOrUpdateUser: twoFactorRequired(function(userData) {

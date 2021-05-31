@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../server/services/2fa/twoFactorRequired';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 
 Meteor.methods({

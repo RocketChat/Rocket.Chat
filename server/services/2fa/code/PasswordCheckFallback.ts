@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../../server/settings';
+import { settings } from '../../../settings';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 

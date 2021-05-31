@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../../app/authorization';
 import { Users } from '../../../../../app/models';
-import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../../server/services/2fa/twoFactorRequired';
 
 Meteor.methods({
 	'personalAccessTokens:removeToken': twoFactorRequired(function({ tokenName }) {

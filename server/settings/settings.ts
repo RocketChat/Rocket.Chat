@@ -67,6 +67,7 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 
 export interface ISettingAddOptions extends Partial<ISetting> {
 	force?: boolean;
+	wizard?: { step: number; order: number };
 }
 
 export interface ISettingAddGroupOptions {

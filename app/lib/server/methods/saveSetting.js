@@ -5,7 +5,7 @@ import { hasPermission, hasAllPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../server/services/2fa/twoFactorRequired';
 
 Meteor.methods({
 	saveSetting: twoFactorRequired(function(_id, value, editor) {
