@@ -163,6 +163,7 @@ export class UsersRaw extends BaseRaw {
 							$and: [
 								{ $eq: ['$u._id', '$$id'] },
 								{ $eq: ['$open', true] },
+								{ $ne: ['$onHold', true] },
 								{ ...department && { $eq: ['$department', department] } },
 							],
 						},
@@ -228,11 +229,11 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	async getAgentAndAmountOngoingChats(userId, department) {
+	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }, { ...department && { $eq: ['$$sub.department', department] } }] } } } } } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
 			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 

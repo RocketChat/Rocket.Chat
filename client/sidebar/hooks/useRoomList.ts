@@ -58,7 +58,7 @@ export const useRoomList = (): Array<ISubscription> => {
 					return team.add(room);
 				}
 
-				if (isDiscussionEnabled && room.prid) {
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
 				}
 
