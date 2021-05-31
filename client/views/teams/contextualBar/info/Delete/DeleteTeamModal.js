@@ -3,19 +3,21 @@ import React, { useState, useCallback } from 'react';
 
 import { StepOne, StepTwo } from '.';
 
+const STEPS = { LIST_ROOMS: 'LIST_ROOMS', CONFIRM_DELETE: 'CONFIRM_DELETE' };
+
 export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const hasRooms = rooms?.length > 0;
 
-	const [step, setStep] = useState(hasRooms ? 1 : 2);
+	const [step, setStep] = useState(hasRooms ? STEPS.LIST_ROOMS : STEPS.CONFIRM_DELETE);
 	const [deletedRooms, setDeletedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
 	const onContinue = useCallback(() => {
-		setStep(2);
+		setStep(STEPS.CONFIRM_DELETE);
 	}, [setStep]);
 
 	const onReturn = useCallback(() => {
-		setStep(1);
+		setStep(STEPS.LIST_ROOMS);
 	}, [setStep]);
 
 	const onChangeRoomSelection = useMutableCallback((room) => {
@@ -44,7 +46,7 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 		onContinue();
 	});
 
-	if (step === 2) {
+	if (step === STEPS.CONFIRM_DELETE) {
 		return (
 			<StepTwo
 				onConfirm={onConfirm}

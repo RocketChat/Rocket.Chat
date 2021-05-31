@@ -1,9 +1,11 @@
+import { Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
+import GenericModal from '../../../../../components/GenericModal';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import DeleteTeamModal from './DeleteTeamModal';
-import DeleteTeamSkeleton from './DeleteTeamSkeleton';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 
@@ -13,10 +15,21 @@ const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }) => {
 		useMemo(() => ({ teamId }), [teamId]),
 	);
 
-	if (phase === AsyncStatePhase.LOADING) {
-		return <DeleteTeamSkeleton onClose={onCancel} />;
-	}
+	const t = useTranslation();
 
+	if (phase === AsyncStatePhase.LOADING) {
+		return (
+			<GenericModal
+				variant='warning'
+				onClose={onCancel}
+				onConfirm={onCancel}
+				title={<Skeleton width='50%' />}
+				confirmText={t('Cancel')}
+			>
+				<Skeleton width='full' />
+			</GenericModal>
+		);
+	}
 	return <DeleteTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
 };
 
