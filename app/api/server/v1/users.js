@@ -21,10 +21,10 @@ import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/get
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
-import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
+import { getUserForCheck, emailCheck } from '../../../../server/services/2fa/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
-import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
+import { resetTOTP } from '../../../../server/services/2fa/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
 
 API.v1.addRoute('users.create', { authRequired: true }, {

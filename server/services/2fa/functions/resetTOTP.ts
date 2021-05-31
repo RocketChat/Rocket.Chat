@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings } from '../../../../server/settings';
-import * as Mailer from '../../../mailer';
-import { Users } from '../../../../server/models/raw';
+import { settings } from '../../../settings';
+import * as Mailer from '../../../../app/mailer';
+import { Users } from '../../../models/raw';
 import { IUser } from '../../../../definition/IUser';
 
 const sendResetNotification = async function(uid: string): Promise<void> {

@@ -12,7 +12,7 @@ import { settings } from '../../settings';
 import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
-import { checkCodeForUser } from '../../2fa/server/code';
+import { checkCodeForUser } from '../../../server/services/2fa/code';
 
 
 const logger = new Logger('API', {});
