@@ -8,6 +8,7 @@ import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
+import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -155,13 +156,7 @@ export class AppsRestApi {
 					});
 				}
 
-				const apps = manager.get().map((prl) => {
-					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageContent;
-					info.status = prl.getStatus();
-
-					return info;
-				});
+				const apps = manager.get().map(formatAppInstanceForRest);
 
 				return API.v1.success({ apps });
 			},
@@ -260,7 +255,9 @@ export class AppsRestApi {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true }));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				const aff = Promise.await(manager.add(buff, { marketplaceInfo, permissionsGranted, enable: true, user }));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -405,24 +402,19 @@ export class AppsRestApi {
 					return API.v1.success({ app: result.data });
 				}
 
-				const prl = manager.getOneById(this.urlParams.id);
+				const app = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({
-						app: {
-							...info,
-							status: prl.getStatus(),
-							licenseValidation: prl.getLatestLicenseValidationResult(),
-						},
-					});
+				if (!app) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				return API.v1.success({
+					app: formatAppInstanceForRest(app),
+				});
 			},
 			post() {
 				let buff;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -468,14 +460,23 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = multipartFormDataHandler(this.request)?.app;
+					const formData = multipartFormDataHandler(this.request);
+					buff = formData?.app;
+					permissionsGranted = (() => {
+						try {
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff, this.bodyParams.permissionsGranted));
+				const aff = Promise.await(manager.update(buff, permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {
@@ -505,7 +506,9 @@ export class AppsRestApi {
 					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				Promise.await(manager.remove(prl.getID()));
+				const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+
+				Promise.await(manager.remove(prl.getID(), { user }));
 
 				const info = prl.getInfo();
 				info.status = prl.getStatus();

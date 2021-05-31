@@ -4,9 +4,10 @@ import UAParser from 'ua-parser-js';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
-import Info from './Info';
-import Label from './Label';
 
 const VisitorClientInfo = ({ uid }) => {
 	const t = useTranslation();
@@ -30,16 +31,16 @@ const VisitorClientInfo = ({ uid }) => {
 	return (
 		<>
 			{clientData.os && (
-				<>
+				<Field>
 					<Label>{t('OS')}</Label>
 					<Info>{clientData.os}</Info>
-				</>
+				</Field>
 			)}
 			{clientData.browser && (
-				<>
+				<Field>
 					<Label>{t('Browser')}</Label>
 					<Info>{clientData.browser}</Info>
-				</>
+				</Field>
 			)}
 		</>
 	);

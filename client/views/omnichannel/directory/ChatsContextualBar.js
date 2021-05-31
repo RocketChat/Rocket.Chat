@@ -1,37 +1,63 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import ChatInfo from './chats/contextualBar/ChatInfo';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from './Skeleton';
+import Chat from './chats/Chat';
+import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
 import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
 
 const ChatsContextualBar = ({ chatReload }) => {
-	const liveRoute = useRoute('live');
 	const directoryRoute = useRoute('omnichannel-directory');
 
-	const context = useRouteParameter('context');
+	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
 
 	const openInRoom = () => {
-		liveRoute.push({ id });
+		directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
 	const handleChatsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'chats' });
+		directoryRoute.push({ page: 'chats' });
 	};
+
+	const handleChatsVerticalBarBackButtonClick = () => {
+		directoryRoute.push({ page: 'chats', id, bar: 'info' });
+	};
+
+	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(
+		`rooms.info?roomId=${id}`,
+	);
+
+	if (bar === 'view') {
+		return <Chat rid={id} />;
+	}
+
+	if (state === AsyncStatePhase.LOADING) {
+		return (
+			<Box pi='x24'>
+				<FormSkeleton />
+			</Box>
+		);
+	}
+
+	if (error || !data || !data.room) {
+		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+	}
 
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'info' && (
+				{bar === 'info' && (
 					<>
-						<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-							<Icon name='info-circled' size='x20' /> {t('Room_Info')}
-						</Box>
+						<VerticalBar.Icon name='info-circled' />
+						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
 						<VerticalBar.Action
 							title={t('View_full_conversation')}
 							name={'new-window'}
@@ -39,19 +65,21 @@ const ChatsContextualBar = ({ chatReload }) => {
 						/>
 					</>
 				)}
-				{context === 'edit' && (
-					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='pencil' size='x20' /> {t('edit-room')}
-					</Box>
+				{bar === 'edit' && (
+					<>
+						<VerticalBar.Icon name='pencil' />
+						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+					</>
 				)}
 				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{context === 'info' && <ChatInfo id={id} />}
-			{context === 'edit' && (
+			{bar === 'info' && <ChatInfoDirectory id={id} room={data.room} />}
+			{bar === 'edit' && (
 				<RoomEditWithData
 					id={id}
-					close={handleChatsVerticalBarCloseButtonClick}
+					close={handleChatsVerticalBarBackButtonClick}
 					reload={chatReload}
+					reloadInfo={reloadInfo}
 				/>
 			)}
 		</VerticalBar>

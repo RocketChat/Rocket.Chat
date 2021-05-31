@@ -3,8 +3,8 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { Settings } from '../../models';
 import { settings } from '../../settings/server';
 
@@ -34,7 +34,13 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
+	settings.get('Default_Referrer_Policy', (key, value) => {
+		if (!value) {
+			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
+		}
+
+		injectIntoHead('noreferrer', `<meta name="referrer" content="${ value }" />`);
+	});
 
 	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead('disable-animation', `

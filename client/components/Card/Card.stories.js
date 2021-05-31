@@ -1,10 +1,10 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import Card from './Card';
+import Card from '.';
 
 export default {
-	title: 'components/basic/Card',
+	title: 'components/Card',
 	component: Card,
 };
 
@@ -74,7 +74,7 @@ export const Double = () => (
 							<Card.Icon name='cross' />A bunch of stuff
 						</Box>
 						<Box display='flex' flexDirection='row' alignItems='center'>
-							<Card.Icon name='num-pad' />A bunch of stuff
+							<Card.Icon name='dialpad' />A bunch of stuff
 						</Box>
 					</Box>
 					<Box>

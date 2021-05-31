@@ -9,7 +9,7 @@ addAction('rocket-search', {
 	title: 'Search_Messages',
 	icon: 'magnifier',
 	template: 'RocketSearch',
-	order: 4,
+	order: 6,
 });
 
 addAction('user-info', {
@@ -18,7 +18,7 @@ addAction('user-info', {
 	title: 'User_Info',
 	icon: 'user',
 	template: lazy(() => import('../../MemberListRouter')),
-	order: 5,
+	order: 1,
 });
 
 addAction('contact-profile', {
@@ -29,7 +29,7 @@ addAction('contact-profile', {
 	template: lazy(
 		() => import('../../../omnichannel/directory/contacts/contextualBar/ContactsContextualBar'),
 	),
-	order: 5,
+	order: 1,
 });
 
 addAction('user-info-group', {
@@ -38,7 +38,7 @@ addAction('user-info-group', {
 	title: 'Members',
 	icon: 'team',
 	template: lazy(() => import('../../MemberListRouter')),
-	order: 5,
+	order: 1,
 });
 
 addAction('members-list', ({ room }) => {
@@ -65,7 +65,7 @@ addAction('uploaded-files-list', {
 	title: 'Files',
 	icon: 'clip',
 	template: lazy(() => import('../../contextualBar/RoomFiles')),
-	order: 6,
+	order: 7,
 });
 
 addAction('keyboard-shortcut-list', {

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { RoomTemplate } from './components/RoomTemplate';
+import { RoomTemplate } from './components/RoomTemplate/RoomTemplate';
 
 export default {
-	title: 'views/Room',
+	title: 'room',
 	component: RoomTemplate,
 };
 

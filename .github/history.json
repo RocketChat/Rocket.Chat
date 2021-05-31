@@ -56635,6 +56635,108 @@
         }
       ]
     },
+    "3.8.9": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.19.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.10.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.21.0-alpha.4235",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.11.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.1": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.12.2": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.3": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
     "3.13.0-rc.0": {
       "node_version": "12.21.0",
       "npm_version": "6.14.8",
@@ -56645,6 +56747,41 @@
         "4.0"
       ],
       "pull_requests": [
+        {
+          "pr": "21020",
+          "title": "[FIX] Missing spaces on attachment ",
+          "userLogin": "dougfabris",
+          "milestone": "3.12.1",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21004",
+          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
+          "userLogin": "yash-rajpal",
+          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20973",
+          "title": "[FIX] Stopping Jitsi reload",
+          "userLogin": "yash-rajpal",
+          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
+          "milestone": "3.12.1",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
         {
           "pr": "20881",
           "title": "[FIX] Follow thread action on threads list ",
@@ -56661,6 +56798,7 @@
           "pr": "20966",
           "title": "[NEW] Teams",
           "userLogin": "gabriellsh",
+          "description": "## Teams\r\n\r\n\r\n\r\nYou can easily group your users as Teams on Rocket.Chat. The feature takes the hassle out of managing multiple users one by one and allows you to handle them at the same time efficiently.\r\n\r\n\r\n- Teams can be public or private and each team can have its own channels, which also can be public or private.\r\n- It's possible to add existing channels to a Team or create new ones inside a Team.\r\n- It's possible to invite people outside a Team to join Team's channels.\r\n- It's possible to convert channels to Teams\r\n- It's possible to add all team members to a channel at once\r\n- Team members have roles\r\n\r\n\r\n![image](https://user-images.githubusercontent.com/70927132/113421955-4f56b680-93a2-11eb-80dc-9b70a3f09b3e.png)\r\n\r\n\r\n\r\n**Quickly onboard new users with Autojoin channels**\r\n\r\nTeams can have Auto-join channels –  channels to which the team members are automatically added, so you don’t need to go through the manual process of adding users repetitively\r\n\r\n![image](https://user-images.githubusercontent.com/70927132/113419284-81194e80-939d-11eb-9fff-aeb05cbc8089.png)\r\n\r\n**Instantly mention multiple members at once** (available in EE)\r\n\r\nWith Teams, you don’t need to remember everyone’s name to communicate with a team quickly. Just mention a Team — @engineers, for instance —  and all members will be instantly notified.",
           "milestone": "3.13.0",
           "contributors": [
             "matheusbsilva137",
@@ -57124,9 +57262,9 @@
         {
           "pr": "21000",
           "title": "[IMPROVE] Make debug logs of Apps configurable via Log_Level setting in the Admin panel",
-          "userLogin": "meomay503",
+          "userLogin": "cuonghuunguyen",
           "contributors": [
-            "meomay503",
+            "cuonghuunguyen",
             "web-flow"
           ]
         },
@@ -57253,53 +57391,6 @@
         }
       ]
     },
-    "3.12.1": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": [
-        {
-          "pr": "21020",
-          "title": "[FIX] Missing spaces on attachment ",
-          "userLogin": "dougfabris",
-          "milestone": "3.12.1",
-          "contributors": [
-            "dougfabris",
-            "tassoevan",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "21004",
-          "title": "[IMPROVE] Close Call contextual bar after starting jitsi call.",
-          "userLogin": "yash-rajpal",
-          "description": "After jitsi call is started, if the call is started in a new window then we should close contextual tab bar.\r\nSo, when 'YES' is pressed on modal, we call handleClose function if openNewWindow is true, as call doesn't starts on tab bar, it starts on new window.",
-          "milestone": "3.12.1",
-          "contributors": [
-            "yash-rajpal",
-            "tassoevan",
-            "web-flow"
-          ]
-        },
-        {
-          "pr": "20973",
-          "title": "[FIX] Stopping Jitsi reload",
-          "userLogin": "yash-rajpal",
-          "description": "The Function where Jitsi call is started gets called many times due to `room.usernames` dep of useMemo, this dep triggers reloading of this function many times.\r\nSo removing this dep from useMemo dependencies",
-          "milestone": "3.12.1",
-          "contributors": [
-            "yash-rajpal",
-            "tassoevan",
-            "web-flow"
-          ]
-        }
-      ]
-    },
     "3.13.0-rc.1": {
       "node_version": "12.21.0",
       "npm_version": "6.14.8",
@@ -57319,50 +57410,6 @@
           ]
         }
       ]
-    },
-    "3.8.9": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.19.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.10.7": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.21.0-alpha.4235",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.11.3": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.22.2",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
-    },
-    "3.12.2": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
     },
     "3.13.0-rc.2": {
       "node_version": "12.21.0",
@@ -57493,17 +57540,6 @@
           ]
         }
       ]
-    },
-    "3.12.3": {
-      "node_version": "12.18.4",
-      "npm_version": "6.14.8",
-      "apps_engine_version": "1.23.0",
-      "mongo_versions": [
-        "3.4",
-        "3.6",
-        "4.0"
-      ],
-      "pull_requests": []
     },
     "3.13.0-rc.3": {
       "node_version": "12.21.0",
@@ -58044,6 +58080,2990 @@
         "3.4",
         "3.6",
         "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21437",
+          "title": "Release 3.13.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            null,
+            "fcecagno",
+            "web-flow",
+            "yash-rajpal",
+            "MartinSchoeler",
+            "dougfabris",
+            "KevLehman",
+            "r0zbot",
+            "tiagoevanp",
+            "cuonghuunguyen",
+            "lucassartor",
+            "rodrigok",
+            "PriyaBihani",
+            "shrinish123"
+          ]
+        }
+      ]
+    },
+    "3.13.1": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21486",
+          "title": "Release 3.13.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rafaelblink",
+            "sampaiodiego",
+            "renatobecker",
+            "graywolf336",
+            "KevLehman",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21465",
+          "title": "[FIX] Header component breaking if user is not part of teams room.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.13.1",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21469",
+          "title": "[FIX] Admin Users list pagination",
+          "userLogin": "KevLehman",
+          "description": "- Fix Administration/Users pagination",
+          "milestone": "3.13.1",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21470",
+          "title": "[FIX] App installation from marketplace not correctly displaying the permissions",
+          "userLogin": "graywolf336",
+          "description": "Fixes the marketplace app installation not correctly displaying the permissions modal.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "graywolf336",
+            "d-gubert",
+            "web-flow",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "21485",
+          "title": "[FIX] Omnichannel queue manager returning outdated room object",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21481",
+          "title": "[FIX]  Close chat button is not available for Omnichannel agents",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21476",
+          "title": "[FIX] Make Omnichannel's closing chat button the last action in the toolbox",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21450",
+          "title": "[FIX] Error when editing Omnichannel rooms without custom fields",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21453",
+          "title": "[FIX] Wrong useMemo on Priorities EE field.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21462",
+          "title": "[FIX] Add tag input to Closing Chat modal",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink"
+          ]
+        }
+      ]
+    },
+    "3.11.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.12.4": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.2": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21570",
+          "title": "Release 3.13.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.13.3": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21491",
+          "title": "[FIX] Team's channels list for teams with too many channels",
+          "userLogin": "KevLehman",
+          "description": "- Fix teams.listRooms pagination for non-admin users",
+          "milestone": "3.13.3",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21644",
+          "title": "[FIX] Livechat not retrieving messages",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "3.13.3",
+          "contributors": [
+            "cuonghuunguyen"
+          ]
+        }
+      ]
+    },
+    "3.11.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.22.2",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21644",
+          "title": "[FIX] Livechat not retrieving messages",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "3.13.3",
+          "contributors": [
+            "cuonghuunguyen"
+          ]
+        }
+      ]
+    },
+    "3.12.5": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21644",
+          "title": "[FIX] Livechat not retrieving messages",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "3.13.3",
+          "contributors": [
+            "cuonghuunguyen"
+          ]
+        }
+      ]
+    },
+    "3.14.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0-alpha.4943",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21119",
+          "title": "[FIX] Allow deletion of own account for passwordless accounts (e.g. OAUTH)",
+          "userLogin": "wolbernd",
+          "milestone": "3.14.0",
+          "contributors": [
+            "wolbernd",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21432",
+          "title": "[FIX] Send alternative color to unread sidebar icon",
+          "userLogin": "tiagoevanp",
+          "description": "![image](https://user-images.githubusercontent.com/17487063/113469819-08f76b00-9427-11eb-942e-783c186ba7cd.png)",
+          "milestone": "3.14.0",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21684",
+          "title": "[FIX] Show direct rooms as readonly when one of the users is deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "3.14.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21694",
+          "title": "Bump Livechat Version",
+          "userLogin": "ggazzo",
+          "milestone": "3.14.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21690",
+          "title": "[NEW][APPS] Method to fetch Livechat Departments",
+          "userLogin": "d-gubert",
+          "description": "New method in the livechat bridge that allows apps to fetch departments that are enabled and have agents assigned",
+          "milestone": "3.14.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "21353",
+          "title": "[IMPROVE][APPS] Scheduler option to skip immediate execution of recurring jobs",
+          "userLogin": "thassiov",
+          "description": "Create and schedule a task manually at `scheduleRecurring` method so the first iteration runs after the configured interval. This is accomplished by adding the setting `skipImmediate: true` when setting up the task.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert",
+            "lolimay"
+          ]
+        },
+        {
+          "pr": "21204",
+          "title": "Fix typo in app/apps/README file",
+          "userLogin": "sauravjoshi23",
+          "contributors": [
+            "sauravjoshi23"
+          ]
+        },
+        {
+          "pr": "21490",
+          "title": "[FIX] Avoid sidebar being broke",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21519",
+          "title": "Add ')' after Date and Time in DB migration",
+          "userLogin": "im-adithya",
+          "contributors": [
+            "im-adithya",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21689",
+          "title": "[IMPROVE] add permission check when adding a channel to a team",
+          "userLogin": "g-thome",
+          "description": "add permission check for each room",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21692",
+          "title": "[NEW][Enterprise] Second layer encryption for data transport (alpha)",
+          "userLogin": "rodrigok",
+          "description": "The second layer encryption for data transport works implementing the ECDH algorithm where session keys are exchanged before the rest of the communication. This feature is **enterprise only** since it requires the micro-services architecture and it's in the early stage of tests as an **alpha** feature and documentation may not be available before the beta stage.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21658",
+          "title": "[NEW][ENTERPRISE] LDAP Teams Sync",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21579",
+          "title": "[FIX] Message link null corrupts message rendering",
+          "userLogin": "g-thome",
+          "description": "Additional checks on message_link field before rendering message contents",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "18357",
+          "title": "[NEW] Standard Importer Structure",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21607",
+          "title": "[NEW] Password history",
+          "userLogin": "matheusbsilva137",
+          "description": "- Store each user's previously used passwords in a `passwordHistory` field (in the `users` record);\r\n- Users' previously used passwords are stored in their `passwordHistory` even when the setting is disabled;\r\n- Add \"Password History\" setting -- when enabled, it blocks users from reusing their most recent passwords;\r\n- Convert `comparePassword` file to TypeScript.\r\n\r\n![Password_Change](https://user-images.githubusercontent.com/36537004/115035168-ac726200-9ea2-11eb-93c6-fc8182ba5f3f.png)\r\n![Password_History](https://user-images.githubusercontent.com/36537004/115035175-ad0af880-9ea2-11eb-9f40-94c6327a9854.png)",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21686",
+          "title": "[IMPROVE] OEmbed details by requesting using the accept language header on the request",
+          "userLogin": "KevLehman",
+          "description": "- Send `Accept-Language` header on oembed requests",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21656",
+          "title": "[FIX] User status out of sync",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21657",
+          "title": "[FIX] Generic Attachment broken somehow",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21565",
+          "title": "[NEW][APPS] onInstall and onUninstall events",
+          "userLogin": "lucassartor",
+          "description": "Adding the `user` information when installing and uninstalling an App to the Apps-Engine.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "lucassartor",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "21360",
+          "title": "[NEW] On Hold system messages",
+          "userLogin": "murtaza98",
+          "description": "![image](https://user-images.githubusercontent.com/34130764/115442079-3a49a680-a22f-11eb-9ee8-6c705097cd57.png)",
+          "milestone": "3.14.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21593",
+          "title": "[IMPROVE] Resize custom emojis on upload instead of saving at max res",
+          "userLogin": "KevLehman",
+          "description": "- Create new MediaService (ideally, should be in charge of all media-related operations)\r\n- Resize emojis to 128x128",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21513",
+          "title": "[FIX] Rename Omnichannel Rooms, Inquiries and Subscriptions when the Contact Name changes",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21495",
+          "title": "[FIX] public teams not appearing on spotlight search results",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21016",
+          "title": "[IMPROVE] Add error messages to the creation of channels or usernames containing reserved words",
+          "userLogin": "matheusbsilva137",
+          "description": "Display error messages when the user attempts to create or edit users' or channels' names with any of the following words (**case-insensitive**):\r\n- admin;\r\n- administrator;\r\n- system;\r\n- user.\r\n![create-channel](https://user-images.githubusercontent.com/36537004/110132223-b421ef80-7da9-11eb-82bc-f0d4e1df967f.png)\r\n![register-username](https://user-images.githubusercontent.com/36537004/110132234-b71ce000-7da9-11eb-904e-580233625951.png)\r\n![change-channel](https://user-images.githubusercontent.com/36537004/110143057-96f31e00-7db5-11eb-994a-39ae9e63392e.png)\r\n![change-username](https://user-images.githubusercontent.com/36537004/110143065-98244b00-7db5-11eb-9d13-afc5dc9866de.png)",
+          "milestone": "3.14.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21509",
+          "title": "[FIX] Remove all agent subscriptions when an Omnichannel chat is closed",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21417",
+          "title": "regression: Team Channels actions",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21682",
+          "title": "[FIX] Wrong title on Omnichannel contact information panel",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21488",
+          "title": "[IMPROVE] Do not require pre-configured tags in Omnichannel chats",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21457",
+          "title": "[FIX] Margins on contextual bar information",
+          "userLogin": "dougfabris",
+          "description": "### Room\r\n**Before**\r\n![image](https://user-images.githubusercontent.com/27704687/115080812-ba8fa500-9ed9-11eb-9078-3625603bf92b.png)\r\n\r\n**After**\r\n![image](https://user-images.githubusercontent.com/27704687/115080966-e9a61680-9ed9-11eb-929f-6516c1563e99.png)\r\n\r\n### Livechat\r\n![image](https://user-images.githubusercontent.com/27704687/113640101-1859fc80-9651-11eb-88f8-09a899953988.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21511",
+          "title": "[FIX] Allows more than 25 discussions/files to be loaded in the contextualbar",
+          "userLogin": "Jeanstaquet",
+          "description": "In some places, you could not load more than 25 threads/discussions/files on the screen when searching the lists in the contextualbar.\r\nThreads & list are numbered for a better view of the solution\r\n\r\n\r\nhttps://user-images.githubusercontent.com/45966964/114222225-93335800-996e-11eb-833f-568e83129aae.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21669",
+          "title": "[FIX] Selected channels are not showing in Teams",
+          "userLogin": "sumukhah",
+          "contributors": [
+            "sumukhah"
+          ]
+        },
+        {
+          "pr": "21598",
+          "title": "Regression: Legacy Banner Position",
+          "userLogin": "dougfabris",
+          "description": "### Before:\r\n![image](https://user-images.githubusercontent.com/27704687/114961773-dc3c4e00-9e3f-11eb-9a32-e882db3fbfbc.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/27704687/114961673-a6976500-9e3f-11eb-9238-a12870d7db8f.png)",
+          "contributors": [
+            "dougfabris",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21428",
+          "title": "[FIX] Remove size prop from StatusBullet component",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21466",
+          "title": "[FIX] Audio message same pattern as image message",
+          "userLogin": "tiagoevanp",
+          "description": "![image](https://user-images.githubusercontent.com/17487063/113760168-4c363000-96ec-11eb-9138-0fbcedb3fa42.png)",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21518",
+          "title": "[FIX] Allows to display more than 25 users maximum in the users list",
+          "userLogin": "Jeanstaquet",
+          "description": "Now when you scroll to the bottom of the users list, it shows more users. Before the fix, the limit for the query for loadMore was calculated so that no additional users could be loaded.\r\n\r\nBefore\r\n\r\nhttps://user-images.githubusercontent.com/45966964/114249739-baece500-999b-11eb-9bb0-3a5bcee18ad8.mp4\r\n\r\nAfter\r\n\r\n\r\nhttps://user-images.githubusercontent.com/45966964/114249895-364e9680-999c-11eb-985c-47aedc763488.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21508",
+          "title": "[FIX] Allows more than 25 threads to be loaded, fixes #21507",
+          "userLogin": "Jeanstaquet",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21534",
+          "title": "[FIX] Use async await in TeamChannels delete channel action",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21617",
+          "title": "[IMPROVE] Alert on team deletion",
+          "userLogin": "MartinSchoeler",
+          "description": "<img width=\"731\" alt=\"Screen Shot 2021-04-16 at 7 03 30 PM\" src=\"https://user-images.githubusercontent.com/20868078/115088417-7d7ddf80-9ee6-11eb-9e58-1eb2862aa62c.png\">",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21612",
+          "title": "[FIX] Team types in admin -> rooms.",
+          "userLogin": "gabriellsh",
+          "description": "![print](https://user-images.githubusercontent.com/40830821/115068327-82339b00-9ec8-11eb-8e37-726baf9d2db0.jpg)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21650",
+          "title": "regression: Cannot enable e2e in direct room.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21535",
+          "title": "[FIX] Change team private info text",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21461",
+          "title": "[FIX] Change margin size for quote messages",
+          "userLogin": "tiagoevanp",
+          "description": "![image](https://user-images.githubusercontent.com/17487063/113723723-02d3e980-96c8-11eb-9bc7-70aab5ea8091.png)",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21416",
+          "title": "[FIX] Change the active appearance for toolbox buttons",
+          "userLogin": "tiagoevanp",
+          "description": "![image](https://user-images.githubusercontent.com/17487063/113359447-2d1b5500-931e-11eb-81fa-86f60fcee3a9.png)",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21491",
+          "title": "[FIX] Team's channels list for teams with too many channels",
+          "userLogin": "KevLehman",
+          "description": "- Fix teams.listRooms pagination for non-admin users",
+          "milestone": "3.13.3",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21552",
+          "title": "[FIX] Rename team not working properly",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21642",
+          "title": "Language update from LingoHub 🤖 on 2021-04-19Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "21644",
+          "title": "[FIX] Livechat not retrieving messages",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "3.13.3",
+          "contributors": [
+            "cuonghuunguyen"
+          ]
+        },
+        {
+          "pr": "21561",
+          "title": "[Improve] Remove useless tabbar options from Omnichannel rooms",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21616",
+          "title": "[FIX] Omnichannel current chats and agents grid aren't sorting by status properly",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21134",
+          "title": "[NEW] REST endpoint `teams.update`",
+          "userLogin": "g-thome",
+          "description": "add teams.update endpoint",
+          "contributors": [
+            "sampaiodiego",
+            "g-thome",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21613",
+          "title": "Regression: Edit user in admin breaking",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21611",
+          "title": "Fix: Missing module `eventemitter3` for micro services",
+          "userLogin": "rodrigok",
+          "description": "- Fix error when running micro services after version 3.12\r\n- Fix build of docker image version latest for micro services",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "21608",
+          "title": "[FIX]  Omnichannel room information panel breaking due to lack of data verification",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rafaelblink"
+          ]
+        },
+        {
+          "pr": "21567",
+          "title": "Regression: React + Blaze  reconciliation ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21451",
+          "title": "[FIX] Wrong user in user info",
+          "userLogin": "gabriellsh",
+          "description": "Fixed some race conditions in admin.\r\n\r\nSelf DMs used to be created with the userId duplicated. Sometimes rooms can have 2 equal uids, but it's a self DM. Fixed a getter so this isn't a problem anymore.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21525",
+          "title": "[FIX] Typos/missing elements in the French translation",
+          "userLogin": "Jeanstaquet",
+          "description": "- I have corrected some typos in the translation\r\n- I added a translation for missing words\r\n- I took the opportunity to correct a mistranslated word\r\n- Test_Desktop_Notifications was missing in the EN and FR file\r\n![image](https://user-images.githubusercontent.com/45966964/114290186-e7792d80-9a7d-11eb-8164-3b5e72e93703.png)",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21563",
+          "title": "[FIX] Archive permissions for room moderator",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21564",
+          "title": "[FIX] Checking 'start-discussion' Permission for MessageBox Actions",
+          "userLogin": "yash-rajpal",
+          "description": "Permissions 'start-discussion-other-user' and 'start-discussion' are checked everywhere before letting anyone start any discussions, this permission check was missing for message box actions, so added it.",
+          "contributors": [
+            "yash-rajpal"
+          ]
+        },
+        {
+          "pr": "21556",
+          "title": "[FIX] Correcting the case there are no result in admin users list ",
+          "userLogin": "Jeanstaquet",
+          "description": "I added a default case to the total when there are no result to the user's query",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21483",
+          "title": "[FIX] Don't allow whitespace on bold, italic and strike",
+          "userLogin": "MartinSchoeler",
+          "description": "Stops the original markdown rendered from rendering empty bold, italic and strike text. Stops `_ _`, `* *` and `~ ~`",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21464",
+          "title": "[FIX] Message Block ordering ",
+          "userLogin": "gabriellsh",
+          "description": "Reactions should come before reply button.\r\n![image](https://user-images.githubusercontent.com/40830821/113748926-6f0e1780-96df-11eb-93a5-ddcfa891413e.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "20998",
+          "title": "[IMPROVE] Add proxy for data export",
+          "userLogin": "r0zbot",
+          "description": "Add a proxy for data export downloads (instead of just linking ufs urls) so we can have more control over its response. Also added a human readable message when the user tries to download the user-data unauthenticated.",
+          "contributors": [
+            "r0zbot",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21489",
+          "title": "[FIX] Updating a message causing URLs to be parsed even within markdown code",
+          "userLogin": "KevLehman",
+          "description": "- Fix `updateMessage` to avoid parsing URLs inside markdown\r\n- Honor `parseUrls` property when updating messages",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21557",
+          "title": "[FIX] Fix the bugs opening discussions",
+          "userLogin": "Jeanstaquet",
+          "description": "I added the right row export to display the discussions list",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21527",
+          "title": "A React-based replacement for BlazeLayout",
+          "userLogin": "tassoevan",
+          "description": "- The Meteor package **`kadira:blaze-layout` was removed**;\r\n- A **global subscription** for the current application layout (**`appLayout`**) replaces `BlazeLayout` entirely;\r\n- The **`#react-root` element** is rendered on server-side instead of dynamically injected into the DOM tree;\r\n- The **\"page loading\" throbber** is now rendered on the React tree;\r\n- The **`renderRouteComponent` helper was removed**;\r\n- Some code run without any criteria on **`main` template** module was moved into **client startup modules**;\r\n- React portals used to embed Blaze templates have their own subscription (**`blazePortals`**);\r\n- Some **route components were refactored** to remove a URL path trap originally disabled by `renderRouteComponent`;\r\n- A new component to embed the DOM nodes generated by **`RoomManager`** was created.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21530",
+          "title": "Language update from LingoHub 🤖 on 2021-04-12Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21482",
+          "title": "Chore: Increase testing coverage on password policy class",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21494",
+          "title": "Chore: Meteor update to 2.1.1",
+          "userLogin": "sampaiodiego",
+          "description": "Basically Node update to version 12.22.1\r\n\r\nMeteor change log https://github.com/meteor/meteor/blob/devel/History.md#v211-2021-04-06",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21484",
+          "title": "Chore: Do not stop animations on Test Mode",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "21493",
+          "title": "Chore: Remove control character from room model operation",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21318",
+          "title": "[NEW] New set of rules for client code",
+          "userLogin": "tassoevan",
+          "description": "This _small_ PR does the following:\r\n\r\n- Now **React** is the web client's first-class citizen, being **loaded before Blaze**. Thus, `BlazeLayout` calls render templates inside of a React component (`BlazeLayoutWrapper`);\r\n- Main client startup code, including polyfills, is written in **TypeScript**;\r\n- At the moment, routes are treated as regular startup code; it's expected that `FlowRouter` will be deprecated in favor of a new routing library;\r\n- **React** was updated to major version **17**, deprecating the usage of `React` as namespace (e.g. use `memo()` instead of `React.memo()`);\r\n- The `client/` and `ee/client/` directory are linted with a **custom ESLint configuration** that includes:\r\n  - **Prettier**;\r\n  - `react-hooks/*` rules for TypeScript files;\r\n  - `react/no-multi-comp`, enforcing the rule of **one single React component per module**;\r\n  - `react/display-name`, which enforces that **React components must have a name for debugging**;\r\n  - `import/named`, avoiding broken named imports.\r\n- A bunch of components were refactored to match the new ESLint rules.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21465",
+          "title": "[FIX] Header component breaking if user is not part of teams room.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.13.1",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21469",
+          "title": "[FIX] Admin Users list pagination",
+          "userLogin": "KevLehman",
+          "description": "- Fix Administration/Users pagination",
+          "milestone": "3.13.1",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21470",
+          "title": "[FIX] App installation from marketplace not correctly displaying the permissions",
+          "userLogin": "graywolf336",
+          "description": "Fixes the marketplace app installation not correctly displaying the permissions modal.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "graywolf336",
+            "d-gubert",
+            "web-flow",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "21485",
+          "title": "[FIX] Omnichannel queue manager returning outdated room object",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.",
+          "milestone": "3.13.1",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21481",
+          "title": "[FIX]  Close chat button is not available for Omnichannel agents",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21476",
+          "title": "[FIX] Make Omnichannel's closing chat button the last action in the toolbox",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21463",
+          "title": "[IMPROVE] Add support to range downloads on file system storage",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21454",
+          "title": "[FIX] Don't ask again modals blinking",
+          "userLogin": "gabriellsh",
+          "description": "Made the check before opening the modal.",
+          "contributors": [
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21450",
+          "title": "[FIX] Error when editing Omnichannel rooms without custom fields",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21453",
+          "title": "[FIX] Wrong useMemo on Priorities EE field.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21462",
+          "title": "[FIX] Add tag input to Closing Chat modal",
+          "userLogin": "rafaelblink",
+          "milestone": "3.13.1",
+          "contributors": [
+            "rafaelblink"
+          ]
+        },
+        {
+          "pr": "20478",
+          "title": " Doc: Corrected links to documentation of rocket.chat README.md ",
+          "userLogin": "joshi008",
+          "description": "The link for documentation in the readme was previously https://rocket.chat/docs/ while that was not working and according to the website it was https://docs.rocket.chat/\r\nThe link for deployment methods in readme was corrected from https://rocket.chat/docs/installation/paas-deployments/ to https://docs.rocket.chat/installation/paas-deployments\r\nSome more links to the documentations were giving 404 error which hence updated.",
+          "contributors": [
+            "joshi008",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21446",
+          "title": "Language update from LingoHub 🤖 on 2021-04-05Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21429",
+          "title": "[FIX] Tag component is no longer rendering on Chat Room Information panel",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21441",
+          "title": "Merge master into develop & Set version to 3.14.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.14.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0-alpha.4943",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21809",
+          "title": "Regression: Update fuselage for icons fix",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21594",
+          "title": "[FIX] Too many request on loadHistory method",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21780",
+          "title": "regression: Markdown broken on safari",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21776",
+          "title": "Regression: Change CI files hashes for caching",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21270",
+          "title": "[FIX] Discussions not showing in Safari",
+          "userLogin": "Kartik18g",
+          "milestone": "3.14.0",
+          "contributors": [
+            "Kartik18g",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21741",
+          "title": "Regression: Reconnection not working properly due to changes on ECHD Proxy",
+          "userLogin": "rodrigok",
+          "description": "The ECHD Proxy implements a delay on websocket connection, the first implementation lost the reference to auto reconnect functionality.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "21731",
+          "title": "Regression: Fix scroll to bottom",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21739",
+          "title": "[FIX] Toolbox icons order",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21747",
+          "title": "Regression: Bold, italic and strike render (Original markdown)",
+          "userLogin": "gabriellsh",
+          "description": "Modified regex to avoid spaces between the marked text and the symbols. Also made it possible to apply the three markings at the same time, independing of order.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21757",
+          "title": "Regression: Fix room not returning to the previous room after directory",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21750",
+          "title": "Regression: Fix services Docker image build",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.14.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0-alpha.4943",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21782",
+          "title": "[FIX] Omnichannel Activity Monitor closing chats returned to the queue",
+          "userLogin": "murtaza98",
+          "description": "Fix `VisitorInactivityMonitor` is still monitoring rooms that returned to `Queue Chats`",
+          "milestone": "3.14.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21812",
+          "title": "Regression: Problem with Importer's logs",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21653",
+          "title": "Chore: Add tests for teams.update REST endpoint",
+          "userLogin": "g-thome",
+          "description": "add more tests to this endpoint",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "21778",
+          "title": "QoL improvements to add channel to team flow",
+          "userLogin": "KevLehman",
+          "description": "- Fixed canAccessRoom validation\r\n- Added e2e tests\r\n- Removed channels that user cannot add to the team from autocomplete suggestions\r\n- Improved error messages",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21831",
+          "title": "Chore: Cache EE node_modules on CI",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21768",
+          "title": "Regression: team sync not accepting multiple teams",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.14.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21815",
+          "title": "regression: Italic being parsed with surrounding non-whitespace text",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21816",
+          "title": "Regression: Unread Threads Header and List",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21746",
+          "title": "[FIX] Attachment files are not rendered properly on SMS channels",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.14.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21840",
+          "title": "Bump Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.14.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "21839",
+          "title": "[FIX][Enterprise] Omnichannel simultaneous chat limit is not properly checking the limit by department",
+          "userLogin": "renatobecker",
+          "description": "The Omnichannel Concurrent Chat Limit feature is not working properly when checking the limit per department, the reason is that the algorithm that fetches the number of ongoing chats per agent wasn't considering the department of the subscriptions, hence,  the number returned from DB was bigger than it should be.",
+          "milestone": "3.14.0",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21714",
+          "title": "Regression: Reactivate direct conversations only if all involved users are active",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.14.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "21841",
+          "title": "bump fuselage",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21810",
+          "title": "[FIX] Duplicated header on admin's user contextualbar",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/116125858-5ff60600-a69c-11eb-9859-41f7393b78bf.png)",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.14.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.14.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22077",
+          "title": "[Patch] [EE] Improve Forwarding Department behaviour with Waiting queue feature",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "renatobecker",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "22068",
+          "title": "regression: fix departments with empty ancestors not being returned",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.14.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22052",
+          "title": "[NEW] Paginated and Filtered selects on new/edit unit",
+          "userLogin": "MartinSchoeler",
+          "description": "REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447\r\n\r\nAdds infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
+          "milestone": "3.14.1",
+          "contributors": [
+            "rafaelblink",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21969",
+          "title": "[FIX] Notify with sound first message in queue list",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.14.1",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22048",
+          "title": "[EE] Omnichannel monitors not authorized to view departments",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22015",
+          "title": "[FIX] Close stream properly at Omnichannel room when move to queue",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.14.1",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "21893",
+          "title": "[FIX] IE11 support",
+          "userLogin": "dougfabris",
+          "milestone": "3.14.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21947",
+          "title": "[FIX] When closing chats a comment is always required",
+          "userLogin": "MartinSchoeler",
+          "description": "Fixes issue with the setting `Livechat_request_comment_when_closing_conversation` not working as intended",
+          "milestone": "3.14.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21688",
+          "title": "[IMPROVE] Omnichannel Room Information panel flow when user save or close on form page.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.1",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22043",
+          "title": "[ENTERPRISE][IMPROVE] Forwarding Department behaviour with Waiting queue feature",
+          "userLogin": "murtaza98",
+          "milestone": "3.14.1",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22101",
+          "title": "Chore: Bump message parser",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22056",
+          "title": "[IMPROVE] Add team members to channel when set as auto join",
+          "userLogin": "g-thome",
+          "description": "Create a channels.autojoin endpoint to set a channel as autojoin. Also make it so that old team members join this channel automatically",
+          "contributors": [
+            "g-thome",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21921",
+          "title": "[FIX] Directory Table's Sort Function",
+          "userLogin": "dougfabris",
+          "description": "### TableRow Margin Issue:\r\n![image](https://user-images.githubusercontent.com/27704687/116907348-d6a07f80-ac17-11eb-9411-edfe0906bfe1.png)\r\n\r\n### Table Sort Action Issue:\r\n![directory](https://user-images.githubusercontent.com/27704687/116907441-f20b8a80-ac17-11eb-8790-bfce19e89a67.gif)",
+          "milestone": "3.15.0",
+          "contributors": [
+            "dougfabris",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22091",
+          "title": "[FIX] App license error detail message removed",
+          "userLogin": "d-gubert",
+          "description": "Banner in the App Detail page that showed a message explaining why the license validation had failed was removed previously, likely during the React rewrite.\n\nWe're bringing it back.",
+          "milestone": "3.15.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "21808",
+          "title": "[FIX] Fixing Jitsi call ended Issue.",
+          "userLogin": "yash-rajpal",
+          "description": "The new rewrite in react of contextual call component broke the Jitsi \"click to join\" messages. The issue being after 10 seconds of initiating the call, the message \"click to join\" always returned \"Call Ended\" even if the call was still going on.\r\nThis was due to the fact that after closing the contextual bar, the react component gets unmounted and we are not able to keep track of ongoing call and increase jitsi room timeout. \r\n\r\nThis PR solves this issue by using the setInterval methods on component will unmount. When the call component unmounts, we keep on checking the state of jitsi call and based on conditions increase the jitsi room timeout. After the call is ended all setInterval calls are closed.\r\n\r\nThis PR also removes the implementation of HEARTBEAT events of JitsiBridge. This is because this is no longer needed and all logic is being taken care of by the unmount function.",
+          "milestone": "3.15.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22020",
+          "title": "[IMPROVE] Missing modal on deleting a role",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/118047610-613c5980-b351-11eb-96c7-6b28ae24363e.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22094",
+          "title": "Remove memory leak from userData",
+          "userLogin": "g-thome",
+          "milestone": "3.15.0",
+          "contributors": [
+            "g-thome",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22099",
+          "title": "Regression: Improve migration 225",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21732",
+          "title": "[FIX] Files list will not show deleted files.",
+          "userLogin": "Darshilp326",
+          "description": "When you delete files from the header option, deleted files will not be shown.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/115730786-38552400-a3a4-11eb-9684-7f510920db66.mp4",
+          "contributors": [
+            "Darshilp326",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22100",
+          "title": "[FIX] Open a new DM throwing  error 404",
+          "userLogin": "tassoevan",
+          "description": "Adapts the `openRoom` function to the new signature of `createDirectMessage`.",
+          "milestone": "3.15.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22092",
+          "title": "Chore: update fuselage && icons",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21539",
+          "title": "[FIX] Replace `query` param by `name`, `username` and `status` on the `teams.members` endpoint",
+          "userLogin": "matheusbsilva137",
+          "description": "- Replace `query` param by `name`, `username` and `status` on the `teams.members` endpoint.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21970",
+          "title": "[FIX] Prevent the userInfo tab to return 'User not found' each time if a certain member of a DM group has been deleted",
+          "userLogin": "Jeanstaquet",
+          "description": "Prevent the userInfo tab to return 'User not found' if a member of a DM group has been deleted.\r\nThis happens if the user that has been deleted is the one originally displayed on the userInfo tab in a DM group with >2 users.\r\n\r\nhttps://user-images.githubusercontent.com/45966964/117221081-db785580-ae08-11eb-9b33-2314a99eb037.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21912",
+          "title": "[IMPROVE] LDAP port setting input type to allow only numbers",
+          "userLogin": "Deepak-learner",
+          "contributors": [
+            "Deepak-learner",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21907",
+          "title": "[IMPROVE] CAS popup login size input type",
+          "userLogin": "Deepak-learner",
+          "contributors": [
+            "Deepak-learner",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22044",
+          "title": "[NEW] Remove exif metadata from uploaded files",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21994",
+          "title": "[FIX] Emails being sent with HTML entities getting escaped multiple times",
+          "userLogin": "bhavayAnand9",
+          "description": "fixes an issue where if password contains special HTML character like &, in the email it would end up something like `&amp;amp;`\r\n\r\n \r\npassword was going through multiple escapeHTML function calls\r\n`secure&123 => secure&amp;123 => secure&amp;amp;123\r\n`",
+          "contributors": [
+            "bhavayAnand9"
+          ]
+        },
+        {
+          "pr": "22042",
+          "title": "[IMPROVE] Inconsistent and misleading 2FA settings",
+          "userLogin": "lucassartor",
+          "description": "Currently, there are some inconsistencies and incorrect behaviors on the 2FA settings, such as:\r\n\r\n- When disabling the TOTP 2FA, all 2FA are disabled;\r\n- There are no option to disable only the TOTP 2FA;\r\n- If 2FA are disabled, the other settings aren't blocked (the e-mail 2FA setting, for example);\r\n- It lacks some labels to warn the user of some specific 2FA options.\r\n\r\nThis PR looks to fix those issues.",
+          "contributors": [
+            "lucassartor",
+            "pierre-lehnen-rc",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21626",
+          "title": "[FIX] Unable to edit a user who does not have an email via the admin or via the user's profile",
+          "userLogin": "Jeanstaquet",
+          "description": "If a user does not have an email address, they cannot change it via their profile or via the admin. I fixed this issue. I have created several profiles and there was one that didn't have an email, I don't know how I did it, I am working on it. I had not modified the db to delete his email, hence the fix\r\n\r\nin admin\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115112617-9b9b1c80-9f86-11eb-8e3a-950c3c1a1746.mp4\r\n\r\n\r\n\r\nin the user profile\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115112620-a0f86700-9f86-11eb-97b1-56eaba42216b.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21448",
+          "title": "i18n: Add missing translation string in account preference",
+          "userLogin": "sumukhah",
+          "description": "\"Test Desktop Notifications\" was missing in translation, Added to the file.\r\n<img width=\"691\" alt=\"Screenshot 2021-04-05 at 3 58 01 PM\" src=\"https://user-images.githubusercontent.com/23723464/113565830-475c7800-9629-11eb-8d93-3c177b9d0030.png\">\r\n\r\n<img width=\"701\" alt=\"Screenshot 2021-04-05 at 3 58 32 PM\" src=\"https://user-images.githubusercontent.com/23723464/113565823-44fa1e00-9629-11eb-9af1-839f42e132ca.png\">",
+          "contributors": [
+            "sumukhah",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21326",
+          "title": "[FIX] Prune messages not cleaning up unread threads",
+          "userLogin": "renancleyson-dev",
+          "description": "Fixes permanent unread messages when admin prune at least two different thread messages in the room that were unread by some user.\r\n![screencapture-localhost-3000-channel-general-thread-2021-03-26-13_17_16](https://user-images.githubusercontent.com/43624243/112678973-62b9cd00-8e4a-11eb-9af9-56f17cc66baf.png)",
+          "contributors": [
+            "renancleyson-dev"
+          ]
+        },
+        {
+          "pr": "22065",
+          "title": "Language update from LingoHub 🤖 on 2021-05-18Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21687",
+          "title": "[IMPROVE] Add groups to the directory channels list",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add groups (private channels) to the directory channels list. Only groups in which the logged user is subscribed are shown in the list.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22014",
+          "title": "[IMPROVE] Support for Google OAuth for mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "22093",
+          "title": "regression: Misspelled property in migration 225",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "22090",
+          "title": "[NEW][ENTERPRISE] Introduce Load Rotation routing algorithm for Omnichannel",
+          "userLogin": "renatobecker",
+          "description": "This PR introduces a new Auto Chat Distribution (ACD) algorithm for Omnichannel: **Load Rotation**.\r\nThe algorithm distributes chats to agents one by one, which means that when a new chat arrives, the agent with the oldest routing assignment time will be selected to serve the chat, regardless of the number of chats in progress each agent has.\r\n\r\n![Screen Shot 2021-05-20 at 5 17 40 PM](https://user-images.githubusercontent.com/59577424/119043752-c61a3400-b98f-11eb-8543-f3176879af1d.png)",
+          "milestone": "3.15.0",
+          "contributors": [
+            "renatobecker",
+            "rafaelblink",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22058",
+          "title": "[FIX] Display Modes",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21985",
+          "title": "[FIX] App crashes when downloads come from WebDAV and the server is not available",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21987",
+          "title": "[FIX] Remove referer header when requesting attachment data",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22021",
+          "title": "[FIX] Incorrect Team's Info spacing",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/118049044-9053ca80-b353-11eb-8b21-7a309ec2ba7e.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22066",
+          "title": "[FIX] Incorrect error message when opening channel in anonymous read",
+          "userLogin": "lucassartor",
+          "description": "Every time you open a public channel with threads in it when using anonymous read an `Incorrect User` error will be thrown. \r\nThis is an incorrect behaviour as everything that is public should be valid for an anonymous user.\r\n\r\nSome files are adapted to that and have already removed this kind of incorrect error, but there are some that need some fix, this PR aims to do that.",
+          "contributors": [
+            "lucassartor",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22080",
+          "title": "Chore: Update Docker container references to use registry.rocket.chat endpoint",
+          "userLogin": "aviaviavi",
+          "description": "This change updates the Docker installation instructions to use the new registry.rocket.chat endpoint to pull the rocketchat/rocket.chat container. This is part of the rollout described here: https://rocket.chat/blog/product/docker-images-change/",
+          "contributors": [
+            "aviaviavi"
+          ]
+        },
+        {
+          "pr": "22083",
+          "title": "[FIX] Permission's scope on Teams Channels",
+          "userLogin": "dougfabris",
+          "description": "Allow moderators and owners to add or create channels on Teams Channels",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22067",
+          "title": "Regression: Match `name` or `fname` when fetching room to send notification for blocked log in attemps",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22059",
+          "title": "regression: bump Rocket.Chat.Fuselage package with paginated selects",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.14.1",
+          "contributors": [
+            "tiagoevanp",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22068",
+          "title": "regression: fix departments with empty ancestors not being returned",
+          "userLogin": "MartinSchoeler",
+          "milestone": "3.14.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22052",
+          "title": "[NEW] Paginated and Filtered selects on new/edit unit",
+          "userLogin": "MartinSchoeler",
+          "description": "REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447\r\n\r\nAdds infinite scrolling selects to the units edit/create  with the ability to be filtered by text as well\r\n\r\n![Screen Shot 2021-05-17 at 9 24 19 AM](https://user-images.githubusercontent.com/20868078/118487999-abc32a80-b6f1-11eb-8d58-d031111ea0fb.png)\r\n\r\nThis Affects the monitors and departments inputs",
+          "milestone": "3.14.1",
+          "contributors": [
+            "rafaelblink",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22043",
+          "title": "[EE] Improve Forwarding Department behaviour with Waiting queue feature",
+          "userLogin": "murtaza98",
+          "milestone": "3.14.1",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21969",
+          "title": "[FIX] Notify with sound first message in queue list",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.14.1",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22048",
+          "title": "[EE] Omnichannel monitors not authorized to view departments",
+          "userLogin": "renatobecker",
+          "milestone": "3.14.1",
+          "contributors": [
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22034",
+          "title": "regression: Fix Users list in the Administration ",
+          "userLogin": "Jeanstaquet",
+          "description": "The app crashed if no custom fields for user profiles have been created by the admin. I fixed this issue. This bug was introduced by a recent commit.\r\n\r\nhttps://user-images.githubusercontent.com/45966964/118210838-5b3a9b80-b46b-11eb-9fe5-5b813848190c.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22030",
+          "title": "regression: Select Team Modal margin",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/118140652-f2a5dd00-b3de-11eb-8075-d0cac4b28650.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22016",
+          "title": "[FIX] Contact Bar not reactive ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tiagoevanp",
+            "rafaelblink",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22017",
+          "title": "[FIX] Scenarios where 2FA enforcement was not working properly",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22029",
+          "title": "[FIX] Unpin message reactivity",
+          "userLogin": "dougfabris",
+          "description": "![Peek 2021-05-13 11-18](https://user-images.githubusercontent.com/27704687/118138696-03555380-b3dd-11eb-8549-730fff0b4ea8.gif)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20923",
+          "title": "[FIX] Removed fields from User Info for which the user doesn't have permissions.",
+          "userLogin": "Darshilp326",
+          "description": "Removed LastLogin, CreatedAt and Roles for users who don't have permission.\r\n\r\nhttps://user-images.githubusercontent.com/55157259/109381351-f2c62e80-78ff-11eb-9289-e11072bf62f8.mp4",
+          "contributors": [
+            "Darshilp326",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21471",
+          "title": "[IMPROVE] Add support to queries in the `im.members` endpoint",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add support to queries within the `name`, `username` and `status` parameters.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21414",
+          "title": "[IMPROVE] Add support to queries in `channels.members` and `groups.members` endpoints",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add support to queries (within the `query` parameter) in `channels.members` and `groups.members` endpoints.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22006",
+          "title": "Regression: Add impersonate permission to app role",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22019",
+          "title": "regression: UserInfoTab Broken",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21944",
+          "title": "[FIX] Wrong icon on \"Move to team\" option in the channel info actions",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/117061659-d9bf6c80-acf8-11eb-8e29-be47e702dedd.png)\r\n\r\nDepends on https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/444",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22015",
+          "title": "[FIX] Close stream properly at Omnichannel room when move to queue",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.14.1",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "19872",
+          "title": "[FIX] Dismiss button for save your encryption password dialog Issue#13557",
+          "userLogin": "savish28",
+          "milestone": "Short-term",
+          "contributors": [
+            "savish28",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21591",
+          "title": "[FIX] Adding permission 'add-team-channel' for Team Channels Contextual bar",
+          "userLogin": "yash-rajpal",
+          "description": "Added 'add-team-channel' permission to the 2 buttons in team channels contextual bar, for adding channels to teams.",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21215",
+          "title": "[FIX] Unable to update app manually",
+          "userLogin": "thassiov",
+          "description": "It allows for update of apps using a zip file.\r\n\r\nWhen installing apps using the zip file, either by url or the file form, if the app was already installed, an error would be thrown stating the condition and forbidding the installation. Now, when sending a zip file of an app that is already installed, the user is presented with the following modal:\r\n\r\n![2021-04-30-113936_627x235_scrot](https://user-images.githubusercontent.com/733282/116711383-2cbbbb80-a9a9-11eb-8c77-22d6802cb9f5.png)\r\n\r\nIf the app also requires permissions to be reviewed, the modal that handles permission reviews will be shown after this one is accepted.",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21836",
+          "title": "[IMPROVE] Replace method to API Endpoint on Prune Messages",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21946",
+          "title": "[FIX] Missing proper permissions on Teams Channels",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22009",
+          "title": "[FIXf] Parent Room Tag Overlapping",
+          "userLogin": "dougfabris",
+          "description": "![tag](https://user-images.githubusercontent.com/27704687/117905720-069bf280-b2aa-11eb-81ed-a5b8c2152d54.gif)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "20955",
+          "title": "[FIX] Adding Custom Fields to show on user info check",
+          "userLogin": "yash-rajpal",
+          "description": "The setting custom fields to show under user info was not being used when rendering fields in user info. This pr adds those checks and only renders the fields mentioned under in admin -> accounts -> Custom Fields to Show in User Info.",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "20692",
+          "title": "[FIX] Adding retentionEnabledDefault check before showing warning message ",
+          "userLogin": "yash-rajpal",
+          "description": "Added check for retentionEnabledDefault before showing prune warning message.",
+          "milestone": "3.15.0",
+          "contributors": [
+            "yash-rajpal",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21852",
+          "title": "[FIX] Horizontal scrollbar not showing on tables",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21317",
+          "title": "Add two more test cases to the slash-command test suite",
+          "userLogin": "EduardoPicolo",
+          "description": "Added two more test cases to the slash-command test suite: \r\n- 'should return an error when the command does not exist'';\r\n- 'should return an error when no command is provided';",
+          "contributors": [
+            "EduardoPicolo",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21854",
+          "title": "[IMPROVE] Prevent gallery to close when clicking on a non-zoomable image",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21515",
+          "title": "[FIX] Workaround for Autolinker phone problem",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21893",
+          "title": "[FIX] IE11 support",
+          "userLogin": "dougfabris",
+          "milestone": "3.14.1",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21645",
+          "title": "[FIX] Tooltip pointer is blocking Text",
+          "userLogin": "sumukhah",
+          "contributors": [
+            "sumukhah"
+          ]
+        },
+        {
+          "pr": "21942",
+          "title": "[FIX] Fixed the fact that when a team was deleted, not all channels were unlinked from the team",
+          "userLogin": "Jeanstaquet",
+          "description": "Fixed the fact that when a team was deleted, not all channels were unlinked from the team. Only the first room of the rooms list was unlinked.\r\n\r\nAfter the fix, there is nos more errors:\r\n\r\n\r\nhttps://user-images.githubusercontent.com/45966964/117055182-2a47c180-ad1b-11eb-806f-07fb3fa7ec12.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21701",
+          "title": "[FIX] Unable to get channels, sort by most recent message",
+          "userLogin": "sumukhah",
+          "contributors": [
+            "sumukhah"
+          ]
+        },
+        {
+          "pr": "21647",
+          "title": "[NEW] Back button for Omnichannel",
+          "userLogin": "rafaelblink",
+          "contributors": [
+            "rafaelblink",
+            "ggazzo",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "21923",
+          "title": "Chore: Storybook organization and errors",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21998",
+          "title": "Language update from LingoHub 🤖 on 2021-05-10Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "20736",
+          "title": "[FIX] Visibility of burger menu on certain width",
+          "userLogin": "yash-rajpal",
+          "description": "Burger was not visible on a certain width, specifically between 600 to 780. if width is more than 780px sidebar is shown, if less than 600 then burger icon was shown. But it wasn't shown between 600px to 780 px.\r\nIt was because for showing burger icon we were only checking for `isMobile` which is lenght only less than 600. So i added one more check for condition if length is less than 780 px.",
+          "contributors": [
+            "yash-rajpal",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21950",
+          "title": "[FIX] Wrong color and size, thread list Metrics",
+          "userLogin": "gabriellsh",
+          "description": "![image](https://user-images.githubusercontent.com/40830821/117066452-1db57000-acff-11eb-9e75-956db65b2fb9.png)",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "21951",
+          "title": "[FIX] Redirect on remove user from channel by user profile tab",
+          "userLogin": "dougfabris",
+          "description": "![redirect](https://user-images.githubusercontent.com/27704687/117078454-498d2180-ad10-11eb-9df2-936552a2b3ce.gif)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21965",
+          "title": "[FIX] Missing margins on select team modal",
+          "userLogin": "dougfabris",
+          "description": "![select_team](https://user-images.githubusercontent.com/27704687/117164325-e5fc0600-ad9a-11eb-861e-a246064b78b4.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21967",
+          "title": "[FIX] Convert a channel to Team Modal Visual Issues",
+          "userLogin": "dougfabris",
+          "description": "![image](https://user-images.githubusercontent.com/27704687/117193225-fae79200-adb8-11eb-9f09-e8d328f3228b.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21975",
+          "title": "[FIX] Label's disabled color on Create New Modal",
+          "userLogin": "dougfabris",
+          "description": "<img width=\"572\" alt=\"Captura de Tela 2021-05-06 às 13 20 06\" src=\"https://user-images.githubusercontent.com/27704687/117332505-4f007e00-ae6e-11eb-85de-03a21e5e2a36.png\">",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21952",
+          "title": "[FIX] Error when you look at the members list of a room in which you are not a member",
+          "userLogin": "Jeanstaquet",
+          "description": "Before, when you look at the members of a room in which you are not a member the app crashed, i corrected this problem.\r\nIndeed, there was a check on each currentSubscription.<somehting> to see if it was not undefined except on currentSubscription.blocker\r\n\r\nhttps://user-images.githubusercontent.com/45966964/117087470-d3101400-ad4f-11eb-8f44-0ebca830a4d8.mp4",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21984",
+          "title": "[FIX] errors when viewing a room that you're not subscribed to",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21980",
+          "title": "[FIX] Auto-join Tags misalignment ",
+          "userLogin": "dougfabris",
+          "description": "<img width=\"419\" alt=\"Captura de Tela 2021-05-06 às 18 07 07\" src=\"https://user-images.githubusercontent.com/27704687/117366637-7586df00-ae97-11eb-80ca-f41fd7515ff0.png\">",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21717",
+          "title": "[FIX] Correcting a the wrong Archived label in edit room",
+          "userLogin": "Jeanstaquet",
+          "description": "![image](https://user-images.githubusercontent.com/45966964/116584997-3cd78a80-a918-11eb-81fa-8a7eb5318ae9.png)\r\n\r\nA label exists for Archived, and it has not been used. So I replaced it with the existing one. the label 'Archived' does not exist.",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21708",
+          "title": "[FIX] Maximum 25 channels can be loaded in the teams' channels list",
+          "userLogin": "Jeanstaquet",
+          "description": "Before a maximum 25 of channels was able to be displayed in the teams' channels list.",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21991",
+          "title": "[FIX] Header Tag Visual Issues",
+          "userLogin": "dougfabris",
+          "description": "### Normal \r\n![image](https://user-images.githubusercontent.com/27704687/117504793-69635600-af59-11eb-8b79-9d8f631490ee.png)\r\n\r\n### Hover\r\n![image](https://user-images.githubusercontent.com/27704687/117504934-97489a80-af59-11eb-87c3-0a62731e9ce3.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21992",
+          "title": "[FIX] iFrame size on embedded videos",
+          "userLogin": "dougfabris",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/27704687/117508802-8bf86d80-af5f-11eb-9eb8-29e55b73eac5.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/27704687/117508870-a4688800-af5f-11eb-9176-7f24de5fc424.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "21988",
+          "title": "String helpers",
+          "userLogin": "tassoevan",
+          "description": "It uses string helpers from a external package (`@rocket.chat/string-helpers`).",
+          "milestone": "3.15.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21962",
+          "title": "[NEW] New Message Parser",
+          "userLogin": "ggazzo",
+          "description": "The objective is to put an end to the confusion that we face having multiple parsers, and the problems that this brings, it is still experimental then users need to choose to use it.\r\n\r\nThe benefits are multiple. no more unexpected cases or grammatical collisions (in addition to more flexible nested cases like bold within link labels).\r\nBesides, we no longer render raw html, instead we use components, so the xss attacks are over (the easy ones at least). Without further discoveries and at the fronted, we only reder what is delivered thus improving our performance.\r\n  This can be used in multiple places, (message, alert, sidenav and in the entire mobile application.)",
+          "milestone": "3.15.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21949",
+          "title": "[FIX] No warning message is sent when user is removed from a team's main channel",
+          "userLogin": "matheusbsilva137",
+          "description": "- Send a warning message to a team's main channel when a user is removed from the team;\r\n - Trigger events while removing a user from a team's main channel;\r\n - Fix `usersCount` field in the team's main room when a user is removed from the team (`usersCount` is now decreased by 1).",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "21982",
+          "title": "Regression: Fix send message validation",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21968",
+          "title": "[NEW] Option to notify failed login attempts to a channel",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "21945",
+          "title": "[FIX] Handle NPS errors instead of throwing them",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "21948",
+          "title": "[FIX] Uploading files from WebDAV",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20084",
+          "title": "[NEW] Option to prevent users from using Invisible status",
+          "userLogin": "lucassartor",
+          "description": "Add an `admin` option to allow/disallow the `Invisible` status option from all users. This option is available in the `Accounts` section.\r\n\r\n![2021-01-06-11-55-22](https://user-images.githubusercontent.com/49413772/103782988-ebc52300-5016-11eb-8a29-dd540c21e11c.gif)\r\n\r\nIf the option is turned off, the `users.setStatus` endpoint is also restricted from users trying to change their status to `Invisible`, throwing the following error:\r\n```json\r\n{\r\n    \"success\": false,\r\n    \"error\": \"Invisible status is disabled [error-not-allowed]\",\r\n    \"stack\": \"Error: Invisible status is disabled [error-not-allowed]\\n    at DDPCommon.MethodInvocation.<anonymous> (app/api/server/v1/users.js:425:13)\\n    at packages/dispatch_run-as-user.js:211:14\\n    at Meteor.EnvironmentVariable.EVp.withValue (packages/meteor.js:1234:12)\\n    at Object.Meteor.runAsUser (packages/dispatch_run-as-user.js:210:33)\\n    at Object.post (app/api/server/v1/users.js:415:10)\\n    at app/api/server/api.js:394:82\\n    at Meteor.EnvironmentVariable.EVp.withValue (packages/meteor.js:1234:12)\\n    at Object._internalRouteActionHandler [as action] (app/api/server/api.js:394:39)\\n    at Route.share.Route.Route._callEndpoint (packages/nimble_restivus/lib/route.coffee:150:32)\\n    at packages/nimble_restivus/lib/route.coffee:59:33\\n    at packages/simple_json-routes.js:98:9\",\r\n    \"errorType\": \"error-not-allowed\",\r\n    \"details\": {\r\n        \"method\": \"users.setStatus\"\r\n    }\r\n}\r\n```",
+          "contributors": [
+            "lucassartor",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21961",
+          "title": "Regression: Fix new 'message-impersonate' permission blocking livechat messages",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "3.15.0",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21875",
+          "title": "[NEW][APPS] Ability for Rocket.Chat Apps to delete rooms",
+          "userLogin": "lucassartor",
+          "description": "Adds a new `delete` method on the rooms bridge in order to trigger the deletion of rooms via the Apps-Engine.",
+          "contributors": [
+            "lucassartor",
+            "web-flow",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "21947",
+          "title": "[FIX] When closing chats a comment is always required",
+          "userLogin": "MartinSchoeler",
+          "description": "Fixes issue with the setting `Livechat_request_comment_when_closing_conversation` not working as intended",
+          "milestone": "3.14.1",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21688",
+          "title": "[IMPROVE] Omnichannel Room Information panel flow when user save or close on form page.",
+          "userLogin": "rafaelblink",
+          "milestone": "3.14.1",
+          "contributors": [
+            "rafaelblink",
+            "web-flow",
+            "renatobecker",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "21917",
+          "title": "Language update from LingoHub 🤖 on 2021-05-03Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "21913",
+          "title": "[FIX] Make the FR translation consistent with the 'room' translation + typos",
+          "userLogin": "Jeanstaquet",
+          "description": "In the FR translation files, there were two terms that were used to refer to **'room'**:\r\n- 'salon' (149 times used)\r\n\r\n![image](https://user-images.githubusercontent.com/45966964/116829860-ac62a980-aba6-11eb-8212-e6f15ed0af82.png)\r\n\r\n- 'salle' (46 times used)\r\n\r\n![image](https://user-images.githubusercontent.com/45966964/116829871-be444c80-aba6-11eb-9b42-e213fee6586a.png)\r\n\r\nThe problem is that both were used in the same context and sometimes even in the same option list. \r\nHowever, since 'salon' is a better translation and was also in the majority, I used the translation 'salon' wherever 'salle' was marked.  \r\n\r\nFor example:\r\n![image](https://user-images.githubusercontent.com/45966964/116830523-1da45b80-abab-11eb-81f8-5225d51cecc6.png)",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "20391",
+          "title": "[FIX] User Impersonation through sendMessage API",
+          "userLogin": "lucassartor",
+          "description": "Create a new permission: `message-impersonate`. For new installs only bot role will have the permission and for updating installs the permission will also be given to user role, so it won't break running deployments.\r\n\r\nIf a message is being sent with `avatar` or `alias` properties, it validates if the sender has the `message-impersonate` permission, if not, an error is throwed:\r\n```json\r\n{\r\n    \"success\": false,\r\n    \"error\": \"Not enough permission\",\r\n    \"stack\": \"Error: Not enough permission\\n ...\"\r\n}\r\n```",
+          "contributors": [
+            "lucassartor",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21877",
+          "title": "Bump actions/stale from v3.0.8 to v3.0.18",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21874",
+          "title": "Upgrade to GitHub-native Dependabot",
+          "userLogin": "dependabot-preview[bot]",
+          "contributors": [
+            "dependabot-preview[bot]",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "21637",
+          "title": "[FIX] Custom OAuth not being completely deleted",
+          "userLogin": "siva2204",
+          "contributors": [
+            "siva2204"
+          ]
+        },
+        {
+          "pr": "21588",
+          "title": "Chore: Doc Client Readme",
+          "userLogin": "umakantv",
+          "contributors": [
+            "umakantv",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21866",
+          "title": "[FIX][APPS] Scheduler duplicating recurrent tasks after server restart",
+          "userLogin": "thassiov",
+          "description": "Reintroduces the old method for creating recurring tasks in the apps' scheduler bridge to ensure tasks won't be duplicated.\r\n\r\nBy introducing the [`skipImmediate` property option](https://github.com/RocketChat/Rocket.Chat/pull/21353)  at the [`scheduleRecurring`](https://github.com/RocketChat/Rocket.Chat/blob/f8171f464ed8a7487795651767695fb33a1c709e/app/apps/server/bridges/scheduler.js#L119) method, the `every` method from _agenda.js_, which ensured no duplicates were created, was removed in favor of a more manual procedure. The new procedure was not taking into account the management of duplicates and as a result multiple copies of the same task could be created and they would get executed at the same time.\r\n\r\nIn the case of server restarts, every time this event happened and the app had the `startupSetting` configured to use _recurring tasks_, they would get recreated the same number of times. In the case of a server that restarts frequently (_n_ times), there would be the same (_n_) number of tasks duplicated (and running) in the system.",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21636",
+          "title": "[FIX] Unable to edit a 'direct' room setting in the admin due to the room name",
+          "userLogin": "Jeanstaquet",
+          "description": "When you are in the admin and want to change a room 'd' setting, it doesn't work because it takes into account the name that is set automatically and therefore tries to save that name. Since the name is not valid and should not be registered, we cannot change the setting for the 'd' room. \r\nI made sure that when you want to change a setting in a 'd' room, that you don't take the name into account\r\n\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115150919-cd85af00-a06a-11eb-9667-ef3dcfc5adb6.mp4\r\n\r\n\r\nBehind the scene, the name is not saved",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21801",
+          "title": "Language update from LingoHub 🤖 on 2021-04-26Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21550",
+          "title": "Chore: Add mongo 4.2 to array of mongo versions supported",
+          "userLogin": "KevLehman",
+          "description": "- MongoDB 4.2 is now supported",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21711",
+          "title": "i18n: Correct a typo in German",
+          "userLogin": "Jeanstaquet",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21751",
+          "title": "Chore: Add missing 'Teams' label in the i18n files for every languages",
+          "userLogin": "Jeanstaquet",
+          "description": "I added the missing Teams label in the i18n folder for EN, FR & NL",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21814",
+          "title": "Chore: fix invalid type name on TS file",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "21832",
+          "title": "Chore: Correct some spelling/typos in English for descriptions/modal",
+          "userLogin": "Jeanstaquet",
+          "description": "I found typos, spelling mistakes, I corrected them",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21847",
+          "title": "Merge master into develop & Set version to 3.15.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "3.12.6": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.13.4": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": []
+    },
+    "3.14.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22135",
+          "title": "Release 3.14.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22109",
+          "title": "Regression: Add \"User left team\" message type",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add 'ult' system message type, which is sent when a user leaves a team (\"Has left the team.\").",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22126",
+          "title": "Regression: Make referrer header configurable",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22128",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "renatobecker",
+          "description": "Currently, Omnichannel Monitors just can't forward chats to a department that is part of a `Business Unit` they're not supervising. This issue is causing critical problems on customer operations since this behaviour is not by design.\r\nThe reason this issue is taking place is that, by design, Monitors just have access to departments related to the `Business Units` they're monitoring, but this restriction is designed only for Omnichannel management areas, which means in case the monitor is, also, an agent, they're supposed to be able to forward a chat to any available departments regardless the `Business Units` it's associated with.\r\nSo, initially, the restriction was implemented on the `Department Model` and, now, we're implementing the logic properly and introducing a new parameter to department endpoints, so the client will define which type of departments it needs.",
+          "contributors": [
+            "renatobecker",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22135",
+          "title": "Release 3.14.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22108",
+          "title": "regression: Migration 225 setting not being fetched correctly",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.0",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.14.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22147",
+          "title": "Release 3.14.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22142",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22159",
+          "title": "Regression: not allowed to edit roles due to a new verification",
+          "userLogin": "dougfabris",
+          "description": "introduced by https://github.com/RocketChat/Rocket.Chat/pull/21905\r\n![Peek 2021-05-26 22-21](https://user-images.githubusercontent.com/27704687/119750970-b9567e00-be70-11eb-9d52-04c8595950df.gif)",
+          "milestone": "3.15.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22137",
+          "title": "Regression: Missing room scope on teams channels permission",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22157",
+          "title": "Regression: discussions display on sidebar",
+          "userLogin": "dougfabris",
+          "description": "### group by type active\r\n![image](https://user-images.githubusercontent.com/27704687/119741996-37a92500-be5d-11eb-8b36-4067a7a229f1.png)\r\n\r\n### group by type inactive\r\n![image](https://user-images.githubusercontent.com/27704687/119742054-56a7b700-be5d-11eb-8810-e31d4216f573.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22158",
+          "title": "Regression: Visual issue on sort list item ",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/119743703-d84d1400-be60-11eb-97cc-c8256b2c8b07.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/119743638-b18edd80-be60-11eb-828d-22cc5e1b2f5b.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22129",
+          "title": "[FIX] Presence.get method",
+          "userLogin": "ggazzo",
+          "description": "closes #21873",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.12.7": {
+      "node_version": "12.18.4",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.23.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.13.5": {
+      "node_version": "12.21.0",
+      "npm_version": "6.14.8",
+      "apps_engine_version": "1.24.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.14.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22181",
+          "title": "Release 3.14.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22181",
+          "title": "Release 3.14.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22142",
+          "title": "[FIX][ENTERPRISE] Omnichannel Monitors can't forward chats to departments that they are not supervising",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22171",
+          "title": "Regression: Add i18n to license error messages",
+          "userLogin": "d-gubert",
+          "milestone": "3.15.0",
+          "contributors": [
+            "d-gubert",
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22178",
+          "title": "Bump: Fuselage 0.26.0",
+          "userLogin": "ggazzo",
+          "milestone": "3.15.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22175",
+          "title": "[FIX] Not possible accept video call if \"Hide right sidebar with click\" is enabled",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22176",
+          "title": "Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "3.15.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22172",
+          "title": "[FIX] Discussion names showing a random value",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.4",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
       ],
       "pull_requests": []
     }

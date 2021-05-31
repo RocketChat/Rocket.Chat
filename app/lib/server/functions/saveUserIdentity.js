@@ -3,6 +3,7 @@ import { setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
+import { validateName } from './validateName';
 
 /**
  *
@@ -25,6 +26,10 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	const usernameChanged = previousUsername !== username;
 
 	if (typeof rawUsername !== 'undefined' && usernameChanged) {
+		if (!validateName(username)) {
+			return false;
+		}
+
 		if (!setUsername(_id, username, user)) {
 			return false;
 		}

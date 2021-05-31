@@ -3,9 +3,9 @@ import { Promise } from 'meteor/promise';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { urlParser } from './_oplogUrlParser';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 class CustomOplogHandle {
 	dbName: string;

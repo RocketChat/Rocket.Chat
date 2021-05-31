@@ -42,17 +42,18 @@ function UserInfoWithData({
 
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
+
 		const {
 			_id,
 			name,
 			username,
 			roles = [],
-			status = null,
 			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
 			nickname,
+			canViewAllInfo,
 		} = user;
 		return {
 			_id,
@@ -63,13 +64,14 @@ function UserInfoWithData({
 				roles &&
 				getRoles(roles).map((role, index) => <UserCard.Role key={index}>{role}</UserCard.Role>),
 			bio,
+			canViewAllInfo,
 			phone: user.phone,
 			customFields: user.customFields,
 			verified: getUserEmailVerified(user),
 			email: getUserEmailAddress(user),
 			utcOffset,
 			createdAt: user.createdAt,
-			status: status && <ReactiveUserStatus uid={_id} presence={status} />,
+			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
 		};
@@ -96,7 +98,7 @@ function UserInfoWithData({
 					<UserInfo
 						{...user}
 						data={user}
-						actions={<UserActions user={user} rid={rid} />}
+						actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
 						{...props}
 						p='x24'
 					/>

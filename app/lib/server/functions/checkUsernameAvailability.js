@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 import { settings } from '../../../settings';
 import { Team } from '../../../../server/sdk';
+import { validateName } from './validateName';
 
 let usernameBlackList = [];
 
@@ -17,7 +18,7 @@ const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.len
 	&& usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(escapeRegExp(username))));
 
 export const checkUsernameAvailability = function(username) {
-	if (usernameIsBlocked(username, usernameBlackList)) {
+	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		return false;
 	}
 
