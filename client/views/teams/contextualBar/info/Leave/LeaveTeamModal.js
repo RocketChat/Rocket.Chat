@@ -5,13 +5,13 @@ import { StepOne, StepTwo } from '.';
 
 const STEPS = {
 	LIST_ROOMS: 'LIST_ROOMS',
-	CONFIRM_DELETE: 'CONFIRM_DELETE',
+	CONFIRM_LEAVE: 'CONFIRM_LEAVE',
 };
 
 export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	const [step, setStep] = useState(() => {
 		if (rooms.length === 0) {
-			return STEPS.CONFIRM_DELETE;
+			return STEPS.CONFIRM_LEAVE;
 		}
 		return STEPS.LIST_ROOMS;
 	});
@@ -19,7 +19,7 @@ export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 
 	const lastOwnerRooms = rooms.filter(({ isLastOwner }) => isLastOwner);
 
-	const onContinue = useCallback(() => setStep(STEPS.CONFIRM_DELETE), []);
+	const onContinue = useCallback(() => setStep(STEPS.CONFIRM_LEAVE), []);
 
 	const onReturn = useCallback(() => setStep(STEPS.LIST_ROOMS), []);
 
@@ -45,7 +45,7 @@ export const LeaveTeamModal = ({ onCancel, onConfirm, rooms }) => {
 		});
 	});
 
-	if (step === STEPS.CONFIRM_DELETE) {
+	if (step === STEPS.CONFIRM_LEAVE) {
 		return (
 			<StepTwo
 				onConfirm={onConfirm}
