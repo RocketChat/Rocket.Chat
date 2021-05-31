@@ -161,6 +161,7 @@ const mergeSubRoom = (subscription) => {
 			servedBy: 1,
 			ts: 1,
 			waitingResponse: 1,
+			departmentId: 1,
 		},
 	};
 
@@ -197,6 +198,7 @@ const mergeSubRoom = (subscription) => {
 		priorityId,
 		livechatData,
 		ts,
+		departmentId,
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -230,6 +232,7 @@ const mergeSubRoom = (subscription) => {
 		priorityId,
 		livechatData,
 		ts,
+		departmentId,
 	});
 };
 
