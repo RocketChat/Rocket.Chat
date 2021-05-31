@@ -79,7 +79,6 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	};
 	onHold?: boolean;
 	departmentId?: string;
-	department?: string;
 
 	tags: any;
 	closedAt: any;
