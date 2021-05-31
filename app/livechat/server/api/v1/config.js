@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
+import { API } from '../../../../../server/api/v1';
 
 API.v1.addRoute('livechat/config', {
 	get() {

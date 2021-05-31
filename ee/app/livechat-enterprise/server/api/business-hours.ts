@@ -1,6 +1,6 @@
 import { Promise } from 'meteor/promise';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api/v1';
 import { findBusinessHours } from '../business-hour/lib/business-hour';
 
 // @ts-ignore

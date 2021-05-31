@@ -1,4 +1,4 @@
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api/v1';
 import { findPriorities, findPriorityById } from './lib/priorities';
 
 API.v1.addRoute('livechat/priorities.list', { authRequired: true }, {

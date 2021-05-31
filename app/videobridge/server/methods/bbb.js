@@ -6,7 +6,7 @@ import BigBlueButtonApi from '../../../bigbluebutton/server';
 import { settings } from '../../../settings';
 import { Rooms, Users } from '../../../models';
 import { saveStreamingOptions } from '../../../channel-settings';
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api/v1';
 
 const parser = new xml2js.Parser({
 	explicitRoot: true,

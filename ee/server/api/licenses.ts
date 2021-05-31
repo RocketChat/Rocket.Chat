@@ -2,7 +2,7 @@ import { check } from 'meteor/check';
 
 import { ILicense, getLicenses, validateFormat, flatModules } from '../../app/license/server/license';
 import { Settings } from '../../../server/models';
-import { API } from '../../../app/api/server/api';
+import { API } from '../../../server/api/v1';
 import { hasPermission } from '../../../app/authorization/server';
 
 function licenseTransform(license: ILicense): ILicense {
