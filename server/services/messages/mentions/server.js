@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import MentionsServer from './Mentions';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-import { Users, Subscriptions, Rooms } from '../../models';
-import { api } from '../../../server/sdk/api';
+import { settings } from '../../../settings';
+import { callbacks } from '../../../../app/callbacks';
+import { Users, Subscriptions, Rooms } from '../../../models';
+import { api } from '../../../sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
