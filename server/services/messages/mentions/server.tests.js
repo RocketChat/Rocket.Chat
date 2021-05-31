@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import assert from 'assert';
 
-import MentionsServer from '../server/Mentions';
+import MentionsServer from './Mentions';
 
 
 let mention;

@@ -4,7 +4,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { MentionsParser } from '../../../mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../common/MentionsParser';
 import { emojiParser } from '../../../emoji/client/emojiParser.js';
 
 export const normalizeThreadTitle = ({ ...message }) => {

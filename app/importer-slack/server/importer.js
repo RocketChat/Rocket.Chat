@@ -8,7 +8,7 @@ import {
 } from '../../importer/server';
 import { Messages } from '../../models';
 import { settings } from '../../../server/settings';
-import { MentionsParser } from '../../mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../server/services/messages/mentions/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
 export class SlackImporter extends Base {

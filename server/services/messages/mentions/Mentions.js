@@ -2,7 +2,7 @@
 * Mentions is a named function that will process Mentions
 * @param {Object} message - The message object
 */
-import { MentionsParser } from '../lib/MentionsParser';
+import { MentionsParser } from '../../../../common/MentionsParser';
 
 export default class MentionsServer extends MentionsParser {
 	constructor(args) {
