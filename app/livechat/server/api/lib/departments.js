@@ -11,6 +11,7 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	}
 
 	let query = {
+		type: { $exists: false },
 		...enabled && { enabled: Boolean(enabled) },
 		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};
