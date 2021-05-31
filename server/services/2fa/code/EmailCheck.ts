@@ -3,9 +3,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
-import { settings } from '../../../../server/settings';
-import * as Mailer from '../../../mailer';
-import { Users } from '../../../../server/models';
+import { settings } from '../../../settings';
+import * as Mailer from '../../../../app/mailer';
+import { Users } from '../../../models';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 

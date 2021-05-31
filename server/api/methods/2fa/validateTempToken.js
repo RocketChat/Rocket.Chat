@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models';
-import { TOTP } from '../lib/totp';
+import { Users } from '../../../../app/models';
+import { TOTP } from '../../../services/2fa/lib/totp';
 
 Meteor.methods({
 	'2fa:validateTempToken'(userToken) {

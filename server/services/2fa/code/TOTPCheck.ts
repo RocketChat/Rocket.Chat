@@ -1,6 +1,6 @@
 import { TOTP } from '../lib/totp';
 import { IUser } from '../../../../definition/IUser';
-import { settings } from '../../../../server/settings';
+import { settings } from '../../../settings';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {

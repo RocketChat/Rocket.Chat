@@ -3,13 +3,13 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../../server/settings';
+import { settings } from '../../../settings';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { IUser } from '../../../../definition/IUser';
 import { ICodeCheck } from './ICodeCheck';
-import { Users } from '../../../../server/models';
+import { Users } from '../../../models';
 import { IMethodConnection } from '../../../../definition/IMethodThisType';
 
 export interface ITwoFactorOptions {

@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
 import { Users } from '../models';
 import { settings as rcSettings } from '../settings';
-import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../services/2fa/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';

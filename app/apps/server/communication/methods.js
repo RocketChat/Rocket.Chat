@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../server/settings';
 import { hasPermission } from '../../../authorization/server';
-import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { twoFactorRequired } from '../../../../server/services/2fa/twoFactorRequired';
 
 const waitToLoad = function(orch) {
 	return new Promise((resolve) => {
