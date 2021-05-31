@@ -1,4 +1,4 @@
-import { API } from '../../../../../../app/api/server';
+import { API } from '../../../../../../server/api/v1';
 import { runEndpointsAsUser } from '../../../../livechat-enterprise/server/lib/runEndpointsAsUser';
 
 const endpointsToRunAsUser = {

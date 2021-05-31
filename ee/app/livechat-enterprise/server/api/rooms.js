@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../../server/api/v1';
 import { hasPermission } from '../../../../../app/authorization';
 import { Subscriptions, LivechatRooms } from '../../../../../server/models';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';

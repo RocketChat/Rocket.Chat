@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../../server/models';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
 

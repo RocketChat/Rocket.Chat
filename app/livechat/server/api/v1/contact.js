@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { Contacts } from '../../lib/Contacts';
 import {
 	LivechatVisitors,

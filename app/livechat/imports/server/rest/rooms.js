@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../../authorization/server';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { findRooms } from '../../../server/api/lib/rooms';
 
 const validateDateParams = (property, date) => {

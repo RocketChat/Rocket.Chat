@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api/v1';
 import { Uploads } from '../../../../server/models';
 import { FileUpload } from '../../../file-upload/server';
 import { isFederationEnabled } from '../lib/isFederationEnabled';

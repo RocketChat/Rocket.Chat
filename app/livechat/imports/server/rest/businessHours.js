@@ -1,4 +1,4 @@
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { findLivechatBusinessHour } from '../../../server/api/lib/businessHours';
 
 API.v1.addRoute('livechat/business-hour', { authRequired: true }, {
