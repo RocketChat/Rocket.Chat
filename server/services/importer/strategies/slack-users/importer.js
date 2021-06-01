@@ -8,9 +8,9 @@ import {
 	ProgressStep,
 	Selection,
 	SelectionUser,
-} from '../../importer/server';
-import { RocketChatFile } from '../../file';
-import { Users } from '../../models';
+} from '../..';
+import { RocketChatFile } from '../../../../../app/file';
+import { Users } from '../../../../models';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {

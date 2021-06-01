@@ -5,11 +5,11 @@ import {
 	ProgressStep,
 	ImportData,
 	ImporterWebsocket,
-} from '../../importer/server';
-import { Messages } from '../../models';
-import { settings } from '../../../server/settings';
-import { MentionsParser } from '../../../server/services/messages/mentions/server';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+} from '..';
+import { Messages } from '../../../../../app/models';
+import { settings } from '../../../../settings';
+import { MentionsParser } from '../../../messages/mentions/server';
+import { getUserAvatarURL } from '../../../../../app/utils/lib/getUserAvatarURL';
 
 export class SlackImporter extends Base {
 	parseData(data) {

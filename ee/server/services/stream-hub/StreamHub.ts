@@ -1,21 +1,21 @@
 import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
-import { MessagesRaw } from '../../../../app/models/server/raw/Messages';
-import { UsersRaw } from '../../../../app/models/server/raw/Users';
-import { SubscriptionsRaw } from '../../../../app/models/server/raw/Subscriptions';
-import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
-import { RolesRaw } from '../../../../app/models/server/raw/Roles';
-import { LivechatInquiryRaw } from '../../../../app/models/server/raw/LivechatInquiry';
-import { UsersSessionsRaw } from '../../../../app/models/server/raw/UsersSessions';
-import { RoomsRaw } from '../../../../app/models/server/raw/Rooms';
-import { LoginServiceConfigurationRaw } from '../../../../app/models/server/raw/LoginServiceConfiguration';
-import { InstanceStatusRaw } from '../../../../app/models/server/raw/InstanceStatus';
-import { IntegrationHistoryRaw } from '../../../../app/models/server/raw/IntegrationHistory';
-import { LivechatDepartmentAgentsRaw } from '../../../../app/models/server/raw/LivechatDepartmentAgents';
-import { IntegrationsRaw } from '../../../../app/models/server/raw/Integrations';
-import { PermissionsRaw } from '../../../../app/models/server/raw/Permissions';
-import { EmailInboxRaw } from '../../../../app/models/server/raw/EmailInbox';
+import { MessagesRaw } from '../../../../server/models/raw/Messages';
+import { UsersRaw } from '../../../../server/models/raw/Users';
+import { SubscriptionsRaw } from '../../../../server/models/raw/Subscriptions';
+import { SettingsRaw } from '../../../../server/models/raw/Settings';
+import { RolesRaw } from '../../../../server/models/raw/Roles';
+import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquiry';
+import { UsersSessionsRaw } from '../../../../server/models/raw/UsersSessions';
+import { RoomsRaw } from '../../../../server/models/raw/Rooms';
+import { LoginServiceConfigurationRaw } from '../../../../server/models/raw/LoginServiceConfiguration';
+import { InstanceStatusRaw } from '../../../../server/models/raw/InstanceStatus';
+import { IntegrationHistoryRaw } from '../../../../server/models/raw/IntegrationHistory';
+import { LivechatDepartmentAgentsRaw } from '../../../../server/models/raw/LivechatDepartmentAgents';
+import { IntegrationsRaw } from '../../../../server/models/raw/Integrations';
+import { PermissionsRaw } from '../../../../server/models/raw/Permissions';
+import { EmailInboxRaw } from '../../../../server/models/raw/EmailInbox';
 import { api } from '../../../../server/sdk/api';
 
 export class StreamHub extends ServiceClass implements IServiceClass {
