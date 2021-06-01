@@ -8,9 +8,9 @@ import {
 	Base,
 	ProgressStep,
 	Selection,
-} from '../../importer/server';
-import { Messages } from '../../models';
-import { FileUpload } from '../../file-upload';
+} from '../..';
+import { Messages } from '../../../../models';
+import { FileUpload } from '../../../../../app/file-upload';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {

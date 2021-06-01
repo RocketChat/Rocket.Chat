@@ -4,8 +4,8 @@ import {
 	Base,
 	ProgressStep,
 	Selection,
-} from '../../importer/server';
-import { Users } from '../../models';
+} from '../..';
+import { Users } from '../../../../models';
 
 export class PendingAvatarImporter extends Base {
 	prepareFileCount() {

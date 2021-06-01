@@ -4,8 +4,8 @@ import {
 	Base,
 	ProgressStep,
 	ImporterWebsocket,
-} from '../../importer/server';
-import { Users } from '../../../server/models';
+} from '../..';
+import { Users } from '../../../../models';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
