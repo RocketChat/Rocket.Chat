@@ -24,19 +24,20 @@ const CannedResponsesRoute = (): FC => {
 
 	const { values, handlers } = useForm({
 		sharing: '',
-		createdBy: '',
-		tags: '',
+		createdBy: {},
+		tags: [],
 		text: '',
 	});
 
 	const { sharing, createdBy, tags, text } = values;
 	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState(['shortcut', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
+	const debouncedText = useDebouncedValue(text, 500);
 	// () => ({
 	// 	fields: JSON.stringify({ name: 1 }),
 	// 	text,
@@ -50,15 +51,15 @@ const CannedResponsesRoute = (): FC => {
 	// [text, itemsPerPage, current, column, direction],
 	const query = useMemo(
 		() => ({
-			text: debouncedParams.text,
+			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(tags && { tags }),
+			...(tags && tags.length > 0 && { tags }),
 			...(sharing && { scope: sharing }),
-			...(createdBy && { createdBy }),
+			...(createdBy?.label && { createdBy: createdBy.label }),
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[createdBy, debouncedParams, debouncedSort, sharing, tags],
+		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing, tags],
 	);
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
@@ -167,7 +168,6 @@ const CannedResponsesRoute = (): FC => {
 						</Box>
 					</Box>
 				</Table.Cell>
-				{/* <Table.Cell withTruncatedText>{createdBy}</Table.Cell> */}
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
 				<RemoveCannedResponseButton _id={_id} />
@@ -208,7 +208,7 @@ const CannedResponsesRoute = (): FC => {
 				sharingValue={sharing}
 				createdByValue={createdBy}
 				tagsValue={tags}
-				shortcutValue={debouncedParams.text}
+				shortcutValue={text}
 				setSharing={handleSharing}
 				setCreatedBy={handleCreatedBy}
 				setTags={handleTags}

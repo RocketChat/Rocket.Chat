@@ -1,8 +1,18 @@
-import { Box, Icon, TextInput, Label, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import React, { FC, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState } from 'react';
+import {
+	Box,
+	Icon,
+	TextInput,
+	Label,
+	PaginatedSelectFiltered,
+	PaginatedMultiSelectFiltered,
+} from '@rocket.chat/fuselage';
+import React, { FC, useMemo, FormEvent, memo, useCallback, useEffect, useState } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useAgentsList } from '../../hooks/useAgentsList';
+import { useTagsList } from '../../hooks/useTagsList';
 
 type CannedResponsesFilterProps = {
 	sharingValue: string;
@@ -27,41 +37,35 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	...props
 }) => {
 	const t = useTranslation();
-	const [sharingList, setSharingList] = useState([{ label: 'all', value: '' }]);
+	const sharingList = [
+		{ label: 'all', value: '' },
+		{ label: 'private', value: 'private' },
+		{ label: 'public', value: 'public' },
+		{ label: 'department', value: 'department' },
+	];
 	const [createdByList, setCreatedByList] = useState([{ label: 'all', value: '' }]);
-	const [tagsList, setTagsList] = useState([{ label: 'all', value: '' }]);
+	const [tagsFilter, setTagsFilter] = useState('');
+	const [agentsFilter, setAgentsFilter] = useState('');
 
-	const { value: data, phase: state, error } = useEndpointData('canned-responses');
+	const { itemsList: tagsList, loadMoreItems: loadMoreTags } = useTagsList(
+		useMemo(() => ({ filter: tagsFilter }), [tagsFilter]),
+	);
 
-	useEffect(() => {
-		data?.cannedResponses.forEach((response) => {
-			// debugger;
-			response.scope &&
-				setSharingList([...sharingList, { label: response.scope, value: response.scope }]);
-			response.tags &&
-				setTagsList([...tagsList, { label: response.tags[0], value: response.tags[0] }]);
-			response.createdBy &&
-				setCreatedByList([
-					...createdByList,
-					{ label: response.createdBy.username, value: response.createdBy.username },
-				]);
-		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data?.cannedResponses]);
+	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
 
-	const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-		setText(event.currentTarget.value);
-	}, []);
+	const { itemsList: agentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
+		useMemo(() => ({ filter: tagsFilter }), [tagsFilter]),
+	);
 
-	// useEffect(() => {
-	// 	setFilter({ text });
-	// }, [setFilter, text]);
+	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(
+		agentsList,
+	);
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 	}, []);
 
-	console.log(createdByList);
+	console.log(agentsItems);
 
 	return (
 		<Box
@@ -98,19 +102,33 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 				<PaginatedSelectFiltered
 					// placeholder={placeholder ?? t('Search')}
 					// ref={inputRef}
+					filter={agentsFilter}
+					setFilter={setAgentsFilter}
 					onChange={setCreatedBy}
-					options={createdByList}
+					options={agentsItems}
 					value={createdByValue}
+					endReached={
+						agentsPhase === AsyncStatePhase.LOADING
+							? () => {}
+							: (start) => loadMoreAgents(start, Math.min(50, agentsTotal))
+					}
 				/>
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Label mb='x4'>{t('Tags')}</Label>
-				<PaginatedSelectFiltered
+				<PaginatedMultiSelectFiltered
 					// placeholder={placeholder ?? t('Search')}
 					// ref={inputRef}
+					filter={tagsFilter}
+					setFilter={setTagsFilter}
 					onChange={setTags}
-					options={tagsList}
+					options={tagsItems}
 					value={tagsValue}
+					endReached={
+						tagsPhase === AsyncStatePhase.LOADING
+							? () => {}
+							: (start) => loadMoreTags(start, Math.min(50, tagsTotal))
+					}
 				/>
 			</Box>
 		</Box>
