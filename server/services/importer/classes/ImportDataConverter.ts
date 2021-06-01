@@ -7,9 +7,9 @@ import { IImportUser } from '../definitions/IImportUser';
 import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
 import { IImportChannel } from '../definitions/IImportChannel';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
-import { Users, Rooms, Subscriptions } from '../../../../server/models';
-import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
-import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
+import { Users, Rooms, Subscriptions } from '../../../models';
+import { generateUsernameSuggestion, insertMessage } from '../../../../app/lib/server';
+import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 
 // @ts-ignore //@ToDo: Add the Logger class definitions.

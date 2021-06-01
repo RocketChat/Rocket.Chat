@@ -7,7 +7,7 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ProgressStep,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+} from '../../../../common/importer/ImporterProgressStep';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';

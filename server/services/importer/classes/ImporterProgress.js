@@ -1,4 +1,4 @@
-import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../common/importer/ImporterProgressStep';
 
 export class Progress {
 	/**

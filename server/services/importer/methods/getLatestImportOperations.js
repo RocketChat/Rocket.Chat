@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Imports } from '../../../models';
-import { hasRole } from '../../../authorization';
+import { hasRole } from '../../../../app/authorization';
 
 Meteor.methods({
 	getLatestImportOperations() {
