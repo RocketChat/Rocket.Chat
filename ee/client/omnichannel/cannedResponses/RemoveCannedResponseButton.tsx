@@ -11,10 +11,9 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 export type RemoveCannedResponseButtonProps = {
 	_id: string;
-	reload: () => void;
 };
 
-const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload }) => {
+const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id }) => {
 	const unitsRoute = useRoute('omnichannel-units');
 	const removeUnit = useMethod('livechat:removeUnit');
 	const setModal = useSetModal();

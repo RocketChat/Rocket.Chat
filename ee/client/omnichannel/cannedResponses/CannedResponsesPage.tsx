@@ -1,10 +1,9 @@
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 
-import FilterByText from '../../../../client/components/FilterByText';
 import GenericTable from '../../../../client/components/GenericTable';
-import VerticalBar from '../../../../client/components/VerticalBar';
+import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { EndpointResponse } from '../../../../definition/IOmnichannelCannedResponse';
@@ -16,7 +15,8 @@ export type CannedResponsesPageProps = {
 	params: { text: string; current: number; itemsPerPage: number };
 	title: string;
 	renderRow: FC;
-	children: ReactNode;
+	children: ReactElement;
+	renderFilter: ReactElement;
 };
 
 const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
@@ -27,31 +27,30 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	title,
 	renderRow,
 	children,
+	renderFilter,
 }) => {
 	const t = useTranslation();
 
-	const cannedResponsesRoute = useRoute('');
+	const Route = useRoute('');
 
 	const handleClick = useMutableCallback(() =>
-		cannedResponsesRoute.push({
+		Route.push({
 			context: 'new',
 		}),
 	);
 
 	return (
-		<VerticalBar>
-			<VerticalBar.Header title={title}>
+		<Page>
+			<Page.Header title={title}>
 				<ButtonGroup>
 					<Button onClick={handleClick} title={t('New_Canned_Response')}>
 						<Icon name='plus' /> {t('New')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Header>
-			<VerticalBar.Content>
+			</Page.Header>
+			<Page.Content>
 				<GenericTable
-					renderFilter={({ onChange, ...props }): ReactNode => (
-						<FilterByText onChange={onChange} {...props} />
-					)}
+					renderFilter={renderFilter}
 					header={header}
 					renderRow={renderRow}
 					results={data && data.cannedResponses}
@@ -59,9 +58,9 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 					setParams={setParams}
 					params={params}
 				/>
-			</VerticalBar.Content>
+			</Page.Content>
 			{children}
-		</VerticalBar>
+		</Page>
 	);
 };
 

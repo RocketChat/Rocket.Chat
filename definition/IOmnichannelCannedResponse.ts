@@ -7,7 +7,7 @@ export type IOmnichannelCannedResponse = {
 	scope: string;
 	tags: Array<string>;
 	_updatedAt: string;
-	_createdBy: {
+	createdBy: {
 		_id: string;
 		username: string;
 	};
