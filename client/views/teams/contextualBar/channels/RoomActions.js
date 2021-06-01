@@ -30,8 +30,8 @@ const RoomActions = ({ room, reload }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canDeleteTeamChannel = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
-	const canEditTeamChannel = usePermission('edit-team-channel');
-	const canRemoveTeamChannel = usePermission('remove-team-channel');
+	const canEditTeamChannel = usePermission('edit-team-channel', rid);
+	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
 
 	const updateRoomEndpoint = useEndpointActionExperimental('POST', 'teams.updateRoom');
 	const removeRoomEndpoint = useEndpointActionExperimental(

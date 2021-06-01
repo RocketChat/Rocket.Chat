@@ -70,7 +70,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 		...shortcut && { shortcut },
 		...text && { $or: [{ name: filter }] },
 		...scope && { scope },
-		...createdBy && { $exists: createdBy },
+		...createdBy && { 'createdBy.username': createdBy },
 		...tags.length && {
 			tags: {
 				$in: tags,
@@ -87,4 +87,12 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 		cannedResponses,
 		total,
 	};
+}
+
+export async function findOneCannedResponse({ userId, _id }) {
+	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
+		throw new Error('error-not-authorized');
+	}
+	const cannedResponse = CannedResponse.findOneById(_id);
+	return cannedResponse;
 }
