@@ -31,6 +31,7 @@ const RoomList = () => {
 	const t = useTranslation();
 
 	const roomsList = useRoomList();
+	console.log(roomsList);
 	const itemData = useMemo(
 		() => ({
 			extended,
@@ -41,6 +42,7 @@ const RoomList = () => {
 			sidebarViewMode,
 			isAnonymous,
 		}),
+		// [extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
 		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
 	);
 

@@ -22,6 +22,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	getRoomName(roomType, roomData) {
+		console.log(roomType);
 		return this.roomTypes[roomType] && this.roomTypes[roomType].roomName && this.roomTypes[roomType].roomName(roomData);
 	}
 
@@ -169,6 +170,7 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 	}
 
 	openRouteLink(roomType, subData, queryParams) {
+		console.log(roomType);
 		if (!this.roomTypes[roomType]) {
 			return false;
 		}

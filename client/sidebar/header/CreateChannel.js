@@ -22,6 +22,7 @@ const CreateChannel = ({
 	hasUnsavedChanges,
 	onChangeUsers,
 	onChangeType,
+	onChangeEphemeral,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
@@ -117,6 +118,19 @@ const CreateChannel = ({
 							checked={values.type}
 							disabled={!!canOnlyCreateOneType}
 							onChange={onChangeType}
+						/>
+					</Box>
+				</Field>
+				<Field mbe='x24'>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{'Ephemeral'}</Field.Label>
+							<Field.Description>{'Channel will self destruct'}</Field.Description>
+						</Box>
+						<ToggleSwitch
+							checked={values.ephemeral}
+							// disabled={!!canOnlyCreateOneType}
+							onChange={onChangeEphemeral}
 						/>
 					</Box>
 				</Field>

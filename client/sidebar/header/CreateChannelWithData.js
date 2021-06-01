@@ -32,11 +32,19 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		readOnly: false,
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
+		ephemeral: false,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted } = values;
-	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
+	const { users, name, description, type, readOnly, broadcast, encrypted, ephemeral } = values;
+	const {
+		handleUsers,
+		handleEncrypted,
+		handleType,
+		handleBroadcast,
+		handleReadOnly,
+		handleEphemeral,
+	} = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -58,7 +66,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		handleReadOnly(value);
 		return handleBroadcast(value);
 	});
-
+	const onChangeEphemeral = useMutableCallback((value) => handleEphemeral(value));
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid) => {
 			goToRoomById(rid);
@@ -73,12 +81,14 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 				broadcast,
 				encrypted,
 				...(teamId && { teamId }),
+				ephemeral,
 			},
 		};
 		let roomData;
 
-		if (type) {
+		if (type || ephemeral) {
 			roomData = await createPrivateChannel(params);
+			console.log({ roomData });
 			!teamId && goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);
@@ -100,6 +110,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		type,
 		users,
 		reload,
+		ephemeral,
 	]);
 
 	return (
@@ -109,6 +120,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 			hasUnsavedChanges={hasUnsavedChanges}
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
+			onChangeEphemeral={onChangeEphemeral}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
