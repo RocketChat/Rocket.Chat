@@ -1,4 +1,4 @@
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 
 class ImporterWebsocketDef {
 	constructor() {

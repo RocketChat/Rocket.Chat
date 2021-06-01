@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Table } from '@rocket.chat/fuselage';
 import { useMediaQuery, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect, useMemo } from 'react';
 
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../common/importer/ImporterProgressStep';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';

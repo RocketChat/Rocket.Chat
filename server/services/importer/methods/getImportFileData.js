@@ -4,9 +4,9 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../../app/authorization';
 import { Imports } from '../../../models';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../common/importer/ImporterProgressStep';
 import { Importers } from '..';
 
 Meteor.methods({

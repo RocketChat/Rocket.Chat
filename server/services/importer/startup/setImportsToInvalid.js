@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Imports } from '../../../models';
 import { RawImports } from '../models/RawImports';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../common/importer/ImporterProgressStep';
 
 function runDrop(fn) {
 	try {
