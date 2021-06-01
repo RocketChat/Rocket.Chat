@@ -8,14 +8,14 @@ import getFileType from 'file-type';
 
 import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { ImporterInfo } from '../../lib/ImporterInfo';
+import { ProgressStep } from '../../../../common/importer/ImporterProgressStep';
+import { ImporterInfo } from '../../../../common/importer/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Settings, Imports } from '../../../models';
-import { Logger } from '../../../logger';
+import { Settings, Imports } from '../../../../app/models';
+import { Logger } from '../../../../app/logger';
 import { ImportDataConverter } from './ImportDataConverter';
 import { ImportData } from '../models/ImportData';
-import { t } from '../../../utils/server';
+import { t } from '../../../../app/utils/server';
 import {
 	Selection,
 	SelectionChannel,
