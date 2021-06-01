@@ -68,7 +68,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 
 	const cursor = CannedResponse.find({
 		...shortcut && { shortcut },
-		...text && { $or: [{ name: filter }] },
+		...text && { $or: [{ shortcut: filter }, { text: filter }] },
 		...scope && { scope },
 		...createdBy && { 'createdBy.username': createdBy },
 		...tags.length && {

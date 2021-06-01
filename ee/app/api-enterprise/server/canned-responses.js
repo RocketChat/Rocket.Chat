@@ -29,10 +29,8 @@ API.v1.addRoute('canned-responses', { authRequired: true }, {
 			departmentId,
 			userId: this.userId,
 			createdBy,
-			sort,
-			count,
 			options: {
-				sort: sort || { shortcut: -1 },
+				sort,
 				offset,
 				count,
 				fields,
