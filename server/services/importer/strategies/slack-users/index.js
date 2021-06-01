@@ -1,5 +1,5 @@
 import { SlackUsersImporter } from './importer';
-import { Importers } from '../../importer/server';
-import { SlackUsersImporterInfo } from '../lib/info';
+import { Importers } from '../..';
+import { SlackUsersImporterInfo } from './info';
 
 Importers.add(new SlackUsersImporterInfo(), SlackUsersImporter);

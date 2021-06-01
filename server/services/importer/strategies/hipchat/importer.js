@@ -8,7 +8,7 @@ import TurndownService from 'turndown';
 import {
 	Base,
 	ProgressStep,
-} from '../../importer/server';
+} from '../..';
 
 const turndownService = new TurndownService({
 	strongDelimiter: '*',
