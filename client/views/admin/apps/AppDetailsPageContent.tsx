@@ -1,9 +1,10 @@
-import { Box, Chip, Divider, Margins } from '@rocket.chat/fuselage';
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { Box, Callout, Chip, Divider, Margins } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import ExternalLink from '../../../components/ExternalLink';
 import AppAvatar from '../../../components/avatar/AppAvatar';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
 import AppMenu from './AppMenu';
 import AppStatus from './AppStatus';
 import PriceDisplay from './PriceDisplay';
@@ -77,6 +78,23 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 				</Box>
 			</Box>
 			<Divider />
+
+			{data.licenseValidation && (
+				<>
+					{Object.entries(data.licenseValidation.warnings).map(([key]) => (
+						<Callout key={key} type='warning'>
+							{t(`Apps_License_Message_${key}` as TranslationKey)}
+						</Callout>
+					))}
+
+					{Object.entries(data.licenseValidation.errors).map(([key]) => (
+						<Callout key={key} type='danger'>
+							{t(`Apps_License_Message_${key}` as TranslationKey)}
+						</Callout>
+					))}
+				</>
+			)}
+
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x12'>
 					<Box fontScale='s2'>{t('Categories')}</Box>

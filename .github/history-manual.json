@@ -88,5 +88,21 @@
 			"KevLehman",
 			"renatobecker"
 		]
+	}],
+	"3.14.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"KevLehman",
+			"g-thome"
+		]
+	}],
+	"3.14.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
 	}]
 }
