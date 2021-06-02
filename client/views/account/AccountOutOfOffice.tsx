@@ -14,15 +14,22 @@ import {
 	ButtonGroup,
 } from '@rocket.chat/fuselage';
 
-import { useTranslation } from '../../contexts/TranslationContext';
+import { ISubscription } from '/definition/ISubscription';
 import Page from '/client/components/Page/Page';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useForm } from '/client/hooks/useForm';
+import { useEndpointData } from '/client/hooks/useEndpointData';
+
+interface IEndpointSubscriptionsGet {
+	value?: { update: Array<ISubscription> };
+}
 
 const defaultFormValues = {
 	outOfOfficeEnabled: false,
 	customMessage: '',
 	startDate: '',
 	endDate: '',
+    roomIds:[]
 };
 
 function OutOfOfficePage() {
@@ -30,19 +37,28 @@ function OutOfOfficePage() {
 
 	const { values, handlers, commit, hasUnsavedChanges } = useForm(defaultFormValues);
 
-	const { outOfOfficeEnabled, customMessage, startDate, endDate } = values;
+	const { outOfOfficeEnabled, customMessage, startDate, endDate, roomIds } = values;
 
 	const {
 		handleOutOfOfficeEnabled,
 		handleCustomMessage,
 		handleStartDate,
 		handleEndDate,
+        handleRoomIds
 	} = handlers;
 
 	const handleSaveChanges = useCallback(() => {
 		commit();
-		console.log(values);
+		console.log(values, 'after saving the changes');
 	}, [commit, values]);
+
+    const {
+		value: { update: subscribedRooms = [] } = { update: [] },
+	}: IEndpointSubscriptionsGet = useEndpointData('subscriptions.get' as any);
+
+	const roomOptions: Array<[string, string]> = useMemo(() => {
+		return subscribedRooms.filter((s) => s.t !== 'd').map((s) => [s.rid, s.name]);
+	}, [subscribedRooms]);
 
 	return (
 		<Page>
@@ -104,7 +120,13 @@ function OutOfOfficePage() {
 								<Field>
 									<Field.Label>{t('End Date')}</Field.Label>
 									<Field.Row>
-										<InputBox type='date' flexGrow={1} h='x20' value={endDate as string} onChange={handleEndDate}/>
+										<InputBox
+											type='date'
+											flexGrow={1}
+											h='x20'
+											value={endDate as string}
+											onChange={handleEndDate}
+										/>
 									</Field.Row>
 									<Field.Hint>{t('The date when Out of Office will be disabled.')}</Field.Hint>
 								</Field>
@@ -122,6 +144,20 @@ function OutOfOfficePage() {
 									<Field.Hint>
 										{t('A message which will be auto sent while you have enabled Out of Office')}
 									</Field.Hint>
+								</Field>
+							</FieldGroup>
+							<FieldGroup>
+								<Field>
+									<Field.Label>{t('Select the Channels for Out of Office')}</Field.Label>
+									<Field.Row>
+										<MultiSelect
+											placeholder={'channels to be selected'}
+											options={roomOptions}
+											onChange={handleRoomIds}
+											maxWidth='100%'
+											flexGrow={1}
+										/>
+									</Field.Row>
 								</Field>
 							</FieldGroup>
 						</>
