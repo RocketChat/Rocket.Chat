@@ -10,6 +10,7 @@ import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
 import AccountTokensPage from './tokens/AccountTokensPage';
+import AccountOutOfOfficePage from './AccountOutOfOffice';
 import './sidebarItems';
 
 const AccountRoute = () => {
@@ -59,6 +60,10 @@ const AccountRoute = () => {
 		}
 
 		return <AccountTokensPage />;
+	}
+
+	if (page === 'outofoffice') {
+		return <AccountOutOfOfficePage />;
 	}
 
 	return null;
