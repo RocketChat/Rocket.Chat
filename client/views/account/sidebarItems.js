@@ -42,4 +42,10 @@ export const {
 		icon: 'key',
 		permissionGranted: () => hasPermission('create-personal-access-tokens'),
 	},
+	{
+		pathSection: 'account',
+		pathGroup: 'outofoffice',
+		i18nLabel: 'Out of Office',
+		icon: 'customize',
+	},
 ]);
