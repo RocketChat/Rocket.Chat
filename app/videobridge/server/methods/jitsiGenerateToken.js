@@ -35,6 +35,7 @@ Meteor.methods({
 				user: {
 					name: user.name,
 					email: user.emails[0].address,
+					roles: user.roles || [],
 					avatar: Meteor.absoluteUrl(`avatar/${ user.username }`),
 					id: user._id,
 				},
