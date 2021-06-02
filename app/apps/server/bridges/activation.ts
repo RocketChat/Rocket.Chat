@@ -2,7 +2,7 @@ import { AppActivationBridge as ActivationBridge } from '@rocket.chat/apps-engin
 import { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { Users } from '../../../models/server/raw';
+import { Users } from '../../../../server/models/raw';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppActivationBridge extends ActivationBridge {
