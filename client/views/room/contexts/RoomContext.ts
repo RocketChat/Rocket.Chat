@@ -25,7 +25,7 @@ export const useRoom = (): IRoom => {
 	return room;
 };
 
-export const useOmnichannelRoom = (): IOmnichannelRoom => {
+export const useOmnichannelRoom = (): IOmnichannelRoom & IOmnichannelSubscription => {
 	const { room } = useContext(RoomContext) || {};
 
 	if (!room) {
