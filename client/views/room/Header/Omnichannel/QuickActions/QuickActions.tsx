@@ -200,7 +200,6 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	}, [onHoldChat, closeModal, rid, t]);
 
 	const openModal = useMutableCallback((id: string) => {
-		const departmentId = room.departmentId || room.department;
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
@@ -224,9 +223,9 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(
-					departmentId ? (
+					room.departmentId ? (
 						<CloseChatModalData
-							departmentId={departmentId}
+							departmentId={room.departmentId}
 							onConfirm={handleClose}
 							onCancel={closeModal}
 						/>
