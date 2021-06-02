@@ -319,7 +319,7 @@ describe('[Users]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});
