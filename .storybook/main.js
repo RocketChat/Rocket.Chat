@@ -73,6 +73,10 @@ module.exports = {
 				/(server)\/*.*/,
 				require.resolve('./mocks/empty.js'),
 			),
+			new webpack.NormalModuleReplacementPlugin(
+				/(server)\/*.*/,
+				require.resolve('./mocks/empty.js'),
+			),
 		);
 
 		config.mode = 'development';
