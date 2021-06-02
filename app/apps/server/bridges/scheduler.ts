@@ -69,18 +69,20 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		processors.forEach(({ id, processor, startupSetting }: IProcessor) => {
 			this.scheduler.define(id, _callProcessor(processor));
 
-			if (startupSetting) {
-				switch (startupSetting.type) {
-					case StartupType.ONETIME:
-						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
-						break;
-					case StartupType.RECURRING:
-						runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, skipImmediate: startupSetting.skipImmediate, data: startupSetting.data }, appId));
-						break;
-					default:
-						this.orch.getRocketChatLogger().error(`Invalid startup setting type (${ startupSetting.type }) for the processor ${ id }`);
-						break;
-				}
+			if (!startupSetting) {
+				return;
+			}
+
+			switch (startupSetting.type) {
+				case StartupType.ONETIME:
+					runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
+					break;
+				case StartupType.RECURRING:
+					runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, skipImmediate: startupSetting.skipImmediate, data: startupSetting.data }, appId));
+					break;
+				default:
+					this.orch.getRocketChatLogger().error(`Invalid startup setting type (${ String((startupSetting as any).type) }) for the processor ${ id }`);
+					break;
 			}
 		});
 

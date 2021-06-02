@@ -212,6 +212,15 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch.getConverters()?.get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value, {}));
 	}
 
+	protected async findDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>> {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
+
+		const converter = this.orch.getConverters()?.get('departments');
+		const boundConverter = converter.convertDepartment.bind(converter);
+
+		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+	}
+
 	protected async setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
 

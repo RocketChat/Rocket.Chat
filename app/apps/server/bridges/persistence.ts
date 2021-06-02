@@ -89,7 +89,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return Array.isArray(records) ? records.map((r) => r.data) : [];
 	}
 
-	protected async update(id: string, data: object, upsert: boolean, appId: string): Promise<string> {
+	protected async update(id: string, data: object, _upsert: boolean, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is updating the record "${ id }" to:`, data);
 
 		if (typeof data !== 'object') {
