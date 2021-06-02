@@ -9,6 +9,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
+import CreateDiscussion from './CreateDiscussion';
 import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
@@ -67,7 +68,7 @@ function CreateRoomList() {
 	const createChannel = useReactModal(CreateChannelWithData);
 	const createTeam = useReactModal(CreateTeamModal);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
-	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
+	const createDiscussion = useReactModal(CreateDiscussion);
 
 	const discussionEnabled = useSetting('Discussion_enabled');
 
