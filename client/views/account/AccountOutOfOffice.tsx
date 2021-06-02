@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
 	Box,
 	Field,
@@ -9,23 +9,52 @@ import {
 	RadioButton,
 	InputBox,
 	Divider,
-    TextAreaInput,
+	TextAreaInput,
+	Button,
+	ButtonGroup,
 } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import Page from '/client/components/Page/Page';
+import { useForm } from '/client/hooks/useForm';
+
+const defaultFormValues = {
+	outOfOfficeEnabled: false,
+	customMessage: '',
+	startDate: '',
+	endDate: '',
+};
 
 function OutOfOfficePage() {
 	const t = useTranslation() as any;
 
-	const [oooEnabled, toggleOOOEnabled] = useToggle(false);
-    const [customMessage, setCustomMessage] = useState('');
+	const { values, handlers, commit, hasUnsavedChanges } = useForm(defaultFormValues);
+
+	const { outOfOfficeEnabled, customMessage, startDate, endDate } = values;
+
+	const {
+		handleOutOfOfficeEnabled,
+		handleCustomMessage,
+		handleStartDate,
+		handleEndDate,
+	} = handlers;
+
+	const handleSaveChanges = useCallback(() => {
+		commit();
+		console.log(values);
+	}, [commit, values]);
 
 	return (
 		<Page>
 			{/* @ts-ignore */}
-			<Page.Header title={t('Out Of Office')} />
+			<Page.Header title={t('Out Of Office')}>
+				<ButtonGroup>
+					<Button primary disabled={!hasUnsavedChanges} onClick={handleSaveChanges}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
+				{/* @ts-ignore */}
+			</Page.Header>
 			{/* @ts-ignore */}
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x800' w='full' alignSelf='center'>
@@ -34,7 +63,10 @@ function OutOfOfficePage() {
 							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 								<Field.Label>Disable Out Of Office</Field.Label>
 								<Field.Row>
-									<RadioButton checked={!oooEnabled} onChange={toggleOOOEnabled as any} />
+									<RadioButton
+										checked={!outOfOfficeEnabled}
+										onChange={() => handleOutOfOfficeEnabled(false)}
+									/>
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('Out of Office will be disabled')}</Field.Hint>
@@ -43,27 +75,36 @@ function OutOfOfficePage() {
 							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 								<Field.Label>Enable Out Of Office</Field.Label>
 								<Field.Row>
-									<RadioButton checked={oooEnabled} onChange={toggleOOOEnabled as any} />
+									<RadioButton
+										checked={outOfOfficeEnabled}
+										onChange={() => handleOutOfOfficeEnabled(true)}
+									/>
 								</Field.Row>
 							</Box>
 							<Field.Hint>{t('Out of Office will be enabled')}</Field.Hint>
 						</Field>
 					</FieldGroup>
-					{oooEnabled && (
+					{outOfOfficeEnabled && (
 						<>
 							<Divider />
 							<FieldGroup>
 								<Field>
 									<Field.Label>{t('Start Date')}</Field.Label>
 									<Field.Row>
-										<InputBox type='date' flexGrow={1} h='x20' />
+										<InputBox
+											type='date'
+											flexGrow={1}
+											h='x20'
+											value={startDate as string}
+											onChange={handleStartDate}
+										/>
 									</Field.Row>
 									<Field.Hint>{t('The date when Out of Office will be enabled.')}</Field.Hint>
 								</Field>
 								<Field>
 									<Field.Label>{t('End Date')}</Field.Label>
 									<Field.Row>
-										<InputBox type='date' flexGrow={1} h='x20' />
+										<InputBox type='date' flexGrow={1} h='x20' value={endDate as string} onChange={handleEndDate}/>
 									</Field.Row>
 									<Field.Hint>{t('The date when Out of Office will be disabled.')}</Field.Hint>
 								</Field>
@@ -73,8 +114,8 @@ function OutOfOfficePage() {
 									<Field.Label>{t('Reply Message')}</Field.Label>
 									<Field.Row>
 										<TextAreaInput
-											value={customMessage}
-											onChange={(e) => setCustomMessage((e.target as any).value)}
+											value={customMessage as string}
+											onChange={handleCustomMessage}
 											rows={2}
 										/>
 									</Field.Row>
