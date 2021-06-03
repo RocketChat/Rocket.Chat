@@ -429,7 +429,6 @@
   "Apps_Framework_enabled": "Habiliteu el marc d'aplicació",
   "Apps_Game_Center": "Centre de Jocs",
   "Apps_Game_Center_Back": "Tornar al Centre de Jocs",
-  "Apps_Game_Center_enabled": "Activar el Centre de Jocs",
   "Apps_Game_Center_Invite_Friends": "Convida els teus amics a unir-se",
   "Apps_Game_Center_Play_Game_Together": "@aquí __name__ Juguem junts!",
   "Apps_Interface_IPostExternalComponentClosed": "Esdeveniment que es produeix després que es tanca un component extern",

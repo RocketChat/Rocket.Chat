@@ -429,7 +429,6 @@
   "Apps_Framework_enabled": "Schakel het app-framework in",
   "Apps_Game_Center": "Game Center",
   "Apps_Game_Center_Back": "Terug naar Game Center",
-  "Apps_Game_Center_enabled": "Schakel Game Center in",
   "Apps_Game_Center_Invite_Friends": "Nodig je vrienden uit om mee te doen",
   "Apps_Game_Center_Play_Game_Together": "@here Laten we samen __name__ spelen!",
   "Apps_Interface_IPostExternalComponentClosed": "Gebeurtenis die plaatsvindt nadat een externe component is gesloten",

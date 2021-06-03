@@ -429,7 +429,6 @@
   "Apps_Framework_enabled": "Activer le cadre de l'application",
   "Apps_Game_Center": "Centre de jeux",
   "Apps_Game_Center_Back": "Retour au centre de jeux",
-  "Apps_Game_Center_enabled": "Activer le centre de jeux",
   "Apps_Game_Center_Invite_Friends": "Invitez vos amis à rejoindre",
   "Apps_Game_Center_Play_Game_Together": "@here Jouons à __name__ ensemble !",
   "Apps_Interface_IPostExternalComponentClosed": "Evénement survenant après la fermeture d'un composant externe",

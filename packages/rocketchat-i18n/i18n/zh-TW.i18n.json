@@ -428,7 +428,6 @@
   "Apps_Framework_enabled": "啟用應用程式框架",
   "Apps_Game_Center": "遊戲中心",
   "Apps_Game_Center_Back": "退回游戲中心",
-  "Apps_Game_Center_enabled": "啟用遊戲中心",
   "Apps_Game_Center_Invite_Friends": "邀請您的朋友加入",
   "Apps_Game_Center_Play_Game_Together": "@here 讓我們一起玩__name__吧！",
   "Apps_Interface_IPostExternalComponentClosed": "事件發生在外部元件已關閉之後",
