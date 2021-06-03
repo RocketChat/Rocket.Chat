@@ -5,9 +5,9 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Settings, Users } from '../../../server/models';
-import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { Settings, Users } from '../../models';
+import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {

@@ -2,8 +2,8 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import semver from 'semver';
 import toastr from 'toastr';
 
-import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../../app/utils/client';
+import { Utilities } from '../../../../common/apps/Utilities';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 

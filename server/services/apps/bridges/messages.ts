@@ -3,11 +3,11 @@ import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 
-import { Messages, Users, Subscriptions } from '../../../../server/models';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { api } from '../../../../server/sdk/api';
-import notifications from '../../../notifications/server/lib/Notifications';
+import { Messages, Users, Subscriptions } from '../../../models';
+import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
+import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
+import { api } from '../../../sdk/api';
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { AppServerOrchestrator } from '../orchestrator';
 
