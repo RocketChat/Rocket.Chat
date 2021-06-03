@@ -92,6 +92,6 @@ import '../app/authentication/server';
 import './services/2fa';
 import './api/v1';
 import './services/messages/slashcommands';
-import './services/messages/mentions/server';
+import './services/messages/mentions';
 import './services/importer';
 import './services/importer/strategies';
