@@ -861,6 +861,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
 	}
 
+	createUserJoinTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, extraData);
+	}
+
 	createUserJoinWithRoomIdAndUserDiscussion(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
@@ -869,6 +874,11 @@ export class Messages extends Base {
 	createUserLeaveWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
+	}
+
+	createUserLeaveTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
 	}
 
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
