@@ -5,7 +5,7 @@ import {
 	ProgressStep,
 	ImportData,
 	ImporterWebsocket,
-} from '..';
+} from '../..';
 import { Messages } from '../../../../../app/models';
 import { settings } from '../../../../settings';
 import { MentionsParser } from '../../../messages/mentions/server';
@@ -144,7 +144,7 @@ export class SlackImporter extends Base {
 		this.updateRecord({ 'count.users': data.length });
 		this.addCountToTotal(data.length);
 
-
+		console.log(data);
 		for (const user of data) {
 			const newUser = {
 				emails: [],
