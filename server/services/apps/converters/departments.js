@@ -1,5 +1,5 @@
-import LivechatDepartment from '../../../../server/models/models/LivechatDepartment';
-import { transformMappedData } from '../../lib/misc/transformMappedData';
+import LivechatDepartment from '../../../models/models/LivechatDepartment';
+import { transformMappedData } from '../misc/transformMappedData';
 
 export class AppDepartmentsConverter {
 	constructor(orch) {

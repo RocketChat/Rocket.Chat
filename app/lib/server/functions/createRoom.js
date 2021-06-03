@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/services/apps';
 import { addUserRoles } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
 import { Rooms, Subscriptions, Users } from '../../../models';

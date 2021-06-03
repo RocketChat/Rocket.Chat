@@ -1,5 +1,5 @@
-import LivechatVisitors from '../../../../server/models/models/LivechatVisitors';
-import { transformMappedData } from '../../lib/misc/transformMappedData';
+import LivechatVisitors from '../../../models/models/LivechatVisitors';
+import { transformMappedData } from '../misc/transformMappedData';
 
 export class AppVisitorsConverter {
 	constructor(orch) {

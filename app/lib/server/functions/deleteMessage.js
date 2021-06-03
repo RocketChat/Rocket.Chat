@@ -5,7 +5,7 @@ import { settings } from '../../../../server/settings';
 import { Messages, Uploads, Rooms } from '../../../../server/models';
 import { Notifications } from '../../../notifications/server';
 import { callbacks } from '../../../callbacks/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/services/apps';
 
 export const deleteMessage = function(message, user) {
 	const deletedMsg = Messages.findOneById(message._id);

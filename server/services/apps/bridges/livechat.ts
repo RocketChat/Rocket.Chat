@@ -9,14 +9,14 @@ import {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { getRoom } from '../../../livechat/server/api/lib/livechat';
-import { Livechat } from '../../../livechat/server/lib/Livechat';
+import { getRoom } from '../../../../app/livechat/server/api/lib/livechat';
+import { Livechat } from '../../../../app/livechat/server/lib/Livechat';
 import {
 	Users,
 	LivechatDepartment,
 	LivechatVisitors,
 	LivechatRooms,
-} from '../../../../server/models';
+} from '../../../models';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {
