@@ -1,7 +1,7 @@
 import { TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
 import { Apps } from './orchestrator';
-import { Utilities } from '../lib/misc/Utilities';
+import { Utilities } from '../../../common/apps/Utilities';
 import { AppEvents } from './communication';
 
 
