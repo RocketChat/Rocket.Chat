@@ -1,14 +1,19 @@
-import { Box, Divider } from '@rocket.chat/fuselage';
-import React, { FC, memo, useCallback, useRef } from 'react';
+import { Box, Divider, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import React, { FC, memo, useCallback, useRef, useState } from 'react';
 
 import { EmojiPicker } from '../../../../../../app/emoji/client';
+import { Backdrop } from '../../../../../../client/components/Backdrop';
 import { useUserPreference } from '../../../../../../client/contexts/UserContext';
 import TextEditor from '../TextEditor';
+import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
 const MarkdownTextEditor: FC = () => {
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const ref = useRef<HTMLButtonElement>(null);
+
+	const [visible, setVisible] = useState(false);
 
 	const useMarkdownSyntax = (char: '*' | '_' | '~' | '[]()'): (() => void) =>
 		useCallback(() => {
@@ -53,7 +58,10 @@ const MarkdownTextEditor: FC = () => {
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
 			textAreaRef.current.focus();
-			textAreaRef.current.selectionStart = startPos + emojiValue.length;
+			textAreaRef.current.setSelectionRange(
+				startPos + emojiValue.length,
+				startPos + emojiValue.length,
+			);
 		}
 	};
 
@@ -72,8 +80,9 @@ const MarkdownTextEditor: FC = () => {
 		});
 	};
 
-	const selectPlaceholder = (): void => {
-		console.log('select placeholder');
+	const openPlaceholderSelect = (): void => {
+		textAreaRef?.current && textAreaRef.current.focus();
+		setVisible(!visible);
 	};
 
 	return (
@@ -86,7 +95,23 @@ const MarkdownTextEditor: FC = () => {
 					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} />
 					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} />
 				</Box>
-				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={selectPlaceholder} />
+				<TextEditor.Toolbox.TextButton
+					text='Insert_Placeholder'
+					action={openPlaceholderSelect}
+					ref={ref}
+				/>
+				<Backdrop
+					display={visible ? 'block' : 'none'}
+					onClick={(): void => {
+						textAreaRef?.current && textAreaRef.current.focus();
+						setVisible(false);
+					}}
+				/>
+				<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
+					<Tile elevation='1' w='224px'>
+						<InsertPlaceholderDropdown textAreaRef={textAreaRef} setVisible={setVisible} />
+					</Tile>
+				</PositionAnimated>
 			</TextEditor.Toolbox>
 			<Divider w='full' mbe='16px' />
 			<TextEditor.Textarea rows={10} ref={textAreaRef} />

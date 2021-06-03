@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 import {
 	TranslationKey,
@@ -11,7 +11,7 @@ type TextButtonProps = {
 	action: () => void;
 };
 
-const TextButton: FC<TextButtonProps> = ({ text, action }) => {
+const TextButton = forwardRef<Element, TextButtonProps>(function TextButton({ text, action }, ref) {
 	const t = useTranslation();
 
 	return (
@@ -26,9 +26,10 @@ const TextButton: FC<TextButtonProps> = ({ text, action }) => {
 				e.preventDefault();
 				action();
 			}}
+			ref={ref}
 		>
 			{t(text)}
 		</Button>
 	);
-};
+});
 export default memo(TextButton);
