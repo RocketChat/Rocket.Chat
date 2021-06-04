@@ -8,6 +8,8 @@ import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import { hasPermission } from '../../../../app/authorization';
 import { Subscriptions, Messages, Users, Rooms } from '../../../models';
 
+import './pinMessage.requests';
+
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {
 		return;
