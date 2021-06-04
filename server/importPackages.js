@@ -40,7 +40,6 @@ import '../app/token-login/server';
 import '../app/mailer';
 import '../app/mapview/server';
 import '../app/markdown/server';
-import '../app/message-pin/server';
 import '../app/message-snippet/server';
 import '../app/message-star/server';
 import '../app/migrations';
@@ -87,6 +86,8 @@ import '../app/livechat/server';
 import '../app/custom/server';
 import '../app/authentication/server';
 
+// this file contains the settings for the registered services
+import './settings/settingfiles';
 import './api/methods';
 import './services/2fa';
 import './api/v1';
