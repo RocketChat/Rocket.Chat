@@ -57,6 +57,7 @@ jobs:
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
+      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
@@ -238,6 +239,7 @@ jobs:
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
+      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
