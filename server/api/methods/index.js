@@ -6,3 +6,4 @@ import './2fa/validateTempToken';
 import './mentions/getUserMentionsByChannel';
 import './messages/unreadMessages';
 import './messages/snippetMessage';
+import './messages/starMessage';
