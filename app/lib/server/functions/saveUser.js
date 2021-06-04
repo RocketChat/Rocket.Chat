@@ -10,6 +10,7 @@ import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
 
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
@@ -256,21 +257,9 @@ export const saveUser = function(userId, userData) {
 
 		const _id = Accounts.createUser(createUser);
 
-		if (settings.get('Accounts_Registration_Users_Default_Roles_Enabled')) {
-			const defaultUserRoles = String(settings.get('Accounts_Registration_Users_Default_Roles')).split(',').map((s) => s.trim());
-			if (defaultUserRoles[0] === '') {
-				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUser' });
-			}
-			if (userData.roles && defaultUserRoles.length > 0) {
-				userData.roles = [...new Set([...userData.roles, ...defaultUserRoles])];
-			} else {
-				userData.roles = defaultUserRoles;
-			}
-		}
-
 		const updateUser = {
 			$set: {
-				roles: userData.roles || ['user'],
+				roles: userData.roles || getNewUserRoles(),
 				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
