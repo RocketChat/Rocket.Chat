@@ -27,14 +27,12 @@ export const useRoom = (): IRoom => {
 
 export const useOmnichannelRoom = (): IOmnichannelRoom & IOmnichannelSubscription => {
 	const { room } = useContext(RoomContext) || {};
-
 	if (!room) {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 	if (!isOmnichannelRoom(room)) {
 		throw new Error('invalid room type');
 	}
-
 	normalizeRoomSubscription(room);
 	return room;
 };
