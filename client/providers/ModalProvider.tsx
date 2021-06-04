@@ -4,6 +4,7 @@ import React, { useState, useMemo, memo, FC, ComponentProps, ReactNode } from 'r
 import { modal } from '../../app/ui-utils/client/lib/modal';
 import ModalPortal from '../components/ModalPortal';
 import { ModalContext } from '../contexts/ModalContext';
+import LegacyModal from '../views/root/LegacyModal';
 
 const ModalProvider: FC = ({ children }) => {
 	const [currentModal, setCurrentModal] = useState<ReactNode>(null);
@@ -24,6 +25,7 @@ const ModalProvider: FC = ({ children }) => {
 					<Modal.Backdrop zIndex={9999}>{currentModal}</Modal.Backdrop>
 				</ModalPortal>
 			)}
+			<LegacyModal />
 		</ModalContext.Provider>
 	);
 };
