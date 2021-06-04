@@ -16,6 +16,7 @@ import toastr from 'toastr';
 import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { handleError } from '../../../../../../app/utils/client';
 import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
+import { IOmnichannelSubscription } from '../../../../../../definition/ISubscription';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import Header from '../../../../../components/Header';
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -35,7 +36,7 @@ import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickAc
 import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
 
 type QuickActionsProps = {
-	room: IOmnichannelRoom;
+	room: IOmnichannelRoom & IOmnichannelSubscription;
 	className?: ComponentProps<typeof Box>['className'];
 };
 

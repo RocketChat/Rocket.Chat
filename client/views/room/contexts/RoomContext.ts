@@ -1,14 +1,21 @@
 import { createContext, useContext } from 'react';
 
 import { IRoom, IOmnichannelRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
+import { IOmnichannelSubscription } from '../../../../definition/ISubscription';
 
 export type RoomContextValue = {
 	rid: IRoom['_id'];
-	room: IRoom;
-	// tabBar: TabBar;
+	room: IOmnichannelRoom & IOmnichannelSubscription;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
+
+const normalizeRoomSubscription = (room: IOmnichannelRoom & IOmnichannelSubscription): IRoom => {
+	if (room.department) {
+		room.departmentId = room.department;
+	}
+	return room;
+};
 
 export const useRoom = (): IRoom => {
 	const { room } = useContext(RoomContext) || {};
@@ -18,13 +25,16 @@ export const useRoom = (): IRoom => {
 	return room;
 };
 
-export const useOmnichannelRoom = (): IOmnichannelRoom => {
+export const useOmnichannelRoom = (): IOmnichannelRoom & IOmnichannelSubscription => {
 	const { room } = useContext(RoomContext) || {};
+
 	if (!room) {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 	if (!isOmnichannelRoom(room)) {
 		throw new Error('invalid room type');
 	}
+
+	normalizeRoomSubscription(room);
 	return room;
 };
