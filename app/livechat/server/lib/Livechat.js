@@ -238,7 +238,7 @@ export const Livechat = {
 			}
 		}
 
-		if (phone) {
+		if (phone?.number) {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];

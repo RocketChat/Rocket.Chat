@@ -10,6 +10,7 @@ import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { Rooms } from '../../models/client';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -26,11 +27,14 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg, subscription }) {
+		condition({ msg, subscription, room }) {
 			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
 				return false;
 			}
-
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return hasAtLeastOnePermission('pin-message', msg.rid);
 		},
 		order: 7,
