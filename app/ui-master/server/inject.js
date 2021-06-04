@@ -34,7 +34,13 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	injectIntoHead('noreferrer', '<meta name="referrer" content="strict-origin" />');
+	settings.get('Default_Referrer_Policy', (key, value) => {
+		if (!value) {
+			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
+		}
+
+		injectIntoHead('noreferrer', `<meta name="referrer" content="${ value }" />`);
+	});
 
 	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead('disable-animation', `

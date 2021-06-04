@@ -233,6 +233,9 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
+	if (!onlineAgents?.length) {
+		return;
+	}
 
 	const notificationUserName = v && (v.name || v.username);
 
