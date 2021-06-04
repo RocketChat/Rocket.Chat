@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 
 import { IOmnichannelRoom } from '../../../../definition/IRoom';
-import { IOmnichannelSubscription } from '../../../../definition/ISubscription';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
@@ -14,7 +13,7 @@ import Favorite from './icons/Favorite';
 import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
-	room: IOmnichannelRoom & IOmnichannelSubscription;
+	room: IOmnichannelRoom;
 	topic?: string;
 	slots: {
 		start?: unknown;

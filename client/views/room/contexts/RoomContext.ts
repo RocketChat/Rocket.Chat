@@ -10,7 +10,9 @@ export type RoomContextValue = {
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
 
-const normalizeRoomSubscription = (room: IOmnichannelRoom & IOmnichannelSubscription): IRoom => {
+const normalizeRoomSubscription = (
+	room: IOmnichannelRoom & IOmnichannelSubscription,
+): IOmnichannelRoom => {
 	if (room.department) {
 		room.departmentId = room.department;
 	}
@@ -25,7 +27,7 @@ export const useRoom = (): IRoom => {
 	return room;
 };
 
-export const useOmnichannelRoom = (): IOmnichannelRoom & IOmnichannelSubscription => {
+export const useOmnichannelRoom = (): IOmnichannelRoom => {
 	const { room } = useContext(RoomContext) || {};
 
 	if (!room) {
@@ -35,6 +37,5 @@ export const useOmnichannelRoom = (): IOmnichannelRoom & IOmnichannelSubscriptio
 		throw new Error('invalid room type');
 	}
 
-	normalizeRoomSubscription(room);
-	return room;
+	return normalizeRoomSubscription(room);
 };
