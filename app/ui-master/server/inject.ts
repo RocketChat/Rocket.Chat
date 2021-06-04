@@ -25,8 +25,6 @@ const callback: NextHandleFunction = (req, res, next) => {
 		const rawPath = parseRequest(req);
 		const pathname = rawPath !== undefined && rawPath.pathname && decodeURIComponent(rawPath.pathname);
 
-		console.log(pathname);
-
 		if (!pathname) {
 			next();
 			return;
@@ -39,20 +37,18 @@ const callback: NextHandleFunction = (req, res, next) => {
 			return;
 		}
 
-		const serveStaticJS = function(content: string): void {
+		const serve = (contentType: string) => (content: string, cacheControl = 'public, max-age=31536000'): void => {
 			res.writeHead(200, {
-				'Content-type': 'application/javascript; charset=UTF-8',
+				'Content-type': contentType,
+				'cache-control': cacheControl,
+				'Content-Length': content.length,
 			});
 			res.write(content);
 			res.end();
 		};
-		const serveStaticCSS = function(content: string): void {
-			res.writeHead(200, {
-				'Content-type': 'text/css; charset=UTF-8',
-			});
-			res.write(content);
-			res.end();
-		};
+
+		const serveStaticJS = serve('application/javascript; charset=UTF-8');
+		const serveStaticCSS = serve('text/css; charset=UTF-8');
 
 		if (injection.type === 'JS') {
 			serveStaticJS(injection.content);
@@ -106,7 +102,7 @@ export const applyHeadInjections = (injections: Injection[]): (html: string) => 
 		if (typeof i === 'string') {
 			return i;
 		}
-		return i.tag;
+		return i.content.trim().length > 0 ? i.tag : '';
 	}).join('\n').replace(/\$/g, '$$$$') }\n</head>`;
 
 	return (html: string): string => html.replace('</head>', replacementHtml);
