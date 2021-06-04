@@ -40,7 +40,6 @@ import '../app/token-login/server';
 import '../app/mailer';
 import '../app/mapview/server';
 import '../app/markdown/server';
-import '../app/message-snippet/server';
 import '../app/message-star/server';
 import '../app/migrations';
 import '../app/nextcloud/server';
