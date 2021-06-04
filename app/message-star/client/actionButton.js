@@ -9,6 +9,7 @@ import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -25,8 +26,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg: message, subscription, u }) {
+		condition({ msg: message, subscription, u, room }) {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 

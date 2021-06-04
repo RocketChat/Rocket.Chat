@@ -1,31 +1,39 @@
+import { ITypingDescriptor, MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
+import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+
 import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { api } from '../../../../server/sdk/api';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { ISubscription } from '../../../../definition/ISubscription';
+import { AppServerOrchestrator } from '../orchestrator';
 
-export class AppMessageBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppMessageBridge extends MessageBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	async create(message, appId) {
+	protected async create(message: IMessage, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is creating a new message.`);
 
-		const convertedMessage = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
 
-	async getById(messageId, appId) {
+	protected async getById(messageId: string, appId: string): Promise<IMessage> {
 		this.orch.debugLog(`The App ${ appId } is getting the message: "${ messageId }"`);
 
-		return this.orch.getConverters().get('messages').convertById(messageId);
+		return this.orch.getConverters()?.get('messages').convertById(messageId);
 	}
 
-	async update(message, appId) {
+	protected async update(message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is updating a message.`);
 
 		if (!message.editor) {
@@ -36,16 +44,16 @@ export class AppMessageBridge {
 			throw new Error('A message must exist to update.');
 		}
 
-		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
 		updateMessage(msg, editor);
 	}
 
-	async notifyUser(user, message, appId) {
+	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is notifying a user.`);
 
-		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		if (!msg) {
 			return;
@@ -56,29 +64,29 @@ export class AppMessageBridge {
 		});
 	}
 
-	async notifyRoom(room, message, appId) {
+	protected async notifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is notifying a room's users.`);
 
 		if (!room || !room.id) {
 			return;
 		}
 
-		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
+		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
 		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
 			.fetch()
-			.map((s) => s.u._id);
+			.map((s: ISubscription) => s.u._id);
 
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
-			.forEach(({ _id }) =>
+			.forEach(({ _id }: { _id: string }) =>
 				api.broadcast('notify.ephemeralMessage', _id, room.id, {
 					...msg,
 				}),
 			);
 	}
 
-	async typing({ scope, id, username, isTyping }) {
+	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
 		switch (scope) {
 			case 'room':
 				notifications.notifyRoom(id, 'typing', username, isTyping);
