@@ -5,6 +5,7 @@ import { types } from 'mediasoup';
 
 import config from '../config';
 import { getWorker } from './worker';
+import { IPeer } from '../types/IPeer';
 
 const rooms = new Map<string, Room>();
 
@@ -60,14 +61,13 @@ export class Room extends EventEmitter {
 			existingPeer.close();
 		}
 
-		const peer = await this.protooRoom.createPeer(peerID, protooWSTransport);
+		const peer: IPeer = await this.protooRoom.createPeer(peerID, protooWSTransport);
 
 		peer.data.consume = consume;
 		peer.data.joined = false;
 		peer.data.displayName = undefined;
 		peer.data.device = undefined;
 		peer.data.rtpCapabilities = undefined;
-		peer.data.sctpCapabilities = undefined;
 
 		peer.data.transports = new Map();
 		peer.data.producers = new Map();
