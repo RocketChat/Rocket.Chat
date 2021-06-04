@@ -7,3 +7,4 @@ import './mentions/getUserMentionsByChannel';
 import './messages/unreadMessages';
 import './messages/snippetMessage';
 import './messages/starMessage';
+import './messages/pinMessage';
