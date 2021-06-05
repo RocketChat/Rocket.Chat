@@ -6,7 +6,10 @@ callbacks.add('livechat.afterForwardChatToAgent', (options: { rid?: string } = {
 
 	const room = LivechatRooms.findOneById(rid);
 	if (!room) {
-		return;
+		return options;
 	}
-	(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(room._id);
+
+	(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(rid);
+
+	return options;
 }, callbacks.priority.MEDIUM, 'livechat-after-forward-room-to-department');
