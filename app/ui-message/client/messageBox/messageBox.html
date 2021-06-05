@@ -3,6 +3,7 @@
 		{{#unless isAnonymousOrMustJoinWithCode}}
 			{{#unless tmid}}
 				{{> messageBoxTyping rid=rid}}
+				{{> messageBoxRecording rid=rid}}
 			{{/unless}}
 
 			{{#if isWritable}}

@@ -1,16 +1,16 @@
 import { Template } from 'meteor/templating';
 
-import { MsgTyping } from '../../../ui';
+import { MsgRecording } from '../../../ui';
 import { t } from '../../../utils';
 import { getConfig } from '../../../ui-utils/client/config';
-import './messageBoxTyping.html';
+import './messageBoxRecording.html';
 
 const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 4;
-const activity = 'typing';
+const activity = 'recording';
 
-Template.messageBoxTyping.helpers({
+Template.messageBoxRecording.helpers({
 	data() {
-		const users = MsgTyping.get(this.rid);
+		const users = MsgRecording.get(this.rid);
 		if (users.length === 0) {
 			return;
 		}
@@ -18,7 +18,7 @@ Template.messageBoxTyping.helpers({
 			return {
 				activity,
 				multi: false,
-				selfActivity: MsgTyping.selfTyping,
+				selfActivity: MsgRecording.selfRecording,
 				users: users[0],
 			};
 		}
@@ -31,7 +31,7 @@ Template.messageBoxTyping.helpers({
 		return {
 			activity,
 			multi: true,
-			selfActivity: MsgTyping.selfTyping,
+			selfActivity: MsgRecording.selfRecording,
 			users: usernames.join(` ${ t('and') } `),
 		};
 	},

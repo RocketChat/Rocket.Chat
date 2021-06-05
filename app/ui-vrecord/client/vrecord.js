@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload } from '../../ui';
+import { VideoRecorder, fileUpload, MsgRecording } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -32,27 +32,38 @@ Template.vrecDialog.helpers({
 });
 
 const recordingInterval = new ReactiveVar(null);
+const recordingIndicator = new ReactiveVar(null);
+
+const stopVideoRecording = (rid) => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+	}
+	if (recordingIndicator.get()) {
+		clearInterval(recordingIndicator.get());
+		recordingIndicator.set(null);
+		MsgRecording.stop(rid);
+	}
+};
+
 
 Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
+		const rid = t.rid.get();
 		VideoRecorder.stop();
 		VRecDialog.close();
 		t.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid);
 	},
 
 	'click .vrec-dialog .record'(e, t) {
+		const rid = t.rid.get();
 		if (VideoRecorder.recording.get()) {
 			VideoRecorder.stopRecording();
-			if (recordingInterval.get()) {
-				clearInterval(recordingInterval.get());
-				recordingInterval.set(null);
-			}
+			stopVideoRecording(rid);
 		} else {
 			VideoRecorder.record();
+			MsgRecording.start(rid);
 			t.time.set('00:00');
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
@@ -62,6 +73,9 @@ Template.vrecDialog.events({
 				const seconds = Math.floor(distance % 60);
 				t.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
 			}, 1000));
+			recordingIndicator.set(setInterval(() => {
+				MsgRecording.start(rid);
+			}, 5000));
 		}
 	},
 
@@ -73,10 +87,7 @@ Template.vrecDialog.events({
 		};
 		VideoRecorder.stop(cb);
 		instance.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid);
 	},
 });
 
@@ -124,5 +135,6 @@ Template.vrecDialog.onCreated(function() {
 });
 
 Template.vrecDialog.onDestroyed(function() {
+	VRecDialog.close(this.rid.get());
 	$(window).off('resize', this.remove);
 });

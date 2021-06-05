@@ -186,7 +186,7 @@ export class NotificationsModule {
 				return true;
 			}
 
-			if (e !== 'typing') {
+			if (e !== 'typing' && e !== 'recording') {
 				return false;
 			}
 

@@ -1,0 +1,20 @@
+<template name="notifyUserActivity" args="rid">
+	{{#with data}}
+		<div class="rc-message-box__typing">
+			<span class="rc-message-box__typing-user">{{users}}</span>
+			{{#if multi}}
+				{{#if selfActivity}}
+					{{_ "are_also"}} {{_ activity}}
+				{{else}}
+					{{_ "are"}} {{_ activity}}
+				{{/if}}
+			{{else}}
+				{{#if selfActivity}}
+					{{_ "is_also" context="male"}} {{_ activity context="male"}}
+				{{else}}
+					{{_ "is" }} {{_ activity context="male"}}
+				{{/if}}
+			{{/if}}
+		</div>
+	{{/with}}
+</template>

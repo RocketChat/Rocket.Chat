@@ -2,17 +2,42 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload } from '../../../ui';
+import { AudioRecorder, fileUpload, MsgRecording } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = () => new Promise((resolve, reject) =>
-	AudioRecorder.start((result) => (result ? resolve() : reject())));
+const startRecording = (rid) => {
+	const result = new Promise((resolve, reject) =>
+		AudioRecorder.start((result) => (result ? resolve() : reject())));
+	result.then(() => {
+		MsgRecording.start(rid);
+	});
+	return result;
+};
 
-const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve));
+const stopRecording = (rid) => {
+	const result = new Promise((resolve) => AudioRecorder.stop(resolve));
+	result.then(() => {
+		MsgRecording.stop(rid);
+	});
+	return result;
+};
 
 const recordingInterval = new ReactiveVar(null);
+const recordingIndicatorInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
+
+const clearIntervalVariables = () => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+		recordingRoomId.set(null);
+	}
+	if (recordingIndicatorInterval.get()) {
+		clearInterval(recordingIndicatorInterval.get());
+		recordingIndicatorInterval.set(null);
+	}
+};
 
 Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
@@ -84,8 +109,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set('recording');
 
 		try {
-			await startRecording();
-
+			await startRecording(this.rid);
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
 				const now = new Date();
@@ -95,6 +119,9 @@ Template.messageBoxAudioMessage.events({
 				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
 			}, 1000));
 			recordingRoomId.set(this.rid);
+			recordingIndicatorInterval.set(setInterval(() => {
+				MsgRecording.start(this.rid);
+			}, 5000));
 		} catch (error) {
 			console.log(error);
 			instance.isMicrophoneDenied.set(true);
@@ -105,15 +132,11 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-			recordingRoomId.set(null);
-		}
+		clearIntervalVariables();
 
 		instance.time.set('00:00');
 
-		await stopRecording();
+		await stopRecording(this.rid);
 
 		instance.state.set(null);
 	},
@@ -123,19 +146,19 @@ Template.messageBoxAudioMessage.events({
 
 		instance.state.set('loading');
 
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-			recordingRoomId.set(null);
-		}
+		clearIntervalVariables();
 
 		instance.time.set('00:00');
 
-		const blob = await stopRecording();
+		const blob = await stopRecording(this.rid);
 
 		instance.state.set(null);
 
 		const { rid, tmid } = this;
 		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
 	},
+});
+
+Template.messageBoxAudioMessage.onDestroyed(function() {
+	MsgRecording.cancel(this.data.rid);
 });
