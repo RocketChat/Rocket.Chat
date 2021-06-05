@@ -6,6 +6,9 @@ import { Base } from './_Base';
 import Settings from './Settings';
 import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
+const settingsRaw = Settings.model.rawCollection();
+const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
+
 export class LivechatVisitors extends Base {
 	constructor() {
 		super('livechat_visitor');
@@ -124,9 +127,6 @@ export class LivechatVisitors extends Base {
 	 * @return {string} The next visitor name
 	 */
 	getNextVisitorUsername() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_guest_count',
 		};
