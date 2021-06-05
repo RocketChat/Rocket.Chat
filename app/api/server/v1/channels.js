@@ -27,7 +27,7 @@ function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
 		room = Rooms.findOneByName(params.roomName, { fields });
 	}
 
-	if (!room || (room.t !== 'c' && room.t !== 'l')) {
+	if (!room || (room.t !== 'c' && room.t !== 'l' && room.t !== 'e')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 

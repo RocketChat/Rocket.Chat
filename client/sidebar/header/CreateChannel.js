@@ -116,7 +116,7 @@ const CreateChannel = ({
 						</Box>
 						<ToggleSwitch
 							checked={values.type}
-							disabled={!!canOnlyCreateOneType}
+							disabled={!!canOnlyCreateOneType || !!values.ephemeral}
 							onChange={onChangeType}
 						/>
 					</Box>
