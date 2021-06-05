@@ -189,7 +189,7 @@
 		"connect": "^3.7.0",
 		"core-js": "^3.8.1",
 		"cors": "^2.8.5",
-		"csv-parse": "^4.12.0",
+		"csv-parse": "^4.15.4",
 		"dompurify": "^2.2.6",
 		"ejson": "^2.2.0",
 		"emailreplyparser": "^0.0.5",
