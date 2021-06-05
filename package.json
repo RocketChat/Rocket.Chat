@@ -74,7 +74,7 @@
 		"@types/moment-timezone": "^0.5.30",
 		"@types/mongodb": "^3.5.26",
 		"@types/node": "^12.20.10",
-		"@types/react-dom": "^16.9.8",
+		"@types/react-dom": "^17.0.6",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.3",
 		"@types/toastr": "^2.1.38",
