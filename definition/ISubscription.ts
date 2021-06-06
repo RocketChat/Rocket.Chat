@@ -40,6 +40,10 @@ export interface ISubscription extends IRocketChatRecord {
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 }
 
+export interface IOmnichannelSubscription extends ISubscription {
+	department?: string;
+}
+
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }
