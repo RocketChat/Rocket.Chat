@@ -81,6 +81,9 @@ const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolea
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 
+const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
+	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
+
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
@@ -183,22 +186,24 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	});
 
-	watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-			case 'updated':
-				data = data ?? await UsersSessions.findOneById(id);
-				if (!data) {
-					return;
-				}
+	if (startMonitor) {
+		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					data = data ?? await UsersSessions.findOneById(id);
+					if (!data) {
+						return;
+					}
 
-				broadcast('watch.userSessions', { clientAction, userSession: data });
-				break;
-			case 'removed':
-				broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
-				break;
-		}
-	});
+					broadcast('watch.userSessions', { clientAction, userSession: data });
+					break;
+				case 'removed':
+					broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
+					break;
+			}
+		});
+	}
 
 	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
