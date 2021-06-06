@@ -66,16 +66,20 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
-const roomFieldsKeys = Object.keys(roomFields);
-const subscriptionFieldsKeys = Object.keys(subscriptionFields);
+const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolean =>
+	(data?: Record<string, any>): boolean => {
+		if (!data) {
+			return false;
+		}
 
-const hasKeys = (data: Record<string, any>, requiredKeys: string[]): boolean =>
-	Object.keys(data)
-		.map((key) => key.split('.')[0])
-		.some((key) => requiredKeys.includes(key));
+		return Object.keys(data)
+			.filter((key) => key !== '_id')
+			.map((key) => key.split('.')[0])
+			.some((key) => requiredKeys.includes(key));
+	};
 
-const hasKeysWithoutId = (data: Record<string, any>, requiredKeys: string[]): boolean =>
-	hasKeys(data, requiredKeys.filter((key) => key !== '_id'));
+const hasRoomFields = hasKeys(Object.keys(roomFields));
+const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
@@ -137,11 +141,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
-				if (data && !hasKeysWithoutId(data, subscriptionFieldsKeys)) {
-					return;
-				}
-
-				if (diff && !hasKeys(diff, subscriptionFieldsKeys)) {
+				if (!hasSubscriptionFields(data || diff)) {
 					return;
 				}
 
@@ -303,11 +303,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		if (data && !hasKeysWithoutId(data, roomFieldsKeys)) {
-			return;
-		}
-
-		if (diff && !hasKeys(diff, roomFieldsKeys)) {
+		if (!hasRoomFields(data || diff)) {
 			return;
 		}
 
