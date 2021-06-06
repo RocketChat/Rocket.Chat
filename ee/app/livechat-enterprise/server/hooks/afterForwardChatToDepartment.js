@@ -7,19 +7,19 @@ callbacks.add('livechat.afterForwardChatToDepartment', (options) => {
 
 	const room = LivechatRooms.findOneById(rid);
 	if (!room) {
-		return;
+		return options;
 	}
 	LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
 	const department = LivechatDepartment.findOneById(newDepartmentId, { fields: { ancestors: 1 } });
 	if (!department) {
-		return;
+		return options;
 	}
 
 	const { departmentAncestors } = room;
 	const { ancestors } = department;
 	if (!ancestors && !departmentAncestors) {
-		return room;
+		return options;
 	}
 
 	LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
