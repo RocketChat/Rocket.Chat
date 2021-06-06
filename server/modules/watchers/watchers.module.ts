@@ -66,6 +66,17 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
+const roomFieldsKeys = Object.keys(roomFields);
+const subscriptionFieldsKeys = Object.keys(subscriptionFields);
+
+const hasKeys = (data: Record<string, any>, requiredKeys: string[]): boolean =>
+	Object.keys(data)
+		.map((key) => key.split('.')[0])
+		.some((key) => requiredKeys.includes(key));
+
+const hasKeysWithoutId = (data: Record<string, any>, requiredKeys: string[]): boolean =>
+	hasKeys(data, requiredKeys.filter((key) => key !== '_id'));
+
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
@@ -122,10 +133,18 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id }) => {
+	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
+				if (data && !hasKeysWithoutId(data, subscriptionFieldsKeys)) {
+					return;
+				}
+
+				if (diff && !hasKeys(diff, subscriptionFieldsKeys)) {
+					return;
+				}
+
 				// Override data cuz we do not publish all fields
 				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
 				if (!subscription) {
@@ -278,9 +297,17 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.settings', { clientAction, setting });
 	});
 
-	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
+	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			return;
+		}
+
+		if (data && !hasKeysWithoutId(data, roomFieldsKeys)) {
+			return;
+		}
+
+		if (diff && !hasKeys(diff, roomFieldsKeys)) {
 			return;
 		}
 
