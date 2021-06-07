@@ -1,16 +1,23 @@
 import { Meteor } from 'meteor/meteor';
-import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { Promise as MeteorPromise } from 'meteor/promise';
+import { SlashCommandContext, ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 
-import { slashCommands } from '../../../utils';
+import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
+import { AppServerOrchestrator } from '../orchestrator';
+import { IMessage } from '../../../../definition/IMessage';
 
-export class AppCommandsBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppCommandsBridge extends CommandBridge {
+	disabledCommands: Map<string, object>;
+
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 		this.disabledCommands = new Map();
 	}
 
-	doesCommandExist(command, appId) {
+	protected doesCommandExist(command: string, appId: string): boolean {
 		this.orch.debugLog(`The App ${ appId } is checking if "${ command }" command exists.`);
 
 		if (typeof command !== 'string' || command.length === 0) {
@@ -21,7 +28,7 @@ export class AppCommandsBridge {
 		return typeof slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
 	}
 
-	enableCommand(command, appId) {
+	protected enableCommand(command: string, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is attempting to enable the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -39,7 +46,7 @@ export class AppCommandsBridge {
 		this.orch.getNotifier().commandUpdated(cmd);
 	}
 
-	disableCommand(command, appId) {
+	protected disableCommand(command: string, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is attempting to disable the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -63,18 +70,18 @@ export class AppCommandsBridge {
 	}
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
-	modifyCommand(command, appId) {
+	protected modifyCommand(command: ISlashCommand, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is attempting to modify the command: "${ command }"`);
 
 		this._verifyCommand(command);
 
-		const cmd = command.toLowerCase();
+		const cmd = command.command.toLowerCase();
 		if (typeof slashCommands.commands[cmd] === 'undefined') {
 			throw new Error(`Command does not exist in the system currently (or it is disabled): "${ cmd }"`);
 		}
 
 		const item = slashCommands.commands[cmd];
-		item.params = command.paramsExample ? command.paramsExample : item.params;
+		item.params = command.i18nParamsExample ? command.i18nParamsExample : item.params;
 		item.description = command.i18nDescription ? command.i18nDescription : item.params;
 		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
@@ -85,7 +92,7 @@ export class AppCommandsBridge {
 		this.orch.getNotifier().commandUpdated(cmd);
 	}
 
-	registerCommand(command, appId) {
+	protected registerCommand(command: ISlashCommand, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is registering the command: "${ command.command }"`);
 
 		this._verifyCommand(command);
@@ -106,7 +113,7 @@ export class AppCommandsBridge {
 		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
 	}
 
-	unregisterCommand(command, appId) {
+	protected unregisterCommand(command: string, appId: string): void {
 		this.orch.debugLog(`The App ${ appId } is unregistering the command: "${ command }"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -120,7 +127,7 @@ export class AppCommandsBridge {
 		this.orch.getNotifier().commandRemoved(cmd);
 	}
 
-	_verifyCommand(command) {
+	private _verifyCommand(command: ISlashCommand): void {
 		if (typeof command !== 'object') {
 			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
@@ -146,9 +153,9 @@ export class AppCommandsBridge {
 		}
 	}
 
-	_appCommandExecutor(command, parameters, message, triggerId) {
-		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+	private _appCommandExecutor(command: string, parameters: any, message: IMessage, triggerId: string): void {
+		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
@@ -160,12 +167,12 @@ export class AppCommandsBridge {
 			triggerId,
 		);
 
-		Promise.await(this.orch.getManager().getCommandManager().executeCommand(command, context));
+		MeteorPromise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
 	}
 
-	_appCommandPreviewer(command, parameters, message) {
-		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+	private _appCommandPreviewer(command: string, parameters: any, message: IMessage): any {
+		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
@@ -175,12 +182,12 @@ export class AppCommandsBridge {
 			Object.freeze(params),
 			threadId,
 		);
-		return Promise.await(this.orch.getManager().getCommandManager().getPreviews(command, context));
+		return MeteorPromise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
 	}
 
-	_appCommandPreviewExecutor(command, parameters, message, preview, triggerId) {
-		const user = this.orch.getConverters().get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters().get('rooms').convertById(message.rid);
+	private async _appCommandPreviewExecutor(command: string, parameters: any, message: IMessage, preview: ISlashCommandPreviewItem, triggerId: string): Promise<void> {
+		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parameters.length === 0 || parameters === ' ' ? [] : parameters.split(' ');
 
@@ -192,6 +199,6 @@ export class AppCommandsBridge {
 			triggerId,
 		);
 
-		Promise.await(this.orch.getManager().getCommandManager().executePreview(command, preview, context));
+		MeteorPromise.await(this.orch.getManager()?.getCommandManager().executePreview(command, preview, context));
 	}
 }
