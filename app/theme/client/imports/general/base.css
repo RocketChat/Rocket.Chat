@@ -247,12 +247,14 @@ button {
 	}
 
 	.rcx-box.rcx-box--full {
-		height: auto !important;
 		overflow: visible !important;
+
+		height: auto !important;
 	}
 
 	.rc-scrollbars-container {
 		overflow: visible !important;
+
 		height: auto !important;
 	}
 
