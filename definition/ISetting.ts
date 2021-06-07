@@ -49,4 +49,5 @@ export interface ISetting {
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	readonly?: boolean;
+	persistent?: boolean;
 }
