@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
 import RoomMenu from '../RoomMenu';
+import { useSidebarClose } from '../hooks/useSidebarDisplay';
 import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -37,8 +38,15 @@ function SideBarItemTemplateWithData({
 	sidebarViewMode,
 	isAnonymous,
 }) {
+	const { closeSidebar } = useSidebarClose();
+
+	const moveToRoom = () => {
+		selected && closeSidebar();
+		return roomTypes.getRouteLink(room.t, room);
+	};
+
+	const href = moveToRoom();
 	const title = roomTypes.getRoomName(room.t, room);
-	const href = roomTypes.getRouteLink(room.t, room);
 
 	const {
 		lastMessage,
