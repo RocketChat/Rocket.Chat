@@ -18,7 +18,7 @@ class SetupWizard extends Page {
 
 	get website() { return browser.element('[data-qa="setup-wizard"] [data-qa="Website"]'); }
 
-	get siteName() { return browser.element('[data-qa="setup-wizard"] [data-qa="Site_Name"]'); }
+	get siteName() { return browser.element('[data-qa="setup-wizard"] [data-qa="Workspace_Name"]'); }
 
 	get language() { return browser.element('[data-qa="setup-wizard"] [data-qa="Language"]'); }
 

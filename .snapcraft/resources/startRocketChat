@@ -30,7 +30,7 @@ function start_rocketchat {
 	export Accounts_AvatarStorePath=$SNAP_COMMON/uploads
 	siteurl="$(snapctl get siteurl)"
         if [ -n "$siteurl" ]; then
-	  export OVERWRITE_SETTING_Site_Url=$siteurl
+	  export OVERWRITE_SETTING_Workspace_Url=$siteurl
 	fi
 
         if ls $SNAP_COMMON/*.env >/dev/null 2>&1; then

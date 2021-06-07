@@ -818,12 +818,12 @@ settings.addGroup('General', function() {
 			},
 		],
 	});
-	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
+	this.add('Workspace_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
-		i18nDescription: 'Site_Url_Description',
+		i18nDescription: 'Workspace_Description',
 		public: true,
 	});
-	this.add('Site_Name', 'Rocket.Chat', {
+	this.add('Workspace_Name', 'Rocket.Chat', {
 		type: 'string',
 		public: true,
 		wizard: {

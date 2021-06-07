@@ -6,8 +6,8 @@ import { LICENSE_VERSION } from '../license';
 export function buildWorkspaceRegistrationData() {
 	const stats = Statistics.findLast() || statistics.get();
 
-	const address = settings.get('Site_Url');
-	const siteName = settings.get('Site_Name');
+	const address = settings.get('Workspace_Url');
+	const siteName = settings.get('Workspace_Name');
 
 	// If we have it lets send it because likely an update
 	const workspaceId = settings.get('Cloud_Workspace_Id');

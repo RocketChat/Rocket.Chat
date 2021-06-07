@@ -12,7 +12,7 @@ export default {
 				'content-type': 'application/json',
 			},
 			data: {
-				url: settings.get('Site_Url'),
+				url: settings.get('Workspace_Url'),
 			},
 		});
 		return result.data;

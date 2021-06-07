@@ -27,19 +27,19 @@ Accounts.config({
 const updateMailConfig = _.debounce(() => {
 	Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
 
-	Accounts.emailTemplates.siteName = settings.get('Site_Name');
+	Accounts.emailTemplates.siteName = settings.get('Workspace_Name');
 
-	Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+	Accounts.emailTemplates.from = `${ settings.get('Workspace_Name') } <${ settings.get('From_Email') }>`;
 }, 1000);
 
 Meteor.startup(() => {
-	settings.get(/^(Accounts_LoginExpiration|Site_Name|From_Email)$/, updateMailConfig);
+	settings.get(/^(Accounts_LoginExpiration|Workspace_Name|From_Email)$/, updateMailConfig);
 });
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
 		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
-		const siteName = settings.get('Site_Name');
+		const siteName = settings.get('Workspace_Name');
 
 		return `[${ siteName }] ${ subject }`;
 	},
@@ -60,7 +60,7 @@ Accounts.emailTemplates.userActivated = {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 		const subject = `Accounts_Email_${ action }_Subject`;
-		const siteName = settings.get('Site_Name');
+		const siteName = settings.get('Workspace_Name');
 
 		return `[${ siteName }] ${ TAPi18n.__(subject) }`;
 	},

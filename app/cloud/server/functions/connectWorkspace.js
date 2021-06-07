@@ -23,7 +23,7 @@ export function connectWorkspace(token) {
 
 	const regInfo = {
 		email: settings.get('Organization_Email'),
-		client_name: settings.get('Site_Name'),
+		client_name: settings.get('Workspace_Name'),
 		redirect_uris: [redirectUri],
 	};
 

@@ -74,7 +74,7 @@ const updateSettings = debounce(Meteor.bindEnvironment(function() {
 		try {
 			updateStatus(STATUS_REGISTERING);
 
-			registerWithHub(getFederationDomain(), settings.get('Site_Url'), FederationKeys.getPublicKeyString());
+			registerWithHub(getFederationDomain(), settings.get('Workspace_Url'), FederationKeys.getPublicKeyString());
 
 			updateStatus(STATUS_ENABLED);
 		} catch (err) {

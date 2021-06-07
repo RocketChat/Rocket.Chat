@@ -8,7 +8,7 @@ import { hasRole } from '../../../authorization';
 
 Meteor.startup(function() {
 	Tracker.autorun(function(c) {
-		const siteUrl = settings.get('Site_Url');
+		const siteUrl = settings.get('Workspace_Url');
 		if (!siteUrl || (Meteor.userId() == null)) {
 			return;
 		}
@@ -21,14 +21,14 @@ Meteor.startup(function() {
 				modal.open({
 					type: 'warning',
 					title: t('Warning'),
-					text: `${ t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Site_Url'), siteUrl, currentUrl) }<br/><br/>${ t('Do_you_want_to_change_to_s_question', currentUrl) }`,
+					text: `${ t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', t('Workspace_Url'), siteUrl, currentUrl) }<br/><br/>${ t('Do_you_want_to_change_to_s_question', currentUrl) }`,
 					showCancelButton: true,
 					confirmButtonText: t('Yes'),
 					cancelButtonText: t('Cancel'),
 					closeOnConfirm: false,
 					html: true,
 				}, function() {
-					Meteor.call('saveSetting', 'Site_Url', currentUrl, function() {
+					Meteor.call('saveSetting', 'Workspace_Url', currentUrl, function() {
 						modal.open({
 							title: t('Saved'),
 							type: 'success',

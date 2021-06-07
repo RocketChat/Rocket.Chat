@@ -115,14 +115,14 @@ settings.addGroup('Email', function() {
 	});
 
 	this.section('Subject', function() {
-		this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
+		this.add('Offline_DM_Email', '[[Workspace_Name]] You have been direct messaged by [User]', {
 			type: 'code',
 			code: 'text',
 			multiline: true,
 			i18nLabel: 'Offline_DM_Email',
 			i18nDescription: 'Offline_Email_Subject_Description',
 		});
-		this.add('Offline_Mention_Email', '[[Site_Name]] You have been mentioned by [User] in #[Room]', {
+		this.add('Offline_Mention_Email', '[[Workspace_Name]] You have been mentioned by [User] in #[Room]', {
 			type: 'code',
 			code: 'text',
 			multiline: true,
@@ -138,7 +138,7 @@ settings.addGroup('Email', function() {
 		});
 	});
 	this.section('Header_and_Footer', function() {
-		this.add('Email_Header', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>', {
+		this.add('Email_Header', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Workspace_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -365,11 +365,11 @@ settings.addGroup('Email', function() {
 	});
 
 	this.section('Registration', function() {
-		this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Site_name}', {
+		this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to Workspace_name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_Enrollment_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+		this.add('Accounts_Enrollment_Email', '<h2>{Welcome_to Workspace_Name}</h2><p>{Visit_Workspace_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Workspace_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -378,11 +378,11 @@ settings.addGroup('Email', function() {
 	});
 
 	this.section('Registration_via_Admin', function() {
-		this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Site_Name}', {
+		this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to Workspace_Name}', {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Accounts_UserAddedEmail_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+		this.add('Accounts_UserAddedEmail_Email', '<h2>{Welcome_to Workspace_Name}</h2><p>{Visit_Workspace_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" target="_blank" href="[Workspace_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -417,7 +417,7 @@ settings.addGroup('Email', function() {
 			type: 'string',
 			i18nLabel: 'Subject',
 		});
-		this.add('Invitation_Email', '<h2>{Welcome_to Site_Name}</h2><p>{Visit_Site_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Site_URL]">{Join_Chat}</a>', {
+		this.add('Invitation_Email', '<h2>{Welcome_to Workspace_Name}</h2><p>{Visit_Workspace_Url_and_try_the_best_open_source_chat_solution_available_today}</p><a class="btn" href="[Workspace_URL]">{Join_Chat}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -447,7 +447,7 @@ settings.addGroup('Email', function() {
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Email_Changed_Email', '<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+		this.add('Email_Changed_Email', '<h2>{Hi},</h2><p>{Your_email_address_has_changed}</p><p>{Your_new_email_is_email}</p><a class="btn" target="_blank" href="[Workspace_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
@@ -462,7 +462,7 @@ settings.addGroup('Email', function() {
 			i18nLabel: 'Subject',
 		});
 
-		this.add('Password_Changed_Email', '<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Site_URL]">{Login}</a>', {
+		this.add('Password_Changed_Email', '<h2>{Hi},</h2><p>{Your_password_was_changed_by_an_admin}</p><p>{Your_temporary_password_is_password}</p><a class="btn" target="_blank" href="[Workspace_URL]">{Login}</a>', {
 			type: 'code',
 			code: 'text/html',
 			multiline: true,

@@ -36,7 +36,7 @@ const commands = {
 			}, event.origin);
 		};
 
-		const siteUrl = `${ Meteor.settings.Site_Url }/`;
+		const siteUrl = `${ Meteor.settings.Workspace_Url }/`;
 		if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
 			data.redirectUrl = null;
 		}

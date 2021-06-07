@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 
 export let hostname;
 
-settings.get('Site_Url', function(key, value) {
+settings.get('Workspace_Url', function(key, value) {
 	if (value == null || value.trim() === '') {
 		return;
 	}

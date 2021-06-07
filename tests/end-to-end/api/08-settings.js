@@ -38,13 +38,13 @@ describe('[Settings]', function() {
 
 	describe('[/settings/:_id]', () => {
 		it('should return one setting', (done) => {
-			request.get(api('settings/Site_Url'))
+			request.get(api('settings/Workspace_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('_id', 'Site_Url');
+					expect(res.body).to.have.property('_id', 'Workspace_Url');
 					expect(res.body).to.have.property('value');
 				})
 				.end(done);
