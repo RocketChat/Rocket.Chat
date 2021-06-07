@@ -10,7 +10,7 @@ export interface ITaskRoomCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 }
 
 export interface ITaskRoomCreateParams {
-	team: Pick<ITaskRoom, 'name' | 'type'>;
+	taskRoom: Pick<ITaskRoom, 'name' | 'type'>;
 	room: ITaskRoomCreateRoom;
 	members?: Array<string>; // list of user _ids
 	owner?: string; // the team owner. If not present, owner = requester

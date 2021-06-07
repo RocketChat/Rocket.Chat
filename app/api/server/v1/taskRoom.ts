@@ -48,6 +48,7 @@ API.v1.addRoute('teams.listAll', { authRequired: true }, {
 
 API.v1.addRoute('teams.create', { authRequired: true }, {
 	post() {
+		//  Permission_taskRoom
 		if (!hasPermission(this.userId, 'create-team')) {
 			return API.v1.unauthorized();
 		}
@@ -57,8 +58,8 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			return API.v1.failure('Body param "name" is required');
 		}
 
-		const team = Promise.await(TaskRoom.create(this.userId, {
-			team: {
+		const taskRoom = Promise.await(TaskRoom.create(this.userId, {
+			taskRoom: {
 				name,
 				type,
 			},
@@ -67,7 +68,7 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			owner,
 		}));
 
-		return API.v1.success({ team });
+		return API.v1.success({ taskRoom });
 	},
 });
 
