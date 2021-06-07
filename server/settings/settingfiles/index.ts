@@ -5,3 +5,5 @@ import './snippetmessage.settings';
 import './starmessage.settings';
 
 import './oauth-apple.settings.ts';
+import './oauth-crowd.settings';
+import './oauth-gitlab.settings';

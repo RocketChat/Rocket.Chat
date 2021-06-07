@@ -4,12 +4,12 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
-import { Logger } from '../../logger';
-import { _setRealName } from '../../lib';
-import { Users } from '../../models';
-import { settings } from '../../settings';
-import { hasRole } from '../../authorization';
-import { deleteUser } from '../../lib/server/functions';
+import { Logger } from '../../../../app/logger';
+import { _setRealName } from '../../../../app/lib';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
+import { hasRole } from '../../../../app/authorization';
+import { deleteUser } from '../../../../app/lib/server/functions';
 
 const logger = new Logger('CROWD', {});
 

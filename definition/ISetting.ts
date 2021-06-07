@@ -48,4 +48,5 @@ export interface ISetting {
 	ts?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
+	readonly?: boolean;
 }
