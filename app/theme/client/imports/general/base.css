@@ -211,7 +211,7 @@ button {
 	.simplebar-content-wrapper,
 	section.rcx-box.rcx-box--full,
 	.rc-old.main-content {
-		overflow: auto !important;
+		overflow: visible !important;
 
 		height: auto !important;
 		max-height: none !important;
@@ -244,6 +244,20 @@ button {
 
 	.rc-alerts {
 		display: none !important;
+	}
+
+	.rcx-box.rcx-box--full {
+		height: auto !important;
+		overflow: visible !important;
+	}
+
+	.rc-scrollbars-container {
+		overflow: visible !important;
+		height: auto !important;
+	}
+
+	.rc-scrollbars-view {
+		position: relative !important;
 	}
 }
 
