@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '..';
 
 settings.addGroup('OAuth', function() {
 	this.section('GitLab', function() {
