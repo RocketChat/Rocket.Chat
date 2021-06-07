@@ -7,3 +7,4 @@ import './starmessage.settings';
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
 import './oauth-gitlab.settings';
+import './oauth-dolphin.settings';
