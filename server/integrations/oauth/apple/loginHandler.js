@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { handleIdentityToken } from './tokenHandler';
-import { settings } from '../../settings';
+import { settings } from '../../../settings';
 
 Accounts.registerLoginHandler('apple', (loginRequest) => {
 	if (!loginRequest.identityToken) {

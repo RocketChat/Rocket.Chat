@@ -1,7 +1,6 @@
 import '../app/cors/server';
 import '../app/sms';
 import '../app/analytics/server';
-import '../app/apple/server';
 import '../app/assets/server';
 import '../app/authorization';
 import '../app/autolinker/server';

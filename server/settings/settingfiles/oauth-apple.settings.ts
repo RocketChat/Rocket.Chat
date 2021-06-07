@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('OAuth', function() {
 	this.section('Apple', function() {
