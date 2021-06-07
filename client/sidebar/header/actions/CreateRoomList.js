@@ -7,6 +7,7 @@ import { useAtLeastOnePermission, usePermission } from '../../../contexts/Author
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import CreateTaskRoomModal from '../../../views/taskRoom/CreateTaskRoomModal';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateRoomListItem from './CreateRoomListItem';
@@ -66,6 +67,7 @@ function CreateRoomList() {
 
 	const createChannel = useReactModal(CreateChannelWithData);
 	const createTeam = useReactModal(CreateTeamModal);
+	const createTaskRoom = useReactModal(CreateTaskRoomModal);
 	const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
 	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
 
@@ -91,6 +93,8 @@ function CreateRoomList() {
 							action={createDirectMessage}
 						/>
 					)}
+					{/* Permission_taskRoom */}
+					{<CreateRoomListItem icon='team' text={t('Task')} action={createTaskRoom} />}
 					{discussionEnabled && canCreateDiscussion && (
 						<CreateRoomListItem
 							icon='discussion'
