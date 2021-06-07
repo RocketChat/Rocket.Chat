@@ -26,7 +26,7 @@ import TranscriptModal from '../../../../../components/Omnichannel/modals/Transc
 import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useLayout } from '../../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
+import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';

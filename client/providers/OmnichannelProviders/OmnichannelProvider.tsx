@@ -25,7 +25,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	showOmnichannelQueueLink: false,
 };
 
-const OmnichannelProvider: FC = ({ children }) => {
+export const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;

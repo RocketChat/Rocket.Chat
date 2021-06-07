@@ -1,5 +1,5 @@
 import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
-import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi'; 
+import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
 export type LivechatDepartment = {
 	GET: (params: {
