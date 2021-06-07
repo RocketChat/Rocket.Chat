@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps } from 'react';
+import React, { FC, ComponentProps, ReactElement, ReactNode } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import { withDoNotAskAgain, RequiredModalProps } from './withDoNotAskAgain';
@@ -10,8 +10,8 @@ type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	cancelText?: string;
 	confirmText?: string;
-	title?: string;
-	icon?: string;
+	title?: string | ReactElement;
+	icon?: string | ReactElement | null;
 	onCancel?: () => void;
 	onClose: () => void;
 	onConfirm: () => void;
@@ -35,6 +35,22 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 	}
 };
 
+const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): ReactNode => {
+	if (icon === null) {
+		return null;
+	}
+
+	if (icon === undefined) {
+		return <Icon color={variant} name={iconMap[variant]} size={24} />;
+	}
+
+	if (typeof icon === 'string') {
+		return <Icon color={variant} name={icon} size={24} />;
+	}
+
+	return icon;
+};
+
 const GenericModal: FC<GenericModalProps> = ({
 	variant = 'info',
 	children,
@@ -53,7 +69,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				{icon !== null && <Icon color={variant} name={icon ?? iconMap[variant]} size={24} />}
+				{renderIcon(icon, variant)}
 				<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
