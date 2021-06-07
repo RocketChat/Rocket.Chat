@@ -1,2 +1,2 @@
-import '../lib/common';
+import '../../../common/oauth/dolphin';
 import './login-button.css';

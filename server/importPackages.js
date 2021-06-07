@@ -12,7 +12,6 @@ import '../app/cloud/server';
 import '../app/colors/server';
 import '../app/custom-oauth';
 import '../app/custom-sounds/server';
-import '../app/dolphin/server';
 import '../app/drupal/server';
 import '../app/emoji';
 import '../app/emoji-custom/server';
