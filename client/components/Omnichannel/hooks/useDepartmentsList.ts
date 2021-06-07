@@ -20,7 +20,7 @@ export const useDepartmentsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = `livechat/department`;
+	const endpoint = 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 

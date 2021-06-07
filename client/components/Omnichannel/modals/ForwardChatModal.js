@@ -26,10 +26,9 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const inputRef = useAutoFocus(true);
 
 	const { values, handlers } = useForm({
-		departmentName: '',
 		username: '',
 		comment: '',
-		department: '',
+		department: {},
 	});
 	const { username, comment, department } = values;
 	const [userId, setUserId] = useState('');
