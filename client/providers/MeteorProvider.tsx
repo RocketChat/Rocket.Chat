@@ -7,7 +7,7 @@ import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider';
-import OmnichannelProvider from './OmnichannelProvider';
+import OmnichannelProvider from './OmnichannelProviders/OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
 import SessionProvider from './SessionProvider';

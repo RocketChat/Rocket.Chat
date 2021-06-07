@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
-import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext/OmnichannelContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';

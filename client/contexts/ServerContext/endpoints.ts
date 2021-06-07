@@ -11,6 +11,7 @@ import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-cu
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
+import { LivechatCustomFields } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
@@ -46,6 +47,7 @@ export type ServerEndpoints = {
 	'livechat/monitors.list': LivechatMonitorsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'livechat/custom-fields': LivechatCustomFields;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
