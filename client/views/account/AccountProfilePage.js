@@ -64,7 +64,7 @@ const AccountProfilePage = () => {
 	// whether the username is forced to match LDAP:
 	const ldapUsernameLinked = ldapEnabled && ldapUsernameField;
 	const requireName = useSetting('Accounts_RequireNameForSignUp');
-	const namesRegexSetting = useSetting('UTF8_Names_Validation');
+	const namesRegexSetting = useSetting('UTF8_User_Names_Validation');
 
 	if (allowPasswordChange && !allowOAuthPasswordChange) {
 		allowPasswordChange = Boolean(user?.services?.password?.bcrypt);

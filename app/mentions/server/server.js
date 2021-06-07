@@ -33,7 +33,7 @@ export class MentionQueries {
 const queries = new MentionQueries();
 
 const mention = new MentionsServer({
-	pattern: () => settings.get('UTF8_Names_Validation'),
+	pattern: () => settings.get('UTF8_User_Names_Validation'),
 	messageMaxAll: () => settings.get('Message_MaxAll'),
 	getUsers: (usernames) => queries.getUsers(usernames),
 	getUser: (userId) => queries.getUser(userId),
