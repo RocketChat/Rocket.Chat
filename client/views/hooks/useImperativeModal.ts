@@ -1,19 +1,18 @@
-import { createElement, useEffect } from 'react';
+import { createElement, useEffect, Dispatch, SetStateAction, ReactNode } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { useSetModal } from '../../contexts/ModalContext';
-import { legacyModal } from '../../lib/legacyModal';
+import { imperativeModal } from '../../lib/imperativeModal';
 
-const LegacyModal = (): null => {
-	const descriptor = useSubscription(legacyModal);
-
-	const setModal = useSetModal();
+export const useImperativeModal = (setModal: Dispatch<SetStateAction<ReactNode>>): void => {
+	const descriptor = useSubscription(imperativeModal);
 
 	useEffect(() => {
 		if (descriptor === null) {
 			return setModal(null);
 		}
 
+		// todo API to accept old modal props
+		// and return equivalent React modal
 		if ('options' in descriptor) {
 			return; // handleBlazeModal
 		}
@@ -24,8 +23,4 @@ const LegacyModal = (): null => {
 
 		throw new Error('invalid modal descriptor');
 	}, [descriptor, setModal]);
-
-	return null;
 };
-
-export default LegacyModal;

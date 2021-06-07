@@ -51,7 +51,7 @@ type ReactModalDescriptor<Props extends {} = {}> = {
 
 type ModalDescriptor = BlazeModalDescriptor | ReactModalDescriptor | null;
 
-class LegacyModalSubscription
+class ImperativeModalSubscription
 	extends Emitter<{ update: void }>
 	implements Subscription<ModalDescriptor> {
 	private descriptor: ModalDescriptor = null;
@@ -77,4 +77,4 @@ class LegacyModalSubscription
 	};
 }
 
-export const legacyModal = new LegacyModalSubscription();
+export const imperativeModal = new ImperativeModalSubscription();
