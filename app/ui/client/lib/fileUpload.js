@@ -5,6 +5,7 @@ import { Handlebars } from 'meteor/ui';
 import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
+import { MsgUploading } from '../index';
 import { t, fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
@@ -33,7 +34,6 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 
 	uploads.push(upload);
 	Session.set('uploading', uploads);
-
 	const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 		progress(progress) {
 			const uploads = Session.get('uploading') || [];
@@ -55,6 +55,14 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 			Session.set('uploading', uploads);
 		},
 	});
+	if (Session.get('uploading').length) {
+		MsgUploading.start(rid);
+	}
+	const msgUploadingInterval = setInterval(function() {
+		if (Session.get('uploading').length) {
+			MsgUploading.start(rid);
+		}
+	}, 5000);
 
 	Tracker.autorun((computation) => {
 		const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
@@ -73,13 +81,23 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 	try {
 		await promise;
 		const uploads = Session.get('uploading') || [];
-		return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+
+		if (!Session.get('uploading').length) {
+			MsgUploading.stop(rid);
+			clearInterval(msgUploadingInterval);
+		}
+		return remainingUploads;
 	} catch (error) {
 		const uploads = Session.get('uploading') || [];
 		uploads.filter((u) => u.id === upload.id).forEach((u) => {
 			u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 			u.percentage = 0;
 		});
+		if (!uploads.length) {
+			MsgUploading.stop(rid);
+			clearInterval(msgUploadingInterval);
+		}
 		Session.set('uploading', uploads);
 	}
 };

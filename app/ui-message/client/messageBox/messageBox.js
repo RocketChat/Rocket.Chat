@@ -34,6 +34,7 @@ import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxRecording';
 import './messageBoxTyping';
+import './messageBoxUploading';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';

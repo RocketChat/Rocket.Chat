@@ -50,6 +50,7 @@ export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';
 export { MsgTyping } from './lib/msgTyping';
 export { MsgRecording } from './lib/msgRecording';
+export { MsgUploading } from './lib/msgUploading';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
