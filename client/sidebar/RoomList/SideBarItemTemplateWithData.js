@@ -39,7 +39,6 @@ function SideBarItemTemplateWithData({
 }) {
 	const title = roomTypes.getRoomName(room.t, room);
 	const href = roomTypes.getRouteLink(room.t, room);
-	console.log(href);
 	const {
 		lastMessage,
 		hideUnreadStatus,

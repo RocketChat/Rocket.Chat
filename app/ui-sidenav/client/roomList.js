@@ -143,6 +143,7 @@ const mergeSubRoom = (subscription) => {
 			uids: 1,
 			v: 1,
 			streamingOptions: 1,
+			ephemeralTime: 1,
 			usernames: 1,
 			topic: 1,
 			encrypted: 1,
@@ -184,7 +185,7 @@ const mergeSubRoom = (subscription) => {
 		uids,
 		usernames,
 		jitsiTimeout,
-
+		ephemeralTime,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -217,7 +218,7 @@ const mergeSubRoom = (subscription) => {
 		uids,
 		usernames,
 		jitsiTimeout,
-
+		ephemeralTime,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -238,7 +239,6 @@ const mergeRoomSub = (room) => {
 	if (!sub) {
 		return room;
 	}
-
 	const {
 		encrypted,
 		description,
@@ -255,7 +255,7 @@ const mergeRoomSub = (room) => {
 		uids,
 		usernames,
 		jitsiTimeout,
-
+		ephemeralTime,
 		v,
 		transcriptRequest,
 		servedBy,
@@ -287,6 +287,7 @@ const mergeRoomSub = (room) => {
 			usernames,
 			lastMessage,
 			streamingOptions,
+			ephemeralTime,
 			teamId,
 			teamMain,
 			v,

@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import InfoPanel from '../../../../InfoPanel';
 import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
@@ -14,6 +15,7 @@ function RoomInfo({
 	description,
 	archived,
 	broadcast,
+	ephemeralTime,
 	announcement,
 	topic,
 	type,
@@ -39,7 +41,7 @@ function RoomInfo({
 		maxAgeDefault,
 		retentionEnabledDefault,
 	} = retentionPolicy;
-
+	const formatDateAndTime = useFormatDateAndTime();
 	const memoizedActions = useMemo(
 		() => ({
 			...(onClickEnterRoom && {
@@ -167,6 +169,12 @@ function RoomInfo({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
+						{ephemeralTime && ephemeralTime !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Ephemeral_time')}</InfoPanel.Label>
+								<InfoPanel.Text>{formatDateAndTime(ephemeralTime)}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 						{broadcast && broadcast !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>

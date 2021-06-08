@@ -1,14 +1,17 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import moment from 'moment';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useSetting } from '../../contexts/SettingsContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 import CreateChannel from './CreateChannel';
 
 const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
+	const t = useTranslation();
 	const createChannel = useEndpointActionExperimental('POST', 'channels.create');
 	const createPrivateChannel = useEndpointActionExperimental('POST', 'groups.create');
 	const canCreateChannel = usePermission('create-c');
@@ -33,10 +36,21 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
 		ephemeral: false,
+		ephemeralTime: '',
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted, ephemeral } = values;
+	const {
+		users,
+		name,
+		description,
+		type,
+		readOnly,
+		broadcast,
+		encrypted,
+		ephemeral,
+		ephemeralTime,
+	} = values;
 	const {
 		handleUsers,
 		handleEncrypted,
@@ -44,8 +58,15 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		handleBroadcast,
 		handleReadOnly,
 		handleEphemeral,
+		handleEphemeralTime,
 	} = handlers;
 
+	const defaultOption = [
+		['1hr', t('1_hour')],
+		['6hr', t('6_hours')],
+		['12hr', t('12_hours')],
+		['24hr', t('24_hours')],
+	];
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
 			if (users.includes(value)) {
@@ -67,6 +88,24 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		return handleBroadcast(value);
 	});
 	const onChangeEphemeral = useMutableCallback((value) => handleEphemeral(value));
+	const onChangeEphemeralTime = useMutableCallback((value) => {
+		let endTime;
+		switch (value) {
+			case '1hr':
+				endTime = moment().add(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
+				break;
+			case '6hr':
+				endTime = moment().add(6, 'hour').format('YYYY-MM-DD HH:mm:ss');
+				break;
+			case '12hr':
+				endTime = moment().add(12, 'hour').format('YYYY-MM-DD HH:mm:ss');
+				break;
+			case '24hr':
+				endTime = moment().add(24, 'hour').format('YYYY-MM-DD HH:mm:ss');
+				break;
+		}
+		handleEphemeralTime(endTime);
+	});
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid) => {
 			goToRoomById(rid);
@@ -82,6 +121,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 				encrypted,
 				...(teamId && { teamId }),
 				ephemeral,
+				ephemeralTime,
 			},
 		};
 		let roomData;
@@ -111,6 +151,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		users,
 		reload,
 		ephemeral,
+		ephemeralTime,
 	]);
 
 	return (
@@ -121,10 +162,12 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
 			onChangeEphemeral={onChangeEphemeral}
+			onChangeEphemeralTime={onChangeEphemeralTime}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
 			onClose={onClose}
+			options={defaultOption}
 			onCreate={onCreate}
 		/>
 	);

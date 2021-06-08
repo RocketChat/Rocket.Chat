@@ -25,7 +25,7 @@ export type RoomHeaderProps = {
 };
 
 const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
-	console.log(room);
+	console.log(room.ephemeralTime);
 	return (
 		<Header>
 			{slots?.start}
@@ -49,6 +49,7 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => {
 							<MarkdownText variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 						)}
 					</Header.Subtitle>
+					{/* <Header.Subtitle>{room.ephemeralTime}</Header.Subtitle> */}
 				</Header.Content.Row>
 			</Header.Content>
 			{slots?.posContent}

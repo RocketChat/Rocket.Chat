@@ -30,8 +30,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 	const room = params.roomId
 		? Rooms.findOneById(params.roomId, roomOptions)
 		: Rooms.findOneByName(params.roomName, roomOptions);
-
-	if (!room || room.t !== 'p') {
+	if (!room || (room.t !== 'p' && room.t !== 'e')) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 

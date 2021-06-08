@@ -31,7 +31,6 @@ const RoomList = () => {
 	const t = useTranslation();
 
 	const roomsList = useRoomList();
-	console.log(roomsList);
 	const itemData = useMemo(
 		() => ({
 			extended,

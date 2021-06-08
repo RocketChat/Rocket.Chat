@@ -51,7 +51,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamId?: string;
 	teamDefault?: boolean;
 	open?: boolean;
-
+	ephemeralTime: string;
 	autoTranslateLanguage: string;
 	autoTranslate?: boolean;
 	unread?: number;

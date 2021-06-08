@@ -7,6 +7,7 @@ import {
 	Icon,
 	Field,
 	ToggleSwitch,
+	Select,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -23,9 +24,11 @@ const CreateChannel = ({
 	onChangeUsers,
 	onChangeType,
 	onChangeEphemeral,
+	onChangeEphemeralTime,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
+	options,
 	onCreate,
 	onClose,
 }) => {
@@ -134,6 +137,14 @@ const CreateChannel = ({
 						/>
 					</Box>
 				</Field>
+				{values.ephemeral && (
+					<Field mbe='x24'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{'Ephemeral Time'}</Field.Label>
+						</Box>
+						<Select onChange={onChangeEphemeralTime} options={options} />
+					</Field>
+				)}
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>

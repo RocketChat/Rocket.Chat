@@ -80,6 +80,11 @@
 							<span title="{{_ "Following"}}" class="following"><i class="icon-bell"></i></span>
 						{{/unless}}
 					{{/if}}
+					{{#if isEphemeral}}
+						<span class="user color-info-font-color">
+							{{>icon icon=roomIcon}}
+						</span>
+					{{/if}}	
 					{{#if msg.alert}}
 						<div title="{{_ msg.alert }}" class="message-unread"></div>
 					{{/if}}
