@@ -5,7 +5,6 @@ import {
 	api,
 	request,
 	credentials,
-	group,
 	login,
 	apiRoleNameUsers,
 	apiRoleNameSubscriptions,
@@ -32,7 +31,7 @@ function createRole(name, scope, description) {
 	});
 }
 
-describe('[Roles]', function() {
+describe.only('[Roles]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -159,7 +158,6 @@ describe('[Roles]', function() {
 				.send({
 					roleName: apiRoleNameSubscriptions,
 					username: login.user,
-					roomId: group._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
