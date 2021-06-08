@@ -131,6 +131,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			name: Match.Maybe(String),
 			scope: Match.Maybe(String),
 			description: Match.Maybe(String),
+			mandatory2fa: Match.Maybe(Boolean),
 		});
 
 		const roleData = {
@@ -138,12 +139,17 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			name: this.bodyParams.name,
 			scope: this.bodyParams.scope,
 			description: this.bodyParams.description,
+			mandatory2fa: this.bodyParams.mandatory2fa,
 		};
 
 		const role = Roles.findOneByIdOrName(roleData.roleId);
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+		}
+
+		if (role.protected) {
+			throw new Meteor.Error('error-role-protected', 'Role is protected');
 		}
 
 		if (roleData.name) {
@@ -159,7 +165,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			}
 		}
 
-		Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description);
+		Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {

@@ -28,7 +28,7 @@ export class Roles extends Base {
 		});
 	}
 
-	updateById(_id, name, scope, description) {
+	updateById(_id, name, scope, description, mandatory2fa) {
 		const query = { _id };
 
 		const update = {
@@ -36,6 +36,7 @@ export class Roles extends Base {
 				...name && { name },
 				...scope && { scope },
 				...description && { description },
+				...mandatory2fa && { mandatory2fa },
 			},
 		};
 
