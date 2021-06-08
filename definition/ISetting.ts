@@ -50,4 +50,6 @@ export interface ISetting {
 	values?: Array<ISettingSelectOption>;
 	readonly?: boolean;
 	persistent?: boolean;
+	placeholder?: string;
+	alert?: string;
 }

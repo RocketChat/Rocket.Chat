@@ -1,12 +1,13 @@
 import moment from 'moment';
 
-import { settings } from '../../settings';
+import { settings } from '..';
 import 'moment-timezone';
 
 settings.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Smarsh_Enabled',
+		// @ts-expect-error
 		enableQuery: {
 			_id: 'From_Email',
 			value: {
@@ -53,6 +54,7 @@ settings.addGroup('Smarsh', function addSettings() {
 			key: 'every_6_hours',
 			i18nLabel: 'every_six_hours',
 		}],
+		// @ts-expect-error
 		enableQuery: {
 			_id: 'From_Email',
 			value: {
