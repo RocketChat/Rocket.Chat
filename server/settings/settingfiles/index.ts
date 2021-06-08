@@ -7,6 +7,7 @@ import './slackbridge.settings';
 import './smarsh-connector.settings';
 import './irc.settings';
 import './googlevision.settings';
+import './sms.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
