@@ -6,10 +6,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Random } from 'meteor/random';
 
 import { logger } from './logger';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../app/callbacks';
 import { settings } from '../../settings';
 import { Messages, Rooms, Users } from '../../models';
-import { createRoom, sendMessage, setUserAvatar } from '../../lib';
+import { createRoom, sendMessage, setUserAvatar } from '../../../app/lib';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

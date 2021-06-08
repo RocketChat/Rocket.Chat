@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../server/models';
-import { hasRole } from '../../authorization';
+import { Rooms } from '../../models';
+import { hasRole } from '../../../app/authorization';
 import { settings } from '../../settings';
 
 Meteor.methods({

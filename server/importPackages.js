@@ -40,7 +40,6 @@ import '../app/oembed/server';
 import '../app/otr/server';
 import '../app/push-notifications/server';
 import '../app/retention-policy';
-import '../app/slackbridge/server';
 import '../app/smarsh-connector';
 import '../app/spotify/server';
 import '../app/theme/server';
@@ -86,4 +85,5 @@ import './services/importer/strategies';
 import './services/apps';
 import './overrides/google-oauth';
 
+import './integrations';
 import './integrations/oauth';
