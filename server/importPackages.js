@@ -26,7 +26,6 @@ import '../app/livestream/server';
 import '../app/logger';
 import '../app/token-login/server';
 import '../app/mailer';
-import '../app/mapview/server';
 import '../app/markdown/server';
 import '../app/migrations';
 import './integrations/oembed';
