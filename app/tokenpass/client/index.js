@@ -1,4 +1,4 @@
-import '../lib/common';
+import '../../../common/oauth/tokenpass';
 import './startup';
 import './roomType';
 import './tokenChannelsList.html';

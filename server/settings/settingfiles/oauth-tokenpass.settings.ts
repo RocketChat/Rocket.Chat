@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
-import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-import { validateTokenAccess } from './roomAccessValidator.compatibility';
-import './roomAccessValidator.internalService';
+import { updateUserTokenpassBalances } from '../../integrations/oauth/tokenpass/functions/updateUserTokenpassBalances';
+import { settings } from '..';
+import { callbacks } from '../../../app/callbacks/server';
+import { validateTokenAccess } from '../../integrations/oauth/tokenpass/roomAccessValidator.compatibility';
+import '../../integrations/oauth/tokenpass/roomAccessValidator.internalService';
 
 settings.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
@@ -23,7 +23,7 @@ settings.addGroup('OAuth', function() {
 });
 
 Meteor.startup(function() {
-	callbacks.add('beforeJoinRoom', function(user, room) {
+	callbacks.add('beforeJoinRoom', function(user: any, room: any): any {
 		if (room.tokenpass && !validateTokenAccess(user, room)) {
 			throw new Meteor.Error('error-not-allowed', 'Token required', { method: 'joinRoom' });
 		}
@@ -32,7 +32,7 @@ Meteor.startup(function() {
 	});
 });
 
-Accounts.onLogin(function({ user }) {
+Accounts.onLogin(function({ user }: { [k: string]: any }) {
 	if (user && user.services && user.services.tokenpass) {
 		updateUserTokenpassBalances(user);
 	}

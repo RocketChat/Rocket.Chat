@@ -36,7 +36,6 @@ import '../app/push-notifications/server';
 import '../app/retention-policy';
 import '../app/theme/server';
 import '../app/threads/server';
-import '../app/tokenpass/server';
 import '../app/ui-master/server';
 import '../app/ui-vrecord/server';
 import '../app/user-data-download';

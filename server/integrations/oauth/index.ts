@@ -8,3 +8,4 @@ import './blockstack';
 import './github';
 import './custom';
 import './nextcloud';
+import './tokenpass';

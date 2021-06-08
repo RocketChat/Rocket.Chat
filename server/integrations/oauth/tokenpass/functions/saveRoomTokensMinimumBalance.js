@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { Rooms } from '../../../models';
+import { Rooms } from '../../../../models';
 
 export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalance) {
 	if (!Match.test(rid, String)) {

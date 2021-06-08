@@ -1,5 +1,5 @@
 import { Tokenpass } from './Tokenpass';
-import { Users } from '../../models';
+import { Users } from '../../../models';
 
 export function validateTokenAccess(userData, roomData) {
 	if (!userData || !userData.services || !userData.services.tokenpass || !userData.services.tokenpass.tcaBalances) {
