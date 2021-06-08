@@ -19,7 +19,6 @@ import '../app/federation/server';
 import '../app/file';
 import '../app/file-upload';
 import '../app/iframe-login/server';
-import '../app/issuelinks/server';
 import '../app/katex/server';
 import '../app/ldap/server';
 import '../app/lib';

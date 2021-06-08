@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.add('IssueLinks_Enabled', false, {
 	type: 'boolean',
