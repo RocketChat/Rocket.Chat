@@ -4,11 +4,11 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Messages, Rooms, Users } from '../../../server/models';
-import { settings } from '../../../server/settings';
-import { callbacks } from '../../callbacks/server';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { Messages, Rooms, Users } from '../../models';
+import { settings } from '../../settings';
+import { callbacks } from '../../../app/callbacks/server';
+import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
+import { canAccessRoom } from '../../../app/authorization/server/functions/canAccessRoom';
 
 const recursiveRemove = (message, deep = 1) => {
 	if (message) {

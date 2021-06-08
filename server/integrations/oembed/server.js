@@ -11,9 +11,9 @@ import he from 'he';
 import jschardet from 'jschardet';
 
 import { OEmbedCache, Messages } from '../../models';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../app/callbacks';
 import { settings } from '../../settings';
-import { isURL } from '../../utils/lib/isURL';
+import { isURL } from '../../../app/utils/lib/isURL';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};

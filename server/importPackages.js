@@ -31,7 +31,7 @@ import '../app/markdown/server';
 import '../app/migrations';
 import '../app/nextcloud/server';
 import '../app/oauth2-server-config/server';
-import '../app/oembed/server';
+import './integrations/oembed';
 import '../app/otr/server';
 import '../app/push-notifications/server';
 import '../app/retention-policy';

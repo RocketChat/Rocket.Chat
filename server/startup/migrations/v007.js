@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { OEmbed } from '../../../app/oembed/server';
+import { OEmbed } from '../../integrations/oembed';
 import { Migrations } from '../../../app/migrations';
 import { Messages } from '../../../app/models';
 
