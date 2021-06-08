@@ -1,37 +1,41 @@
 import { Random } from 'meteor/random';
+import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
+import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
+import { AppServerOrchestrator } from '../orchestrator';
 
-export class AppUserBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppUserBridge extends UserBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	async getById(userId, appId) {
+	protected async getById(userId: string, appId: string): Promise<IUser> {
 		this.orch.debugLog(`The App ${ appId } is getting the userId: "${ userId }"`);
 
-		return this.orch.getConverters().get('users').convertById(userId);
+		return this.orch.getConverters()?.get('users').convertById(userId);
 	}
 
-	async getByUsername(username, appId) {
+	protected async getByUsername(username: string, appId: string): Promise<IUser> {
 		this.orch.debugLog(`The App ${ appId } is getting the username: "${ username }"`);
 
-		return this.orch.getConverters().get('users').convertByUsername(username);
+		return this.orch.getConverters()?.get('users').convertByUsername(username);
 	}
 
-	async getAppUser(appId) {
+	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${ appId } is getting its assigned user`);
 
-		const user = Users.findOneByAppId(appId);
+		const user = Users.findOneByAppId(appId, {});
 
-		return this.orch.getConverters().get('users').convertToApp(user);
+		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
 
-	async create(userDescriptor, appId, { avatarUrl }) {
+	protected async create(userDescriptor: Partial<IUser>, appId: string, options?: IUserCreationOptions): Promise<string> {
 		this.orch.debugLog(`The App ${ appId } is requesting to create a new user.`);
-		const user = this.orch.getConverters().get('users').convertToRocketChat(userDescriptor);
+		const user = this.orch.getConverters()?.get('users').convertToRocketChat(userDescriptor);
 
 		if (!user._id) {
 			user._id = Random.id();
@@ -49,8 +53,8 @@ export class AppUserBridge {
 
 				Users.insert(user);
 
-				if (avatarUrl) {
-					setUserAvatar(user, avatarUrl, '', 'local');
+				if (options?.avatarUrl) {
+					setUserAvatar(user, options.avatarUrl, '', 'local');
 				}
 
 				break;
@@ -62,7 +66,7 @@ export class AppUserBridge {
 		return user._id;
 	}
 
-	async remove(user, appId) {
+	protected async remove(user: IUser & { id: string }, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App's user is being removed: ${ appId }`);
 
 		// It's actually not a problem if there is no App user to delete - just means we don't need to do anything more.
@@ -79,7 +83,7 @@ export class AppUserBridge {
 		return true;
 	}
 
-	async update(user, fields, appId) {
+	protected async update(user: IUser & { id: string }, fields: Partial<IUser>, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is updating a user`);
 
 		if (!user) {
@@ -100,7 +104,7 @@ export class AppUserBridge {
 		return true;
 	}
 
-	async getActiveUserCount() {
+	protected async getActiveUserCount(): Promise<number> {
 		return Users.getActiveLocalUserCount();
 	}
 }
