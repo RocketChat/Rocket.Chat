@@ -51,7 +51,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 						{...imageDimensions}
 						loadImage={loadImage}
 						setLoadImage={setLoadImage}
-						src={url}
+						src={getURL(url)}
 						previewUrl={`data:image/png;base64,${imagePreview}`}
 					/>
 				</Attachment.Content>
