@@ -28,6 +28,32 @@ export class Roles extends Base {
 		});
 	}
 
+	updateById(_id, name, scope, description) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				...name && { name },
+				...scope && { scope },
+				...description && { description },
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	createWithRandomId(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const role = {
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		};
+
+		return this.insert(role);
+	}
+
 	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
 		const queryData = {
 			name,
