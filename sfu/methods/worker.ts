@@ -1,4 +1,4 @@
-import mediasoup, { types } from 'mediasoup';
+import { types, createWorker } from 'mediasoup';
 
 import config from '../config';
 
@@ -9,7 +9,7 @@ export const runWorkers = async (): Promise<void> => {
 	const { numWorkers } = config.mediasoup;
 
 	new Array(numWorkers).fill(0).forEach(async () => {
-		const worker = await mediasoup.createWorker({
+		const worker = await createWorker({
 			logLevel: config.mediasoup.workerSettings.logLevel,
 			logTags: config.mediasoup.workerSettings.logTags,
 			rtcMinPort: Number(config.mediasoup.workerSettings.rtcMinPort),
@@ -23,6 +23,7 @@ export const runWorkers = async (): Promise<void> => {
 
 		mediasoupWorkers.push(worker);
 	});
+	console.log('Mediasoup Workers started.');
 };
 
 export const getWorker = (): types.Worker => {
