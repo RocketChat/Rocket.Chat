@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../authorization';
-import { OAuthApps } from '../../../../models';
+import { hasPermission } from '../../../../../../app/authorization';
+import { OAuthApps } from '../../../../../models';
 
 Meteor.methods({
 	deleteOAuthApp(applicationId) {

@@ -1,4 +1,4 @@
-import { OAuthApps } from '../../../models';
+import { OAuthApps } from '../../../../models';
 
 if (!OAuthApps.findOne('zapier')) {
 	OAuthApps.insert({
