@@ -3,8 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
-import { CustomOAuth } from '../../custom-oauth';
+import { settings } from '../../app/settings';
+import { CustomOAuth } from '../../app/custom-oauth';
 
 const config = {
 	serverURL: '',
