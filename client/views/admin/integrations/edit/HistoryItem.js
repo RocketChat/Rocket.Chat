@@ -2,7 +2,7 @@ import { Button, Icon, Box, Accordion, Field, FieldGroup } from '@rocket.chat/fu
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import { integrations as eventList } from '../../../../../app/integrations/lib/rocketchat';
+import { integrations as eventList } from '../../../../../server/integrations/custom/rocketchat';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
