@@ -19,7 +19,7 @@ export interface ITaskRoom extends IRocketChatRecord {
 }
 
 export interface ITaskRoomMember extends IRocketChatRecord {
-	teamId: string;
+	// teamId: string;
 	userId: string;
 	roles?: Array<string>;
 	createdBy: Pick<IUser, '_id' | 'username' >;

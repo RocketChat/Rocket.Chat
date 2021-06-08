@@ -112,7 +112,6 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 				})) || [];
 
 			membersList.push({
-				taskRoomId,
 				userId: owner || uid,
 				roles: ['owner'],
 				createdAt: new Date(),
@@ -120,27 +119,23 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 				_updatedAt: new Date(), // TODO how to avoid having to do this?
 			});
 
-			let roomId = room.id;
-			if (roomId) {
-				await this.RoomsModel.setTeamMainById(roomId, taskRoomId);
-			} else {
-				const roomType: IRoom['t'] = taskRoom.type === TASKRoomType.PRIVATE ? 'p' : 'c';
 
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: taskRoom.name,
-					members: memberUsernames,
-					extraData: {
-						...room.extraData,
-						taskRoomId,
-						teamMain: true,
-					},
-				};
+			const roomType: IRoom['t'] = taskRoom.type === TASKRoomType.PRIVATE ? 'p' : 'c';
 
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
+			const newRoom = {
+				...room,
+				type: roomType,
+				name: taskRoom.name,
+				members: memberUsernames,
+				extraData: {
+					...room.extraData,
+					taskRoomId,
+				},
+			};
+
+			const createdRoom = await Room.create(owner || uid, newRoom);
+			const roomId = createdRoom._id;
+
 
 			await this.TaskRoomModel.updateMainRoomForTeam(taskRoomId, roomId);
 			taskRoomData.roomId = roomId;
