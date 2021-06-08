@@ -12,9 +12,6 @@ export type OmnichannelRoomContextValue = {
 export const OmnichannelRoomContext = createContext<OmnichannelRoomContextValue | null>(null);
 
 export const useOmnichannelVisitorInfo = (): OmnichannelRoomContextValue['visitorInfo'] => {
-	const { visitorInfo } = useContext(OmnichannelRoomContext) || {};
-	if (!visitorInfo) {
-		throw new Error('use visitorInfo only inside opened livechat rooms');
-	}
+	const { visitorInfo } = useContext(OmnichannelRoomContext);
 	return visitorInfo;
 };
