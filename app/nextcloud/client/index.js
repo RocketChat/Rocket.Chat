@@ -1,1 +1,1 @@
-import '../lib/common';
+import '../../../common/oauth/nextcloud';

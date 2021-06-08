@@ -7,3 +7,4 @@ import './wordpress';
 import './blockstack';
 import './github';
 import './custom';
+import './nextcloud';

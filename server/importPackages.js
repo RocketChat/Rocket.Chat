@@ -29,7 +29,6 @@ import '../app/mailer';
 import '../app/mapview/server';
 import '../app/markdown/server';
 import '../app/migrations';
-import '../app/nextcloud/server';
 import '../app/oauth2-server-config/server';
 import './integrations/oembed';
 import '../app/otr/server';
