@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
-import { CustomOAuth } from '../../custom-oauth';
+import { settings } from '../../app/settings';
+import { CustomOAuth } from '../../app/custom-oauth';
 
 const config = {
 	serverURL: '',
