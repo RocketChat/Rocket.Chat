@@ -164,7 +164,7 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 	const canCreateTeam = usePermission('create-team');
 	const isCreateButtonEnabled = canSave && canCreateTeam;
 
-	const createTeam = useEndpointActionExperimental('POST', 'teams.create');
+	const createTeam = useEndpointActionExperimental('POST', 'taskRoom.create');
 
 	const onCreate = useCallback(async () => {
 		const params = {

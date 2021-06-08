@@ -7,6 +7,7 @@ import { MeteorService } from './meteor/service';
 import { NPSService } from './nps/service';
 import { RoomService } from './room/service';
 import { TeamService } from './team/service';
+import { TaskRoomService } from './taskRoom/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
 import { MediaService } from './image/service';
 
@@ -19,4 +20,5 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new NPSService(db));
 api.registerService(new RoomService(db));
 api.registerService(new TeamService(db));
+api.registerService(new TaskRoomService(db));
 api.registerService(new MediaService());
