@@ -8,10 +8,10 @@ import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { mapRolesFromSSO, mapSSOGroupsToChannels, updateRolesFromSSO } from './oauth_helpers';
-import { Logger } from '../../logger';
-import { Users } from '../../models';
-import { isURL } from '../../utils/lib/isURL';
-import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
+import { Logger } from '../../../../app/logger';
+import { Users } from '../../../../app/models';
+import { isURL } from '../../../../app/utils/lib/isURL';
+import { registerAccessTokenService } from '../../../../app/lib/server/oauth/oauth';
 
 const logger = new Logger('CustomOAuth');
 

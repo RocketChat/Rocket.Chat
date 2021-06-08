@@ -5,3 +5,5 @@ import './dolphin';
 import './drupal';
 import './wordpress';
 import './blockstack';
+import './github';
+import './custom';

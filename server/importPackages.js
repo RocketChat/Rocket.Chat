@@ -19,7 +19,6 @@ import '../app/error-handler';
 import '../app/federation/server';
 import '../app/file';
 import '../app/file-upload';
-import '../app/github-enterprise/server';
 import '../app/google-vision/server';
 import '../app/iframe-login/server';
 import '../app/integrations/server';
