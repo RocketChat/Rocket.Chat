@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { hasPermission, canAccessRoom } from '../../../authorization';
 import { Rooms } from '../../../models';
-import { Tokenpass, updateUserTokenpassBalances } from '../../../tokenpass/server';
+import { Tokenpass, updateUserTokenpassBalances } from '../../../../server/integrations/oauth/tokenpass';
 import { addUserToRoom } from '../functions';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 

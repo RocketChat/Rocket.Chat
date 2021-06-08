@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../models';
-import { Tokenpass } from '../Tokenpass';
+import { Tokenpass } from '../../../integrations/oauth/tokenpass/Tokenpass';
 
 Meteor.methods({
 	findTokenChannels() {

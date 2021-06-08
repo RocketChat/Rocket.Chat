@@ -1,9 +1,9 @@
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
+import { ServiceClass } from '../../../sdk/types/ServiceClass';
 import { validators } from './roomAccessValidator.compatibility';
-import { api } from '../../../server/sdk/api';
-import { IAuthorizationTokenpass } from '../../../server/sdk/types/IAuthorizationTokenpass';
-import { IRoom } from '../../../definition/IRoom';
-import { IUser } from '../../../definition/IUser';
+import { api } from '../../../sdk/api';
+import { IAuthorizationTokenpass } from '../../../sdk/types/IAuthorizationTokenpass';
+import { IRoom } from '../../../../definition/IRoom';
+import { IUser } from '../../../../definition/IUser';
 
 class AuthorizationTokenpass extends ServiceClass implements IAuthorizationTokenpass {
 	protected name = 'authorization-tokenpass';

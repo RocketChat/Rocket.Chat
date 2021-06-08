@@ -19,3 +19,4 @@ import './oauth-wordpress.settings';
 import './oauth-blockstack.settings';
 import './oauth-github.settings';
 import './oauth-nextcloud.settings';
+import './oauth-tokenpass.settings';
