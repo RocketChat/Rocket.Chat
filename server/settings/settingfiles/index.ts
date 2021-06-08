@@ -10,3 +10,4 @@ import './oauth-gitlab.settings';
 import './oauth-dolphin.settings';
 import './oauth-drupal.settings';
 import './oauth-wordpress.settings';
+import './oauth-blockstack.settings';
