@@ -7,6 +7,7 @@ import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
 import { RoomContext } from '../contexts/RoomContext';
+import OmnichannelRoomProvider from './OmnichannelRoomProvider';
 import ToolboxProvider from './ToolboxProvider';
 
 export type Props = {
@@ -41,6 +42,13 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 
 	return (
 		<RoomContext.Provider value={context}>
+			{room.t === 'l' ? (
+				<OmnichannelRoomProvider room={room}>
+					<ToolboxProvider room={room}>{children}</ToolboxProvider>
+				</OmnichannelRoomProvider>
+			) : (
+				<ToolboxProvider room={room}>{children}</ToolboxProvider>
+			)}
 			<ToolboxProvider room={room}>{children}</ToolboxProvider>
 		</RoomContext.Provider>
 	);
