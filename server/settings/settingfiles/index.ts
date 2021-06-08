@@ -9,6 +9,7 @@ import './irc.settings';
 import './googlevision.settings';
 import './sms.settings';
 import './issuelinks.settings';
+import './maps.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
