@@ -10,18 +10,19 @@ export type Props = {
 };
 
 const OmnichannelRoomProvider = ({ room, children }: Props): JSX.Element => {
-	const { value /* phase, reload */ } = useEndpointData('livechat/visitors.info');
+	const endpoint = `livechat/visitors.info?visitorId=${room.v._id}` as 'livechat/visitors.info';
+	const { value /* phase, reload */ } = useEndpointData(endpoint);
 
 	const contextValue = useMemo(
 		() => ({
 			rid: room._id,
-			visitor: room.v,
+			visitorId: room.v._id,
 			visitorInfo: value?.visitor,
 		}),
-		[room._id, room.v, value?.visitor],
+		[room._id, room.v._id, value?.visitor],
 	);
 
-	console.log('provider', room);
+	console.log('provider', room, value);
 
 	return (
 		<OmnichannelRoomContext.Provider

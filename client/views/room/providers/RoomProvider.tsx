@@ -49,7 +49,6 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 			) : (
 				<ToolboxProvider room={room}>{children}</ToolboxProvider>
 			)}
-			<ToolboxProvider room={room}>{children}</ToolboxProvider>
 		</RoomContext.Provider>
 	);
 };

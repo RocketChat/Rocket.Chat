@@ -1,11 +1,11 @@
 import { createContext, useContext } from 'react';
 
-import { IOmnichannelRoom } from '../../../../definition/IRoom';
 import { ILivechatVisitorInfo } from '../../../../definition/ILivechatVisitorInfo';
+import { IOmnichannelRoom } from '../../../../definition/IRoom';
 
 export type OmnichannelRoomContextValue = {
 	rid: IOmnichannelRoom['_id'];
-	visitor: IOmnichannelRoom['v'];
+	visitorId: IOmnichannelRoom['v']['_id'];
 	visitorInfo: ILivechatVisitorInfo;
 };
 
@@ -14,7 +14,7 @@ export const OmnichannelRoomContext = createContext<OmnichannelRoomContextValue 
 export const useOmnichannelVisitorInfo = (): OmnichannelRoomContextValue['visitorInfo'] => {
 	const { visitorInfo } = useContext(OmnichannelRoomContext) || {};
 	if (!visitorInfo) {
-		throw new Error('use useRoom only inside opened rooms');
+		throw new Error('use visitorInfo only inside opened livechat rooms');
 	}
 	return visitorInfo;
 };
