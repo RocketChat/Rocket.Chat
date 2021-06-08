@@ -4,8 +4,8 @@ import { Match, check } from 'meteor/check';
 import { Roles } from '../../../models';
 import { API } from '../api';
 import { getUsersInRole, hasPermission } from '../../../authorization/server';
-import { settings } from "/app/settings";
-import { api } from "/server/sdk/api";
+import { settings } from '../../../settings/server/index';
+import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
