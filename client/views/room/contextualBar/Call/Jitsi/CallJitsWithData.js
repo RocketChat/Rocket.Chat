@@ -139,9 +139,13 @@ const CallJitsWithData = ({ rid }) => {
 		if (!accepted || !jitsi) {
 			return;
 		}
-		jitsi.start(ref.current);
 
-		updateTimeout(rid);
+		if (jitsi.needsStart) {
+			jitsi.start(ref.current);
+			updateTimeout(rid, true);
+		} else {
+			updateTimeout(rid, false);
+		}
 
 		jitsi.on('HEARTBEAT', testAndHandleTimeout);
 		const none = () => {};
@@ -154,7 +158,12 @@ const CallJitsWithData = ({ rid }) => {
 	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout]);
 
 	const handleYes = useMutableCallback(() => {
+		if (jitsi) {
+			jitsi.needsStart = true;
+		}
+
 		setAccepted(true);
+
 		if (openNewWindow) {
 			handleClose();
 		}
