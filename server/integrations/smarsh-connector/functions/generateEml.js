@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { settings } from '../../../settings';
 import { Rooms, Messages, Users, SmarshHistory } from '../../../models';
-import { MessageTypes } from '../../../ui-utils';
+import { MessageTypes } from '../../../../app/ui-utils';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Settings } from '../../../../server/models';
+import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import Bridge from '../irc-bridge';
 

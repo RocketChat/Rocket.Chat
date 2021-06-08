@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../app/callbacks';
 import { Uploads, Settings, Users, Messages } from '../../models';
-import { FileUpload } from '../../file-upload';
-import { api } from '../../../server/sdk/api';
+import { FileUpload } from '../../../app/file-upload';
+import { api } from '../../sdk/api';
 
 class GoogleVision {
 	constructor() {
