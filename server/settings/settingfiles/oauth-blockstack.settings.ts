@@ -2,8 +2,8 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { logger } from './logger';
-import { settings } from '../../settings';
+import { logger } from '../../integrations/oauth/blockstack/logger';
+import { settings } from '..';
 
 const defaults = {
 	enable: false,
@@ -36,7 +36,7 @@ Meteor.startup(() => {
 });
 
 // Helper to return all Blockstack settings
-const getSettings = () => Object.assign({}, defaults, {
+const getSettings = (): { [x: string]: any } => Object.assign({}, defaults, {
 	enable: settings.get('Blockstack_Enable'),
 	authDescription: settings.get('Blockstack_Auth_Description'),
 	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),

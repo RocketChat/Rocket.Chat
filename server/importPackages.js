@@ -55,7 +55,6 @@ import '../app/webdav/server';
 import '../app/webrtc/server';
 import '../app/meteor-accounts-saml/server';
 import '../app/e2e/server';
-import '../app/blockstack/server';
 import '../app/version-check/server';
 import '../app/search/server';
 import '../app/chatpal-search/server';

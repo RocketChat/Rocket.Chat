@@ -4,3 +4,4 @@ import './gitlab';
 import './dolphin';
 import './drupal';
 import './wordpress';
+import './blockstack';
