@@ -5,3 +5,4 @@ import './google-vision';
 import './spotify';
 import './sms';
 import './custom';
+import './chatpal';

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../../authorization';
-import { OAuthApps, Users } from '../../../../models';
+import { hasPermission } from '../../../../../../app/authorization';
+import { OAuthApps, Users } from '../../../../../models';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({

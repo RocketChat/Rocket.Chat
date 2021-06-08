@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { searchProviderService, SearchProvider } from '../../../search/server';
+import { searchProviderService, SearchProvider } from '../../../../app/search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions, Rooms } from '../../../models';
 import { baseUrl } from '../utils/settings';
