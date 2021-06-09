@@ -847,6 +847,12 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+
+	this.add('Enable_CSP', true, {
+		type: 'boolean',
+		secret: true,
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,

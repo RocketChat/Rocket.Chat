@@ -4,7 +4,6 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { WebAppInternals } from 'meteor/webapp';
 
 import { Settings } from '../../models';
 import { settings } from '../../settings/server';
@@ -13,14 +12,21 @@ import './scripts';
 
 export * from './inject';
 
-BrowserPolicy.content.allowImageOrigin('*');
-BrowserPolicy.content.disallowInlineScripts();
-BrowserPolicy.content.allowFontDataUrl();
-BrowserPolicy.content.allowInlineStyles();
-WebAppInternals.setInlineScriptsAllowed(false);
-
-
 Meteor.startup(() => {
+	settings.get('Enable_CSP', (_, enabled) => {
+		if (!enabled) {
+			return BrowserPolicy.content.setPolicy("default-src 'self'; "
+			+ "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+			+ 'connect-src * data:; '
+			+ 'img-src * data: ; '
+			+ "style-src 'self' 'unsafe-inline';");
+		}
+		BrowserPolicy.content.allowImageOrigin('*');
+		BrowserPolicy.content.disallowInlineScripts();
+		BrowserPolicy.content.allowFontDataUrl();
+		BrowserPolicy.content.allowConnectDataUrl();
+		BrowserPolicy.content.allowInlineStyles();
+	});
 	Tracker.autorun(() => {
 		const injections = Object.values(headInjections.all());
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));

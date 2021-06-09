@@ -1550,6 +1550,8 @@
   "See_on_Engagement_Dashboard": "See on Engagement Dashboard",
   "Enable": "Enable",
   "Enable_Auto_Away": "Enable Auto Away",
+  "Enable_CSP": "Enable Content-Security-Policy",
+  "Enable_CSP_Description": "Do not disable this option unless you have a custom build and are having problems due to inline-scripts",
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
   "Enable_inquiry_fetch_by_stream": "Enable inquiry data fetch from server using a stream",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
