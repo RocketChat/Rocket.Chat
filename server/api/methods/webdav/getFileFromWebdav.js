@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings';
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models';
-import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
+import { WebdavClientAdapter } from './lib/webdavClientAdapter';
 
 Meteor.methods({
 	async getFileFromWebdav(accountId, file) {
