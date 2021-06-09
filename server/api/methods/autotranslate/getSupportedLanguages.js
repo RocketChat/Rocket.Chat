@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { hasPermission } from '../../../authorization';
-import { TranslationProviderRegistry } from '..';
+import { hasPermission } from '../../../../app/authorization';
+import { TranslationProviderRegistry } from '../../../services/autotranslate';
 
 Meteor.methods({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {

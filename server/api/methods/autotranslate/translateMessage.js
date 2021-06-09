@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../models';
-import { TranslationProviderRegistry } from '..';
+import { TranslationProviderRegistry } from '../../../services/autotranslate';
 
 Meteor.methods({
 	'autoTranslate.translateMessage'(message, targetLanguage) {

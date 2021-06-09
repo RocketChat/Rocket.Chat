@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('Analytics', function addSettings() {
 	this.section('Piwik', function() {

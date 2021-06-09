@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 Meteor.startup(function() {
 	const enableQuery = {
