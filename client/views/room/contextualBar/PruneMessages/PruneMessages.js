@@ -2,7 +2,7 @@ import { Field, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuse
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import DateTimeRow from './DateTimeRow';

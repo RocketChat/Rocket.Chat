@@ -2,8 +2,8 @@ import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
-import UserAvatar from '../../../../client/components/avatar/UserAvatar';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import UserAvatar from '../avatar/UserAvatar';
 import Avatar from './Avatar';
 
 const query = (term = '') => ({ selector: JSON.stringify({ term }) });
