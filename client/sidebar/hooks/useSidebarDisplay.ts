@@ -1,8 +1,6 @@
-type useSidebarClose = {
+export const useSidebarClose = (): {
 	closeSidebar: () => void;
-};
-
-export const useSidebarClose = (): useSidebarClose => {
+} => {
 	const closeSidebar = (): void => {
 		const sidebarWrap = $('.sidebar-wrap');
 		const sidebar = $('.sidebar');

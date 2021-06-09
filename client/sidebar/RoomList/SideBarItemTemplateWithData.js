@@ -40,12 +40,7 @@ function SideBarItemTemplateWithData({
 }) {
 	const { closeSidebar } = useSidebarClose();
 
-	const moveToRoom = () => {
-		selected && closeSidebar();
-		return roomTypes.getRouteLink(room.t, room);
-	};
-
-	const href = moveToRoom();
+	const href = roomTypes.getRouteLink(room.t, room);
 	const title = roomTypes.getRoomName(room.t, room);
 
 	const {
@@ -98,6 +93,7 @@ function SideBarItemTemplateWithData({
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
+			onClick={() => !selected && closeSidebar()}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}
