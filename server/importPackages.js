@@ -30,7 +30,6 @@ import '../app/ui-vrecord/server';
 import '../app/videobridge/server';
 import '../app/meteor-accounts-saml/server';
 import '../app/e2e/server';
-import '../app/search/server';
 import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/utils';
@@ -58,6 +57,7 @@ import './services/autotranslate';
 import './services/cloud';
 import './services/user/data-download';
 import './services/messages/threads';
+import './services/search';
 import './overrides/google-oauth';
 import './utils';
 

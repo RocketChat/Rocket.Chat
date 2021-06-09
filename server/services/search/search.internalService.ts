@@ -1,10 +1,10 @@
 import _ from 'underscore';
 
-import { Users } from '../../../server/models';
-import { settings } from '../../../server/settings';
+import { Users } from '../../models';
+import { settings } from '../../settings';
 import { searchProviderService } from './service/providerService';
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
-import { api } from '../../../server/sdk/api';
+import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { api } from '../../sdk/api';
 import { searchEventService } from './events/events';
 
 class Search extends ServiceClass {

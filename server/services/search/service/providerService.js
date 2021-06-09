@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { validationService } from './validationService';
-import { settings } from '../../../settings';
+import { settings } from '../../../../app/settings';
 import SearchLogger from '../logger/logger';
 
 class SearchProviderService {
