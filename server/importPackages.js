@@ -22,7 +22,6 @@ import '../app/mailer';
 import '../app/markdown/server';
 import '../app/migrations';
 import '../app/otr/server';
-import '../app/push-notifications/server';
 import '../app/ui-master/server';
 import '../app/ui-vrecord/server';
 import '../app/videobridge/server';
@@ -34,7 +33,6 @@ import '../app/utils';
 import '../app/models';
 import '../app/metrics';
 import '../app/callbacks';
-import '../app/notifications';
 import '../app/promises/server';
 import '../app/ui-utils';
 import '../app/livechat/server';
@@ -57,6 +55,8 @@ import './services/autotranslate';
 import './services/cloud';
 import './services/user/data-download';
 import './services/search';
+import './services/notifications';
+
 import './overrides/google-oauth';
 import './utils';
 

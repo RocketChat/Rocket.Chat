@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import { Users } from '../../../../../app/models';
-import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import notifications from '../../../../../server/services/notifications/Notifications';
 
 Meteor.methods({
 	saveCannedResponse(_id, responseData) {

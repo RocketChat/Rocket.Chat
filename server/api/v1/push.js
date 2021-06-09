@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { Match, check } from 'meteor/check';
 
-import { appTokensCollection } from '../../../app/push/server';
+import { appTokensCollection } from '../../services/notifications/lib';
 import { API } from './api';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
+import PushNotification from '../../services/notifications/lib/PushNotification';
 import { canAccessRoom } from '../../../app/authorization/server/functions/canAccessRoom';
 import { Users, Messages, Rooms } from '../../models';
 

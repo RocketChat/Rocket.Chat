@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../../server/settings';
 import { Messages, Uploads, Rooms } from '../../../../server/models';
-import { Notifications } from '../../../notifications/server';
+import { Notifications } from '../../../../server/services/notifications';
 import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../../server/services/apps';
 

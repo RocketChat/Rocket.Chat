@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings';
 import { WebdavAccounts } from '../../../models';
 import { WebdavClientAdapter } from './lib/webdavClientAdapter';
-import { Notifications } from '../../../../app/notifications/server';
+import { Notifications } from '../../../services/notifications';
 
 Meteor.methods({
 	async addWebdavAccount(formData) {
