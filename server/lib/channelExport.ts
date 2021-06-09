@@ -16,11 +16,11 @@ import {
 	makeZipFile,
 	sendEmail,
 	uploadZipFile,
-} from '../../app/user-data-download/server/cronProcessDownloads';
+} from '../services/user/data-download/cronProcessDownloads';
 import { IUser } from '../../definition/IUser';
 import { getMomentLocale } from './getMomentLocale';
 import { getURL } from '../../app/utils/lib/getURL';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
+import { DataExport } from '../services/user/data-download/DataExport';
 
 type ExportEmail = {
 	rid: string;

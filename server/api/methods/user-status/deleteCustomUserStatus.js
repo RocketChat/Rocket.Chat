@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
-import { CustomUserStatus } from '../../../../server/models';
-import { api } from '../../../../server/sdk/api';
+import { hasPermission } from '../../../../app/authorization/server';
+import { CustomUserStatus } from '../../../models';
+import { api } from '../../../sdk/api';
 
 Meteor.methods({
 	deleteCustomUserStatus(userStatusID) {

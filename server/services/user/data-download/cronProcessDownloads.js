@@ -9,14 +9,14 @@ import archiver from 'archiver';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { settings } from '../../../server/settings';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../../server/models';
-import { FileUpload } from '../../file-upload/server';
+import { settings } from '../../../settings';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../../models';
+import { FileUpload } from '../../../../app/file-upload/server';
 import { DataExport } from './DataExport';
-import * as Mailer from '../../mailer';
-import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
-import { joinPath } from '../../../server/lib/fileUtils';
-import { getURL } from '../../utils/lib/getURL';
+import * as Mailer from '../../../../app/mailer';
+import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { joinPath } from '../../../lib/fileUtils';
+import { getURL } from '../../../../app/utils/lib/getURL';
 
 const fsStat = util.promisify(fs.stat);
 const fsOpen = util.promisify(fs.open);

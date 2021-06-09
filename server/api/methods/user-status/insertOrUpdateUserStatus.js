@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../../app/authorization';
 import { CustomUserStatus } from '../../../models';
-import { api } from '../../../../server/sdk/api';
+import { api } from '../../../sdk/api';
 
 Meteor.methods({
 	insertOrUpdateUserStatus(userStatusData) {
