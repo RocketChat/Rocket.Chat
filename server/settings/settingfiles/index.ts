@@ -14,6 +14,7 @@ import './webdav.settings';
 import './webrtc.settings';
 import './analytics.settings';
 import './autolinker.settings';
+import './bothelpers.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';

@@ -6,8 +6,8 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
-import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
-import { NPS, Banner } from '../../../../server/sdk';
+import { getAndCreateNpsSurvey } from '../../nps/getAndCreateNpsSurvey';
+import { NPS, Banner } from '../../../sdk';
 
 export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();

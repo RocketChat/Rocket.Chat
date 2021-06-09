@@ -5,7 +5,7 @@ import { check, Match } from 'meteor/check';
 
 import { Settings } from '../../../models';
 import { Info } from '../../../utils';
-import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { getWorkspaceAccessToken } from '../../../../server/services/cloud';
 
 export default () => {
 	try {

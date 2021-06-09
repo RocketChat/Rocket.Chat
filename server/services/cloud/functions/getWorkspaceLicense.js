@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../app/callbacks';
 import { LICENSE_VERSION } from '../license';
 
 export function getWorkspaceLicense() {

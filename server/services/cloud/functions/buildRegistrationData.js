@@ -1,6 +1,6 @@
-import { settings } from '../../../../server/settings';
-import { Users, Statistics } from '../../../../server/models';
-import { statistics } from '../../../statistics';
+import { settings } from '../../../settings';
+import { Users, Statistics } from '../../../models';
+import { statistics } from '../../../../app/statistics';
 import { LICENSE_VERSION } from '../license';
 
 export function buildWorkspaceRegistrationData() {
