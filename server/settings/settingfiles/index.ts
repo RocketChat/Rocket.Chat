@@ -17,6 +17,7 @@ import './autolinker.settings';
 import './bothelpers.settings';
 import './katex.settings';
 import './versioncheck.settings';
+import './retentionpolicy.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
