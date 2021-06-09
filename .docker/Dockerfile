@@ -38,12 +38,12 @@ WORKDIR /app/bundle
 # needs a mongoinstance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
-    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    MONGO_URL=mongodb+srv://chumakovv:chumakovv@cluster0.iaijb.mongodb.net/tasquadchat?retryWrites=true&w=majority \
     HOME=/tmp \
-    PORT=3000 \
-    ROOT_URL=http://localhost:3000 \
+    PORT=80 \
+    ROOT_URL=http://localhost:80 \
     Accounts_AvatarStorePath=/app/uploads
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["node", "main.js"]
