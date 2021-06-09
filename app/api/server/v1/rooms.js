@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import Busboy from 'busboy';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
@@ -9,6 +8,7 @@ import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -63,32 +63,6 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 	},
 });
 
-const getFiles = async ({ request }) => new Promise((resolve, reject) => {
-	const busboy = new Busboy({ headers: request.headers });
-	const files = [];
-
-	const fields = {};
-
-	busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-		if (fieldname !== 'file') {
-			return reject(new Meteor.Error('invalid-field'));
-		}
-
-		const fileDate = [];
-		file.on('data', (data) => fileDate.push(data));
-
-		file.on('end', () => {
-			files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
-		});
-	});
-
-	busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
-
-	busboy.on('finish', resolve({ files, fields }));
-
-	request.pipe(busboy);
-});
-
 API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
@@ -97,20 +71,13 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-
-		const { files, fields } = Promise.await(getFiles({
+		const { file, ...fields } = Promise.await(getUploadFormData({
 			request: this.request,
 		}));
 
-		if (files.length === 0) {
-			return API.v1.failure('File required');
+		if (!file) {
+			throw new Meteor.Error('invalid-field');
 		}
-
-		if (files.length > 1) {
-			return API.v1.failure('Just 1 file is allowed');
-		}
-
-		const file = files[0];
 
 		const details = {
 			name: file.filename,
