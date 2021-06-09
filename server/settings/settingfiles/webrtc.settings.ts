@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('WebRTC', function() {
 	this.add('WebRTC_Enable_Channel', false, {

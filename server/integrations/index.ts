@@ -7,3 +7,4 @@ import './sms';
 import './custom';
 import './chatpal';
 import './bigbluebutton';
+import './oembed';
