@@ -1,5 +1,5 @@
-import { Messages, Subscriptions } from '../../../server/models';
-import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
+import { Messages, Subscriptions } from '../../../models';
+import { getMentions } from '../../../../app/lib/server/lib/notifyUsersOnMessage';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
 	const { rid, ts, u, editedAt } = message;

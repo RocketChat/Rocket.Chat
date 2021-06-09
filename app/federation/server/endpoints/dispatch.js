@@ -21,7 +21,7 @@ import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { getUpload, requestEventsFromLatest } from '../handler';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
-import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
+import { processThreads } from '../../../../server/services/messages/threads/hooks/aftersavemessage';
 
 const eventHandlers = {
 	//

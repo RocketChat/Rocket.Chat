@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { settings } from '../settings';
 import { Messages, Rooms } from '../models';
 import { canAccessRoom } from '../../app/authorization/server';
-import { readThread } from '../../app/threads/server/functions';
+import { readThread } from '../services/messages/threads/functions';
 
 Meteor.methods({
 	readThreads(tmid) {

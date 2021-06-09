@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../../server/models';
-import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../../server/settings';
+import { Messages } from '../../../../models';
+import { callbacks } from '../../../../../app/callbacks/server';
+import { settings } from '../../../../settings';
 import { reply } from '../functions';
-import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
-import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
+import { updateThreadUsersSubscriptions, getMentions } from '../../../../../app/lib/server/lib/notifyUsersOnMessage';
+import { sendMessageNotifications } from '../../../../../app/lib/server/lib/sendNotificationsOnMessage';
 
 function notifyUsersOnReply(message, replies, room) {
 	// skips this callback if the message was edited

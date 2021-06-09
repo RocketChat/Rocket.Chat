@@ -25,7 +25,6 @@ import '../app/otr/server';
 import '../app/push-notifications/server';
 import '../app/retention-policy';
 import '../app/theme/server';
-import '../app/threads/server';
 import '../app/ui-master/server';
 import '../app/ui-vrecord/server';
 import '../app/videobridge/server';
@@ -58,6 +57,7 @@ import './services/apps';
 import './services/autotranslate';
 import './services/cloud';
 import './services/user/data-download';
+import './services/messages/threads';
 import './overrides/google-oauth';
 import './utils';
 
