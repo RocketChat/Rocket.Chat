@@ -3,10 +3,10 @@ import semver from 'semver';
 
 import getNewUpdates from './getNewUpdates';
 import { settings } from '../../../settings';
-import { Info } from '../../../utils';
+import { Info } from '../../../../app/utils';
 import { Users } from '../../../models';
 import logger from '../logger';
-import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { sendMessagesToAdmins } from '../../../lib/sendMessagesToAdmins';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {

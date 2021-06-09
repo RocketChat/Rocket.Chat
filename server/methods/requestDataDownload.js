@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { ExportOperations, UserDataFiles } from '../../app/models';
 import { settings } from '../../app/settings';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
+import { DataExport } from '../services/user/data-download/DataExport';
 
 let tempFolder = '/tmp/userData';
 if (settings.get('UserData_FileSystemPath') != null) {

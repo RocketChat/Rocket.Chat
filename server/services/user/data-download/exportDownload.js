@@ -1,9 +1,9 @@
 import { WebApp } from 'meteor/webapp';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { UserDataFiles } from '../../models';
+import { UserDataFiles } from '../../../models';
 import { DataExport } from './DataExport';
-import { settings } from '../../../server/settings';
+import { settings } from '../../../settings';
 
 
 WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {

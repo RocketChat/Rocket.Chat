@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../../server/settings';
-import { RateLimiter, setStatusText } from '../../../lib/server';
+import { settings } from '../../../settings';
+import { RateLimiter, setStatusText } from '../../../../app/lib/server';
 
 Meteor.methods({
 	setUserStatus(statusType, statusText) {

@@ -1,4 +1,4 @@
-import { settings } from '../../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('UserDataDownload', function() {
 	this.add('UserData_EnableDownload', true, {
