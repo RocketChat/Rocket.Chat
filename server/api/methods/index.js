@@ -35,3 +35,4 @@ import './user-status/getUserStatusText';
 import './user-status/insertOrUpdateUserStatus';
 import './user-status/listCustomUserStatus';
 import './user-status/setUserStatus';
+import './notifications/saveNotificationSettings';

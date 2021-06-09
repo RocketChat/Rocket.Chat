@@ -13,7 +13,7 @@ import { Rooms as RoomRaw } from '../../../../../server/models/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import notifications from '../../../../../server/services/notifications/Notifications';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (departmentId) {

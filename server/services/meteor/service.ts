@@ -18,7 +18,7 @@ import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../integrations/custom/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
-import notifications from '../../../app/notifications/server/lib/Notifications';
+import notifications from '../notifications/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 
 

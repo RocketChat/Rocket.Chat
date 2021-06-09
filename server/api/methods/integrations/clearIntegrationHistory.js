@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../app/authorization';
 import { IntegrationHistory, Integrations } from '../../../models';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
+import notifications from '../../../services/notifications/Notifications';
 
 Meteor.methods({
 	clearIntegrationHistory(integrationId) {

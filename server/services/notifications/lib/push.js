@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
-import { settings } from '../../../server/settings';
+import { settings } from '../../../settings';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');

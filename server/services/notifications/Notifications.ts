@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { DDPCommon } from 'meteor/ddp-common';
 
-import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
-import { Streamer } from '../../../../server/modules/streamer/streamer.module';
-import { api } from '../../../../server/sdk/api';
+import { NotificationsModule } from '../../modules/notifications/notifications.module';
+import { Streamer } from '../../modules/streamer/streamer.module';
+import { api } from '../../sdk/api';
 import {
 	Subscriptions as SubscriptionsRaw,
 	Rooms as RoomsRaw,
 	Users as UsersRaw,
 	Settings as SettingsRaw,
-} from '../../../../server/models/raw';
+} from '../../models/raw';
 
 // TODO: Replace this in favor of the api.broadcast
 // StreamerCentral.on('broadcast', (name, eventName, args) => {

@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import CannedResponse from '../../../models/server/models/CannedResponse';
-import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import notifications from '../../../../../server/services/notifications/Notifications';
 
 callbacks.add('livechat.removeAgentDepartment', async (options: Record<string, any>): Promise<any> => {
 	const { departmentId, agentsId } = options;

@@ -13,7 +13,7 @@ import {
 } from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
-import { Notifications } from '../../../notifications/server';
+import { Notifications } from '../../../../server/services/notifications';
 import { FileUpload } from '../../../file-upload';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';

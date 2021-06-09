@@ -6,7 +6,7 @@ import { EJSON } from 'meteor/ejson';
 import { Log } from 'meteor/logging';
 
 import { settings } from '../../settings';
-import notifications from '../../notifications/server/lib/Notifications';
+import notifications from '../../../server/services/notifications/Notifications';
 
 export const processString = function(string, date) {
 	let obj;

@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Push } from '../../../push/server';
-import { settings } from '../../../../server/settings';
-import { metrics } from '../../../metrics/server';
-import { Users } from '../../../../server/models';
-import { RocketChatAssets } from '../../../assets/server';
-import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
-import { callbacks } from '../../../callbacks/server';
-import { getPushData } from '../../../lib/server/functions/notifications/mobile';
+import { settings } from '../../../settings';
+import { metrics } from '../../../../app/metrics/server';
+import { Users } from '../../../models';
+import { RocketChatAssets } from '../../../../app/assets/server';
+import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../../app/lib/server/functions/notifications';
+import { callbacks } from '../../../../app/callbacks/server';
+import { getPushData } from '../../../../app/lib/server/functions/notifications/mobile';
+
+import { Push } from '.';
 
 export class PushNotification {
 	getNotificationId(roomId) {

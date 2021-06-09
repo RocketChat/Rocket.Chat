@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Subscriptions } from '../../../../server/models';
-import { getUserNotificationPreference } from '../../../utils';
+import { Subscriptions } from '../../../models';
+import { getUserNotificationPreference } from '../../../../app/utils';
 
 Meteor.methods({
 	saveNotificationSettings(roomId, field, value) {

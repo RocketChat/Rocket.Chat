@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '../../../definition/INotification';
-import { NotificationQueue, Users } from '../../../server/models/raw';
-import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
-import { PushNotification } from '../../push-notifications/server';
+import { NotificationQueue, Users } from '../../models/raw';
+import { sendEmailFromData } from '../../../app/lib/server/functions/notifications/email';
 import { IUser } from '../../../definition/IUser';
+
+import { PushNotification } from '.';
 
 const {
 	NOTIFICATIONS_WORKER_TIMEOUT = 2000,

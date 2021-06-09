@@ -38,7 +38,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../../server/services/apps';
 import { businessHourManager } from '../business-hour';
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../server/services/notifications/Notifications';
 
 export const Livechat = {
 	Analytics,
