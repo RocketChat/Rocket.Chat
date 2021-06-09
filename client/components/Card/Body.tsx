@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC, CSSProperties } from 'react';
 
-const Body: FC<{ flexDirection: CSSProperties['flexDirection'] }> = ({
+const Body: FC<{ flexDirection?: CSSProperties['flexDirection'] }> = ({
 	children,
 	flexDirection = 'row',
 }) => (
