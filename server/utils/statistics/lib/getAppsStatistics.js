@@ -1,7 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { Apps } from '../../../../server/services/apps';
-import { Info } from '../../../utils/server';
+import { Apps } from '../../../services/apps';
+import { Info } from '../../../../app/utils/server';
 
 export function getAppsStatistics() {
 	return {

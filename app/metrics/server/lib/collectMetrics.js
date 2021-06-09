@@ -12,7 +12,7 @@ import { Migrations } from '../../../migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
 import { metrics } from './metrics';
-import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
+import { getAppsStatistics } from '../../../../server/utils/statistics/lib/getAppsStatistics';
 
 Facts.incrementServerFact = function(pkg, fact, increment) {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);

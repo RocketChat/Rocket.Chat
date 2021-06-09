@@ -1,6 +1,6 @@
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { statistics } from '../lib/statistics';
-import { Statistics } from '../../../../server/models/raw';
+import { Statistics } from '../../../models/raw';
 
 export async function getLastStatistics({ userId, refresh }) {
 	if (!await hasPermissionAsync(userId, 'view-statistics')) {
