@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { getWorkspaceAccessToken } from '../cloud';
 import { INpsVote } from '../../../definition/INps';
 
 type NPSResultPayload = {
@@ -11,6 +11,7 @@ type NPSResultPayload = {
 }
 
 export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
+	// @ts-expect-error
 	const token: string = getWorkspaceAccessToken();
 	if (!token) {
 		return false;

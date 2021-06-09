@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { getWorkspaceAccessToken } from '../cloud';
 import { UiKitBannerPayload } from '../../../definition/UIKit';
 import { Banner } from '../../sdk';
 import { IBanner, BannerPlatform } from '../../../definition/IBanner';
@@ -18,6 +18,7 @@ type NpsSurveyData = {
 };
 
 export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNpsSurvey(npsId: string) {
+	// @ts-expect-error
 	const token: string = getWorkspaceAccessToken();
 	if (!token) {
 		return false;

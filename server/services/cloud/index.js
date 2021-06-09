@@ -8,8 +8,8 @@ import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { Permissions } from '../../models';
-import { settings } from '../../../server/settings';
+import { Permissions } from '../../../app/models';
+import { settings } from '../../settings';
 
 if (Permissions) {
 	Permissions.create('manage-cloud', ['admin']);

@@ -1,10 +1,8 @@
 import '../app/cors/server';
 import '../app/assets/server';
 import '../app/authorization';
-import '../app/bot-helpers/server';
 import '../app/cas/server';
 import '../app/channel-settings';
-import '../app/cloud/server';
 import '../app/colors/server';
 import '../app/custom-sounds/server';
 import '../app/emoji';
@@ -63,6 +61,7 @@ import './services/importer';
 import './services/importer/strategies';
 import './services/apps';
 import './services/autotranslate';
+import './services/cloud';
 import './overrides/google-oauth';
 
 import './integrations';
