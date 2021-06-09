@@ -55,7 +55,7 @@ export const MsgRecording = new class {
 				return;
 			}
 			const users = userRecording.get(rid) || {};
-			if (recording === true) {
+			if (recording) {
 				clearTimeout(users[username]);
 				users[username] = setTimeout(function() {
 					const u = userRecording.get(rid);
@@ -63,6 +63,7 @@ export const MsgRecording = new class {
 					userRecording.set(rid, u);
 				}, timeout);
 			} else {
+				clearTimeout(users[username]);
 				delete users[username];
 			}
 			userRecording.set(rid, users);

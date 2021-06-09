@@ -55,7 +55,7 @@ export const MsgUploading = new class {
 				return;
 			}
 			const users = usersUploading.get(rid) || {};
-			if (uploading === true) {
+			if (uploading) {
 				clearTimeout(users[username]);
 				users[username] = setTimeout(function() {
 					const u = usersUploading.get(rid);
@@ -63,9 +63,9 @@ export const MsgUploading = new class {
 					usersUploading.set(rid, u);
 				}, timeout);
 			} else {
+				clearTimeout(users[username]);
 				delete users[username];
 			}
-
 			usersUploading.set(rid, users);
 		};
 		return Notifications.onRoom(rid, 'uploading', rooms[rid]);
