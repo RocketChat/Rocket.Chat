@@ -1,13 +1,13 @@
-import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
+import { ILivechatCustomField } from '../../../../../../definition/ILivechatCustomField';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
-export type LivechatDepartment = {
+export type LivechatCustomFields = {
 	GET: (params: {
 		query: string;
 		offset: number;
 		count: number;
 	}) => {
-		departments: ObjectFromApi<ILivechatDepartment[]>;
+		customFields: ObjectFromApi<ILivechatCustomField[]>;
 		total: number;
 		count: number;
 		offset: number;

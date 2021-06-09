@@ -1,10 +1,10 @@
 import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { useOmnichannelDepartments } from '../../../contexts/OmnichannelContext/OmnichannelDepartmentContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import DepartmentAutoComplete from '../../../views/omnichannel/DepartmentAutoComplete';
 import ModalSeparator from '../../ModalSeparator';
@@ -21,10 +21,8 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 
 	const { handleDepartmentName, handleUsername, handleComment } = handlers;
 	const getUserData = useEndpoint('GET', `users.info?username=${username}`);
-	const { value: departmentsData = {} } = useEndpointData(
-		'livechat/department',
-		useMemo(() => ({ enabled: true }), []),
-	);
+
+	const departments = useOmnichannelDepartments().map((department) => department.enabled === true);
 
 	const handleSend = useMutableCallback(() => {
 		onForward(departmentName, userId, comment);
@@ -54,8 +52,6 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	}, [username]);
 
 	const canForward = departmentName || username;
-
-	const { departments } = departmentsData;
 
 	const hasDepartments = departments && departments.length > 0;
 

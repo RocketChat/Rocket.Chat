@@ -6,11 +6,11 @@ import React, { useEffect, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useOmnichannelCustomFields } from '../../../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useRoute } from '../../../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../../contexts/UserContext';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import { useOmnichannelRoom } from '../../../../room/contexts/RoomContext';
@@ -28,9 +28,7 @@ function ChatInfo({ id, route }) {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const allCustomFields = useOmnichannelCustomFields();
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
@@ -64,7 +62,7 @@ function ChatInfo({ id, route }) {
 			const { customFields: customFieldsAPI } = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
-	}, [allCustomFields, stateCustomFields]);
+	}, [allCustomFields]);
 
 	const checkIsVisibleAndScopeRoom = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);

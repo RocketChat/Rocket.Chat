@@ -26,11 +26,12 @@ import TranscriptModal from '../../../../../components/Omnichannel/modals/Transc
 import { usePermission, useRole } from '../../../../../contexts/AuthorizationContext';
 import { useLayout } from '../../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
-import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext';
+import { useOmnichannelRouteConfig } from '../../../../../contexts/OmnichannelContext/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
+import { useOmnichannelVisitorInfo } from '../../../contexts/OmnichannelRoomContext';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickActions';
 import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
 
@@ -53,15 +54,15 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const rid = room._id;
 	const uid = useUserId();
 
-	const getVisitorInfo = useEndpoint('GET', 'livechat/visitors.info');
+	const getVisitorInfo = useOmnichannelVisitorInfo;
 
 	const getVisitorEmail = useMutableCallback(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
-		const {
-			visitor: { visitorEmails },
-		} = await getVisitorInfo({ visitorId: visitorRoomId });
+		const { visitorEmails } = getVisitorInfo();
+		console.log(visitorEmails);
+
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
 		}

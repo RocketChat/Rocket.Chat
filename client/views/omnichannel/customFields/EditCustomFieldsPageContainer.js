@@ -2,24 +2,18 @@ import { Callout } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import Page from '../../../components/Page';
-import PageSkeleton from '../../../components/PageSkeleton';
+import { useOmnichannelCustomFields } from '../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditCustomFieldsPage from './EditCustomFieldsPage';
 
 const EditCustomFieldsPageContainer = ({ reload }) => {
 	const t = useTranslation();
+
 	const id = useRouteParameter('id');
+	const data = useOmnichannelCustomFields().find((customField) => customField._id === id);
 
-	const { value: data, phase: state, error } = useEndpointData(`livechat/custom-fields/${id}`);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return <PageSkeleton />;
-	}
-
-	if (!data || !data.success || !data.customField || error) {
+	if (!data) {
 		return (
 			<Page>
 				<Page.Header title={t('Edit_Custom_Field')} />

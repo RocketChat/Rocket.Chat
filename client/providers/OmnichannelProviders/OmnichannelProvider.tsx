@@ -1,17 +1,22 @@
 import React, { useState, useEffect, FC, useMemo, useCallback, memo } from 'react';
 
-import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
-import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
-import { Notifications } from '../../app/notifications/client';
-import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
-import { IRoom } from '../../definition/IRoom';
-import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
-import { usePermission } from '../contexts/AuthorizationContext';
-import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
-import { useMethod } from '../contexts/ServerContext';
-import { useSetting } from '../contexts/SettingsContext';
-import { useUser } from '../contexts/UserContext';
-import { useReactiveValue } from '../hooks/useReactiveValue';
+import { LivechatInquiry } from '../../../app/livechat/client/collections/LivechatInquiry';
+import { initializeLivechatInquiryStream } from '../../../app/livechat/client/lib/stream/queueManager';
+import { Notifications } from '../../../app/notifications/client';
+import { IOmnichannelAgent } from '../../../definition/IOmnichannelAgent';
+import { IRoom } from '../../../definition/IRoom';
+import { OmichannelRoutingConfig } from '../../../definition/OmichannelRoutingConfig';
+import { usePermission } from '../../contexts/AuthorizationContext';
+import {
+	OmnichannelContext,
+	OmnichannelContextValue,
+} from '../../contexts/OmnichannelContext/OmnichannelContext';
+import { useMethod } from '../../contexts/ServerContext';
+import { useSetting } from '../../contexts/SettingsContext';
+import { useUser } from '../../contexts/UserContext';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { OmnichannelCustomFieldProvider } from './OmnichannelCustomFieldProvider';
+import { OmnichannelDepartmentProvider } from './OmnichannelDepartmentProvider';
 
 const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
@@ -20,7 +25,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	showOmnichannelQueueLink: false,
 };
 
-const OmnichannelProvider: FC = ({ children }) => {
+export const OmnichannelProvider: FC = ({ children }) => {
 	const omniChannelEnabled = useSetting('Livechat_enabled') as boolean;
 	const omnichannelRouting = useSetting('Livechat_Routing_Method');
 	const showOmnichannelQueueLink = useSetting('Livechat_show_queue_list_link') as boolean;
@@ -138,7 +143,13 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 	}, [agentAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
 
-	return <OmnichannelContext.Provider children={children} value={contextValue} />;
+	return (
+		<OmnichannelContext.Provider value={contextValue}>
+			<OmnichannelDepartmentProvider>
+				<OmnichannelCustomFieldProvider children={children} />
+			</OmnichannelDepartmentProvider>
+		</OmnichannelContext.Provider>
+	);
 };
 
 export default memo<typeof OmnichannelProvider>(OmnichannelProvider);

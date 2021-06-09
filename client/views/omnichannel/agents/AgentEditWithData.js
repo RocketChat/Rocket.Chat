@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
+import { useOmnichannelDepartments } from '../../../contexts/OmnichannelContext/OmnichannelDepartmentContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -15,17 +16,14 @@ function AgentEditWithData({ uid, reload }) {
 		phase: userDepartmentsState,
 		error: userDepartmentsError,
 	} = useEndpointData(`livechat/agents/${uid}/departments`);
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
 
-	if ([state, availableDepartmentsState, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
+	const availableDepartments = useOmnichannelDepartments();
+
+	if ([state, userDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error || userDepartmentsError || availableDepartmentsError || !data || !data.user) {
+	if (error || userDepartmentsError || !data || !data.user) {
 		return <Box mbs='x16'>{t('User_not_found')}</Box>;
 	}
 

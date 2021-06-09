@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { OmichannelRoutingConfig, Inquiries } from '../../definition/OmichannelRoutingConfig';
+import { OmichannelRoutingConfig, Inquiries } from '../../../definition/OmichannelRoutingConfig';
 
 export type OmnichannelContextValue = {
 	inquiries: Inquiries;
