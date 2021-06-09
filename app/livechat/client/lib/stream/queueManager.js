@@ -33,7 +33,10 @@ const events = {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		if (saveResult?.insertedId) {
+			newInquirySound();
+		}
 	},
 	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
 };
