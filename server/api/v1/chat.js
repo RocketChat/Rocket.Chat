@@ -6,7 +6,7 @@ import { canAccessRoom, hasPermission } from '../../../app/authorization';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../app/lib/server';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-import { executeSetReaction } from '../../../app/reactions/server/setReaction';
+import { executeSetReaction } from '../../services/messages/reactions/setReaction';
 import { API } from './api';
 import Rooms from '../../models/models/Rooms';
 import Users from '../../models/models/Users';

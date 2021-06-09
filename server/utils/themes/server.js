@@ -6,10 +6,10 @@ import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
-import { Logger } from '../../logger';
-import { getURL } from '../../utils/lib/getURL';
-import { injectIntoHead } from '../../ui-master/server';
+import { settings } from '../../../app/settings';
+import { Logger } from '../../../app/logger';
+import { getURL } from '../../../app/utils/lib/getURL';
+import { injectIntoHead } from '../../../app/ui-master/server';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
