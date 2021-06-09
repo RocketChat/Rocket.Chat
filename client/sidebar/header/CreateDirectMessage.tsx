@@ -8,7 +8,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { goToRoomById } from '../../lib/goToRoomById';
 
-type Username = Pick<IUser, 'username'>;
+type Username = IUser['username'];
 
 type CreateDirectMessageProps = {
 	onClose: () => void;
