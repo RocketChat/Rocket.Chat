@@ -7,6 +7,7 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import Tags from '../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useOmnichannelCustomFields } from '../../../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -71,9 +72,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const allCustomFields = useOmnichannelCustomFields();
 	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData(
 		'livechat/priorities.list',
 	);
@@ -133,7 +132,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const formIsValid =
 		(hasUnsavedChangesRoom || hasUnsavedChangesCustomFields) && customFieldsError.length === 0;
 
-	if ([stateCustomFields, statePriorities].includes(AsyncStatePhase.LOADING)) {
+	if ([statePriorities].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 

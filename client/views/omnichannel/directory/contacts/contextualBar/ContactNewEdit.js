@@ -8,12 +8,12 @@ import { isEmail } from '../../../../../../app/utils/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../components/helpers';
+import { useOmnichannelCustomFields } from '../../../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
@@ -80,7 +80,7 @@ function ContactNewEdit({ id, data, close }) {
 	const [phoneError, setPhoneError] = useState();
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: state } = useEndpointData('livechat/custom-fields');
+	const allCustomFields = useOmnichannelCustomFields();
 
 	const jsonConverterToValidFormat = (customFields) => {
 		const jsonObj = {};
@@ -195,10 +195,6 @@ function ContactNewEdit({ id, data, close }) {
 		!emailError &&
 		!phoneError &&
 		customFieldsError.length === 0;
-
-	if ([state].includes(AsyncStatePhase.LOADING)) {
-		return <FormSkeleton />;
-	}
 
 	return (
 		<>

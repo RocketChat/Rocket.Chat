@@ -10,5 +10,5 @@ export const OmnichannelCustomFieldContext = createContext<OmnichannelCustomFiel
 	customFields: [],
 });
 
-export const useOmnichannelDepartments = (): OmnichannelCustomFieldContextValue['customFields'] =>
+export const useOmnichannelCustomFields = (): OmnichannelCustomFieldContextValue['customFields'] =>
 	useContext(OmnichannelCustomFieldContext).customFields;

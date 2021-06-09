@@ -8,10 +8,10 @@ import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import DeleteWarningModal from '../../../components/DeleteWarningModal';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { useOmnichannelCustomFields } from '../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { formsSubscription } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
@@ -20,8 +20,8 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
+	const allCustomFields = useOmnichannelCustomFields();
 
-	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
 	const statusOptions = [
 		['all', t('All')],
 		['closed', t('Closed')],
