@@ -1,6 +1,6 @@
 import { settings } from '../../../settings';
 import { Users, Statistics } from '../../../models';
-import { statistics } from '../../../../app/statistics';
+import { statistics } from '../../../utils/statistics';
 import { LICENSE_VERSION } from '../license';
 
 export function buildWorkspaceRegistrationData() {

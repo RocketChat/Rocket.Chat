@@ -2,7 +2,7 @@ import { Promise } from 'meteor/promise';
 
 import { Migrations } from '../../../app/migrations';
 import { Sessions } from '../../models/raw';
-import { getMostImportantRole } from '../../../app/statistics/server/lib/getMostImportantRole';
+import { getMostImportantRole } from '../../utils/statistics/lib/getMostImportantRole';
 
 async function migrateSessions() {
 	const cursor = Sessions.col.aggregate([{

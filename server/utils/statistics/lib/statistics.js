@@ -15,16 +15,16 @@ import {
 	LivechatVisitors,
 	Integrations,
 	Statistics,
-} from '../../../../server/models';
-import { settings } from '../../../../server/settings';
-import { Info, getMongoInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations/server';
-import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw } from '../../../../server/models/raw';
-import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+} from '../../../models';
+import { settings } from '../../../settings';
+import { Info, getMongoInfo } from '../../../../app/utils/server';
+import { Migrations } from '../../../../app/migrations/server';
+import { getStatistics as federationGetStatistics } from '../../../../app/federation/server/functions/dashboard';
+import { NotificationQueue, Users as UsersRaw } from '../../../models/raw';
+import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team } from '../../../../server/sdk';
+import { Team } from '../../../sdk';
 
 const wizardFields = [
 	'Organization_Type',

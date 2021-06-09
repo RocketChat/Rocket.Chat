@@ -4,9 +4,9 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { Sessions } from '../../../../server/models';
-import { Logger } from '../../../logger';
-import { aggregates } from '../../../../server/models/models/Sessions';
+import { Sessions } from '../../../models';
+import { Logger } from '../../../../app/logger';
+import { aggregates } from '../../../models/models/Sessions';
 import { getMostImportantRole } from './getMostImportantRole';
 
 const getDateObj = (dateTime = new Date()) => ({
