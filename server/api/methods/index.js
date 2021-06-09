@@ -25,3 +25,7 @@ import './webdav/getWebdavFileList';
 import './webdav/getWebdavFilePreview';
 import './webdav/removeWebdavAccount';
 import './webdav/uploadFileToWebdav';
+import './autotranslate/getProviderUiMetadata';
+import './autotranslate/getSupportedLanguages';
+import './autotranslate/saveSettings';
+import './autotranslate/translateMessage';

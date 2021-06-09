@@ -3,10 +3,10 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../app/callbacks';
 import { Subscriptions, Messages } from '../../models';
-import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger';
+import { Markdown } from '../../../app/markdown/server';
+import { Logger } from '../../../app/logger';
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');
