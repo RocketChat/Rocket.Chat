@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
 import RoomMenu from '../RoomMenu';
-import { useSidebarClose } from '../hooks/useSidebarDisplay';
+import { useSidebarClose } from '../hooks/useSidebarClose';
 import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
