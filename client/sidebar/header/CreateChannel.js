@@ -8,6 +8,8 @@ import {
 	Field,
 	ToggleSwitch,
 	FieldGroup,
+	MultiSelect,
+	// PaginatedMultiSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -22,6 +24,7 @@ const CreateChannel = ({
 	handlers,
 	hasUnsavedChanges,
 	onChangeUsers,
+	onChangeTags,
 	onChangeType,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
@@ -38,6 +41,7 @@ const CreateChannel = ({
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState();
+	// const [tagsFilter, setTagsFilter] = useState('');
 
 	const checkName = useDebouncedCallback(
 		async (name) => {
@@ -166,6 +170,51 @@ const CreateChannel = ({
 					<Field>
 						<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
 						<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
+					</Field>
+					<Field>
+						<Field.Label>{`${t('Add Tags')} (${t('optional')})`}</Field.Label>
+						<Field.Description>
+							{values.type
+								? 'Tags not available for Private Channels'
+								: 'Tags increase visibility of Public Channels'}
+						</Field.Description>
+						{/* <PaginatedMultiSelectFiltered
+						filter={tagsFilter}
+						setFilter={setTagsFilter}
+						options={[
+							{
+								value: 'cooking',
+								label: 'cooking',
+							},
+							{
+								value: 'sports',
+								label: 'sports',
+							},
+							{
+								value: 'action',
+								label: 'action',
+							},
+						]}
+						value={values.tags}
+						maxWidth='100%'
+						placeholder={t('Select_an_option')}
+						onChange={onChangeTags}
+						/>*/}
+						<MultiSelect
+							options={[
+								['cooking', '#cooking'],
+								['action', '#action'],
+								['comedy', '#comedy'],
+								['romance', '#romance'],
+								['drama', '#drama'],
+								['fun', '#fun'],
+							]}
+							value={values.tags}
+							maxWidth='100%'
+							placeholder={t('Select_an_option')}
+							onChange={onChangeTags}
+							disabled={values.type}
+						/>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
