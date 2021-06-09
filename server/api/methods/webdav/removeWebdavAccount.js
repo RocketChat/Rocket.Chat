@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { WebdavAccounts } from '../../../models';
-import { Notifications } from '../../../notifications/server';
+import { Notifications } from '../../../../app/notifications/server';
 
 Meteor.methods({
 	removeWebdavAccount(accountId) {

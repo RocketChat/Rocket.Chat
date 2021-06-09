@@ -10,6 +10,7 @@ import './googlevision.settings';
 import './sms.settings';
 import './issuelinks.settings';
 import './maps.settings';
+import './webdav.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
