@@ -1,15 +1,20 @@
 import { Box, Button, ButtonGroup, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import Card from '../../../../components/Card';
+import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useSetting, useSettingSetValue } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { CardHeader, Section } from './components';
+import FederationModal from './components/FederationModal';
 import { SectionStatus } from './components/Section';
 
 const FederationCard = () => {
 	const t = useTranslation();
+
+	const setModal = useSetModal();
 
 	const federationEnabled = useSetting('FEDERATION_Enabled') as boolean;
 	const setFederationEnabled = useSettingSetValue('FEDERATION_Enabled');
@@ -36,6 +41,18 @@ const FederationCard = () => {
 		federationAddingUsersStatus = SectionStatus.UNKNOWN;
 	}
 
+	// Handle modal
+
+	const handleModal = useMutableCallback(() =>
+		setModal(
+			<FederationModal
+				onClose={() => {
+					setModal();
+				}}
+			/>,
+		),
+	);
+
 	return (
 		<Card>
 			<CardHeader>
@@ -57,25 +74,26 @@ const FederationCard = () => {
 					<Section
 						status={federationEnabledStatus}
 						title={t('Federation_Enable')}
-						subtitle='Federation integration is working correctly.'
+						subtitle={t('Federation_Is_working_correctly')}
 					/>
 					<Section
 						status={federationSetupStatus}
 						title={t('Federation_Adding_to_your_server')}
-						subtitle='Changes needed on your Server the Domain Name, Target and Port.'
-						link={!federationHealthy && 'Fix now!'}
-					/>
+						subtitle={t('Federation_Changes_needed')}
+					>
+						{!federationHealthy && <a onClick={handleModal}>{t('Federation_Fix_now')}</a>}
+					</Section>
 					<Section
 						status={federationAddingUsersStatus}
 						title={t('Federation_Adding_users_from_another_server')}
-						subtitle='We guide you on how to add your first federated user.'
+						subtitle={t('Federation_Guide_adding_users')}
 					/>
 				</Card.Col>
 			</Card.Body>
 			<Card.Footer>
 				<ButtonGroup align='end'>
 					<Button small onClick={() => settingsRoute.push()}>
-						Settings
+						{t('Settings')}
 					</Button>
 				</ButtonGroup>
 			</Card.Footer>
