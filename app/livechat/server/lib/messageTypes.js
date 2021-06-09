@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { actionLinks } from '../../../action-links/server';
+import { actionLinks } from '../../../../server/utils/actionlinks';
 import { Notifications } from '../../../notifications/server';
 import { Messages, LivechatRooms } from '../../../../server/models';
 import { settings } from '../../../../server/settings';
