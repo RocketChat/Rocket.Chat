@@ -9,3 +9,4 @@ import './github';
 import './custom';
 import './nextcloud';
 import './tokenpass';
+import './oauth-apps';
