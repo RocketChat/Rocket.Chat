@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { theme } from '../../../app/theme/server/server';
+import { theme } from '../../utils/themes/server';
 import { Settings } from '../../../app/models';
 
 Migrations.add({

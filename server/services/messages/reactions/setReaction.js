@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms } from '../../models';
-import { callbacks } from '../../callbacks';
-import { emoji } from '../../emoji';
-import { isTheLastMessage, msgStream } from '../../lib';
-import { hasPermission } from '../../authorization/server/functions/hasPermission';
-import { api } from '../../../server/sdk/api';
+import { Messages, EmojiCustom, Rooms } from '../../../models';
+import { callbacks } from '../../../../app/callbacks';
+import { emoji } from '../../../../app/emoji';
+import { isTheLastMessage, msgStream } from '../../../../app/lib';
+import { hasPermission } from '../../../../app/authorization/server/functions/hasPermission';
+import { api } from '../../../sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
