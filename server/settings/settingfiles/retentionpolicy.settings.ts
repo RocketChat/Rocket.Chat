@@ -1,4 +1,4 @@
-import { settings } from '../../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('RetentionPolicy', function() {
 	const globalQuery = {
