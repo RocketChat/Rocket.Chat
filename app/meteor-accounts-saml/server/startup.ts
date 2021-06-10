@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { settings } from '../../../server/settings';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
-import { Logger } from '../../logger/server';
+import { Logger } from '../../../server/utils/logger';
 import { SAMLUtils } from './lib/Utils';
 
 settings.addGroup('SAML');

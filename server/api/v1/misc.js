@@ -14,7 +14,7 @@ import { settings } from '../../settings';
 import { API } from './api';
 import { getDefaultUserFields } from '../../../app/utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../app/utils/lib/getURL';
-import { StdOut } from '../../../app/logger/server/streamer';
+import { StdOut } from '../../utils/logger/streamer';
 
 
 // DEPRECATED
