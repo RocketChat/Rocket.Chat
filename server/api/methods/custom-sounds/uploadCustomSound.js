@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
-import { RocketChatFile } from '../../../file';
-import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { hasPermission } from '../../../../app/authorization';
+import { Notifications } from '../../../../app/notifications';
+import { RocketChatFile } from '../../../../app/file';
+import { RocketChatFileCustomSoundsInstance } from '../../../utils/custom-sounds/startup/custom-sounds';
 
 Meteor.methods({
 	uploadCustomSound(binaryContent, contentType, soundData) {

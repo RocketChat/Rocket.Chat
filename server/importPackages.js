@@ -1,9 +1,6 @@
 import '../app/assets/server';
 import '../app/authorization';
-import '../app/cas/server';
 import '../app/channel-settings';
-import '../app/colors/server';
-import '../app/custom-sounds/server';
 import '../app/emoji';
 import '../app/emoji-custom/server';
 import '../app/emoji-emojione/server';
