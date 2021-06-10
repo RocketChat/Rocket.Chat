@@ -20,8 +20,6 @@ import '../app/discussion/server';
 import '../app/mail-messages/server';
 import '../app/utils';
 import '../app/models';
-import '../app/callbacks';
-import '../app/promises/server';
 import '../app/ui-utils';
 import '../app/livechat/server';
 import '../app/authentication/server';

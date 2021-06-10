@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models';
 import { Livechat } from '../../lib/Livechat';
-import { callbacks } from '../../../../callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department) {

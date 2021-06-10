@@ -5,7 +5,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 import LDAP from './ldap';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../utils/hooks';
 import { RocketChatFile } from '../../../app/file';
 import { settings } from '../../settings';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';

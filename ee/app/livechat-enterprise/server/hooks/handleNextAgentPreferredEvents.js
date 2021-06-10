@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../server/settings';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../server/models';

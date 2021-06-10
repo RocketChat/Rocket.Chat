@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import LivechatRooms from '../../../../../server/models/models/LivechatRooms';
 
 callbacks.add('livechat.afterForwardChatToAgent', (options: { rid?: string } = {}) => {

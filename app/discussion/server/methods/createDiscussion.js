@@ -8,7 +8,7 @@ import { Messages, Rooms } from '../../../../server/models';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../../server/settings';
 import { roomTypes } from '../../../utils/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);

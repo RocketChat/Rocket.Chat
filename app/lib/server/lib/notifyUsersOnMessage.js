@@ -3,7 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Rooms, Subscriptions } from '../../../../server/models';
 import { settings } from '../../../../server/settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 
 /**
  * Chechs if a messages contains a user highlight

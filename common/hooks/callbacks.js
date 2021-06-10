@@ -5,7 +5,7 @@ import _ from 'underscore';
 let timed = false;
 
 if (Meteor.isClient) {
-	const { getConfig } = require('../../ui-utils/client/config');
+	const { getConfig } = require('../../app/ui-utils/client/config');
 	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
 }
 /*
