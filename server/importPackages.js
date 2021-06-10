@@ -3,7 +3,6 @@ import '../app/authorization';
 import '../app/channel-settings';
 import '../app/emoji';
 import '../app/emoji-emojione/server';
-import '../app/file';
 import '../app/file-upload';
 import '../app/lib';
 import '../app/token-login/server';
@@ -41,6 +40,7 @@ import './services/notifications';
 import './services/e2e';
 import './services/federation';
 import './services/livestream';
+import './services/file-handling/file';
 
 import './overrides/google-oauth';
 import './utils';
