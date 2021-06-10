@@ -109,8 +109,7 @@ export const readMessage = new class extends Emitter {
 		}
 
 		if (!subscription.alert && (subscription.unread === 0)) {
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
@@ -153,9 +152,8 @@ export const readMessage = new class extends Emitter {
 
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
-			roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
+			$(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 		}
 	}
 }();

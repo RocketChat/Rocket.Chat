@@ -1,26 +1,31 @@
 import { Meteor } from 'meteor/meteor';
+import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
+import { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
+import { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
+import { AppServerOrchestrator } from '../orchestrator';
 
-export class AppUploadBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppUploadBridge extends UploadBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	async getById(id, appId) {
+	protected async getById(id: string, appId: string): Promise<IUpload> {
 		this.orch.debugLog(`The App ${ appId } is getting the upload: "${ id }"`);
 
-		return this.orch.getConverters().get('uploads').convertById(id);
+		return this.orch.getConverters()?.get('uploads').convertById(id);
 	}
 
-	getBuffer(upload, appId) {
+	protected async getBuffer(upload: IUpload, appId: string): Promise<Buffer> {
 		this.orch.debugLog(`The App ${ appId } is getting the upload: "${ upload.id }"`);
 
-		const rocketChatUpload = this.orch.getConverters().get('uploads').convertToRocketChat(upload);
+		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error, result) => {
+			FileUpload.getBuffer(rocketChatUpload, (error: Error, result: Buffer) => {
 				if (error) {
 					return reject(error);
 				}
@@ -30,7 +35,7 @@ export class AppUploadBridge {
 		});
 	}
 
-	async createUpload(details, buffer, appId) {
+	protected async createUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
 		this.orch.debugLog(`The App ${ appId } is creating an upload "${ details.name }"`);
 
 		if (!details.userId && !details.visitorToken) {
@@ -43,7 +48,7 @@ export class AppUploadBridge {
 
 		const fileStore = FileUpload.getStore('Uploads');
 		const insertSync = details.userId
-			? (...args) => Meteor.runAsUser(details.userId, () => fileStore.insertSync(...args))
+			? (...args: any[]): Function => Meteor.runAsUser(details.userId, () => fileStore.insertSync(...args))
 			: Meteor.wrapAsync(fileStore.insert.bind(fileStore));
 
 		details.type = determineFileType(buffer, details);
@@ -60,7 +65,7 @@ export class AppUploadBridge {
 					});
 				}
 
-				resolve(this.orch.getConverters().get('uploads').convertToApp(uploadedFile));
+				resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
 			} catch (err) {
 				reject(err);
 			}

@@ -1,4 +1,19 @@
 import { HTTP } from 'meteor/http';
+import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
+import { IHttpResponse, IHttpRequest } from '@rocket.chat/apps-engine/definition/accessors';
+import { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
+
+import { AppServerOrchestrator } from '../orchestrator';
+
+type INpmRequestOptions = Pick<IHttpRequest, 'encoding' | 'strictSSL' | 'rejectUnauthorized'> & {
+	agentOptions: {
+		rejectUnauthorized: boolean | undefined;
+	};
+};
+
+type iHttpRequestWithOptions = IHttpRequest & {
+	npmRequestOptions?: any;
+};
 
 /**
  * Normalize the options object to a shape
@@ -7,8 +22,8 @@ import { HTTP } from 'meteor/http';
  * @param Object options Http options received from the engine
  *
  */
-function normalizeHttpOptions(options) {
-	const npmRequestOptions = {};
+function normalizeHttpOptions(options: iHttpRequestWithOptions): void {
+	const npmRequestOptions: Partial<INpmRequestOptions> = {};
 
 	if (options.hasOwnProperty('encoding')) {
 		npmRequestOptions.encoding = options.encoding;
@@ -31,12 +46,13 @@ function normalizeHttpOptions(options) {
 	options.npmRequestOptions = npmRequestOptions;
 }
 
-export class AppHttpBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppHttpBridge extends HttpBridge {
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 	}
 
-	async call(info) {
+	protected async call(info: IHttpBridgeRequestInfo): Promise<IHttpResponse> {
 		if (!info.request.content && typeof info.request.data === 'object') {
 			info.request.content = JSON.stringify(info.request.data);
 		}
@@ -46,7 +62,7 @@ export class AppHttpBridge {
 		this.orch.debugLog(`The App ${ info.appId } is requesting from the outter webs:`, info);
 
 		try {
-			return HTTP.call(info.method, info.url, info.request);
+			return HTTP.call(info.method, info.url, info.request) as IHttpResponse;
 		} catch (e) {
 			return e.response;
 		}
