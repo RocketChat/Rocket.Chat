@@ -1,6 +1,6 @@
 import { Migrations } from '../migrations';
 import { Users, Subscriptions, Rooms, Messages } from '../../../app/models';
-import { FileUpload } from '../../../app/file-upload/server';
+import { FileUpload } from '../../services/file-handling/file-upload';
 
 Migrations.add({
 	version: 131,

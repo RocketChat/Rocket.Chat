@@ -1,4 +1,4 @@
-import '../lib/FileUploadBase';
+import '../../../../common/FileUploadBase';
 import { FileUpload } from './lib/FileUpload';
 import './lib/proxy';
 import './lib/requests';

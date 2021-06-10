@@ -3,11 +3,11 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import _ from 'underscore';
 
-import { Uploads } from '../../../models';
-import { Rooms } from '../../../../server/models/raw';
-import { callbacks } from '../../../callbacks';
+import { Uploads } from '../../../../models';
+import { Rooms } from '../../../../models/raw';
+import { callbacks } from '../../../../utils/hooks';
 import { FileUpload } from '../lib/FileUpload';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoom } from '../../../../../app/authorization/server/functions/canAccessRoom';
 
 Meteor.methods({
 	async sendFileMessage(roomId, store, file, msgData = {}) {

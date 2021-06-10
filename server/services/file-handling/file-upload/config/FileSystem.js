@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 

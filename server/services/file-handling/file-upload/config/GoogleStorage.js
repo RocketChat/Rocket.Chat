@@ -4,7 +4,7 @@ import https from 'https';
 import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import { settings } from '../../../settings';
+import { settings } from '../../../../settings';
 import '../../ufs/GoogleStorage/server.js';
 
 const get = function(file, req, res) {

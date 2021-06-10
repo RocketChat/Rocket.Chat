@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { callbacks } from '../../utils/hooks';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
-import { FileUpload } from '../../../app/file-upload/server';
+import { FileUpload } from '../../services/file-handling/file-upload';
 import { slashCommands } from '../../../app/utils/server';
 import { Messages, Rooms, Uploads, Users } from '../../models';
 import { Inbox, inboxes } from './EmailInbox';
