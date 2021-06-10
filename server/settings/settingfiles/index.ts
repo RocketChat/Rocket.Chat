@@ -24,6 +24,8 @@ import './uivrecord.settings';
 import './otr.settings';
 import './e2e.settings';
 import './iframelogin.settings';
+import './autotranslate.settings';
+import './userdatadownload.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';
