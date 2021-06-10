@@ -3,18 +3,19 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
-import { useAtLeastOnePermission, usePermission } from '../../../contexts/AuthorizationContext';
+import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateDirectMessage from '../CreateDirectMessage';
-import CreateDiscussion from './CreateDiscussion';
+import CreateDiscussion from '../CreateDiscussion';
 import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
+const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
 const style = {
@@ -42,7 +43,7 @@ function CreateRoomList() {
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
-	const canCreateDirectMessages = usePermission('create-d');
+	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
 	const createChannel = useReactModal(CreateChannelWithData);

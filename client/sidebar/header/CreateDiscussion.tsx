@@ -12,14 +12,14 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { IUser } from '../../../../definition/IUser';
-import RoomAutoComplete from '../../../components/RoomAutoComplete';
-import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
-import { useForm } from '../../../hooks/useForm';
-import { goToRoomById } from '../../../lib/goToRoomById';
+import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
+import RoomAutoComplete from '../../components/RoomAutoComplete';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useForm } from '../../hooks/useForm';
+import { goToRoomById } from '../../lib/goToRoomById';
 
 type CreateDiscussionFormValues = {
 	name: string;
