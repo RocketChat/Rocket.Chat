@@ -22,6 +22,8 @@ import './colors.settings';
 import './custom-sounds.settings';
 import './uivrecord.settings';
 import './otr.settings';
+import './e2e.settings';
+import './iframelogin.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';

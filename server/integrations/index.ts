@@ -9,3 +9,4 @@ import './chatpal';
 import './bigbluebutton';
 import './oembed';
 import './cas';
+import './ldap';

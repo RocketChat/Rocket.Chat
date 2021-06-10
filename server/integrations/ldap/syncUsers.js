@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { sync } from './sync';
-import { hasRole } from '../../authorization';
+import { hasRole } from '../../../app/authorization';
 import { settings } from '../../settings';
 
 Meteor.methods({
