@@ -33,8 +33,8 @@
 		"version": "node .scripts/version.js",
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "start-storybook -p 6006",
-		"build-storybook": "build-storybook"
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
+		"build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 build-storybook"
 	},
 	"license": "MIT",
 	"repository": {
@@ -90,6 +90,7 @@
 		"chai": "^4.2.0",
 		"chai-datetime": "^1.7.0",
 		"chai-spies": "^1.0.0",
+		"cross-env": "^7.0.3",
 		"cypress": "^4.12.1",
 		"emojione-assets": "^4.5.0",
 		"eslint": "^6.8.0",
