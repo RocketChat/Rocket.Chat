@@ -19,6 +19,7 @@ const Header = ({ room }) => {
 		}),
 		[isMobile],
 	);
+
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
