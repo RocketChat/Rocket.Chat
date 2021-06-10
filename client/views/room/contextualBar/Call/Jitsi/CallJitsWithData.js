@@ -124,14 +124,14 @@ const CallJitsWithData = ({ rid }) => {
 			if (jitsi.window?.closed) {
 				return jitsi.dispose();
 			}
-			return updateTimeout(rid);
+			return updateTimeout(rid, false);
 		}
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
 			return jitsi.dispose();
 		}
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
-			return updateTimeout(rid);
+			return updateTimeout(rid, false);
 		}
 	});
 

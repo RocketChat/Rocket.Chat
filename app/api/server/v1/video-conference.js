@@ -5,7 +5,7 @@ import { API } from '../api';
 
 API.v1.addRoute('video-conference/jitsi.update-timeout', { authRequired: true }, {
 	post() {
-		const { roomId, joiningNow } = this.bodyParams;
+		const { roomId, joiningNow = true } = this.bodyParams;
 		if (!roomId) {
 			return API.v1.failure('The "roomId" parameter is required!');
 		}
