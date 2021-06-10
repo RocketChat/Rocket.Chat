@@ -223,7 +223,7 @@ export class AppsRestApi {
 					const formData = Promise.await(getUploadFormData({
 						request: this.request,
 					}));
-					buff = formData?.app;
+					buff = formData?.app?.fileBuffer;
 					permissionsGranted = (() => {
 						try {
 							const permissions = JSON.parse(formData?.permissions || '');
@@ -446,7 +446,7 @@ export class AppsRestApi {
 					const formData = Promise.await(getUploadFormData({
 						request: this.request,
 					}));
-					buff = formData?.app;
+					buff = formData?.app?.fileBuffer;
 					permissionsGranted = (() => {
 						try {
 							const permissions = JSON.parse(formData?.permissions || '');
