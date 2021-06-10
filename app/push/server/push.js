@@ -140,12 +140,10 @@ export class PushClass {
 		}
 
 		if (response.statusCode === 200) {
-			console.log('message sent');
 			return;
 		}
 
 		logger.error(`Error sending push to gateway (${ tries } try) ->`, response);
-		console.log('body: ', response.body);
 
 		if (tries <= 4) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
