@@ -1,4 +1,4 @@
-export interface ILivechatTagRecord {
+export interface ILivechatTag {
 	_id: string;
 	name: string;
 	description: string;
