@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 
-import { WebdavClientAdapter } from '../../../../server/api/methods/webdav/lib/webdavClientAdapter';
+import { WebdavClientAdapter } from '../../../../api/methods/webdav/lib/webdavClientAdapter';
 /**
  * WebDAV store
  * @param options

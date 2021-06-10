@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { settings } from '../../../../server/settings';
 import { Messages, Uploads, Rooms } from '../../../../server/models';
 import { Notifications } from '../../../../server/services/notifications';

@@ -1,7 +1,7 @@
 import { setUsername } from './setUsername';
 import { setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../../server/models';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
 

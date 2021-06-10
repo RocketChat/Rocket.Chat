@@ -6,8 +6,8 @@ import { WebApp } from 'meteor/webapp';
 import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
-import { Logger } from '../../../logger';
-import { isDocker } from '../../../utils';
+import { Logger } from '../../../../utils/logger';
+import { isDocker } from '../../../../../app/utils';
 
 const logger = new Logger('UploadProxy');
 

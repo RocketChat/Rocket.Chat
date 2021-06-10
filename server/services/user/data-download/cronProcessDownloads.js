@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../../settings';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../../models';
-import { FileUpload } from '../../../../app/file-upload/server';
+import { FileUpload } from '../../file-handling/file-upload';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../../../app/mailer';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';

@@ -1,7 +1,7 @@
 import { Cookies } from 'meteor/ostrio:cookies';
 
 import Users from '../../../models/models/Users';
-import { FileUpload } from '../../../../app/file-upload/server';
+import { FileUpload } from '../../file-handling/file-upload';
 import { getURL } from '../../../../app/utils/lib/getURL';
 
 const cookie = new Cookies();

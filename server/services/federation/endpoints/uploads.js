@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../api/v1';
 import { Uploads } from '../../../models';
-import { FileUpload } from '../../../../app/file-upload/server';
+import { FileUpload } from '../../file-handling/file-upload';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 
 API.v1.addRoute('federation.uploads', { authRequired: false }, {

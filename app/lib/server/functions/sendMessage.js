@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../../server/services/apps';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { hasPermission } from '../../../authorization/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
