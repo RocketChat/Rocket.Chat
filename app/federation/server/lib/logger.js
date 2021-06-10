@@ -1,4 +1,4 @@
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/utils/logger';
 
 export const logger = new Logger('Federation', {
 	sections: {

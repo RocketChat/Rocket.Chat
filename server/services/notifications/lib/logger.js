@@ -1,4 +1,4 @@
-import { Logger, LoggerManager } from '../../../../app/logger/server';
+import { Logger, LoggerManager } from '../../../utils/logger';
 
 export const logger = new Logger('Push');
 export { LoggerManager };

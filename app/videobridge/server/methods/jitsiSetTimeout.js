@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks/server';
 import { metrics } from '../../../../server/utils/metrics';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/utils/logger';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid) => {

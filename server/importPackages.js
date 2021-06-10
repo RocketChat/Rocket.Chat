@@ -10,7 +10,6 @@ import '../app/file';
 import '../app/file-upload';
 import '../app/lib';
 import '../app/livestream/server';
-import '../app/logger';
 import '../app/token-login/server';
 import '../app/mailer';
 import '../app/markdown/server';
