@@ -312,5 +312,8 @@
 	},
 	"browserslist": [
 		"last 2 versions"
-	]
+	],
+	"volta": {
+		"node": "12.22.1"
+	}
 }
