@@ -3,7 +3,7 @@ import limax from 'limax';
 import sharp from 'sharp';
 
 import { hasPermission } from '../../../../app/authorization';
-import { RocketChatFile } from '../../../../app/file';
+import { RocketChatFile } from '../../../services/file-handling/file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { api } from '../../../sdk/api';
 import { Media } from '../../../sdk';

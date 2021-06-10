@@ -1,4 +1,4 @@
-import { RocketChatFile } from '../../../app/file';
+import { RocketChatFile } from '../../services/file-handling/file';
 import { FileUpload } from '../../../app/file-upload';
 import { Migrations } from '../migrations';
 import { Users } from '../../../app/models';

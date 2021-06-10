@@ -9,7 +9,7 @@ import {
 	Selection,
 	SelectionUser,
 } from '../..';
-import { RocketChatFile } from '../../../../../app/file';
+import { RocketChatFile } from '../../../file-handling/file';
 import { Users } from '../../../../models';
 
 export class SlackUsersImporter extends Base {

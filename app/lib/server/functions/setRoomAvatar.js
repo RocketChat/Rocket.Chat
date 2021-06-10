@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../../server/services/file-handling/file';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Avatars, Messages } from '../../../../server/models';
 import { api } from '../../../../server/sdk/api';
