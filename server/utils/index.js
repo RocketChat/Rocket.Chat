@@ -6,3 +6,4 @@ import './custom-sounds';
 import './metrics';
 import './logger';
 import './hooks';
+import './custom-emoji';
