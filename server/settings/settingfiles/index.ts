@@ -27,8 +27,10 @@ import './iframelogin.settings';
 import './autotranslate.settings';
 import './userdatadownload.settings';
 import './federation.settings';
+import './livestream.settings';
+import './errorhandler.settings';
 
-import './oauth-apple.settings.ts';
+import './oauth-apple.settings';
 import './oauth-crowd.settings';
 import './oauth-gitlab.settings';
 import './oauth-dolphin.settings';
