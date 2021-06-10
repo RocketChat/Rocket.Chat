@@ -12,7 +12,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../../server/models';
 import { Apps, AppEvents } from '../../../../server/services/apps';
 

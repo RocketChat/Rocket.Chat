@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { BusinessHourManager } from './BusinessHourManager';
 import { SingleBusinessHourBehavior } from './Single';
 import { cronJobs } from '../../../utils/server/lib/cron/Cronjobs';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { DefaultBusinessHour } from './Default';
 
 export const businessHourManager = new BusinessHourManager(cronJobs);

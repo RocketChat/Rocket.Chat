@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../../../models';
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../utils/hooks';
 import { settings } from '../../../../settings';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../../../app/lib/server/lib/notifyUsersOnMessage';

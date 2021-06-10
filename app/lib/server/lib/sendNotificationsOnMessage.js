@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { Subscriptions, Users } from '../../../../server/models';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';

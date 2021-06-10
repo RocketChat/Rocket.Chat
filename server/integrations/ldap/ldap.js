@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../utils/hooks';
 import { settings } from '../../settings';
 import { Logger } from '../../../app/logger';
 

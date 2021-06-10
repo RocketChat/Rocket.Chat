@@ -4,7 +4,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../../server/settings';
 import { Messages, Uploads, Rooms } from '../../../../server/models';
 import { Notifications } from '../../../../server/services/notifications';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { Apps } from '../../../../server/services/apps';
 
 export const deleteMessage = function(message, user) {

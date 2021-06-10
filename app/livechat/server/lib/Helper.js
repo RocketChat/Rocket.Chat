@@ -7,7 +7,7 @@ import { hasRole } from '../../../authorization';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment, LivechatDepartmentAgents } from '../../../../server/models';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../../server/services/apps';
 import notifications from '../../../../server/services/notifications/Notifications';

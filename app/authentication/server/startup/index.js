@@ -7,7 +7,7 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../../server/settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { Roles, Users, Settings } from '../../../../server/models';
 import { Users as UsersRaw } from '../../../../server/models/raw';
 import { addUserRoles } from '../../../authorization/server';

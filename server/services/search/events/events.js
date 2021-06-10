@@ -1,7 +1,7 @@
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../../app/callbacks/server';
+import { callbacks } from '../../../utils/hooks';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 

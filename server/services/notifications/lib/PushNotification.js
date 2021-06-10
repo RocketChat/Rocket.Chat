@@ -5,7 +5,7 @@ import { metrics } from '../../../utils/metrics';
 import { Users } from '../../../models';
 import { RocketChatAssets } from '../../../../app/assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../../app/lib/server/functions/notifications';
-import { callbacks } from '../../../../app/callbacks/server';
+import { callbacks } from '../../../utils/hooks';
 import { getPushData } from '../../../../app/lib/server/functions/notifications/mobile';
 
 import { Push } from '.';

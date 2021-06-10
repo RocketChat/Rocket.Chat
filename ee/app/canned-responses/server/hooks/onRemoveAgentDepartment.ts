@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import notifications from '../../../../../server/services/notifications/Notifications';
 
