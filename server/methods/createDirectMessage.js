@@ -5,7 +5,7 @@ import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization';
 import { Users, Rooms } from '../../app/models';
 import { RateLimiter } from '../../app/lib';
-import { addUser } from '../../app/federation/server/functions/addUser';
+import { addUser } from '../services/federation/functions/addUser';
 import { createRoom } from '../../app/lib/server';
 
 Meteor.methods({
