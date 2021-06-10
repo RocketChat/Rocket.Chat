@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('Message', function() {
 	this.add('Message_VideoRecorderEnabled', true, {

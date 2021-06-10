@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '../settings';
 
 settings.addGroup('OTR', function() {
 	this.add('OTR_Enable', true, {

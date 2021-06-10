@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Messages, Users } from '../../../../server/models';
 import { callbacks } from '../../../callbacks/server';
-import { metrics } from '../../../metrics/server';
+import { metrics } from '../../../../server/utils/metrics';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';

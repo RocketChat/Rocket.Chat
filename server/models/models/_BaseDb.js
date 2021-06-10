@@ -4,7 +4,7 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import { metrics } from '../../../app/metrics/server/lib/metrics';
+import { metrics } from '../../utils/metrics/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
 
 const baseName = 'rocketchat_';

@@ -1,4 +1,4 @@
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../../server/utils/metrics';
 import { settings } from '../../../../settings';
 import { Notifications } from '../../../../notifications';
 
