@@ -35,9 +35,12 @@ type CreateDiscussionProps = {
 	defaultParentRoomName?: string;
 };
 
-// For other discussion creation locations, some default props should be provided
-// such as the parent room or parent message. This component does not support this
-// behavior at this time, but should be implemented when needed.
+/*
+ ** TO-DO: For other discussion creation locations, some default props should be provided
+ ** such as the parent room or parent message. This component does not support this
+ ** behavior at this time, but should be implemented when needed.
+ */
+
 const CreateDiscussion = ({ onClose, defaultParentRoom }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
