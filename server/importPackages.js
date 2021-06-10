@@ -1,4 +1,3 @@
-import '../app/cors/server';
 import '../app/assets/server';
 import '../app/authorization';
 import '../app/cas/server';
