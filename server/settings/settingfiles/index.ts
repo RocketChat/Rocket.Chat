@@ -20,6 +20,8 @@ import './versioncheck.settings';
 import './retentionpolicy.settings';
 import './colors.settings';
 import './custom-sounds.settings';
+import './uivrecord.settings';
+import './otr.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';

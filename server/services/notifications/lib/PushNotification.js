@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
-import { metrics } from '../../../../app/metrics/server';
+import { metrics } from '../../../utils/metrics';
 import { Users } from '../../../models';
 import { RocketChatAssets } from '../../../../app/assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../../app/lib/server/functions/notifications';

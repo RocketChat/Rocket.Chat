@@ -6,7 +6,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings';
 import { roomTypes } from '../../../../utils';
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../../server/utils/metrics';
 import { callbacks } from '../../../../callbacks';
 import { getURL } from '../../../../utils/server';
 

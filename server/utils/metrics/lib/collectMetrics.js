@@ -7,12 +7,12 @@ import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
 
-import { Info, getOplogInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations';
+import { Info, getOplogInfo } from '../../../../app/utils/server';
+import { Migrations } from '../../../../app/migrations';
 import { settings } from '../../../settings';
 import { Statistics } from '../../../models';
 import { metrics } from './metrics';
-import { getAppsStatistics } from '../../../../server/utils/statistics/lib/getAppsStatistics';
+import { getAppsStatistics } from '../../statistics/lib/getAppsStatistics';
 
 Facts.incrementServerFact = function(pkg, fact, increment) {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);

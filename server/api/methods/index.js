@@ -40,3 +40,5 @@ import './custom-sounds/deleteCustomSound';
 import './custom-sounds/insertOrUpdateSound';
 import './custom-sounds/listCustomSounds';
 import './custom-sounds/uploadCustomSound';
+import './otr/deleteOldOTRMessages';
+import './otr/updateOTRAck';
