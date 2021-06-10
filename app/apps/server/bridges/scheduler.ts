@@ -1,20 +1,33 @@
 import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
-import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
+import {
+	StartupType,
+	IProcessor,
+	IOnetimeSchedule,
+	IRecurringSchedule,
+} from '@rocket.chat/apps-engine/definition/scheduler';
+import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
-function _callProcessor(processor) {
-	return (job) => processor(job?.attrs?.data || {});
+import { AppServerOrchestrator } from '../orchestrator';
+
+function _callProcessor(processor: Function): (job: { attrs?: { data: object } }) => object {
+	return (job): Function => processor(job?.attrs?.data || {});
 }
 
 /**
  * Provides the Apps Engine with task scheduling capabilities
  * It uses {@link agenda:github.com/agenda/agenda} as backend
  */
-export class AppSchedulerBridge {
-	constructor(orch) {
-		this.orch = orch;
+export class AppSchedulerBridge extends SchedulerBridge {
+	private isConnected: boolean;
+
+	private scheduler: Agenda;
+
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 		this.scheduler = new Agenda({
-			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
+			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: 'rocketchat_apps_scheduler' },
 			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,
@@ -50,24 +63,26 @@ export class AppSchedulerBridge {
 	 *
 	 * @returns Promise<void>
 	 */
-	async registerProcessors(processors = [], appId) {
-		const runAfterRegister = [];
+	protected async registerProcessors(processors: Array<IProcessor> = [], appId: string): Promise<void> {
+		const runAfterRegister: Promise<void>[] = [];
 		this.orch.debugLog(`The App ${ appId } is registering job processors`, processors);
-		processors.forEach(({ id, processor, startupSetting }) => {
+		processors.forEach(({ id, processor, startupSetting }: IProcessor) => {
 			this.scheduler.define(id, _callProcessor(processor));
 
-			if (startupSetting) {
-				switch (startupSetting.type) {
-					case StartupType.ONETIME:
-						runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
-						break;
-					case StartupType.RECURRING:
-						runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, skipImmediate: startupSetting.skipImmediate, data: startupSetting.data }, appId));
-						break;
-					default:
-						this.orch.getRocketChatLogger().error(`Invalid startup setting type (${ startupSetting.type }) for the processor ${ id }`);
-						break;
-				}
+			if (!startupSetting) {
+				return;
+			}
+
+			switch (startupSetting.type) {
+				case StartupType.ONETIME:
+					runAfterRegister.push(this.scheduleOnceAfterRegister({ id, when: startupSetting.when, data: startupSetting.data }, appId));
+					break;
+				case StartupType.RECURRING:
+					runAfterRegister.push(this.scheduleRecurring({ id, interval: startupSetting.interval, skipImmediate: startupSetting.skipImmediate, data: startupSetting.data }, appId));
+					break;
+				default:
+					this.orch.getRocketChatLogger().error(`Invalid startup setting type (${ String((startupSetting as any).type) }) for the processor ${ id }`);
+					break;
 			}
 		});
 
@@ -87,7 +102,7 @@ export class AppSchedulerBridge {
 	 *
 	 * @returns Promise<void>
 	 */
-	async scheduleOnce(job, appId) {
+	protected async scheduleOnce(job: IOnetimeSchedule, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is scheduling an onetime job`, job);
 		try {
 			await this.startScheduler();
@@ -97,7 +112,7 @@ export class AppSchedulerBridge {
 		}
 	}
 
-	async scheduleOnceAfterRegister(job, appId) {
+	private async scheduleOnceAfterRegister(job: IOnetimeSchedule, appId: string): Promise<void> {
 		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' });
 		if (!scheduledJobs.length) {
 			await this.scheduleOnce(job, appId);
@@ -116,7 +131,7 @@ export class AppSchedulerBridge {
 	 *
 	 * @returns Promise<void>
 	 */
-	async scheduleRecurring({ id, interval, skipImmediate = false, data }, appId) {
+	protected async scheduleRecurring({ id, interval, skipImmediate = false, data }: IRecurringSchedule, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is scheduling a recurring job`, id);
 		try {
 			await this.startScheduler();
@@ -134,7 +149,7 @@ export class AppSchedulerBridge {
 	 *
 	 * @returns Promise<void>
 	 */
-	async cancelJob(jobId, appId) {
+	protected async cancelJob(jobId: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${ appId } is canceling a job`, jobId);
 		await this.startScheduler();
 		try {
@@ -151,7 +166,7 @@ export class AppSchedulerBridge {
 	 *
 	 * @returns Promise<void>
 	 */
-	async cancelAllJobs(appId) {
+	protected async cancelAllJobs(appId: string): Promise<void> {
 		this.orch.debugLog(`Canceling all jobs of App ${ appId }`);
 		await this.startScheduler();
 		const matcher = new RegExp(`_${ appId }$`);
@@ -162,7 +177,7 @@ export class AppSchedulerBridge {
 		}
 	}
 
-	async startScheduler() {
+	private async startScheduler(): Promise<void> {
 		if (!this.isConnected) {
 			await this.scheduler.start();
 			this.isConnected = true;
