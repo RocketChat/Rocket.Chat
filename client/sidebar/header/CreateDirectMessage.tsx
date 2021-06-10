@@ -51,7 +51,7 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 			</Modal.Header>
 			<Modal.Content>
 				<Box>{t('Direct_message_creation_description')}</Box>
-				<Box mbs='x16' display='flex' width='full'>
+				<Box mbs='x16' display='flex' flexDirection='column' width='full'>
 					<UserAutoCompleteMultiple value={users} onChange={onChangeUsers} />
 				</Box>
 			</Modal.Content>
