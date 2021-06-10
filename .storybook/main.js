@@ -4,9 +4,9 @@ const webpack = require('webpack');
 
 module.exports = {
 	stories: [
-		'../app/**/*.stories.js',
-		'../client/**/*.stories.js',
-		'../ee/**/*.stories.js',
+		'../app/**/*.stories.{js,tsx}',
+		'../client/**/*.stories.{js,tsx}',
+		'../ee/**/*.stories.{js,tsx}',
 	],
 	addons: [
 		'@storybook/addon-essentials',
@@ -58,8 +58,6 @@ module.exports = {
 			],
 		});
 
-		config.resolve.extensions.push('.ts', '.tsx');
-
 		config.plugins.push(
 			new webpack.NormalModuleReplacementPlugin(
 				/^meteor/,
@@ -67,7 +65,7 @@ module.exports = {
 			),
 			new webpack.NormalModuleReplacementPlugin(
 				/(app)\/*.*\/(server)\/*/,
-				require.resolve('./mocks/empty.js'),
+				require.resolve('./mocks/empty.ts'),
 			),
 		);
 
