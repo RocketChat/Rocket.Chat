@@ -1,3 +1,4 @@
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import NotAuthorizedPage from './NotAuthorizedPage';
@@ -7,4 +8,4 @@ export default {
 	component: NotAuthorizedPage,
 };
 
-export const _default = () => <NotAuthorizedPage />;
+export const _default: Story = () => <NotAuthorizedPage />;
