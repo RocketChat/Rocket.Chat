@@ -6,7 +6,7 @@ import './services/startup';
 
 import '../ee/server';
 import './lib/pushConfig';
-import './startup/migrations';
+import './startup/migrationfiles';
 import './startup/appcache';
 import './startup/cron';
 import './startup/initialData';

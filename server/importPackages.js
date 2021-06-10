@@ -12,7 +12,6 @@ import '../app/livestream/server';
 import '../app/token-login/server';
 import '../app/mailer';
 import '../app/markdown/server';
-import '../app/migrations';
 import '../app/ui-master/server';
 import '../app/videobridge/server';
 import '../app/meteor-accounts-saml/server';
@@ -50,3 +49,5 @@ import './utils';
 
 import './integrations';
 import './integrations/oauth';
+
+import './startup/migrations';
