@@ -3,10 +3,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import limax from 'limax';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../../app/authorization';
 import { EmojiCustom } from '../../../models';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import { api } from '../../../../server/sdk/api';
+import { api } from '../../../sdk/api';
 
 Meteor.methods({
 	insertOrUpdateEmoji(emojiData) {

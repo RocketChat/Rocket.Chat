@@ -2,7 +2,6 @@ import '../app/assets/server';
 import '../app/authorization';
 import '../app/channel-settings';
 import '../app/emoji';
-import '../app/emoji-custom/server';
 import '../app/emoji-emojione/server';
 import '../app/error-handler';
 import '../app/file';
