@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { request } from 'undici';
 import _ from 'underscore';
 
+import HTTP from '../../../server/http/http';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
@@ -104,7 +104,7 @@ export class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
-			data: {
+			body: {
 				token,
 				options: notification,
 			},
@@ -115,11 +115,7 @@ export class PushClass {
 			data.headers.Authorization = this.options.getAuthorization();
 		}
 
-		const response = await request(`${ gateway }/push/${ service }/send`, {
-			method: 'POST',
-			headers: data.headers,
-			body: JSON.stringify(data.data),
-		});
+		const response = await HTTP.post(`${ gateway }/push/${ service }/send`, data);
 
 		if (response.statusCode === 406) {
 			logger.info('removing push token', token);
