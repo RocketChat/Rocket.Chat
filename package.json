@@ -286,6 +286,7 @@
 		"underscore.string": "^3.3.5",
 		"url-polyfill": "^1.1.12",
 		"use-subscription": "^1.5.1",
+		"undici": "^3.3.6",
 		"uuid": "^3.4.0",
 		"webdav": "^2.10.2",
 		"xml-crypto": "^2.1.2",
