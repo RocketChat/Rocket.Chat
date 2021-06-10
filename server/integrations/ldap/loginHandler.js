@@ -6,8 +6,8 @@ import ldapEscape from 'ldap-escape';
 import { slug, getLdapUsername, getLdapUserUniqueID, syncUserData, addLdapUser } from './sync';
 import LDAP from './ldap';
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
-import { Logger } from '../../logger';
+import { callbacks } from '../../../app/callbacks';
+import { Logger } from '../../../app/logger';
 
 
 const logger = new Logger('LDAPHandler', {});

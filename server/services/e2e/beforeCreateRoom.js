@@ -1,5 +1,5 @@
-import { callbacks } from '../../callbacks/server';
-import { settings } from '../../../server/settings';
+import { callbacks } from '../../../app/callbacks/server';
+import { settings } from '../../settings';
 
 callbacks.add('beforeCreateRoom', ({ type, extraData }) => {
 	if (

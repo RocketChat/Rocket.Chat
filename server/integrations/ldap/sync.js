@@ -5,16 +5,16 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 import LDAP from './ldap';
-import { callbacks } from '../../callbacks/server';
-import { RocketChatFile } from '../../file';
+import { callbacks } from '../../../app/callbacks/server';
+import { RocketChatFile } from '../../../app/file';
 import { settings } from '../../settings';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
-import { Logger } from '../../logger';
-import { _setRealName, _setUsername } from '../../lib';
-import { templateVarHandler } from '../../utils';
-import { FileUpload } from '../../file-upload';
-import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
-import { api } from '../../../server/sdk/api';
+import { Logger } from '../../../app/logger';
+import { _setRealName, _setUsername } from '../../../app/lib';
+import { templateVarHandler } from '../../../app/utils';
+import { FileUpload } from '../../../app/file-upload';
+import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../app/lib/server/functions';
+import { api } from '../../sdk/api';
 
 
 export const logger = new Logger('LDAPSync', {});

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { twoFactorRequired } from '../../../../server/services/2fa/twoFactorRequired';
-import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { twoFactorRequired } from '../../../services/2fa/twoFactorRequired';
+import { resetUserE2EEncriptionKey } from '../../../lib/resetUserE2EKey';
 
 Meteor.methods({
 	'e2e.resetOwnE2EKey': twoFactorRequired(function() {

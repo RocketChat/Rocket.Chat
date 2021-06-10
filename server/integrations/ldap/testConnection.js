@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import LDAP from './ldap';
-import { hasRole } from '../../authorization';
+import { hasRole } from '../../../app/authorization';
 import { settings } from '../../settings';
 
 Meteor.methods({

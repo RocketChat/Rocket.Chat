@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
-import { callbacks } from '../../callbacks/server';
+import { callbacks } from '../../../app/callbacks/server';
 import { settings } from '../../settings';
-import { Logger } from '../../logger';
+import { Logger } from '../../../app/logger';
 
 const logger = new Logger('LDAP', {
 	sections: {
