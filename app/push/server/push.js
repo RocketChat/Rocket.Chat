@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { HTTP } from 'meteor/http';
+import { request } from 'undici';
 import _ from 'underscore';
 
 import { initAPN, sendAPN } from './apn';
@@ -100,7 +100,7 @@ export class PushClass {
 		}
 	}
 
-	sendGatewayPush(gateway, service, token, notification, tries = 0) {
+	async sendGatewayPush(gateway, service, token, notification, tries = 0) {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
@@ -115,44 +115,50 @@ export class PushClass {
 			data.headers.Authorization = this.options.getAuthorization();
 		}
 
-		return HTTP.post(`${ gateway }/push/${ service }/send`, data, (error, response) => {
-			if (response?.statusCode === 406) {
-				logger.info('removing push token', token);
-				appTokensCollection.remove({
-					$or: [{
-						'token.apn': token,
-					}, {
-						'token.gcm': token,
-					}],
-				});
-				return;
-			}
-
-			if (response?.statusCode === 422) {
-				logger.info('gateway rejected push notification. not retrying.', response);
-				return;
-			}
-
-			if (response?.statusCode === 401) {
-				logger.warn('Error sending push to gateway (not authorized)', response);
-				return;
-			}
-
-			if (!error) {
-				return;
-			}
-
-			logger.error(`Error sending push to gateway (${ tries } try) ->`, error);
-
-			if (tries <= 4) {
-				// [1, 2, 4, 8, 16] minutes (total 31)
-				const ms = 60000 * Math.pow(2, tries);
-
-				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
-
-				return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
-			}
+		const response = await request(`${ gateway }/push/${ service }/send`, {
+			method: 'POST',
+			headers: data.headers,
+			body: JSON.stringify(data.data),
 		});
+
+		if (response.statusCode === 406) {
+			logger.info('removing push token', token);
+			appTokensCollection.remove({
+				$or: [{
+					'token.apn': token,
+				}, {
+					'token.gcm': token,
+				}],
+			});
+			return;
+		}
+
+		if (response.statusCode === 422) {
+			logger.info('gateway rejected push notification. not retrying.', response);
+			return;
+		}
+
+		if (response.statusCode === 401) {
+			logger.warn('Error sending push to gateway (not authorized)', response);
+			return;
+		}
+
+		if (response.statusCode === 200) {
+			console.log('message sent');
+			return;
+		}
+
+		logger.error(`Error sending push to gateway (${ tries } try) ->`, response);
+		console.log('body: ', response.body);
+
+		if (tries <= 4) {
+			// [1, 2, 4, 8, 16] minutes (total 31)
+			const ms = 60000 * Math.pow(2, tries);
+
+			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+
+			return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+		}
 	}
 
 	sendNotificationGateway(app, notification, countApn, countGcm) {
