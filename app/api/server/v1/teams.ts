@@ -175,7 +175,7 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 
 		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
-		if (!hasPermission(this.userId, 'view-all-team-channels', team.roomId)) {
+		if (!(this.userId === userId || hasPermission(this.userId, 'view-all-team-channels', team.roomId))) {
 			return API.v1.unauthorized();
 		}
 
