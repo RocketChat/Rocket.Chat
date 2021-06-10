@@ -3904,6 +3904,7 @@
   "Teams_New_Read_only_Description": "All users in this team can write messages",
   "Teams_Public_Team": "Public Team",
   "Teams_Private_Team": "Private Team",
+  "Teams_removing_member": "Removing Member",
   "Teams_removing__username__from_team": "You are removing __username__ from this Team",
   "Teams_removing__username__from_team_and_channels": "You are removing __username__ from this Team and all its Channels.",
   "Teams_Select_a_team": "Select a team",
