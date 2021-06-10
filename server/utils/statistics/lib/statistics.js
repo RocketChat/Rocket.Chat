@@ -18,7 +18,7 @@ import {
 } from '../../../models';
 import { settings } from '../../../settings';
 import { Info, getMongoInfo } from '../../../../app/utils/server';
-import { Migrations } from '../../../../app/migrations/server';
+import { Migrations } from '../../../startup/migrations';
 import { getStatistics as federationGetStatistics } from '../../../services/federation/functions/dashboard';
 import { NotificationQueue, Users as UsersRaw } from '../../../models/raw';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
