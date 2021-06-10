@@ -5,7 +5,6 @@ import '../app/emoji';
 import '../app/emoji-custom/server';
 import '../app/emoji-emojione/server';
 import '../app/error-handler';
-import '../app/federation/server';
 import '../app/file';
 import '../app/file-upload';
 import '../app/lib';
@@ -46,6 +45,7 @@ import './services/user/data-download';
 import './services/search';
 import './services/notifications';
 import './services/e2e';
+import './services/federation';
 
 import './overrides/google-oauth';
 import './utils';

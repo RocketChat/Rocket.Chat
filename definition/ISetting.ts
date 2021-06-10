@@ -53,4 +53,5 @@ export interface ISetting {
 	placeholder?: string;
 	alert?: string;
 	i18n?: string;
+	disableReset?: boolean;
 }
