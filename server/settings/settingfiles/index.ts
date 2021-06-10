@@ -18,6 +18,8 @@ import './bothelpers.settings';
 import './katex.settings';
 import './versioncheck.settings';
 import './retentionpolicy.settings';
+import './colors.settings';
+import './custom-sounds.settings';
 
 import './oauth-apple.settings.ts';
 import './oauth-crowd.settings';

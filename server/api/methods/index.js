@@ -36,3 +36,7 @@ import './user-status/insertOrUpdateUserStatus';
 import './user-status/listCustomUserStatus';
 import './user-status/setUserStatus';
 import './notifications/saveNotificationSettings';
+import './custom-sounds/deleteCustomSound';
+import './custom-sounds/insertOrUpdateSound';
+import './custom-sounds/listCustomSounds';
+import './custom-sounds/uploadCustomSound';

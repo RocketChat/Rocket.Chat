@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../../app/authorization';
 import { CustomSounds } from '../../../models';
-import { Notifications } from '../../../notifications';
-import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { Notifications } from '../../../../app/notifications';
+import { RocketChatFileCustomSoundsInstance } from '../../../utils/custom-sounds/startup/custom-sounds';
 
 Meteor.methods({
 	insertOrUpdateSound(soundData) {

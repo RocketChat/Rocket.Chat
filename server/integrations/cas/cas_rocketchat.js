@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { Logger } from '../../logger';
+import { Logger } from '../../../app/logger';
 import { settings } from '../../settings';
 
 export const logger = new Logger('CAS', {});

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import { CustomSounds } from '../../../models';
-import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
-import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { hasPermission } from '../../../../app/authorization';
+import { Notifications } from '../../../../app/notifications';
+import { RocketChatFileCustomSoundsInstance } from '../../../utils/custom-sounds/startup/custom-sounds';
 
 Meteor.methods({
 	deleteCustomSound(_id) {

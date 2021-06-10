@@ -8,3 +8,4 @@ import './custom';
 import './chatpal';
 import './bigbluebutton';
 import './oembed';
+import './cas';

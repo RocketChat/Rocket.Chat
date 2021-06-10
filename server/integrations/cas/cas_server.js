@@ -10,9 +10,9 @@ import CAS from 'cas';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings';
-import { Rooms, CredentialTokens } from '../../../server/models';
-import { _setRealName } from '../../lib';
-import { createRoom } from '../../lib/server/functions/createRoom';
+import { Rooms, CredentialTokens } from '../../models';
+import { _setRealName } from '../../../app/lib';
+import { createRoom } from '../../../app/lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
 
