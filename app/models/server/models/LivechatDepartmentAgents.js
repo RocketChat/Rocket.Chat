@@ -101,7 +101,7 @@ export class LivechatDepartmentAgents extends Base {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
-			return;
+			return false;
 		}
 
 		const onlineUser = Users.findOneOnlineAgentByUsername(_.pluck(agents, 'username'));

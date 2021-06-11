@@ -91,7 +91,7 @@ export class LivechatDepartment extends Base {
 		return this.remove(query);
 	}
 
-	findEnabledWithAgents(fields) {
+	findEnabledWithAgents(fields = null) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
