@@ -1,3 +1,4 @@
+import './assets';
 import './actionlinks';
 import './version-check';
 import './themes';

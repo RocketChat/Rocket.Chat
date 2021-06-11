@@ -1,7 +1,5 @@
 import './api/v1';
-import '../app/assets/server';
 import '../app/authorization';
-import '../app/channel-settings';
 import '../app/emoji';
 import '../app/emoji-emojione/server';
 import '../app/lib';

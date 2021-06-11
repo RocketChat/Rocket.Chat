@@ -7,11 +7,11 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings } from '../../../server/settings';
-import { getURL } from '../../utils/lib/getURL';
-import { mime } from '../../utils/lib/mimeTypes';
-import { hasPermission } from '../../authorization';
-import { RocketChatFile } from '../../../server/services/file-handling/file';
+import { settings } from '../../settings';
+import { getURL } from '../../../app/utils/lib/getURL';
+import { mime } from '../../../app/utils/lib/mimeTypes';
+import { hasPermission } from '../../../app/authorization';
+import { RocketChatFile } from '../../services/file-handling/file';
 
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
