@@ -2265,7 +2265,7 @@
   "Jitsi_Application_Secret": "Application Secret",
   "Jitsi_Chrome_Extension": "Chrome Extension Id",
   "Jitsi_Enable_Channels": "Enable in Channels",
-  "Jitsi_Enable_Teams": "Enable in Teams",
+  "Jitsi_Enable_Teams": "Enable for Teams",
   "Jitsi_Enabled_TokenAuth": "Enable JWT auth",
   "Jitsi_Limit_Token_To_Room": "Limit token to Jitsi Room",
   "Job_Title": "Job Title",
