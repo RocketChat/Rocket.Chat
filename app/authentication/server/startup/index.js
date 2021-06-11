@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
-import * as Mailer from '../../../mailer/server/api';
+import * as Mailer from '../../../../server/utils/mailer/api';
 import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../../server/utils/hooks';
 import { Roles, Users, Settings } from '../../../../server/models';

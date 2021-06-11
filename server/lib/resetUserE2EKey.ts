@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Users, Subscriptions } from '../models';
 import { settings } from '../settings';
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../utils/mailer';
 import { IUser } from '../../definition/IUser';
 
 const sendResetNotitification = function(uid: string): void {

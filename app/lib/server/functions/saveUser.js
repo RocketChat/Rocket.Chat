@@ -4,7 +4,7 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/utils/mailer';
 import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';

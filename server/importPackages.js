@@ -1,10 +1,10 @@
 import './api/v1';
+
 import '../app/authorization';
 import '../app/emoji';
 import '../app/emoji-emojione/server';
 import '../app/lib';
 import '../app/token-login/server';
-import '../app/mailer';
 import '../app/markdown/server';
 import '../app/ui-master/server';
 import '../app/videobridge/server';
