@@ -1,3 +1,4 @@
+import { ILivechatDepartment } from '../../../definition/ILivechatDepartment';
 import { IOmnichannelCannedResponse } from '../../../definition/IOmnichannelCannedResponse';
 import { RecordList } from './RecordList';
 
@@ -6,7 +7,9 @@ export type CannedResponseOptions = {
 	type: string;
 };
 
-export class CannedResponseList extends RecordList<IOmnichannelCannedResponse> {
+export class CannedResponseList extends RecordList<
+	IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }
+> {
 	public constructor(private _options: CannedResponseOptions) {
 		super();
 	}
