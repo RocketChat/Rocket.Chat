@@ -1,23 +1,11 @@
-import React, { useState } from 'react';
 import { Field, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useForm } from '../../../../../hooks/useForm';
-import { useMethod } from '../../../../../contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
 
-export const AddUsers = ({
-	onClickClose,
-	onClickBack,
-	onClickSave,
-	value,
-	onChange,
-	errors,
-}) => {
+const AddUsers = ({ onClickClose, onClickBack, onClickSave, value, onChange }) => {
 	const t = useTranslation();
 
 	return (
@@ -28,72 +16,22 @@ export const AddUsers = ({
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 			<VerticalBar.ScrollableContent>
-				<Field >
+				<Field>
 					<Field.Label flexGrow={0}>{t('Choose_users')}</Field.Label>
-					<UserAutoCompleteMultiple errors={errors.users} value={value} onChange={onChange} placeholder={t('Choose_users')} />
-					{errors.users && <Field.Error>
-						{errors.users}
-					</Field.Error>}
+					<UserAutoCompleteMultiple
+						value={value}
+						onChange={onChange}
+						placeholder={t('Choose_users')}
+					/>
 				</Field>
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>
-				<Button primary disabled={!value || value.length === 0} onClick={onClickSave}>{t('Add_users')}</Button>
+				<Button primary disabled={!value || value.length === 0} onClick={onClickSave}>
+					{t('Add_users')}
+				</Button>
 			</VerticalBar.Footer>
 		</>
 	);
 };
 
-export default ({
-	rid,
-	onClickBack,
-}) => {
-	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const [errors, setErrors] = useState({});
-
-	const onClickClose = useTabBarClose();
-	const saveAction = useMethod('addUsersToRoom');
-
-	const { values, handlers } = useForm({ users: [] });
-	const { users } = values;
-	const { handleUsers } = handlers;
-
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (users.includes(value)) {
-				return;
-			}
-			return handleUsers([...users, value]);
-		}
-		handleUsers(users.filter((current) => current !== value));
-	});
-
-	const handleSave = useMutableCallback(async () => {
-		if (users.length < 1) {
-			return setErrors({
-				users: t('Select_at_least_one_user'),
-			});
-		}
-
-		try {
-			await saveAction({ rid, users });
-			dispatchToastMessage({ type: 'success', message: t('Users_added') });
-			onClickBack();
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: e });
-		}
-
-		setErrors({});
-	});
-
-	return (
-		<AddUsers
-			onClickClose={onClickClose}
-			onClickBack={onClickBack}
-			onClickSave={handleSave}
-			value={users}
-			onChange={onChangeUsers}
-			errors={errors}
-		/>
-	);
-};
+export default AddUsers;

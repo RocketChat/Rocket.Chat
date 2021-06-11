@@ -258,14 +258,14 @@ export default class LDAP {
 		if (attribute) {
 			filter = new this.ldapjs.filters.EqualityFilter({
 				attribute,
-				value: new Buffer(id, 'hex'),
+				value: Buffer.from(id, 'hex'),
 			});
 		} else {
 			const filters = [];
 			Unique_Identifier_Field.forEach((item) => {
 				filters.push(new this.ldapjs.filters.EqualityFilter({
 					attribute: item,
-					value: new Buffer(id, 'hex'),
+					value: Buffer.from(id, 'hex'),
 				}));
 			});
 
@@ -369,6 +369,14 @@ export default class LDAP {
 				} else {
 					values[key] = value;
 				}
+			}
+
+			if (key === 'ou' && Array.isArray(value)) {
+				value.forEach((item, index) => {
+					if (item instanceof Buffer) {
+						value[index] = item.toString();
+					}
+				});
 			}
 		});
 

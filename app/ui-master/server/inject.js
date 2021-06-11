@@ -3,8 +3,8 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { Settings } from '../../models';
 import { settings } from '../../settings/server';
 
@@ -34,9 +34,15 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	injectIntoHead('noreferrer', '<meta name="referrer" content="origin-when-cross-origin" />');
+	settings.get('Default_Referrer_Policy', (key, value) => {
+		if (!value) {
+			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
+		}
 
-	if (process.env.DISABLE_ANIMATION || process.env.TEST_MODE === 'true') {
+		injectIntoHead('noreferrer', `<meta name="referrer" content="${ value }" />`);
+	});
+
+	if (process.env.DISABLE_ANIMATION) {
 		injectIntoHead('disable-animation', `
 		<style>
 			body, body * {
@@ -158,16 +164,19 @@ renderDynamicCssList();
 
 settings.get(/theme-color-rc/i, () => renderDynamicCssList());
 
-injectIntoBody('icons', Assets.getText('public/icons.svg'));
-
-injectIntoBody('page-loading-div', `
-<div id="initial-page-loading" class="page-loading">
-	<div class="loading-animation">
-		<div class="bounce bounce1"></div>
-		<div class="bounce bounce2"></div>
-		<div class="bounce bounce3"></div>
+injectIntoBody('react-root', `
+<div id="react-root">
+	<div class="page-loading">
+		<div class="loading-animation">
+			<div class="bounce bounce1"></div>
+			<div class="bounce bounce2"></div>
+			<div class="bounce bounce3"></div>
+		</div>
 	</div>
-</div>`);
+</div>
+`);
+
+injectIntoBody('icons', Assets.getText('public/icons.svg'));
 
 settings.get('Accounts_ForgetUserSessionOnWindowClose', (key, value) => {
 	if (value) {

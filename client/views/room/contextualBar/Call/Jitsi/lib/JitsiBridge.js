@@ -3,15 +3,10 @@ import { Emitter } from '@rocket.chat/emitter';
 import { JitsiMeetExternalAPI } from './Jitsi';
 
 export class JitsiBridge extends Emitter {
-	constructor({
-		openNewWindow,
-		ssl,
-		domain,
-		jitsiRoomName,
-		accessToken,
-		desktopSharingChromeExtId,
-		name,
-	}, heartbeat) {
+	constructor(
+		{ openNewWindow, ssl, domain, jitsiRoomName, accessToken, desktopSharingChromeExtId, name },
+		heartbeat,
+	) {
 		super();
 
 		this.openNewWindow = openNewWindow;
@@ -22,6 +17,7 @@ export class JitsiBridge extends Emitter {
 		this.desktopSharingChromeExtId = desktopSharingChromeExtId;
 		this.name = name;
 		this.heartbeat = heartbeat;
+		this.window = undefined;
 	}
 
 	start(domTarget) {
@@ -47,8 +43,11 @@ export class JitsiBridge extends Emitter {
 		const interfaceConfigOverwrite = {};
 
 		if (openNewWindow) {
-			const queryString = accessToken ? `?jwt=${ accessToken }` : '';
-			const newWindow = window.open(`${ protocol + domain }/${ jitsiRoomName }${ queryString }`, jitsiRoomName);
+			const queryString = accessToken ? `?jwt=${accessToken}` : '';
+			const newWindow = window.open(
+				`${protocol + domain}/${jitsiRoomName}${queryString}`,
+				jitsiRoomName,
+			);
 
 			if (!newWindow) {
 				return;
@@ -61,13 +60,23 @@ export class JitsiBridge extends Emitter {
 			}, 1000);
 
 			this.once('dispose', () => clearTimeout(timer));
-
+			this.window = newWindow;
 			return newWindow.focus();
 		}
 
 		const width = 'auto';
 		const height = 500;
-		const api = new JitsiMeetExternalAPI(domain, jitsiRoomName, width, height, domTarget, configOverwrite, interfaceConfigOverwrite, !ssl, accessToken); // eslint-disable-line no-undef
+		const api = new JitsiMeetExternalAPI(
+			domain,
+			jitsiRoomName,
+			width,
+			height,
+			domTarget,
+			configOverwrite,
+			interfaceConfigOverwrite,
+			!ssl,
+			accessToken,
+		); // eslint-disable-line no-undef
 		api.executeCommand('displayName', [name]);
 		this.once('dispose', () => api.dispose());
 	}

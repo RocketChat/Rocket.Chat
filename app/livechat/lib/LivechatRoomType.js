@@ -126,4 +126,12 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		instance.tabBar.openUserInfo();
 		return true;
 	}
+
+	showQuickActionButtons() {
+		return true;
+	}
+
+	isLivechatRoom() {
+		return true;
+	}
 }

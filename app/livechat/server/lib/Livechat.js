@@ -238,7 +238,7 @@ export const Livechat = {
 			}
 		}
 
-		if (phone) {
+		if (phone?.number) {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];
@@ -359,6 +359,7 @@ export const Livechat = {
 
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
+		Subscriptions.removeByRoomId(rid);
 
 		const message = {
 			t: 'livechat-close',
@@ -372,9 +373,7 @@ export const Livechat = {
 
 		sendMessage(user || visitor, message, room);
 
-		if (servedBy) {
-			Subscriptions.removeByRoomIdAndUserId(rid, servedBy._id);
-		}
+
 		Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		Meteor.defer(() => {
@@ -589,6 +588,10 @@ export const Livechat = {
 	},
 
 	async transfer(room, guest, transferData) {
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:transfer' });
+		}
+
 		if (transferData.departmentId) {
 			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, { fields: { name: 1 } });
 		}
@@ -604,6 +607,10 @@ export const Livechat = {
 
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:returnRoomAsInquiry' });
+		}
+
+		if (room.onHold) {
+			throw new Meteor.Error('error-room-onHold', 'Room On Hold', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
 		if (!room.servedBy) {
@@ -630,6 +637,10 @@ export const Livechat = {
 			console.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
+
+		Meteor.defer(() => {
+			callbacks.run('livechat:afterReturnRoomAsInquiry', { room });
+		});
 
 		return true;
 	},

@@ -13,7 +13,10 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	#index = new Map<T['_id'], T>();
 
-	#phase: AsyncStatePhase.LOADING | AsyncStatePhase.UPDATING | AsyncStatePhase.RESOLVED = AsyncStatePhase.LOADING
+	#phase:
+		| AsyncStatePhase.LOADING
+		| AsyncStatePhase.UPDATING
+		| AsyncStatePhase.RESOLVED = AsyncStatePhase.LOADING;
 
 	#items: T[] | undefined = undefined;
 
@@ -45,7 +48,7 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	private insert(item: T): void {
 		this.#index.set(item._id, item);
-		this.emit(`${ item._id }/inserted`, item);
+		this.emit(`${item._id}/inserted`, item);
 		if (typeof this.#itemCount === 'number') {
 			this.#itemCount++;
 		}
@@ -54,13 +57,13 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	private update(item: T): void {
 		this.#index.set(item._id, item);
-		this.emit(`${ item._id }/updated`, item);
+		this.emit(`${item._id}/updated`, item);
 		this.#hasChanges = true;
 	}
 
 	private delete(_id: T['_id']): void {
 		this.#index.delete(_id);
-		this.emit(`${ _id }/deleted`);
+		this.emit(`${_id}/deleted`);
 		if (typeof this.#itemCount === 'number') {
 			this.#itemCount--;
 		}

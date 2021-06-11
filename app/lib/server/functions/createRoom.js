@@ -9,9 +9,10 @@ import { callbacks } from '../../../callbacks';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
+import { Team } from '../../../../server/sdk';
 
 
-export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
+export const createRoom = function(type, name, owner, members = [], readOnly, { teamId, ...extraData } = {}, options = {}) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -50,8 +51,9 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	}
 
 	let room = {
-		name: getValidRoomName(name, null, validRoomNameOptions),
 		fname: name,
+		...extraData,
+		name: getValidRoomName(name, null, validRoomNameOptions),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
@@ -59,10 +61,16 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 			_id: owner._id,
 			username: owner.username,
 		},
-		...extraData,
 		ts: now,
 		ro: readOnly === true,
 	};
+
+	if (teamId) {
+		const team = Promise.await(Team.getOneById(teamId, { projection: { _id: 1 } }));
+		if (team) {
+			room.teamId = team._id;
+		}
+	}
 
 	room._USERNAMES = members;
 
