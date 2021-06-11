@@ -9,6 +9,7 @@ import RoomHeader from './RoomHeader';
 
 const Header = ({ room }) => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+
 	const slots = useMemo(
 		() => ({
 			start: isMobile && (
