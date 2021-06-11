@@ -1,4 +1,4 @@
-const path = require('path');
+const { resolve, relative, join } = require('path');
 
 const webpack = require('webpack');
 
@@ -26,8 +26,8 @@ module.exports = {
 					require('autoprefixer')(),
 					require('postcss-url')({ url: ({ absolutePath, relativePath, url }) => {
 						const absoluteDir = absolutePath.slice(0, -relativePath.length);
-						const relativeDir = path.relative(absoluteDir, path.resolve(__dirname, '../public'));
-						const newPath = path.join(relativeDir, url);
+						const relativeDir = relative(absoluteDir, resolve(__dirname, '../public'));
+						const newPath = join(relativeDir, url);
 						return newPath;
 					} }),
 				],
@@ -50,9 +50,7 @@ module.exports = {
 				{
 					loader: 'ts-loader',
 					options: {
-						compilerOptions: {
-							noEmit: false,
-						},
+						configFile: join(__dirname, '../tsconfig.webpack.json'),
 					},
 				},
 			],
