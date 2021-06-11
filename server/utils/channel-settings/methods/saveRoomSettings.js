@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
-import { hasPermission } from '../../../authorization';
-import { Rooms } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { setRoomAvatar } from '../../../../app/lib/server/functions/setRoomAvatar';
+import { hasPermission } from '../../../../app/authorization';
+import { Rooms } from '../../../../app/models';
+import { callbacks } from '../../../../app/callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
@@ -17,8 +17,8 @@ import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTokenpass } from '../functions/saveRoomTokens';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
-import { RoomSettingsEnum, roomTypes } from '../../../utils';
-import { Team } from '../../../../server/sdk';
+import { RoomSettingsEnum, roomTypes } from '../../../../app/utils';
+import { Team } from '../../../sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
 
 const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];

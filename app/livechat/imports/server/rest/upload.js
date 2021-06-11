@@ -5,7 +5,7 @@ import filesize from 'filesize';
 import { settings } from '../../../../settings';
 import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils';
-import { FileUpload } from '../../../../file-upload';
+import { FileUpload } from '../../../../../server/services/file-handling/file-upload';
 import { API } from '../../../../../server/api/v1';
 
 let maxFileSize;

@@ -7,7 +7,7 @@ import { Mongo } from 'meteor/mongo';
 
 import { RocketChatFile } from '../../services/file-handling/file';
 import { SystemLogger } from '../../../app/logger';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../services/file-handling/file-upload';
 import { Migrations } from '../migrations';
 import { Uploads, Settings, Users } from '../../../app/models';
 

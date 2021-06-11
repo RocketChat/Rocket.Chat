@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 
 import { Rooms } from '../../../models';
-import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
+import { MessageTypesValues } from '../../../../app/lib/lib/MessageTypes';
 
 export const saveRoomSystemMessages = function(rid, systemMessages) {
 	if (!Match.test(rid, String)) {
