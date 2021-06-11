@@ -1,19 +1,28 @@
 import { Box, Button, ButtonGroup, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import React, { Dispatch, FC, FormEventHandler, memo, ReactElement, SetStateAction } from 'react';
+import React, {
+	Dispatch,
+	FC,
+	FormEventHandler,
+	memo,
+	MouseEvent,
+	ReactElement,
+	SetStateAction,
+} from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useTabContext } from '../../../../../../client/views/room/providers/ToolboxProvider';
+import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
 import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 
 const CannedResponseList: FC<{
 	loadMoreItems: (start: number, end: number) => void;
-	cannedItems: IOmnichannelCannedResponse[];
+	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
 	itemCount: number;
 	onClose: any;
 	loading: boolean;
@@ -22,9 +31,9 @@ const CannedResponseList: FC<{
 	setText: FormEventHandler<HTMLOrSVGElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
-	onClickItem: (e: any) => void;
-	onClickCreate: (e: any) => void;
-	onClickUse: (e: any) => void;
+	onClickItem: (data: any) => void;
+	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
+	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 }> = ({
 	loadMoreItems,
 	cannedItems,
@@ -43,7 +52,7 @@ const CannedResponseList: FC<{
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 
-	const departmentId = useTabContext();
+	const cannedId = useTabContext();
 
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver({
 		debounceDelay: 200,
@@ -107,9 +116,13 @@ const CannedResponseList: FC<{
 				</Box>
 			</VerticalBar.Content>
 
-			{departmentId && (
+			{cannedId && (
 				<VerticalBar.InnerContent>
-					<WrapCannedResponse departmentId={departmentId} />
+					<WrapCannedResponse
+						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
+						onClickBack={onClickItem}
+						onClickUse={onClickUse}
+					/>
 				</VerticalBar.InnerContent>
 			)}
 

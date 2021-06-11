@@ -1,14 +1,45 @@
-import React, { FC, memo, MouseEventHandler } from 'react';
+import React, { FC, memo, MouseEvent, MouseEventHandler } from 'react';
 
-// import CannedResponse from './CannedResponse';
+import { useRole } from '../../../../../../client/contexts/AuthorizationContext';
+import { useSetModal } from '../../../../../../client/contexts/ModalContext';
+import CreateCannedResponse from '../../CannedResponse/modals';
+import CannedResponse from './CannedResponse';
 
-const WrapCannedResponse: FC<{ departmentId: any }> = ({ departmentId }) => {
-	const onClickBack: MouseEventHandler<HTMLOrSVGElement> = () => {
-		console.log(departmentId);
+const WrapCannedResponse: FC<{
+	cannedItem: any;
+	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
+	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
+}> = ({
+	cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text },
+	onClickBack,
+	onClickUse,
+}) => {
+	const setModal = useSetModal();
+	const onClickEdit = (): void => {
+		setModal(<CreateCannedResponse data={{ _id, departmentId, shortcut, tags, scope, text }} />);
 	};
 
-	// return <CannedResponse data={{ shortcut: 't' }} onClickBack={onClickBack} />;
-	return <div onClick={onClickBack}>bro</div>;
+	const hasManagerRole = useRole('livechat-manager');
+
+	const canEdit = hasManagerRole || scope === 'user';
+
+	return (
+		<CannedResponse
+			canEdit={canEdit}
+			data={{
+				departmentName,
+				shortcut,
+				tags,
+				scope,
+				text,
+			}}
+			onClickBack={onClickBack}
+			onClickEdit={onClickEdit}
+			onClickUse={(e): void => {
+				onClickUse(e, text);
+			}}
+		/>
+	);
 };
 
 export default memo(WrapCannedResponse);

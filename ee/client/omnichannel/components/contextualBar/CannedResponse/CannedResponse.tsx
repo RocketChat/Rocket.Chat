@@ -3,15 +3,31 @@ import React, { FC, memo, MouseEventHandler } from 'react';
 
 import VerticalBar from '../../../../../../client/components/VerticalBar';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
+import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const CannedResponse: FC<{
 	canEdit: boolean;
-	data: { shortcut: string; text: string; scope: string; tags: any };
+	data: {
+		departmentName: ILivechatDepartment['name'];
+		shortcut: IOmnichannelCannedResponse['shortcut'];
+		text: IOmnichannelCannedResponse['text'];
+		scope: IOmnichannelCannedResponse['scope'];
+		tags: IOmnichannelCannedResponse['tags'];
+	};
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({ canEdit, data: { shortcut, text, scope, tags }, onClickBack, onClickEdit, onClickUse }) => {
+}> = ({
+	canEdit,
+	data: { departmentName, shortcut, text, scope: dataScope, tags },
+	onClickBack,
+	onClickEdit,
+	onClickUse,
+}) => {
 	const t = useTranslation();
+	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
 		<VerticalBar

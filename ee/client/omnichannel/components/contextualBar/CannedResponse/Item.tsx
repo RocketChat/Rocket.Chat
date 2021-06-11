@@ -1,16 +1,20 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Tag } from '@rocket.chat/fuselage';
-import React, { FC, memo, useState } from 'react';
+import React, { FC, memo, MouseEvent, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
 import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import { useScopeDict } from '../../../hooks/useScopeDict';
 
 const Item: FC<{
-	data: IOmnichannelCannedResponse;
-	onClickItem: (e: any) => void;
-	onClickUse: (e: any) => void;
+	data: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
+	onClickItem: (e: MouseEvent<HTMLOrSVGElement>) => void;
+	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 }> = ({ data, onClickItem, onClickUse }) => {
 	const t = useTranslation();
+
+	const scope = useScopeDict(data.scope, data.departmentName);
 
 	const clickable = css`
 		cursor: pointer;
@@ -32,17 +36,22 @@ const Item: FC<{
 			onMouseLeave={(): void => setVisibility(false)}
 		>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-				{/* This is not a good way to solve the problem */}
-				<Box w='full' maxWidth='75%'>
+				<Box w='full' minWidth={0}>
 					<Box fontScale='p2' withTruncatedText>
 						!{data.shortcut}
 					</Box>
 					<Box fontScale='c1' color='info' withTruncatedText>
-						{data.scope}
+						{scope}
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='row' alignItems='center'>
-					<Button display={visibility ? 'block' : 'none'} small onClick={onClickUse}>
+					<Button
+						display={visibility ? 'block' : 'none'}
+						small
+						onClick={(e): void => {
+							onClickUse(e, data.text);
+						}}
+					>
 						{t('Use')}
 					</Button>
 					<Icon name='chevron-left' size={24} color='neutral-700' />

@@ -21,7 +21,7 @@ const cannedItems = [
 	{
 		shortcut: 'test',
 		text: 'simple canned response test',
-		scope: 'Public',
+		scope: 'global',
 		tags: ['sales', 'support'],
 	},
 	{
