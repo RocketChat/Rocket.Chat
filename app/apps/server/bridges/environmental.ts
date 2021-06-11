@@ -1,10 +1,17 @@
-export class AppEnvironmentalVariableBridge {
-	constructor(orch) {
-		this.orch = orch;
+import { EnvironmentalVariableBridge } from '@rocket.chat/apps-engine/server/bridges/EnvironmentalVariableBridge';
+
+import { AppServerOrchestrator } from '../orchestrator';
+
+export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge {
+	allowed: Array<string>;
+
+	// eslint-disable-next-line no-empty-function
+	constructor(private readonly orch: AppServerOrchestrator) {
+		super();
 		this.allowed = ['NODE_ENV', 'ROOT_URL', 'INSTANCE_IP'];
 	}
 
-	async getValueByName(envVarName, appId) {
+	protected async getValueByName(envVarName: string, appId: string): Promise<string | undefined> {
 		this.orch.debugLog(`The App ${ appId } is getting the environmental variable value ${ envVarName }.`);
 
 		if (!await this.isReadable(envVarName, appId)) {
@@ -14,13 +21,13 @@ export class AppEnvironmentalVariableBridge {
 		return process.env[envVarName];
 	}
 
-	async isReadable(envVarName, appId) {
+	protected async isReadable(envVarName: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is checking if the environmental variable is readable ${ envVarName }.`);
 
 		return this.allowed.includes(envVarName.toUpperCase());
 	}
 
-	async isSet(envVarName, appId) {
+	protected async isSet(envVarName: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${ appId } is checking if the environmental variable is set ${ envVarName }.`);
 
 		if (!await this.isReadable(envVarName, appId)) {
