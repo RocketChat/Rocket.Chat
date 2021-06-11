@@ -1,7 +1,9 @@
 export type LivechatDepartment = {
 	GET: (params: {
-		query: string;
+		text?: string;
+		enabled?: boolean;
+		onlyMyDepartments?: boolean;
 	}) => {
-		statuses: unknown[];
+		departments: unknown[];
 	};
 };
