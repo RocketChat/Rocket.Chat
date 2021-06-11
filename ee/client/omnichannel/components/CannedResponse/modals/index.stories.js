@@ -11,18 +11,32 @@ const form = {
 	values: {
 		shortcut: 'test',
 		tags: ['test'],
+		scope: 'department',
 	},
 	handlers: {
-		shortcut: () => {},
-		tags: () => {},
+		handleShortcut: () => {},
+		handleTags: () => {},
+		handleDepartment: () => {},
 	},
-	errors: '',
+};
+
+const errors = {};
+
+const radioHandlers = {
+	setPublic: () => {},
+	setDepartment: () => {},
+	setPrivate: () => {},
 };
 
 export const CreateCannedResponse = () => (
 	<CreateCannedResponseModal
-		isManager={true}
-		form={form}
+		isManager
+		values={form.values}
+		handlers={form.handlers}
+		errors={errors}
+		hasUnsavedChanges
+		radioHandlers={radioHandlers}
+		radioDescription='Anyone in the selected department can access this canned response'
 		onClose={() => {}}
 		onSave={() => {}}
 		onPreview={() => {}}

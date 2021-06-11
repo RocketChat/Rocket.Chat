@@ -1,44 +1,69 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, Field, Modal, TextInput } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { FC, memo, ReactNode } from 'react';
 
+import AutoCompleteDepartment from '../../../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../../../client/components/Omnichannel/Tags';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import SharingOptions from './SharingOptions';
 
 const CreateCannedResponseModal: FC<{
 	isManager: boolean;
-	form: any;
+	values: any;
+	handlers: any;
+	errors: any;
+	hasUnsavedChanges: boolean;
 	radioHandlers: any;
 	radioDescription: string;
-	onClose: () => void;
+	onClose: (modal: ReactNode) => void;
 	onSave: () => void;
 	onPreview: () => void;
-}> = ({ isManager, form, radioHandlers, radioDescription, onClose, onSave, onPreview }) => {
+}> = ({
+	isManager,
+	values,
+	handlers,
+	errors,
+	hasUnsavedChanges,
+	radioHandlers,
+	radioDescription,
+	onClose,
+	onSave,
+	onPreview,
+}) => {
 	const t = useTranslation();
 
 	const clickable = css`
 		cursor: pointer;
 	`;
 
-	const { values, handlers, errors } = form;
+	const { _id, shortcut, text, scope, tags, departmentId } = values;
+	const { handleShortcut, handleText, handleTags, handleDepartmentId } = handlers;
+
+	const checkDepartment = scope !== 'department' || (scope === 'department' && departmentId);
+
+	const canSave = shortcut && text && checkDepartment;
 
 	return (
 		<Modal>
 			<Modal.Header>
-				{/* <Modal.Title>{t('Create_Canned_Response')}</Modal.Title> */}
-				<Modal.Close onClick={onClose} />
+				<Modal.Title>{_id ? t('Edit_Canned_Response') : t('Create_Canned_Response')}</Modal.Title>
+				<Modal.Close
+					onClick={(): void => {
+						onClose(null);
+					}}
+				/>
 			</Modal.Header>
 			<Modal.Content fontScale='p1'>
 				<Field mbe='x24'>
 					<Field.Label>{t('Shortcut')}</Field.Label>
 					<TextInput
+						error={errors.shortcut}
 						name={'shortcut'}
-						// placeholder={`!${t('shortcut_name')}`}
-						error={errors && errors.shortcut}
-						onChange={handlers && handlers.shortcut}
-						value={values && values.shortcut}
+						placeholder={`!${t('shortcut_name')}`}
+						onChange={handleShortcut}
+						value={shortcut}
 					/>
+					<Field.Error>{errors.shortcut}</Field.Error>
 				</Field>
 				<Field mbe='x24'>
 					<Field.Label w='full'>
@@ -49,29 +74,44 @@ const CreateCannedResponseModal: FC<{
 							</Box>
 						</Box>
 					</Field.Label>
-					<TextInput />
+					<TextInput value={text} onChange={handleText} error={errors.text} />
 				</Field>
 				<Field mbe='x24'>
-					<Tags
-						error={errors && errors.tags}
-						handler={handlers && handlers.tags}
-						tags={values && values.tags}
-					/>
+					<Tags handler={handleTags} tags={tags} />
 				</Field>
 				{isManager && (
 					<>
 						<Field mbe='x24'>
-							{/* <Field.Label>{t('Sharing')}</Field.Label> */}
+							<Field.Label>{t('Sharing')}</Field.Label>
 							<Field.Description>{radioDescription}</Field.Description>
+							<Field.Row mbs='12px' justifyContent='start'>
+								<SharingOptions scope={scope} radioHandlers={radioHandlers} />
+							</Field.Row>
 						</Field>
-						<SharingOptions radioHandlers={radioHandlers} />
+						{scope === 'department' && (
+							<Field mbe='x24'>
+								<Field.Label>{t('Department')}</Field.Label>
+								<AutoCompleteDepartment
+									value={departmentId}
+									onChange={handleDepartmentId}
+									error={errors.departmentId}
+								/>
+								<Field.Error>{errors.departmentId}</Field.Error>
+							</Field>
+						)}
 					</>
 				)}
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary onClick={onSave}>
+					<Button
+						onClick={(): void => {
+							onClose(null);
+						}}
+					>
+						{t('Cancel')}
+					</Button>
+					<Button primary disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
