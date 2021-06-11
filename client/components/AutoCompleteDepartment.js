@@ -32,7 +32,9 @@ const AutoCompleteDepartment = (props) => {
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ label }) => <>{label}</>}
-			renderItem={({ value, ...props }) => <Option key={value} {...props} />}
+			renderItem={({ label, value, ...props }) => (
+				<Option title={label} label={label} key={value} {...props} />
+			)}
 			options={options}
 		/>
 	);
