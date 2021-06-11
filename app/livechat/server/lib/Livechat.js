@@ -680,7 +680,7 @@ export const Livechat = {
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			Livechat.logger.webhook.error(`Response error on ${ attempts - 9 } try ->`, e);
+			Livechat.logger.webhook.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
 			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
 			setTimeout(Meteor.bindEnvironment(function() {
