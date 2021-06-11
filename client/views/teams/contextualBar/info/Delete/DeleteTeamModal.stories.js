@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DeleteTeam, { StepOne, StepTwo, StepThree } from '.';
+import DeleteTeam, { StepOne, StepTwo } from '.';
 
 export default {
 	title: 'teams/DeleteTeamModal',
@@ -23,10 +23,8 @@ const rooms = Array.from({ length: 15 }).map((_, i) => ({
 
 export const Default = () => <DeleteTeam rooms={rooms} />;
 
-export const ModalStepOne = () => <StepOne {...commonProps} />;
+export const ModalStepOne = () => <StepOne rooms={rooms} selectedRooms={{}} {...commonProps} />;
 
-export const ModalStepTwo = () => <StepTwo rooms={rooms} selectedRooms={{}} {...commonProps} />;
-
-export const ModalStepThree = () => (
-	<StepThree deletedRooms={rooms} keptRooms={rooms} {...commonProps} />
+export const ModalStepTwo = () => (
+	<StepTwo deletedRooms={rooms} keptRooms={rooms} {...commonProps} />
 );
