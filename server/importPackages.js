@@ -1,3 +1,4 @@
+import './api/v1';
 import '../app/assets/server';
 import '../app/authorization';
 import '../app/channel-settings';
@@ -22,7 +23,6 @@ import '../app/authentication/server';
 import './settings/settingfiles';
 import './api/methods';
 import './services/2fa';
-import './api/v1';
 import './services/messages/slashcommands';
 import './services/messages/mentions';
 import './services/messages/threads';
