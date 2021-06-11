@@ -12,7 +12,7 @@ import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../../app/logger';
 import { _setRealName, _setUsername } from '../../../app/lib';
 import { templateVarHandler } from '../../../app/utils';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../services/file-handling/file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../app/lib/server/functions';
 import { api } from '../../sdk/api';
 

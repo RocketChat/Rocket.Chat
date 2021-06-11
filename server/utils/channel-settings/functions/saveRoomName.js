@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Messages, Subscriptions, Integrations } from '../../../../server/models';
-import { roomTypes, getValidRoomName } from '../../../utils/server';
-import { callbacks } from '../../../../server/utils/hooks';
-import { checkUsernameAvailability } from '../../../lib/server/functions';
+import { Rooms, Messages, Subscriptions, Integrations } from '../../../models';
+import { roomTypes, getValidRoomName } from '../../../../app/utils/server';
+import { callbacks } from '../../hooks';
+import { checkUsernameAvailability } from '../../../../app/lib/server/functions';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
 	if (isDiscussion) {

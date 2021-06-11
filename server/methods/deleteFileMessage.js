@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { FileUpload } from '../../app/file-upload';
+import { FileUpload } from '../services/file-handling/file-upload';
 import { Messages } from '../../app/models';
 
 Meteor.methods({

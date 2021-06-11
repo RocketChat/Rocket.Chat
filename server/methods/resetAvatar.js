@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { FileUpload } from '../../app/file-upload';
+import { FileUpload } from '../services/file-handling/file-upload';
 import { Users } from '../models';
 import { settings } from '../../app/settings';
 import { hasPermission } from '../../app/authorization/server';
