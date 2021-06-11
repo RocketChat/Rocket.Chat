@@ -5,11 +5,11 @@ import { IUser } from './IUser';
 
 export interface IOmnichannelCannedResponse extends IRocketChatRecord {
 	shortcut: string;
-	text: boolean;
+	text: string;
 	scope: string;
 	tags: any;
 	userId: IUser['_id'];
-	departmentId: ILivechatDepartment['_id'];
+	departmentId?: ILivechatDepartment['_id'];
 	createdBy: {
 		_id: IUser['_id'];
 		username: string;
