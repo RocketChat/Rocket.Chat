@@ -54,7 +54,7 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	}
 
 	if (full) {
-		return siteUrl + url;
+		return s.rtrim(siteUrl, pathPrefix) + url;
 	}
 
 	return url;
