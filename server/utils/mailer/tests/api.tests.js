@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import assert from 'assert';
 
-import { replaceVariables } from '../server/utils.js';
+import { replaceVariables } from '../utils.js';
 
 describe('Mailer-API', function() {
 	describe('translate', () => {

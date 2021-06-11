@@ -7,7 +7,7 @@ import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../../server/settings';
+import { settings } from '../../settings';
 import { replaceVariables } from './utils.js';
 
 let contentHeader;

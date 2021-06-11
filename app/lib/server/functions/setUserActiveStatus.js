@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/utils/mailer';
 import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
