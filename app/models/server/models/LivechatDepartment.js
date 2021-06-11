@@ -91,12 +91,12 @@ export class LivechatDepartment extends Base {
 		return this.remove(query);
 	}
 
-	findEnabledWithAgents() {
+	findEnabledWithAgents(fields) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.find(query);
+		return this.find(query, fields && { fields });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
