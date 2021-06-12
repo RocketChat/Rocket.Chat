@@ -15,6 +15,7 @@ import {
 import React, { FC, memo, Ref, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IUser } from '../../../../definition/IUser';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -23,7 +24,6 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction'
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/goToRoomById';
 import TeamNameInput from './TeamNameInput';
-import UsersInput from './UsersInput';
 
 type CreateTeamModalState = {
 	name: any;
@@ -94,7 +94,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		async (name: string) => {
 			setNameError(undefined);
 
-			if (!hasUnsavedChanges) {
+			if (hasUnsavedChanges) {
 				return;
 			}
 
@@ -338,7 +338,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 							({t('optional')})
 						</Box>
 					</Field.Label>
-					<UsersInput value={members} onChange={onChangeMembers} />
+					<UserAutoCompleteMultiple handleById value={members} onChange={onChangeMembers} />
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>
