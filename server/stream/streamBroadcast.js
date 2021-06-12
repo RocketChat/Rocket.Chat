@@ -165,6 +165,11 @@ function startStreamCastBroadcast(value) {
 		_dontPrintErrors: LoggerManager.logLevel < 2,
 	});
 
+	// Ignore collection events to prevent store in memory
+	// necessary to prevent memory lead due to the usage
+	// of DDP subscribe
+	connection._livedata_data = () => {};
+
 	connections[instance] = connection;
 	connection.instanceId = instance;
 	connection.instanceRecord = {};
