@@ -1,10 +1,11 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../contexts/UserContext';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { useAsyncState } from '../../../../../hooks/useAsyncState';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import LeaveTeamModal from './LeaveTeamModal';
 import StepOne from './StepOne';
@@ -14,10 +15,23 @@ const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
 	const t = useTranslation();
 
 	const userId = useUserId();
-	const { value, phase } = useEndpointData(
-		'teams.listRoomsOfUser',
-		useMemo(() => ({ teamId, userId }), [teamId, userId]),
-	);
+
+	const listRooms = useEndpoint('GET', 'teams.listRoomsOfUser');
+	const { resolve, reject, reset, phase, value } = useAsyncState([]);
+
+	const fetchData = useCallback(() => {
+		reset();
+		listRooms({ teamId, userId })
+			.then(resolve)
+			.catch((error) => {
+				console.error(error);
+				reject(error);
+			});
+	}, [reset, listRooms, teamId, userId, resolve, reject]);
+
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (
@@ -33,7 +47,7 @@ const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
 		);
 	}
 
-	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value.rooms} />;
+	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms || []} />;
 };
 
 export { StepOne, StepTwo };
