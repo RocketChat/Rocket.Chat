@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { Match } from 'meteor/check';
-import { Mongo } from 'meteor/mongo';
+import { Mongo, MongoInternals } from 'meteor/mongo';
 import _ from 'underscore';
 
 import { metrics } from '../../../metrics/server/lib/metrics';
@@ -27,6 +27,62 @@ const actions = {
 	u: 'update',
 	d: 'remove',
 };
+
+function getCallerNames(skip = 3, limit = 2) {
+	// const a = Date.now();
+	let data = [];
+	try {
+		try { throw new Error(); } catch (e) {
+			data = e.stack.match(/(?<=at )[^\(\n]+(?= \()/g).splice(skip, limit);
+		}
+	} catch (e) {
+		// return [];
+	}
+	// console.log(Date.now() - a);
+	return data;
+}
+
+const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+const DurationStart = new Map();
+client.on('commandStarted', (event) => {
+	DurationStart.set(event.requestId, event);
+});
+client.on('commandSucceeded', (event) => {
+	if (!DurationStart.has(event.requestId)) {
+		return;
+	}
+
+	const startEvent = DurationStart.get(event.requestId);
+	DurationStart.delete(event.requestId);
+
+	const number = event.reply.n ?? event.reply.cursor?.firstBatch?.length ?? event.reply.cursor?.nextBatch?.length ?? event.reply.lastErrorObject?.n ?? 0;
+	const { duration } = event;
+	const cmd = startEvent.command.filter || startEvent.command.query || startEvent.command.deletes || startEvent.command.updates || startEvent.command.pipeline || startEvent.command.indexes;
+	const result = {
+		collection: startEvent.command[startEvent.commandName],
+		command: event.commandName,
+		caller: cmd?.$comment || JSON.stringify(cmd),
+	};
+	metrics.collectionsByTime.set(result, duration);
+	metrics.collectionsByRecord.set(result, number);
+
+	// if (event.commandName === 'findAndModify') {
+	// 	console.log(startEvent);
+	// 	console.log(event);
+	// }
+	// if (!['find', 'update', 'getMore', 'ismaster', 'listIndexes', 'count', 'delete', 'serverStatus', 'insert', 'createIndexes', 'aggregate', 'drop', 'findAndModify'].includes(result.command)) {
+	// 	console.log({
+	// 		...result,
+	// 		duration,
+	// 		number,
+	// 		durationPerNumber: number === 0 ? 0 : duration / number,
+	// 	});
+	// 	console.log(startEvent);
+	// 	console.log(event);
+	// }
+});
+client.on('commandFailed', (event) => DurationStart.delete(event.requestId));
+const monitorMongoCommands = process.env.MONITOR_MONGO_COMMANDS === 'true';
 
 export class BaseDb extends EventEmitter {
 	constructor(model, baseModel, options = {}) {
@@ -177,16 +233,34 @@ export class BaseDb extends EventEmitter {
 	}
 
 	find(query = {}, options = {}) {
+		if (monitorMongoCommands) {
+			if (typeof query === 'string') {
+				query = { _id: query };
+			}
+			query.$comment = getCallerNames().reverse().join(' > ');
+		}
 		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
 		return this.model.find(query, optionsDef);
 	}
 
 	findById(_id, options) {
-		return this.find({ _id }, options);
+		const query = {
+			_id,
+		};
+		if (monitorMongoCommands) {
+			query.$comment = getCallerNames().reverse().join(' > ');
+		}
+		return this.find(query, options);
 	}
 
 	findOne(query = {}, options = {}) {
 		const optionsDef = this._doNotMixInclusionAndExclusionFields(options);
+		if (monitorMongoCommands) {
+			if (typeof query === 'string') {
+				query = { _id: query };
+			}
+			query.$comment = getCallerNames().reverse().join(' > ');
+		}
 		return this.model.findOne(query, optionsDef);
 	}
 
