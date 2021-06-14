@@ -3,15 +3,15 @@ import 'babel-polyfill';
 
 import chai from 'chai';
 
-import '../../lib/tests/server.mocks.js';
-import { AuthorizeRequest } from '../server/lib/generators/AuthorizeRequest';
-import { LogoutRequest } from '../server/lib/generators/LogoutRequest';
-import { LogoutResponse } from '../server/lib/generators/LogoutResponse';
-import { ServiceProviderMetadata } from '../server/lib/generators/ServiceProviderMetadata';
-import { LogoutRequestParser } from '../server/lib/parsers/LogoutRequest';
-import { LogoutResponseParser } from '../server/lib/parsers/LogoutResponse';
-import { ResponseParser } from '../server/lib/parsers/Response';
-import { SAMLUtils } from '../server/lib/Utils';
+import '../../../../app/lib/tests/server.mocks.js';
+import { AuthorizeRequest } from '../lib/generators/AuthorizeRequest';
+import { LogoutRequest } from '../lib/generators/LogoutRequest';
+import { LogoutResponse } from '../lib/generators/LogoutResponse';
+import { ServiceProviderMetadata } from '../lib/generators/ServiceProviderMetadata';
+import { LogoutRequestParser } from '../lib/parsers/LogoutRequest';
+import { LogoutResponseParser } from '../lib/parsers/LogoutResponse';
+import { ResponseParser } from '../lib/parsers/Response';
+import { SAMLUtils } from '../lib/Utils';
 import {
 	serviceProviderOptions,
 	simpleMetadata,
@@ -38,7 +38,7 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import '../../../definition/xml-encryption';
+import '../../../../definition/xml-encryption';
 
 const { expect } = chai;
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../../server/models';
+import { Users } from '../../../models';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
 import { SAMLUtils } from '../lib/Utils';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
