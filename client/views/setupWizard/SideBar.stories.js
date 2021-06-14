@@ -1,14 +1,13 @@
-import { select } from '@storybook/addon-knobs';
 import React from 'react';
 
 import SideBar from './SideBar';
 
 export default {
-	title: 'views/setupWizard/SideBar',
+	title: 'components/setupWizard/SideBar',
 	component: SideBar,
 };
 
-export const _default = () =>
+export const _default = () => (
 	<SideBar
 		logoSrc='https://open.rocket.chat/images/logo/logo.svg'
 		steps={[
@@ -29,10 +28,11 @@ export const _default = () =>
 				title: 'Implement the solution',
 			},
 		]}
-		currentStep={select('currentStep', [1, 2, 3, 4])}
-	/>;
+		currentStep={[1, 2, 3, 4][0]}
+	/>
+);
 
-export const atSomeStep = () =>
+export const atSomeStep = () => (
 	<SideBar
 		logoSrc='https://open.rocket.chat/images/logo/logo.svg'
 		steps={[
@@ -54,4 +54,5 @@ export const atSomeStep = () =>
 			},
 		]}
 		currentStep={2}
-	/>;
+	/>
+);

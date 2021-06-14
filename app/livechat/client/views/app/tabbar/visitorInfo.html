@@ -39,6 +39,8 @@
 				<ul>
 					{{#with room}}
 						{{#if servedBy}}<li><strong>{{_ "Agent"}}</strong>: {{servedBy.username}}</li>{{/if}}
+						{{#if email}}<li><strong>{{_ "Email_Inbox"}}</strong>: {{email.inbox}}</li>{{/if}}
+						{{#if email}}<li><strong>{{_ "Email_subject"}}</strong>: {{email.subject}}</li>{{/if}}
 						{{#if facebook}}<li><i class="icon-facebook"></i>{{_ "Facebook_Page"}}: {{facebook.page.name}}</li>{{/if}}
 						{{#if sms}}<li><i class="i con-mobile"></i>{{_ "SMS_Enabled"}}</li>{{/if}}
 						{{#if topic}}<li><strong>{{_ "Topic"}}</strong>: {{{markdown topic}}}</li>{{/if}}
@@ -86,6 +88,10 @@
 
 				{{#if canSendTranscript}}
 					<button class="button rc-button rc-button--secondary button-block send-transcript"><span><i class="icon-mail"></i> {{_ "Transcript"}}</span></button>
+				{{/if}}
+
+				{{#if canPlaceChatOnHold}}
+					<button class="button rc-button rc-button--secondary button-block on-hold"><span><i class="icon-pause"></i> {{_ "On_Hold_Chats"}}</span></button>
 				{{/if}}
 			</nav>
 		{{/if}}

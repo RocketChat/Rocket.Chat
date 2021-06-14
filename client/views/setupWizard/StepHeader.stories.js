@@ -1,15 +1,10 @@
-import { number, text } from '@storybook/addon-knobs';
 import React from 'react';
 
 import { StepHeader } from './StepHeader';
 
 export default {
-	title: 'views/setupWizard/StepHeader',
+	title: 'components/setupWizard/StepHeader',
 	component: StepHeader,
 };
 
-export const _default = () =>
-	<StepHeader
-		number={number('number', 1)}
-		title={text('title', 'Title')}
-	/>;
+export const _default = () => <StepHeader number={1} title={'Title'} />;

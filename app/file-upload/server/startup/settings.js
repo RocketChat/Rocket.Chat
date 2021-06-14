@@ -71,9 +71,6 @@ settings.addGroup('FileUpload', function() {
 		}, {
 			key: 'FileSystem',
 			i18nLabel: 'FileSystem',
-		}, {
-			key: 'Storj',
-			i18nLabel: 'Storj',
 		}],
 		public: true,
 	});
@@ -213,41 +210,6 @@ settings.addGroup('FileUpload', function() {
 				value: 'GoogleCloudStorage',
 			},
 		});
-	});
-
-	this.section('Storj Storage', function() {
-		this.add('FileUpload_Storj_Bucket', '', {
-			type: 'string',
-			private: true,
-			enableQuery: {
-				_id: 'FileUpload_Storage_Type',
-				value: 'Storj',
-			},
-			secret: true,
-		});
-		this.add('FileUpload_Storj_AccessKey', '', {
-			type: 'string',
-			private: true,
-			enableQuery: {
-				_id: 'FileUpload_Storage_Type',
-				value: 'Storj',
-			},
-			secret: true,
-		});
-		// this.add('FileUpload_Storj_Proxy_Avatars', false, {
-		// 	type: 'boolean',
-		// 	enableQuery: {
-		// 		_id: 'FileUpload_Storage_Type',
-		// 		value: 'Storj',
-		// 	},
-		// });
-		// this.add('FileUpload_Storj_Proxy_Uploads', false, {
-		// 	type: 'boolean',
-		// 	enableQuery: {
-		// 		_id: 'FileUpload_Storage_Type',
-		// 		value: 'Storj',
-		// 	},
-		// });
 	});
 
 	this.section('File System', function() {

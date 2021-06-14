@@ -1,13 +1,13 @@
-import React, { ReactNode, useContext, useMemo } from 'react';
+import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
-import { IRoom } from '../../../../definition/IRoom';
-import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
-import { RoomContext } from '../contexts/RoomContext';
-import { ToolboxProvider } from './ToolboxProvider';
 import { roomTypes } from '../../../../app/utils/client';
-import { useUserRoom } from '../hooks/useUserRoom';
-
-const fields = {};
+import { IRoom, IOmnichannelRoom } from '../../../../definition/IRoom';
+import { IOmnichannelSubscription } from '../../../../definition/ISubscription';
+import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
+import { AsyncStatePhase } from '../../../lib/asyncState';
+import Skeleton from '../Room/Skeleton';
+import { RoomContext } from '../contexts/RoomContext';
+import ToolboxProvider from './ToolboxProvider';
 
 export type Props = {
 	children: ReactNode;
@@ -15,27 +15,34 @@ export type Props = {
 };
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
-	const uid = useUserId();
-	const subscription = useUserSubscription(rid, fields) as unknown as IRoom;
-	const _room = useUserRoom(rid, fields) as unknown as IRoom;
+	const { phase, value: room } = useHandleRoom(rid);
+	const context = useMemo(() => {
+		if (!room) {
+			return null;
+		}
+		room._id = rid;
+		return {
+			rid,
+			room: { ...room, name: roomTypes.getRoomName(room.t, room) } as IOmnichannelRoom &
+				IOmnichannelSubscription,
+		};
+	}, [room, rid]);
 
-	const room = uid ? subscription || _room : _room;
-	room._id = rid;
-	const context = useMemo(() => ({
-		rid,
-		room: { ...room, name: roomTypes.getRoomName(room.t, room) },
-	}), [room, rid]);
+	useEffect(() => {
+		RoomManager.open(rid);
+		return (): void => {
+			RoomManager.back(rid);
+		};
+	}, [rid]);
 
-	if (!room) {
-		return <></>;
+	if (phase === AsyncStatePhase.LOADING || !room) {
+		return <Skeleton />;
 	}
 
-	return <RoomContext.Provider value={context}>
-		<ToolboxProvider room={room}>
-			{children}
-		</ToolboxProvider>
-	</RoomContext.Provider>;
+	return (
+		<RoomContext.Provider value={context}>
+			<ToolboxProvider room={room}>{children}</ToolboxProvider>
+		</RoomContext.Provider>
+	);
 };
-
-export const useRoom = (): undefined | IRoom => useContext(RoomContext)?.room;
-export default RoomProvider;
+export default memo(RoomProvider);

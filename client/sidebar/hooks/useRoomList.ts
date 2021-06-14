@@ -1,12 +1,16 @@
-import { useEffect } from 'react';
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
+import { useEffect } from 'react';
 
+import { IRoom } from '../../../definition/IRoom';
+import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
-import { ISubscription } from '../../../definition/ISubscription';
 
 const query = { open: { $ne: false } };
+
+const emptyQueue: IRoom[] = [];
 
 export const useRoomList = (): Array<ISubscription> => {
 	const [roomList, setRoomList] = useDebouncedState<ISubscription[]>([], 150);
@@ -14,7 +18,7 @@ export const useRoomList = (): Array<ISubscription> => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
-	const showDiscussion = useUserPreference('sidebarShowDiscussion');
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const options = useQueryOptions();
@@ -23,16 +27,22 @@ export const useRoomList = (): Array<ISubscription> => {
 
 	const inquiries = useQueuedInquiries();
 
+	let queue: IRoom[] = emptyQueue;
+	if (inquiries.enabled) {
+		queue = inquiries.queue;
+	}
+
 	useEffect(() => {
 		setRoomList(() => {
 			const favorite = new Set();
+			const team = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
-			const _private = new Set();
-			const _public = new Set();
+			const channels = new Set();
 			const direct = new Set();
 			const discussion = new Set();
 			const conversation = new Set();
+			const onHold = new Set();
 
 			rooms.forEach((room) => {
 				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
@@ -43,16 +53,20 @@ export const useRoomList = (): Array<ISubscription> => {
 					return favorite.add(room);
 				}
 
-				if (showDiscussion && room.prid) {
+				if (room.teamMain) {
+					return team.add(room);
+				}
+
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
 				}
 
-				if (room.t === 'c') {
-					_public.add(room);
+				if (room.t === 'c' || room.t === 'p') {
+					channels.add(room);
 				}
 
-				if (room.t === 'p') {
-					_private.add(room);
+				if (room.t === 'l' && room.onHold) {
+					return showOmnichannel && onHold.add(room);
 				}
 
 				if (room.t === 'l') {
@@ -67,22 +81,36 @@ export const useRoomList = (): Array<ISubscription> => {
 			});
 
 			const groups = new Map();
-			showOmnichannel && inquiries.enabled && groups.set('Omnichannel', []);
-			showOmnichannel && !inquiries.enabled && groups.set('Omnichannel', omnichannel);
-			showOmnichannel && inquiries.enabled && inquiries.queue.length && groups.set('Incoming_Livechats', inquiries.queue);
-			showOmnichannel && inquiries.enabled && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && groups.set('Omnichannel', []);
+			showOmnichannel &&
+				inquiries.enabled &&
+				queue.length &&
+				groups.set('Incoming_Livechats', queue);
+			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
+			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
-			showDiscussion && discussion.size && groups.set('Discussions', discussion);
-			sidebarGroupByType && _private.size && groups.set('Private', _private);
-			sidebarGroupByType && _public.size && groups.set('Public', _public);
-			sidebarGroupByType && direct.size && groups.set('Direct', direct);
+			team.size && groups.set('Teams', team);
+			sidebarGroupByType &&
+				isDiscussionEnabled &&
+				discussion.size &&
+				groups.set('Discussions', discussion);
+			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rooms, showOmnichannel, inquiries.enabled, inquiries.enabled && inquiries.queue, sidebarShowUnread, favoritesEnabled, showDiscussion, sidebarGroupByType]);
+	}, [
+		rooms,
+		showOmnichannel,
+		inquiries.enabled,
+		queue,
+		sidebarShowUnread,
+		favoritesEnabled,
+		sidebarGroupByType,
+		setRoomList,
+		isDiscussionEnabled,
+	]);
 
 	return roomList;
 };

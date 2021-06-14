@@ -1,8 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import toastr from 'toastr';
-
-import { escapeHTML } from '../../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 export const handleError = function(error, useToastr = true) {
 	if (error.xhr) {
@@ -23,7 +22,7 @@ export const handleError = function(error, useToastr = true) {
 		}
 		const details = Object.entries(error.details || {})
 			.reduce((obj, [key, value]) => ({ ...obj, [key]: escapeHTML(value) }), {});
-		const message = TAPi18n.__(error.message || error.error, details);
+		const message = TAPi18n.__(error.error || error.message, details);
 		const title = details.errorTitle && TAPi18n.__(details.errorTitle);
 
 		return toastr.error(message, title);

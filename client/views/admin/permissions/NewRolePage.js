@@ -1,16 +1,18 @@
-import React from 'react';
-import { Box, FieldGroup, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
-import RoleForm from './RoleForm';
-import { useForm } from '../../../hooks/useForm';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import VerticalBar from '../../../components/VerticalBar';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
+import RoleForm from './RoleForm';
 
 const NewRolePage = () => {
 	const t = useTranslation();
+	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers } = useForm({
@@ -26,21 +28,30 @@ const NewRolePage = () => {
 		try {
 			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <Box w='full' alignSelf='center' mb='neg-x8'>
-		<Margins block='x8'>
-			<FieldGroup>
-				<RoleForm values={values} handlers={handlers}/>
-			</FieldGroup>
-			<ButtonGroup stretch w='full'>
-				<Button primary onClick={handleSave}>{t('Save')}</Button>
-			</ButtonGroup>
-		</Margins>
-	</Box>;
+	return (
+		<>
+			<VerticalBar.ScrollableContent>
+				<Box w='full' alignSelf='center' mb='neg-x8'>
+					<Margins block='x8'>
+						<RoleForm values={values} handlers={handlers} />
+					</Margins>
+				</Box>
+			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
+				<ButtonGroup stretch w='full'>
+					<Button primary onClick={handleSave}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</VerticalBar.Footer>
+		</>
+	);
 };
 
 export default NewRolePage;

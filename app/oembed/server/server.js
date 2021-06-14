@@ -60,7 +60,7 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
@@ -102,6 +102,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		maxRedirects: redirectCount,
 		headers: {
 			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
 	let headers = null;
@@ -142,10 +143,9 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	return stream.on('error', function(err) {
 		error = err;
 	});
-};
+});
 
 OEmbed.getUrlMeta = function(url, withFragment) {
-	const getUrlContentSync = Meteor.wrapAsync(getUrlContent);
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query);
@@ -158,7 +158,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContentSync(urlObj, 5);
+	const content = getUrlContent(urlObj, 5);
 	if (!content) {
 		return;
 	}
@@ -190,12 +190,11 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
 		}
+		delete metas.oembedHtml;
 	}
 	let headers = undefined;
-	let data = undefined;
 
-
-	if (content && content.headers) {
+	if (content?.headers) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
@@ -203,15 +202,15 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		});
 	}
 	if (content && content.statusCode !== 200) {
-		return data;
+		return;
 	}
-	data = callbacks.run('oembed:afterParseContent', {
+	return callbacks.run('oembed:afterParseContent', {
+		url,
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
 		content,
 	});
-	return data;
 };
 
 OEmbed.getUrlMetaWithCache = function(url, withFragment) {
@@ -260,7 +259,7 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%\"');
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
 
 OEmbed.rocketUrlParser = function(message) {
 	if (Array.isArray(message.urls)) {

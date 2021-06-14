@@ -2,13 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-export const registerAdminRoute = createRouteGroup('admin', '/admin', () => import('./AdministrationRouter'));
-
-registerAdminRoute('/', {
-	triggersEnter: [(context, redirect) => {
-		redirect('admin-info');
-	}],
-});
+export const registerAdminRoute = createRouteGroup('admin', '/admin', () =>
+	import('./AdministrationRouter'),
+);
 
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
@@ -117,6 +113,11 @@ registerAdminRoute('/federation-dashboard', {
 registerAdminRoute('/permissions/:context?/:_id?', {
 	name: 'admin-permissions',
 	lazyRouteComponent: () => import('./permissions/PermissionsRouter'),
+});
+
+registerAdminRoute('/email-inboxes/:context?/:_id?', {
+	name: 'admin-email-inboxes',
+	lazyRouteComponent: () => import('./emailInbox/EmailInboxRoute'),
 });
 
 Meteor.startup(() => {

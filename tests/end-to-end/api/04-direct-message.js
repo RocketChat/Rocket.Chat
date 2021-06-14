@@ -10,6 +10,7 @@ import {
 	apiEmail,
 } from '../../data/api-data.js';
 import { password, adminUsername } from '../../data/user.js';
+import { updateSetting, updatePermission } from '../../data/permissions.helper';
 
 
 describe('[Direct Messages]', function() {
@@ -239,6 +240,82 @@ describe('[Direct Messages]', function() {
 			.end(done);
 	});
 
+	it('/im.files', (done) => {
+		request.get(api('im.files'))
+			.set(credentials)
+			.query({
+				roomId: directMessage._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('files');
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('total');
+			})
+			.end(done);
+	});
+
+	describe('/im.messages.others', () => {
+		it('should fail when the endpoint is disabled', (done) => {
+			updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
+				request.get(api('im.messages.others'))
+					.set(credentials)
+					.query({
+						roomId: directMessage._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
+					})
+					.end(done);
+			});
+		});
+		it('should fail when the endpoint is enabled but the user doesnt have permission', (done) => {
+			updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
+				updatePermission('view-room-administration', []).then(() => {
+					request.get(api('im.messages.others'))
+						.set(credentials)
+						.query({
+							roomId: directMessage._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'unauthorized');
+						})
+						.end(done);
+				});
+			});
+		});
+		it('should succeed when the endpoint is enabled and user has permission', (done) => {
+			updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
+				updatePermission('view-room-administration', ['admin']).then(() => {
+					request.get(api('im.messages.others'))
+						.set(credentials)
+						.query({
+							roomId: directMessage._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('messages').and.to.be.an('array');
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('count');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+	});
+
 	it('/im.close', (done) => {
 		request.post(api('im.close'))
 			.set(credentials)
@@ -361,6 +438,41 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('offset').and.to.be.equal(0);
 					expect(res.body).to.have.property('total').and.to.be.equal(2);
 					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
+				})
+				.end(done);
+		});
+		it('should return and array with one member', (done) => {
+			request.get(api('im.members'))
+				.set(credentials)
+				.query({
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').and.to.be.equal(2);
+					expect(res.body).to.have.property('offset').and.to.be.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.equal(2);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
+				})
+				.end(done);
+		});
+		it('should return and array with one member queried by status', (done) => {
+			request.get(api('im.members'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+					'status[]': ['online'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').and.to.be.equal(1);
+					expect(res.body).to.have.property('offset').and.to.be.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.equal(1);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
 				})
 				.end(done);
 		});

@@ -1,5 +1,6 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Select, Skeleton } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
@@ -7,8 +8,9 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
 
-function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
 	const t = useTranslation();
+	const isLgScreen = useBreakpoints().includes('lg');
 
 	const currentDate = useMemo(() =>
 		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
@@ -58,7 +60,8 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 							padding={0.25}
 							margin={{
 								// TODO: Get it from theme
-								bottom: 20,
+								bottom: 30,
+								right: 5,
 							}}
 							colors={[
 								// TODO: Get it from theme
@@ -72,7 +75,7 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 								tickSize: 0,
 								// TODO: Get it from theme
 								tickPadding: 4,
-								tickRotation: 0,
+								tickRotation: isLgScreen ? 0 : 25,
 								tickValues: 'every 2 hours',
 								format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 							}}
@@ -112,9 +115,9 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 			</Box>
 			: <Skeleton variant='rect' height={196} />}
 	</>;
-}
+};
 
-function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) {
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
 	const currentDate = useMemo(() => moment.utc().subtract(displacement, 'weeks'), [displacement]);
 	const formattedCurrentDate = useMemo(() => {
 		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
@@ -150,7 +153,11 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 				? <Box style={{ height: 196 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='day'
@@ -205,9 +212,9 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 				: <Skeleton variant='rect' height={196} />}
 		</Flex.Container>
 	</>;
-}
+};
 
-export function BusiestChatTimesSection() {
+const BusiestChatTimesSection = () => {
 	const t = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState('hours');
@@ -238,4 +245,6 @@ export function BusiestChatTimesSection() {
 			onNextDateClick={handleNextDateClick}
 		/>
 	</Section>;
-}
+};
+
+export default BusiestChatTimesSection;

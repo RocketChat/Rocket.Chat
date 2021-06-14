@@ -118,6 +118,12 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_AllowInvisibleStatusOption', true, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
@@ -163,6 +169,10 @@ settings.addGroup('Accounts', function() {
 		});
 		this.add('Accounts_BlockedUsernameList', '', {
 			type: 'string',
+		});
+		this.add('Accounts_SystemBlockedUsernameList', 'admin,administrator,system,user', {
+			type: 'string',
+			hidden: true,
 		});
 		this.add('Accounts_UseDefaultBlockedDomainsList', true, {
 			type: 'boolean',
@@ -345,10 +355,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Display_avatars',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
@@ -374,10 +384,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Sidebar_list_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars_Sidebar',
+			i18nLabel: 'Display_Avatars_Sidebar',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
@@ -497,15 +507,24 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'New_Message_Notification',
 		});
+
 		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
+
 		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
+		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Enable_message_parser_early_adoption',
+			alert: 'Enable_message_parser_early_adoption_alert',
 		});
 	});
 
@@ -594,6 +613,26 @@ settings.addGroup('Accounts', function() {
 		this.add('Accounts_Password_Policy_AtLeastOneSpecialCharacter', true, {
 			type: 'boolean',
 			enableQuery,
+		});
+	});
+
+	this.section('Password_History', function() {
+		this.add('Accounts_Password_History_Enabled', false, {
+			type: 'boolean',
+			i18nLabel: 'Enable_Password_History',
+			i18nDescription: 'Enable_Password_History_Description',
+		});
+
+		const enableQuery = {
+			_id: 'Accounts_Password_History_Enabled',
+			value: true,
+		};
+
+		this.add('Accounts_Password_History_Amount', 5, {
+			type: 'int',
+			enableQuery,
+			i18nLabel: 'Password_History_Amount',
+			i18nDescription: 'Password_History_Amount_Description',
 		});
 	});
 });
@@ -917,6 +956,37 @@ settings.addGroup('General', function() {
 		public: true,
 		multiline: true,
 	});
+	this.add('Default_Referrer_Policy', 'same-origin', {
+		type: 'select',
+		values: [
+			{
+				key: 'no-referrer',
+				i18nLabel: 'No_Referrer',
+			}, {
+				key: 'no-referrer-when-downgrade',
+				i18nLabel: 'No_Referrer_When_Downgrade',
+			}, {
+				key: 'origin',
+				i18nLabel: 'Origin',
+			}, {
+				key: 'origin-when-cross-origin',
+				i18nLabel: 'Origin_When_Cross_Origin',
+			}, {
+				key: 'same-origin',
+				i18nLabel: 'Same_Origin',
+			}, {
+				key: 'strict-origin',
+				i18nLabel: 'Strict_Origin',
+			}, {
+				key: 'strict-origin-when-cross-origin',
+				i18nLabel: 'Strict_Origin_When_Cross_Origin',
+			}, {
+				key: 'unsafe-url',
+				i18nLabel: 'Unsafe_Url',
+			},
+		],
+		public: true,
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -979,9 +1049,14 @@ settings.addGroup('General', function() {
 			public: true,
 		});
 	});
-	return this.section('Stream_Cast', function() {
+	this.section('Stream_Cast', function() {
 		return this.add('Stream_Cast_Address', '', {
 			type: 'string',
+		});
+	});
+	this.section('NPS', function() {
+		this.add('NPS_survey_enabled', true, {
+			type: 'boolean',
 		});
 	});
 });
@@ -992,6 +1067,11 @@ settings.addGroup('Message', function() {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
+		});
+		this.add('Message_Attachments_Strip_Exif', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Strip_ExifDescription',
 		});
 	});
 	this.section('Message_Audio', function() {
@@ -1522,8 +1602,8 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'nonprofit',
-					i18nLabel: 'Nonprofit',
+					key: 'community',
+					i18nLabel: 'Community',
 				},
 				{
 					key: 'enterprise',
@@ -1534,8 +1614,8 @@ settings.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Government',
 				},
 				{
-					key: 'community',
-					i18nLabel: 'Community',
+					key: 'nonprofit',
+					i18nLabel: 'Nonprofit',
 				},
 			],
 			wizard: {
@@ -1554,100 +1634,104 @@ settings.addGroup('Setup_Wizard', function() {
 			type: 'select',
 			values: [
 				{
-					key: 'advocacy',
-					i18nLabel: 'Advocacy',
+					key: 'aerospaceDefense',
+					i18nLabel: 'Aerospace_and_Defense',
 				},
 				{
 					key: 'blockchain',
 					i18nLabel: 'Blockchain',
 				},
 				{
-					key: 'helpCenter',
-					i18nLabel: 'Help_Center',
+					key: 'consulting',
+					i18nLabel: 'Consulting',
 				},
 				{
-					key: 'manufacturing',
-					i18nLabel: 'Manufacturing',
+					key: 'consumerGoods',
+					i18nLabel: 'Consumer_Packaged_Goods',
+				},
+				{
+					key: 'contactCenter',
+					i18nLabel: 'Contact_Center',
 				},
 				{
 					key: 'education',
 					i18nLabel: 'Education',
 				},
 				{
-					key: 'insurance',
-					i18nLabel: 'Insurance',
-				},
-				{
-					key: 'logistics',
-					i18nLabel: 'Logistics',
-				},
-				{
-					key: 'consulting',
-					i18nLabel: 'Consulting',
-				},
-				{
 					key: 'entertainment',
 					i18nLabel: 'Entertainment',
-				},
-				{
-					key: 'publicRelations',
-					i18nLabel: 'Public_Relations',
-				},
-				{
-					key: 'religious',
-					i18nLabel: 'Religious',
-				},
-				{
-					key: 'gaming',
-					i18nLabel: 'Gaming',
-				},
-				{
-					key: 'socialNetwork',
-					i18nLabel: 'Social_Network',
-				},
-				{
-					key: 'realEstate',
-					i18nLabel: 'Real_Estate',
-				},
-				{
-					key: 'tourism',
-					i18nLabel: 'Tourism',
-				},
-				{
-					key: 'telecom',
-					i18nLabel: 'Telecom',
-				},
-				{
-					key: 'consumerGoods',
-					i18nLabel: 'Consumer_Goods',
 				},
 				{
 					key: 'financialServices',
 					i18nLabel: 'Financial_Services',
 				},
 				{
-					key: 'healthcarePharmaceutical',
-					i18nLabel: 'Healthcare_and_Pharmaceutical',
+					key: 'gaming',
+					i18nLabel: 'Gaming',
 				},
 				{
-					key: 'industry',
-					i18nLabel: 'Industry',
+					key: 'healthcare',
+					i18nLabel: 'Healthcare',
+				},
+				{
+					key: 'hospitalityBusinness',
+					i18nLabel: 'Hospitality_Businness',
+				},
+				{
+					key: 'insurance',
+					i18nLabel: 'Insurance',
+				},
+				{
+					key: 'itSecurity',
+					i18nLabel: 'It_Security',
+				},
+				{
+					key: 'logistics',
+					i18nLabel: 'Logistics',
+				},
+				{
+					key: 'manufacturing',
+					i18nLabel: 'Manufacturing',
 				},
 				{
 					key: 'media',
 					i18nLabel: 'Media',
 				},
 				{
+					key: 'pharmaceutical',
+					i18nLabel: 'Pharmaceutical',
+				},
+				{
+					key: 'realEstate',
+					i18nLabel: 'Real_Estate',
+				},
+				{
+					key: 'religious',
+					i18nLabel: 'Religious',
+				},
+				{
 					key: 'retail',
 					i18nLabel: 'Retail',
+				},
+				{
+					key: 'socialNetwork',
+					i18nLabel: 'Social_Network',
+				},
+				{
+					key: 'technologyProvider',
+					i18nLabel: 'Technology_Provider',
 				},
 				{
 					key: 'technologyServices',
 					i18nLabel: 'Technology_Services',
 				},
 				{
-					key: 'technologyProvider',
-					i18nLabel: 'Technology_Provider',
+					key: 'telecom',
+					i18nLabel: 'Telecom',
+				},
+				{
+					key: 'utilities',
+					i18nLabel: 'Utilities',
 				},
 				{
 					key: 'other',
@@ -1703,10 +1787,6 @@ settings.addGroup('Setup_Wizard', function() {
 		this.add('Country', '', {
 			type: 'select',
 			values: [
-				{
-					key: 'worldwide',
-					i18nLabel: 'Worldwide',
-				},
 				{
 					key: 'afghanistan',
 					i18nLabel: 'Country_Afghanistan',
@@ -2663,6 +2743,10 @@ settings.addGroup('Setup_Wizard', function() {
 					key: 'zimbabwe',
 					i18nLabel: 'Country_Zimbabwe',
 				},
+				{
+					key: 'worldwide',
+					i18nLabel: 'Worldwide',
+				},
 			],
 			wizard: {
 				step: 2,
@@ -2705,6 +2789,17 @@ settings.addGroup('Setup_Wizard', function() {
 	});
 
 	this.section('Cloud_Info', function() {
+		this.add('Nps_Url', 'https://nps.rocket.chat', {
+			type: 'string',
+			hidden: true,
+			readonly: true,
+			enableQuery: {
+				_id: 'Register_Server',
+				value: true,
+			},
+			secret: true,
+		});
+
 		this.add('Cloud_Url', 'https://cloud.rocket.chat', {
 			type: 'string',
 			hidden: true,

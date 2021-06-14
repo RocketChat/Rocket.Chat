@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -422,15 +423,26 @@ export class Subscriptions extends Base {
 
 	// FIND
 	findByUserId(userId, options) {
-		const query =			{ 'u._id': userId };
+		const query = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
+
+	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
 
 	findByUserIdExceptType(userId, typeException, options) {
 		const query = {
 			'u._id': userId,
 			t: { $ne: typeException },
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndRoomIds(userId, roomIds, options) {
+		const query = {
+			'u._id': userId,
+			rid: { $in: roomIds },
 		};
 
 		return this.find(query, options);
@@ -451,6 +463,15 @@ export class Subscriptions extends Base {
 			t: {
 				$in: types,
 			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndRoles(userId, roles, options) {
+		const query = {
+			'u._id': userId,
+			roles: { $in: roles },
 		};
 
 		return this.find(query, options);
@@ -592,7 +613,7 @@ export class Subscriptions extends Base {
 
 	// UPDATE
 	archiveByRoomId(roomId) {
-		const query =			{ rid: roomId };
+		const query = { rid: roomId };
 
 		const update = {
 			$set: {
@@ -1258,6 +1279,18 @@ export class Subscriptions extends Base {
 		return result;
 	}
 
+	removeByRoomIdsAndUserId(rids, userId) {
+		const result = this.remove({ rid: { $in: rids }, 'u._id': userId });
+
+		if (Match.test(result, Number) && result > 0) {
+			Rooms.incUsersCountByIds(rids, -1);
+		}
+
+		Users.removeRoomsByRoomIdsAndUserId(rids, userId);
+
+		return result;
+	}
+
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
@@ -1317,7 +1350,7 @@ export class Subscriptions extends Base {
 	removeUnreadThreadsByRoomId(rid, tunread) {
 		const query = {
 			rid,
-			tunread,
+			tunread: { $in: tunread },
 		};
 
 		const update = {
@@ -1329,6 +1362,22 @@ export class Subscriptions extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	setOnHold(roomId) {
+		return this.update(
+			{ rid: roomId },
+			{ $set: { onHold: true } },
+			{ multi: true },
+		);
+	}
+
+	unsetOnHold(roomId) {
+		return this.update(
+			{ rid: roomId },
+			{ $unset: { onHold: 1 } },
+			{ multi: true },
+		);
 	}
 }
 

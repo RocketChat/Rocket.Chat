@@ -18,10 +18,14 @@ class ExternalQueue {
 		};
 	}
 
-	getNextAgent(department) {
+	getNextAgent(department, ignoreAgentId) {
 		for (let i = 0; i < 10; i++) {
 			try {
-				const queryString = department ? `?departmentId=${ department }` : '';
+				let queryString = department ? `?departmentId=${ department }` : '';
+				if (ignoreAgentId) {
+					const ignoreAgentIdParam = `ignoreAgentId=${ ignoreAgentId }`;
+					queryString = queryString.startsWith('?') ? `${ queryString }&${ ignoreAgentIdParam }` : `?${ ignoreAgentIdParam }`;
+				}
 				const result = HTTP.call('GET', `${ settings.get('Livechat_External_Queue_URL') }${ queryString }`, {
 					headers: {
 						'User-Agent': 'RocketChat Server',
@@ -46,10 +50,6 @@ class ExternalQueue {
 			}
 		}
 		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-	}
-
-	delegateAgent(agent) {
-		return agent;
 	}
 }
 
