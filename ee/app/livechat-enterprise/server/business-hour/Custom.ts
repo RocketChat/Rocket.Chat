@@ -41,8 +41,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		};
 		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
 		const businessHourToReturn = { ...businessHourData };
-		delete businessHourData.timezoneName;
-		delete businessHourData.departmentsToApplyBusinessHour;
+		delete (businessHourData as any).timezoneName;
+		delete (businessHourData as any).departmentsToApplyBusinessHour;
 		delete businessHourData.departments;
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
 		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
