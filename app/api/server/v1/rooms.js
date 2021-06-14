@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import Busboy from 'busboy';
 
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
@@ -9,6 +8,7 @@ import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
 import { settings } from '../../../settings/server/index';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -63,33 +63,6 @@ API.v1.addRoute('rooms.get', { authRequired: true }, {
 	},
 });
 
-const getFiles = Meteor.wrapAsync(({ request }, callback) => {
-	const busboy = new Busboy({ headers: request.headers });
-	const files = [];
-
-	const fields = {};
-
-
-	busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-		if (fieldname !== 'file') {
-			return callback(new Meteor.Error('invalid-field'));
-		}
-
-		const fileDate = [];
-		file.on('data', (data) => fileDate.push(data));
-
-		file.on('end', () => {
-			files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
-		});
-	});
-
-	busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
-
-	busboy.on('finish', Meteor.bindEnvironment(() => callback(null, { files, fields })));
-
-	request.pipe(busboy);
-});
-
 API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 	post() {
 		const room = Meteor.call('canAccessRoom', this.urlParams.rid, this.userId);
@@ -98,20 +71,13 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-
-		const { files, fields } = getFiles({
+		const { file, ...fields } = Promise.await(getUploadFormData({
 			request: this.request,
-		});
+		}));
 
-		if (files.length === 0) {
-			return API.v1.failure('File required');
+		if (!file) {
+			throw new Meteor.Error('invalid-field');
 		}
-
-		if (files.length > 1) {
-			return API.v1.failure('Just 1 file is allowed');
-		}
-
-		const file = files[0];
 
 		const details = {
 			name: file.filename,
@@ -121,25 +87,21 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			userId: this.userId,
 		};
 
-		const fileData = Meteor.runAsUser(this.userId, () => {
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			const fileStore = FileUpload.getStore('Uploads');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
-			}
-			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
+		const stripExif = settings.get('Message_Attachments_Strip_Exif');
+		const fileStore = FileUpload.getStore('Uploads');
+		if (stripExif) {
+			// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+			file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
+		}
+		const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 
-			uploadedFile.description = fields.description;
+		uploadedFile.description = fields.description;
 
-			delete fields.description;
+		delete fields.description;
 
-			Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
+		Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
 
-			return uploadedFile;
-		});
-
-		return API.v1.success({ message: Messages.getMessageByFileIdAndUsername(fileData._id, this.userId) });
+		return API.v1.success({ message: Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId) });
 	},
 });
 
