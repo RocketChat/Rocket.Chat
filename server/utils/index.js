@@ -12,3 +12,4 @@ import './error-handler';
 import './channel-settings';
 import './mailer';
 import './emoji';
+import './token-login';
