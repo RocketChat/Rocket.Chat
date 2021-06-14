@@ -2,7 +2,7 @@ import { Random } from 'meteor/random';
 
 import { BaseRaw } from './BaseRaw';
 import Analytics from '../models/Analytics';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../../overrides/database/readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw {
 	saveMessageSent({ room, date }) {

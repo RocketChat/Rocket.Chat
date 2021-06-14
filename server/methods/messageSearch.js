@@ -5,7 +5,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '../models';
 import { Messages } from '../models/raw';
 import { settings } from '../../app/settings';
-import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../overrides/database/readSecondaryPreferred';
 
 Meteor.methods({
 	messageSearch(text, rid, limit) {

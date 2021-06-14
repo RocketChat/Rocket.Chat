@@ -14,7 +14,7 @@ import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOp
 import { FileUpload } from '../../file-handling/file-upload';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../../utils/mailer';
-import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../../../overrides/database/readSecondaryPreferred';
 import { joinPath } from '../../../lib/fileUtils';
 import { getURL } from '../../../../app/utils/lib/getURL';
 
