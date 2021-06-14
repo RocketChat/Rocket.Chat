@@ -1,10 +1,10 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import { emojioneRender } from '../app/emoji-emojione/lib/emojioneRender';
 
 let EmojiPicker;
 const removeFromRecent = (emoji) => {
 	if (!EmojiPicker) {
 		// since this function will be only called client side, the import needs to happen here
-		({ EmojiPicker } = require('../client/lib/EmojiPicker'));
+		({ EmojiPicker } = require('../app/emoji/client/lib/EmojiPicker'));
 	}
 	EmojiPicker.removeFromRecent(emoji.replace(/(^:|:$)/g, ''));
 };
