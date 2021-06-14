@@ -7,4 +7,4 @@ import './createDiscussionMessageAction';
 import './discussionFromMessageBox';
 import './tabBar';
 
-import '../lib/discussionRoomType';
+import '../../../common/discussionRoomType';

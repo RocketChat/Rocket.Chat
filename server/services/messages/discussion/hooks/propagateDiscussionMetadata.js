@@ -1,6 +1,6 @@
-import { callbacks } from '../../../../server/utils/hooks';
-import { Messages, Rooms } from '../../../../server/models';
-import { deleteRoom } from '../../../lib/server';
+import { callbacks } from '../../../../utils/hooks';
+import { Messages, Rooms } from '../../../../models';
+import { deleteRoom } from '../../../../../app/lib/server';
 
 /**
  * We need to propagate the writing of new message in a discussion to the linking

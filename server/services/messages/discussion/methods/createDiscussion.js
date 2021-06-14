@@ -3,12 +3,12 @@ import { Random } from 'meteor/random';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
-import { Messages, Rooms } from '../../../../server/models';
-import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
-import { settings } from '../../../../server/settings';
-import { roomTypes } from '../../../utils/server';
-import { callbacks } from '../../../../server/utils/hooks';
+import { hasAtLeastOnePermission, canSendMessage } from '../../../../../app/authorization/server';
+import { Messages, Rooms } from '../../../../models';
+import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../../../app/lib/server';
+import { settings } from '../../../../settings';
+import { roomTypes } from '../../../../../app/utils/server';
+import { callbacks } from '../../../../utils/hooks';
 
 const getParentRoom = (rid) => {
 	const room = Rooms.findOne(rid);
