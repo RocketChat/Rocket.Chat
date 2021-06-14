@@ -5,7 +5,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { settings } from '../../settings';
 import { callbacks } from '../../../app/callbacks';
 import { Subscriptions, Messages } from '../../models';
-import { Markdown } from '../../../app/markdown/server';
+import { Markdown } from '../../utils/markdown';
 import { Logger } from '../../../app/logger';
 
 const Providers = Symbol('Providers');

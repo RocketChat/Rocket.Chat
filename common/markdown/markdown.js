@@ -9,7 +9,7 @@ import { marked } from './parser/marked/marked';
 import { original } from './parser/original/original';
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
-import { settings } from '../../settings';
+import { settings } from '../../app/settings';
 
 const parsers = {
 	original,

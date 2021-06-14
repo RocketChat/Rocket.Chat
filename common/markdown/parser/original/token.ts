@@ -4,7 +4,7 @@
  */
 import { Random } from 'meteor/random';
 
-import { IMessage } from '../../../../../definition/IMessage';
+import { IMessage } from '../../../../definition/IMessage';
 
 type TokenType = 'code'| 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
 type Token = {
