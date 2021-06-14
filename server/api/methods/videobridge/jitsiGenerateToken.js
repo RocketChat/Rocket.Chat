@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { jws } from 'jsrsasign';
 
-import { Rooms } from '../../../models';
-import { settings } from '../../../settings';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { Rooms } from '../../../../app/models';
+import { settings } from '../../../../app/settings';
+import { canAccessRoom } from '../../../../app/authorization/server/functions/canAccessRoom';
 
 Meteor.methods({
 	'jitsi:generateAccessToken': (rid) => {

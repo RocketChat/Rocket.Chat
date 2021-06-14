@@ -11,3 +11,4 @@ import './oembed';
 import './cas';
 import './ldap';
 import './meteor-saml';
+import './videobridge';
