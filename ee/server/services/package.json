@@ -27,7 +27,7 @@
 		"nats": "^1.4.8",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
-		"ws": "^7.2.3",
+		"ws": "^7.4.6",
 		"eventemitter3": "^4.0.7",
 		"body-parser": "^1.19.0",
 		"cookie": "^0.4.1",
