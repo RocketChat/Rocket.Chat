@@ -3,10 +3,13 @@ const { resolve, relative, join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+	typescript: {
+		reactDocgen: 'none',
+	},
 	stories: [
-		'../app/**/*.stories.{js,tsx}',
-		'../client/**/*.stories.{js,tsx}',
-		'../ee/**/*.stories.{js,tsx}',
+		// '../app/**/*.stories.{js,tsx}',
+		'../client/**/Attachments.stories.{js,tsx}',
+		// '../ee/**/*.stories.{js,tsx}',
 	],
 	addons: [
 		'@storybook/addon-essentials',

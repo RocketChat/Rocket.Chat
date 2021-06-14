@@ -9,6 +9,7 @@ type MentionType = 'user' | 'team';
 
 
 type MessageTypesValues =
+| 'e2e'
 | 'uj'
 | 'ul'
 | 'ru'
@@ -27,6 +28,7 @@ type MessageTypesValues =
 | 'room_changed_topic'
 | 'room_e2e_enabled'
 | 'room_e2e_disabled'
+| 'livechat-close'
 
 
 export interface IMessage extends IRocketChatRecord {

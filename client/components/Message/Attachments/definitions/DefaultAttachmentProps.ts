@@ -10,7 +10,7 @@ export type DefaultAttachmentProps = {
 	author_link?: string;
 	author_name?: string;
 
-	fields: FieldProps;
+	fields?: FieldProps[];
 
 	// footer
 	// footer_icon
