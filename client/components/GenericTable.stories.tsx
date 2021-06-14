@@ -1,16 +1,19 @@
 import { TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Story } from '@storybook/react';
+import React, { ReactElement, ReactNode } from 'react';
 
 import GenericTable from './GenericTable';
 
 export default {
 	title: 'components/GenericTable',
 	component: GenericTable,
-	decorators: [(fn) => <div children={fn()} style={{ height: '100vh' }} />],
+	decorators: [
+		(fn: () => ReactNode): ReactElement => <div children={fn()} style={{ height: '100vh' }} />,
+	],
 };
 
-export const _default = () => {
-	const Search = () => (
+export const _default: Story = () => {
+	const Search = (): ReactElement => (
 		<Box mb='x16' is='form' display='flex' flexDirection='column'>
 			<TextInput
 				flexShrink={0}
@@ -26,5 +29,5 @@ export const _default = () => {
 		<GenericTable.HeaderCell>Data</GenericTable.HeaderCell>,
 		<GenericTable.HeaderCell>Info</GenericTable.HeaderCell>,
 	];
-	return <GenericTable header={header} renderFilter={(props) => <Search {...props} />} />;
+	return <GenericTable header={header} renderFilter={(): ReactElement => <Search />} />;
 };
