@@ -1,4 +1,4 @@
-import { RoomTypeConfig, roomTypes } from '../../utils';
+import { RoomTypeConfig, roomTypes } from '../app/utils';
 
 export class DiscussionRoomType extends RoomTypeConfig {
 	constructor() {

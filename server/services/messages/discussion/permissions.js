@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Permissions } from '../../models';
+import { Permissions } from '../../../../app/models';
 
 Meteor.startup(() => {
 	// Add permissions for discussion
