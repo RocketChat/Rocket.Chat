@@ -464,9 +464,7 @@ export const Livechat = {
 			rcSettings[setting._id] = setting.value;
 		});
 
-		settings.get('Livechat_history_monitor_type', (key, value) => {
-			rcSettings[key] = value;
-		});
+		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
