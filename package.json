@@ -112,7 +112,7 @@
 		"postcss": "^7.0.32",
 		"postcss-custom-properties": "^9.1.1",
 		"postcss-easy-import": "^3.0.0",
-		"postcss-load-config": "^2.1.0",
+		"postcss-load-config": "^3.0.1",
 		"postcss-media-minmax": "^4.0.0",
 		"postcss-nested": "^4.2.3",
 		"postcss-selector-not": "^4.0.0",
