@@ -5,9 +5,9 @@ import assert from 'assert';
 import './client.mocks.js';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { original } from '../lib/parser/original/original';
-import { filtered } from '../lib/parser/filtered/filtered';
-import { Markdown } from '../lib/markdown';
+import { original } from '../../../common/markdown/parser/original/original';
+import { filtered } from '../../../common/markdown/parser/filtered/filtered';
+import { Markdown } from '../../../common/markdown/markdown';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');

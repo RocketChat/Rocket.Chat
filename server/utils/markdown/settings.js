@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings } from '../../../app/settings';
 
 Meteor.startup(() => {
 	settings.add('Markdown_Parser', 'original', {

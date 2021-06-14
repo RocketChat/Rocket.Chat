@@ -14,3 +14,4 @@ import './mailer';
 import './emoji';
 import './token-login';
 import './mail-messages';
+import './markdown';

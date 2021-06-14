@@ -3,7 +3,6 @@ import './api/v1';
 import '../app/authorization';
 import '../app/emoji-emojione/server';
 import '../app/lib';
-import '../app/markdown/server';
 import '../app/ui-master/server';
 import '../app/videobridge/server';
 import '../app/meteor-accounts-saml/server';

@@ -14,7 +14,7 @@ import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
-import { filterMarkdown } from '../../../markdown/lib/markdown';
+import { filterMarkdown } from '../../../../common/markdown/markdown';
 import { getUserPreference } from '../../../utils/client';
 
 export const normalizeThreadMessage = ({ ...message }) => {
