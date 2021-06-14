@@ -49,3 +49,6 @@ import './e2e/setRoomKeyID';
 import './e2e/fetchMyKeys';
 import './e2e/resetOwnE2EKey';
 import './e2e/requestSubscriptionKeys';
+import './videobridge/jitsiSetTimeout';
+import './videobridge/jitsiGenerateToken';
+import './videobridge/bbb';

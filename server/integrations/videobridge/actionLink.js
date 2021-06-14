@@ -1,4 +1,4 @@
-import { actionLinks } from '../../../server/utils/actionlinks';
+import { actionLinks } from '../../utils/actionlinks';
 
 actionLinks.register('joinJitsiCall', function(/* message, params*/) {
 

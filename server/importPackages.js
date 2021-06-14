@@ -3,7 +3,6 @@ import './api/v1';
 import '../app/authorization';
 import '../app/lib';
 import '../app/ui-master/server';
-import '../app/videobridge/server';
 import '../app/utils';
 import '../app/models';
 import '../app/ui-utils';

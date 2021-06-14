@@ -3,7 +3,7 @@ import { jws } from 'jsrsasign';
 
 import { Rooms } from '../../../models';
 import { settings } from '../../../settings';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoom } from '../../../../app/authorization/server/functions/canAccessRoom';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 
 Meteor.methods({

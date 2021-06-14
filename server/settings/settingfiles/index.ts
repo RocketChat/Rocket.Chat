@@ -40,3 +40,4 @@ import './oauth-blockstack.settings';
 import './oauth-github.settings';
 import './oauth-nextcloud.settings';
 import './oauth-tokenpass.settings';
+import './videobridge.settings';

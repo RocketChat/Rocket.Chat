@@ -2,7 +2,7 @@ import { Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, memo } from 'react';
 
-import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../app/videobridge/constants';
+import { HEARTBEAT, TIMEOUT, DEBOUNCE } from '../../../../../../common/videobridge/constants';
 import { useConnectionStatus } from '../../../../../contexts/ConnectionStatusContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Messages, Users } from '../../../../server/models';
-import { callbacks } from '../../../../server/utils/hooks';
-import { metrics } from '../../../../server/utils/metrics';
-import * as CONSTANTS from '../../constants';
-import { canSendMessage } from '../../../authorization/server';
-import { SystemLogger } from '../../../../server/utils/logger';
+import { Rooms, Messages, Users } from '../../../models';
+import { callbacks } from '../../../utils/hooks';
+import { metrics } from '../../../utils/metrics';
+import * as CONSTANTS from '../../../../common/videobridge/constants';
+import { canSendMessage } from '../../../../app/authorization/server';
+import { SystemLogger } from '../../../utils/logger';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid, joiningNow = true) => {
