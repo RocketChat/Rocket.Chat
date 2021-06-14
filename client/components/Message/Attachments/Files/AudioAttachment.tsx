@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 
+import { AudioAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/AudioAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
-import { AudioAttachmentProps } from './definitions/AudioAttachmentProps';
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	title,

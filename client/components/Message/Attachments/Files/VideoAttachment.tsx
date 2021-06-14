@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
+import { VideoAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/VideoAttachmentProps';
 import Attachment from '../Attachment';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
-import { VideoAttachmentProps } from './definitions/VideoAttachmentProps';
 
 export const VideoAttachment: FC<VideoAttachmentProps> = ({
 	title,

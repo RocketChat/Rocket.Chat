@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 
+import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
+import { MessageAttachmentBase } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
 import { useBlockRendered } from '../hooks/useBlockRendered';
-import { FileProp } from './Files/definitions/FileProp';
 import Item from './Item';
-import { AttachmentProps } from './definitions/AttachmentProps';
 
-const Attachments: FC<{ attachments: Array<AttachmentProps>; file?: FileProp }> = ({
+const Attachments: FC<{ attachments: Array<MessageAttachmentBase>; file?: FileProp }> = ({
 	attachments = null,
 	file,
 }): any => {

@@ -1,20 +1,23 @@
 import React, { FC, ReactNode } from 'react';
 
+import { isActionAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentAction';
+import {
+	MarkdownFields,
+	MessageAttachmentDefault,
+} from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 import MarkdownText from '../../MarkdownText';
 import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';
 import FieldsAttachment from './FieldsAttachment';
-import { isActionAttachment } from './definitions/ActionAttachmentProps';
-import { DefaultAttachmentProps, MarkdownFields } from './definitions/DefaultAttachmentProps';
 import { useCollapse } from './hooks/useCollapse';
 
 const applyMarkdownIfRequires = (
-	list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext'],
+	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
 ): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
 
-const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
+const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 
 	return (

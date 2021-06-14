@@ -1,6 +1,6 @@
 // DEPRECATED
 
-import { AttachmentProps } from './AttachmentProps';
+import { MessageAttachmentBase } from './MessageAttachmentBase';
 
 type Action = {
 	msgId?: string;
@@ -14,11 +14,11 @@ type Action = {
 	msg_processing_type?: 'sendMessage' | 'respondWithMessage' | 'respondWithQuotedMessage';
 };
 
-export type ActionAttachmentProps = {
-	button_alignment: 'horizontal' | 'vertical';
+export type MessageAttachmentAction = {
+	button_alignment?: 'horizontal' | 'vertical';
 	actions: Array<Action>;
-} & AttachmentProps;
+} & MessageAttachmentBase;
 
 export const isActionAttachment = (
-	attachment: AttachmentProps,
-): attachment is ActionAttachmentProps => 'actions' in attachment;
+	attachment: MessageAttachmentBase,
+): attachment is MessageAttachmentAction => 'actions' in attachment;

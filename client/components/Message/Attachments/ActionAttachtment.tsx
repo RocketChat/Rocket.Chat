@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { ActionAttachmentProps } from './definitions/ActionAttachmentProps';
+import { MessageAttachmentAction } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentAction';
 
-export const ActionAttachment: FC<ActionAttachmentProps> = ({ actions }) => (
+export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => (
 	<ButtonGroup mb='x4' {...({ small: true } as any)}>
 		{actions
 			.filter(

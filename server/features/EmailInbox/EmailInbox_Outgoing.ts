@@ -84,7 +84,7 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 	const file = Uploads.findOneById(message.file._id);
 
 	FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
-		sendEmail(inbox, {
+		!_err && buffer && sendEmail(inbox, {
 			to: room.email.replyTo,
 			subject: room.email.subject,
 			text: message.attachments[0].description || '',

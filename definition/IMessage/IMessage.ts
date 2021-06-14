@@ -1,9 +1,10 @@
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
-import { IRocketChatRecord } from './IRocketChatRecord';
-import { IUser } from './IUser';
-import { ChannelName, RoomID } from './IRoom';
+import { IRocketChatRecord } from '../IRocketChatRecord';
+import { IUser } from '../IUser';
+import { ChannelName, RoomID } from '../IRoom';
+import { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
 type MentionType = 'user' | 'team';
 
@@ -67,5 +68,5 @@ export interface IMessage extends IRocketChatRecord {
 
 	urls: any;
 	file: any;
-	attachments: any;
+	attachments: MessageAttachment[];
 }

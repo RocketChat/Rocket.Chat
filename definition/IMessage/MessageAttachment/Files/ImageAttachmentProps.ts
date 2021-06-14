@@ -1,4 +1,5 @@
-import { AttachmentPropsBase } from '../../definitions/AttachmentPropsBase';
+
+import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { Dimensions } from './Dimensions';
 import { FileAttachmentProps } from './FileAttachmentProps';
 import { FileProp } from './FileProp';
@@ -10,7 +11,7 @@ export type ImageAttachmentProps = {
 	image_type: string;
 	image_size?: number;
 	file?: FileProp;
-} & AttachmentPropsBase;
+} & MessageAttachmentBase;
 
 export const isFileImageAttachment = (
 	attachment: FileAttachmentProps,

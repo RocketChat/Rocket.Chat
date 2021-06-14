@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
 
+import { ImageAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/ImageAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import Image from '../components/Image';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
 import { useLoadImage } from '../hooks/useLoadImage';
-import { ImageAttachmentProps } from './definitions/ImageAttachmentProps';
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	title,

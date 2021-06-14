@@ -1,14 +1,14 @@
 import React, { FC, memo } from 'react';
 
+import { isFileAttachment } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
+import { FileProp } from '../../../../definition/IMessage/MessageAttachment/Files/FileProp';
+import { MessageAttachmentBase } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
+import { isQuoteAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageQuoteAttachment';
 import DefaultAttachment from './DefaultAttachment';
 import { FileAttachment } from './Files';
-import { isFileAttachment } from './Files/definitions/FileAttachmentProps';
-import { FileProp } from './Files/definitions/FileProp';
 import { QuoteAttachment } from './QuoteAttachment';
-import { AttachmentProps } from './definitions/AttachmentProps';
-import { isQuoteAttachment } from './definitions/QuoteAttachmentProps';
 
-const Item: FC<{ attachment: AttachmentProps; file?: FileProp | undefined }> = ({
+const Item: FC<{ attachment: MessageAttachmentBase; file?: FileProp | undefined }> = ({
 	attachment,
 	file,
 }) => {

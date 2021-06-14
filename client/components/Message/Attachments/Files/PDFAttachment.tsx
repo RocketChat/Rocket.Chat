@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 
+import { PDFAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/PDFAttachmentProps';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';
-import { PDFAttachmentProps } from './definitions/PDFAttachmentProps';
 
 export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	collapsed: collapsedDefault = false,

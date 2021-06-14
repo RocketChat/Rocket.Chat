@@ -1,4 +1,5 @@
-import { AttachmentPropsBase } from '../../definitions/AttachmentPropsBase';
+
+import { MessageAttachmentBase } from '../MessageAttachmentBase';
 import { FileAttachmentProps } from './FileAttachmentProps';
 import { FileProp } from './FileProp';
 
@@ -7,7 +8,7 @@ export type AudioAttachmentProps = {
 	audio_type: string;
 	audio_size?: number;
 	file?: FileProp;
-} & AttachmentPropsBase;
+} & MessageAttachmentBase;
 
 export const isFileAudioAttachment = (
 	attachment: FileAttachmentProps,

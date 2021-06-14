@@ -1,7 +1,7 @@
-export type AttachmentPropsBase = {
+export type MessageAttachmentBase = {
 	title?: string;
 
-	ts: Date;
+	ts?: Date;
 	collapsed?: boolean;
 	description?: string;
 

@@ -3,14 +3,15 @@
 import React from 'react';
 
 import Attachments from '.';
-import { AttachmentProps } from './definitions/AttachmentProps';
+import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
+import { MessageAttachmentDefault } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 
 export default {
 	title: 'Message/Attachments',
 	component: Attachments,
 };
 
-const field: AttachmentProps = {
+const field: MessageAttachmentDefault = {
 	color: '#ff0000',
 	text: 'Yay for gruggy!',
 	pretext: 'Pre Text',
@@ -46,9 +47,9 @@ const field: AttachmentProps = {
 	],
 };
 
-const image: AttachmentProps = {
+const image: FileAttachmentProps = {
 	ts: new Date('2016-12-09T16:53:06.761Z'),
-	collapsed: false,
+	// collapsed: false,
 	title: 'Attachment Image Example',
 	title_link: 'https://youtube.com',
 	title_link_download: true,
@@ -94,7 +95,7 @@ export const Default = () => <Attachments attachments={message.attachments} />;
 export const Fields = () => <Attachments attachments={[field]} />;
 
 export const FailingImage = () => (
-	<Attachments attachments={[{ ...image, image_url: 'invalid.url' }]} />
+	<Attachments attachments={[{ ...image, image_url: 'invalid.url' } as FileAttachmentProps]} />
 );
 
 export const Image = () => <Attachments attachments={[image]} />;
