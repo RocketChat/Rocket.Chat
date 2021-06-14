@@ -1,9 +1,7 @@
 name: "PR Title Checker"
 on:
   pull_request:
-    types:
-      - opened
-      - edited
+    types: [opened, edited]
 
 jobs:
   check:
