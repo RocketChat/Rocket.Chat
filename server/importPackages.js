@@ -1,10 +1,12 @@
 import './api/v1';
+import '../app/models';
 
+// a separate task should be done for moving these packages to new structure
+// since many of them are heavily used or are too critical to do a quick move
 import '../app/authorization';
 import '../app/lib';
 import '../app/ui-master/server';
 import '../app/utils';
-import '../app/models';
 import '../app/ui-utils';
 import '../app/livechat/server';
 import '../app/authentication/server';

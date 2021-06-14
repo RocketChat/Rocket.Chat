@@ -21,7 +21,7 @@ import { Info, getMongoInfo } from '../../../../app/utils/server';
 import { Migrations } from '../../../startup/migrations';
 import { getStatistics as federationGetStatistics } from '../../../services/federation/functions/dashboard';
 import { NotificationQueue, Users as UsersRaw } from '../../../models/raw';
-import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../../../overrides/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team } from '../../../sdk';

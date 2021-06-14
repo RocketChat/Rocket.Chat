@@ -1,5 +1,5 @@
 import { Base } from './_Base';
-import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../../overrides/database/readSecondaryPreferred';
 
 export const aggregates = {
 	dailySessionsOfYesterday(collection, { year, month, day }) {
