@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 import { FileProp } from '..';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
+import { AttachmentPropsBase } from '../definitions/AttachmentPropsBase';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;

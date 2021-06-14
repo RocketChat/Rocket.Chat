@@ -7,16 +7,7 @@ import Attachments from '.';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
 import Attachment from './Attachment';
-import { AttachmentPropsBase } from './Attachment/AttachmentPropsBase';
-
-export type QuoteAttachmentProps = {
-	author_name: string;
-	author_link: string;
-	author_icon: string;
-	message_link?: string;
-	text: string;
-	attachments?: Array<QuoteAttachmentProps>;
-} & AttachmentPropsBase;
+import { QuoteAttachmentProps } from './definitions/QuoteAttachmentProps';
 
 const hover = css`
 	&:hover,

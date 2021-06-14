@@ -1,28 +1,10 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { AttachmentProps } from '.';
-// DEPRECATED
-
-type Action = {
-	msgId?: string;
-	type: 'button';
-	text: string;
-	msg?: string;
-	url?: string;
-	image_url?: string;
-	is_webview?: true;
-	msg_in_chat_window?: true;
-	msg_processing_type?: 'sendMessage' | 'respondWithMessage' | 'respondWithQuotedMessage';
-};
-
-export type ActionAttachmentProps = {
-	button_alignment: 'horizontal' | 'vertical';
-	actions: Array<Action>;
-} & AttachmentProps;
+import { ActionAttachmentProps } from './definitions/ActionAttachmentProps';
 
 export const ActionAttachment: FC<ActionAttachmentProps> = ({ actions }) => (
-	<ButtonGroup mb='x4' {...{ small: true }}>
+	<ButtonGroup mb='x4' {...({ small: true } as any)}>
 		{actions
 			.filter(
 				({ type, msg_in_chat_window: msgInChatWindow, url, image_url: image, text }) =>

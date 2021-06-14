@@ -1,15 +1,10 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useCollapse } from '../hooks/useCollapse';
-
-export type PDFAttachmentProps = {
-	file: FileProp;
-} & AttachmentPropsBase;
+import { PDFAttachmentProps } from './definitions/PDFAttachmentProps';
 
 export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	collapsed: collapsedDefault = false,
@@ -22,7 +17,7 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	return (
 		<Attachment>
-			<MarkdownText variant='inline' content={description} />
+			{description && <MarkdownText variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{t('PDF')}</Attachment.Title>
 				{collapse}

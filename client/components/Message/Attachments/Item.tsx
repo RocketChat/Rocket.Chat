@@ -1,16 +1,18 @@
 import React, { FC, memo } from 'react';
 
-import { AttachmentProps } from './AttachmentProps';
 import DefaultAttachment from './DefaultAttachment';
-import { FileProp } from './FileProp';
-import { isFileAttachment, FileAttachment } from './Files';
-import { QuoteAttachment, QuoteAttachmentProps } from './QuoteAttachment';
+import { FileAttachment } from './Files';
+import { isFileAttachment } from './Files/definitions/FileAttachmentProps';
+import { FileProp } from './Files/definitions/FileProp';
+import { QuoteAttachment } from './QuoteAttachment';
+import { AttachmentProps } from './definitions/AttachmentProps';
+import { isQuoteAttachment } from './definitions/QuoteAttachmentProps';
 
-const isQuoteAttachment = (attachment: AttachmentProps): attachment is QuoteAttachmentProps =>
-	'message_link' in attachment && attachment.message_link !== null;
-
-const Item: FC<{ attachment: AttachmentProps; file?: FileProp }> = ({ attachment, file }) => {
-	if (isFileAttachment(attachment)) {
+const Item: FC<{ attachment: AttachmentProps; file?: FileProp | undefined }> = ({
+	attachment,
+	file,
+}) => {
+	if (isFileAttachment(attachment) && file) {
 		return <FileAttachment {...attachment} file={file} />;
 	}
 

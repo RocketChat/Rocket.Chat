@@ -1,18 +1,10 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
-
-export type AudioAttachmentProps = {
-	audio_url: string;
-	audio_type: string;
-	audio_size?: number;
-	file?: FileProp;
-} & AttachmentPropsBase;
+import { AudioAttachmentProps } from './definitions/AudioAttachmentProps';
 
 export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	title,

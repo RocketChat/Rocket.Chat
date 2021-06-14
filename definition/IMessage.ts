@@ -1,8 +1,33 @@
+import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
+import { parser } from '@rocket.chat/message-parser';
+
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
 
 type MentionType = 'user' | 'team';
+
+
+type MessageTypesValues =
+| 'uj'
+| 'ul'
+| 'ru'
+| 'au'
+| 'mute_unmute'
+| 'r'
+| 'ut'
+| 'wm'
+| 'rm'
+| 'subscription-role-added'
+| 'subscription-role-removed'
+| 'room_archived'
+| 'room_unarchived'
+| 'room_changed_privacy'
+| 'room_changed_avatar'
+| 'room_changed_topic'
+| 'room_e2e_enabled'
+| 'room_e2e_disabled'
+
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -15,8 +40,11 @@ export interface IMessage extends IRocketChatRecord {
 		name?: string;
 		username?: string;
 	}[];
+	groupable?: false;
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	blocks?: MessageSurfaceLayout;
+	md?: ReturnType<typeof parser>;
 
 	_hidden?: boolean;
 	imported?: boolean;
@@ -25,13 +53,17 @@ export interface IMessage extends IRocketChatRecord {
 		type: 'Point';
 		coordinates: [string, string];
 	};
-	starred?: {_id: string}[];
+	starred?: {_id: IUser['_id']}[];
 	pinned?: boolean;
 	drid?: RoomID;
 	tlm?: Date;
 
 	dcount?: number;
 	tcount?: number;
-	t?: string;
+	t?: MessageTypesValues;
 	e2e?: 'pending';
+
+	urls: any;
+	file: any;
+	attachments: any;
 }

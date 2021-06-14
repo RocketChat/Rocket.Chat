@@ -1,48 +1,12 @@
-import React, { ComponentProps, FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 
-import { AttachmentProps } from '.';
 import MarkdownText from '../../MarkdownText';
-import { ActionAttachment, ActionAttachmentProps } from './ActionAttachtment';
+import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';
 import FieldsAttachment from './FieldsAttachment';
-import { Dimensions } from './components/Dimensions';
+import { isActionAttachment } from './definitions/ActionAttachmentProps';
+import { DefaultAttachmentProps, MarkdownFields } from './definitions/DefaultAttachmentProps';
 import { useCollapse } from './hooks/useCollapse';
-
-type MarkdownFields = 'text' | 'pretext' | 'fields';
-
-type DefaultAttachmentProps = {
-	collapsed?: true;
-
-	author_icon?: string;
-	author_link?: string;
-	author_name?: string;
-
-	// TODO: replace this component props type with a payload-based type because
-	// `value` comes as `string` and is passed as `ReactNode`
-	fields: ComponentProps<typeof FieldsAttachment>['fields'];
-
-	// footer
-	// footer_icon
-
-	image_url?: string;
-	image_dimensions?: Dimensions;
-
-	mrkdwn_in?: Array<MarkdownFields>;
-	pretext?: string;
-	text?: string;
-
-	thumb_url?: string;
-
-	title?: string;
-	title_link?: string;
-
-	ts?: Date;
-
-	color?: string;
-};
-
-const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAttachmentProps =>
-	'actions' in attachment;
 
 const applyMarkdownIfRequires = (
 	list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext'],

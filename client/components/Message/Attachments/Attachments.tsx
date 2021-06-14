@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 
 import { useBlockRendered } from '../hooks/useBlockRendered';
-import { AttachmentProps } from './AttachmentProps';
-import { FileProp } from './FileProp';
+import { FileProp } from './Files/definitions/FileProp';
 import Item from './Item';
+import { AttachmentProps } from './definitions/AttachmentProps';
 
 const Attachments: FC<{ attachments: Array<AttachmentProps>; file?: FileProp }> = ({
 	attachments = null,

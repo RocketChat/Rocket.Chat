@@ -1,4 +1,4 @@
 export { default } from './Attachments';
 
-export { AttachmentProps } from './AttachmentProps';
-export { FileProp } from './FileProp';
+export { AttachmentProps } from './definitions/AttachmentProps';
+export { FileProp } from './Files/definitions/FileProp';

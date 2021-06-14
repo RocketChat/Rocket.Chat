@@ -12,6 +12,8 @@ import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { IMessage } from '../../../definition/IMessage';
+
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
@@ -122,7 +124,7 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 	params: 'msg_id',
 });
 
-callbacks.add('beforeSaveMessage', function(message: any, room: any) {
+callbacks.add('beforeSaveMessage', function(message: IMessage, room: any) {
 	if (!room?.email?.inbox) {
 		return message;
 	}
@@ -145,7 +147,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 
 	// Try to identify a quote in a livechat room
 	const match = msg.match(livechatQuoteRegExp);
-	if (!match) {
+	if (!match?.groups) {
 		return message;
 	}
 
