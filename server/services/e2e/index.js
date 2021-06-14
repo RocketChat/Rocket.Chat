@@ -1,5 +1,5 @@
 import { callbacks } from '../../../app/callbacks';
-import { Notifications } from '../../../app/notifications';
+import { Notifications } from '../notifications';
 
 import './beforeCreateRoom';
 
