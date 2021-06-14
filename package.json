@@ -75,7 +75,7 @@
 		"@types/mongodb": "^3.5.26",
 		"@types/node": "^12.20.10",
 		"@types/react": "^17.0.11",
-		"@types/react-dom": "^16.9.13",
+		"@types/react-dom": "^17.0.7",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.3",
 		"@types/toastr": "^2.1.38",
