@@ -5,7 +5,7 @@ import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from
 import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../models';
 import Users from '../../models/models/Users';
-import { sendTestEmailToInbox } from '../../features/EmailInbox/EmailInbox_Outgoing';
+import { sendTestEmailToInbox } from '../../integrations/EmailInbox/EmailInbox_Outgoing';
 
 API.v1.addRoute('email-inbox.list', { authRequired: true }, {
 	get() {

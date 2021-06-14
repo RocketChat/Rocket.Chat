@@ -19,7 +19,7 @@ import { matrixBroadCastActions } from '../../stream/streamBroadcast';
 import { integrations } from '../../integrations/custom/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../notifications/Notifications';
-import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { configureEmailInboxes } from '../../integrations/EmailInbox/EmailInbox';
 
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
