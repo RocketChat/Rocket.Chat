@@ -1,6 +1,6 @@
 import { metrics } from '../../../../../server/utils/metrics';
 import { settings } from '../../../../settings';
-import { Notifications } from '../../../../notifications';
+import { Notifications } from '../../../../../server/services/notifications';
 
 export function shouldNotifyAudio({
 	disableAllMessageNotifications,

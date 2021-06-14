@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Subscriptions, Rooms } from '../../../models';
-import { Notifications } from '../../../../app/notifications';
+import { Notifications } from '../../../services/notifications';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {
