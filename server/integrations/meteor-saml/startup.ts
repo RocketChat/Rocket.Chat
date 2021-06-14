@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../../server/settings';
+import { settings } from '../../settings';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
-import { Logger } from '../../../server/utils/logger';
+import { Logger } from '../../utils/logger';
 import { SAMLUtils } from './lib/Utils';
 
 settings.addGroup('SAML');

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../../../server/settings';
+import { settings } from '../../../settings';
 import { SettingComposedValue } from '../../../../common/SettingsBase';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
