@@ -15,3 +15,4 @@ import './emoji';
 import './token-login';
 import './mail-messages';
 import './markdown';
+import './emoji-emojione';
