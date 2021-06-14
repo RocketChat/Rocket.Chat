@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import Card from '.';
@@ -8,7 +9,7 @@ export default {
 	component: Card,
 };
 
-export const Single = () => (
+export const Single: Story = () => (
 	<Box p='x40'>
 		<Card>
 			<Card.Title>A card</Card.Title>
@@ -39,7 +40,7 @@ export const Single = () => (
 	</Box>
 );
 
-export const Double = () => (
+export const Double: Story = () => (
 	<Box p='x40'>
 		<Card>
 			<Card.Title>A card</Card.Title>
