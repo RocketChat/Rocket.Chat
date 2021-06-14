@@ -1,5 +1,5 @@
 import { isIE11 } from '../../ui-utils/client/lib/isIE11';
-import { emoji } from '../lib/rocketchat';
+import { emoji } from '../../../common/emoji';
 
 /*
  * emojiParser is a function that will replace emojis

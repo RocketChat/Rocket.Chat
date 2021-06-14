@@ -11,3 +11,4 @@ import './custom-emoji';
 import './error-handler';
 import './channel-settings';
 import './mailer';
+import './emoji';
