@@ -20,6 +20,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
+	const isTeam = room.teamId;
 
 	room.type = room.t;
 	room.rid = rid;
@@ -100,6 +101,7 @@ const RoomMembersWithData = ({ rid }) => {
 	return (
 		<RoomMembers
 			rid={rid}
+			isTeam={isTeam}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
