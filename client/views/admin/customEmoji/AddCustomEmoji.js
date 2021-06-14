@@ -2,12 +2,14 @@ import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rock
 import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useFileInput } from '../../../hooks/useFileInput';
 
 function AddCustomEmoji({ close, onChange, ...props }) {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
@@ -30,14 +32,23 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 
 	const handleSave = useCallback(async () => {
 		const formData = new FormData();
-		formData.append('emoji', emojiFile);
-		formData.append('name', name);
-		formData.append('aliases', aliases);
-		const result = await saveAction(formData);
 
-		if (result.success) {
-			onChange();
-			close();
+		const regExp = new RegExp('^[a-zA-Z0-9_]+$');
+		formData.append('emoji', emojiFile);
+
+		if (regExp.test(name) && regExp.test(aliases)) {
+			formData.append('name', name);
+			formData.append('aliases', aliases);
+			const result = await saveAction(formData);
+			if (result.success) {
+				onChange();
+				close();
+			}
+		} else {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('custom_emoji_special_characters'),
+			});
 		}
 	}, [emojiFile, name, aliases, saveAction, onChange, close]);
 
@@ -97,16 +108,6 @@ function AddCustomEmoji({ close, onChange, ...props }) {
 						<Button onClick={close}>{t('Cancel')}</Button>
 						<Button primary onClick={handleSave}>
 							{t('Save')}
-						</Button>
-					</ButtonGroup>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Row>
-					<ButtonGroup stretch w='full'>
-						<Button primary danger>
-							<Icon name='trash' mie='x4' />
-							{t('Delete')}
 						</Button>
 					</ButtonGroup>
 				</Field.Row>
