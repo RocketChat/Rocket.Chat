@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import moment from 'moment';
+// import moment from 'moment';
 import React, { memo, useCallback, useMemo } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
@@ -36,7 +36,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		encrypted: e2eEnabledForPrivateByDefault ?? false,
 		broadcast: false,
 		ephemeral: false,
-		ephemeralTime: '',
+		ephemeralTime: null,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
@@ -89,22 +89,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	});
 	const onChangeEphemeral = useMutableCallback((value) => handleEphemeral(value));
 	const onChangeEphemeralTime = useMutableCallback((value) => {
-		let endTime;
-		switch (value) {
-			case '1hr':
-				endTime = moment().add(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
-				break;
-			case '6hr':
-				endTime = moment().add(6, 'hour').format('YYYY-MM-DD HH:mm:ss');
-				break;
-			case '12hr':
-				endTime = moment().add(12, 'hour').format('YYYY-MM-DD HH:mm:ss');
-				break;
-			case '24hr':
-				endTime = moment().add(24, 'hour').format('YYYY-MM-DD HH:mm:ss');
-				break;
-		}
-		handleEphemeralTime(endTime);
+		handleEphemeralTime(value);
 	});
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid) => {

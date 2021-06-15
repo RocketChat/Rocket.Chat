@@ -179,7 +179,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		name,
 	};
 	message.rid = room._id;
-
+	if (room.ephemeral && room.ephemeralTime) {
+		message.expireAt = room.ephemeralTime;
+	}
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
 	}
