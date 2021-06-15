@@ -38,8 +38,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			const team = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
-			const _private = new Set();
-			const _public = new Set();
+			const channels = new Set();
 			const direct = new Set();
 			const discussion = new Set();
 			const conversation = new Set();
@@ -62,12 +61,8 @@ export const useRoomList = (): Array<ISubscription> => {
 					return discussion.add(room);
 				}
 
-				if (room.t === 'c') {
-					_public.add(room);
-				}
-
-				if (room.t === 'p') {
-					_private.add(room);
+				if (room.t === 'c' || room.t === 'p') {
+					channels.add(room);
 				}
 
 				if (room.t === 'l' && room.onHold) {
@@ -100,9 +95,8 @@ export const useRoomList = (): Array<ISubscription> => {
 				isDiscussionEnabled &&
 				discussion.size &&
 				groups.set('Discussions', discussion);
-			sidebarGroupByType && _private.size && groups.set('Private', _private);
-			sidebarGroupByType && _public.size && groups.set('Public', _public);
-			sidebarGroupByType && direct.size && groups.set('Direct', direct);
+			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
