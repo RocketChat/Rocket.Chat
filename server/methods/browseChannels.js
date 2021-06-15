@@ -75,6 +75,7 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 			usersCount: 1,
 			prid: 1,
 			teamId: 1,
+			taskRoomId: 1,
 		},
 	});
 	const total = cursor.count(); // count ignores the `skip` and `limit` options

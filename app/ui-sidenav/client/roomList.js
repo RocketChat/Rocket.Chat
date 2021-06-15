@@ -156,6 +156,7 @@ const mergeSubRoom = (subscription) => {
 			retention: 1,
 			teamId: 1,
 			teamMain: 1,
+			taskRoomId: 1,
 			onHold: 1,
 			metrics: 1,
 			servedBy: 1,

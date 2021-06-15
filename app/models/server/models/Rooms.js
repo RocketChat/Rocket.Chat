@@ -31,6 +31,10 @@ export class Rooms extends Base {
 			teamId: 1,
 			teamDefault: 1,
 		}, { sparse: true });
+
+		this.tryEnsureIndex({
+			taskRoomId: 1,
+		}, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
