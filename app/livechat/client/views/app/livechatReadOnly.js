@@ -12,7 +12,8 @@ import { inquiryDataStream } from '../../lib/stream/inquiry';
 Template.livechatReadOnly.helpers({
 	inquiryOpen() {
 		const inquiry = Template.instance().inquiry.get();
-		return inquiry && inquiry.status === 'queued';
+		const room = Template.instance().room.get();
+		return (inquiry && inquiry.status === 'queued') || !room.servedBy;
 	},
 
 	roomOpen() {
