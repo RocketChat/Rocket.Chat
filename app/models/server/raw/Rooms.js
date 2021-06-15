@@ -207,6 +207,7 @@ export class RoomsRaw extends BaseRaw {
 			$unset: {
 				teamId: '',
 				teamDefault: '',
+				teamMain: '',
 			},
 		};
 
