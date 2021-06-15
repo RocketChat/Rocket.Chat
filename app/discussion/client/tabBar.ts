@@ -9,7 +9,7 @@ addAction('discussions', () => {
 	const discussionEnabled = useSetting('Discussion_enabled');
 
 	return useMemo(() => (discussionEnabled ? {
-		groups: ['channel', 'group', 'direct', 'team'],
+		groups: ['channel', 'group', 'direct', 'team', 'taskRoom'],
 		id: 'discussions',
 		title: 'Discussions',
 		icon: 'discussion',
