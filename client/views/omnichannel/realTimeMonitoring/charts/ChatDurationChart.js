@@ -60,7 +60,6 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
 			const label = getMomentCurrentLabel();
-			console.log('---avg:', avg, ' --- longest:', longest);
 			updateChartData(label, [avg, longest]);
 		}
 	}, [avg, longest, state, t, updateChartData]);
