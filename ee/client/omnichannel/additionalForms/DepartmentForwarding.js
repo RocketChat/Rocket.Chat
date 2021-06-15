@@ -1,4 +1,4 @@
-import { Field, MultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, MultiSelectFiltered, Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -24,14 +24,17 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label, plac
 		<Field>
 			<Field.Label>{t(label)}</Field.Label>
 			<Field.Row>
-				<MultiSelectFiltered
-					value={value}
-					options={options}
-					onChange={handler}
-					disabled={!options}
-					placeholder={t(placeholder)}
-					flexGrow={1}
-				/>
+				<Box w='100%'>
+					<MultiSelectFiltered
+						w='100%'
+						value={value}
+						options={options}
+						onChange={handler}
+						disabled={!options}
+						placeholder={t(placeholder)}
+						flexGrow={1}
+					/>
+				</Box>
 			</Field.Row>
 			<Field.Hint>{t('List_of_departments_for_forward_description')}</Field.Hint>
 		</Field>
