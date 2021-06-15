@@ -55,10 +55,6 @@ export interface ITaskRoomUpdateData {
 
 export interface ITaskRoomService {
 	create(uid: string, params: ITaskRoomCreateParams): Promise<ITaskRoom>;
-	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
-	removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean): Promise<IRoom>;
-	listRooms(uid: string, teamId: string, filter: IListRoomsFilter, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
-	listRoomsOfUser(uid: string, teamId: string, userId: string, allowPrivateTeam: boolean, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;
 	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
 	list(uid: string, paginationOptions?: IPaginationOptions, queryOptions?: IQueryOptions<ITaskRoom>): Promise<IRecordsWithTotal<ITaskRoom>>;
 	listAll(options?: IPaginationOptions): Promise<IRecordsWithTotal<ITaskRoom>>;

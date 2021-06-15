@@ -49,7 +49,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	if (options.nameValidationRegex) {
 		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
 	}
-
+	console.log(extraData);
 	let room = {
 		fname: name,
 		...extraData,

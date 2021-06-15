@@ -13,7 +13,7 @@ addAction('rocket-search', {
 });
 
 addAction('user-info', {
-	groups: ['direct'],
+	groups: [],
 	id: 'user-info',
 	title: 'User_Info',
 	icon: 'user',

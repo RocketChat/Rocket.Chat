@@ -23,6 +23,8 @@ export interface ISubscription extends IRocketChatRecord {
 	teamMain?: boolean;
 	teamId?: string;
 
+	taskRoomId?: string;
+
 	userMentions: number;
 	groupMentions: number;
 
