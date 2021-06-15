@@ -1,9 +1,9 @@
 import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -49,6 +49,8 @@ const AnalyticsPage = () => {
 		setChartName(graphOptions[0][0]);
 	}, [graphOptions]);
 
+	console.log(departmentId);
+
 	return (
 		<Page>
 			<Page.Header title={t('Analytics')} />
@@ -61,11 +63,12 @@ const AnalyticsPage = () => {
 						</Box>
 						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
-							<DepartmentAutoComplete
-								flexShrink={0}
-								placeholder={t('All')}
+							<AutoCompleteDepartment
 								value={departmentId}
 								onChange={setDepartmentId}
+								placeholder={t('All')}
+								label={t('All')}
+								onlyMyDepartments
 							/>
 						</Box>
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
