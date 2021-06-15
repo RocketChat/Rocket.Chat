@@ -49,7 +49,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	if (options.nameValidationRegex) {
 		validRoomNameOptions.nameValidationRegex = options.nameValidationRegex;
 	}
-	console.log(extraData);
+
 	let room = {
 		fname: name,
 		...extraData,
@@ -117,6 +117,10 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 
 		if (username === owner.username) {
 			extra.ls = now;
+		}
+
+		if (room.taskRoomId) {
+			extra.taskRoomId = room.taskRoomId;
 		}
 
 		Subscriptions.createWithRoomAndUser(room, member, extra);
