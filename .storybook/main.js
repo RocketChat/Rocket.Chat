@@ -7,9 +7,9 @@ module.exports = {
 		reactDocgen: 'none',
 	},
 	stories: [
-		// '../app/**/*.stories.{js,tsx}',
+		'../app/**/*.stories.{js,tsx}',
 		'../client/**/Attachments.stories.{js,tsx}',
-		// '../ee/**/*.stories.{js,tsx}',
+		'../ee/**/*.stories.{js,tsx}',
 	],
 	addons: [
 		'@storybook/addon-essentials',
