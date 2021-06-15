@@ -38,12 +38,14 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 			name: String,
 			scope: Match.Maybe(String),
 			description: Match.Maybe(String),
+			mandatory2fa: Match.Maybe(Boolean),
 		});
 
 		const roleData = {
 			name: this.bodyParams.name,
 			scope: this.bodyParams.scope,
 			description: this.bodyParams.description,
+			mandatory2fa: this.bodyParams.mandatory2fa,
 		};
 
 		if (!hasPermission(Meteor.userId(), 'access-permissions')) {
