@@ -7,7 +7,7 @@ export type LivechatTagsList = {
 		offset: number;
 		count: number;
 	}) => {
-		monitors: ObjectFromApi<ILivechatTag>[];
+		tags: ObjectFromApi<ILivechatTag>[];
 		total: number;
 	};
 };
