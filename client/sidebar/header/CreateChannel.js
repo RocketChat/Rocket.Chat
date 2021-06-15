@@ -22,6 +22,7 @@ const CreateChannel = ({
 	hasUnsavedChanges,
 	onChangeUsers,
 	onChangeType,
+	onChangeVoice,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
@@ -130,7 +131,7 @@ const CreateChannel = ({
 						</Box>
 						<ToggleSwitch
 							checked={values.readOnly}
-							disabled={values.broadcast}
+							disabled={values.broadcast || values.voice}
 							onChange={handlers.handleReadOnly}
 						/>
 					</Box>
@@ -156,7 +157,20 @@ const CreateChannel = ({
 							<Field.Label>{t('Broadcast')}</Field.Label>
 							<Field.Description>{t('Broadcast_channel_Description')}</Field.Description>
 						</Box>
-						<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
+						<ToggleSwitch
+							checked={values.broadcast}
+							disabled={values.voice}
+							onChange={onChangeBroadcast}
+						/>
+					</Box>
+				</Field>
+				<Field mbe='x24'>
+					<Box display='flex' justifyContent='space-between' alignItems='start'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{t('Voice')}</Field.Label>
+							<Field.Description>{t('Voice_channel_Description')}</Field.Description>
+						</Box>
+						<ToggleSwitch checked={values.voice} onChange={onChangeVoice} />
 					</Box>
 				</Field>
 				<Field mbe='x24'>

@@ -1,4 +1,4 @@
-import protooClient from 'protoo-client';
+import { Peer, WebSocketTransport } from 'protoo-client';
 import { Device, types } from 'mediasoup-client';
 
 interface IData {
@@ -25,7 +25,7 @@ export default class VoiceRoom {
 
 	protooUrl: string;
 
-	protoo?: protooClient.Peer;
+	protoo?: Peer;
 
 	mediasoupDevice?: types.Device;
 
@@ -49,8 +49,8 @@ export default class VoiceRoom {
 	}
 
 	async join(): Promise<void> {
-		const protooTransport = new protooClient.WebSocketTransport(this.protooUrl);
-		this.protoo = new protooClient.Peer(protooTransport);
+		const protooTransport = new WebSocketTransport(this.protooUrl);
+		this.protoo = new Peer(protooTransport);
 
 		this.protoo.on('open', () => this.joinRoom());
 
