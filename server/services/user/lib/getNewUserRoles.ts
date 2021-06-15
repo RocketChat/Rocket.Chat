@@ -1,4 +1,4 @@
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 export function getNewUserRoles(previousRoles?: string[]): string[] {
 	const currentRoles = previousRoles ?? [];
