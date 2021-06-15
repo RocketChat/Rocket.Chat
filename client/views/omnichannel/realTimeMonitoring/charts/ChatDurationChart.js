@@ -17,7 +17,7 @@ const init = (canvas, context, t) =>
 		context,
 		[t('Avg_chat_duration'), t('Longest_chat_duration')],
 		labels,
-		[initialData, initialData],
+		[initialData, initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true },
 	);
 
@@ -60,6 +60,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
 			const label = getMomentCurrentLabel();
+			console.log('---avg:', avg, ' --- longest:', longest);
 			updateChartData(label, [avg, longest]);
 		}
 	}, [avg, longest, state, t, updateChartData]);
