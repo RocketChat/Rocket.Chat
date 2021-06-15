@@ -80,7 +80,7 @@
 		"@types/semver": "^7.3.3",
 		"@types/toastr": "^2.1.38",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^2.34.0",
+		"@typescript-eslint/parser": "^3.0.0",
 		"acorn": "^6.4.1",
 		"autoprefixer": "^9.8.6",
 		"babel-eslint": "^10.1.0",
@@ -126,7 +126,7 @@
 		"supertest": "^3.4.2",
 		"ts-loader": "^7.0.5",
 		"ts-node": "^8.10.2",
-		"typescript": "^4.3.2",
+		"typescript": "^4.2.2",
 		"webpack": "^4.44.1"
 	},
 	"dependencies": {
