@@ -1,6 +1,5 @@
 import { request } from 'undici';
 
-
 export default class HTTP {
 	static post(url, data) {
 		return request(url, {
