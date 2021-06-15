@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import DotLeader from './DotLeader';
@@ -8,7 +9,7 @@ export default {
 	component: DotLeader,
 };
 
-export const Default = () => (
+export const Default: Story = () => (
 	<Box display='flex' flexDirection='row'>
 		Label
 		<DotLeader />
