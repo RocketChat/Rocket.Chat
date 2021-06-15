@@ -122,15 +122,6 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 					<AutoCompleteAgent value={servedBy} onChange={handleServedBy} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment
-						value={department}
-						onChange={handleDepartment}
-						label={t('All')}
-						onlyMyDepartments
-					/>
-				</Box>
-				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
 					<Select
 						flexShrink={0}
@@ -164,6 +155,15 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 				<RemoveAllClosed
 					handleClearFilters={handleClearFilters}
 					handleRemoveClosed={handleRemoveClosed}
+				/>
+			</Box>
+			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
+				<Label mb='x4'>{t('Department')}</Label>
+				<AutoCompleteDepartment
+					value={department}
+					onChange={handleDepartment}
+					label={t('All')}
+					onlyMyDepartments
 				/>
 			</Box>
 			{Tags && (
