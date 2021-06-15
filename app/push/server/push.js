@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import HTTP from '../../../server/http/http';
+import HTTP from '../../../server/utils/http';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
