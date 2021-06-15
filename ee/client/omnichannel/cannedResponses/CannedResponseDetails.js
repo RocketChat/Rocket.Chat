@@ -1,8 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Margins, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
+import toastr from 'toastr';
 
+import { handleError } from '../../../../app/utils/client';
+import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
 import VerticalBar from '../../../../client/components/VerticalBar';
+import { useSetModal } from '../../../../client/contexts/ModalContext';
+import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { withResponseData } from './withResponseData';
 
@@ -11,12 +16,39 @@ const breakWord = css`
 `;
 
 export const CannedResponseDetails = ({
-	response: { shortcut, text, scope },
+	response: { shortcut, text, scope, _id },
 	onEdit,
 	onReturn,
 	onClose,
 }) => {
 	const t = useTranslation();
+
+	const setModal = useSetModal();
+
+	const removeCannedResponse = useMethod('removeCannedResponse');
+
+	const handleRemoveClick = useCallback(() => {
+		const handleCancel = () => {
+			setModal(null);
+		};
+		const handleDelete = () => {
+			try {
+				removeCannedResponse(_id);
+				toastr.success(t('Canned_Response_Removed'));
+				onReturn();
+				handleCancel();
+			} catch (error) {
+				handleError(error);
+			}
+		};
+		setModal(() => (
+			<DeleteWarningModal
+				children={t('Canned_Response_Delete_Warning')}
+				onDelete={handleDelete}
+				onCancel={handleCancel}
+			/>
+		));
+	}, [onReturn, removeCannedResponse, _id, setModal, t]);
 
 	return (
 		<VerticalBar>
@@ -54,8 +86,12 @@ export const CannedResponseDetails = ({
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
 					<Button onClick={onEdit}>
-						<Icon name='pencil' size='x16' />
+						<Icon name='pencil' mie='x4' />
 						{t('Edit')}
+					</Button>
+					<Button primary danger onClick={handleRemoveClick}>
+						<Icon name='trash' mie='x4' />
+						{t('Delete')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
