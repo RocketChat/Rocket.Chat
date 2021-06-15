@@ -11,6 +11,7 @@ export class LivechatDepartment extends Base {
 
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ type: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,
