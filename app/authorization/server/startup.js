@@ -128,6 +128,7 @@ Meteor.startup(function() {
 		{ _id: 'message-impersonate', roles: ['bot', 'app'] },
 		{ _id: 'create-team',         roles: ['admin', 'user'] },
 		{ _id: 'delete-team',         roles: ['admin', 'owner'] },
+		{ _id: 'convert-team',        roles: ['admin', 'owner'] },
 		{ _id: 'edit-team',           roles: ['admin', 'owner'] },
 		{ _id: 'add-team-member',     roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'edit-team-member',    roles: ['admin', 'owner', 'moderator'] },

@@ -8,7 +8,7 @@ module.exports = {
 	},
 	stories: [
 		'../app/**/*.stories.{js,tsx}',
-		'../client/**/Attachments.stories.{js,tsx}',
+		'../client/**/*.stories.{js,tsx}',
 		'../ee/**/*.stories.{js,tsx}',
 	],
 	addons: [
