@@ -111,6 +111,10 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
+		if (!room.servedBy) {
+			return true;
+		}
+
 		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
 	}
 
