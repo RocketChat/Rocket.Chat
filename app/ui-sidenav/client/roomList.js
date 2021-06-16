@@ -142,6 +142,7 @@ const mergeSubRoom = (subscription) => {
 			lastMessage: 1,
 			uids: 1,
 			v: 1,
+			voice: 1,
 			streamingOptions: 1,
 			usernames: 1,
 			topic: 1,
@@ -186,6 +187,7 @@ const mergeSubRoom = (subscription) => {
 		jitsiTimeout,
 
 		v,
+		voice,
 		transcriptRequest,
 		servedBy,
 		onHold,
@@ -219,6 +221,7 @@ const mergeSubRoom = (subscription) => {
 		jitsiTimeout,
 
 		v,
+		voice,
 		transcriptRequest,
 		servedBy,
 		onHold,
@@ -257,6 +260,7 @@ const mergeRoomSub = (room) => {
 		jitsiTimeout,
 
 		v,
+		voice,
 		transcriptRequest,
 		servedBy,
 		onHold,
@@ -290,6 +294,7 @@ const mergeRoomSub = (room) => {
 			teamId,
 			teamMain,
 			v,
+			voice,
 			transcriptRequest,
 			servedBy,
 			onHold,
