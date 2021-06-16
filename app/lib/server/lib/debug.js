@@ -80,7 +80,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
-		logRequest(this.connection.clientAddress, this.userId, method, this.connection.httpHeaders.referer, this.connection.httpHeaders['user-agent']);
+		logRequest(this.connection?.clientAddress, this.userId, method, this.connection?.httpHeaders.referer, this.connection?.httpHeaders['user-agent']);
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;
