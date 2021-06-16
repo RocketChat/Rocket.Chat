@@ -8,7 +8,7 @@ export const TooltipComponent = ({ title, anchor }) => {
 		anchor={ref}
 		placement='top-middle'
 		margin={8}
-		visible={AnimatedVisibility.UNHIDING}
+		visible={window.matchMedia('(max-width: 500px)').matches ? AnimatedVisibility.HIDDEN : AnimatedVisibility.UNHIDING}
 		children={title}
 	><Tooltip>{title}</Tooltip></PositionAnimated>;
 };
