@@ -11,7 +11,6 @@ import {
 import { useMutableCallback, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useOmnichannelDepartments } from '../../../contexts/OmnichannelContext/OmnichannelDepartmentContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
