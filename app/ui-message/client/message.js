@@ -451,6 +451,10 @@ Template.message.helpers({
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
 	},
+	showPin() {
+		const { msg } = this;
+		return msg.pinned && !(msg.actionContext === 'pinned' || this.context === 'pinned');
+	},
 	showStar() {
 		const { msg } = this;
 		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');

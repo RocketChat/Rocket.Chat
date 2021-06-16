@@ -69,7 +69,7 @@
 							<i class="icon-pencil{{#if $neq editedBy msg.u.username}} error-color{{/if}}" title="{{_ "Edited"}}"></i>
 						</span>
 					{{/if}}
-					{{#if msg.pinned}}
+					{{#if showPin}}
 						<span title="{{_ "Message_has_been_pinned"}}" class="pinned"><i class="icon-pin"></i></span>
 					{{/if}}
 					{{#if showStar}}
