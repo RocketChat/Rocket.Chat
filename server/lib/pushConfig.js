@@ -110,7 +110,7 @@ function configurePush() {
 			apn,
 			gcm,
 			production: settings.get('Push_production'),
-			gateways: settings.get('Push_enable_gateway') === true ? settings.get('Push_gateway').split('\n') : undefined,
+			gateways: settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms') ? settings.get('Push_gateway').split('\n') : undefined,
 			uniqueId: settings.get('uniqueID'),
 			getAuthorization() {
 				return `Bearer ${ getWorkspaceAccessToken() }`;

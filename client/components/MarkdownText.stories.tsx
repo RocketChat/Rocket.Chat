@@ -1,3 +1,4 @@
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import MarkdownText from './MarkdownText';
@@ -7,7 +8,7 @@ export default {
 	component: MarkdownText,
 };
 
-export const Example = () => (
+export const Example: Story = () => (
 	<MarkdownText
 		content={`
 # h1 Heading
