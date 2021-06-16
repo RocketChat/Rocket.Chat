@@ -6,6 +6,7 @@ import {
 	Select,
 	TextAreaInput,
 	SelectOptions,
+	NumberInput,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ComponentProps, FC, FormEvent, useMemo, useState } from 'react';
@@ -188,11 +189,19 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, handlers, className }) =>
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
-						<TextInput
-							value={conditionValue}
-							onChange={handleConditionValue}
-							placeholder={conditionValuePlaceholder}
-						/>
+						{conditionName === 'time-on-site' ? (
+							<NumberInput
+								value={conditionValue}
+								onChange={handleConditionValue}
+								placeholder={conditionValuePlaceholder}
+							/>
+						) : (
+							<TextInput
+								value={conditionValue}
+								onChange={handleConditionValue}
+								placeholder={conditionValuePlaceholder}
+							/>
+						)}
 					</Field.Row>
 				)}
 			</Field>
