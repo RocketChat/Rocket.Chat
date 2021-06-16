@@ -18,6 +18,12 @@ const logger = new Logger('Meteor', {
 	},
 });
 
+const logRequest = process.env.LOG_METHODS === 'false'
+	? () => {}
+	: (requestIp, userId = '-', method = '-', referer = '-', userAgent = '-') => {
+		console.log(`${ requestIp } - ${ userId } [${ new Date().toISOString() }] "METHOD ${ method }" - "${ referer }" "${ userAgent }"`);
+	};
+
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
 settings.get('Log_Trace_Methods', (key, value) => { Log_Trace_Methods = value; });
@@ -66,13 +72,15 @@ const omitKeyArgs = (args, name) => {
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
+		const method = name === 'stream' ? `${ name }:${ originalArgs[0] }` : name;
 		const end = metrics.meteorMethods.startTimer({
-			method: name === 'stream' ? `${ name }:${ originalArgs[0] }` : name,
+			method,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
+		logRequest(this.connection.clientAddress, this.userId, method, this.connection.httpHeaders.referer, this.connection.httpHeaders['user-agent']);
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;

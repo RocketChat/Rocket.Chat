@@ -14,6 +14,11 @@ import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
+const logRequest = process.env.LOG_REQUESTS === 'false'
+	? () => {}
+	: (requestIp, userId = '-', statusCode = '-', method = '-', url = '-', referer = '-', userAgent = '-') => {
+		console.log(`${ requestIp } - ${ userId } [${ new Date().toISOString() }] "${ method } ${ url }" ${ statusCode } - "${ referer }" "${ userAgent }"`);
+	};
 
 const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
@@ -410,6 +415,8 @@ export class APIClass extends Restivus {
 					rocketchatRestApiEnd({
 						status: result.statusCode,
 					});
+
+					logRequest(this.requestIp, this.userId, result.statusCode, this.request.method, this.request.url, this.request.headers.referer, this.request.headers['user-agent']);
 
 					return result;
 				};
