@@ -71,6 +71,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 				Array.isArray(deletedRooms) && deletedRooms.length > 0 ? deletedRooms : null;
 			try {
 				await deleteTeam({ teamId: room.teamId, roomsToRemove });
+				dispatchToastMessage({ type: 'success', message: t('Team_has_been_deleted') });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
