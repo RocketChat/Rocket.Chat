@@ -306,7 +306,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			removeAgentFromSubscription(rid, oldServedBy);
+			RoutingManager.removeAllRoomSubscriptions(room);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 
@@ -393,7 +393,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		removeAgentFromSubscription(rid, oldServedBy);
+		RoutingManager.removeAllRoomSubscriptions(room);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);

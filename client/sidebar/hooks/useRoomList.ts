@@ -74,11 +74,7 @@ export const useRoomList = (): Array<ISubscription> => {
 				}
 
 				if (room.t === 'l') {
-					return (
-						showOmnichannel &&
-						!queue.some((q) => (q as any).rid === room.rid) &&
-						omnichannel.add(room)
-					);
+					return showOmnichannel && omnichannel.add(room);
 				}
 
 				if (room.t === 'd') {

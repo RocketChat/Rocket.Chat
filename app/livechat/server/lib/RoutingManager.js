@@ -101,8 +101,8 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);
+			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -169,6 +169,15 @@ export const RoutingManager = {
 
 		dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
+	},
+
+	removeAllRoomSubscriptions(room) {
+		const { _id: roomId } = room;
+
+		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		subscriptions?.forEach(({ u }) => {
+			removeAgentFromSubscription(roomId, u);
+		});
 	},
 };
 
