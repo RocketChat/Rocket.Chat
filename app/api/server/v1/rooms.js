@@ -377,6 +377,10 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 				throw new Meteor.Error('error-invalid-format');
 			}
 
+			if (dateFrom > dateTo) {
+				throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+			}
+
 			sendFile({
 				rid,
 				format,
