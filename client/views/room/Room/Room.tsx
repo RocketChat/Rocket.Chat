@@ -1,6 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, FC } from 'react';
 
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
@@ -10,7 +11,7 @@ import { MessageList } from '../MessageList/MessageList';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
-import { useRoom } from '../providers/RoomProvider';
+import { useRoom } from '../contexts/RoomContext';
 import {
 	useTab,
 	useTabBarOpen,
@@ -60,24 +61,26 @@ export const Room: FC<{}> = () => {
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
-					{typeof tab.template === 'string' && (
-						<VerticalBarOldActions
-							{...tab}
-							name={tab.template}
-							tabBar={tabBar}
-							rid={room._id}
-							_id={room._id}
-						/>
-					)}
-					{typeof tab.template !== 'string' && (
-						<LazyComponent
-							template={tab.template}
-							tabBar={tabBar}
-							rid={room._id}
-							teamId={room.teamId}
-							_id={room._id}
-						/>
-					)}
+					<ErrorBoundary>
+						{typeof tab.template === 'string' && (
+							<VerticalBarOldActions
+								{...tab}
+								name={tab.template}
+								tabBar={tabBar}
+								rid={room._id}
+								_id={room._id}
+							/>
+						)}
+						{typeof tab.template !== 'string' && (
+							<LazyComponent
+								template={tab.template}
+								tabBar={tabBar}
+								rid={room._id}
+								teamId={room.teamId}
+								_id={room._id}
+							/>
+						)}
+					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}
 		</RoomTemplate>

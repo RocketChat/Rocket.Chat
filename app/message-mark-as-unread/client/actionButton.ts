@@ -3,8 +3,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils/client';
-import { ChatSubscription } from '../../models/client';
+import { handleError } from '../../utils';
+import { ChatSubscription } from '../../models';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -28,7 +29,11 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		condition({ message, user }) {
+		condition({ message, user, room }) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return message.u._id !== user._id;
 		},
 		order: 10,

@@ -226,6 +226,67 @@ describe('[Users]', function() {
 		reservedWords.forEach((name) => {
 			failCreateUser(name);
 		});
+
+		describe('users default roles configuration', () => {
+			before(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user,admin');
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user');
+			});
+
+			it('should create a new user with default roles', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['user', 'admin']);
+					})
+					.end(done);
+			});
+
+			it('should create a new user with only the role provided', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+						roles: ['guest'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['guest']);
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -282,7 +343,7 @@ describe('[Users]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});

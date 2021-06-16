@@ -52,7 +52,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 	}
 
 	findMembersInfoByTeamId(teamId: string, limit: number, skip: number, query?: FilterQuery<T>): Cursor<T> {
-		return this.col.find({ teamId, ...query }, {
+		return this.col.find({ ...query, teamId }, {
 			limit,
 			skip,
 			projection: {
@@ -104,6 +104,12 @@ export class TeamMemberRaw extends BaseRaw<T> {
 		return this.col.deleteOne({
 			teamId,
 			userId,
+		});
+	}
+
+	deleteByTeamId(teamId: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteMany({
+			teamId,
 		});
 	}
 }

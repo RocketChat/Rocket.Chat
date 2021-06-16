@@ -1,7 +1,8 @@
 import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import { IRoom } from '../../../../definition/IRoom';
+import { IRoom, IOmnichannelRoom } from '../../../../definition/IRoom';
+import { IOmnichannelSubscription } from '../../../../definition/ISubscription';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import RoomSkeleton from '../Room/RoomSkeleton';
@@ -46,7 +47,6 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		room._id = rid;
 		return {
 			rid,
-			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 			actions: {
 				openUserCard,
 				followMessage,
@@ -56,6 +56,8 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 				replyBroadcast,
 			},
 			getMore,
+			room: { ...room, name: roomTypes.getRoomName(room.t, room) } as IOmnichannelRoom &
+				IOmnichannelSubscription,
 		};
 	}, [room, rid, getMore]);
 

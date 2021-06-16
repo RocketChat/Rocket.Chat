@@ -207,6 +207,7 @@ export class RoomsRaw extends BaseRaw {
 			$unset: {
 				teamId: '',
 				teamDefault: '',
+				teamMain: '',
 			},
 		};
 
@@ -364,5 +365,9 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	findOneByNameOrFname(name, options = {}) {
+		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 }

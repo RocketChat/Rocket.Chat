@@ -9,6 +9,7 @@ type MentionType = 'user' | 'team';
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
+	tmid?: string;
 	ts: Date;
 
 	// TODO

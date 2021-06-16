@@ -24,7 +24,6 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 				messageViewMode: 1,
 			},
@@ -77,11 +76,6 @@ Template.roomList.helpers({
 				query.tokens = { $exists: false };
 			} else if (this.identifier === 'tokens' && user && user.services && user.services.tokenpass) {
 				query.tokens = { $exists: true };
-			}
-
-			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
-				query.prid = { $exists: false };
 			}
 
 			if (getUserPreference(user, 'sidebarShowUnread')) {
@@ -152,6 +146,7 @@ const mergeSubRoom = (subscription) => {
 			usernames: 1,
 			topic: 1,
 			encrypted: 1,
+			jitsiTimeout: 1,
 			// autoTranslate: 1,
 			// autoTranslateLanguage: 1,
 			description: 1,
@@ -162,6 +157,11 @@ const mergeSubRoom = (subscription) => {
 			teamId: 1,
 			teamMain: 1,
 			msgs: 1,
+			onHold: 1,
+			metrics: 1,
+			servedBy: 1,
+			ts: 1,
+			waitingResponse: 1,
 		},
 	};
 
@@ -169,33 +169,69 @@ const mergeSubRoom = (subscription) => {
 
 	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
 
-	if (room.uids) {
-		subscription.uids = room.uids;
-	}
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
 
-	if (room.v) {
-		subscription.v = room.v;
-	}
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+	} = room;
 
-	subscription.usernames = room.usernames;
-
-	subscription.lastMessage = room.lastMessage;
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
-	subscription.streamingOptions = room.streamingOptions;
 
-	subscription.encrypted = room.encrypted;
-	subscription.description = room.description;
-	subscription.cl = room.cl;
-	subscription.topic = room.topic;
-	subscription.announcement = room.announcement;
-	subscription.broadcast = room.broadcast;
-	subscription.archived = room.archived;
-	subscription.retention = room.retention;
+	return Object.assign(subscription, getLowerCaseNames(subscription), {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
 
-	subscription.teamId = room.teamId;
-	subscription.teamMain = room.teamMain;
-	subscription.msgs = room.msgs;
-	return Object.assign(subscription, getLowerCaseNames(subscription));
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+	});
 };
 
 const mergeRoomSub = (room) => {
@@ -203,26 +239,70 @@ const mergeRoomSub = (room) => {
 	if (!sub) {
 		return room;
 	}
+
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		ts,
+
+	} = room;
+
 	Subscriptions.update({
 		rid: room._id,
 	}, {
 		$set: {
-			encrypted: room.encrypted,
-			description: room.description,
-			cl: room.cl,
-			topic: room.topic,
-			announcement: room.announcement,
-			msgs: room.msgs,
-			broadcast: room.broadcast,
-			archived: room.archived,
-			retention: room.retention,
-			...Array.isArray(room.uids) && { uids: room.uids },
-			...Array.isArray(room.uids) && { usernames: room.usernames },
-			...room.v && { v: room.v },
-			lastMessage: room.lastMessage,
-			streamingOptions: room.streamingOptions,
-			teamId: room.teamId,
-			teamMain: room.teamMain,
+			encrypted,
+			description,
+			cl,
+			topic,
+			announcement,
+			broadcast,
+			archived,
+			retention,
+			uids,
+			usernames,
+			lastMessage,
+			streamingOptions,
+			teamId,
+			teamMain,
+			v,
+			transcriptRequest,
+			servedBy,
+			onHold,
+			tags,
+			closedAt,
+			metrics,
+			waitingResponse,
+			responseBy,
+			priorityId,
+			livechatData,
+			jitsiTimeout,
+			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});

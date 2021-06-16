@@ -1,21 +1,42 @@
+import { Meteor } from 'meteor/meteor';
+
 import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { call } from '../../../../ui-utils/client';
+import { getUserPreference } from '../../../../utils';
+import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
 
 const departments = new Set();
+
+const newInquirySound = () => {
+	const userId = Meteor.userId();
+	const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
+	const newRoomNotification = getUserPreference(userId, 'newRoomNotification');
+	const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
+
+	if (audioNotificationValue !== 'none') {
+		CustomSounds.play(newRoomNotification, {
+			volume: Number((audioVolume / 100).toPrecision(2)),
+		});
+	}
+};
 
 const events = {
 	added: (inquiry) => {
 		delete inquiry.type;
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		newInquirySound();
 	},
 	changed: (inquiry) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		if (saveResult?.insertedId) {
+			newInquirySound();
+		}
 	},
 	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
 };
