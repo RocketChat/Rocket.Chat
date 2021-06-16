@@ -14,7 +14,6 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 	const s = (fn) => (isLoading ? <Skeleton width='x40' /> : fn());
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
-
 	const router = useRoute('engagement-dashboard');
 
 	const handleEngagement = useMutableCallback(() => {
@@ -131,6 +130,14 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 								</>
 							}
 							value={s(() => statistics.totalChannels)}
+						/>
+						<TextSeparator
+							label={
+								<>
+									<Card.Icon name='team' size='x16' /> {t('Stats_Total_Teams')}
+								</>
+							}
+							value={s(() => statistics.teams.totalTeams)}
 						/>
 						<TextSeparator
 							label={
