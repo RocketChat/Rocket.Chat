@@ -1,52 +1,50 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
-import { useEndpointData } from '../hooks/useEndpointData';
+import { useRecordList } from '../hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../hooks/useAsyncState';
+import { useDepartmentsList } from '../views/hooks/useDepartmentsList';
 
 const AutoCompleteDepartment = (props) => {
-	const { label, onlyMyDepartments = false } = props;
+	const { value, onlyMyDepartments = false, onChange = () => {} } = props;
 
 	const t = useTranslation();
-	const [filter, setFilter] = useState('');
-	const { value: data } = useEndpointData(
-		'livechat/department',
-		useMemo(() => ({ text: filter, onlyMyDepartments }), [filter, onlyMyDepartments]),
+	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }), [
+			debouncedDepartmentsFilter,
+			onlyMyDepartments,
+		]),
 	);
 
-	const options = useMemo(
-		() =>
-			(data && [
-				{ value: 'all', label: label && t('All') },
-				...data.departments.map((department) => ({
-					value: department._id,
-					label: department.name,
-				})),
-			]) || [{ value: 'all', label: label || t('All') }],
-		[data, label, t],
-	);
+	const {
+		phase: departmentsPhase,
+		items: departmentsItems,
+		itemCount: departmentsTotal,
+	} = useRecordList(departmentsList);
 
 	return (
 		<PaginatedSelectFiltered
-			filter={filter}
-			setFilter={setFilter}
-			options={options}
+			value={value}
+			onChange={onChange}
+			filter={departmentsFilter}
+			setFilter={setDepartmentsFilter}
+			options={departmentsItems}
+			maxWidth='100%'
 			placeholder={t('Select_an_option')}
+			flexGrow={1}
+			endReached={
+				departmentsPhase === AsyncStatePhase.LOADING
+					? () => {}
+					: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+			}
 		/>
 	);
-
-	// return (
-	// 	<AutoComplete
-	// 		{...props}
-	// 		filter={filter}
-	// 		setFilter={setFilter}
-	// 		renderSelected={({ label }) => <>{label}</>}
-	// 		renderItem={({ label, value, ...props }) => (
-	// 			<Option title={label} label={label} key={value} {...props} />
-	// 		)}
-	// 		options={options}
-	// 	/>
-	// );
 };
 
 export default memo(AutoCompleteDepartment);
