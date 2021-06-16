@@ -16,6 +16,9 @@ const emojiParser = (message) => {
 	// &#39; to apostrophe (') for emojis such as :')
 	html = html.replace(/&#39;/g, '\'');
 
+	// Smartypants apostrophe (`) to normal apostrophe (')
+	html = html.replace(/’/g, '\'');
+
 	// '<br>' to ' <br> ' for emojis such at line breaks
 	html = html.replace(/<br>/g, ' <br> ');
 
