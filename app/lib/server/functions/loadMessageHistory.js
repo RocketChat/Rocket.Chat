@@ -1,19 +1,13 @@
-import { settings } from '../../../settings';
-import { Messages, Rooms } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-
-const hideMessagesOfTypeServer = new Set();
-
-settings.get('Hide_System_Messages', function(key, values) {
-	const hiddenTypes = values.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []);
-	hideMessagesOfTypeServer.clear();
-	hiddenTypes.forEach((item) => hideMessagesOfTypeServer.add(item));
-});
+import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
 export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, showThreadMessages = true }) {
-	const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
-	const hiddenMessageTypes = Array.isArray(room && room.sysMes) ? room.sysMes : Array.from(hideMessagesOfTypeServer.values()); // TODO probably remove on chained event system
+	const hiddenMessageTypes = getHiddenSystemMessages(room);
+
 	const options = {
 		sort: {
 			ts: -1,
