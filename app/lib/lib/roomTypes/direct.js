@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import toastr from 'toastr';
 
 import { ChatRoom, Subscriptions } from '../../../models';
 import { openRoom } from '../../../ui-utils';
-import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
+import { t, getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../utils';
 import { hasPermission, hasAtLeastOnePermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
@@ -47,6 +48,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	findRoom(identifier) {
 		if (!hasPermission('view-d-room')) {
+			toastr.error(t('view-d-room_description'), t('view-d-room'));
 			return null;
 		}
 
