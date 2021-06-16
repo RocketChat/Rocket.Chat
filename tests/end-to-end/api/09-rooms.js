@@ -753,6 +753,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -768,6 +770,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -784,6 +788,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -801,6 +807,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
