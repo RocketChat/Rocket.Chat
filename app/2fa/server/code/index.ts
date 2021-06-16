@@ -60,7 +60,7 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 		clientAddress: connection.clientAddress,
 	});
 
-	return crypto.createHash('md5').update(data).digest('hex');
+	return crypto.createHash('sha256').update(data).digest('hex');
 }
 
 function getRememberDate(from: Date = new Date()): Date | undefined {
