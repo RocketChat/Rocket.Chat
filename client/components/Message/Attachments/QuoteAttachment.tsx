@@ -66,7 +66,7 @@ export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
 					</Attachment.Author>
 					<MarkdownText variant='inline' content={text} />
 					{attachments && (
-						<Attachment.Inner>
+						<Attachment.Inner mbe='-12px'>
 							<Attachments attachments={attachments} />
 						</Attachment.Inner>
 					)}
