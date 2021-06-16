@@ -9,8 +9,9 @@ import { Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
+import { settings } from '../../../settings';
 
-const LIMIT_DEFAULT = 50;
+const limit = settings.get('Starred_message_limit') >= 0 ? settings.get('Starred_message_limit') : 50;
 
 Template.starredMessages.helpers({
 	hasMessages() {
@@ -30,7 +31,7 @@ Template.starredMessages.onCreated(function() {
 	this.rid = this.data.rid;
 	this.messages = new Mongo.Collection(null);
 	this.hasMore = new ReactiveVar(true);
-	this.limit = new ReactiveVar(LIMIT_DEFAULT);
+	this.limit = new ReactiveVar(limit);
 
 	this.autorun(() => {
 		const query = {
@@ -44,7 +45,7 @@ Template.starredMessages.onCreated(function() {
 
 		this.cursor && this.cursor.stop();
 
-		this.limit.set(LIMIT_DEFAULT);
+		this.limit.set(limit);
 
 		this.cursor = Messages.find(query).observe({
 			added: ({ _id, ...message }) => {
