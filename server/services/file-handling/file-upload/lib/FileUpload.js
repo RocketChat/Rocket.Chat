@@ -13,12 +13,12 @@ import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../../settings';
-import Uploads from '../../../../models/models/Uploads';
-import UserDataFiles from '../../../../models/models/UserDataFiles';
-import Avatars from '../../../../models/models/Avatars';
-import Users from '../../../../models/models/Users';
-import Rooms from '../../../../models/models/Rooms';
-import Settings from '../../../../models/models/Settings';
+import Uploads from '../../../../models/meteor/Uploads';
+import UserDataFiles from '../../../../models/meteor/UserDataFiles';
+import Avatars from '../../../../models/meteor/Avatars';
+import Users from '../../../../models/meteor/Users';
+import Rooms from '../../../../models/meteor/Rooms';
+import Settings from '../../../../models/meteor/Settings';
 import { mime } from '../../../../../app/utils/lib/mimeTypes';
 import { roomTypes } from '../../../../../app/utils/server/lib/roomTypes';
 import { hasPermission } from '../../../../../app/authorization/server/functions/hasPermission';

@@ -1,4 +1,4 @@
-import { Messages } from '../../../../../server/models/models/Messages';
+import { Messages } from '../../../../../server/models/meteor/Messages';
 import { settings } from '../../../../../server/settings';
 
 Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function(roomId, message, user, extraData) {

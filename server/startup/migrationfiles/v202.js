@@ -1,5 +1,5 @@
 import { Migrations } from '../migrations';
-import Uploads from '../../models/models/Uploads';
+import Uploads from '../../models/meteor/Uploads';
 
 Migrations.add({
 	version: 202,

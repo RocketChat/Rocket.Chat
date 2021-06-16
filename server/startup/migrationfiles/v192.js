@@ -1,6 +1,6 @@
 import { Migrations } from '../migrations';
 import { Messages, Rooms } from '../../models';
-import { trash } from '../../models/models/_BaseDb';
+import { trash } from '../../models/meteor/_BaseDb';
 
 Migrations.add({
 	version: 192,

@@ -1,4 +1,4 @@
-import Settings from '../models/models/Settings';
+import Settings from '../models/meteor/Settings';
 
 const cache = new Map();
 

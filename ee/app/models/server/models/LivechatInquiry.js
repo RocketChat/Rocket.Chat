@@ -1,4 +1,4 @@
-import { LivechatInquiry } from '../../../../../server/models/models/LivechatInquiry';
+import { LivechatInquiry } from '../../../../../server/models/meteor/LivechatInquiry';
 
 LivechatInquiry.prototype.setEstimatedServiceTimeAt = function(rid, data = {}) {
 	const { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt } = data;

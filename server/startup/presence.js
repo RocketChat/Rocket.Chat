@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/konecty:user-presence';
 
-import InstanceStatusModel from '../models/models/InstanceStatus';
-import UsersSessionsModel from '../models/models/UsersSessions';
+import InstanceStatusModel from '../models/meteor/InstanceStatus';
+import UsersSessionsModel from '../models/meteor/UsersSessions';
 
 Meteor.startup(function() {
 	UserPresence.start();

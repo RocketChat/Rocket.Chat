@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../server/utils/hooks';
-import LivechatRooms from '../../../../../server/models/models/LivechatRooms';
-import LivechatDepartment from '../../../../../server/models/models/LivechatDepartment';
+import LivechatRooms from '../../../../../server/models/meteor/LivechatRooms';
+import LivechatDepartment from '../../../../../server/models/meteor/LivechatDepartment';
 
 callbacks.add('livechat.afterForwardChatToDepartment', (options) => {
 	const { rid, newDepartmentId } = options;

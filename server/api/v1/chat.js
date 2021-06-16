@@ -8,9 +8,9 @@ import { processWebhookMessage } from '../../../app/lib/server';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../services/messages/reactions/setReaction';
 import { API } from './api';
-import Rooms from '../../models/models/Rooms';
-import Users from '../../models/models/Users';
-import Subscriptions from '../../models/models/Subscriptions';
+import Rooms from '../../models/meteor/Rooms';
+import Users from '../../models/meteor/Users';
+import Subscriptions from '../../models/meteor/Subscriptions';
 import { settings } from '../../settings';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from './lib/messages';
 

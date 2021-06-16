@@ -1,4 +1,4 @@
-import LivechatVisitors from '../../../models/models/LivechatVisitors';
+import LivechatVisitors from '../../../models/meteor/LivechatVisitors';
 import { transformMappedData } from '../misc/transformMappedData';
 
 export class AppVisitorsConverter {

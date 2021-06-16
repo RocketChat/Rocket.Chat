@@ -6,7 +6,7 @@ import UAParser from 'ua-parser-js';
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models';
 import { Logger } from '../../../../app/logger';
-import { aggregates } from '../../../models/models/Sessions';
+import { aggregates } from '../../../models/meteor/Sessions';
 import { getMostImportantRole } from './getMostImportantRole';
 
 const getDateObj = (dateTime = new Date()) => ({

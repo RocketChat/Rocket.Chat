@@ -4,7 +4,7 @@ import { API } from './api';
 import { findEmailInboxes, findOneEmailInbox, insertOneOrUpdateEmailInbox } from './lib/emailInbox';
 import { hasPermission } from '../../../app/authorization/server/functions/hasPermission';
 import { EmailInbox } from '../../models';
-import Users from '../../models/models/Users';
+import Users from '../../models/meteor/Users';
 import { sendTestEmailToInbox } from '../../integrations/EmailInbox/EmailInbox_Outgoing';
 
 API.v1.addRoute('email-inbox.list', { authRequired: true }, {

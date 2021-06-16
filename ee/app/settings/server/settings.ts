@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { SettingsEvents, settings } from '../../../../server/settings/settings';
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
-import SettingsModel from '../../../../server/models/models/Settings';
+import SettingsModel from '../../../../server/models/meteor/Settings';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
 
 export function changeSettingValue(record: ISetting): undefined | { value: SettingValue } {

@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import AnalyticsRaw from '../../../../../server/models/raw/Analytics';
-import Sessions from '../../../../../server/models/models/Sessions';
+import Sessions from '../../../../../server/models/meteor/Sessions';
 import { Users } from '../../../../../server/models/raw';
 import { Analytics } from '../../../../../server/models';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';

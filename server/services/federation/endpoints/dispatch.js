@@ -3,7 +3,7 @@ import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/v1';
 import { logger } from '../lib/logger';
-import { contextDefinitions, eventTypes } from '../../../models/models/FederationEvents';
+import { contextDefinitions, eventTypes } from '../../../models/meteor/FederationEvents';
 import {
 	FederationRoomEvents, FederationServers,
 	Messages,
