@@ -13,6 +13,7 @@ import {
 } from '../../../../contexts/RouterContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useTabContext } from '../../providers/ToolboxProvider';
 import Row from './Row';
 import { withData } from './withData';
@@ -27,7 +28,7 @@ function ThreadList({
 	type,
 	setType,
 	loadMoreItems,
-	loading,
+	actualLoading,
 	onClose,
 	error,
 	userId,
@@ -65,6 +66,7 @@ function ThreadList({
 
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
+	const loading = actualLoading === AsyncStatePhase.LOADING || actualLoading === AsyncStatePhase.UPDATING;
 
 	return (
 		<>
