@@ -44,11 +44,10 @@ const AccountProfilePage = () => {
 
 	const logoutOtherClients = useMethod('logoutOtherClients');
 	const deleteOwnAccount = useMethod('deleteUserOwnAccount');
+	const checkExistingPassword = useMethod('checkExistingPassword');
 	const saveFn = useMethod('saveUserProfile');
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
-
-	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -212,6 +211,7 @@ const AccountProfilePage = () => {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
+		const localPassword = await checkExistingPassword();
 
 		const title = t('Are_you_sure_you_want_to_delete_your_account');
 		if (localPassword) {
@@ -233,7 +233,15 @@ const AccountProfilePage = () => {
 				text={t('If_you_are_sure_type_in_your_username')}
 			/>
 		));
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
+	}, [
+		closeModal,
+		deleteOwnAccount,
+		dispatchToastMessage,
+		erasureType,
+		t,
+		setModal,
+		checkExistingPassword,
+	]);
 
 	return (
 		<Page>
