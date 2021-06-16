@@ -181,12 +181,15 @@ function EditRoom({ room, onChange }) {
 			</Field>
 			{room.t !== 'd' && (
 				<>
-					<Field>
-						<Field.Label>{t('Owner')}</Field.Label>
-						<Field.Row>
-							<Box fontScale='p1'>{room.u?.username}</Box>
-						</Field.Row>
-					</Field>
+					{room.u && (
+						<Field>
+							<Field.Label>{t('Owner')}</Field.Label>
+							<Field.Row>
+								<Box fontScale='p1'>{room.u?.username}</Box>
+							</Field.Row>
+						</Field>
+					)}
+
 					{canViewDescription && (
 						<Field>
 							<Field.Label>{t('Description')}</Field.Label>
