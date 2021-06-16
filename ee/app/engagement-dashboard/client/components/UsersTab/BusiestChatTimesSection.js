@@ -127,7 +127,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick }) 
 	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
-		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),
+		day: String(moment.utc([year, month - 1, day, 12, 0, 0]).valueOf()),
 	})).sort(({ day: a }, { day: b }) => a - b) : []), [data]);
 
 	return <>
