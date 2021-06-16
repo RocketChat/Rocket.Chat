@@ -18,7 +18,7 @@ addParameters({
 		page: DocsPage,
 	},
 	options: {
-		storySort: ([, a], [, b]) =>
+		storySort: ([, a], [, b]): number =>
 			a.kind.localeCompare(b.kind),
 	},
 });
