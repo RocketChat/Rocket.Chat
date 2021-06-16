@@ -1308,6 +1308,7 @@
   "error-not-authorized": "Yetkili değil",
   "error-office-hours-are-closed": "Çalışma saatleri kapalı.",
   "error-password-policy-not-met": "Şifre sunucunun politikasını karşılamıyor",
+  "Hide_Avatars": "Avatarlar Gizlensin",
   "error-password-policy-not-met-maxLength": "Şifre sunucunun maksimum uzunluk politikasını karşılamıyor (şifre çok uzun)",
   "error-password-policy-not-met-minLength": "Şifre sunucunun minimum uzunluk politikasını karşılamıyor (şifre çok kısa)",
   "error-password-policy-not-met-oneLowercase": "Şifre, sunucunun en az bir küçük harfli politikasını karşılamıyor",

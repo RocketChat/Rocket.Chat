@@ -1074,6 +1074,7 @@
   "error-not-allowed": "Không cho phép",
   "error-not-authorized": "Chưa được phép",
   "error-password-policy-not-met": "Mật khẩu không đáp ứng chính sách của máy chủ",
+  "Hide_Avatars": "Ẩn hình đại diện",
   "error-password-policy-not-met-maxLength": "Mật khẩu không đáp ứng chính sách tối đa của máy chủ (mật khẩu quá dài)",
   "error-password-policy-not-met-minLength": "Mật khẩu không đáp ứng chính sách tối thiểu của máy chủ (mật khẩu quá ngắn)",
   "error-password-policy-not-met-oneLowercase": "Mật khẩu không đáp ứng chính sách của máy chủ ít nhất một ký tự chữ thường",

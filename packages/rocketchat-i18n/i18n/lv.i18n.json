@@ -1095,6 +1095,7 @@
   "error-not-allowed": "Nav atļauts",
   "error-not-authorized": "Nav saskaņots",
   "error-password-policy-not-met": "Parole neatbilst servera politikai",
+  "Hide_Avatars": "Paslēpt avatārus",
   "error-password-policy-not-met-maxLength": "Paroles garums neatbilst servera maksimālā garuma politikai (parole ir pārāk gara)",
   "error-password-policy-not-met-minLength": "Paroles garums neatbilst servera minimālā garuma politikai (parole ir pārāk īsa)",
   "error-password-policy-not-met-oneLowercase": "Parole neatbilst servera politikai, vismaz viena rakstuzīme ar mazo burtu",

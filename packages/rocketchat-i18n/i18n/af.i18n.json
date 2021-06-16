@@ -1084,6 +1084,7 @@
   "error-not-allowed": "Nie toegelaat nie",
   "error-not-authorized": "Nie gemagtig nie",
   "error-password-policy-not-met": "Wagwoord voldoen nie aan die bediener se beleid nie",
+  "Hide_Avatars": "Versteek Avatars",
   "error-password-policy-not-met-maxLength": "Wagwoord voldoen nie aan die bediener se beleid van maksimum lengte nie (wagwoord te lank)",
   "error-password-policy-not-met-minLength": "Wagwoord voldoen nie aan die bediener se beleid van minimum lengte nie (wagwoord te kort)",
   "error-password-policy-not-met-oneLowercase": "Wagwoord voldoen nie aan die bediener se beleid van ten minste een kleinletter nie",

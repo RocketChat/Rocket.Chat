@@ -1665,6 +1665,7 @@
   "error-not-authorized": "未經授權",
   "error-office-hours-are-closed": "上班時間已過",
   "error-password-policy-not-met": "密碼不符合伺服器的政策",
+  "Hide_Avatars": "隱藏頭像",
   "error-password-policy-not-met-maxLength": "密碼不符合伺服器的最大長度限制（密碼過長）",
   "error-password-policy-not-met-minLength": "密碼不符合伺服器的最小長度限制（密碼太短）",
   "error-password-policy-not-met-oneLowercase": "密碼不符合至少有一個小寫字符的伺服器策略",

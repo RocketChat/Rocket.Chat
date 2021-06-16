@@ -1696,6 +1696,7 @@
   "error-office-hours-are-closed": "De kantooruren zijn gesloten.",
   "error-password-in-history": "Het ingevoerde wachtwoord is eerder gebruikt",
   "error-password-policy-not-met": "Wachtwoord voldoet niet aan het serverbeleid",
+  "Hide_Avatars": "Verberg Avatars",
   "error-password-policy-not-met-maxLength": "Wachtwoord voldoet niet aan het serverbeleid voor maximale lengte (wachtwoord te lang)",
   "error-password-policy-not-met-minLength": "Wachtwoord voldoet niet aan het serverbeleid voor minimale lengte (wachtwoord te kort)",
   "error-password-policy-not-met-oneLowercase": "Wachtwoord voldoet niet aan het serverbeleid van ten minste één kleine letter",

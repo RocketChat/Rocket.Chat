@@ -1095,6 +1095,7 @@
   "error-not-allowed": "Nepovolené",
   "error-not-authorized": "Nie je povolené",
   "error-password-policy-not-met": "Heslo nespĺňa pravidlá servera",
+  "Hide_Avatars": "Skryť Avatary",
   "error-password-policy-not-met-maxLength": "Heslo nespĺňa pravidlá servera o maximálnej dĺžke (heslo je príliš dlhé)",
   "error-password-policy-not-met-minLength": "Heslo nespĺňa pravidlá servera minimálnej dĺžky (príliš krátke heslo)",
   "error-password-policy-not-met-oneLowercase": "Heslo nespĺňa pravidlá servera aspoň s jedným malým písmom",

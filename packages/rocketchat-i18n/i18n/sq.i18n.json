@@ -1083,6 +1083,7 @@
   "error-not-allowed": "Nuk lejohet",
   "error-not-authorized": "nuk është i autorizuar",
   "error-password-policy-not-met": "Fjalëkalimi nuk i plotëson politikat e serverit",
+  "Hide_Avatars": "Fshih Avatarët",
   "error-password-policy-not-met-maxLength": "Fjalëkalimi nuk i plotëson politikat e serverit me gjatësi maksimale (fjalëkalimi shumë i gjatë)",
   "error-password-policy-not-met-minLength": "Fjalëkalimi nuk plotëson politikën e serverit me gjatësi minimale (fjalëkalimi shumë i shkurtër)",
   "error-password-policy-not-met-oneLowercase": "Fjalëkalimi nuk i plotëson politikat e serverit për të paktën një karakter të vogël",

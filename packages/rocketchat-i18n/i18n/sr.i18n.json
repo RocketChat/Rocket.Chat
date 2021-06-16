@@ -906,6 +906,7 @@
   "error-not-allowed": "Није дозвољено",
   "error-not-authorized": "Није овлашћен",
   "error-password-policy-not-met": "Лозинка не одговара политици сервера",
+  "Hide_Avatars": "Сакриј аватаре",
   "error-password-policy-not-met-maxLength": "Лозинка не одговара политици сервера максималне дужине (лозинка је предугачка)",
   "error-password-policy-not-met-minLength": "Лозинка не одговара политици сервера минималне дужине (преусмерена је лозинка)",
   "error-password-policy-not-met-oneLowercase": "Лозинка не испуњава политику сервера најмање једног малог слова",

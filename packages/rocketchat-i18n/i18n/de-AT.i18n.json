@@ -1086,6 +1086,7 @@
   "error-not-allowed": "Nicht erlaubt",
   "error-not-authorized": "Nicht berechtigt",
   "error-password-policy-not-met": "Das Passwort entspricht nicht den Richtlinien des Servers",
+  "Hide_Avatars": "Avatar verstecken",
   "error-password-policy-not-met-maxLength": "Das Passwort entspricht nicht der Richtlinie des Servers mit maximaler Länge (Passwort zu lang)",
   "error-password-policy-not-met-minLength": "Das Passwort entspricht nicht der Mindestlänge des Servers (Passwort zu kurz)",
   "error-password-policy-not-met-oneLowercase": "Das Kennwort entspricht nicht der Richtlinie des Servers mit mindestens einem Kleinbuchstaben",

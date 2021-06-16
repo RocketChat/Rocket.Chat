@@ -1084,6 +1084,7 @@
   "error-not-allowed": "Ne permesita",
   "error-not-authorized": "Ne rajtigita",
   "error-password-policy-not-met": "Pasvorto ne renkontas la politikon de la servilo",
+  "Hide_Avatars": "Kaŝi avatars",
   "error-password-policy-not-met-maxLength": "Pasvorto ne plenumas la politikan servilon de maksimuma longo (pasvorto tro longa)",
   "error-password-policy-not-met-minLength": "Pasvorto ne renkontas la politikon de la servilo de minimuma longeco (pasvorto tro mallonga)",
   "error-password-policy-not-met-oneLowercase": "Pasvorto ne renkontas la politikon de la servilo de almenaŭ unu minuskla karaktero",

@@ -1522,6 +1522,7 @@
   "error-not-authorized": "Není povoleno",
   "error-office-hours-are-closed": "Zavřeno",
   "error-password-policy-not-met": "Heslo nesplňuje požadavky serveru",
+  "Hide_Avatars": "Skrýt avatary",
   "error-password-policy-not-met-maxLength": "Heslo nesplňuje zásady maximální délky (příliš dlouhé heslo)",
   "error-password-policy-not-met-minLength": "Heslo nesplňuje zásady minimální délky (příliš krátké heslo)",
   "error-password-policy-not-met-oneLowercase": "Heslo nesplňuje zásady alespoň jednoho malého znaku",

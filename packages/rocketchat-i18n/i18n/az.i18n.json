@@ -1084,6 +1084,7 @@
   "error-not-allowed": "İcazəli deyildir, izinli deyildir, qadağandır",
   "error-not-authorized": "Səlahiyyətli deyil",
   "error-password-policy-not-met": "Şifrə serverin siyasətinə cavab vermir",
+  "Hide_Avatars": "Avatarları gizlədin",
   "error-password-policy-not-met-maxLength": "Şifrə, serverin maksimum uzunluğu siyasətinə (parol çox uzun) cavab vermir",
   "error-password-policy-not-met-minLength": "Şifrə, serverin minimum uzunluğu siyasətinə (parol çox qısa)",
   "error-password-policy-not-met-oneLowercase": "Şifrə, serverin ən az bir kiçik karakteri siyasətini təmin etməyib",

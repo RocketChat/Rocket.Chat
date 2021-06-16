@@ -1082,6 +1082,7 @@
   "error-not-allowed": "Nepermis",
   "error-not-authorized": "Neautorizat",
   "error-password-policy-not-met": "Parola nu respectă politica serverului",
+  "Hide_Avatars": "Ascundeți Avatare",
   "error-password-policy-not-met-maxLength": "Parola nu respectă politica serverului de lungime maximă (parola este prea lungă)",
   "error-password-policy-not-met-minLength": "Parola nu respectă politica serverului de lungime minimă (parola prea scurtă)",
   "error-password-policy-not-met-oneLowercase": "Parola nu respectă politica serverului cu cel puțin un caracter minuscul",

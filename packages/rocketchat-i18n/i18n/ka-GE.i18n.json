@@ -1447,6 +1447,7 @@
   "error-not-authorized": "არაა უფლებამოსილი",
   "error-office-hours-are-closed": "სამუშაო საათები",
   "error-password-policy-not-met": "პაროლი არ აკმაყოფილებს სერვერის წესებს",
+  "Hide_Avatars": "დამალეთ ავატარები",
   "error-password-policy-not-met-maxLength": "პაროლის სიგრძე აღემატება მაქსიმალურ დაშვებულ სიგრძეს (პაროლი ძალიან გრძელია)",
   "error-password-policy-not-met-minLength": "პაროლის სიგრძე დაშვებულ მინიმალურ სიგრძეზე ნაკლებია (პაროლი ძალიან მოკლეა)",
   "error-password-policy-not-met-oneLowercase": "პაროლი უნდა შეიცავდეს მინიმუმ ერთ პატარა ასოს",

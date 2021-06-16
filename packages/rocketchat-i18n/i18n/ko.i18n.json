@@ -1582,6 +1582,7 @@
   "error-not-authorized": "권한이 없습니다.",
   "error-office-hours-are-closed": "업무 시간이 종료되었습니다.",
   "error-password-policy-not-met": "서버정책을 충족하지 않는 비밀번호",
+  "Hide_Avatars": "아바타 숨기기",
   "error-password-policy-not-met-maxLength": "비밀번호가 최대 길이 정책(너무 길음)을 충족하지 않습니다.",
   "error-password-policy-not-met-minLength": "비밀번호가 최소 길이 정책 (너무 짧음)을 충족하지 않습니다.",
   "error-password-policy-not-met-oneLowercase": "비밀번호는 하나 이상의 소문자가 포함되어야 합니다.",

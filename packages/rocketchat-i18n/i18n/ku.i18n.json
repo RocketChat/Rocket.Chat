@@ -1080,6 +1080,7 @@
   "error-not-allowed": "destûr ne",
   "error-not-authorized": "destûr ne",
   "error-password-policy-not-met": "Şîfreya pisporiya polîtîkayê nagire",
+  "Hide_Avatars": "Avatars veşêre",
   "error-password-policy-not-met-maxLength": "Şîfreya pisporiya polîtîkaya herî dirêj (pêwenddar pir dirêj e) nabîne.",
   "error-password-policy-not-met-minLength": "Şîfreya pisporiya polîtîkaya navîn ya herî kêm (şîfreyek kurt e)",
   "error-password-policy-not-met-oneLowercase": "Şîfreya pisporê polîtîkayê ya herî kêm yek piçeyek nêv nake",

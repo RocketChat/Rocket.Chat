@@ -1080,6 +1080,7 @@
   "error-not-allowed": "Зөвшөөрөгдөөгүй",
   "error-not-authorized": "Эрх мэдэлгүй байх",
   "error-password-policy-not-met": "Нууц үг серверийн бодлогыг хангахгүй байна",
+  "Hide_Avatars": "Avatars Avatars",
   "error-password-policy-not-met-maxLength": "Нууц үг серверийн хамгийн их урттай бодлого (нууц үг хэтэрхий урт байна)",
   "error-password-policy-not-met-minLength": "Нууц үг нь хамгийн бага урттай серверийн бодлогыг хангахгүй байна (нууц үг хэтэрхий богино байна)",
   "error-password-policy-not-met-oneLowercase": "Нууц үг нь доод тал нь нэг жижиг үсгээр бичигдсэн серверийн бодлогыг хангахгүй байна",

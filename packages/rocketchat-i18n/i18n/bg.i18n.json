@@ -1084,6 +1084,7 @@
   "error-not-allowed": "Не е позволено",
   "error-not-authorized": "Неоторизиран",
   "error-password-policy-not-met": "Паролата не отговаря на правилата на сървъра",
+  "Hide_Avatars": "Скриване на аватарите",
   "error-password-policy-not-met-maxLength": "Паролата не отговаря на правилата за максимална дължина на сървъра (паролата е твърде дълга)",
   "error-password-policy-not-met-minLength": "Паролата не отговаря на правилата за минимална дължина на сървъра (паролата е твърде кратка)",
   "error-password-policy-not-met-oneLowercase": "Паролата не отговаря на правилата на сървъра с поне един малък знак",

@@ -1082,6 +1082,7 @@
   "error-not-allowed": "Heb ei ganiatáu",
   "error-not-authorized": "Heb ei awdurdodi",
   "error-password-policy-not-met": "Nid yw'r cyfrinair yn bodloni polisi'r gweinydd",
+  "Hide_Avatars": "Cuddio Avatars",
   "error-password-policy-not-met-maxLength": "Nid yw'r cyfrinair yn cwrdd â pholisi'r gweinydd o hyd hyd (cyfrinair yn rhy hir)",
   "error-password-policy-not-met-minLength": "Nid yw'r cyfrinair yn bodloni polisi'r gweinydd o hyd gofynnol (cyfrinair yn rhy fyr)",
   "error-password-policy-not-met-oneLowercase": "Nid yw'r cyfrinair yn bodloni polisi'r gweinydd o un cymeriad o leiaf o leiaf",

@@ -1421,6 +1421,7 @@
   "error-not-authorized": "Заборонено",
   "error-office-hours-are-closed": "Робочий час закінчено",
   "error-password-policy-not-met": "Пароль не відповідає політиці сервера",
+  "Hide_Avatars": "Сховати аватари",
   "error-password-policy-not-met-maxLength": "Пароль не відповідає політиці сервера максимальної довжини (пароль занадто довгий)",
   "error-password-policy-not-met-minLength": "Пароль не відповідає політиці сервера мінімальної довжини (пароль занадто короткий)",
   "error-password-policy-not-met-oneLowercase": "Пароль не відповідає політиці сервера принаймні одного символу нижнього регістру",

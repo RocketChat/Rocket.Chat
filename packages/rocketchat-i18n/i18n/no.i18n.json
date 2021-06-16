@@ -1154,6 +1154,7 @@
   "error-not-allowed": "Ikke tillatt",
   "error-not-authorized": "Ikke autorisert",
   "error-password-policy-not-met": "Passordet oppfyller ikke serverens retningslinjer",
+  "Hide_Avatars": "Skjul Avatars",
   "error-password-policy-not-met-maxLength": "Passordet oppfyller ikke serverens policy med maksimal lengde (passord for lenge)",
   "error-password-policy-not-met-minLength": "Passordet oppfyller ikke serverens policy med minimumslengde (passord for kort)",
   "error-password-policy-not-met-oneLowercase": "Passordet oppfyller ikke serverens policy med minst en liten bokstav",

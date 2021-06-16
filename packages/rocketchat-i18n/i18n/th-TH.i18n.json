@@ -1082,6 +1082,7 @@
   "error-not-allowed": "ไม่ได้รับอนุญาต",
   "error-not-authorized": "ไม่มีอำนาจ",
   "error-password-policy-not-met": "รหัสผ่านไม่เป็นไปตามนโยบายของเซิร์ฟเวอร์",
+  "Hide_Avatars": "ซ่อนอวตาร",
   "error-password-policy-not-met-maxLength": "รหัสผ่านไม่ตรงกับนโยบายของเซิร์ฟเวอร์ที่มีความยาวสูงสุด (รหัสผ่านยาวเกินไป)",
   "error-password-policy-not-met-minLength": "รหัสผ่านไม่ตรงกับนโยบายของเซิร์ฟเวอร์ที่มีความยาวขั้นต่ำ (รหัสผ่านสั้นเกินไป)",
   "error-password-policy-not-met-oneLowercase": "รหัสผ่านไม่ตรงกับนโยบายของเซิร์ฟเวอร์สำหรับอักขระตัวพิมพ์เล็กอย่างน้อยหนึ่งตัว",

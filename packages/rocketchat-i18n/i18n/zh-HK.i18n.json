@@ -1103,6 +1103,7 @@
   "error-not-allowed": "不允许",
   "error-not-authorized": "未经授权",
   "error-password-policy-not-met": "密码不符合服务器的政策",
+  "Hide_Avatars": "隐藏頭像",
   "error-password-policy-not-met-maxLength": "密码不符合服务器的最大长度限制（密码过长）",
   "error-password-policy-not-met-minLength": "密码不符合服务器的最小长度限制（密码太短）",
   "error-password-policy-not-met-oneLowercase": "密码不符合至少有一个小写字符的服务器策略",

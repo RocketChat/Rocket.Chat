@@ -1115,6 +1115,7 @@
   "error-not-allowed": "Non permesso",
   "error-not-authorized": "Non autorizzato",
   "error-password-policy-not-met": "La password non soddisfa la politica del server",
+  "Hide_Avatars": "Nascondi avatar",
   "error-password-policy-not-met-maxLength": "La password non soddisfa la politica del server di lunghezza massima (password troppo lunga)",
   "error-password-policy-not-met-minLength": "La password non soddisfa la politica del server di lunghezza minima (password troppo breve)",
   "error-password-policy-not-met-oneLowercase": "La password non soddisfa la politica del server di almeno un carattere minuscolo",

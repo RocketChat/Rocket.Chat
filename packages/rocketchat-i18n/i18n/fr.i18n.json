@@ -1696,6 +1696,7 @@
   "error-office-hours-are-closed": "Les heures de bureau sont fermées.",
   "error-password-in-history": "Le mot de passe saisi a déjà été utilisé",
   "error-password-policy-not-met": "Le mot de passe ne répond pas à la politique du serveur",
+  "Hide_Avatars": "Masquer les avatars",
   "error-password-policy-not-met-maxLength": "Le mot de passe ne respecte pas la politique de longueur maximale du mot de passe (mot de passe trop long)",
   "error-password-policy-not-met-minLength": "Le mot de passe ne respecte pas la politique de longueur minimale du serveur (mot de passe trop court)",
   "error-password-policy-not-met-oneLowercase": "Le mot de passe ne respecte pas la politique du serveur d'au moins un caractère en minuscule",

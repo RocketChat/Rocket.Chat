@@ -1694,6 +1694,7 @@
   "error-office-hours-are-closed": "El horario de oficina está cerrado.",
   "error-password-in-history": "La contraseña ingresada se ha utilizado anteriormente",
   "error-password-policy-not-met": "La contraseña no cumple con la política del servidor",
+  "Hide_Avatars": "Ocultar avatares",
   "error-password-policy-not-met-maxLength": "La contraseña no cumple con la política del servidor de longitud máxima (contraseña demasiado larga)",
   "error-password-policy-not-met-minLength": "La contraseña no cumple con la política de longitud mínima del servidor (contraseña demasiado corta)",
   "error-password-policy-not-met-oneLowercase": "La contraseña no cumple con la política del servidor de al menos un carácter en minúscula",

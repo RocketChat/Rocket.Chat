@@ -1084,6 +1084,7 @@
   "error-not-allowed": "tidak diizinkan",
   "error-not-authorized": "Tidak diizinkan",
   "error-password-policy-not-met": "Kata sandi tidak memenuhi kebijakan server",
+  "Hide_Avatars": "Sembunyikan Avatars",
   "error-password-policy-not-met-maxLength": "Kata sandi tidak memenuhi kebijakan panjang maksimum server (kata sandi terlalu panjang)",
   "error-password-policy-not-met-minLength": "Kata sandi tidak memenuhi kebijakan panjang minimum server (kata sandi terlalu pendek)",
   "error-password-policy-not-met-oneLowercase": "Kata sandi tidak memenuhi kebijakan server setidaknya satu karakter huruf kecil",

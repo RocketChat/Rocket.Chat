@@ -1335,6 +1335,7 @@
   "error-not-allowed": "اجازه داده نشده",
   "error-not-authorized": "غیر مجاز",
   "error-password-policy-not-met": "رمز عبور خط مشی سرور را برآورده نمی کند",
+  "Hide_Avatars": "پنهان کردن آواتارها",
   "error-password-policy-not-met-maxLength": "رمز عبور سیاست حداکثر طول سرور را برآورده نمی کند (رمز عبور بیش از حد طول می کشد)",
   "error-password-policy-not-met-minLength": "رمز عبور خط مشی سرور حداقل طول می کشد (رمز عبور خیلی کوتاه است)",
   "error-password-policy-not-met-oneLowercase": "رمز عبور خطای سرور حداقل یک شخصیت کوچک را برآورده نمی کند",

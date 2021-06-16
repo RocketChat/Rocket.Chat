@@ -1700,6 +1700,7 @@
   "error-office-hours-are-closed": "The office hours are closed.",
   "error-password-in-history": "Entered password has been previously used",
   "error-password-policy-not-met": "Password does not meet the server's policy",
+  "Hide_Avatars": "Hide Avatars",
   "error-password-policy-not-met-maxLength": "Password does not meet the server's policy of maximum length (password too long)",
   "error-password-policy-not-met-minLength": "Password does not meet the server's policy of minimum length (password too short)",
   "error-password-policy-not-met-oneLowercase": "Password does not meet the server's policy of at least one lowercase character",
