@@ -48,7 +48,9 @@ const RoomMembers = ({
 	);
 
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
-	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
+	const lm = useMutableCallback(
+		(start) => !loading && loadMoreItems(start === 0 ? start : start + 1),
+	);
 
 	return (
 		<>
