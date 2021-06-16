@@ -136,6 +136,11 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'message_pinned',
+		system: true,
+		message: 'Pinned_a_message',
+	});
+	MessageTypes.registerType({
 		id: 'subscription-role-added',
 		system: true,
 		message: '__username__was_set__role__by__user_by_',
@@ -217,6 +222,9 @@ export const MessageTypesValues = [
 	}, {
 		key: 'mute_unmute',
 		i18nLabel: 'Message_HideType_mute_unmute',
+	}, {
+		key: 'message_pinned',
+		i18nLabel: 'Message_HideType_message_pinned',
 	}, {
 		key: 'r',
 		i18nLabel: 'Message_HideType_r',
