@@ -2,7 +2,7 @@ FROM node:12.22.1-buster-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-# dependencies
+# dependencies 
 RUN groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
     && mkdir -p /app/uploads \
@@ -38,12 +38,6 @@ WORKDIR /app/bundle
 # needs a mongoinstance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
-    MONGO_URL=mongodb://mongo:27017/rocketchat \
-    HOME=/tmp \
-    PORT=3000 \
-    ROOT_URL=http://localhost:3000 \
-    Accounts_AvatarStorePath=/app/uploads
-
-EXPOSE 3000
+    HOME=/tmp
 
 CMD ["node", "main.js"]
