@@ -332,7 +332,7 @@ export class SAUMonitorClass {
 
 		SyncedCron.add({
 			name: this._jobName,
-			schedule: (parser) => parser.text('at 15:53 pm'),
+			schedule: (parser) => parser.text('at 2:00 pm'),
 			job: () => {
 				this.aggregate();
 			},

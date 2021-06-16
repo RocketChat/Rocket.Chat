@@ -53,7 +53,8 @@ const ActiveUsersSection = () => {
 
 		const distributeValueOverPoints = (usersLists, currentIndex, usersList, i, T, array, prev) => {
 			const usersSet = new Set(usersList);
-			var j, k;
+			let j;
+			let k;
 			for (j = 0, k = i; j < T && k < array.length; ++k, ++j) {
 				if (k >= 0) {
 					usersLists[currentIndex + j]?.forEach((userId) => usersSet.add(userId));
