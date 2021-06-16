@@ -19,6 +19,7 @@ import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
@@ -46,6 +47,8 @@ function EditRoom({ room, onChange }) {
 	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
+
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
@@ -149,9 +152,15 @@ function EditRoom({ room, onChange }) {
 	const handleDelete = useMutableCallback(() => {
 		const onCancel = () => setModal(undefined);
 		const onConfirm = async () => {
-			await deleteRoom(room._id);
-			onCancel();
-			setDeleted(true);
+			try {
+				await deleteRoom(room._id);
+				onCancel();
+				setDeleted(true);
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				onCancel();
+			}
 		};
 
 		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
