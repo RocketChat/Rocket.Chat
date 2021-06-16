@@ -363,7 +363,7 @@ export default class LDAP {
 		Object.keys(values._raw).forEach((key) => {
 			const value = values._raw[key];
 
-			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key)) {
+			if (!['thumbnailPhoto', 'jpegPhoto'].includes(key) && !key.endsWith(';binary')) {
 				if (value instanceof Buffer) {
 					values[key] = value.toString();
 				} else {
