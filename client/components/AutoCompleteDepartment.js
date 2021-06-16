@@ -1,4 +1,4 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
+import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -27,17 +27,26 @@ const AutoCompleteDepartment = (props) => {
 	);
 
 	return (
-		<AutoComplete
-			{...props}
+		<PaginatedSelectFiltered
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ label }) => <>{label}</>}
-			renderItem={({ label, value, ...props }) => (
-				<Option title={label} label={label} key={value} {...props} />
-			)}
 			options={options}
+			placeholder={t('Select_an_option')}
 		/>
 	);
+
+	// return (
+	// 	<AutoComplete
+	// 		{...props}
+	// 		filter={filter}
+	// 		setFilter={setFilter}
+	// 		renderSelected={({ label }) => <>{label}</>}
+	// 		renderItem={({ label, value, ...props }) => (
+	// 			<Option title={label} label={label} key={value} {...props} />
+	// 		)}
+	// 		options={options}
+	// 	/>
+	// );
 };
 
 export default memo(AutoCompleteDepartment);
