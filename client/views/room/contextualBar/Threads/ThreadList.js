@@ -116,7 +116,11 @@ function ThreadList({
 					</Callout>
 				)}
 
-				{!loading && total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
+				{!loading && total === 0 && (
+					<Box p='x24' color='neutral-600' textAlign='center' width='full'>
+						{t('No_Threads')}
+					</Box>
+				)}
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && threads.length > 0 && (
