@@ -1,4 +1,5 @@
 import { Tracker } from 'meteor/tracker';
+import _ from 'underscore';
 
 import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
 
@@ -38,18 +39,20 @@ export const openToolTip = (title, anchor) => {
 	unregister = unregister || createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
 };
 
-document.body.addEventListener('mouseover', (() => {
-	let timeout;
-	return (e) => {
-		timeout = timeout && clearTimeout(timeout);
+let timeout;
+export const tooltipHandler = (e) => {
+	timeout = timeout && clearTimeout(timeout);
+	const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
+	if (element) {
+		element.dataset.title = element.dataset.title || element.title;
+		element.removeAttribute('title');
 		timeout = setTimeout(() => {
-			const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
-			if (element) {
-				element.dataset.title = element.dataset.title || element.title;
-				element.removeAttribute('title');
-				openToolTip(element.dataset.title, element);
-			}
-		}, 1000);
-		closeTooltip();
-	};
-})());
+			openToolTip(element.dataset.title, element);
+		}, 100);
+	}
+	closeTooltip();
+};
+
+document.body.addEventListener('mouseover', _.debounce((() => (e) => {
+	tooltipHandler(e);
+})(), 200));
