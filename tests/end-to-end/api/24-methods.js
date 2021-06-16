@@ -1352,6 +1352,77 @@ describe('Meteor.methods', function() {
 				})
 				.end(done);
 		});
+
+		describe('optional link embeds', () => {
+			let messageWithOptionalEmbedId = null;
+			it('should not parse urls with <> in the sent message', (done) => {
+				request.post(methodCall('sendMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'https://rocket.chat is test1 and test2 is <https://youtube.com> and  https://github.com is test3 and also <ftp://user:password@server/pathname;type=a> which ftp link test4' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data.result.urls).to.have.lengthOf(2);
+						expect(data.result.urls[0].url).to.equal('https://rocket.chat');
+						expect(data.result.urls[1].url).to.equal('https://github.com');
+
+						messageWithOptionalEmbedId = data.result._id;
+					})
+					.end(done);
+			});
+			it('works for long urls', (done) => {
+				request.post(methodCall('sendMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: `search1 on rocketchat <https://www.google.com/search?q=rocket+chat&ei=pFaIe6F4t4PgsO5gAs&oq=rocketchat&gs_lcp=Cgdnd3Mtd2l6EAMYADIKCAAQ&uact=5> and
+							search2 on meteor https://www.qwant.com/?q=site%3Ameteor.com+what+is+meteor+js+and+how+to+get+started&t=web and a <https://very.deep.nest.sub.sub.domain.link?query1=has%20queries&testing=true&works=1&isawesome>` }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data.result.urls).to.have.lengthOf(1);
+						expect(data.result.urls[0].url).to.equal('https://www.qwant.com/?q=site%3Ameteor.com+what+is+meteor+js+and+how+to+get+started&t=web');
+					})
+					.end(done);
+			});
+			it('works inside threads', (done) => {
+				request.post(methodCall('sendMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [{ _id: `${ Date.now() + Math.random() }`, tmid: messageWithOptionalEmbedId, rid, msg: 'https://www.chaijs.com/api/bdd/ is test1 and <https://mochajs.org/#parallel-tests> is test2' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data.result.urls).to.have.lengthOf(1);
+						expect(data.result.urls[0].url).to.equal('https://www.chaijs.com/api/bdd/');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('[@updateMessage]', () => {
@@ -1477,6 +1548,121 @@ describe('Meteor.methods', function() {
 						})
 						.end(done);
 				});
+		});
+		describe('optional link embeds', () => {
+			let messageWithOptionalEmbedId = null;
+			beforeEach('send message with one disabled and one enabled', (done) => {
+				request.post(methodCall('sendMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [{ _id: `${ Date.now() + Math.random() }`, rid, msg: 'https://developer.rocket.chat is test1 and test2 is <https://docs.github.com>' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data.result.urls).to.have.lengthOf(1);
+						expect(data.result.urls[0].url).to.equal('https://developer.rocket.chat');
+						messageWithOptionalEmbedId = data.result._id;
+					})
+					.end(done);
+			});
+			it('adding a new url with <>', (done) => {
+				request.post(methodCall('updateMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'updateMessage',
+							params: [{ _id: messageWithOptionalEmbedId, rid, msg: 'https://developer.rocket.chat is test1 and test2 is <https://docs.github.com> and <https://regexr.com/> is test3' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg').that.is.an('string');
+					})
+					.then(() => {
+						request.get(api(`chat.getMessage?msgId=${ messageWithOptionalEmbedId }`))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body.message).to.have.property('urls');
+								expect(res.body.message.urls).to.have.lengthOf(1);
+							})
+							.end(done);
+					});
+			});
+			it('disable embed by adding <>', (done) => {
+				request.post(methodCall('updateMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'updateMessage',
+							params: [{ _id: messageWithOptionalEmbedId, rid, msg: '<https://developer.rocket.chat> is test1 and test2 is <https://docs.github.com>' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg').that.is.an('string');
+					})
+					.then(() => {
+						request.get(api(`chat.getMessage?msgId=${ messageWithOptionalEmbedId }`))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body.message).to.have.property('urls');
+								expect(res.body.message.urls).to.be.empty;
+							})
+							.end(done);
+					});
+			});
+			it('enable embeds by removing', (done) => {
+				request.post(methodCall('updateMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'updateMessage',
+							params: [{ _id: messageWithOptionalEmbedId, rid, msg: 'https://developer.rocket.chat is test1 and test2 is https://docs.github.com' }],
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg').that.is.an('string');
+					})
+					.then(() => {
+						request.get(api(`chat.getMessage?msgId=${ messageWithOptionalEmbedId }`))
+							.set(credentials)
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body.message).to.have.property('urls');
+								expect(res.body.message.urls).to.have.lengthOf(2);
+							})
+							.end(done);
+					});
+			});
 		});
 	});
 
