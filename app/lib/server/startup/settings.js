@@ -228,6 +228,9 @@ settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+			type: 'string',
+		});
 		this.add('Accounts_PasswordReset', true, {
 			type: 'boolean',
 			public: true,
@@ -955,6 +958,37 @@ settings.addGroup('General', function() {
 		type: 'string',
 		public: true,
 		multiline: true,
+	});
+	this.add('Default_Referrer_Policy', 'same-origin', {
+		type: 'select',
+		values: [
+			{
+				key: 'no-referrer',
+				i18nLabel: 'No_Referrer',
+			}, {
+				key: 'no-referrer-when-downgrade',
+				i18nLabel: 'No_Referrer_When_Downgrade',
+			}, {
+				key: 'origin',
+				i18nLabel: 'Origin',
+			}, {
+				key: 'origin-when-cross-origin',
+				i18nLabel: 'Origin_When_Cross_Origin',
+			}, {
+				key: 'same-origin',
+				i18nLabel: 'Same_Origin',
+			}, {
+				key: 'strict-origin',
+				i18nLabel: 'Strict_Origin',
+			}, {
+				key: 'strict-origin-when-cross-origin',
+				i18nLabel: 'Strict_Origin_When_Cross_Origin',
+			}, {
+				key: 'unsafe-url',
+				i18nLabel: 'Unsafe_Url',
+			},
+		],
+		public: true,
 	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {

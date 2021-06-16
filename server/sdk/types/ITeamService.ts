@@ -84,4 +84,7 @@ export interface ITeamService {
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
 	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
+	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
+	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
+	removeAllMembersFromTeam(teamId: string): Promise<void>;
 }

@@ -20,7 +20,10 @@ const BusinessHoursMultipleContainer = ({
 	className,
 	hasChangesAndIsValid = () => {},
 }) => {
-	const { value: data, phase: state } = useEndpointData('livechat/department');
+	const onlyMyDepartments = true;
+	const params = useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
+
+	const { value: data, phase: state } = useEndpointData('livechat/department', params);
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
 
