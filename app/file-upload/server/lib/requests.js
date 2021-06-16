@@ -17,6 +17,9 @@ WebApp.connectHandlers.use(FileUpload.getPath(), function(req, res, next) {
 
 			res.setHeader('Content-Security-Policy', 'default-src \'none\'');
 			res.setHeader('Cache-Control', 'max-age=31536000');
+			if (file.type) {
+				res.setHeader('Content-Type', file.type);
+			}
 			return FileUpload.get(file, req, res, next);
 		}
 	}
