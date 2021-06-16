@@ -64,7 +64,9 @@ function UserInfo({
 				<InfoPanel.Section>
 					<InfoPanel.Title title={(showRealNames && name) || username || name} icon={status} />
 
-					<InfoPanel.Text>{customStatus}</InfoPanel.Text>
+					<InfoPanel.Text>
+						<MarkdownText content={customStatus} variant='inline' />
+					</InfoPanel.Text>
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
