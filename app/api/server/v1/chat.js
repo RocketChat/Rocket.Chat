@@ -553,6 +553,51 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('chat.getThreadMessagesAnon', { authRequired: false }, {
+	get() {
+		const { tmid } = this.queryParams;
+		const { query, fields, sort } = this.parseJsonQuery();
+		const { offset, count } = this.getPaginationItems();
+
+		if (!settings.get('Threads_enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+		}
+		if (!settings.get('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Anonymous Read is Disabled');
+		}
+		if (!tmid) {
+			throw new Meteor.Error('error-invalid-params', 'The required "tmid" query param is missing.');
+		}
+		const thread = Messages.findOneById(tmid, { fields: { rid: 1 } });
+		if (!thread || !thread.rid) {
+			throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+		}
+
+		const room = Rooms.findOneById(thread.rid, { fields: { t: 1, _id: 1 } });
+		if (room.t !== 'c') {
+			throw new Meteor.Error('error-not-allowed', 'Room must be public');
+		}
+
+		const cursor = Messages.find({ ...query, tmid }, {
+			sort: sort || { ts: 1 },
+			skip: offset,
+			limit: count,
+			fields,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages,
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+});
+
 API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 	get() {
 		const { tmid } = this.queryParams;
