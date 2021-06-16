@@ -37,6 +37,7 @@ function SideBarItemTemplateWithData({
 	style,
 	sidebarViewMode,
 	isAnonymous,
+	onClickItem,
 }) {
 	const { closeSidebar } = useSidebarClose();
 
@@ -119,6 +120,7 @@ function SideBarItemTemplateWithData({
 					/>
 				))
 			}
+			onClick={onClickItem}
 		/>
 	);
 }
