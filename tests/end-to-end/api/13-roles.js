@@ -31,7 +31,7 @@ function createRole(name, scope, description) {
 	});
 }
 
-describe.only('[Roles]', function() {
+describe('[Roles]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
