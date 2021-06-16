@@ -42,6 +42,9 @@ Template.contactChatHistoryMessages.events({
 	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
+	'click .js-close'(e, instance) {
+		return instance.clear();
+	},
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight && instance.hasMore.get()) {
 			instance.offset.set(instance.offset.get() + instance.limit.get());
