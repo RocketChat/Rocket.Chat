@@ -2142,7 +2142,6 @@
   "RetentionPolicy_ExcludePinned": "Тэмдэглэсэн зурвасуудыг хасна уу",
   "RetentionPolicy_FilesOnly": "Зөвхөн файлуудыг устгах",
   "RetentionPolicy_FilesOnly_Description": "Зөвхөн файлууд устах болно, мэдээнүүд нь өөрөө биелэгдэх болно.",
-  "RetentionPolicy_MaxAge": "Мессежний хамгийн их нас",
   "RetentionPolicy_MaxAge_Channels": "Сувгийн хамгийн их зурвасын нас",
   "RetentionPolicy_MaxAge_Description": "Энэ утгыг өмнөх бүх зурвасууд өдрөөс өдөрт тайлах",
   "RetentionPolicy_MaxAge_DMs": "Мессежний хамгийн их зурвасын нас",

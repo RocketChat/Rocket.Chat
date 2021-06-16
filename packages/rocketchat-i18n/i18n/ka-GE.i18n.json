@@ -2894,7 +2894,6 @@
   "RetentionPolicy_ExcludePinned": "მიმაგრებული შეტყობინებების გამორიცხვა",
   "RetentionPolicy_FilesOnly": "მხოლოდ ფაილების წაშლა",
   "RetentionPolicy_FilesOnly_Description": "წაიშლება მხოლოდ ფაილები,შეტყობინებები დარჩება ადგილზე",
-  "RetentionPolicy_MaxAge": "შეტყობინების მაქსიმალური ასაკი",
   "RetentionPolicy_MaxAge_Channels": "არხში შეტყობინების მაქსიმალური ასაკი",
   "RetentionPolicy_MaxAge_DMs": "პირდაპირ შეტყობინებებში შეტყობინების მაქსიმალური ასაკი",
   "RetentionPolicy_MaxAge_Groups": "პირად ჯგუფში შეტყობინების მაქსიმალური ასაკი",

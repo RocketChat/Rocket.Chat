@@ -2159,7 +2159,6 @@
   "RetentionPolicy_ExcludePinned": "Vylúčte pripnuté správy",
   "RetentionPolicy_FilesOnly": "Odstráňte iba súbory",
   "RetentionPolicy_FilesOnly_Description": "Iba súbory budú vymazané, samotné správy zostanú na mieste.",
-  "RetentionPolicy_MaxAge": "Maximálny vek správy",
   "RetentionPolicy_MaxAge_Channels": "Maximálny vek správ v kanáloch",
   "RetentionPolicy_MaxAge_Description": "Nakrájajte všetky správy staršie ako táto hodnota v dňoch",
   "RetentionPolicy_MaxAge_DMs": "Maximálny vek správ v priamych správach",

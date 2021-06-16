@@ -2149,7 +2149,6 @@
   "RetentionPolicy_ExcludePinned": "Ekskludi kovritajn mesaĝojn",
   "RetentionPolicy_FilesOnly": "Nur forigi dosierojn",
   "RetentionPolicy_FilesOnly_Description": "Nur dosieroj estos forigitaj, la mesaĝoj mem restos en loko.",
-  "RetentionPolicy_MaxAge": "Maksimuma mesaĝo",
   "RetentionPolicy_MaxAge_Channels": "Maksimuma mesaĝo en kanaloj",
   "RetentionPolicy_MaxAge_Description": "Pritondu ĉiujn mesaĝojn pli malnovajn ol ĉi tiu valoro, en tagoj",
   "RetentionPolicy_MaxAge_DMs": "Maksimuma mesaĝo en rektaj mesaĝoj",

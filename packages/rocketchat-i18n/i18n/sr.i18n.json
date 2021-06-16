@@ -1849,7 +1849,6 @@
   "RetentionPolicy_ExcludePinned": "Искључите закачене поруке",
   "RetentionPolicy_FilesOnly": "Избришите само датотеке",
   "RetentionPolicy_FilesOnly_Description": "Само датотеке ће бити избрисане, саме поруке ће остати на месту.",
-  "RetentionPolicy_MaxAge": "Максимална старост поруке",
   "RetentionPolicy_MaxAge_Channels": "Максимална старост поруке у каналима",
   "RetentionPolicy_MaxAge_Description": "Обришите све поруке старије од ове вредности, у данима",
   "RetentionPolicy_MaxAge_DMs": "Максимална старост поруке у директним порукама",

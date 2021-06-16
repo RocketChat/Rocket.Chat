@@ -2149,7 +2149,6 @@
   "RetentionPolicy_ExcludePinned": "Sluit uitgespelde boodskappe uit",
   "RetentionPolicy_FilesOnly": "Net verwyder lêers",
   "RetentionPolicy_FilesOnly_Description": "Slegs lêers sal uitgevee word, die boodskappe self sal in plek bly.",
-  "RetentionPolicy_MaxAge": "Maksimum boodskap ouderdom",
   "RetentionPolicy_MaxAge_Channels": "Maksimum boodskap ouderdom in kanale",
   "RetentionPolicy_MaxAge_Description": "Snoei alle boodskappe ouer as hierdie waarde, in dae",
   "RetentionPolicy_MaxAge_DMs": "Maksimum boodskap ouderdom in direkte boodskappe",

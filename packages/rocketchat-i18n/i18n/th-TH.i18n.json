@@ -2143,7 +2143,6 @@
   "RetentionPolicy_ExcludePinned": "ไม่รวมข้อความตรึง",
   "RetentionPolicy_FilesOnly": "ลบเฉพาะไฟล์เท่านั้น",
   "RetentionPolicy_FilesOnly_Description": "ระบบจะลบเฉพาะไฟล์เท่านั้นข้อความจะอยู่ในสถานที่",
-  "RetentionPolicy_MaxAge": "อายุข้อความสูงสุด",
   "RetentionPolicy_MaxAge_Channels": "อายุข้อความสูงสุดในช่อง",
   "RetentionPolicy_MaxAge_Description": "ลบข้อความทั้งหมดที่เก่ากว่าค่านี้เป็นวัน",
   "RetentionPolicy_MaxAge_DMs": "อายุข้อความสูงสุดในข้อความโดยตรง",

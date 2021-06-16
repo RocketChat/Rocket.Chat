@@ -2155,7 +2155,6 @@
   "RetentionPolicy_ExcludePinned": "Εξαιρούνται τα καρφιτσωμένα μηνύματα",
   "RetentionPolicy_FilesOnly": "Διαγράψτε μόνο τα αρχεία",
   "RetentionPolicy_FilesOnly_Description": "Μόνο τα αρχεία θα διαγραφούν, τα ίδια τα μηνύματα θα παραμείνουν στη θέση τους.",
-  "RetentionPolicy_MaxAge": "Μέγιστη ηλικία μηνύματος",
   "RetentionPolicy_MaxAge_Channels": "Μέγιστη ηλικία μηνύματος στα κανάλια",
   "RetentionPolicy_MaxAge_Description": "Κλαδέψτε όλα τα μηνύματα που είναι παλαιότερα από αυτήν την τιμή, σε ημέρες",
   "RetentionPolicy_MaxAge_DMs": "Μέγιστη ηλικία μηνύματος στα άμεσα μηνύματα",

@@ -2171,7 +2171,6 @@
   "RetentionPolicy_ExcludePinned": "排除固定消息",
   "RetentionPolicy_FilesOnly": "只删除文件",
   "RetentionPolicy_FilesOnly_Description": "只删除文件，邮件本身将保留在原位。",
-  "RetentionPolicy_MaxAge": "最大邮件年龄",
   "RetentionPolicy_MaxAge_Channels": "频道中的最大消息时限",
   "RetentionPolicy_MaxAge_Description": "修剪所有早于此值的邮件，以天为单位",
   "RetentionPolicy_MaxAge_DMs": "直接消息中的最大消息时间",

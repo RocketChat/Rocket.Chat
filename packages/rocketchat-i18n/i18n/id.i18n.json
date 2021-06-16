@@ -2157,7 +2157,6 @@
   "RetentionPolicy_ExcludePinned": "Kecualikan pesan yang disematkan",
   "RetentionPolicy_FilesOnly": "Hanya hapus file",
   "RetentionPolicy_FilesOnly_Description": "Hanya file yang akan dihapus, pesan itu sendiri akan tetap di tempatnya.",
-  "RetentionPolicy_MaxAge": "Umur pesan maksimum",
   "RetentionPolicy_MaxAge_Channels": "Umur pesan maksimum di saluran",
   "RetentionPolicy_MaxAge_Description": "Pangkas semua pesan yang lebih lama dari nilai ini, dalam hitungan hari",
   "RetentionPolicy_MaxAge_DMs": "Umur pesan maksimum dalam pesan langsung",

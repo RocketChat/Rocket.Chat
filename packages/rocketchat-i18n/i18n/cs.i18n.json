@@ -3096,7 +3096,6 @@
   "RetentionPolicy_ExcludePinned": "Vyloučit připnuté zprávy",
   "RetentionPolicy_FilesOnly": "Smazat pouze soubory",
   "RetentionPolicy_FilesOnly_Description": "Pouze soubory budou smazány, samotné zprávy zůstanou na místě.",
-  "RetentionPolicy_MaxAge": "Maximální stáří zprávy",
   "RetentionPolicy_MaxAge_Channels": "Maximální stáří zprávy v místnostech",
   "RetentionPolicy_MaxAge_Description": "Pročistit všechny zprávy starší, než X dní",
   "RetentionPolicy_MaxAge_DMs": "Maximální stáří zprávy v přímých zprávách",

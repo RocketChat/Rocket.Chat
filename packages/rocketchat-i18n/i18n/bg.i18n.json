@@ -2147,7 +2147,6 @@
   "RetentionPolicy_ExcludePinned": "Изключете закачените съобщения",
   "RetentionPolicy_FilesOnly": "Изтривайте само файлове",
   "RetentionPolicy_FilesOnly_Description": "Само файловете ще бъдат изтрити, самите съобщения ще останат на мястото си.",
-  "RetentionPolicy_MaxAge": "Максимална възраст на съобщенията",
   "RetentionPolicy_MaxAge_Channels": "Максимална възраст на съобщенията в каналите",
   "RetentionPolicy_MaxAge_Description": "Премахване на всички съобщения, по-стари от тази стойност, в дни",
   "RetentionPolicy_MaxAge_DMs": "Максимална възраст на съобщенията в директните съобщения",

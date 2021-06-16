@@ -2139,7 +2139,6 @@
   "RetentionPolicy_ExcludePinned": "Izključi prepovedana sporočila",
   "RetentionPolicy_FilesOnly": "Izbrišite le datoteke",
   "RetentionPolicy_FilesOnly_Description": "Samo datoteke bodo izbrisane, sporočila bodo ostala na mestu.",
-  "RetentionPolicy_MaxAge": "Najvišja starost sporočila",
   "RetentionPolicy_MaxAge_Channels": "Najvišja starost sporočil v kanalih",
   "RetentionPolicy_MaxAge_Description": "Preglejte vsa sporočila, starejša od te vrednosti, v dnevih",
   "RetentionPolicy_MaxAge_DMs": "Najvišja starost sporočil v neposrednih sporočilih",

@@ -2146,7 +2146,6 @@
   "RetentionPolicy_ExcludePinned": "பின் செய்திகளை விலக்கவும்",
   "RetentionPolicy_FilesOnly": "கோப்புகளை மட்டும் நீக்கு",
   "RetentionPolicy_FilesOnly_Description": "கோப்புகள் மட்டுமே நீக்கப்படும், செய்திகளும் தங்குதலுடன் இருக்கும்.",
-  "RetentionPolicy_MaxAge": "அதிகபட்ச செய்தி வயது",
   "RetentionPolicy_MaxAge_Channels": "சேனல்களில் அதிகபட்ச செய்தி வயது",
   "RetentionPolicy_MaxAge_Description": "நாட்களில் இந்த மதிப்பை விட பழைய எல்லா செய்திகளையும் புரையுங்கள்",
   "RetentionPolicy_MaxAge_DMs": "நேரடியான செய்திகளில் அதிகபட்ச செய்தி வயது",
