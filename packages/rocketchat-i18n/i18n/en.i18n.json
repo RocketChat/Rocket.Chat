@@ -434,7 +434,6 @@
   "Apps_Framework_enabled": "Enable the App Framework",
   "Apps_Game_Center": "Game Center",
   "Apps_Game_Center_Back": "Back to Game Center",
-  "Apps_Game_Center_enabled": "Enable the Game Center",
   "Apps_Game_Center_Invite_Friends": "Invite your friends to join",
   "Apps_Game_Center_Play_Game_Together": "@here Let's play __name__ together!",
   "Apps_Interface_IPostExternalComponentClosed": "Event happening after an external component is closed",
