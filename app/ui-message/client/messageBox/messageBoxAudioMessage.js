@@ -5,6 +5,7 @@ import { settings } from '../../../settings';
 import { AudioRecorder, fileUpload } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
+import * as banners from '../../../../client/lib/banners';
 
 const startRecording = () => new Promise((resolve, reject) =>
 	AudioRecorder.start((result) => (result ? resolve() : reject())));
@@ -50,7 +51,6 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 Template.messageBoxAudioMessage.helpers({
 	isAllowed() {
 		return AudioRecorder.isSupported()
-			&& !Template.instance().isMicrophoneDenied.get()
 			&& settings.get('FileUpload_Enabled')
 			&& settings.get('Message_AudioRecorderEnabled')
 			&& (!settings.get('FileUpload_MediaTypeBlackList')
@@ -76,6 +76,17 @@ Template.messageBoxAudioMessage.helpers({
 Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-record'(event, instance) {
 		event.preventDefault();
+
+		const parameter = await navigator.permissions.query({ name: 'microphone' });
+		if (parameter.state === 'denied') {
+			banners.open({
+				id: 'Microphone_permission_denied',
+				title: t('Microphone_permission_denied'),
+				html: t('Microphone_permission_update_instruction'),
+				modifiers: ['large', 'danger'],
+			});
+			return;
+		}
 
 		if (recordingRoomId.get() && (recordingRoomId.get() !== this.rid)) {
 			return;
