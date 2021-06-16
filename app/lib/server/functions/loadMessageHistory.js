@@ -1,5 +1,5 @@
-import { settings } from '../../../settings/server';
-import { Messages, Rooms } from '../../../models/server';
+import { settings } from '../../../../server/settings';
+import { Messages, Rooms } from '../../../../server/models';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
