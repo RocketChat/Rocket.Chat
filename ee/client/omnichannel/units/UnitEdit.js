@@ -18,7 +18,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useForm } from '../../../../client/hooks/useForm';
-import { useDepartmentsList } from '../../../../client/views/hooks/useDepartmentsList';
+import { useDepartmentsByUnitsList } from '../../../../client/views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
 function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
@@ -40,7 +40,10 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 		monitorsList,
 	);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+	const {
+		itemsList: departmentsList,
+		loadMoreItems: loadMoreDepartments,
+	} = useDepartmentsByUnitsList(
 		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId }), [
 			debouncedDepartmentsFilter,
 			unitId,
