@@ -8,7 +8,6 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
-import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { Markdown } from '../../markdown/client';
@@ -222,7 +221,7 @@ Template.message.helpers({
 	},
 	threadMessage() {
 		const { msg } = this;
-		return normalizeThreadTitle(msg);
+		return renderMessageBody(msg);
 	},
 	bodyClass() {
 		const { msg } = this;
