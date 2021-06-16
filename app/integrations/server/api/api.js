@@ -1,58 +1,18 @@
 import vm from 'vm';
 
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
-import { Livechat } from 'meteor/rocketchat:livechat';
-import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models';
 import { settings } from '../../../settings/server';
+import { buildSandbox } from '../lib/sandbox';
 
 const compiledScripts = {};
-function buildSandbox(store = {}) {
-	const sandbox = {
-		scriptTimeout(reject) {
-			return setTimeout(() => reject('timed out'), 3000);
-		},
-		_,
-		s,
-		console,
-		moment,
-		Fiber,
-		Promise,
-		Livechat,
-		Store: {
-			set(key, val) {
-				store[key] = val;
-				return val;
-			},
-			get(key) {
-				return store[key];
-			},
-		},
-		HTTP(method, url, options) {
-			try {
-				return {
-					result: HTTP.call(method, url, options),
-				};
-			} catch (error) {
-				return {
-					error,
-				};
-			}
-		},
-	};
-	Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => { sandbox[k] = Models[k]; });
-	return { store, sandbox	};
-}
 
 function getIntegrationScript(integration) {
 	const compiledScript = compiledScripts[integration._id];

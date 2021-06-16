@@ -1,26 +1,27 @@
 import vm from 'vm';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import s from 'underscore.string';
-import moment from 'moment';
-import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import * as Models from '../../../models';
 import { settings } from '../../../settings';
-import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
+import EventArgumentHandler from './eventArgumentHandler';
+import UpdateHistoryWebhook from './updateHistoryWebhook';
+import SendMessageWebhook from './sendMessageWebhook';
+import { buildSandbox } from './sandbox';
 
-integrations.triggerHandler = new class RocketChatIntegrationHandler {
+integrations.triggerHandler = new class RocketChatTriggerHandler {
 	constructor() {
 		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
+		this.updateHistory = UpdateHistoryWebhook.updateHistory;
+		this.sendMessage = SendMessageWebhook.sendMessage;
 
 		Models.Integrations.find({ type: 'webhook-outgoing' }).fetch().forEach((data) => this.addIntegration(data));
 	}
@@ -65,170 +66,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		return false;
 	}
 
-	updateHistory({ historyId, step, integration, event, data, triggerWord, ranPrepareScript, prepareSentMessage, processSentMessage, resultMessage, finished, url, httpCallData, httpError, httpResult, error, errorStack }) {
-		const history = {
-			type: 'outgoing-webhook',
-			step,
-		};
-
-		// Usually is only added on initial insert
-		if (integration) {
-			history.integration = integration;
-		}
-
-		// Usually is only added on initial insert
-		if (event) {
-			history.event = event;
-		}
-
-		if (data) {
-			history.data = { ...data };
-
-			if (data.user) {
-				history.data.user = _.omit(data.user, ['services']);
-			}
-
-			if (data.room) {
-				history.data.room = data.room;
-			}
-		}
-
-		if (triggerWord) {
-			history.triggerWord = triggerWord;
-		}
-
-		if (typeof ranPrepareScript !== 'undefined') {
-			history.ranPrepareScript = ranPrepareScript;
-		}
-
-		if (prepareSentMessage) {
-			history.prepareSentMessage = prepareSentMessage;
-		}
-
-		if (processSentMessage) {
-			history.processSentMessage = processSentMessage;
-		}
-
-		if (resultMessage) {
-			history.resultMessage = resultMessage;
-		}
-
-		if (typeof finished !== 'undefined') {
-			history.finished = finished;
-		}
-
-		if (url) {
-			history.url = url;
-		}
-
-		if (typeof httpCallData !== 'undefined') {
-			history.httpCallData = httpCallData;
-		}
-
-		if (httpError) {
-			history.httpError = httpError;
-		}
-
-		if (typeof httpResult !== 'undefined') {
-			history.httpResult = JSON.stringify(httpResult, null, 2);
-		}
-
-		if (typeof error !== 'undefined') {
-			history.error = error;
-		}
-
-		if (typeof errorStack !== 'undefined') {
-			history.errorStack = errorStack;
-		}
-
-		if (historyId) {
-			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
-			return historyId;
-		}
-		history._createdAt = new Date();
-		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
-	}
-
-	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
-	sendMessage({ trigger, nameOrId = '', room, message, data }) {
-		let user;
-		// Try to find the user who we are impersonating
-		if (trigger.impersonateUser) {
-			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name);
-		}
-
-		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
-		// configured username for the integration since this is required at all times.
-		if (!user) {
-			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username);
-		}
-
-		let tmpRoom;
-		if (nameOrId || trigger.targetRoom || message.channel) {
-			tmpRoom = getRoomByNameOrIdWithOptionToJoin({ currentUserId: user._id, nameOrId: nameOrId || message.channel || trigger.targetRoom, errorOnEmpty: false }) || room;
-		} else {
-			tmpRoom = room;
-		}
-
-		// If no room could be found, we won't be sending any messages but we'll warn in the logs
-		if (!tmpRoom) {
-			logger.outgoing.warn(`The Integration "${ trigger.name }" doesn't have a room configured nor did it provide a room to send the message to.`);
-			return;
-		}
-
-		logger.outgoing.debug(`Found a room for ${ trigger.name } which is: ${ tmpRoom.name } with a type of ${ tmpRoom.t }`);
-
-		message.bot = { i: trigger._id };
-
-		const defaultValues = {
-			alias: trigger.alias,
-			avatar: trigger.avatar,
-			emoji: trigger.emoji,
-		};
-
-		if (tmpRoom.t === 'd') {
-			message.channel = `@${ tmpRoom._id }`;
-		} else {
-			message.channel = `#${ tmpRoom._id }`;
-		}
-
-		message = processWebhookMessage(message, user, defaultValues, trigger);
-		return message;
-	}
-
-	buildSandbox(store = {}) {
-		const sandbox = {
-			scriptTimeout(reject) {
-				return setTimeout(() => reject('timed out'), 3000);
-			},
-			_,
-			s,
-			console,
-			moment,
-			Fiber,
-			Promise,
-			Store: {
-				set: (key, val) => { store[key] = val; },
-				get: (key) => store[key],
-			},
-			HTTP: (method, url, options) => {
-				try {
-					return {
-						result: HTTP.call(method, url, options),
-					};
-				} catch (error) {
-					return { error };
-				}
-			},
-		};
-
-		Object.keys(Models).filter((k) => !k.startsWith('_')).forEach((k) => {
-			sandbox[k] = Models[k];
-		});
-
-		return { store, sandbox };
-	}
-
 	getIntegrationScript(integration) {
 		const compiledScript = this.compiledScripts[integration._id];
 		if (compiledScript && +compiledScript._updatedAt === +integration._updatedAt) {
@@ -236,7 +73,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 
 		const script = integration.scriptCompiled;
-		const { store, sandbox } = this.buildSandbox();
+		const { store, sandbox } = buildSandbox();
 
 		let vmScript;
 		try {
@@ -301,7 +138,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 		}
 
 		try {
-			const { sandbox } = this.buildSandbox(this.compiledScripts[integration._id].store);
+			const { sandbox } = buildSandbox(this.compiledScripts[integration._id].store);
 			sandbox.script = script;
 			sandbox.method = method;
 			sandbox.params = params;
@@ -333,148 +170,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			logger.outgoing.debug(integration.scriptCompiled.replace(/^/gm, '  ')); // Only output the compiled script if debugging is enabled, so the logs don't get spammed.
 			logger.outgoing.error('Stack:');
 			logger.outgoing.error(e.stack.replace(/^/gm, '  '));
-		}
-	}
-
-	eventNameArgumentsToObject(...args) {
-		const argObject = {
-			event: args[0],
-		};
-
-		switch (argObject.event) {
-			case 'sendMessage':
-				if (args.length >= 3) {
-					argObject.message = args[1];
-					argObject.room = args[2];
-				}
-				break;
-			case 'fileUploaded':
-				if (args.length >= 2) {
-					const arghhh = args[1];
-					argObject.user = arghhh.user;
-					argObject.room = arghhh.room;
-					argObject.message = arghhh.message;
-				}
-				break;
-			case 'roomArchived':
-				if (args.length >= 3) {
-					argObject.room = args[1];
-					argObject.user = args[2];
-				}
-				break;
-			case 'roomCreated':
-				if (args.length >= 3) {
-					argObject.owner = args[1];
-					argObject.room = args[2];
-				}
-				break;
-			case 'roomJoined':
-			case 'roomLeft':
-				if (args.length >= 3) {
-					argObject.user = args[1];
-					argObject.room = args[2];
-				}
-				break;
-			case 'userCreated':
-				if (args.length >= 2) {
-					argObject.user = args[1];
-				}
-				break;
-			default:
-				logger.outgoing.warn(`An Unhandled Trigger Event was called: ${ argObject.event }`);
-				argObject.event = undefined;
-				break;
-		}
-
-		logger.outgoing.debug(`Got the event arguments for the event: ${ argObject.event }`, argObject);
-
-		return argObject;
-	}
-
-	mapEventArgsToData(data, { event, message, room, owner, user }) {
-		switch (event) {
-			case 'sendMessage':
-				data.channel_id = room._id;
-				data.channel_name = room.name;
-				data.message_id = message._id;
-				data.timestamp = message.ts;
-				data.user_id = message.u._id;
-				data.user_name = message.u.username;
-				data.text = message.msg;
-				data.siteUrl = settings.get('Site_Url');
-
-				if (message.alias) {
-					data.alias = message.alias;
-				}
-
-				if (message.bot) {
-					data.bot = message.bot;
-				}
-
-				if (message.editedAt) {
-					data.isEdited = true;
-				}
-
-				if (message.tmid) {
-					data.tmid = message.tmid;
-				}
-				break;
-			case 'fileUploaded':
-				data.channel_id = room._id;
-				data.channel_name = room.name;
-				data.message_id = message._id;
-				data.timestamp = message.ts;
-				data.user_id = message.u._id;
-				data.user_name = message.u.username;
-				data.text = message.msg;
-				data.user = user;
-				data.room = room;
-				data.message = message;
-
-				if (message.alias) {
-					data.alias = message.alias;
-				}
-
-				if (message.bot) {
-					data.bot = message.bot;
-				}
-				break;
-			case 'roomCreated':
-				data.channel_id = room._id;
-				data.channel_name = room.name;
-				data.timestamp = room.ts;
-				data.user_id = owner._id;
-				data.user_name = owner.username;
-				data.owner = owner;
-				data.room = room;
-				break;
-			case 'roomArchived':
-			case 'roomJoined':
-			case 'roomLeft':
-				data.timestamp = new Date();
-				data.channel_id = room._id;
-				data.channel_name = room.name;
-				data.user_id = user._id;
-				data.user_name = user.username;
-				data.user = user;
-				data.room = room;
-
-				if (user.type === 'bot') {
-					data.bot = true;
-				}
-				break;
-			case 'userCreated':
-				data.timestamp = user.createdAt;
-				data.user_id = user._id;
-				data.user_name = user.username;
-				data.user = user;
-
-				if (user.type === 'bot') {
-					data.bot = true;
-				}
-				break;
-			default:
-				break;
 		}
 	}
 
@@ -548,7 +243,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 	executeTriggers(...args) {
 		logger.outgoing.debug('Execute Trigger:', args[0]);
 
-		const argObject = this.eventNameArgumentsToObject(...args);
+		const argObject = EventArgumentHandler.eventNameArgumentsToObject(...args);
 		const { event, message, room } = argObject;
 
 		// Each type of event should have an event and a room attached, otherwise we
@@ -631,7 +326,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			data.trigger_word = word;
 		}
 
-		this.mapEventArgsToData(data, { trigger, event, message, room, owner, user });
+		EventArgumentHandler.mapEventArgsToData(data, { trigger, event, message, room, owner, user });
 		this.updateHistory({ historyId, step: 'mapped-args-to-data', data, triggerWord: word });
 
 		logger.outgoing.info(`Will be executing the Integration "${ trigger.name }" to the url: ${ url }`);
