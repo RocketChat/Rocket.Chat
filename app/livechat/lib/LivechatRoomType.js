@@ -115,7 +115,11 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		return (room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
+		if (room.servedBy && hasPermission('view-livechat-rooms')) {
+			return false;
+		}
+
+		return room.servedBy._id !== user._id;
 	}
 
 	getAvatarPath(roomData) {
