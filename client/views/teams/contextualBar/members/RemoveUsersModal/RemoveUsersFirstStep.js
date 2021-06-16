@@ -27,7 +27,7 @@ const RemoveUsersFirstStep = ({
 		<GenericModal
 			variant='warning'
 			icon='warning'
-			title={t('What would you like to do?')}
+			title={t('Teams_removing_member')}
 			cancelText={t('Cancel')}
 			confirmText={t('Continue')}
 			onClose={onClose}

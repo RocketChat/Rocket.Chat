@@ -228,6 +228,9 @@ settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+			type: 'string',
+		});
 		this.add('Accounts_PasswordReset', true, {
 			type: 'boolean',
 			public: true,
