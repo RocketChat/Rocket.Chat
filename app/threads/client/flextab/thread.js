@@ -105,6 +105,8 @@ Template.thread.helpers({
 	checkboxData() {
 		const instance = Template.instance();
 		const checked = instance.state.get('sendToChannel');
+		const allowInMainChannel = settings.get('Message_AllowThreadMessagesinMainChannel');
+		!allowInMainChannel ? instance.state.set('sendToChannel', false) : null;
 		return {
 			id: 'sendAlso',
 			checked,
