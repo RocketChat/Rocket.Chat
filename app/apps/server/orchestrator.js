@@ -190,17 +190,6 @@ settings.addGroup('General', function() {
 			public: true,
 			hidden: false,
 		});
-
-		this.add('Apps_Game_Center_enabled', false, {
-			type: 'boolean',
-			enableQuery: {
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			hidden: false,
-			public: true,
-			alert: 'Experimental_Feature_Alert',
-		});
 	});
 });
 
