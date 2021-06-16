@@ -39,6 +39,8 @@ Meteor.methods({
 		let canAddUser = false;
 		if (userInRoom && hasPermission(userId, 'add-user-to-joined-room', room._id)) {
 			canAddUser = true;
+		} else if (hasPermission(userId, 'add-team-member', room._id)) {
+			canAddUser = true;
 		} else if (room.t === 'c' && hasPermission(userId, 'add-user-to-any-c-room')) {
 			canAddUser = true;
 		} else if (room.t === 'p' && hasPermission(userId, 'add-user-to-any-p-room')) {
