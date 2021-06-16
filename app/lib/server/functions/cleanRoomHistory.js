@@ -58,6 +58,7 @@ export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = ne
 			ignoreDiscussion,
 			ts,
 			users: fromUsers,
+			ignoreThreads,
 		});
 	}
 	return count;
