@@ -71,9 +71,9 @@ Get to know more about us and explore current openings at https://jobs.rocket.ch
 # Community
 Join thousands of members worldwide 24/7 in our [community server](https://open.rocket.chat).
 
-[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=support)](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
+<a href="https://open.rocket.chat/channel/support"><img alt="Rocket.Chat" src="https://user-images.githubusercontent.com/58134096/104687565-78619680-5725-11eb-9851-6ace26ed165d.png" width="160"/></a> for help from our community with general Rocket.Chat questions.
 
-[![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=dev)](https://open.rocket.chat/channel/dev) for developers needing help from the community to developing new features.
+<a href="https://open.rocket.chat/channel/dev"><img alt="Rocket.Chat" src="https://user-images.githubusercontent.com/58134096/104687735-c24a7c80-5725-11eb-8608-adbd2d8b5edb.png" width="150" /></a> for developers needing help from the community to developing new features.
 
 You can also join the conversation on [Twitter](https://twitter.com/RocketChat) and [Facebook](https://www.facebook.com/RocketChatApp).
 
