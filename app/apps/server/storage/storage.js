@@ -6,86 +6,47 @@ export class AppRealStorage extends AppStorage {
 		this.db = data;
 	}
 
-	create(item) {
-		return new Promise((resolve, reject) => {
-			item.createdAt = new Date();
-			item.updatedAt = new Date();
+	async create(item) {
+		item.createdAt = new Date();
+		item.updatedAt = new Date();
 
-			let doc;
+		const doc = this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
 
-			try {
-				doc = this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
-			} catch (e) {
-				return reject(e);
-			}
+		if (doc) {
+			throw new Error('App already exists.');
+		}
 
-			if (doc) {
-				return reject(new Error('App already exists.'));
-			}
+		const id = this.db.insert(item);
+		item._id = id;
 
-			try {
-				const id = this.db.insert(item);
-				item._id = id;
-
-				resolve(item);
-			} catch (e) {
-				reject(e);
-			}
-		});
+		return item;
 	}
 
-	retrieveOne(id) {
-		return new Promise((resolve, reject) => {
-			let doc;
-
-			try {
-				doc = this.db.findOne({ $or: [{ _id: id }, { id }] });
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve(doc);
-		});
+	async retrieveOne(id) {
+		return this.db.findOne({ $or: [{ _id: id }, { id }] });
 	}
 
-	retrieveAll() {
-		return new Promise((resolve, reject) => {
-			let docs;
+	async retrieveAll() {
+		const docs = this.db.find({}).fetch();
 
-			try {
-				docs = this.db.find({}).fetch();
-			} catch (e) {
-				return reject(e);
-			}
+		const items = new Map();
 
-			const items = new Map();
+		docs.forEach((i) => items.set(i.id, i));
 
-			docs.forEach((i) => items.set(i.id, i));
-
-			resolve(items);
-		});
+		return items;
 	}
 
-	update(item) {
-		return new Promise((resolve, reject) => {
-			try {
-				this.db.update({ id: item.id }, item);
-				resolve(item.id);
-			} catch (e) {
-				return reject(e);
-			}
-		}).then(this.retrieveOne.bind(this));
+	async update(item) {
+		return this.db.raw.findAndModify(
+			{ id: item.id },
+			null,
+			{ $set: item },
+			{ new: true },
+		).then(({ value }) => value);
 	}
 
-	remove(id) {
-		return new Promise((resolve, reject) => {
-			try {
-				this.db.remove({ id });
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve({ success: true });
-		});
+	async remove(id) {
+		this.db.remove({ id });
+		return { success: true };
 	}
 }
