@@ -6,6 +6,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import { UserStatus } from '../../../components/UserStatus';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
@@ -14,8 +15,9 @@ import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, ...props }) {
+export const UserInfoWithData = React.memo(({ uid, username, onChange, ...props }) => {
 	const t = useTranslation();
+	const usersRoute = useRoute('admin-users');
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
@@ -27,7 +29,16 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		]),
 	);
 
-	const onChange = useMutableCallback(() => reload());
+	const handleReload = useMutableCallback(() => reload());
+
+	const handleUserChange = useMutableCallback((actionType) => {
+		if (actionType === 'delete-user') {
+			onChange();
+			usersRoute.push({});
+		} else {
+			handleReload();
+		}
+	});
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
@@ -84,7 +95,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 		<UserInfo
 			{...user}
 			data={data.user}
-			onChange={onChange}
+			onChange={handleReload}
 			actions={
 				data &&
 				data.user && (
@@ -93,11 +104,11 @@ export function UserInfoWithData({ uid, username, ...props }) {
 						isAdmin={admin}
 						_id={data.user._id}
 						username={data.user.username}
-						onChange={onChange}
+						onChange={handleUserChange}
 					/>
 				)
 			}
 			{...props}
 		/>
 	);
-}
+});

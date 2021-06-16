@@ -77,7 +77,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 						children={t('User_has_been_deleted')}
 						onClose={() => {
 							setModal();
-							onChange();
+							onChange('delete-user');
 						}}
 					/>,
 				);

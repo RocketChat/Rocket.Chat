@@ -1,18 +1,32 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AddUser } from './AddUser';
 import EditUserWithData from './EditUserWithData';
 import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
+import useQuery from './useQuery';
 
 function UsersPage() {
 	const t = useTranslation();
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState([
+		['name', 'asc'],
+		['usernames', 'asc'],
+	]);
+
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
+	const query = useQuery(debouncedParams, debouncedSort);
+
+	const { value: data = {}, reload } = useEndpointData('users.list', query);
 
 	const usersRoute = useRoute('admin-users');
 
@@ -27,6 +41,8 @@ function UsersPage() {
 	const handleInviteButtonClick = () => {
 		usersRoute.push({ context: 'invite' });
 	};
+
+	const handleUserDataChange = useMutableCallback(() => reload());
 
 	const [, { context, id }] = useCurrentRoute();
 
@@ -44,7 +60,13 @@ function UsersPage() {
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<UsersTable />
+					<UsersTable
+						data={data}
+						sort={sort}
+						params={params}
+						setSort={setSort}
+						setParams={setParams}
+					/>
 				</Page.Content>
 			</Page>
 			{context && (
@@ -57,9 +79,9 @@ function UsersPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					{context === 'info' && <UserInfoWithData uid={id} />}
-					{context === 'edit' && <EditUserWithData uid={id} />}
-					{context === 'new' && <AddUser />}
+					{context === 'info' && <UserInfoWithData uid={id} onChange={handleUserDataChange} />}
+					{context === 'edit' && <EditUserWithData uid={id} onChange={handleUserDataChange} />}
+					{context === 'new' && <AddUser onChange={handleUserDataChange} />}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
 			)}
