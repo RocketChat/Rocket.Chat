@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 import supertest from 'supertest';
 
 import { publicChannelName, privateChannelName } from './channel.js';
@@ -37,6 +39,8 @@ export const integration = {};
 export const credentials = {
 	'X-Auth-Token': undefined,
 	'X-User-Id': undefined,
+	'x-2fa-code': undefined,
+	'x-2fa-method': 'password',
 };
 export const login = {
 	user: adminUsername,
@@ -59,14 +63,18 @@ export function log(res) {
 	});
 }
 
-export function getCredentials(done = function() {}) {
+export function getCredentials(done = function() { }) {
 	request.post(api('login'))
 		.send(login)
 		.expect('Content-Type', 'application/json')
 		.expect(200)
 		.expect((res) => {
+			const code = createHash('sha256')
+				.update(adminPassword)
+				.digest('hex');
 			credentials['X-Auth-Token'] = res.body.data.authToken;
 			credentials['X-User-Id'] = res.body.data.userId;
+			credentials['x-2fa-code'] = code;
 		})
 		.end(done);
 }
