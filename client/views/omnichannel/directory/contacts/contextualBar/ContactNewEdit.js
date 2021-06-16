@@ -11,12 +11,10 @@ import { createToken } from '../../../../../components/helpers';
 import { useOmnichannelCustomFields } from '../../../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../../hooks/useForm';
 import { formsSubscription } from '../../../additionalForms';
-import { FormSkeleton } from '../../Skeleton';
 
 const initialValues = {
 	token: '',
@@ -98,10 +96,7 @@ function ContactNewEdit({ id, data, close }) {
 	};
 
 	const jsonCustomField = useMemo(
-		() =>
-			allCustomFields && allCustomFields.customFields
-				? jsonConverterToValidFormat(allCustomFields.customFields)
-				: {},
+		() => (allCustomFields?.length > 0 ? jsonConverterToValidFormat(allCustomFields) : {}),
 		[allCustomFields],
 	);
 

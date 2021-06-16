@@ -93,10 +93,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	};
 
 	const jsonCustomField = useMemo(
-		() =>
-			allCustomFields && allCustomFields.customFields
-				? jsonConverterToValidFormat(allCustomFields.customFields)
-				: {},
+		() => (allCustomFields?.length > 0 ? jsonConverterToValidFormat(allCustomFields) : {}),
 		[allCustomFields],
 	);
 

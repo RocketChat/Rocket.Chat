@@ -59,7 +59,7 @@ function ChatInfo({ id, route }) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
 		if (allCustomFields) {
-			const { customFields: customFieldsAPI } = allCustomFields;
+			const customFieldsAPI = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
 	}, [allCustomFields]);

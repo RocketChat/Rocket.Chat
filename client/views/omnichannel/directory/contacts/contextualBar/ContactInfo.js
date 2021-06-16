@@ -57,10 +57,10 @@ const ContactInfo = ({ id, rid, route }) => {
 
 	useEffect(() => {
 		if (allCustomFields) {
-			const { customFields: customFieldsAPI } = allCustomFields;
+			const customFieldsAPI = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
-	}, [allCustomFields, stateCustomFields]);
+	}, [allCustomFields]);
 
 	const { value: data, phase: state, error } = useEndpointData(
 		`omnichannel/contact?contactId=${id}`,

@@ -29,9 +29,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	];
 	const customFieldsOptions = useMemo(
 		() =>
-			allCustomFields && allCustomFields.customFields
-				? allCustomFields.customFields.map(({ _id, label }) => [_id, label])
-				: [],
+			allCustomFields?.length > 0 ? allCustomFields.map(({ _id, label }) => [_id, label]) : [],
 		[allCustomFields],
 	);
 

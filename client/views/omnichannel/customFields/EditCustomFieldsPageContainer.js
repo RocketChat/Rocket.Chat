@@ -24,7 +24,7 @@ const EditCustomFieldsPageContainer = ({ reload }) => {
 		);
 	}
 
-	return <EditCustomFieldsPage customField={data.customField} id={id} reload={reload} />;
+	return <EditCustomFieldsPage customField={data} id={id} reload={reload} />;
 };
 
 export default EditCustomFieldsPageContainer;

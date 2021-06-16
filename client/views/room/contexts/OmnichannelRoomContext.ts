@@ -4,9 +4,9 @@ import { ILivechatVisitorInfo } from '../../../../definition/ILivechatVisitorInf
 import { IOmnichannelRoom } from '../../../../definition/IRoom';
 
 export type OmnichannelRoomContextValue = {
-	rid: IOmnichannelRoom['_id'];
-	visitorId: IOmnichannelRoom['v']['_id'];
-	visitorInfo: ILivechatVisitorInfo;
+	rid: IOmnichannelRoom['_id'] | undefined;
+	visitorId: IOmnichannelRoom['v']['_id'] | undefined;
+	visitorInfo: ILivechatVisitorInfo | undefined;
 };
 
 export const OmnichannelRoomContext = createContext<OmnichannelRoomContextValue | null>(null);

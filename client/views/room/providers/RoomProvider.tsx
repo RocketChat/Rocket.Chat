@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import { IRoom } from '../../../../definition/IRoom';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
@@ -40,7 +40,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 
 	return (
 		<RoomContext.Provider value={context}>
-			{room.t === 'l' ? (
+			{isOmnichannelRoom(room) ? (
 				<OmnichannelRoomProvider room={room}>
 					<ToolboxProvider room={room}>{children}</ToolboxProvider>
 				</OmnichannelRoomProvider>
