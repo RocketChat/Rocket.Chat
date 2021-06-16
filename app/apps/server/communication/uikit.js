@@ -26,7 +26,7 @@ settings.get('API_CORS_Origin', (_, value) => {
 
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || (corsEnabled && (allowListOrigins.includes('*') || allowListOrigins.includes(origin))) || origin === settings.get('Site_Url')) {
+		if (!origin || !corsEnabled || allowListOrigins.includes('*') || allowListOrigins.includes(origin) || origin === settings.get('Site_Url')) {
 			callback(null, true);
 		} else {
 			callback('Not allowed by CORS', false);
