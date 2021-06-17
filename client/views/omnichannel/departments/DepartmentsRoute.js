@@ -117,9 +117,9 @@ function DepartmentsRoute() {
 				>
 					{t('Show_on_registration_page')}
 				</GenericTable.HeaderCell>,
-				canRemoveDepartments && (<GenericTable.HeaderCell key={'remove'} w='x60'>
-					{t('Remove')}
-				</GenericTable.HeaderCell>),
+				canRemoveDepartments && (
+					<GenericTable.HeaderCell key={'remove'} w='x60'>{t('Remove')}</GenericTable.HeaderCell>
+				),
 			].filter(Boolean),
 		[sort, onHeaderClick, t],
 	);
