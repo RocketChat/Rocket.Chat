@@ -21,8 +21,14 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 
 	switch (room.t) {
 		case 'p':
+			if (room.voice) {
+				return { name: 'volume-lock' };
+			}
 			return { name: 'hashtag-lock' };
 		case 'c':
+			if (room.voice) {
+				return { name: 'volume' };
+			}
 			return { name: 'hash' };
 		case 'l':
 			return {
