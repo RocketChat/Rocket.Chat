@@ -8,7 +8,7 @@ import {
 	Icon,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import Page from '../../../../client/components/Page';

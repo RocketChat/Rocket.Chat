@@ -8,6 +8,8 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type DepartmentsListOptions = {
 	filter: string;
+	departmentId?: string;
+	onlyMyDepartments?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -20,7 +22,9 @@ export const useDepartmentsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = 'livechat/department';
+	const endpoint = `livechat/department${
+		options.onlyMyDepartments ? '?onlyMyDepartments=true' : ''
+	}` as 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
@@ -37,13 +41,20 @@ export const useDepartmentsList = (
 			});
 
 			return {
-				items: departments.map((department: any) => {
-					department._updatedAt = new Date(department._updatedAt);
-					department.label = department.name;
-					department.value = { value: department._id, label: department.name };
-					return department;
-				}),
-				itemCount: total,
+				items: departments
+					.filter((department) => {
+						if (options.departmentId && department._id === options.departmentId) {
+							return false;
+						}
+						return true;
+					})
+					.map((department: any) => {
+						department._updatedAt = new Date(department._updatedAt);
+						department.label = department.name;
+						department.value = { value: department._id, label: department.name };
+						return department;
+					}),
+				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
 		[getDepartments, options],
