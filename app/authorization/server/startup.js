@@ -135,6 +135,8 @@ Meteor.startup(function() {
 		{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
 		{ _id: 'view-all-teams', roles: ['admin'] },
+		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'remove-livechat-department',  roles: ['livechat-manager', 'admin'] },
 	];
 
 	for (const permission of permissions) {
