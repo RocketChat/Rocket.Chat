@@ -4,7 +4,7 @@ import { parser } from '@rocket.chat/message-parser';
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/services/apps';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;

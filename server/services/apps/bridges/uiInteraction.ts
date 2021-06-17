@@ -2,7 +2,7 @@ import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/ser
 import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { Notifications } from '../../../notifications/server';
+import { Notifications } from '../../../../app/notifications/server';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {

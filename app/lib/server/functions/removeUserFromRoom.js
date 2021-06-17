@@ -2,7 +2,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models';
-import { AppEvents, Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../../server/services/apps';
 import { callbacks } from '../../../callbacks';
 import { Team } from '../../../../server/sdk';
 

@@ -5,9 +5,9 @@ import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 
 import { AppServerOrchestrator } from '../orchestrator';
-import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { ISubscription } from '../../../../definition/ISubscription';
-import { Rooms, Subscriptions, Users } from '../../../../server/models';
+import { Rooms, Subscriptions, Users } from '../../../models';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function

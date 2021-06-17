@@ -1,6 +1,6 @@
 import fileType from 'file-type';
 
-import { mime as MIME } from '../../../utils/lib/mimeTypes';
+import { mime as MIME } from '../../../../app/utils/lib/mimeTypes';
 
 export function determineFileType(buffer, details) {
 	const mime = MIME.lookup(details.name);

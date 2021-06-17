@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
-import { API } from '../../../../server/api/v1';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
+import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { API } from '../../../api/v1';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../settings';
-import { Info } from '../../../utils';
-import { Settings, Users } from '../../../../server/models';
+import { Info } from '../../../../app/utils';
+import { Settings, Users } from '../../../models';
 import { Apps } from '../orchestrator';
-import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { formatAppInstanceForRest } from '../misc/formatAppInstanceForRest';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({

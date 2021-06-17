@@ -6,10 +6,10 @@ import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { Users } from '../../../../server/models';
-import { settings } from '../../../../server/settings';
+import { Users } from '../../../models';
+import { settings } from '../../../settings';
 import { Apps } from '../orchestrator';
-import { UiKitCoreApp } from '../../../../server/sdk';
+import { UiKitCoreApp } from '../../../sdk';
 
 const apiServer = express();
 

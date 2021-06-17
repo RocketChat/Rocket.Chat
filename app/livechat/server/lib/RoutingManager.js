@@ -14,7 +14,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../../server/models';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../../server/services/apps';
 
 export const RoutingManager = {
 	methodName: null,

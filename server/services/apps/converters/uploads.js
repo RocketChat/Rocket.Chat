@@ -1,5 +1,5 @@
-import { transformMappedData } from '../../lib/misc/transformMappedData';
-import Uploads from '../../../../server/models/models/Uploads';
+import { transformMappedData } from '../misc/transformMappedData';
+import Uploads from '../../../models/models/Uploads';
 
 export class AppUploadsConverter {
 	constructor(orch) {

@@ -7,3 +7,11 @@ mock('meteor/meteor', {
 		},
 	},
 });
+
+mock('meteor/random', {
+	Random: {
+		id() {
+			return Math.random().toString(36).substring(7);
+		},
+	},
+});

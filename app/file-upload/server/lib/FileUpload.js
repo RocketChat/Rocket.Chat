@@ -26,7 +26,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../../server/models';
-import { AppEvents, Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../../server/services/apps';
 import { streamToBuffer } from './streamToBuffer';
 
 const cookie = new Cookies();

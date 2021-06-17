@@ -36,7 +36,7 @@ import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../../server/services/apps';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 

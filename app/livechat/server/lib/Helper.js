@@ -9,7 +9,7 @@ import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../../server/services/apps';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';

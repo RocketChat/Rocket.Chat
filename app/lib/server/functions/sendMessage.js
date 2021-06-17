@@ -4,7 +4,7 @@ import { parser } from '@rocket.chat/message-parser';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Messages } from '../../../models';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../server/services/apps';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
