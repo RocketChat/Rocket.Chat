@@ -51,13 +51,12 @@ const ActiveUsersSection = () => {
 			return map;
 		}, {});
 
-		const distributeValueOverPoints = (usersLists, currentIndex, usersList, i, T, array, prev) => {
+		const distributeValueOverPoints = (usersListsMap, currentIndex, usersList, i, T, array, prev) => {
 			const usersSet = new Set(usersList);
-			let j;
-			let k;
-			for (j = 0, k = i; j < T && k < array.length; ++k, ++j) {
+			let k = i;
+			for (let j = 0; j < T && k < array.length; ++k, ++j) {
 				if (k >= 0) {
-					usersLists[currentIndex + j]?.forEach((userId) => usersSet.add(userId));
+					usersListsMap[currentIndex + j]?.forEach((userId) => usersSet.add(userId));
 					array[k].y = Math.max(usersSet.size, array[k].y);
 				}
 
