@@ -26,7 +26,7 @@ function saveUserProfile(settings, customFields) {
 	const user = Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
-		if (!saveUserIdentity(this.userId, {
+		if (!saveUserIdentity({
 			_id: this.userId,
 			name: settings.realname,
 			username: settings.username,
