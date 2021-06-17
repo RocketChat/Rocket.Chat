@@ -58,6 +58,8 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+
+	sysMes?: string[];
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

@@ -426,7 +426,6 @@
   "Apps_Framework_enabled": "App 프레임 워크 사용",
   "Apps_Game_Center": "게임 센터",
   "Apps_Game_Center_Back": "게임 센터로 돌아 가기",
-  "Apps_Game_Center_enabled": "게임 센터 사용",
   "Apps_Game_Center_Invite_Friends": "친구를 초대하십시오",
   "Apps_Game_Center_Play_Game_Together": "@here  __name__ 을 함께 플레이합시다!",
   "Apps_Interface_IPostExternalComponentClosed": "외부 구성 요소를 닫고 난 후 발생하는 이벤트",
