@@ -20,6 +20,9 @@ function getSubscribedRoomIds(roomIds: string[], currentUser: IUser): string[] {
     const room: IRoom = Rooms.findOneById(roomId);
     if (!room) {
       // this room does not exist
+
+      // this should not happen if the user entered the details via the ui
+      // but if he used the api, then should we inform?
       continue;
     }
 
@@ -58,27 +61,38 @@ export function enableOutOffice({
   // create a new document if currentOutOfOffice does not exist
   if (!currentOutOfOffice) {
     const subscribedRoomIds = getSubscribedRoomIds(roomIds, currentUser);
-    const newDocument = OutOfOffice.createWithFullOutOfOfficeData({
+    const newDocumentId = OutOfOffice.createWithFullOutOfOfficeData({
       userId: currentUser._id,
       roomIds: subscribedRoomIds,
-      sentRoomIds: [],
       customMessage,
       startDate,
       endDate,
+      sentRoomIds: [],
       isEnabled: true,
     });
-    return newDocument;
+
+    if (!newDocumentId) {
+      throw new Meteor.Error(
+        "error-invalid-document",
+        "A new Out Of Office document could not be created"
+      );
+    }
+
+    return OutOfOffice.findOneById(newDocumentId);
   }
 
   if (currentOutOfOffice.isEnabled === true) {
     // already enabled - nothing to do
-    return;
+    throw new Meteor.Error(
+      "error-not-allowed",
+      "Out Of Office is already enabled."
+    );
   }
 
   // update the existing one associated with this user
 
   const subscribedRoomIds = getSubscribedRoomIds(roomIds, currentUser);
-  const updatedDocument = OutOfOffice.setDataWhenEnabled(
+  OutOfOffice.setDataWhenEnabled(
     currentOutOfOffice._id,
     {
       roomIds: subscribedRoomIds,
@@ -88,5 +102,5 @@ export function enableOutOffice({
     }
   );
 
-  return updatedDocument;
+  return OutOfOffice.findOneById(currentOutOfOffice._id) ;
 }

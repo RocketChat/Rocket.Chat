@@ -5,7 +5,9 @@ class OutOfOffice extends Base {
     super("OutOfOffice");
   }
   // insert
-  createWithFullOutOfOfficeData(data: Omit<IOutOfOffice, "_id">) {
+  createWithFullOutOfOfficeData(
+    data: Omit<IOutOfOffice, "_id">
+  ): IOutOfOffice["_id"] {
     return this.insert(data);
   }
 
