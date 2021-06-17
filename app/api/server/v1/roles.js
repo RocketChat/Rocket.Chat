@@ -156,7 +156,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 
 		if (roleData.name) {
 			const otherRole = Roles.findOneByIdOrName(roleData.name);
-			if (otherRole && otherRole._id !== role.roleId) {
+			if (otherRole && otherRole._id !== role._id) {
 				throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 			}
 		}
