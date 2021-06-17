@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import { integrations as eventList } from '../../../../app/integrations/lib/rocketchat';
+import { integrations as eventList } from '../../../../server/integrations/custom/rocketchat';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';

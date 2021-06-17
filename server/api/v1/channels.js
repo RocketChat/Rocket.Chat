@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../models';
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/server';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
+import { mountIntegrationQueryBasedOnPermissions } from '../../integrations/custom/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { API } from './api';
 import { settings } from '../../settings';

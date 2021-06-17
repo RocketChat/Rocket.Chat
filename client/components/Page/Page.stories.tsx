@@ -13,7 +13,6 @@ export default {
 const DummyContent = (): ReactElement => (
 	<>
 		{Array.from({ length: 60 }, (_, i) => (
-			// @ts-expect-error (this is failing because of a missing property required... weird)
 			<Tile key={i} children='Content slice' marginBlock='x16' />
 		))}
 	</>

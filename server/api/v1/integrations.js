@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { IntegrationHistory, Integrations } from '../../models';
 import { API } from './api';
-import { mountIntegrationHistoryQueryBasedOnPermissions, mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
+import { mountIntegrationHistoryQueryBasedOnPermissions, mountIntegrationQueryBasedOnPermissions } from '../../integrations/custom/lib/mountQueriesBasedOnPermission';
 import { findOneIntegration } from './lib/integrations';
 
 API.v1.addRoute('integrations.create', { authRequired: true }, {

@@ -48,4 +48,8 @@ export interface ISetting {
 	ts?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
+	readonly?: boolean;
+	persistent?: boolean;
+	placeholder?: string;
+	alert?: string;
 }

@@ -93,5 +93,4 @@ import '../app/reactions/client';
 import '../app/livechat/client';
 import '../app/meteor-autocomplete/client';
 import '../app/theme/client';
-import '../app/custom/client';
 import '../app/message-read-receipt/client';
