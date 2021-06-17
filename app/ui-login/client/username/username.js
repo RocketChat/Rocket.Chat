@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 import _ from 'underscore';
 
 import { settings } from '../../../settings';
@@ -27,11 +26,6 @@ Template.username.onCreated(function() {
 			return this.customFields.set(null);
 		}
 	});
-	if (Session.get('loginDefaultState')) {
-		this.state = new ReactiveVar(Session.get('loginDefaultState'));
-	} else {
-		this.state = new ReactiveVar('login');
-	}
 
 	const validateCustomFields = function(formObj, validationObj) {
 		const customFields = self.customFields.get();
