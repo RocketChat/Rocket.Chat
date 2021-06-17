@@ -6,19 +6,19 @@ import { AudioRecorder, fileUpload, USER_RECORDING, UserAction } from '../../../
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = (rid) => {
+const startRecording = (rid, tmid) => {
 	const result = new Promise((resolve, reject) =>
 		AudioRecorder.start((result) => (result ? resolve() : reject())));
 	result.then(() => {
-		UserAction.start(rid, USER_RECORDING);
+		UserAction.start(rid, USER_RECORDING, { tmid });
 	});
 	return result;
 };
 
-const stopRecording = (rid) => {
+const stopRecording = (rid, tmid) => {
 	const result = new Promise((resolve) => AudioRecorder.stop(resolve));
 	result.then(() => {
-		UserAction.stop(rid, USER_RECORDING);
+		UserAction.stop(rid, USER_RECORDING, { tmid });
 	});
 	return result;
 };
@@ -109,7 +109,7 @@ Template.messageBoxAudioMessage.events({
 		instance.state.set('recording');
 
 		try {
-			await startRecording(this.rid);
+			await startRecording(this.rid, this.tmid);
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
 				const now = new Date();
@@ -120,7 +120,7 @@ Template.messageBoxAudioMessage.events({
 			}, 1000));
 			recordingRoomId.set(this.rid);
 			recordingIndicatorInterval.set(setInterval(() => {
-				UserAction.start(this.rid, USER_RECORDING);
+				UserAction.start(this.rid, USER_RECORDING, { tmid: this.tmid });
 			}, 5000));
 		} catch (error) {
 			console.log(error);
@@ -136,7 +136,7 @@ Template.messageBoxAudioMessage.events({
 
 		instance.time.set('00:00');
 
-		await stopRecording(this.rid);
+		await stopRecording(this.rid, this.tmid);
 
 		instance.state.set(null);
 	},
@@ -150,7 +150,7 @@ Template.messageBoxAudioMessage.events({
 
 		instance.time.set('00:00');
 
-		const blob = await stopRecording(this.rid);
+		const blob = await stopRecording(this.rid, this.tmid);
 
 		instance.state.set(null);
 

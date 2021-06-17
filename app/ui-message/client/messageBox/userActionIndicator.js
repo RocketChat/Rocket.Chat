@@ -35,14 +35,13 @@ const showUserActivity = (action, activity, rid) => {
 };
 
 Template.userActionIndicator.helpers({
-
 	typingUsersData() {
-		return showUserActivity('typing', USER_TYPING, this.rid);
+		return showUserActivity('typing', USER_TYPING, this.id);
 	},
 	uploadingUsersData() {
-		return showUserActivity('uploading', USER_UPLOADING, this.rid);
+		return showUserActivity('uploading', USER_UPLOADING, this.id);
 	},
 	recordingUsersData() {
-		return showUserActivity('recording', USER_RECORDING, this.rid);
+		return showUserActivity('recording', USER_RECORDING, this.id);
 	},
 });

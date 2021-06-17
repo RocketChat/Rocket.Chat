@@ -39,23 +39,30 @@ const shownName = function(user) {
 	return user.username;
 };
 
-const stopActivity = (rid, activityType) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), false, activityType);
-const startActivity = (rid, activityType) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), true, activityType);
+const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), false, activityType, extras);
+const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), true, activityType, extras);
 
-function handleStreamAction(activity, performingUsers, rid, username) {
-	const users = performingUsers.get(rid) || {};
+function handleStreamAction(activity, performingUsers, rid, username, extras) {
+	const id = extras && 'tmid' in extras ? extras.tmid : rid;
+	const users = performingUsers.get(id) || {};
+
 	if (activity === true) {
 		clearTimeout(users[username]);
 		users[username] = setTimeout(function() {
-			const u = performingUsers.get(rid);
+			const u = performingUsers.get(id);
 			delete u[username];
-			performingUsers.set(rid, u);
+			if (extras && 'tmid' in extras) {
+				performingUsers.set(id, u);
+			} else {
+				performingUsers.set(id, u);
+			}
 		}, timeout);
 	} else {
 		clearTimeout(users[username]);
 		delete users[username];
 	}
-	performingUsers.set(rid, users);
+
+	performingUsers.set(id, users);
 }
 
 export const UserAction = new class {
@@ -69,23 +76,23 @@ export const UserAction = new class {
 		if (rooms[rid]) {
 			return;
 		}
-		rooms[rid] = function(username, activity, activityType) {
+		rooms[rid] = function(username, activity, activityType, extras) {
 			const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
 			if (username === shownName(user)) {
 				return;
 			}
 			if (activityType === USER_RECORDING) {
-				handleStreamAction(activity, recordingUsers, rid, username);
+				handleStreamAction(activity, recordingUsers, rid, username, extras);
 			} else if (activityType === USER_UPLOADING) {
-				handleStreamAction(activity, uploadingUsers, rid, username);
+				handleStreamAction(activity, uploadingUsers, rid, username, extras);
 			} else if (activityType === USER_TYPING) {
-				handleStreamAction(activity, typingUsers, rid, username);
+				handleStreamAction(activity, typingUsers, rid, username, extras);
 			}
 		};
 		return Notifications.onRoom(rid, 'user-activity', rooms[rid]);
 	}
 
-	startPerformingAction(rid, activityType, timeouts, renews) {
+	startPerformingAction(rid, activityType, timeouts, renews, extras) {
 		if (renews[rid]) {
 			return;
 		}
@@ -96,7 +103,7 @@ export const UserAction = new class {
 			delete renews[rid];
 		}, renew);
 
-		startActivity(rid, activityType);
+		startActivity(rid, activityType, extras);
 		if (timeouts[rid]) {
 			clearTimeout(timeouts[rid]);
 			delete timeouts[rid];
@@ -106,19 +113,19 @@ export const UserAction = new class {
 		return timeouts[rid];
 	}
 
-	start(rid, activityType) {
+	start(rid, activityType, extras = {}) {
 		if (activityType === USER_RECORDING) {
-			this.startPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews);
+			this.startPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews, extras);
 		} else if (activityType === USER_TYPING) {
-			this.startPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews);
+			this.startPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews, extras);
 		} else if (activityType === USER_UPLOADING) {
-			this.startPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews);
+			this.startPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews, extras);
 		} else {
 			// console.log('activity type is invalid');
 		}
 	}
 
-	stopPerformingAction(rid, activityType, timeouts, renews) {
+	stopPerformingAction(rid, activityType, timeouts, renews, extras) {
 		selfActivity[activityType] = false;
 		if (timeouts[rid]) {
 			clearTimeout(timeouts[rid]);
@@ -128,16 +135,16 @@ export const UserAction = new class {
 			clearTimeout(renews[rid]);
 			delete renews[rid];
 		}
-		return stopActivity(rid, activityType);
+		return stopActivity(rid, activityType, extras);
 	}
 
-	stop(rid, activityType) {
+	stop(rid, activityType, extras) {
 		if (activityType === USER_RECORDING) {
-			this.stopPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews);
+			this.stopPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews, extras);
 		} else if (activityType === USER_TYPING) {
-			this.stopPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews);
+			this.stopPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews, extras);
 		} else if (activityType === USER_UPLOADING) {
-			this.stopPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews);
+			this.stopPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews, extras);
 		} else {
 			// console.log('not a valid activity type');
 		}
@@ -159,15 +166,15 @@ export const UserAction = new class {
 		delete rooms[rid];
 	}
 
-	get(rid, activityType) {
+	get(roomId, activityType) {
 		if (activityType === USER_RECORDING) {
-			return _.keys(recordingUsers.get(rid)) || [];
+			return _.keys(recordingUsers.get(roomId)) || [];
 		}
 		if (activityType === USER_UPLOADING) {
-			return _.keys(uploadingUsers.get(rid)) || [];
+			return _.keys(uploadingUsers.get(roomId)) || [];
 		}
 		if (activityType === USER_TYPING) {
-			return _.keys(typingUsers.get(rid)) || [];
+			return _.keys(typingUsers.get(roomId)) || [];
 		}
 	}
 }();

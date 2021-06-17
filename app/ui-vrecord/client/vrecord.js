@@ -34,7 +34,7 @@ Template.vrecDialog.helpers({
 const recordingInterval = new ReactiveVar(null);
 const recordingIndicator = new ReactiveVar(null);
 
-const stopVideoRecording = (rid) => {
+const stopVideoRecording = (rid, tmid) => {
 	if (recordingInterval.get()) {
 		clearInterval(recordingInterval.get());
 		recordingInterval.set(null);
@@ -42,7 +42,7 @@ const stopVideoRecording = (rid) => {
 	if (recordingIndicator.get()) {
 		clearInterval(recordingIndicator.get());
 		recordingIndicator.set(null);
-		UserAction.stop(rid, USER_RECORDING);
+		UserAction.stop(rid, USER_RECORDING, { tmid });
 	}
 };
 
@@ -50,20 +50,23 @@ const stopVideoRecording = (rid) => {
 Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
 		const rid = t.rid.get();
+		const tmid = t.tmid.get();
+
 		VideoRecorder.stop();
 		VRecDialog.close();
 		t.time.set('');
-		stopVideoRecording(rid);
+		stopVideoRecording(rid, tmid);
 	},
 
 	'click .vrec-dialog .record'(e, t) {
 		const rid = t.rid.get();
+		const tmid = t.tmid.get();
 		if (VideoRecorder.recording.get()) {
 			VideoRecorder.stopRecording();
-			stopVideoRecording(rid);
+			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
-			UserAction.start(rid, USER_RECORDING);
+			UserAction.start(rid, USER_RECORDING, { tmid });
 			t.time.set('00:00');
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
@@ -74,7 +77,7 @@ Template.vrecDialog.events({
 				t.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
 			}, 1000));
 			recordingIndicator.set(setInterval(() => {
-				UserAction.start(rid, USER_RECORDING);
+				UserAction.start(rid, USER_RECORDING, { tmid });
 			}, 5000));
 		}
 	},
@@ -87,7 +90,7 @@ Template.vrecDialog.events({
 		};
 		VideoRecorder.stop(cb);
 		instance.time.set('');
-		stopVideoRecording(rid);
+		stopVideoRecording(rid, tmid);
 	},
 });
 

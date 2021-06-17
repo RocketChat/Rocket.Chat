@@ -56,11 +56,11 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		},
 	});
 	if (Session.get('uploading').length) {
-		UserAction.start(rid, 'user-uploading');
+		UserAction.start(rid, 'user-uploading', { tmid });
 	}
 	const msgUploadingInterval = setInterval(function() {
 		if (Session.get('uploading').length) {
-			UserAction.start(rid, 'user-uploading');
+			UserAction.start(rid, 'user-uploading', { tmid });
 		}
 	}, 5000);
 
@@ -84,7 +84,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 
 		if (!Session.get('uploading').length) {
-			UserAction.stop(rid, 'user-uploading');
+			UserAction.stop(rid, 'user-uploading', { tmid });
 			clearInterval(msgUploadingInterval);
 		}
 		return remainingUploads;
@@ -95,7 +95,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 			u.percentage = 0;
 		});
 		if (!uploads.length) {
-			UserAction.stop(rid, 'user-uploading');
+			UserAction.stop(rid, 'user-uploading', { tmid });
 			clearInterval(msgUploadingInterval);
 		}
 		Session.set('uploading', uploads);

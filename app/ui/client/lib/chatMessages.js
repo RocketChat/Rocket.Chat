@@ -248,7 +248,7 @@ export class ChatMessages {
 	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
-		UserAction.stop(rid, USER_TYPING);
+		UserAction.stop(rid, USER_TYPING, { tmid });
 
 		if (!ChatSubscription.findOne({ rid })) {
 			await call('joinRoom', rid);
@@ -571,9 +571,9 @@ export class ChatMessages {
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
 			if (input.value.trim()) {
-				UserAction.start(rid, USER_TYPING);
+				UserAction.start(rid, USER_TYPING, { tmid });
 			} else {
-				UserAction.stop(rid, USER_TYPING);
+				UserAction.stop(rid, USER_TYPING, { tmid });
 			}
 		}
 
