@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../../server/models';
 import { canAccessRoom } from '../../../authorization/server';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const MAX_LIMIT = 100;
 

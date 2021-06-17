@@ -4,12 +4,12 @@ import { Random } from 'meteor/random';
 
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { settings } from '../../../../settings/server';
+import { settings } from '../../../../../server/settings';
 
 API.v1.addRoute('livechat/message', {
 	post() {

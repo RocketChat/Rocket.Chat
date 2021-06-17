@@ -8,7 +8,7 @@ import {
 	Users,
 	Uploads,
 	Settings,
-} from '../../../app/models/server';
+} from '../../models';
 
 const validSettings = [
 	'FEDERATION_Enabled',

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { isEnterprise, getMaxGuestUsers } from '../../license/server';
-import { Users } from '../../../../app/models/server';
+import { Users } from '../../../../server/models';
 
 export const validateUserRoles = function(userId, userData) {
 	if (!isEnterprise()) {

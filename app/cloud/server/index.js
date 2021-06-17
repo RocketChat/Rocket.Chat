@@ -9,7 +9,7 @@ import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { Permissions } from '../../models';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 
 if (Permissions) {
 	Permissions.create('manage-cloud', ['admin']);

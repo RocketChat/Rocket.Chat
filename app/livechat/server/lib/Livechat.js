@@ -13,7 +13,7 @@ import UAParser from 'ua-parser-js';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../callbacks/server';
 import {
 	Users,
@@ -27,7 +27,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatInquiry,
-} from '../../../models/server';
+} from '../../../../server/models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';

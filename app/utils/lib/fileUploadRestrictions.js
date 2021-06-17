@@ -5,7 +5,7 @@ let settings;
 if (Meteor.isClient) {
 	settings = require('../../settings/client').settings;
 } else {
-	settings = require('../../settings/server').settings;
+	settings = require('../../../server/settings').settings;
 }
 
 const fileUploadMediaWhiteList = function(customWhiteList) {

@@ -10,7 +10,7 @@ import CAS from 'cas';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings';
-import { Rooms, CredentialTokens } from '../../models/server';
+import { Rooms, CredentialTokens } from '../../../server/models';
 import { _setRealName } from '../../lib';
 import { createRoom } from '../../lib/server/functions/createRoom';
 

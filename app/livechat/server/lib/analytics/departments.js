@@ -1,4 +1,4 @@
-import { LivechatRooms, Messages } from '../../../../models/server/raw';
+import { LivechatRooms, Messages } from '../../../../../server/models/raw';
 
 export const findAllRoomsAsync = async ({
 	start,

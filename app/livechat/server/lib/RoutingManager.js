@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -13,7 +13,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../../server/models';
 import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {

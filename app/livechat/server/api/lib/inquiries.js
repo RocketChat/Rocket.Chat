@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../models/server/raw';
+import { LivechatDepartmentAgents, LivechatDepartment, LivechatInquiry } from '../../../../../server/models/raw';
 import { hasRoleAsync } from '../../../../authorization/server/functions/hasRole';
 
 const agentDepartments = async (userId) => {

@@ -2,15 +2,15 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users } from '../../../../../app/models';
-import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
+import { LivechatInquiry, OmnichannelQueue } from '../../../../../server/models/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
+import { LivechatRooms, Subscriptions, Messages } from '../../../../../server/models';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 

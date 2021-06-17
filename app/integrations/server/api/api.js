@@ -12,9 +12,9 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../../server/api/v1';
 import * as Models from '../../../models';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {

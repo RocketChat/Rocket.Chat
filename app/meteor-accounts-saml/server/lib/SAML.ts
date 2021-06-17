@@ -7,8 +7,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../../settings/server';
-import { Users, Rooms, CredentialTokens } from '../../../models/server';
+import { settings } from '../../../../server/settings';
+import { Users, Rooms, CredentialTokens } from '../../../../server/models';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';

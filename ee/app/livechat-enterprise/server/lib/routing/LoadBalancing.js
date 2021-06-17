@@ -1,5 +1,5 @@
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
-import { Users } from '../../../../../../app/models/server/raw';
+import { Users } from '../../../../../../server/models/raw';
 
 /* Load Balancing Queuing method:
 	*

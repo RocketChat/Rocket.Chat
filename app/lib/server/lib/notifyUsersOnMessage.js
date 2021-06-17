@@ -1,8 +1,8 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { Rooms, Subscriptions } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { Rooms, Subscriptions } from '../../../../server/models';
+import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../callbacks/server';
 
 /**

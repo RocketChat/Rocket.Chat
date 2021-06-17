@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
 import { Logger } from '../../logger/server';
 import { SAMLUtils } from './lib/Utils';

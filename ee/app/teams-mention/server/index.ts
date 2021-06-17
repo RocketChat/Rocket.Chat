@@ -4,7 +4,7 @@ import { onLicense } from '../../license/server';
 import { overwriteClassOnLicense } from '../../license/server/license';
 import { SpotlightEnterprise } from './EESpotlight';
 import { Spotlight } from '../../../../server/lib/spotlight';
-import { MentionQueries } from '../../../../app/mentions/server/server';
+import { MentionQueries } from '../../../../server/services/messages/mentions/server';
 import { callbacks } from '../../../../app/callbacks/server';
 import { MentionQueriesEnterprise } from './EEMentionQueries';
 import { Team } from '../../../../server/sdk';

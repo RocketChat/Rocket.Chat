@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
-import { CustomUserStatus } from '../../../models/server';
+import { CustomUserStatus } from '../../../../server/models';
 import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({

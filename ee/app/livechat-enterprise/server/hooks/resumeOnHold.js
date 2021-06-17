@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { LivechatRooms } from '../../../../../app/models/server';
+import { LivechatRooms } from '../../../../../server/models';
 
 const handleAfterSaveMessage = (message, { _id: rid }) => {
 	// skips this callback if the message was edited

@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 
 

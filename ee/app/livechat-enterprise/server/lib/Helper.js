@@ -8,8 +8,8 @@ import {
 	LivechatRooms,
 	Messages,
 	LivechatCustomField,
-} from '../../../../../app/models/server';
-import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
+} from '../../../../../server/models';
+import { Rooms as RoomRaw } from '../../../../../server/models/raw';
 import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';

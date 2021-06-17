@@ -3,9 +3,9 @@ import moment from 'moment';
 import { ILivechatBusinessHour } from '../../../../definition/ILivechatBusinessHour';
 import {
 	IWorkHoursCronJobsWrapper, LivechatBusinessHoursRaw,
-} from '../../../models/server/raw/LivechatBusinessHours';
-import { UsersRaw } from '../../../models/server/raw/Users';
-import { LivechatBusinessHours, Users } from '../../../models/server/raw';
+} from '../../../../server/models/raw/LivechatBusinessHours';
+import { UsersRaw } from '../../../../server/models/raw/Users';
+import { LivechatBusinessHours, Users } from '../../../../server/models/raw';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 
 export interface IBusinessHourBehavior {

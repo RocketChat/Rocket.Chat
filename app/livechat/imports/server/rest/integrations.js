@@ -1,4 +1,4 @@
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { findIntegrationSettings } from '../../../server/api/lib/integrations';
 
 API.v1.addRoute('livechat/integrations.settings', { authRequired: true }, {

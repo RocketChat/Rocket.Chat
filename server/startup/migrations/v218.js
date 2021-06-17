@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Statistics } from '../../../app/models/server';
+import { Statistics } from '../../models';
 
 Migrations.add({
 	version: 218,

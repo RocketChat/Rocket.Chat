@@ -1,5 +1,5 @@
 import { logger } from '../lib/logger';
-import { FederationRoomEvents, Subscriptions, Users } from '../../../models/server';
+import { FederationRoomEvents, Subscriptions, Users } from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';

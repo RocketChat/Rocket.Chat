@@ -1,6 +1,6 @@
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../../server/settings';
 import { UserStatus } from '../../../definition/UserStatus';
 import { api } from '../../../server/sdk/api';
 

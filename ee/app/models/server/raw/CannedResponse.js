@@ -1,4 +1,4 @@
-import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
+import { BaseRaw } from '../../../../../server/models/raw/BaseRaw';
 import CannedResponse from '../models/CannedResponse';
 
 export class CannedResponseRaw extends BaseRaw {

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Users, Subscriptions } from '../../app/models/server';
-import { settings } from '../../app/settings/server';
+import { Users, Subscriptions } from '../models';
+import { settings } from '../settings';
 import * as Mailer from '../../app/mailer';
 import { IUser } from '../../definition/IUser';
 

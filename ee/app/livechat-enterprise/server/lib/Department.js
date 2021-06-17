@@ -2,7 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import {
 	LivechatDepartment,
-} from '../../../../../app/models/server/raw';
+} from '../../../../../server/models/raw';
 
 export const findAllDepartmentsAvailable = async (unitId, offset, count, text) => {
 	const filterReg = new RegExp(escapeRegExp(text), 'i');

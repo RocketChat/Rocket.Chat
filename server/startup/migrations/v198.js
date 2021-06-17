@@ -1,4 +1,4 @@
-import { Settings } from '../../../app/models/server';
+import { Settings } from '../../models';
 import { Migrations } from '../../../app/migrations/server';
 
 Migrations.add({

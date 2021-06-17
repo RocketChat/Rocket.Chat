@@ -1,6 +1,6 @@
 import { Cookies } from 'meteor/ostrio:cookies';
 
-import Users from '../../models/server/models/Users';
+import Users from '../../../server/models/models/Users';
 import { FileUpload } from '../../file-upload/server';
 import { getURL } from '../../utils/lib/getURL';
 

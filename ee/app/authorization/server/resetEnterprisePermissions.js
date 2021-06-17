@@ -1,4 +1,4 @@
-import { Permissions } from '../../../../app/models/server';
+import { Permissions } from '../../../../server/models';
 import { guestPermissions } from '../lib/guestPermissions';
 
 export const resetEnterprisePermissions = function() {

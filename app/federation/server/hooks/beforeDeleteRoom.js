@@ -1,5 +1,5 @@
 import { logger } from '../lib/logger';
-import { FederationRoomEvents, Rooms } from '../../../models/server';
+import { FederationRoomEvents, Rooms } from '../../../../server/models';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';

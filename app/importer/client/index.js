@@ -1,3 +1,3 @@
-export { Importers } from '../lib/Importers';
-export { ImporterInfo } from '../lib/ImporterInfo';
-export { ProgressStep } from '../lib/ImporterProgressStep';
+export { Importers } from '../../../common/importer/Importers';
+export { ImporterInfo } from '../../../common/importer/ImporterInfo';
+export { ProgressStep } from '../../../common/importer/ImporterProgressStep';

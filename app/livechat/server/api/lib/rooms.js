@@ -1,4 +1,4 @@
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server/raw';
+import { LivechatRooms, LivechatDepartment } from '../../../../../server/models/raw';
 
 export async function findRooms({
 	agents,

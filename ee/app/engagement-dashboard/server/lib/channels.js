@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { Rooms } from '../../../../../app/models/server/raw';
+import { Rooms } from '../../../../../server/models/raw';
 import { convertDateToInt, diffBetweenDaysInclusive } from './date';
 
 export const findAllChannelsWithNumberOfMessages = async ({ start, end, options = {} }) => {

@@ -7,7 +7,7 @@ import {
 	setCacheAndDispositionHeaders,
 } from './utils';
 import { FileUpload } from '../../../app/file-upload';
-import { Rooms, Avatars } from '../../../app/models/server';
+import { Rooms, Avatars } from '../../models';
 import { roomTypes } from '../../../app/utils';
 
 

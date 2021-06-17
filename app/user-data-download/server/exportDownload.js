@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { UserDataFiles } from '../../models';
 import { DataExport } from './DataExport';
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 
 
 WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {

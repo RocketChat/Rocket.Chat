@@ -2,9 +2,9 @@ import sharp from 'sharp';
 import { throttle } from 'underscore';
 import { Cookies } from 'meteor/ostrio:cookies';
 
-import { Users } from '../../../app/models/server';
+import { Users } from '../../models';
 import { getAvatarColor } from '../../../app/utils';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 

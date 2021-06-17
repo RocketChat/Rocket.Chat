@@ -1,4 +1,4 @@
-import { FederationKeys } from '../../../models/server';
+import { FederationKeys } from '../../../../server/models';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { logger } from './logger';

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Users, FederationServers } from '../../../app/models/server';
+import { Users, FederationServers } from '../../models';
 
 Migrations.add({
 	version: 143,

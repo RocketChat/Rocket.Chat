@@ -4,7 +4,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { settings } from '../../app/settings';
 import { setUserAvatar } from '../../app/lib';
-import { Users } from '../../app/models/server';
+import { Users } from '../models';
 import { hasPermission } from '../../app/authorization/server';
 
 Meteor.methods({

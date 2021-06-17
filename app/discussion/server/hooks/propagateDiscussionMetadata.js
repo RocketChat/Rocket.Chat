@@ -1,5 +1,5 @@
 import { callbacks } from '../../../callbacks/server';
-import { Messages, Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../../server/models';
 import { deleteRoom } from '../../../lib/server';
 
 /**

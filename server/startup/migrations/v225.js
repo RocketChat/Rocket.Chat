@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations';
-import { Settings, Users } from '../../../app/models/server';
+import { Settings, Users } from '../../models';
 
 Migrations.add({
 	version: 225,

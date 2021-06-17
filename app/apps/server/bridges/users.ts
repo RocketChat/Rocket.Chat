@@ -3,9 +3,9 @@ import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { IUserCreationOptions, IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, _setStatusTextPromise } from '../../../lib/server/functions';
-import { Users } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users } from '../../../../server/models';
 import { AppServerOrchestrator } from '../orchestrator';
+import { Users as UsersRaw } from '../../../../server/models/raw';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function

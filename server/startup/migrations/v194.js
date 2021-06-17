@@ -1,7 +1,7 @@
 import {
 	Settings,
 	Users,
-} from '../../../app/models/server';
+} from '../../models';
 import { Migrations } from '../../../app/migrations/server';
 
 function updateFieldMap() {

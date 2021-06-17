@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Messages, Subscriptions, Integrations } from '../../../models/server';
+import { Rooms, Messages, Subscriptions, Integrations } from '../../../../server/models';
 import { roomTypes, getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../callbacks/server';
 import { checkUsernameAvailability } from '../../../lib/server/functions';

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Settings, LivechatRooms, Rooms, LivechatInquiry } from '../../../app/models/server';
+import { Settings, LivechatRooms, Rooms, LivechatInquiry } from '../../models';
 import { createLivechatInquiry } from '../../../app/livechat/server/lib/Helper';
 
 Migrations.add({

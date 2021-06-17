@@ -5,9 +5,9 @@ import {
 	IBusinessHourBehavior,
 } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { ILivechatBusinessHour } from '../../../../../definition/ILivechatBusinessHour';
-import { LivechatDepartmentRaw } from '../../../../../app/models/server/raw/LivechatDepartment';
-import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
-import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
+import { LivechatDepartmentRaw } from '../../../../../server/models/raw/LivechatDepartment';
+import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
+import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../server/models/raw';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 

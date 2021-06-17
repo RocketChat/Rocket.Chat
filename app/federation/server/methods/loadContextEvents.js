@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from '../../../authorization/server';
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '../../../../server/models';
 
 Meteor.methods({
 	'federation:loadContextEvents': (latestEventTimestamp) => {

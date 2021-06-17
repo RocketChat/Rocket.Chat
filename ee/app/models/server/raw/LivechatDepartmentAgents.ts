@@ -1,4 +1,4 @@
-import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/raw/LivechatDepartmentAgents';
+import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {

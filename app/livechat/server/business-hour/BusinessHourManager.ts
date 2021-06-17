@@ -3,7 +3,7 @@ import moment from 'moment';
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../callbacks/server';
 
 const cronJobDayDict: Record<string, number> = {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks';
-import { LivechatDepartment } from '../../../../../app/models/server';
+import { LivechatDepartment } from '../../../../../server/models';
 
 callbacks.add('livechat.beforeForwardRoomToDepartment', (options) => {
 	const { room, transferData } = options;

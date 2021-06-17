@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import AuditLog from './auditLog';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
+import { LivechatRooms, Rooms, Messages, Users } from '../../../../server/models';
 import { hasPermission } from '../../../../app/authorization/server';
 
 const getValue = (room) => room && { rids: [room._id], name: room.name };

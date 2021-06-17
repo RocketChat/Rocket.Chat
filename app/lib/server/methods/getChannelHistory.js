@@ -3,8 +3,8 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../authorization/server';
-import { Subscriptions, Messages } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { Subscriptions, Messages } from '../../../../server/models';
+import { settings } from '../../../../server/settings';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import type { WriteOpResult } from 'mongodb';
 
-import { Rooms, Messages } from '../../../models/server';
+import { Rooms, Messages } from '../../../../server/models';
 import type { IUser } from '../../../../definition/IUser';
 
 export const saveRoomEncrypted = function(rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<WriteOpResult> {

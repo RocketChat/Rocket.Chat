@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations';
-import { LivechatDepartmentAgents, LivechatDepartment } from '../../../app/models/server';
+import { LivechatDepartmentAgents, LivechatDepartment } from '../../models';
 
 const updateEnabledProperty = (departmentIds) => {
 	LivechatDepartment

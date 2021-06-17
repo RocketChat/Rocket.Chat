@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { Messages, Permissions, Rooms, Settings } from '../../../app/models/server';
+import { Messages, Permissions, Rooms, Settings } from '../../models';
 
 const getField = (msg, fieldType, fieldName) => {
 	if (!msg.attachments) {

@@ -1,4 +1,4 @@
-import { Settings, Subscriptions, Users } from '../../../models/server';
+import { Settings, Subscriptions, Users } from '../../../../server/models';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName) => fullyQualifiedName.split('@');

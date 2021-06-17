@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api/v1';
 import { logger } from '../lib/logger';
-import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
+import { contextDefinitions, eventTypes } from '../../../../server/models/models/FederationEvents';
 import {
 	FederationRoomEvents, FederationServers,
 	Messages,
 	Rooms,
 	Subscriptions,
 	Users,
-} from '../../../models/server';
+} from '../../../../server/models';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { Notifications } from '../../../notifications/server';

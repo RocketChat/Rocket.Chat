@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { LivechatBusinessHours } from '../../../models/server/raw';
+import { LivechatBusinessHours } from '../../../../server/models/raw';
 
 Meteor.methods({
 	'livechat:saveOfficeHours'(day, start, finish, open) {

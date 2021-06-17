@@ -12,20 +12,20 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
-import { settings } from '../../../settings/server';
-import Uploads from '../../../models/server/models/Uploads';
-import UserDataFiles from '../../../models/server/models/UserDataFiles';
-import Avatars from '../../../models/server/models/Avatars';
-import Users from '../../../models/server/models/Users';
-import Rooms from '../../../models/server/models/Rooms';
-import Settings from '../../../models/server/models/Settings';
+import { settings } from '../../../../server/settings';
+import Uploads from '../../../../server/models/models/Uploads';
+import UserDataFiles from '../../../../server/models/models/UserDataFiles';
+import Avatars from '../../../../server/models/models/Avatars';
+import Users from '../../../../server/models/models/Users';
+import Rooms from '../../../../server/models/models/Rooms';
+import Settings from '../../../../server/models/models/Settings';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { roomTypes } from '../../../utils/server/lib/roomTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
-import { Messages } from '../../../models/server';
+import { Messages } from '../../../../server/models';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
 

@@ -3,7 +3,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
-import { Users } from '../../../models/server';
+import { Users } from '../../../../server/models';
 import { hasPermission } from '../../../authorization';
 
 const logger = new Logger('getFullUserData');

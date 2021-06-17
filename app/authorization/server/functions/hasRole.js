@@ -1,4 +1,4 @@
-import { Roles } from '../../../models/server/raw';
+import { Roles } from '../../../../server/models/raw';
 
 export const hasRoleAsync = async (userId, roleNames, scope) => {
 	if (!userId || userId === '') {

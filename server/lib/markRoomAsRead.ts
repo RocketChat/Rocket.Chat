@@ -1,5 +1,5 @@
 import { callbacks } from '../../app/callbacks/server';
-import { NotificationQueue, Subscriptions } from '../../app/models/server/raw';
+import { NotificationQueue, Subscriptions } from '../models/raw';
 
 export async function markRoomAsRead(rid: string, uid: string): Promise<void> {
 	callbacks.run('beforeReadMessages', rid, uid);

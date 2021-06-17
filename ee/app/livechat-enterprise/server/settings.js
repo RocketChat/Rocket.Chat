@@ -1,5 +1,5 @@
 import { settings } from '../../../../app/settings';
-import { Settings } from '../../../../app/models/server';
+import { Settings } from '../../../../server/models';
 
 export const createSettings = () => {
 	settings.add('Livechat_waiting_queue', false, {

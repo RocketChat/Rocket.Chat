@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Statistics } from '../../../models/server/raw';
+import { Statistics } from '../../../../server/models/raw';
 
 export async function getStatistics({ userId, query = {}, pagination: { offset, count, sort, fields } }) {
 	if (!await hasPermissionAsync(userId, 'view-statistics')) {

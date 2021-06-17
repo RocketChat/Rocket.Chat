@@ -1,7 +1,7 @@
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import CannedResponse from '../../../models/server/raw/CannedResponse';
-import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
+import { LivechatDepartmentAgents } from '../../../../../server/models/raw';
 
 export async function findAllCannedResponses({ userId }) {
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {

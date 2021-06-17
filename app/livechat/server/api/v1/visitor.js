@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { LivechatRooms, LivechatVisitors, LivechatCustomField } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 

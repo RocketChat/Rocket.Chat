@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks/server';
-import LivechatRooms from '../../../../../app/models/server/models/LivechatRooms';
+import LivechatRooms from '../../../../../server/models/models/LivechatRooms';
 
 callbacks.add('livechat.afterForwardChatToAgent', (options: { rid?: string } = {}) => {
 	const { rid } = options;

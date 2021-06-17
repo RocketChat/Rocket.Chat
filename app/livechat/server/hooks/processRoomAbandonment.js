@@ -2,9 +2,9 @@ import moment from 'moment';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { LivechatRooms, Messages } from '../../../models/server';
+import { LivechatRooms, Messages } from '../../../../server/models';
 import { businessHourManager } from '../business-hour';
-import { LivechatBusinessHours, LivechatDepartment } from '../../../models/server/raw';
+import { LivechatBusinessHours, LivechatDepartment } from '../../../../server/models/raw';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) => moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
 const parseDays = (acc, day) => {

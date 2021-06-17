@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { Messages } from '../../../../server/models';
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';

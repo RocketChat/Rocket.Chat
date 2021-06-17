@@ -1,7 +1,7 @@
 import Future from 'fibers/future';
 
 import { Migrations } from '../../../app/migrations';
-import { Users, Sessions } from '../../../app/models/server/raw';
+import { Users, Sessions } from '../../models/raw';
 
 async function migrateSessions(fut) {
 	const cursor = Users.find({ roles: 'anonymous' }, { projection: { _id: 1 } });

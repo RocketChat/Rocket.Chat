@@ -1,4 +1,4 @@
-import { LivechatExternalMessage } from '../../../../models/server/raw';
+import { LivechatExternalMessage } from '../../../../../server/models/raw';
 
 export async function findExternalMessages({ roomId, pagination: { offset, count, sort } }) {
 	const cursor = await LivechatExternalMessage.findByRoomId(roomId, {

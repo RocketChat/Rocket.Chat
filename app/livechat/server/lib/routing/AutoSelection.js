@@ -1,5 +1,5 @@
 import { RoutingManager } from '../RoutingManager';
-import { LivechatDepartmentAgents, Users } from '../../../../models/server';
+import { LivechatDepartmentAgents, Users } from '../../../../../server/models';
 
 /* Auto Selection Queuing method:
 	*

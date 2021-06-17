@@ -16,7 +16,7 @@ import {
 	LivechatDepartment,
 	LivechatVisitors,
 	LivechatRooms,
-} from '../../../models/server';
+} from '../../../../server/models';
 import { AppServerOrchestrator } from '../orchestrator';
 
 export class AppLivechatBridge extends LivechatBridge {

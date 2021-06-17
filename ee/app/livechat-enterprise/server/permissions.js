@@ -1,4 +1,4 @@
-import { Permissions, Roles } from '../../../../app/models/server';
+import { Permissions, Roles } from '../../../../server/models';
 
 export const createPermissions = () => {
 	if (!Permissions) {

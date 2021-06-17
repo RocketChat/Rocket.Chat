@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions } from '../../app/models/server';
+import { Subscriptions } from '../models';
 import { hasPermission } from '../../app/authorization/server';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 

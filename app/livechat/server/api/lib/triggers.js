@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatTrigger } from '../../../../models/server/raw';
+import { LivechatTrigger } from '../../../../../server/models/raw';
 
 export async function findTriggers({ userId, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-livechat-manager')) {

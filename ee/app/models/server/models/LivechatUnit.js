@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
+import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../server/models/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import LivechatUnitMonitors from './LivechatUnitMonitors';

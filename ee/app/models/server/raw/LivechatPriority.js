@@ -1,4 +1,4 @@
-import { BaseRaw } from '../../../../../app/models/server/raw/BaseRaw';
+import { BaseRaw } from '../../../../../server/models/raw/BaseRaw';
 import LivechatPriority from '../models/LivechatPriority';
 
 export class LivechatPriorityRaw extends BaseRaw {

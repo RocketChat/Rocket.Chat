@@ -1,7 +1,7 @@
 import { Promise } from 'meteor/promise';
 
 import { Migrations } from '../../../app/migrations';
-import { Sessions } from '../../../app/models/server/raw';
+import { Sessions } from '../../models/raw';
 import { getMostImportantRole } from '../../../app/statistics/server/lib/getMostImportantRole';
 
 async function migrateSessions() {

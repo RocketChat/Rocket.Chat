@@ -1,9 +1,9 @@
 import moment from 'moment';
 
-import AnalyticsRaw from '../../../../../app/models/server/raw/Analytics';
-import Sessions from '../../../../../app/models/server/raw/Sessions';
-import { Users } from '../../../../../app/models/server/raw';
-import { Analytics } from '../../../../../app/models/server';
+import AnalyticsRaw from '../../../../../server/models/raw/Analytics';
+import Sessions from '../../../../../server/models/models/Sessions';
+import { Users } from '../../../../../server/models/raw';
+import { Analytics } from '../../../../../server/models';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {

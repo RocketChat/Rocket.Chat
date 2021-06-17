@@ -1,4 +1,4 @@
-import { settings } from '../../../settings/server/functions/settings';
+import { settings } from '../../../../server/settings/settings';
 
 settings.addGroup('Omnichannel', function() {
 	this.section('External Frame', function() {

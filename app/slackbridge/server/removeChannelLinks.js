@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../models/server';
+import { Rooms } from '../../../server/models';
 import { hasRole } from '../../authorization';
 import { settings } from '../../settings';
 

@@ -9,8 +9,8 @@ import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
-import { Users } from '../../app/models/server';
-import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
+import { Users } from '../models';
+import InstanceStatusModel from '../models/models/InstanceStatus';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
 
 process.env.PORT = String(process.env.PORT).trim();

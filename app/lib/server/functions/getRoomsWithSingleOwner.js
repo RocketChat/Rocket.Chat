@@ -1,5 +1,5 @@
 import { subscriptionHasRole } from '../../../authorization/server';
-import { Users, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions } from '../../../../server/models';
 
 export function shouldRemoveOrChangeOwner(subscribedRooms) {
 	return subscribedRooms

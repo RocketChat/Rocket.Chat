@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { MultipleBusinessHoursBehavior } from '../business-hour/Multiple';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../../server/settings';
 import { LivechatBusinessHourBehaviors } from '../../../../../definition/ILivechatBusinessHour';
 
 callbacks.add('on-business-hour-start', (options: any = {}) => {

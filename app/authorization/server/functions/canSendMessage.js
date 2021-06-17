@@ -1,6 +1,6 @@
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server/raw';
+import { Subscriptions, Rooms } from '../../../../server/models/raw';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
 const subscriptionOptions = {

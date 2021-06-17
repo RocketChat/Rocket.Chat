@@ -1,8 +1,8 @@
 import { Random } from 'meteor/random';
 
 import { Migrations } from '../../../app/migrations/server';
-import { Settings } from '../../../app/models/server';
-import { settings } from '../../../app/settings/server';
+import { Settings } from '../../models';
+import { settings } from '../../settings';
 
 Migrations.add({
 	version: 157,

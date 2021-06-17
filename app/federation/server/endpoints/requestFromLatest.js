@@ -1,8 +1,8 @@
 import { EJSON } from 'meteor/ejson';
 
-import { API } from '../../../api/server';
+import { API } from '../../../../server/api/v1';
 import { logger } from '../lib/logger';
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '../../../../server/models';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { dispatchEvents } from '../handler';

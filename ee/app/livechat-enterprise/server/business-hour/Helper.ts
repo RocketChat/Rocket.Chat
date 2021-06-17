@@ -6,7 +6,7 @@ import {
 	LivechatDepartment,
 	LivechatDepartmentAgents,
 	Users,
-} from '../../../../../app/models/server/raw';
+} from '../../../../../server/models/raw';
 import { LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {

@@ -1,4 +1,4 @@
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../../app/callbacks';
 import { addLicense, setURL } from './license';
 

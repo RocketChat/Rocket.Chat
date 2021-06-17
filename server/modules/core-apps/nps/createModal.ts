@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { IUser } from '../../../../definition/IUser';
 
 export type ModalParams = {

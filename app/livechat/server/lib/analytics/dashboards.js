@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
+import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../../server/models/raw';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
 import {

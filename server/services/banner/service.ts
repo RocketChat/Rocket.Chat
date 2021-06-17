@@ -2,9 +2,9 @@ import { Db } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
-import { BannersRaw } from '../../../app/models/server/raw/Banners';
-import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
-import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { BannersRaw } from '../../models/raw/Banners';
+import { BannersDismissRaw } from '../../models/raw/BannersDismiss';
+import { UsersRaw } from '../../models/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
 import { BannerPlatform, IBanner } from '../../../definition/IBanner';
 import { api } from '../../sdk/api';

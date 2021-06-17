@@ -1,4 +1,4 @@
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { IRoom } from '../../../../definition/IRoom';
 
 const hideMessagesOfTypeServer = new Set<string>();

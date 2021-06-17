@@ -5,9 +5,9 @@ import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermission } from '../../app/authorization/server';
-import { Rooms, Users, Subscriptions } from '../../app/models/server';
-import { Rooms as RoomsRaw } from '../../app/models/server/raw';
-import { settings } from '../../app/settings/server';
+import { Rooms, Users, Subscriptions } from '../models';
+import { Rooms as RoomsRaw } from '../models/raw';
+import { settings } from '../settings';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';

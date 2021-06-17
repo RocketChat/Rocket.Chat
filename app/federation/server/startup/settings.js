@@ -1,14 +1,14 @@
 import { debounce } from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { logger } from '../lib/logger';
-import { FederationKeys } from '../../../models/server';
+import { FederationKeys } from '../../../../server/models';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
 Meteor.startup(function() {

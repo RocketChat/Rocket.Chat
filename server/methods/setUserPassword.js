@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Users } from '../../app/models/server';
+import { Users } from '../models';
 import { passwordPolicy } from '../../app/lib/server';
 import { compareUserPassword } from '../lib/compareUserPassword';
 

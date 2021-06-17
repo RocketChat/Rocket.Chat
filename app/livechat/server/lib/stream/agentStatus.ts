@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../Livechat';
-import { settings } from '../../../../settings/server';
+import { settings } from '../../../../../server/settings';
 
 export let monitorAgents = false;
 let actionTimeout = 60000;

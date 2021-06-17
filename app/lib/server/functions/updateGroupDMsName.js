@@ -1,4 +1,4 @@
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Subscriptions, Users } from '../../../../server/models';
 
 const getFname = (members) => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members) => members.map(({ username }) => username).join(',');

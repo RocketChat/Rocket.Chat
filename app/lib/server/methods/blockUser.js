@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { Subscriptions } from '../../../models';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
-import { Rooms } from '../../../models/server';
+import { Rooms } from '../../../../server/models';
 
 Meteor.methods({
 	blockUser({ rid, blocked }) {

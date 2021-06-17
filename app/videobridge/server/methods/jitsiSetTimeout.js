@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Messages, Users } from '../../../models/server';
+import { Rooms, Messages, Users } from '../../../../server/models';
 import { callbacks } from '../../../callbacks/server';
 import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';

@@ -1,5 +1,5 @@
 import { Migrations } from '../../../app/migrations/server';
-import { LivechatInquiry } from '../../../app/models/server/raw';
+import { LivechatInquiry } from '../../models/raw';
 
 Migrations.add({
 	version: 186,

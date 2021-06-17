@@ -1,8 +1,8 @@
 /* eslint no-multi-spaces: 0 */
 import { Meteor } from 'meteor/meteor';
 
-import { Roles, Permissions, Settings } from '../../models/server';
-import { settings } from '../../settings/server';
+import { Roles, Permissions, Settings } from '../../../server/models';
+import { settings } from '../../../server/settings';
 import { getSettingPermissionId, CONSTANTS } from '../lib';
 
 Meteor.startup(function() {

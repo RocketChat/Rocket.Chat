@@ -4,7 +4,7 @@ import moment from 'moment';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
-import { Subscriptions, Users } from '../../../models/server';
+import { Subscriptions, Users } from '../../../../server/models';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';

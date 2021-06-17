@@ -3,5 +3,5 @@ module.exports = {
 	extends: '../../../.eslintrc',
 	rules: {
 		'import/no-unresolved': 'off',
-	}
+	},
 };

@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../settings/server';
+import { settings } from '../../../server/settings';
 import { addServerUrlToIndex } from '../lib/Assets';
 
 const indexHtmlWithServerURL = addServerUrlToIndex(Assets.getText('livechat/index.html'));

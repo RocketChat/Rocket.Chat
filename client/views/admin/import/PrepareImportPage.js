@@ -20,7 +20,7 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ImportingErrorStates,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+} from '../../../../common/importer/ImporterProgressStep';
 import Page from '../../../components/Page';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';

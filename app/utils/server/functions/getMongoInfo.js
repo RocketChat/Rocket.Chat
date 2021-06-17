@@ -1,6 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 
-import { getOplogHandle } from '../../../models/server/models/_oplogHandle';
+import { getOplogHandle } from '../../../../server/models/models/_oplogHandle';
 
 export function getOplogInfo() {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();

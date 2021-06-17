@@ -1,6 +1,6 @@
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
-import { LivechatInquiry, Users } from '../../../../../../app/models/server/raw';
+import { LivechatInquiry, Users } from '../../../../../../server/models/raw';
 import { LivechatEnterprise } from '../../lib/LivechatEnterprise';
 
 export async function setPriorityToInquiry({ userId, roomId, priority }) {

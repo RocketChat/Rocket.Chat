@@ -2,7 +2,7 @@ import Agenda from 'agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
-import { LivechatRooms, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../server/models';
 import { Livechat } from '../../../../../app/livechat/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';

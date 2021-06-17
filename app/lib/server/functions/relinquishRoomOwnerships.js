@@ -1,5 +1,5 @@
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions, Messages, Rooms, Roles } from '../../../models/server';
+import { Subscriptions, Messages, Rooms, Roles } from '../../../../server/models';
 
 const bulkRoomCleanUp = (rids) => {
 	// no bulk deletion for files

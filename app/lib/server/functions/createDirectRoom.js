@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../callbacks/server';
-import { Rooms, Subscriptions } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { Rooms, Subscriptions } from '../../../../server/models';
+import { settings } from '../../../../server/settings';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
 
 const generateSubscription = (fname, name, user, extra) => ({

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { FederationServers, FederationRoomEvents, Users } from '../../../models/server';
+import { FederationServers, FederationRoomEvents, Users } from '../../../../server/models';
 
 export function getStatistics() {
 	const numberOfEvents = FederationRoomEvents.find().count();

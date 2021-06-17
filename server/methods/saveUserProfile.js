@@ -3,9 +3,9 @@ import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
-import { Users } from '../../app/models/server';
-import { settings as rcSettings } from '../../app/settings/server';
-import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { Users } from '../models';
+import { settings as rcSettings } from '../settings';
+import { twoFactorRequired } from '../services/2fa/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';

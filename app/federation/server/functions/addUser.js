@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import * as federationErrors from './errors';
-import { FederationServers, Users } from '../../../models/server';
+import { FederationServers, Users } from '../../../../server/models';
 import { getUserByUsername } from '../handler';
 
 export function addUser(query) {

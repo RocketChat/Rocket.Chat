@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file';
 import { FileUpload } from '../../../file-upload';
-import { Rooms, Avatars, Messages } from '../../../models/server';
+import { Rooms, Avatars, Messages } from '../../../../server/models';
 import { api } from '../../../../server/sdk/api';
 
 export const setRoomAvatar = function(rid, dataURI, user) {

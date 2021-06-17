@@ -6,7 +6,7 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Settings, Users } from '../../models/server';
+import { Settings, Users } from '../../../server/models';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 
 

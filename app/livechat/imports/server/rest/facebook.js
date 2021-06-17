@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import { Random } from 'meteor/random';
 
-import { API } from '../../../../api/server';
+import { API } from '../../../../../server/api/v1';
 import { LivechatRooms, LivechatVisitors } from '../../../../models';
 import { settings } from '../../../../settings';
 import { Livechat } from '../../../server/lib/Livechat';
