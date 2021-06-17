@@ -1,17 +1,20 @@
-![](https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png)
 
-<h1 align="center">
-  The Ultimate Open Source WebChat Platform
-</h1>
 
-[![Rocket.Chat](https://open.rocket.chat/images/join-chat.svg)](https://open.rocket.chat/)
-[![Build Status](https://img.shields.io/travis/RocketChat/Rocket.Chat/master.svg)](https://travis-ci.org/RocketChat/Rocket.Chat)
-[![Project Dependencies](https://david-dm.org/RocketChat/Rocket.Chat.svg)](https://david-dm.org/RocketChat/Rocket.Chat)
-[![devDependencies Status](https://david-dm.org/RocketChat/Rocket.Chat/dev-status.svg)](https://david-dm.org/RocketChat/Rocket.Chat?type=dev)
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/8580571ba024426d9649e9ab389bd5dd)](https://www.codacy.com/app/RocketChat/Rocket-chat)
-[![Coverage Status](https://coveralls.io/repos/RocketChat/Rocket.Chat/badge.svg)](https://coveralls.io/r/RocketChat/Rocket.Chat)
-[![Code Climate](https://codeclimate.com/github/RocketChat/Rocket.Chat/badges/gpa.svg)](https://codeclimate.com/github/RocketChat/Rocket.Chat)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
+![](../../.gitbook/assets/logo-horizontal-2.png)   
+
+
+[Rocket.Chat](https://rocket.chat/) is a modern open-source \(permissive MIT source license\) team chat and collaborating platform written in JavaScript using the Meteor framework. It is one of the most solid open-source Slack alternatives.   
+
+
+Rocket.Chat is a team collaboration software, allowing endless possibilities of customizations, integrations, and security.  The review platform Capterra named Rocket.Chat one of the Top 5 Most Popular Live Chat Softwares and [Top 20 Most Popular Remote Work Software.](https://rocket.chat/rocket-chat-earns-capterras-top-20/)  
+
+
+* [Review product documentation.](https://docs.rocket.chat/)
+* [Review developer documentation.](https://developer.rocket.chat/)
+
+![](https://lh3.googleusercontent.com/y4FVH8a6WucNcuXCQQ5QaQt9M8tpz2_julhjEdJ-NLoA2NHJgeWlXYY6c5bfwI4Lu8jt8IOtwwwt1D4lgW_OpLKGRPwPsGmsOeutC9i_gg69S5lxjg4TUcsFnzVP6og8Qmhs5EJV)
+
+## Table of Contents
 
 * [**NEW!** Rocket.Chat Moving to a Single Codebase](#moving-to-a-single-codebase)
 * [Community](#community)
