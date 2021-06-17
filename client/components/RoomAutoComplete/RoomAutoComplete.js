@@ -1,4 +1,4 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -31,8 +31,12 @@ const RoomAutoComplete = (props) => {
 			setFilter={setFilter}
 			renderSelected={({ value, label }) => (
 				<>
-					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
-					{label?.name}
+					<Box margin='none' mi='x2'>
+						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />{' '}
+					</Box>
+					<Box margin='none' mi='x2'>
+						{label?.name}
+					</Box>
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (

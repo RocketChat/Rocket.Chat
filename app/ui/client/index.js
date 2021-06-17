@@ -25,7 +25,6 @@ import './views/app/photoswipe.html';
 import './views/cmsPage';
 import './views/404/roomNotFound';
 import './views/app/burger';
-import './views/app/CreateDirectMessage';
 import './views/app/editStatus';
 import './views/app/home';
 import './views/app/roomSearch';

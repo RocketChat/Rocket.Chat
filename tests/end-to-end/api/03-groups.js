@@ -60,6 +60,16 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
+		it('should hide message pins (system messages)', (done) => {
+			request.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testGroup._id,
+					systemMessages: ['message_pinned'],
+				})
+				.expect(200)
+				.end(done);
+		});
 		it('should return group basic structure', (done) => {
 			request.get(api('groups.info'))
 				.set(credentials)
