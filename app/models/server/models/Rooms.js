@@ -253,6 +253,10 @@ export class Rooms extends Base {
 		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
+	getHiddenSystemMessagesTypesById(_id, options) {
+		return this.findOne({ _id }, { ...options, fields: { sysMes: 1 } });
+	}
+
 	setAllowReactingWhenReadOnlyById = function(_id, allowReacting) {
 		const query = {
 			_id,
@@ -967,7 +971,7 @@ export class Rooms extends Base {
 
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
-		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
+		const lastMessage = Messages.getLastVisibleMessageSentByRoomId(_id, messageId);
 
 		const update = lastMessage ? {
 			$set: {
