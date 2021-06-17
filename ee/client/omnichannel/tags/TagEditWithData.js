@@ -7,8 +7,8 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import TagEdit from './TagEdit';
 
-function TagEditWithData({ tagId, reload }) {
-	const query = useMemo(() => ({ tagId }), [tagId]);
+function TagEditWithData({ title, id, reload }) {
+	const query = useMemo(() => ({ tagId: id }), [id]);
 	const { value: data, phase: state, error } = useEndpointData('livechat/tags.getOne', query);
 	const {
 		value: availableDepartments,
@@ -32,7 +32,8 @@ function TagEditWithData({ tagId, reload }) {
 
 	return (
 		<TagEdit
-			tagId={tagId}
+			title={title}
+			tagId={id}
 			data={data}
 			availableDepartments={availableDepartments}
 			reload={reload}
