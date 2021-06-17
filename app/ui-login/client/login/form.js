@@ -177,20 +177,8 @@ Template.loginForm.events({
 
 Template.loginForm.onCreated(function() {
 	const instance = this;
-	this.customFields = new ReactiveVar();
 	this.loading = new ReactiveVar(false);
-	Tracker.autorun(() => {
-		const Accounts_CustomFields = settings.get('Accounts_CustomFields');
-		if (typeof Accounts_CustomFields === 'string' && Accounts_CustomFields.trim() !== '') {
-			try {
-				return this.customFields.set(JSON.parse(settings.get('Accounts_CustomFields')));
-			} catch (error1) {
-				return console.error('Invalid JSON for Accounts_CustomFields');
-			}
-		} else {
-			return this.customFields.set(null);
-		}
-	});
+
 	if (Session.get('loginDefaultState')) {
 		this.state = new ReactiveVar(Session.get('loginDefaultState'));
 	} else {
@@ -205,34 +193,6 @@ Template.loginForm.onCreated(function() {
 	});
 
 	this.validSecretURL = new ReactiveVar(false);
-	const validateCustomFields = function(formObj, validationObj) {
-		const customFields = instance.customFields.get();
-		if (!customFields) {
-			return;
-		}
-
-		for (const field in formObj) {
-			if (formObj.hasOwnProperty(field)) {
-				const value = formObj[field];
-				if (customFields[field] == null) {
-					continue;
-				}
-				const customField = customFields[field];
-				if (customField.required === true && !value) {
-					validationObj[field] = t('Field_required');
-					return validationObj[field];
-				}
-				if ((customField.maxLength != null) && value.length > customField.maxLength) {
-					validationObj[field] = t('Max_length_is', customField.maxLength);
-					return validationObj[field];
-				}
-				if ((customField.minLength != null) && value.length < customField.minLength) {
-					validationObj[field] = t('Min_length_is', customField.minLength);
-					return validationObj[field];
-				}
-			}
-		}
-	};
 	this.validate = function() {
 		const formData = $('#login-card').serializeArray();
 		const formObj = {};
@@ -266,7 +226,6 @@ Template.loginForm.onCreated(function() {
 			if (settings.get('Accounts_ManuallyApproveNewUsers') && !formObj.reason) {
 				validationObj.reason = t('Invalid_reason');
 			}
-			validateCustomFields(formObj, validationObj);
 		}
 		$('#login-card h2').removeClass('error');
 		$('#login-card input.error, #login-card select.error').removeClass('error');
