@@ -80,7 +80,10 @@ function EditDepartment({ data, id, title, reload }) {
 		visitorInactivityTimeoutInSeconds:
 			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
-		departmentsAllowedToForward: (department && department.departmentsAllowedToForward) || [],
+		departmentsAllowedToForward:
+			(department &&
+				department.departmentsAllowedToForward?.map((dep) => ({ label: dep, value: dep }))) ||
+			[],
 	});
 	const {
 		handleName,
@@ -211,7 +214,7 @@ function EditDepartment({ data, id, title, reload }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.join(),
+				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.label).join(),
 		};
 
 		const agentListPayload = {

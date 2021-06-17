@@ -1,38 +1,44 @@
-import { Field, MultiSelectFiltered, Box } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import React, { useMemo, useState } from 'react';
 
+import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
-const param = { onlyMyDepartments: true };
-export const DepartmentForwarding = ({ departmentId, value, handler, label, placeholder }) => {
+export const DepartmentForwarding = ({ departmentId, value, handler, label }) => {
 	const t = useTranslation();
-	const { value: data } = useEndpointData('livechat/department', param);
+	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
-	const options = useMemo(
-		() =>
-			(data && [
-				...data.departments
-					.filter((department) => department._id !== departmentId)
-					.map((department) => [department._id, department.name]),
-			]) ||
-			[],
-		[data, departmentId],
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+		useMemo(() => ({ filter: departmentsFilter, departmentId }), [departmentId, departmentsFilter]),
 	);
+
+	const {
+		phase: departmentsPhase,
+		items: departmentsItems,
+		itemCount: departmentsTotal,
+	} = useRecordList(departmentsList);
 
 	return (
 		<Field>
 			<Field.Label>{t(label)}</Field.Label>
 			<Field.Row>
 				<Box w='100%'>
-					<MultiSelectFiltered
+					<PaginatedMultiSelectFiltered
+						maxWidth='100%'
 						w='100%'
-						value={value}
-						options={options}
-						onChange={handler}
-						disabled={!options}
-						placeholder={t(placeholder)}
 						flexGrow={1}
+						filter={departmentsFilter}
+						setFilter={setDepartmentsFilter}
+						onChange={handler}
+						options={departmentsItems}
+						value={value}
+						endReached={
+							departmentsPhase === AsyncStatePhase.LOADING
+								? () => {}
+								: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+						}
 					/>
 				</Box>
 			</Field.Row>

@@ -8,6 +8,8 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type DepartmentsListOptions = {
 	filter: string;
+	departmentId?: string;
+	onlyMyDepartments?: boolean;
 };
 
 export const useDepartmentsList = (
@@ -20,7 +22,9 @@ export const useDepartmentsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = 'livechat/department';
+	const endpoint = `livechat/department${
+		options.onlyMyDepartments ? '?onlyMyDepartments=true' : ''
+	}` as 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
