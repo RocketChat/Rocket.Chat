@@ -59,11 +59,12 @@ function DepartmentsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		departmentsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			departmentsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/department', query);

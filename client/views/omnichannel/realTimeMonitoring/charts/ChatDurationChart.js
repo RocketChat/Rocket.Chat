@@ -34,10 +34,11 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/timings',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.chatDurationChart = reload;
 

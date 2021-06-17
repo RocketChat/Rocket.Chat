@@ -34,9 +34,10 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [
-		data._id,
-	]);
+	const deleteQuery = useMemo(
+		() => ({ type: 'webhook-incoming', integrationId: data._id }),
+		[data._id],
+	);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 	const saveIntegration = useMethod('updateIncomingIntegration');
 

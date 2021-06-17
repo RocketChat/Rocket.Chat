@@ -50,9 +50,10 @@ function EditOutgoingWebhook({ data, onChange, setSaveAction, ...props }) {
 
 	const router = useRoute('admin-integrations');
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-outgoing', integrationId: data._id }), [
-		data._id,
-	]);
+	const deleteQuery = useMemo(
+		() => ({ type: 'webhook-outgoing', integrationId: data._id }),
+		[data._id],
+	);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 
 	const handleDeleteIntegration = useCallback(() => {

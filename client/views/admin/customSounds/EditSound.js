@@ -35,12 +35,10 @@ function EditSound({ close, onChange, data, ...props }) {
 		setSound(soundFile);
 	}, []);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [
-		name,
-		previousName,
-		previousSound,
-		sound,
-	]);
+	const hasUnsavedChanges = useMemo(
+		() => previousName !== name || previousSound !== sound,
+		[name, previousName, previousSound, sound],
+	);
 
 	const saveAction = useCallback(
 		async (sound) => {

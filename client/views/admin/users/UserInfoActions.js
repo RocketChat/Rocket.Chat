@@ -32,32 +32,34 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 
 	const enforcePassword = useSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback');
 
-	const confirmOwnerChanges = (action, modalProps = {}) => async () => {
-		try {
-			return await action();
-		} catch (error) {
-			if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
-				const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
-				setModal(
-					<ConfirmOwnerChangeWarningModal
-						shouldChangeOwner={shouldChangeOwner}
-						shouldBeRemoved={shouldBeRemoved}
-						{...modalProps}
-						onConfirm={async () => {
-							await action(true);
-							setModal();
-						}}
-						onCancel={() => {
-							setModal();
-							onChange();
-						}}
-					/>,
-				);
-				return;
+	const confirmOwnerChanges =
+		(action, modalProps = {}) =>
+		async () => {
+			try {
+				return await action();
+			} catch (error) {
+				if (error.xhr?.responseJSON?.errorType === 'user-last-owner') {
+					const { shouldChangeOwner, shouldBeRemoved } = error.xhr.responseJSON.details;
+					setModal(
+						<ConfirmOwnerChangeWarningModal
+							shouldChangeOwner={shouldChangeOwner}
+							shouldBeRemoved={shouldBeRemoved}
+							{...modalProps}
+							onConfirm={async () => {
+								await action(true);
+								setModal();
+							}}
+							onCancel={() => {
+								setModal();
+								onChange();
+							}}
+						/>,
+					);
+					return;
+				}
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
+		};
 
 	const deleteUserQuery = useMemo(() => ({ userId: _id }), [_id]);
 	const deleteUserEndpoint = useEndpoint('POST', 'users.delete');

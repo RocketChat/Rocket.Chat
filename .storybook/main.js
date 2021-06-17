@@ -21,7 +21,6 @@ module.exports = {
 				plugins: [
 					require('postcss-custom-properties')({ preserve: true }),
 					require('postcss-media-minmax')(),
-					require('postcss-selector-not')(),
 					require('postcss-nested')(),
 					require('autoprefixer')(),
 					require('postcss-url')({ url: ({ absolutePath, relativePath, url }) => {

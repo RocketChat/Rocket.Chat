@@ -36,19 +36,19 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
-	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(
-		monitorsList,
-	);
-
 	const {
-		itemsList: departmentsList,
-		loadMoreItems: loadMoreDepartments,
-	} = useDepartmentsByUnitsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId }), [
-			debouncedDepartmentsFilter,
-			unitId,
-		]),
-	);
+		phase: monitorsPhase,
+		items: monitorsItems,
+		itemCount: monitorsTotal,
+	} = useRecordList(monitorsList);
+
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } =
+		useDepartmentsByUnitsList(
+			useMemo(
+				() => ({ filter: debouncedDepartmentsFilter, unitId }),
+				[debouncedDepartmentsFilter, unitId],
+			),
+		);
 
 	const {
 		phase: departmentsPhase,
