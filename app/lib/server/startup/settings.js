@@ -1303,14 +1303,6 @@ settings.addGroup('Push', function() {
 				_id: 'Push_enable',
 				value: true,
 			},
-			{
-				_id: 'Register_Server',
-				value: true,
-			},
-			{
-				_id: 'Cloud_Service_Agree_PrivacyTerms',
-				value: true,
-			},
 		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
