@@ -67,19 +67,7 @@ module.exports = {
 			),
 			new webpack.NormalModuleReplacementPlugin(
 				/(server)\/*.*/,
-				require.resolve('./mocks/empty.js'),
-			),
-			new webpack.NormalModuleReplacementPlugin(
-				/(server)\/*.*/,
-				require.resolve('./mocks/empty.js'),
-			),
-			new webpack.NormalModuleReplacementPlugin(
-				/(server)\/*.*/,
-				require.resolve('./mocks/empty.js'),
-			),
-			new webpack.NormalModuleReplacementPlugin(
-				/(server)\/*.*/,
-				require.resolve('./mocks/empty.js'),
+				require.resolve('./mocks/empty.ts'),
 			),
 		);
 
