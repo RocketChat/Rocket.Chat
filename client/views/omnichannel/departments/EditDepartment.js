@@ -82,7 +82,8 @@ function EditDepartment({ data, id, title, reload }) {
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
 		departmentsAllowedToForward:
 			(department &&
-				department.departmentsAllowedToForward?.map((dep) => ({ label: dep, value: dep }))) ||
+				department.departmentsAllowedToForward &&
+				department.departmentsAllowedToForward.map((dep) => ({ label: dep, value: dep }))) ||
 			[],
 	});
 	const {
