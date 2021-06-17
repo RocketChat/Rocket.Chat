@@ -1,3 +1,4 @@
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import Logo from './Logo';
@@ -7,4 +8,4 @@ export default {
 	component: Logo,
 };
 
-export const AsPlaceholder = () => <Logo />;
+export const AsPlaceholder: Story = () => <Logo />;
