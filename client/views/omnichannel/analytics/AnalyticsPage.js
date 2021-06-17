@@ -31,7 +31,7 @@ const useOptions = (type) => {
 const AnalyticsPage = () => {
 	const t = useTranslation();
 	const [type, setType] = useState('Conversations');
-	const [departmentId, setDepartmentId] = useState(null);
+	const [department, setDepartment] = useState(null);
 	const [dateRange, setDateRange] = useState({ start: null, end: null });
 	const [chartName, setChartName] = useState();
 
@@ -49,8 +49,6 @@ const AnalyticsPage = () => {
 		setChartName(graphOptions[0][0]);
 	}, [graphOptions]);
 
-	console.log(departmentId);
-
 	return (
 		<Page>
 			<Page.Header title={t('Analytics')} />
@@ -64,8 +62,8 @@ const AnalyticsPage = () => {
 						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
 							<AutoCompleteDepartment
-								value={departmentId}
-								onChange={setDepartmentId}
+								value={department}
+								onChange={setDepartment}
 								placeholder={t('All')}
 								label={t('All')}
 								onlyMyDepartments
@@ -74,7 +72,7 @@ const AnalyticsPage = () => {
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
 					<Box>
-						<Overview type={type} dateRange={dateRange} departmentId={departmentId} />
+						<Overview type={type} dateRange={dateRange} departmentId={department?.value} />
 					</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inline='x2'>
@@ -92,7 +90,7 @@ const AnalyticsPage = () => {
 							w='66%'
 							h='100%'
 							chartName={chartName}
-							departmentId={departmentId}
+							departmentId={department?.value}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
@@ -104,7 +102,7 @@ const AnalyticsPage = () => {
 							p='x10'
 							mis='x4'
 						>
-							<AgentOverview type={chartName} dateRange={dateRange} departmentId={departmentId} />
+							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department} />
 						</Box>
 					</Box>
 				</Margins>

@@ -2,10 +2,10 @@ import { Box, Select, Field, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { getDateRange } from '../../../lib/getDateRange';
-import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import AgentStatusChart from './charts/AgentStatusChart';
 import ChatDurationChart from './charts/ChatDurationChart';
 import ChatsChart from './charts/ChatsChart';
@@ -29,7 +29,7 @@ const RealTimeMonitoringPage = () => {
 
 	const departmentParams = useMemo(
 		() => ({
-			...(department && { departmentId: department }),
+			...(department?.value && { departmentId: department?.value }),
 		}),
 		[department],
 	);
@@ -80,10 +80,11 @@ const RealTimeMonitoringPage = () => {
 						<Field mie='x4' flexShrink={1}>
 							<Field.Label>{t('Department')}</Field.Label>
 							<Field.Row>
-								<DepartmentAutoComplete
-									placeholder={t('All')}
+								<AutoCompleteDepartment
 									value={department}
 									onChange={setDepartment}
+									placeholder={t('All')}
+									label={t('All')}
 									onlyMyDepartments
 								/>
 							</Field.Row>

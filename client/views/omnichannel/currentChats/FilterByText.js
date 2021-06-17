@@ -81,7 +81,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			guest,
 			servedBy,
 			status,
-			department,
+			...(department?.value && { department: department.value }),
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags,
