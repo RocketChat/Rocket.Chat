@@ -122,7 +122,6 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		username: String,
 	}));
 
-	// check if a subscription already exists
 	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId, { fields: { _id: 1 } });
 
 	const { _id, username, token, status = 'online' } = guest;
