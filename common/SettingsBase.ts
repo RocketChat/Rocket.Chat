@@ -1,11 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-<<<<<<< HEAD:common/SettingsBase.ts
 import { SettingValue } from '../definition/ISetting';
-=======
-import { SettingValue } from '../../definition/ISetting';
->>>>>>> Moved settings manager to server/settings. Branched export left on app:server/settings/SettingsBase.ts
 
 export type SettingComposedValue = {key: string; value: SettingValue};
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
