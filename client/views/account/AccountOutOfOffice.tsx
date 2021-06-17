@@ -1,11 +1,10 @@
-import React, { useCallback, useMemo } from 'react';
 import {
 	Box,
 	Field,
 	FieldGroup,
-	/**@ts-ignore */
+	/** @ts-ignore */
 	MultiSelect,
-	/**@ts-ignore */
+	/** @ts-ignore */
 	RadioButton,
 	InputBox,
 	Divider,
@@ -13,12 +12,13 @@ import {
 	Button,
 	ButtonGroup,
 } from '@rocket.chat/fuselage';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 
-import { ISubscription } from '/definition/ISubscription';
-import Page from '/client/components/Page/Page';
+import { ISubscription } from '../../../definition/ISubscription';
+import Page from '../../components/Page/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useForm } from '/client/hooks/useForm';
-import { useEndpointData } from '/client/hooks/useEndpointData';
+import { useEndpointData } from '../../hooks/useEndpointData';
+import { useForm } from '../../hooks/useForm';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
@@ -32,12 +32,12 @@ const defaultFormValues = {
 	roomIds: [],
 };
 
-function OutOfOfficePage() {
+function OutOfOfficePage(): ReactNode {
 	const t = useTranslation() as any;
 
 	const { values, handlers, commit, hasUnsavedChanges } = useForm(defaultFormValues);
 
-	const { outOfOfficeEnabled, customMessage, startDate, endDate, roomIds } = values;
+	const { outOfOfficeEnabled, customMessage, startDate, endDate } = values;
 
 	const {
 		handleOutOfOfficeEnabled,
@@ -56,9 +56,10 @@ function OutOfOfficePage() {
 		value: { update: subscribedRooms = [] } = { update: [] },
 	}: IEndpointSubscriptionsGet = useEndpointData('subscriptions.get' as any);
 
-	const roomOptions: Array<[string, string]> = useMemo(() => {
-		return subscribedRooms.filter((s) => s.t !== 'd').map((s) => [s.rid, s.name]);
-	}, [subscribedRooms]);
+	const roomOptions: Array<[string, string]> = useMemo(
+		() => subscribedRooms.filter((s) => s.t !== 'd').map((s) => [s.rid, s.name]),
+		[subscribedRooms],
+	);
 
 	return (
 		<Page>
@@ -80,7 +81,7 @@ function OutOfOfficePage() {
 								<Field.Row>
 									<RadioButton
 										checked={!outOfOfficeEnabled}
-										onChange={() => handleOutOfOfficeEnabled(false)}
+										onChange={(): void => handleOutOfOfficeEnabled(false)}
 									/>
 								</Field.Row>
 								<Field.Row>
@@ -95,8 +96,8 @@ function OutOfOfficePage() {
 							<Box display='flex' justifyContent='space-between' alignItems='center'>
 								<Field.Row>
 									<RadioButton
-										checked={outOfOfficeEnabled}
-										onChange={() => handleOutOfOfficeEnabled(true)}
+										checked={outOfOfficeEnabled as boolean}
+										onChange={(): void => handleOutOfOfficeEnabled(true)}
 									/>
 								</Field.Row>
 								<Field.Row>
