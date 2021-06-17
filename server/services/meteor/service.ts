@@ -4,6 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
+import { metrics } from '../../../app/metrics';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
@@ -236,6 +237,12 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 		this.onEvent('watch.emailInbox', async () => {
 			configureEmailInboxes();
+		});
+
+		this.onEvent('watch.messages', ({ message }) => {
+			if (message?._updatedAt) {
+				metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+			}
 		});
 	}
 

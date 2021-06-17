@@ -31,6 +31,7 @@ const mongoConnectionOptions = {
 	// add retryWrites=false if not present in MONGO_URL
 	...!process.env.MONGO_URL.includes('retryWrites') && { retryWrites: false },
 	// ignoreUndefined: false, // TODO evaluate adding this config
+	monitorCommands: process.env.MONITOR_MONGO_COMMANDS === 'true',
 };
 
 const mongoOptionStr = process.env.MONGO_OPTIONS;
