@@ -6,7 +6,7 @@ import { usePermission } from '../../contexts/AuthorizationContext';
 import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
-import AccountOutOfOfficePage from './AccountOutOfOffice';
+import AccountOutOfOfficePage from './AccountOutOfOfficePage';
 import AccountProfilePage from './AccountProfilePage';
 import AccountPreferencesPage from './preferences/AccountPreferencesPage';
 import AccountSecurityPage from './security/AccountSecurityPage';
