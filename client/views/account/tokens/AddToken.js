@@ -38,7 +38,9 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const handleAdd = useCallback(async () => {
+	const handleAdd = useCallback(async (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		try {
 			const token = await createTokenFn({ tokenName: name, bypassTwoFactor });
 
@@ -80,7 +82,7 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 	const bypassTwoFactorCheckboxId = useUniqueId();
 
 	return (
-		<FieldGroup is='form' marginBlock='x8' {...props}>
+		<FieldGroup is='form' marginBlock='x8' {...props} onSubmit={handleAdd}>
 			<Field>
 				<Field.Row>
 					<Margins inlineEnd='x4'>
