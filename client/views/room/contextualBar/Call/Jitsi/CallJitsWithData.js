@@ -124,14 +124,14 @@ const CallJitsWithData = ({ rid }) => {
 			if (jitsi.window?.closed) {
 				return jitsi.dispose();
 			}
-			return updateTimeout(rid);
+			return updateTimeout(rid, false);
 		}
 		if (new Date() - new Date(room.jitsiTimeout) > TIMEOUT) {
 			return jitsi.dispose();
 		}
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
-			return updateTimeout(rid);
+			return updateTimeout(rid, false);
 		}
 	});
 
@@ -139,9 +139,13 @@ const CallJitsWithData = ({ rid }) => {
 		if (!accepted || !jitsi) {
 			return;
 		}
-		jitsi.start(ref.current);
 
-		updateTimeout(rid);
+		if (jitsi.needsStart) {
+			jitsi.start(ref.current);
+			updateTimeout(rid, true);
+		} else {
+			updateTimeout(rid, false);
+		}
 
 		jitsi.on('HEARTBEAT', testAndHandleTimeout);
 		const none = () => {};
@@ -154,7 +158,12 @@ const CallJitsWithData = ({ rid }) => {
 	}, [accepted, jitsi, rid, testAndHandleTimeout, updateTimeout]);
 
 	const handleYes = useMutableCallback(() => {
+		if (jitsi) {
+			jitsi.needsStart = true;
+		}
+
 		setAccepted(true);
+
 		if (openNewWindow) {
 			handleClose();
 		}

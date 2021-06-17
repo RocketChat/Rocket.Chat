@@ -34,8 +34,8 @@
 		"set-version": "node .scripts/set-version.js",
 		"sfu:start": "ts-node sfu/index.ts",
 		"release": "meteor npm run set-version --silent",
-		"storybook": "start-storybook -p 6006",
-		"build-storybook": "build-storybook"
+		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
+		"build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 build-storybook"
 	},
 	"license": "MIT",
 	"repository": {
@@ -76,7 +76,8 @@
 		"@types/mongodb": "^3.5.26",
 		"@types/node": "^12.20.10",
 		"@types/protoo-server": "^4.0.1",
-		"@types/react-dom": "^16.9.8",
+		"@types/react": "^17.0.11",
+		"@types/react-dom": "^16.9.13",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.3",
 		"@types/toastr": "^2.1.38",
@@ -92,6 +93,7 @@
 		"chai": "^4.2.0",
 		"chai-datetime": "^1.7.0",
 		"chai-spies": "^1.0.0",
+		"cross-env": "^7.0.3",
 		"cypress": "^4.12.1",
 		"emojione-assets": "^4.5.0",
 		"eslint": "^6.8.0",
@@ -138,13 +140,13 @@
 		"@nivo/heatmap": "^0.61.0",
 		"@nivo/line": "^0.61.1",
 		"@nivo/pie": "^0.61.1",
-		"@rocket.chat/apps-engine": "1.26.0",
-		"@rocket.chat/css-in-js": "^0.26.0",
+		"@rocket.chat/apps-engine": "1.27.0-alpha.5192",
+		"@rocket.chat/css-in-js": "^0.6.3-dev.261",
 		"@rocket.chat/emitter": "^0.26.0",
-		"@rocket.chat/fuselage": "^0.26.0",
-		"@rocket.chat/fuselage-hooks": "^0.26.0",
-		"@rocket.chat/fuselage-polyfills": "^0.26.0",
-		"@rocket.chat/fuselage-tokens": "^0.26.0",
+		"@rocket.chat/fuselage": "^0.6.3-dev.266",
+		"@rocket.chat/fuselage-hooks": "^0.6.3-dev.261",
+		"@rocket.chat/fuselage-polyfills": "^0.6.3-dev.259",
+		"@rocket.chat/fuselage-tokens": "^0.6.3-dev.261",
 		"@rocket.chat/fuselage-ui-kit": "^0.26.0",
 		"@rocket.chat/memo": "^0.26.0",
 		"@rocket.chat/message-parser": "^0.26.0",
@@ -317,5 +319,8 @@
 	},
 	"browserslist": [
 		"last 2 versions"
-	]
+	],
+	"volta": {
+		"node": "12.22.1"
+	}
 }
