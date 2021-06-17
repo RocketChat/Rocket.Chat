@@ -39,10 +39,10 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
 	const handleAdd = useCallback(
-		async (e) => {
-			e.stopPropagation();
-			e.preventDefault();
+		async (event) => {
 			try {
+				event?.stopPropagation();
+				event?.preventDefault();
 				const token = await createTokenFn({ tokenName: name, bypassTwoFactor });
 
 				setModal(
