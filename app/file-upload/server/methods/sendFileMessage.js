@@ -33,7 +33,7 @@ Meteor.methods({
 
 		Uploads.updateFileComplete(file._id, Meteor.userId(), _.omit(file, '_id'));
 
-		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+		const fileUrl = FileUpload.getPath(`${ file._id }/file`);
 
 		const attachment = {
 			title: file.name,
