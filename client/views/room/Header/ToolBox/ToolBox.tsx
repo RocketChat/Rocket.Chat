@@ -21,7 +21,7 @@ type ToolBoxProps = {
 	room?: IRoom;
 };
 
-const ToolBox: FC<ToolBoxProps> = ({ className }) => {
+const ToolBox: FC<ToolBoxProps> = ({ className, room }) => {
 	const tab = useTab();
 	const openTabBar = useTabBarOpen();
 	const { isMobile } = useLayout();
@@ -29,9 +29,14 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
 	const { actions: mapActions } = useContext(ToolboxContext);
-	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
+	let actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);
+
+	if (room && room.voice) {
+		actions = actions.filter(({ id }) => id === 'channel-settings' || id === 'members-list');
+	}
+
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 
 	const hiddenActions: MenuProps['options'] = Object.fromEntries(
