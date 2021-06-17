@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Busboy from 'busboy';
 
-import { RocketChatAssets } from '../../../app/assets/server';
+import { RocketChatAssets } from '../../utils/assets';
 import { API } from './api';
 
 API.v1.addRoute('assets.setAsset', { authRequired: true }, {

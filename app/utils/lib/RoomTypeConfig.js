@@ -5,7 +5,7 @@ let Users;
 let settings;
 if (Meteor.isServer) {
 	({ settings } = require('../../../server/settings'));
-	Users = require('../../../server/models/models/Users').default;
+	Users = require('../../../server/models/meteor/Users').default;
 } else {
 	({ settings } = require('../../settings/client'));
 }

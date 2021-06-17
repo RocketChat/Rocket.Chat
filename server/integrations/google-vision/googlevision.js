@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings } from '../../settings';
 import { callbacks } from '../../../app/callbacks';
 import { Uploads, Settings, Users, Messages } from '../../models';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../services/file-handling/file-upload';
 import { api } from '../../sdk/api';
 
 class GoogleVision {

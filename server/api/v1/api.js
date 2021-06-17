@@ -9,7 +9,7 @@ import _ from 'underscore';
 
 import { Logger } from '../../../app/logger';
 import { settings } from '../../settings';
-import { metrics } from '../../../app/metrics';
+import { metrics } from '../../utils/metrics';
 import { hasPermission, hasAllPermission } from '../../../app/authorization';
 import { getDefaultUserFields } from '../../../app/utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../services/2fa/code';

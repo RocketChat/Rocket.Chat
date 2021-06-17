@@ -1,4 +1,4 @@
-import { Markdown } from '../../../markdown/server';
+import { Markdown } from '../../../../server/utils/markdown';
 
 export const parseUrlsInMessage = (message) => {
 	if (message.parseUrls === false) {

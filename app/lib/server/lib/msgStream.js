@@ -1,3 +1,3 @@
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../server/services/notifications/Notifications';
 
 export const msgStream = notifications.streamRoomMessage;

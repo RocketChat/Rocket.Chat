@@ -52,4 +52,6 @@ export interface ISetting {
 	persistent?: boolean;
 	placeholder?: string;
 	alert?: string;
+	i18n?: string;
+	disableReset?: boolean;
 }

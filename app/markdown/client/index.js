@@ -1,2 +1,3 @@
-export { Markdown } from '../lib/markdown';
-export { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../lib/markdown';
+export { Markdown } from '../../../common/markdown/markdown';
+
+export { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../../../common/markdown/markdown';

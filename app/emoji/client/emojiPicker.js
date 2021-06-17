@@ -8,7 +8,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import '../../theme/client/imports/components/emojiPicker.css';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
-import { emoji } from '../lib/rocketchat';
+import { emoji } from '../../../common/emoji';
 import './emojiPicker.html';
 
 const ESCAPE = 27;

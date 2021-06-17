@@ -2,8 +2,8 @@ import { check } from 'meteor/check';
 
 import { API } from './api';
 import { hasRole } from '../../../app/authorization';
-import { saveRegistrationData } from '../../../app/cloud/server/functions/saveRegistrationData';
-import { retrieveRegistrationStatus } from '../../../app/cloud/server/functions/retrieveRegistrationStatus';
+import { saveRegistrationData } from '../../services/cloud/functions/saveRegistrationData';
+import { retrieveRegistrationStatus } from '../../services/cloud/functions/retrieveRegistrationStatus';
 
 API.v1.addRoute('cloud.manualRegister', { authRequired: true }, {
 	post() {

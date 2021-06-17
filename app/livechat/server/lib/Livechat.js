@@ -14,7 +14,7 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../../server/settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../callbacks';
 import {
 	Users,
 	LivechatRooms,
@@ -30,15 +30,15 @@ import {
 } from '../../../../server/models';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../../server/utils/mailer';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../../server/services/apps';
 import { businessHourManager } from '../business-hour';
-import notifications from '../../../notifications/server/lib/Notifications';
+import notifications from '../../../../server/services/notifications/Notifications';
 
 export const Livechat = {
 	Analytics,

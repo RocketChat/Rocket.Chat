@@ -1,5 +1,5 @@
 import { getURL } from '../../lib/getURL';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { Uploads } from '../../../../server/models';
 
 export const normalizeMessageFileUpload = (message) => {

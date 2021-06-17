@@ -4,14 +4,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../../server/utils/metrics';
 import { settings } from '../../../settings';
 import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/utils/logger';
 import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {

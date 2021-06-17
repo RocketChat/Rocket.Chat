@@ -20,7 +20,7 @@ import {
 	sendMessage,
 } from '../../../app/lib';
 import { saveRoomName, saveRoomTopic } from '../../../app/channel-settings';
-import { FileUpload } from '../../../app/file-upload';
+import { FileUpload } from '../../services/file-handling/file-upload';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

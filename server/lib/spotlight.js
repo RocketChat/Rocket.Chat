@@ -10,7 +10,7 @@ import { Subscriptions, Rooms } from '../models';
 import { Users } from '../models/raw';
 import { settings } from '../settings';
 import { searchableRoomTypes } from '../../app/utils/server';
-import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { readSecondaryPreferred } from '../overrides/database/readSecondaryPreferred';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {

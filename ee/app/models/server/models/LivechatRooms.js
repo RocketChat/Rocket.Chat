@@ -1,4 +1,4 @@
-import { LivechatRooms } from '../../../../../server/models/models/LivechatRooms';
+import { LivechatRooms } from '../../../../../server/models/meteor/LivechatRooms';
 import { logger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';

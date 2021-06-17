@@ -10,7 +10,7 @@ import {
 	Selection,
 } from '../..';
 import { Messages } from '../../../../models';
-import { FileUpload } from '../../../../../app/file-upload';
+import { FileUpload } from '../../../file-handling/file-upload';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {

@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
 import { LivechatRooms, LivechatVisitors } from '../../../models';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 
 Meteor.methods({
 	async 'sendFileLivechatMessage'(roomId, visitorToken, file, msgData = {}) {

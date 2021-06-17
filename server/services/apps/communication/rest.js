@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { API } from '../../../api/v1';
-import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../../app/cloud/server';
+import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../cloud';
 import { settings } from '../../../settings';
 import { Info } from '../../../../app/utils';
 import { Settings, Users } from '../../../models';

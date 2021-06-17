@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import { addQueryRestrictionsToDepartmentsModel } from '../lib/query.helper';
 import { hasRole } from '../../../../../app/authorization/server/functions/hasRole';
 

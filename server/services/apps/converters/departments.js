@@ -1,4 +1,4 @@
-import LivechatDepartment from '../../../models/models/LivechatDepartment';
+import LivechatDepartment from '../../../models/meteor/LivechatDepartment';
 import { transformMappedData } from '../misc/transformMappedData';
 
 export class AppDepartmentsConverter {

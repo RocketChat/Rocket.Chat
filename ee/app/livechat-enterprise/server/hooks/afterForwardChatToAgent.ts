@@ -1,5 +1,5 @@
-import { callbacks } from '../../../../../app/callbacks/server';
-import LivechatRooms from '../../../../../server/models/models/LivechatRooms';
+import { callbacks } from '../../../../../server/utils/hooks';
+import LivechatRooms from '../../../../../server/models/meteor/LivechatRooms';
 
 callbacks.add('livechat.afterForwardChatToAgent', (options: { rid?: string } = {}) => {
 	const { rid } = options;

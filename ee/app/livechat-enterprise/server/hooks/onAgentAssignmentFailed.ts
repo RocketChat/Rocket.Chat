@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../server/models';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../server/settings';

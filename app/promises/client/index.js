@@ -1,4 +1,4 @@
-import { promises } from '../lib/promises';
+import { promises } from '../../../common/hooks/promises';
 
 export {
 	promises,

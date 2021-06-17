@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { LivechatAgentActivity, Sessions, Users } from '../../../../server/models';
 
 const formatDate = (dateTime = new Date()) => ({

@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 import { MultipleBusinessHoursBehavior } from '../business-hour/Multiple';
 import { settings } from '../../../../../server/settings';
 import { LivechatBusinessHourBehaviors } from '../../../../../definition/ILivechatBusinessHour';

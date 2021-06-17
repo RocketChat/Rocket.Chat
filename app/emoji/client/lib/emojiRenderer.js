@@ -2,7 +2,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { HTML } from 'meteor/htmljs';
 
-import { emoji } from '../../lib/rocketchat';
+import { emoji } from '../../../../common/emoji';
 import { isSetNotNull } from '../function-isSet';
 
 export const renderEmoji = function(_emoji) {

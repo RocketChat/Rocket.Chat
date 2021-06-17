@@ -5,7 +5,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import { emoji } from '../../lib/rocketchat';
+import { emoji } from '../../../../common/emoji';
 
 let updatePositions = true;
 

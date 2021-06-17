@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { FileUpload } from '../../../../file-upload/server';
+import { FileUpload } from '../../../../../server/services/file-handling/file-upload';
 import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../../../server/models';
 import { API } from '../../../../../server/api/v1';
 import { SMS } from '../../../../../server/integrations/sms';

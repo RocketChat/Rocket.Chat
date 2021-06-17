@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { settings } from '../../../../server/settings';
 import { Messages, Uploads, Rooms } from '../../../../server/models';
-import { Notifications } from '../../../notifications/server';
-import { callbacks } from '../../../callbacks/server';
+import { Notifications } from '../../../../server/services/notifications';
+import { callbacks } from '../../../../server/utils/hooks';
 import { Apps } from '../../../../server/services/apps';
 
 export const deleteMessage = function(message, user) {

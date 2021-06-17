@@ -3,7 +3,7 @@ import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings';
-import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
+import { IMAPInterceptor } from '../../../../server/utils/email/IMAPInterceptor';
 
 import { processDirectEmail } from '.';
 

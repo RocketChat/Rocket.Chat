@@ -5,7 +5,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import mkdirp from 'mkdirp';
 
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../utils/mailer';
 import { Messages, Users } from '../models';
 import { settings } from '../settings';
 import { Message } from '../../app/ui-utils/server';
@@ -16,11 +16,11 @@ import {
 	makeZipFile,
 	sendEmail,
 	uploadZipFile,
-} from '../../app/user-data-download/server/cronProcessDownloads';
+} from '../services/user/data-download/cronProcessDownloads';
 import { IUser } from '../../definition/IUser';
 import { getMomentLocale } from './getMomentLocale';
 import { getURL } from '../../app/utils/lib/getURL';
-import { DataExport } from '../../app/user-data-download/server/DataExport';
+import { DataExport } from '../services/user/data-download/DataExport';
 
 type ExportEmail = {
 	rid: string;

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
-import { Notifications } from '../../../notifications';
+import { Notifications } from '../../../../server/services/notifications';
 import { Invites, Subscriptions, Rooms } from '../../../../server/models';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';

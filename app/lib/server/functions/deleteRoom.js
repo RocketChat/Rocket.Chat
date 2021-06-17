@@ -1,6 +1,6 @@
 import { Messages, Subscriptions, Rooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 
 export const deleteRoom = function(rid) {
 	FileUpload.removeFilesByRoomId(rid);

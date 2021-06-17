@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { filterMarkdown } from '../../../markdown/lib/markdown';
+import { filterMarkdown } from '../../../../common/markdown/markdown';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../../common/MentionsParser';

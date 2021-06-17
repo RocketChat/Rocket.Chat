@@ -2,8 +2,8 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { filterMarkdown } from '../../../app/markdown/lib/markdown';
 import { MessageTypes } from '../../../app/ui-utils/lib/MessageTypes';
+import { filterMarkdown } from '../../../common/markdown/markdown';
 
 export const normalizeSidebarMessage = (message, t) => {
 	const messageType = MessageTypes.getType(message);

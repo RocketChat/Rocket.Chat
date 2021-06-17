@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { Subscriptions, Users } from '../../../../server/models';
 import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
@@ -11,7 +11,7 @@ import { getEmailData, shouldNotifyEmail } from '../functions/notifications/emai
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
-import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { Notification } from '../../../../server/services/notifications/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 
 let TroubleshootDisableNotifications;

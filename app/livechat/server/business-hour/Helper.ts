@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../definition/ILivechatBusinessHour';
 import { LivechatBusinessHours, Users } from '../../../../server/models/raw';
-import { createDefaultBusinessHourRow } from '../../../../server/models/models/LivechatBusinessHours';
+import { createDefaultBusinessHourRow } from '../../../../server/models/meteor/LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (businessHours: ILivechatBusinessHour[]): Promise<Record<string, any>[]> => {
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');

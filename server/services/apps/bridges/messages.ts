@@ -7,7 +7,7 @@ import { Messages, Users, Subscriptions } from '../../../models';
 import { updateMessage } from '../../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
 import { api } from '../../../sdk/api';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
+import notifications from '../../notifications/Notifications';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { AppServerOrchestrator } from '../orchestrator';
 

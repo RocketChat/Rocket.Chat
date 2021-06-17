@@ -1,4 +1,4 @@
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { Subscriptions, Messages, Rooms, Roles } from '../../../../server/models';
 
 const bulkRoomCleanUp = (rids) => {

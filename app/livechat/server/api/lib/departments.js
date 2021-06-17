@@ -2,7 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../server/models/raw';
-import { callbacks } from '../../../../callbacks/server';
+import { callbacks } from '../../../../../server/utils/hooks';
 
 
 export async function findDepartments({ userId, onlyMyDepartments = false, text, enabled, pagination: { offset, count, sort } }) {

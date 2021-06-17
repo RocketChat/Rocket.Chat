@@ -1,6 +1,6 @@
-import { logger } from '../../../../../app/ldap/server/sync';
+import { logger } from '../../../../../server/integrations/ldap/sync';
 import { setUserActiveStatus } from '../../../../../app/lib/server/functions/setUserActiveStatus';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../server/settings';
 
 export const syncExistentUser = ({ ldapUser, user }) => {
 	const activate = !!ldapUser && !ldapUser.pwdAccountLockedTime;

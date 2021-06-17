@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { syncExistentUser } from './hooks/syncExistentUser';
 import { beforeSearchAll } from './hooks/beforeSearchAll';
-import { callbacks } from '../../../../app/callbacks/server';
+import { callbacks } from '../../../../server/utils/hooks';
 import { settings } from '../../../../app/settings';
 import { onLicense } from '../../license/server';
 

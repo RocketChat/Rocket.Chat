@@ -1,9 +1,9 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { deleteRoom } from './deleteRoom';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/services/file-handling/file-upload';
 import { Messages, Rooms, Subscriptions } from '../../../../server/models';
-import { Notifications } from '../../../notifications/server';
+import { Notifications } from '../../../../server/services/notifications';
 
 export const cleanRoomHistory = function({ rid, latest = new Date(), oldest = new Date('0001-01-01T00:00:00Z'), inclusive = true, limit = 0, excludePinned = true, ignoreDiscussion = true, filesOnly = false, fromUsers = [], ignoreThreads = true }) {
 	const gt = inclusive ? '$gte' : '$gt';

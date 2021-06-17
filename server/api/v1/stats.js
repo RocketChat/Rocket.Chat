@@ -1,5 +1,5 @@
 import { API } from './api';
-import { getStatistics, getLastStatistics } from '../../../app/statistics/server';
+import { getStatistics, getLastStatistics } from '../../utils/statistics';
 
 API.v1.addRoute('statistics', { authRequired: true }, {
 	get() {

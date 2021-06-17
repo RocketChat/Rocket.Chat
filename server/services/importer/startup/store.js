@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../../../app/file';
+import { RocketChatFile } from '../../file-handling/file';
 import { settings } from '../../../settings';
 
 export let RocketChatImportFileInstance;

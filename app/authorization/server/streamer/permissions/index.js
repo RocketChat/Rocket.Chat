@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import Permissions from '../../../../../server/models/models/Permissions';
+import Permissions from '../../../../../server/models/meteor/Permissions';
 
 Meteor.methods({
 	'permissions/get'(updatedAt) {
