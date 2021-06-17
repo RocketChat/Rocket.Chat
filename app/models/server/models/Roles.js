@@ -29,25 +29,10 @@ export class Roles extends Base {
 	}
 
 	updateById(_id, name, scope, description, mandatory2fa) {
-		// console.log(description);
-		// const query = { _id };
-
-		// const update = {
-		// 	$set: {
-		// 		...name && { name },
-		// 		...scope && { scope },
-		// 		...description && { description },
-		// 		...mandatory2fa && { mandatory2fa },
-		// 	},
-		// };
-
-		// return this.update(query, update);
-
 		const queryData = {
 			name,
 			scope,
 			description,
-			// protected: protectedRole,
 			mandatory2fa,
 		};
 
