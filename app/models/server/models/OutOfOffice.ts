@@ -39,6 +39,10 @@ class OutOfOffice extends Base {
       }
     );
   }
+
+  setDisabled(docId: string) {
+    return this.update({ _id: docId }, { $set: { isEnabled: false } });
+  }
 }
 
 export interface IOutOfOffice {
