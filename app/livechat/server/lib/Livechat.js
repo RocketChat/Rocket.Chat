@@ -14,7 +14,7 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../../server/settings';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../callbacks';
 import {
 	Users,
 	LivechatRooms,
