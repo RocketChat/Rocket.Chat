@@ -19,13 +19,22 @@ import Page from '../../components/Page/Page';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useForm } from '../../hooks/useForm';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
 }
 
-const defaultFormValues = {
-	outOfOfficeEnabled: false,
+interface IFormValues {
+	isEnabled: boolean;
+	customMessage: string;
+	startDate: string;
+	endDate: string;
+	roomIds: string[];
+}
+
+const defaultFormValues: IFormValues = {
+	isEnabled: false,
 	customMessage: '',
 	startDate: '',
 	endDate: '',
@@ -35,21 +44,52 @@ const defaultFormValues = {
 function OutOfOfficePage(): ReactNode {
 	const t = useTranslation() as any;
 
-	const { values, handlers, commit, hasUnsavedChanges } = useForm(defaultFormValues);
+	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.getByUser' as any);
+	const initialFormValues = useMemo(
+		() => ({
+			...defaultFormValues,
+			isEnabled: !!receivedOutOfOfficeValues?.isEnabled,
+			customMessage: receivedOutOfOfficeValues?.customMessage ?? '',
+			roomIds: receivedOutOfOfficeValues?.roomIds ?? [],
+		}),
+		[receivedOutOfOfficeValues],
+	);
 
-	const { outOfOfficeEnabled, customMessage, startDate, endDate } = values;
+	const { values, handlers, commit, hasUnsavedChanges } = useForm(initialFormValues as any);
+	// doubt - the form values are not changing even though the getInitialFormValues are different
+	const { isEnabled, roomIds, customMessage, startDate, endDate } = values;
 
 	const {
-		handleOutOfOfficeEnabled,
+		handleIsEnabled,
 		handleCustomMessage,
 		handleStartDate,
 		handleEndDate,
 		handleRoomIds,
 	} = handlers;
 
-	const handleSaveChanges = useCallback(() => {
+	const enableOutOfOffice = useEndpointAction(
+		'POST',
+		'outOfOffice.enable',
+		useMemo(
+			() => ({
+				roomIds,
+				customMessage,
+				startDate,
+				endDate,
+			}),
+			[roomIds, customMessage, startDate, endDate],
+		),
+	);
+
+	const disableOutOfOffice = useEndpointAction('POST', 'outOfOffice.disable');
+
+	const handleSaveChanges = useCallback(async () => {
 		commit();
-		console.log(values, 'after saving the changes');
+		if (isEnabled) {
+			await disableOutOfOffice();
+		} else {
+			await enableOutOfOffice();
+		}
 	}, [commit, values]);
 
 	const {
@@ -79,10 +119,7 @@ function OutOfOfficePage(): ReactNode {
 						<Field>
 							<Box display='flex' justifyContent='space-between' alignItems='center'>
 								<Field.Row>
-									<RadioButton
-										checked={!outOfOfficeEnabled}
-										onChange={(): void => handleOutOfOfficeEnabled(false)}
-									/>
+									<RadioButton checked={!isEnabled} onChange={(): void => handleIsEnabled(false)} />
 								</Field.Row>
 								<Field.Row>
 									<Box display='flex' flexDirection='column'>
@@ -96,8 +133,8 @@ function OutOfOfficePage(): ReactNode {
 							<Box display='flex' justifyContent='space-between' alignItems='center'>
 								<Field.Row>
 									<RadioButton
-										checked={outOfOfficeEnabled as boolean}
-										onChange={(): void => handleOutOfOfficeEnabled(true)}
+										checked={isEnabled as boolean}
+										onChange={(): void => handleIsEnabled(true)}
 									/>
 								</Field.Row>
 								<Field.Row>
@@ -109,7 +146,7 @@ function OutOfOfficePage(): ReactNode {
 							</Box>
 						</Field>
 					</FieldGroup>
-					{outOfOfficeEnabled && (
+					{isEnabled && (
 						<>
 							<Divider />
 							<FieldGroup>

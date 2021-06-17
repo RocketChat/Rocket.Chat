@@ -12,8 +12,8 @@ class OutOfOffice extends Base {
   }
 
   // find
-  findOneByUserId(userId: IOutOfOffice["userId"]): IOutOfOffice {
-    return this.findOne({ userId });
+  findOneByUserId(userId: IOutOfOffice["userId"], options = {}): IOutOfOffice {
+    return this.findOne({ userId }, options);
   }
 
   // update

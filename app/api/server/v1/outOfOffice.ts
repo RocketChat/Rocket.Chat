@@ -32,7 +32,7 @@ API.v1.addRoute(
         );
       }
 
-      const rec = enableOutOffice({
+      const updated = enableOutOffice({
         userId: this.userId,
         roomIds,
         customMessage,
@@ -40,7 +40,7 @@ API.v1.addRoute(
         endDate,
       });
 
-      return API.v1.success({ hasHappened: rec });
+      return API.v1.success(updated);
     },
   }
 );
@@ -50,9 +50,25 @@ API.v1.addRoute(
   { authRequired: true },
   {
     post() {
-      const rec = disableOutOfOffice({ userId: this.userId });
+      const updated = disableOutOfOffice({ userId: this.userId });
 
-      return API.v1.success(rec);
+      return API.v1.success(updated);
+    },
+  }
+);
+
+API.v1.addRoute(
+  "outOfOffice.getByUser",
+  { authRequired: true },
+  {
+    // doubt - should we change this to a function?
+    get() {
+      const foundDocument = OutOfOffice.findOneByUserId(this.userId, {
+        isEnabled: 1,
+        roomIds: 1,
+        customMessage: 1,
+      });
+      return API.v1.success(foundDocument);
     },
   }
 );
@@ -78,13 +94,5 @@ API.v1.addRoute("outOfOffice.getById", {
     const doc = OutOfOffice.findOneById(docId);
 
     return API.v1.success({ "the-found": doc });
-  },
-});
-
-API.v1.addRoute("outOfOffice.getByUser", {
-  get() {
-    const userId = this.userId;
-    const doc = OutOfOffice.findOneByUserId(userId);
-    return API.v1.success({ "by-user": doc });
   },
 });
