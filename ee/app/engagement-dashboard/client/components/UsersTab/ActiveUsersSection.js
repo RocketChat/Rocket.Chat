@@ -51,12 +51,12 @@ const ActiveUsersSection = () => {
 			return map;
 		}, {});
 
-		const distributeValueOverPoints = (usersListsMap, currentIndex, usersList, i, T, array, prev) => {
+		const distributeValueOverPoints = (usersListsMap, usersList, i, T, array, prev) => {
 			const usersSet = new Set(usersList);
 			let k = i;
 			for (let j = 0; j < T && k < array.length; ++k, ++j) {
 				if (k >= 0) {
-					usersListsMap[currentIndex + j]?.forEach((userId) => usersSet.add(userId));
+					usersListsMap[k]?.forEach((userId) => usersSet.add(userId));
 					array[k].y = Math.max(usersSet.size, array[k].y);
 				}
 
@@ -73,13 +73,11 @@ const ActiveUsersSection = () => {
 		const mauValues = createPoints();
 		const prevMauValue = createPoint(-1);
 
-		let currentIndex = 0;
 		for (const { usersList, users, day, month, year } of data.month) {
 			const i = moment.utc([year, month - 1, day, 0, 0, 0, 0]).diff(period.start, 'days');
 			dauValues[i].y += users;
-			distributeValueOverPoints(usersLists, currentIndex, usersList, i, 7, wauValues, prevWauValue);
-			distributeValueOverPoints(usersLists, currentIndex, usersList, i, 30, mauValues, prevMauValue);
-			currentIndex++;
+			distributeValueOverPoints(usersLists, usersList, i, 7, wauValues, prevWauValue);
+			distributeValueOverPoints(usersLists, usersList, i, 30, mauValues, prevMauValue);
 		}
 
 		return [
