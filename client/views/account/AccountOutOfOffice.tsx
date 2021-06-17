@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
 	Box,
 	Field,
@@ -29,7 +29,7 @@ const defaultFormValues = {
 	customMessage: '',
 	startDate: '',
 	endDate: '',
-    roomIds:[]
+	roomIds: [],
 };
 
 function OutOfOfficePage() {
@@ -44,7 +44,7 @@ function OutOfOfficePage() {
 		handleCustomMessage,
 		handleStartDate,
 		handleEndDate,
-        handleRoomIds
+		handleRoomIds,
 	} = handlers;
 
 	const handleSaveChanges = useCallback(() => {
@@ -52,7 +52,7 @@ function OutOfOfficePage() {
 		console.log(values, 'after saving the changes');
 	}, [commit, values]);
 
-    const {
+	const {
 		value: { update: subscribedRooms = [] } = { update: [] },
 	}: IEndpointSubscriptionsGet = useEndpointData('subscriptions.get' as any);
 
@@ -76,28 +76,36 @@ function OutOfOfficePage() {
 				<Box maxWidth='x800' w='full' alignSelf='center'>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-								<Field.Label>Disable Out Of Office</Field.Label>
+							<Box display='flex' justifyContent='space-between' alignItems='center'>
 								<Field.Row>
 									<RadioButton
 										checked={!outOfOfficeEnabled}
 										onChange={() => handleOutOfOfficeEnabled(false)}
 									/>
 								</Field.Row>
+								<Field.Row>
+									<Box display='flex' flexDirection='column'>
+										<Field.Label>Disable Out Of Office</Field.Label>
+										<Field.Hint>{t('Out of Office will be disabled')}</Field.Hint>
+									</Box>
+								</Field.Row>
 							</Box>
-							<Field.Hint>{t('Out of Office will be disabled')}</Field.Hint>
 						</Field>
 						<Field>
-							<Box display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-								<Field.Label>Enable Out Of Office</Field.Label>
+							<Box display='flex' justifyContent='space-between' alignItems='center'>
 								<Field.Row>
 									<RadioButton
 										checked={outOfOfficeEnabled}
 										onChange={() => handleOutOfOfficeEnabled(true)}
 									/>
 								</Field.Row>
+								<Field.Row>
+									<Box display='flex' flexDirection='column'>
+										<Field.Label>Enable Out Of Office</Field.Label>
+										<Field.Hint>{t('Out of Office will be enabled')}</Field.Hint>
+									</Box>
+								</Field.Row>
 							</Box>
-							<Field.Hint>{t('Out of Office will be enabled')}</Field.Hint>
 						</Field>
 					</FieldGroup>
 					{outOfOfficeEnabled && (
