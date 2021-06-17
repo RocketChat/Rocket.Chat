@@ -1,11 +1,17 @@
 import { request } from 'undici';
 
-export default class HTTP {
-	static post(url: string, data: any): Promise<any> {
-		return request(url, {
-			method: 'POST',
-			headers: data.headers,
-			body: JSON.stringify(data.body),
-		});
-	}
+interface IPostParams {
+	url: string;
+	body: any;
+	headers: any;
+}
+
+export function post(params: IPostParams): Promise<any> {
+	const { url, body, headers } = params;
+
+	return request(url, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(body),
+	});
 }

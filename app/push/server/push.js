@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import HTTP from '../../../server/utils/http';
+import { post } from '../../../server/utils/http';
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger, LoggerManager } from './logger';
@@ -103,19 +103,18 @@ export class PushClass {
 	async sendGatewayPush(gateway, service, token, notification, tries = 0) {
 		notification.uniqueId = this.options.uniqueId;
 
-		const data = {
-			body: {
-				token,
-				options: notification,
-			},
-			headers: {},
+		const body = {
+			token,
+			options: notification,
 		};
 
+		const headers = {};
+
 		if (token && this.options.getAuthorization) {
-			data.headers.Authorization = this.options.getAuthorization();
+			headers.Authorization = this.options.getAuthorization();
 		}
 
-		const response = await HTTP.post(`${ gateway }/push/${ service }/send`, data);
+		const response = await post({ url: `${ gateway }/push/${ service }/send`, body, headers });
 
 		if (response.statusCode === 406) {
 			logger.info('removing push token', token);
