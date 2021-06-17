@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { RoomTemplate } from './components/RoomTemplate/RoomTemplate';
 
@@ -7,7 +7,7 @@ export default {
 	component: RoomTemplate,
 };
 
-export const Default = () => (
+export const Default = (): ReactElement => (
 	<RoomTemplate>
 		<RoomTemplate.Header>header</RoomTemplate.Header>
 		<RoomTemplate.Body>body</RoomTemplate.Body>

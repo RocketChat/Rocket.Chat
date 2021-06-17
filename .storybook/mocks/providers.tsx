@@ -1,12 +1,12 @@
 import i18next from 'i18next';
-import React from 'react';
+import React, { PropsWithChildren, ReactElement } from 'react';
 
-import { TranslationContext } from '../../client/contexts/TranslationContext';
+import { TranslationContext, TranslationContextValue } from '../../client/contexts/TranslationContext';
 import ServerProvider from '../../client/providers/ServerProvider';
 
-let contextValue;
+let contextValue: TranslationContextValue;
 
-const getContextValue = () => {
+const getContextValue = (): TranslationContextValue => {
 	if (contextValue) {
 		return contextValue;
 	}
@@ -26,8 +26,8 @@ const getContextValue = () => {
 		initImmediate: false,
 	});
 
-	const translate = (key, ...replaces) => {
-		if (typeof replaces[0] === 'object') {
+	const translate = (key: string, ...replaces: unknown[]): string => {
+		if (typeof replaces[0] === 'object' && replaces[0] !== null) {
 			const [options] = replaces;
 			return i18next.t(key, options);
 		}
@@ -42,7 +42,7 @@ const getContextValue = () => {
 		});
 	};
 
-	translate.has = (key) => key && i18next.exists(key);
+	translate.has = (key: string): boolean => !!key && i18next.exists(key);
 
 	contextValue = {
 		languages: [{
@@ -52,16 +52,17 @@ const getContextValue = () => {
 		}],
 		language: 'en',
 		translate,
+		loadLanguage: async (): Promise<void> => undefined,
 	};
 
 	return contextValue;
 };
 
-function TranslationProviderMock({ children }) {
+function TranslationProviderMock({ children }: PropsWithChildren<{}>): ReactElement {
 	return <TranslationContext.Provider children={children} value={getContextValue()} />;
 }
 
-export function MeteorProviderMock({ children }) {
+export function MeteorProviderMock({ children }: PropsWithChildren<{}>): ReactElement {
 	return <ServerProvider>
 		<TranslationProviderMock>
 			{children}

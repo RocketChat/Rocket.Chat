@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { MeteorProviderMock } from './mocks/providers';
 
-export const rocketChatDecorator = (fn) => {
+export const rocketChatDecorator = (storyFn: () => ReactElement): ReactElement => {
 	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
 	if (linkElement.id !== 'theme-styles') {
 		require('../app/theme/client/main.css');
@@ -14,7 +14,8 @@ export const rocketChatDecorator = (fn) => {
 		document.head.appendChild(linkElement);
 	}
 
-	// eslint-disable-next-line import/no-unresolved
+	/* eslint-disable @typescript-eslint/no-var-requires */
+	/* eslint-disable-next-line */
 	const { default: icons } = require('!!raw-loader!../private/public/icons.svg');
 
 	return <MeteorProviderMock>
@@ -25,12 +26,12 @@ export const rocketChatDecorator = (fn) => {
 		`}</style>
 		<div dangerouslySetInnerHTML={{ __html: icons }} />
 		<div className='color-primary-font-color'>
-			{fn()}
+			{storyFn()}
 		</div>
 	</MeteorProviderMock>;
 };
 
-export const fullHeightDecorator = (storyFn) =>
+export const fullHeightDecorator = (storyFn: () => ReactElement): ReactElement =>
 	<div style={{
 		display: 'flex',
 		flexDirection: 'column',
@@ -39,7 +40,7 @@ export const fullHeightDecorator = (storyFn) =>
 		{storyFn()}
 	</div>;
 
-export const centeredDecorator = (storyFn) =>
+export const centeredDecorator = (storyFn: () => ReactElement): ReactElement =>
 	<div style={{
 		display: 'flex',
 		alignItems: 'center',

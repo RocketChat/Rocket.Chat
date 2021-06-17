@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Tile } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Story } from '@storybook/react';
+import React, { ReactElement } from 'react';
 
 import Page from '.';
 import { fullHeightDecorator } from '../../../.storybook/decorators';
@@ -9,7 +10,7 @@ export default {
 	component: Page,
 };
 
-const DummyContent = () => (
+const DummyContent = (): ReactElement => (
 	<>
 		{Array.from({ length: 60 }, (_, i) => (
 			<Tile key={i} children='Content slice' marginBlock='x16' />
@@ -17,7 +18,7 @@ const DummyContent = () => (
 	</>
 );
 
-export const Basic = () => (
+export const Basic: Story = () => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.Content>
@@ -26,7 +27,7 @@ export const Basic = () => (
 	</Page>
 );
 
-export const WithButtonsAtTheHeader = () => (
+export const WithButtonsAtTheHeader: Story = (): ReactElement => (
 	<Page>
 		<Page.Header title='Header'>
 			<ButtonGroup>
@@ -41,7 +42,7 @@ export const WithButtonsAtTheHeader = () => (
 	</Page>
 );
 
-export const WithScrollableContent = () => (
+export const WithScrollableContent = (): ReactElement => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.ScrollableContent>
@@ -51,7 +52,7 @@ export const WithScrollableContent = () => (
 );
 WithScrollableContent.decorators = [fullHeightDecorator];
 
-export const WithScrollableContentWithShadow = () => (
+export const WithScrollableContentWithShadow = (): ReactElement => (
 	<Page>
 		<Page.Header title='Header' />
 		<Page.ScrollableContentWithShadow>
