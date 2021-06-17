@@ -122,9 +122,13 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		username: String,
 	}));
 
+	// check if a subscription already exists
+	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId, { fields: { _id: 1 } });
+
 	const { _id, username, token, status = 'online' } = guest;
 
 	const subscriptionData = {
+		...existingSubscription && existingSubscription._id && { _id: existingSubscription._id },
 		rid,
 		fname: name,
 		alert: true,
@@ -149,7 +153,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		...department && { department },
 	};
 
-	return Subscriptions.insert(subscriptionData);
+	return Subscriptions.insertOrUpsert(subscriptionData);
 };
 
 export const removeAgentFromSubscription = (rid, { _id, username }) => {
@@ -306,7 +310,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			RoutingManager.removeAllRoomSubscriptions(room);
+			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 
@@ -393,7 +397,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		RoutingManager.removeAllRoomSubscriptions(room);
+		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);

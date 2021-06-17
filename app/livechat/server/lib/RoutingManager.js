@@ -171,11 +171,14 @@ export const RoutingManager = {
 		return defaultAgent;
 	},
 
-	removeAllRoomSubscriptions(room) {
+	removeAllRoomSubscriptions(room, ignoreUser) {
 		const { _id: roomId } = room;
 
 		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
 		subscriptions?.forEach(({ u }) => {
+			if (ignoreUser && ignoreUser._id === u._id) {
+				return;
+			}
 			removeAgentFromSubscription(roomId, u);
 		});
 	},
