@@ -176,7 +176,7 @@ function CurrentChatsRoute() {
 				>
 					{t('Status')}
 				</GenericTable.HeaderCell>,
-				(canRemoveClosedChats && <GenericTable.HeaderCell key={'remove'} w='x60'>
+				canRemoveClosedChats && (<GenericTable.HeaderCell key={'remove'} w='x60'>
 					{t('Remove')}
 				</GenericTable.HeaderCell>),
 			].filter(Boolean),
