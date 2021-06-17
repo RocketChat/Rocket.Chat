@@ -40,10 +40,6 @@ import '../app/token-login/server';
 import '../app/mailer';
 import '../app/mapview/server';
 import '../app/markdown/server';
-import '../app/message-mark-as-unread/server';
-import '../app/message-pin/server';
-import '../app/message-snippet/server';
-import '../app/message-star/server';
 import '../app/migrations';
 import '../app/nextcloud/server';
 import '../app/oauth2-server-config/server';
@@ -88,6 +84,9 @@ import '../app/livechat/server';
 import '../app/custom/server';
 import '../app/authentication/server';
 
+// this file contains the settings for the registered services
+import './settings/settingfiles';
+import './api/methods';
 import './services/2fa';
 import './api/v1';
 import './services/messages/slashcommands';

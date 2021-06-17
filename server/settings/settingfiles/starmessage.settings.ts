@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings } from '..';
 
 Meteor.startup(function() {
 	return settings.add('Message_AllowStarring', true, {
