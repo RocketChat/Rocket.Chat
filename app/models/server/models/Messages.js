@@ -3,6 +3,7 @@ import _ from 'underscore';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
+import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 export class Messages extends Base {
@@ -323,58 +324,14 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampInclusive(roomId, timestamp, options) {
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lte: timestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestamps(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
+				[inclusive ? '$lte' : '$lt']: timestamp,
 			},
 			...!showThreadMessages && {
 				$or: [{
@@ -392,15 +349,15 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true) {
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
 			},
 			...!showThreadMessages && {
 				$or: [{
@@ -520,11 +477,13 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
+	getLastVisibleMessageSentByRoomId(rid, messageId) {
+		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
+		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false },
+			t: hiddenSysMes ? { $nin: hiddenSysMes } : undefined,
 			$or: [
 				{ tmid: { $exists: false } },
 				{ tshow: true },
@@ -782,7 +741,17 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(roomId, 1);
+
+		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
+		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
+		if (hiddenSysMes.length && hiddenSysMes.includes(type)) {
+			Rooms.incMsgCountById(roomId, 1);
+		} else {
+			const byUser = extraData && extraData.u ? extraData.u._id : user._id;
+			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
+			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
+		}
+
 		return record;
 	}
 
