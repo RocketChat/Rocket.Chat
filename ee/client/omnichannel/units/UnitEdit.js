@@ -208,6 +208,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 							<Field.Label>{t('Departments')}*</Field.Label>
 							<Field.Row>
 								<PaginatedMultiSelectFiltered
+									withTitle
 									filter={departmentsFilter}
 									setFilter={setDepartmentsFilter}
 									options={departmentsItems}
@@ -229,6 +230,7 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 							<Field.Label>{t('Monitors')}*</Field.Label>
 							<Field.Row>
 								<PaginatedMultiSelectFiltered
+									withTitle
 									filter={monitorsFilter}
 									setFilter={setMonitorsFilter}
 									options={monitorsItems}
