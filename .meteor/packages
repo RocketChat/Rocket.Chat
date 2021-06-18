@@ -62,7 +62,7 @@ pauli:accounts-linkedin
 raix:handlebar-helpers
 raix:ui-dropped-event
 
-rocketchat:tap-i18n
+rocketchat:tap-i18n@1.10.1
 underscore@1.0.10
 littledata:synced-cron
 
@@ -89,3 +89,4 @@ rocketchat:i18n
 rocketchat:postcss
 dandv:caret-position
 facts-base@1.0.1
+jquery
