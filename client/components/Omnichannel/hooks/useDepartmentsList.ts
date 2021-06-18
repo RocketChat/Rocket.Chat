@@ -22,9 +22,7 @@ export const useDepartmentsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = `livechat/department${
-		options.onlyMyDepartments ? '?onlyMyDepartments=true' : ''
-	}` as 'livechat/department';
+	const endpoint = 'livechat/department' as 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
@@ -35,9 +33,11 @@ export const useDepartmentsList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { departments, total } = await getDepartments({
+				onlyMyDepartments: options.onlyMyDepartments,
 				text: options.filter,
 				offset: start,
 				count: end + start,
+				sort: JSON.stringify({ name: 1 }),
 			});
 
 			return {
