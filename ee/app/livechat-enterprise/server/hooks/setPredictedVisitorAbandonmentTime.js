@@ -23,4 +23,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		setPredictedVisitorAbandonmentTime(room);
 	}
 	return message;
-}, callbacks.priority.HIGH, 'save-visitor-inactivity');
+}, callbacks.priority.MEDIUM, 'save-visitor-inactivity');
