@@ -84,7 +84,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			department,
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
-			tags,
+			tags: tags.map((tag) => tag.label),
 			customFields: customFields.reduce(reducer, {}),
 		});
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);
@@ -123,7 +123,12 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
-					<AutoCompleteDepartment value={department} onChange={handleDepartment} label={t('All')} />
+					<AutoCompleteDepartment
+						value={department}
+						onChange={handleDepartment}
+						label={t('All')}
+						onlyMyDepartments
+					/>
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>

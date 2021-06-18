@@ -13,8 +13,9 @@ const ChannelToTeamModal = ({ onClose, onConfirm }) => {
 			onClose={onClose}
 			onCancel={onClose}
 			onConfirm={onConfirm}
+			confirmText={t('Convert')}
 		>
-			{t('Teams_convert_channel_to_team_warning')}
+			{` ${t('Converting_channel_to_a_team')}`}
 		</GenericModal>
 	);
 };

@@ -132,13 +132,13 @@ function UserTable({ workspace = 'local' }) {
 										{username}
 									</Box>
 								</Box>
-								<MarkdownText fontScale='p1' color='hint' content={bio} />
+								<MarkdownText variant='inline' fontScale='p1' color='hint' content={bio} />
 							</Box>
 						</Box>
 					</Flex.Container>
 				</Table.Cell>
 				{mediaQuery && canViewFullOtherUserInfo && (
-					<Table.Cell withTruncatedText>{emails && emails[0].address}</Table.Cell>
+					<Table.Cell withTruncatedText>{emails && emails.length && emails[0].address}</Table.Cell>
 				)}
 				{federation && <Table.Cell withTruncatedText>{domain}</Table.Cell>}
 				{mediaQuery && (

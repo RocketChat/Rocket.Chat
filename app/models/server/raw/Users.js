@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -162,6 +163,7 @@ export class UsersRaw extends BaseRaw {
 							$and: [
 								{ $eq: ['$u._id', '$$id'] },
 								{ $eq: ['$open', true] },
+								{ $ne: ['$onHold', true] },
 								{ ...department && { $eq: ['$department', department] } },
 							],
 						},
@@ -172,6 +174,29 @@ export class UsersRaw extends BaseRaw {
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
 			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
 			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
+		];
+
+		if (department) {
+			aggregate.push({ $unwind: '$departments' });
+			aggregate.push({ $match: { 'departments.departmentId': department } });
+		}
+
+		aggregate.push({ $limit: 1 });
+
+		const [agent] = await this.col.aggregate(aggregate).toArray();
+		if (agent) {
+			await this.setLastRoutingTime(agent.agentId);
+		}
+
+		return agent;
+	}
+
+	async getLastAvailableAgentRouted(department, ignoreAgentId) {
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
+			{ $sort: { lastRoutingTime: 1, username: 1 } },
 		];
 
 		if (department) {
@@ -204,11 +229,11 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	async getAgentAndAmountOngoingChats(userId, department) {
+	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
 			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }, { ...department && { $eq: ['$$sub.department', department] } }] } } } } } },
+			{ $project: { agentId: '$_id', username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
 			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
 		];
 

@@ -1,7 +1,18 @@
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
 import { filterMarkdown } from '../../../app/markdown/lib/markdown';
-import { escapeHTML } from '../../../lib/escapeHTML';
+import { MessageTypes } from '../../../app/ui-utils/lib/MessageTypes';
 
 export const normalizeSidebarMessage = (message, t) => {
+	const messageType = MessageTypes.getType(message);
+	if (message.t && messageType) {
+		const data = (typeof messageType.data === 'function' && messageType.data(message)) || {};
+		const language = Meteor._localStorage.getItem('userLanguage');
+		return TAPi18n.__(messageType.message, data, language);
+	}
+
 	if (message.msg) {
 		return escapeHTML(filterMarkdown(message.msg));
 	}

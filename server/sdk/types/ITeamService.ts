@@ -1,7 +1,8 @@
-import { FindOneOptions } from 'mongodb';
+import { FilterQuery, FindOneOptions } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { ICreateRoomParams } from './IRoomService';
 
 export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
@@ -64,7 +65,7 @@ export interface ITeamService {
 	listByNames(names: Array<string>, options?: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	listByIds(ids: Array<string>, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
 	search(userId: string, term: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam[]>;
-	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: IQueryOptions<ITeamMember>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
+	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: FilterQuery<IUser>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
 	removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean>;
@@ -82,4 +83,8 @@ export interface ITeamService {
 	getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
+	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;
+	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
+	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
+	removeAllMembersFromTeam(teamId: string): Promise<void>;
 }

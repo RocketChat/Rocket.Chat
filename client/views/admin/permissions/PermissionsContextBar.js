@@ -26,10 +26,8 @@ const PermissionsContextBar = () => {
 					{context === 'edit' && t('Role_Editing')}
 					<VerticalBar.Close onClick={handleVerticalBarCloseButton} />
 				</VerticalBar.Header>
-				<VerticalBar.ScrollableContent>
-					{context === 'new' && <NewRolePage />}
-					{context === 'edit' && <EditRolePage _id={_id} />}
-				</VerticalBar.ScrollableContent>
+				{context === 'new' && <NewRolePage />}
+				{context === 'edit' && <EditRolePage _id={_id} />}
 			</VerticalBar>
 		)) ||
 		null

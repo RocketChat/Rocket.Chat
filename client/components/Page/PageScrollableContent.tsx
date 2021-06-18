@@ -1,16 +1,23 @@
-import { Box, ScrollableProps } from '@rocket.chat/fuselage';
-import React, { forwardRef } from 'react';
+import { Box, Scrollable } from '@rocket.chat/fuselage';
+import React, { forwardRef, ComponentProps } from 'react';
 
 import ScrollableContentWrapper, { CustomScrollbarsProps } from '../ScrollableContentWrapper';
 
 type PageScrollableContentProps = {
-	onScrollContent?: ScrollableProps['onScrollContent'];
-};
+	onScrollContent?: ComponentProps<typeof Scrollable>['onScrollContent'];
+} & ComponentProps<typeof Box>;
 
 const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps>(
 	function PageScrollableContent({ onScrollContent, ...props }, ref) {
 		return (
-			<Box display='flex' flexShrink={1} flexDirection='column' flexGrow={1} overflow='hidden'>
+			<Box
+				height='50vh'
+				display='flex'
+				flexShrink={1}
+				flexDirection='column'
+				flexGrow={1}
+				overflow='hidden'
+			>
 				<ScrollableContentWrapper
 					onScroll={onScrollContent as CustomScrollbarsProps['onScroll']}
 					ref={ref as any}
