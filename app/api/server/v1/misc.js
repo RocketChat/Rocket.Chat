@@ -49,8 +49,15 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		const { 'services.password.bcrypt': password, ...fields } = getDefaultUserFields();
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields })));
+		const fields = getDefaultUserFields();
+		const user = Users.findOneById(this.userId, { fields });
+
+		// The password hash shouldn't be leaked but the client may need to know if it exists.
+		if (user?.services?.password?.bcrypt) {
+			user.services.password.bcrypt = 'filtered';
+		}
+
+		return API.v1.success(this.getUserInfo(user));
 	},
 });
 
