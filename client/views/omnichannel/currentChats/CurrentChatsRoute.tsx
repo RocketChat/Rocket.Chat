@@ -2,7 +2,7 @@ import { Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, FC } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
@@ -12,14 +12,42 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import CurrentChatsPage from './CurrentChatsPage';
 import RemoveChatButton from './RemoveChatButton';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+type useQueryType = (
+	debouncedParams: {
+		fname: string;
+		guest: string;
+		servedBy: string;
+		department: string;
+		status: string;
+		from: string;
+		to: string;
+		tags: any[];
+		customFields: any;
+		itemsPerPage: number;
+		current: number;
+	},
+	debouncedSort: any[],
+) => any;
 
-const useQuery = (
+const sortDir = (sortDir: string): number => (sortDir === 'asc' ? 1 : -1);
+
+const useQuery: useQueryType = (
 	{ guest, servedBy, department, status, from, to, tags, customFields, itemsPerPage, current },
 	[column, direction],
 ) =>
 	useMemo(() => {
-		const query = {
+		const query: {
+			roomName?: string;
+			sort: string;
+			count?: number;
+			offset?: number;
+			createdAt?: string;
+			open?: boolean;
+			agents?: string[];
+			departmentId?: string;
+			tags?: string[];
+			customFields?: string;
+		} = {
 			...(guest && { roomName: guest }),
 			sort: JSON.stringify({
 				[column]: sortDir(direction),
@@ -33,12 +61,12 @@ const useQuery = (
 			query.createdAt = JSON.stringify({
 				...(from && {
 					start: moment(new Date(from))
-						.set({ hour: '00', minutes: '00', seconds: '00' })
+						.set({ hour: 0, minutes: 0, seconds: 0 })
 						.format('YYYY-MM-DDTHH:mm:ss'),
 				}),
 				...(to && {
 					end: moment(new Date(to))
-						.set({ hour: '23', minutes: '59', seconds: '59' })
+						.set({ hour: 23, minutes: 59, seconds: 59 })
 						.format('YYYY-MM-DDTHH:mm:ss'),
 				}),
 			});
@@ -46,7 +74,7 @@ const useQuery = (
 		if (status !== 'all') {
 			query.open = status === 'opened';
 		}
-		if (servedBy && servedBy !== 'all') {
+		if (servedBy && !servedBy.includes('all')) {
 			query.agents = [servedBy];
 		}
 		if (department && department !== 'all') {
@@ -77,13 +105,14 @@ const useQuery = (
 		customFields,
 	]);
 
-function CurrentChatsRoute() {
+const CurrentChatsRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCurrentChats = usePermission('view-livechat-current-chats');
 
 	const [params, setParams] = useState({
+		guest: '',
 		fname: '',
-		servedBy: [],
+		servedBy: '',
 		status: '',
 		department: '',
 		from: '',
@@ -91,13 +120,13 @@ function CurrentChatsRoute() {
 		customFields: {},
 		current: 0,
 		itemsPerPage: 25,
+		tags: [] as string[],
 	});
-	const [sort, setSort] = useState(['ts', 'desc']);
+	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['ts', 'desc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	// const livechatRoomRoute = useRoute('live/:id');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -121,11 +150,11 @@ function CurrentChatsRoute() {
 		() =>
 			[
 				<GenericTable.HeaderCell
-					key={'name'}
+					key={'fname'}
 					direction={sort[1]}
-					active={sort[0] === 'name'}
+					active={sort[0] === 'fname'}
 					onClick={onHeaderClick}
-					sort='name'
+					sort='fname'
 				>
 					{t('Name')}
 				</GenericTable.HeaderCell>,
@@ -188,7 +217,7 @@ function CurrentChatsRoute() {
 				key={_id}
 				tabIndex={0}
 				role='link'
-				onClick={() => onRowClick(_id)}
+				onClick={(): void => onRowClick(_id)}
 				action
 				qa-user-id={_id}
 			>
@@ -212,15 +241,13 @@ function CurrentChatsRoute() {
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}
-			onHeaderClick={onHeaderClick}
 			data={data}
-			useQuery={useQuery}
 			reload={reload}
 			header={header}
 			renderRow={renderRow}
 			title={t('Current_Chats')}
 		></CurrentChatsPage>
 	);
-}
+};
 
 export default CurrentChatsRoute;

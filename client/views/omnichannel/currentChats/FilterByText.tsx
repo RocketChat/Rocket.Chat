@@ -1,7 +1,7 @@
 import { TextInput, Box, MultiSelect, Select, InputBox } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React, { useEffect, useMemo } from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
@@ -16,18 +16,23 @@ import { formsSubscription } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';
 
-const FilterByText = ({ setFilter, reload, ...props }) => {
+type FilterByTextType = FC<{
+	setFilter: Dispatch<SetStateAction<any>>;
+	reload?: any;
+}>;
+
+const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const { value: allCustomFields } = useEndpointData('livechat/custom-fields');
-	const statusOptions = [
+	const statusOptions: [string, string][] = [
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Open')],
 	];
-	const customFieldsOptions = useMemo(
+	const customFieldsOptions: [string, string][] = useMemo(
 		() =>
 			allCustomFields && allCustomFields.customFields
 				? allCustomFields.customFields.map(({ _id, label }) => [_id, label])
@@ -42,7 +47,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage('tags', []);
-	const [customFields, setCustomFields] = useLocalStorage('tags', []);
+	const [customFields, setCustomFields] = useLocalStorage<any[]>('tags', []);
 
 	const handleGuest = useMutableCallback((e) => setGuest(e.target.value));
 	const handleServedBy = useMutableCallback((e) => setServedBy(e));
@@ -64,14 +69,14 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 		setCustomFields([]);
 	});
 
-	const forms = useSubscription(formsSubscription);
+	const forms = useSubscription<any>(formsSubscription);
 
-	const { useCurrentChatTags = () => {} } = forms;
+	const { useCurrentChatTags = (): void => undefined } = forms;
 
 	const Tags = useCurrentChatTags();
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
-	const reducer = function (acc, curr) {
+	const reducer = function (acc: any, curr: string): any {
 		acc[curr] = '';
 		return acc;
 	};
@@ -96,7 +101,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 
 	const handleRemoveClosed = useMutableCallback(async () => {
-		const onDeleteAll = async () => {
+		const onDeleteAll = async (): Promise<void> => {
 			try {
 				await removeClosedChats();
 				reload();
@@ -104,10 +109,10 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			setModal();
+			setModal(null);
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()} />);
+		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={(): void => setModal(null)} />);
 	});
 
 	return (
