@@ -182,7 +182,7 @@ function CurrentChatsRoute() {
 					</GenericTable.HeaderCell>
 				),
 			].filter(Boolean),
-		[sort, onHeaderClick, t],
+		[sort, onHeaderClick, t, canRemoveClosedChats],
 	);
 
 	const renderRow = useCallback(
@@ -204,7 +204,7 @@ function CurrentChatsRoute() {
 				{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[onRowClick, reload, t],
+		[canRemoveClosedChats, onRowClick, reload, t],
 	);
 
 	if (!canViewCurrentChats) {
