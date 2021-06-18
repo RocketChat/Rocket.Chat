@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import { ILivechatDepartmentRecord } from '../../../definition/ILivechatDepartmentRecord';
-import { useEndpoint } from '../../contexts/ServerContext';
-import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../lib/lists/RecordList';
+import { ILivechatDepartmentRecord } from '../../../../definition/ILivechatDepartmentRecord';
+import { useEndpoint } from '../../../contexts/ServerContext';
+import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
+import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
+import { RecordList } from '../../../lib/lists/RecordList';
 
 type DepartmentsListOptions = {
-	unitId: string;
 	filter: string;
 };
 
@@ -21,9 +20,7 @@ export const useDepartmentsList = (
 } => {
 	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
 	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
-	const endpoint = `livechat/departments.available-by-unit/${
-		options.unitId || 'none'
-	}` as 'livechat/departments.by-unit/';
+	const endpoint = 'livechat/department';
 
 	const getDepartments = useEndpoint('GET', endpoint);
 
@@ -49,7 +46,7 @@ export const useDepartmentsList = (
 				itemCount: total,
 			};
 		},
-		[getDepartments, options.filter],
+		[getDepartments, options],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);

@@ -105,4 +105,10 @@ export class TeamMemberRaw extends BaseRaw<T> {
 			userId,
 		});
 	}
+
+	deleteByTeamId(teamId: string): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteMany({
+			teamId,
+		});
+	}
 }

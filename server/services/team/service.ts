@@ -651,6 +651,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}));
 	}
 
+	async removeAllMembersFromTeam(teamId: string): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId);
+
+		if (!team) {
+			return;
+		}
+
+		await this.TeamMembersModel.deleteByTeamId(team._id);
+	}
+
 	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {
 		const isAlreadyAMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(userId, teamId, { projection: { _id: 1 } });
 

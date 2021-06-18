@@ -7,10 +7,9 @@ callbacks.add('livechat.onLoadConfigApi', async (options = {}) => {
 	const queueInfo = await getLivechatQueueInfo(room);
 	const customFields = getLivechatCustomFields();
 
-	const config = {
+	return {
 		...queueInfo && { queueInfo },
 		...customFields && { customFields },
+		...options,
 	};
-
-	return Object.assign({ config }, options);
 }, callbacks.priority.MEDIUM, 'livechat-on-load-config-api');

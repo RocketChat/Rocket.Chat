@@ -66,11 +66,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	);
 
 	const canDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
-
 	const canEdit = usePermission('edit-room', rid);
-
 	const canConvertRoomToTeam = usePermission('create-team');
-
 	const canLeave =
 		usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 
@@ -191,8 +188,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && onMoveToTeam}
-			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && onConvertToTeam}
+			onClickMoveToTeam={!room.teamId && canEdit && onMoveToTeam}
+			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && canEdit && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 			{...room}
 			announcement={
