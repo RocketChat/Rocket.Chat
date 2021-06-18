@@ -7,7 +7,7 @@ import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-const AutoCompleteDepartment = (props) => {
+const AutoCompleteDepartmentMultiple = (props) => {
 	const { value, onlyMyDepartments = false, onChange = () => {} } = props;
 
 	const t = useTranslation();
@@ -28,13 +28,24 @@ const AutoCompleteDepartment = (props) => {
 		itemCount: departmentsTotal,
 	} = useRecordList(departmentsList);
 
+	const sortedByName = departmentsItems.sort((a, b) => {
+		if (a.name > b.name) {
+			return 1;
+		}
+		if (a.name < b.name) {
+			return -1;
+		}
+
+		return 0;
+	});
+
 	return (
 		<PaginatedMultiSelectFiltered
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
-			options={departmentsItems}
+			options={sortedByName}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
@@ -48,4 +59,4 @@ const AutoCompleteDepartment = (props) => {
 	);
 };
 
-export default memo(AutoCompleteDepartment);
+export default memo(AutoCompleteDepartmentMultiple);
