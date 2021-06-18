@@ -100,7 +100,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 		}
 	}
 
-	readOnly(rid, user) {
+	readOnly(rid) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 		if (!room || !room.open) {
 			return true;
@@ -111,7 +111,7 @@ export default class LivechatRoomType extends RoomTypeConfig {
 			return true;
 		}
 
-		return (!room.servedBy || room.servedBy._id !== user._id) && !hasPermission('view-livechat-rooms');
+		return !room.servedBy;
 	}
 
 	getAvatarPath(roomData) {
