@@ -1,13 +1,13 @@
-import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
+import { ILivechatTag } from '../../../../../../definition/ILivechatTag';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
-export type LivechatDepartment = {
+export type LivechatTagsList = {
 	GET: (params: {
 		text: string;
 		offset: number;
 		count: number;
 	}) => {
-		departments: ObjectFromApi<ILivechatDepartment>[];
+		tags: ObjectFromApi<ILivechatTag>[];
 		total: number;
 	};
 };

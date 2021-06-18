@@ -1,4 +1,4 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -29,13 +29,13 @@ const AutoCompleteDepartment = (props) => {
 	} = useRecordList(departmentsList);
 
 	return (
-		<PaginatedSelectFiltered
+		<PaginatedMultiSelectFiltered
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
 			options={departmentsItems}
-			maxWidth='100%'
+			width='100%'
 			flexShrink={0}
 			flexGrow={0}
 			placeholder={t('Select_an_option')}

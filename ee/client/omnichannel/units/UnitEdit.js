@@ -7,7 +7,7 @@ import {
 	Select,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
@@ -18,7 +18,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useForm } from '../../../../client/hooks/useForm';
-import { useDepartmentsList } from '../../../../client/views/hooks/useDepartmentsList';
+import { useDepartmentsByUnitsList } from '../../../../client/views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
 function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
@@ -26,6 +26,8 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
 		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
@@ -35,8 +37,14 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 		monitorsList,
 	);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: departmentsFilter, unitId }), [departmentsFilter, unitId]),
+	const {
+		itemsList: departmentsList,
+		loadMoreItems: loadMoreDepartments,
+	} = useDepartmentsByUnitsList(
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId }), [
+			debouncedDepartmentsFilter,
+			unitId,
+		]),
 	);
 
 	const {
