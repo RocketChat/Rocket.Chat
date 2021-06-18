@@ -122,12 +122,14 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		username: String,
 	}));
 
-	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId, { fields: { _id: 1 } });
+	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
+	if (existingSubscription && existingSubscription._id) {
+		return existingSubscription;
+	}
 
 	const { _id, username, token, status = 'online' } = guest;
 
 	const subscriptionData = {
-		...existingSubscription && existingSubscription._id && { _id: existingSubscription._id },
 		rid,
 		fname: name,
 		alert: true,
@@ -152,7 +154,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		...department && { department },
 	};
 
-	return Subscriptions.insertOrUpsert(subscriptionData);
+	return Subscriptions.insert(subscriptionData);
 };
 
 export const removeAgentFromSubscription = (rid, { _id, username }) => {
