@@ -66,7 +66,7 @@ const config: ISFUConfig = {
 			listenIps:
 			[
 				{
-					ip: process.env.MEDIASOUP_LISTEN_IP || '1.2.3.4',
+					ip: '127.0.0.1', // @TODO: Set correct IP/use enviornment variable
 					announcedIp: process.env.MEDIASOUP_ANNOUNCED_IP,
 				},
 			],

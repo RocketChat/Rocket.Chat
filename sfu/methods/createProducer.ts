@@ -1,6 +1,8 @@
+import { types } from 'mediasoup';
+
 import { IPeer, ICreateProducerData } from '../types';
 
-export const createProducer = async (peer: IPeer, data: ICreateProducerData): Promise<string> => {
+export const createProducer = async (peer: IPeer, data: ICreateProducerData): Promise<types.Producer> => {
 	const { transportId, rtpParameters, appData, kind } = data;
 
 	const transport = peer.data.transports.get(transportId);
@@ -18,5 +20,5 @@ export const createProducer = async (peer: IPeer, data: ICreateProducerData): Pr
 
 	peer.data.producers.set(producer.id, producer);
 
-	return producer.id;
+	return producer;
 };
