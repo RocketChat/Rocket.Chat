@@ -114,43 +114,47 @@ export class PushClass {
 			headers.Authorization = this.options.getAuthorization();
 		}
 
-		const response = await post({ url: `${ gateway }/push/${ service }/send`, body, headers });
+		try {
+			const response = await post({ url: `${ gateway }/push/${ service }/send`, body, headers });
 
-		if (response.statusCode === 406) {
-			logger.info('removing push token', token);
-			appTokensCollection.remove({
-				$or: [{
-					'token.apn': token,
-				}, {
-					'token.gcm': token,
-				}],
-			});
-			return;
-		}
+			if (response.statusCode === 200) {
+				return;
+			}
 
-		if (response.statusCode === 422) {
-			logger.info('gateway rejected push notification. not retrying.', response);
-			return;
-		}
+			if (response.statusCode === 406) {
+				logger.info('removing push token', token);
+				appTokensCollection.remove({
+					$or: [{
+						'token.apn': token,
+					}, {
+						'token.gcm': token,
+					}],
+				});
+				return;
+			}
 
-		if (response.statusCode === 401) {
-			logger.warn('Error sending push to gateway (not authorized)', response);
-			return;
-		}
+			if (response.statusCode === 422) {
+				logger.info('gateway rejected push notification. not retrying.', response);
+				return;
+			}
 
-		if (response.statusCode === 200) {
-			return;
-		}
+			if (response.statusCode === 401) {
+				logger.warn('Error sending push to gateway (not authorized)', response);
+				return;
+			}
 
-		logger.error(`Error sending push to gateway (${ tries } try) ->`, response);
+			throw new Error(response);
+		} catch (e) {
+			logger.error(`Error sending push to gateway (${ tries } try) ->`, e);
 
-		if (tries <= 4) {
-			// [1, 2, 4, 8, 16] minutes (total 31)
-			const ms = 60000 * Math.pow(2, tries);
+			if (tries <= 4) {
+				// [1, 2, 4, 8, 16] minutes (total 31)
+				const ms = 60000 * Math.pow(2, tries);
 
-			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
-			return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+				return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+			}
 		}
 	}
 
