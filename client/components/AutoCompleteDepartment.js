@@ -28,13 +28,24 @@ const AutoCompleteDepartment = (props) => {
 		itemCount: departmentsTotal,
 	} = useRecordList(departmentsList);
 
+	const sortedByName = departmentsItems.sort((a, b) => {
+		if (a.name > b.name) {
+			return 1;
+		}
+		if (a.name < b.name) {
+			return -1;
+		}
+
+		return 0;
+	});
+
 	return (
 		<PaginatedSelectFiltered
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
-			options={departmentsItems}
+			options={sortedByName}
 			maxWidth='100%'
 			flexShrink={0}
 			flexGrow={0}
