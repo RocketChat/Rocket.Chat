@@ -66,11 +66,21 @@ function DiscussionList({
 							{error.toString()}
 						</Callout>
 					)}
-					{total === 0 && <Box p='x24'>{t('No_Discussions_found')}</Box>}
+
+					{total === 0 && (
+						<Box width='full' textAlign='center' p='x24' color='neutral-600'>
+							{t('No_Discussions_found')}
+						</Box>
+					)}
+
 					{!error && total > 0 && discussions.length > 0 && (
 						<>
 							<Virtuoso
-								style={{ minHeight: blockSize, width: inlineSize, overflow: 'hidden' }}
+								style={{
+									minHeight: blockSize,
+									width: inlineSize,
+									overflow: 'hidden',
+								}}
 								totalCount={total}
 								endReached={
 									loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
