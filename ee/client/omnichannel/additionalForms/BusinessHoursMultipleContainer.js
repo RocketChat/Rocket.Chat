@@ -21,27 +21,12 @@ const BusinessHoursMultipleContainer = ({
 	className,
 	hasChangesAndIsValid = () => {},
 }) => {
-	const onlyMyDepartments = true;
-	const params = useMemo(() => ({ onlyMyDepartments }), [onlyMyDepartments]);
-
-	const { value: data, phase: state } = useEndpointData('livechat/department', params);
-
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData));
 
 	const { name } = values;
 
 	onChange(values);
 	hasChangesAndIsValid(hasUnsavedChanges && !!name);
-
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<>
-				<Skeleton />
-				<Skeleton />
-				<Skeleton />
-			</>
-		);
-	}
 
 	return <BusinessHoursMultiple values={values} handlers={handlers} className={className} />;
 };
