@@ -6,7 +6,8 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
-const mapDepartments = (departments) => departments.map(({ _id }) => _id);
+const mapDepartments = (departments) =>
+	departments.map(({ _id, name }) => ({ value: _id, label: name }));
 
 const getInitialData = (data = {}) => ({
 	active: data.active ?? true,
@@ -32,11 +33,6 @@ const BusinessHoursMultipleContainer = ({
 	onChange(values);
 	hasChangesAndIsValid(hasUnsavedChanges && !!name);
 
-	const departmentList = useMemo(
-		() => data && data.departments?.map(({ _id, name }) => [_id, name]),
-		[data],
-	);
-
 	if (state === AsyncStatePhase.LOADING) {
 		return (
 			<>
@@ -47,14 +43,7 @@ const BusinessHoursMultipleContainer = ({
 		);
 	}
 
-	return (
-		<BusinessHoursMultiple
-			values={values}
-			handlers={handlers}
-			departmentList={departmentList}
-			className={className}
-		/>
-	);
+	return <BusinessHoursMultiple values={values} handlers={handlers} className={className} />;
 };
 
 export default BusinessHoursMultipleContainer;

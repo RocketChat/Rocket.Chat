@@ -1,4 +1,5 @@
 import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
@@ -9,6 +10,9 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 export const DepartmentForwarding = ({ departmentId, value, handler, label }) => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(() => ({ filter: departmentsFilter, departmentId }), [departmentId, departmentsFilter]),
@@ -29,7 +33,7 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }) =>
 						maxWidth='100%'
 						w='100%'
 						flexGrow={1}
-						filter={departmentsFilter}
+						filter={debouncedDepartmentsFilter}
 						setFilter={setDepartmentsFilter}
 						onChange={handler}
 						options={departmentsItems}
