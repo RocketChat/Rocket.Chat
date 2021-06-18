@@ -7,7 +7,7 @@ import {
 	Select,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
@@ -26,6 +26,9 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
 
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
 		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),

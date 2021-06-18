@@ -41,13 +41,20 @@ export const useDepartmentsList = (
 			});
 
 			return {
-				items: departments.map((department: any) => {
-					department._updatedAt = new Date(department._updatedAt);
-					department.label = department.name;
-					department.value = { value: department._id, label: department.name };
-					return department;
-				}),
-				itemCount: total,
+				items: departments
+					.filter((department) => {
+						if (options.departmentId && department._id === options.departmentId) {
+							return false;
+						}
+						return true;
+					})
+					.map((department: any) => {
+						department._updatedAt = new Date(department._updatedAt);
+						department.label = department.name;
+						department.value = { value: department._id, label: department.name };
+						return department;
+					}),
+				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
 		[getDepartments, options],
