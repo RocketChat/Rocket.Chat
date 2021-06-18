@@ -6,7 +6,7 @@ import { useSubscription } from 'use-subscription';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -107,7 +107,14 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAll} onCancel={() => setModal()} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteAll}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return (
