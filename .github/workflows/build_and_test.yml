@@ -115,6 +115,9 @@ jobs:
         cd -
 
     - run: meteor npm run lint
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
 
     - run: meteor npm run translation-check
 
