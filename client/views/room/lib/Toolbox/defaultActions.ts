@@ -49,13 +49,13 @@ addAction('members-list', ({ room }) => {
 				? {
 						groups: ['channel', 'group', 'team'],
 						id: 'members-list',
-						title: room.teamId ? 'Teams_members' : 'Members',
+						title: room.teamMain ? 'Teams_members' : 'Members',
 						icon: 'members',
 						template: lazy(() => import('../../MemberListRouter')),
 						order: 5,
 				  }
 				: null,
-		[hasPermission, room.broadcast, room.teamId],
+		[hasPermission, room.broadcast, room.teamMain],
 	);
 });
 

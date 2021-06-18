@@ -20,7 +20,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
-	const isTeam = room.teamId;
+	const isTeam = room.teamMain;
 
 	room.type = room.t;
 	room.rid = rid;
