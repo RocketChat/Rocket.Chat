@@ -23,6 +23,7 @@ const CreateChannel = ({
 	onChangeUsers,
 	onChangeType,
 	onChangeBroadcast,
+	onChangeVoice,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
 	onCreate,
@@ -126,7 +127,7 @@ const CreateChannel = ({
 							<Field.Label>{t('Voice')}</Field.Label>
 							<Field.Description>{t('Voice_channel_Description')}</Field.Description>
 						</Box>
-						<ToggleSwitch checked={values.voice} onChange={handlers.handleVoice} />
+						<ToggleSwitch checked={values.voice} onChange={onChangeVoice} />
 					</Box>
 				</Field>
 				{!values.voice && (

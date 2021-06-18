@@ -5,6 +5,10 @@ import React, { FC, ReactElement, useState } from 'react';
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
 
+/*
+ * TO-DO: Replace direct DOM manipulation by components
+ * Current behavior for test only
+ */
 interface IVoiceRoom {
 	room: IRoom;
 }

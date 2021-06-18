@@ -37,7 +37,14 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
 	const { users, name, description, type, readOnly, broadcast, encrypted, voice } = values;
-	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
+	const {
+		handleUsers,
+		handleEncrypted,
+		handleType,
+		handleBroadcast,
+		handleReadOnly,
+		handleVoice,
+	} = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -58,6 +65,13 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		handleEncrypted(!value);
 		handleReadOnly(value);
 		return handleBroadcast(value);
+	});
+
+	const onChangeVoice = useMutableCallback((value) => {
+		handleBroadcast(!value);
+		handleEncrypted(!value);
+		handleReadOnly(!value);
+		return handleVoice(value);
 	});
 
 	const onCreate = useCallback(async () => {
@@ -113,6 +127,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 			onChangeUsers={onChangeUsers}
 			onChangeType={onChangeType}
 			onChangeBroadcast={onChangeBroadcast}
+			onChangeVoice={onChangeVoice}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}
 			onClose={onClose}
