@@ -11,6 +11,10 @@ import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 
+const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+
 FlowRouter.wait();
 
 FlowRouter.route('/', {
@@ -161,7 +165,6 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 		appLayout.render({ component: SetupWizardRoute });
 	},
 });
@@ -169,14 +172,12 @@ FlowRouter.route('/setup-wizard/:step?', {
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
 	action: () => {
-		const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 		appLayout.render({ component: MailerUnsubscriptionPage });
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
-		const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 		appLayout.render({ component: NotFoundPage });
 	},
 };
