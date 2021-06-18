@@ -29,7 +29,6 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
 		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
 	);

@@ -13,7 +13,6 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }) =>
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
 		useMemo(() => ({ filter: departmentsFilter, departmentId }), [departmentId, departmentsFilter]),
 	);
