@@ -84,7 +84,7 @@ const FilterByText = ({ setFilter, reload, ...props }) => {
 			department,
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
-			tags,
+			tags: tags.map((tag) => tag.label),
 			customFields: customFields.reduce(reducer, {}),
 		});
 	}, [setFilter, guest, servedBy, status, department, from, to, tags, customFields]);

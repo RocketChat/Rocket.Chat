@@ -9,8 +9,8 @@ export enum SettingEditor {
 	EXPRESSION = 'expression'
 }
 
-export type SettingValueMultiSelect = Array<{key: string; i18nLabel: string}>
-export type SettingValueRoomPick = Array<{_id: string; name: string}> | string
+export type SettingValueMultiSelect = string[];
+export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
 export type SettingValue = string | boolean | number | SettingValueMultiSelect | undefined;
 
 export interface ISettingSelectOption {
