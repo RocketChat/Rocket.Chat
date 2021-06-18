@@ -1,4 +1,4 @@
-import { AutoComplete, Option } from '@rocket.chat/fuselage';
+import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
@@ -26,12 +26,10 @@ const AutoCompleteAgent = (props) => {
 	);
 
 	return (
-		<AutoComplete
+		<PaginatedSelectFiltered
 			{...props}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ label }) => <>{label}</>}
-			renderItem={({ value, ...props }) => <Option key={value} {...props} />}
 			options={props.empty ? options : optionsWithAll}
 		/>
 	);
