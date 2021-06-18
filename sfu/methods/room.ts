@@ -164,7 +164,7 @@ export class Room extends EventEmitter {
 				peer.data.displayName = displayName;
 				peer.data.device = device;
 
-				const joinedPeers = { ...this.getJoinedPeers() };
+				const joinedPeers = this.getJoinedPeers();
 
 				const peerInfos = joinedPeers
 					.filter((joinedPeer) => joinedPeer.id !== peer.id)
@@ -174,7 +174,7 @@ export class Room extends EventEmitter {
 						device: joinedPeer.data.device,
 					}));
 
-				accept({ peers: peerInfos });
+				accept(peerInfos);
 
 				peer.data.joined = true;
 
@@ -187,14 +187,25 @@ export class Room extends EventEmitter {
 				break;
 			}
 
+			case 'getPeer': {
+				const id = request.data;
+				const peer = this.protooRoom.getPeer(id);
+
+				accept(peer.data);
+				break;
+			}
+
 			case 'produce': {
 				if (!peer.data.joined) {
 					throw new Error('Peer yet to join.');
 				}
 
-				const producerId = createProducer(peer, request.data);
+				const producer = await createProducer(peer, request.data);
+				accept({ id: producer.id });
 
-				accept({ id: producerId });
+				for (const otherPeer of this.getJoinedPeers(peer)) {
+					createConsumer(this.mediasoupRouter, otherPeer, peer, producer);
+				}
 
 				break;
 			}
