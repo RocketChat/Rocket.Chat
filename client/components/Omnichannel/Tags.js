@@ -21,6 +21,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
+	const [paginatedTagValue, handlePaginatedTagValue] = useState([]);
 
 	const removeTag = (tag) => {
 		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
@@ -54,7 +55,13 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 			</Field.Label>
 			{Tags && tagsList && tagsList.length > 0 ? (
 				<Field.Row>
-					<Tags value={tags} handler={handler} />
+					<Tags
+						value={paginatedTagValue}
+						handler={(tags) => {
+							handler(tags.map((tag) => tag.label));
+							handlePaginatedTagValue(tags);
+						}}
+					/>
 				</Field.Row>
 			) : (
 				<>

@@ -18,6 +18,7 @@ import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
+import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
@@ -50,6 +51,7 @@ export type ServerEndpoints = {
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
 	'livechat/monitors.list': LivechatMonitorsList;
+	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 };
