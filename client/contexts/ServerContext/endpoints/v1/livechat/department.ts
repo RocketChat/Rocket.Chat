@@ -6,6 +6,7 @@ export type LivechatDepartment = {
 		text: string;
 		offset: number;
 		count: number;
+		onlyMyDepartments?: boolean;
 	}) => {
 		departments: ObjectFromApi<ILivechatDepartment>[];
 		total: number;
