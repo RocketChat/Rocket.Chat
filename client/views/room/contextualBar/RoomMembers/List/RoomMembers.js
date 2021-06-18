@@ -87,14 +87,14 @@ const RoomMembers = ({
 				)}
 
 				{error && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x12' pb='x12'>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
 
 				{!loading && members.length <= 0 && (
-					<Box pi='x24' pb='x12'>
-						{t('No_results_found')}
+					<Box textAlign='center' p='x12' color='neutral-600'>
+						{t('No_members_found')}
 					</Box>
 				)}
 
