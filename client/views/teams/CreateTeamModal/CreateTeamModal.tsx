@@ -94,10 +94,6 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		async (name: string) => {
 			setNameError(undefined);
 
-			if (hasUnsavedChanges) {
-				return;
-			}
-
 			if (!name || name.length === 0) {
 				setNameError(t('Field_required'));
 				return;
