@@ -123,7 +123,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 	}));
 
 	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
-	if (existingSubscription && existingSubscription._id) {
+	if (existingSubscription?._id) {
 		return existingSubscription;
 	}
 
