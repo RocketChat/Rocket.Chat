@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 import { Peer, WebSocketTransport } from 'protoo-client';
 import { Device, types } from 'mediasoup-client';
 
@@ -10,7 +12,7 @@ interface IData {
 	displayName: string;
 }
 
-export default class VoiceRoom {
+export default class VoiceRoom extends EventEmitter {
 	roomID: string;
 
 	closed: boolean;
@@ -38,13 +40,14 @@ export default class VoiceRoom {
 	consumers: Map<string, types.Consumer>;
 
 	constructor({ roomID, device, produce, consume, displayName, peerID }: IData) {
+		super();
 		this.roomID = roomID;
 		this.device = device;
 		this.displayName = displayName;
 		this.closed = false;
 		this.produce = produce;
 		this.consume = consume;
-		this.protooUrl = `wss://localhost:8989/?roomId=${ roomID }&peerId=${ peerID }`;
+		this.protooUrl = `ws://${ window.location.hostname }:8989/?roomId=${ roomID }&peerId=${ peerID }`;
 		this.consumers = new Map();
 	}
 
@@ -99,6 +102,10 @@ export default class VoiceRoom {
 
 						if (consumer) {
 							this.consumers.set(consumer.id, consumer);
+
+							const peer = await this.protoo?.request('getPeer', peerID);
+							this.emit('newConsumer', consumer, peer);
+
 							consumer.on('transportclose', () => {
 								this.consumers.delete(consumer.id);
 							});
@@ -131,8 +138,7 @@ export default class VoiceRoom {
 		try {
 			this.mediasoupDevice = new Device();
 
-			const routerRtpCapabilities = await this.protoo?.request('getRouterRtpCapabilities');
-
+			const routerRtpCapabilities = await this.protoo?.request('getRouterRtpCapibilities');
 			await this.mediasoupDevice.load({ routerRtpCapabilities });
 
 			if (this.produce) {
@@ -216,9 +222,8 @@ export default class VoiceRoom {
 			await this.protoo?.request('join', {
 				displayName: this.displayName,
 				device: this.device,
-				rtpCapabailities: this.consume && this.mediasoupDevice.rtpCapabilities,
+				rtpCapabilities: this.consume && this.mediasoupDevice.rtpCapabilities,
 			});
-
 
 			if (this.produce) {
 				this.enableMic();
@@ -250,6 +255,26 @@ export default class VoiceRoom {
 					opusDtx: true,
 				},
 			});
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async muteMic(): Promise<void> {
+		this.micProducer?.pause();
+
+		try {
+			await this.protoo?.request('pauseProducer', { producerId: this.micProducer?.id });
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async unmuteMic(): Promise<void> {
+		this.micProducer?.resume();
+
+		try {
+			await this.protoo?.request('resumeProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
 			console.log(err);
 		}
