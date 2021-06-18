@@ -1,8 +1,6 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import BusinessHoursMultiple from './BusinessHoursMultiple';
 
