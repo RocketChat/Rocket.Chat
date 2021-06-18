@@ -82,7 +82,11 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 			<Box
 				display='flex'
 				position='fixed'
-				style={{ bottom: 0, left: 0, right: 0 }}
+				style={{
+					bottom: 0,
+					left: 0,
+					right: 0,
+				}}
 				justifyContent='center'
 				alignItems='center'
 				pb='x24'

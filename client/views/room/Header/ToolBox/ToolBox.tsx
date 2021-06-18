@@ -33,6 +33,10 @@ const ToolBox: FC<ToolBoxProps> = ({ className, room }) => {
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);
 
+	/*
+	 * TO-DO: check this room.voice test improve with more details before merge
+	 */
+
 	if (room && room.voice) {
 		actions = actions.filter(({ id }) => id === 'channel-settings' || id === 'members-list');
 	}
