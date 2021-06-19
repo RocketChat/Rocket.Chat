@@ -8,6 +8,8 @@ import {
 	Icon,
 	Callout,
 	TextAreaInput,
+	MultiSelect,
+	//PaginatedMultiSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
@@ -38,6 +40,7 @@ const getInitialValues = (room) => ({
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
 	roomAvatar: undefined,
+	roomTags: room.tags ?? [],
 });
 
 function EditRoom({ room, onChange }) {
@@ -57,6 +60,7 @@ function EditRoom({ room, onChange }) {
 		canViewDescription,
 		canViewType,
 		canViewReadOnly,
+		canViewTags,
 	] = useMemo(() => {
 		const isAllowed = roomTypes.getConfig(room.t).allowRoomSettingChange;
 		return [
@@ -67,6 +71,7 @@ function EditRoom({ room, onChange }) {
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
+			isAllowed(room, RoomSettingsEnum.TAGS),
 		];
 	}, [room]);
 
@@ -82,6 +87,7 @@ function EditRoom({ room, onChange }) {
 		roomAvatar,
 		roomDescription,
 		roomAnnouncement,
+		roomTags,
 	} = values;
 
 	const {
@@ -96,6 +102,7 @@ function EditRoom({ room, onChange }) {
 		handleRoomTopic,
 		handleRoomDescription,
 		handleRoomAnnouncement,
+		handleRoomTags,
 	} = handlers;
 
 	const changeArchivation = archived !== !!room.archived;
@@ -130,6 +137,7 @@ function EditRoom({ room, onChange }) {
 				roomDescription,
 				roomAnnouncement,
 				roomAvatar,
+				roomTags,
 			});
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
@@ -142,6 +150,7 @@ function EditRoom({ room, onChange }) {
 
 	const changeRoomType = useMutableCallback(() => {
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
+		handleRoomTags([]);
 	});
 
 	const deleteRoom = useMethod('eraseRoom');
@@ -207,6 +216,57 @@ function EditRoom({ room, onChange }) {
 									onChange={handleRoomDescription}
 									flexGrow={1}
 								/>
+							</Field.Row>
+						</Field>
+					)}
+					{/*canViewTags && (
+						<Field>
+							<Field.Label>{t('Tags')}</Field.Label>
+							<Field.Row>
+								<PaginatedMultiSelectFiltered
+									filter={tagsFilter}
+									setFilter={setTagsFilter}
+									options={[
+										{
+											value: 'cooking',
+											label: 'cooking',
+										},
+										{
+											value: 'sports',
+											label: 'sports',
+										},
+										{
+											value: 'action',
+											label: 'action',
+										},
+									]}
+									value={roomTags}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleRoomTags}
+								/>
+							</Field.Row>
+						</Field>
+					)*/}
+					{canViewTags && (
+						<Field>
+							<Field.Label>{t('Tags')}</Field.Label>
+							<Field.Row>
+								<MultiSelect
+								options={[
+									['cooking','#cooking'],
+									['action','#action'],
+									['comedy', '#comedy'],
+									['romance', '#romance'],
+									['drama', '#drama'],
+									['fun', '#fun']
+								]}
+								value={roomTags}
+								maxWidth='100%'
+								placeholder={t('Select_an_option')}
+								onChange={handleRoomTags}
+								disabled={roomType !== 'c'}
+							/>
 							</Field.Row>
 						</Field>
 					)}

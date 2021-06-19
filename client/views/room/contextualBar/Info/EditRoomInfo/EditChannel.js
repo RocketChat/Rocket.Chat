@@ -13,6 +13,7 @@ import {
 	Box,
 	Icon,
 	TextAreaInput,
+	//PaginatedMultiSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -48,6 +49,7 @@ const useInitialValues = (room, settings) => {
 		ro,
 		archived,
 		topic,
+		tags,
 		description,
 		announcement,
 		joinCodeRequired,
@@ -72,6 +74,7 @@ const useInitialValues = (room, settings) => {
 			archived: !!archived,
 			roomTopic: topic ?? '',
 			roomDescription: description ?? '',
+			roomTags: tags ?? [],
 			roomAnnouncement: announcement ?? '',
 			roomAvatar: undefined,
 			joinCode: '',
@@ -91,6 +94,7 @@ const useInitialValues = (room, settings) => {
 			announcement,
 			archived,
 			description,
+			tags,
 			excludePinnedDefault,
 			filesOnlyDefault,
 			joinCodeRequired,
@@ -157,6 +161,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		archived,
 		roomTopic,
 		roomDescription,
+		roomTags,
 		roomAnnouncement,
 		reactWhenReadOnly,
 		joinCode,
@@ -184,6 +189,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		handleRoomType,
 		handleRoomTopic,
 		handleRoomDescription,
+		handleRoomTags,
 		handleRoomAnnouncement,
 		handleRetentionEnabled,
 		handleRetentionOverrideGlobal,
@@ -198,6 +204,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewAnnouncement,
 		canViewArchived,
 		canViewDescription,
+		canViewTags,
 		canViewType,
 		canViewReadOnly,
 		canViewHideSysMes,
@@ -212,6 +219,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			isAllowed(room, RoomSettingsEnum.ANNOUNCEMENT),
 			isAllowed(room, RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE),
 			isAllowed(room, RoomSettingsEnum.DESCRIPTION),
+			isAllowed(room, RoomSettingsEnum.TAGS),
 			isAllowed(room, RoomSettingsEnum.TYPE),
 			isAllowed(room, RoomSettingsEnum.READ_ONLY),
 			isAllowed(room, RoomSettingsEnum.SYSTEM_MESSAGES),
@@ -226,6 +234,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
 	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
+	const canChangeTags = usePermission('change-tags', room._id);
 	const canSetRo = usePermission('set-readonly', room._id);
 	const canSetReactWhenRo = usePermission('set-react-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
@@ -296,6 +305,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const changeRoomType = useMutableCallback(() => {
 		handleRoomType(roomType === 'p' ? 'c' : 'p');
+		handleRoomTags([]);
 	});
 
 	const onChangeMaxAge = useMutableCallback((e) => {
@@ -338,6 +348,57 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								value={roomDescription}
 								onChange={handleRoomDescription}
 								flexGrow={1}
+							/>
+						</Field.Row>
+					</Field>
+				)}
+				{/*canViewTags && (
+					<Field>
+						<Field.Label>{t('Tags')}</Field.Label>
+						<Field.Row>
+							<PaginatedMultiSelectFiltered
+									filter={tagsFilter}
+									setFilter={setTagsFilter}
+									options={[
+										{
+											value: 'cooking',
+											label: 'cooking',
+										},
+										{
+											value: 'sports',
+											label: 'sports',
+										},
+										{
+											value: 'action',
+											label: 'action',
+										},
+									]}
+									value={roomTags}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleRoomTags}
+								/>
+						</Field.Row>
+					</Field>
+				)*/}
+				{canChangeTags && (
+					<Field>
+						<Field.Label>{t('Tags')}</Field.Label>
+						<Field.Row>
+							<MultiSelect
+								options={[
+									['cooking','#cooking'],
+									['action','#action'],
+									['comedy', '#comedy'],
+									['romance', '#romance'],
+									['drama', '#drama'],
+									['fun', '#fun']
+								]}
+								value={roomTags}
+								maxWidth='100%'
+								placeholder={t('Select_an_option')}
+								onChange={handleRoomTags}
+								disabled={roomType !== 'c'}
 							/>
 						</Field.Row>
 					</Field>
