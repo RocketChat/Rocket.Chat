@@ -117,20 +117,19 @@ function OutOfOfficePage(): ReactNode {
 				<Box maxWidth='x800' w='full' alignSelf='center'>
 					<FieldGroup>
 						<Field>
-							<Box display='flex' justifyContent='space-between' alignItems='center'>
+							<Box display='flex' justifyContent='flex-start' alignItems='center'>
 								<Field.Row>
 									<RadioButton checked={!isEnabled} onChange={(): void => handleIsEnabled(false)} />
 								</Field.Row>
 								<Field.Row>
 									<Box display='flex' flexDirection='column'>
 										<Field.Label>Disable Out Of Office</Field.Label>
-										<Field.Hint>{t('Out of Office will be disabled')}</Field.Hint>
 									</Box>
 								</Field.Row>
 							</Box>
 						</Field>
 						<Field>
-							<Box display='flex' justifyContent='space-between' alignItems='center'>
+							<Box display='flex' justifyContent='flex-start' alignItems='center'>
 								<Field.Row>
 									<RadioButton
 										checked={isEnabled as boolean}
@@ -140,7 +139,6 @@ function OutOfOfficePage(): ReactNode {
 								<Field.Row>
 									<Box display='flex' flexDirection='column'>
 										<Field.Label>Enable Out Of Office</Field.Label>
-										<Field.Hint>{t('Out of Office will be enabled')}</Field.Hint>
 									</Box>
 								</Field.Row>
 							</Box>
