@@ -123,7 +123,7 @@ function DepartmentsRoute() {
 					</GenericTable.HeaderCell>
 				),
 			].filter(Boolean),
-		[sort, onHeaderClick, t],
+		[sort, onHeaderClick, t, canRemoveDepartments],
 	);
 
 	const renderRow = useCallback(
@@ -144,7 +144,7 @@ function DepartmentsRoute() {
 				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[onRowClick, t, reload],
+		[canRemoveDepartments, onRowClick, t, reload],
 	);
 
 	if (!canViewDepartments) {
