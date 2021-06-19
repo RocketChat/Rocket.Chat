@@ -914,6 +914,14 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
 	}
 
+	createRoomAddedToTeamWithRoomIdAndUser(roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('room_added_to_team', roomId, message, user, extraData);
+	}
+
+	createRoomRemovedFromTeamWithRoomIdAndUser(roomId, message, user, extraData) {
+		return this.createWithTypeRoomIdMessageAndUser('room_removed_from_team', roomId, message, user, extraData);
+	}
+
 	// REMOVE
 	removeById(_id) {
 		const query = { _id };
