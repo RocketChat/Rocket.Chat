@@ -81,15 +81,7 @@ export function enableOutOffice({
     return OutOfOffice.findOneById(newDocumentId);
   }
 
-  if (currentOutOfOffice.isEnabled === true) {
-    // already enabled - nothing to do
-    throw new Meteor.Error(
-      "error-not-allowed",
-      "Out Of Office is already enabled."
-    );
-  }
-
-  // update the existing one associated with this user
+  // if already exists, update the existing one
 
   const subscribedRoomIds = getSubscribedRoomIds(roomIds, currentUser);
   OutOfOffice.setDataWhenEnabled(

@@ -41,22 +41,28 @@ const defaultFormValues: IFormValues = {
 	roomIds: [],
 };
 
+function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
+	if (!receivedFormValues) {
+		return { ...defaultFormValues };
+	}
+	return { ...receivedFormValues };
+	// return {
+	// 	...defaultFormValues,
+	// 	isEnabled: !!receivedFormValues.isEnabled,
+	// 	customMessage: receivedFormValues.customMessage,
+	// 	roomIds: receivedFormValues.roomIds ?? [],
+	// };
+}
+
 function OutOfOfficePage(): ReactNode {
 	const t = useTranslation() as any;
 
 	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.status' as any);
-	const initialFormValues = useMemo(
-		() => ({
-			...defaultFormValues,
-			isEnabled: !!receivedOutOfOfficeValues?.isEnabled,
-			customMessage: receivedOutOfOfficeValues?.customMessage ?? '',
-			roomIds: receivedOutOfOfficeValues?.roomIds ?? [],
-		}),
-		[receivedOutOfOfficeValues],
+
+	const { values, handlers, commit, hasUnsavedChanges } = useForm(
+		getInitialFormValues(receivedOutOfOfficeValues) as any,
 	);
 
-	const { values, handlers, commit, hasUnsavedChanges } = useForm(initialFormValues as any);
-	// doubt - the form values are not changing even though the getInitialFormValues are different
 	const { isEnabled, roomIds, customMessage, startDate, endDate } = values;
 
 	const {

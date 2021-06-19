@@ -68,6 +68,14 @@ API.v1.addRoute(
         roomIds: 1,
         customMessage: 1,
       });
+
+      if (!foundDocument) {
+        return API.v1.failure("error-not-found", undefined, undefined, {
+          details:
+            "Out of Office document associated with this user-id could not be found",
+        });
+      }
+
       return API.v1.success(foundDocument);
     },
   }
