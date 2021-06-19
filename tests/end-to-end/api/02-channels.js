@@ -693,6 +693,41 @@ describe('[Channels]', function() {
 		});
 	});
 
+	describe('/channels.setTags', () => {
+		it('should set the tags of the channel with an array', (done) => {
+			request.post(api('channels.setTags'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					tags: ['these','are','tags','of','a','channel','for','api','tests'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('tags');
+					expect(res.body.tags).to.have.members(['these','are','tags','of','a','channel','for','api','tests']);
+				})
+				.end(done);
+		});
+		it('should set the tags of the channel with an empty array (remove tags)', (done) => {
+			request.post(api('channels.setTags'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					tags: [],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('tags');
+					expect(res.body.tags).to.have.members([]);
+				})
+				.end(done);
+		});
+	});
+
 	describe('/channels.setAnnouncement', () => {
 		it('should set the announcement of the channel with a string', (done) => {
 			request.post(api('channels.setAnnouncement'))

@@ -933,6 +933,28 @@ API.v1.addRoute('channels.setTopic', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('channels.setTags', { authRequired: true }, {
+	post() {
+		if (!this.bodyParams.hasOwnProperty('tags')) {
+			return API.v1.failure('The bodyParam "tags" is required');
+		}
+
+		const findResult = findChannelByIdOrName({ params: this.requestParams() });
+
+		if (findResult.tags === this.bodyParams.tags) {
+			return API.v1.failure('The channel tags is the same as what it would be changed to.');
+		}
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('saveRoomSettings', findResult._id, 'roomTags', this.bodyParams.tags);
+		});
+
+		return API.v1.success({
+			tags: this.bodyParams.tags,
+		});
+	},
+});
+
 API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 	post() {
 		if (!this.bodyParams.hasOwnProperty('announcement')) {
