@@ -12,14 +12,13 @@ import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 const ActiveUsersSection = () => {
 	const t = useTranslation();
-
 	const period = useMemo(() => ({
 		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 	}), []);
 
 	const params = useMemo(() => ({
-		start: period.start.clone().subtract(30, 'days').toISOString(),
+		start: period.start.clone().subtract(29, 'days').toISOString(),
 		end: period.end.toISOString(),
 	}), [period]);
 
@@ -46,25 +45,6 @@ const ActiveUsersSection = () => {
 		});
 
 		const createPoints = () => Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => createPoint(i));
-		const usersLists = data.month.reduce((map, dayData) => {
-			map[dayData.day] = dayData.usersList;
-			return map;
-		}, {});
-
-		const distributeValueOverPoints = (usersListsMap, usersList, i, T, array, prev) => {
-			const usersSet = new Set(usersList);
-			let k = i;
-			for (let j = 0; j < T && k < array.length; ++k, ++j) {
-				if (k >= 0) {
-					usersListsMap[k]?.forEach((userId) => usersSet.add(userId));
-					array[k].y = Math.max(usersSet.size, array[k].y);
-				}
-
-				if (k === -1) {
-					prev.y = usersSet.size;
-				}
-			}
-		};
 
 		const dauValues = createPoints();
 		const prevDauValue = createPoint(-1);
@@ -73,11 +53,28 @@ const ActiveUsersSection = () => {
 		const mauValues = createPoints();
 		const prevMauValue = createPoint(-1);
 
-		for (const { usersList, users, day, month, year } of data.month) {
-			const i = moment.utc([year, month - 1, day, 0, 0, 0, 0]).diff(period.start, 'days');
-			dauValues[i].y += users;
-			distributeValueOverPoints(usersLists, usersList, i, 7, wauValues, prevWauValue);
-			distributeValueOverPoints(usersLists, usersList, i, 30, mauValues, prevMauValue);
+		const usersListsMap = data.month.reduce((map, dayData) => {
+			const date = moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day });
+			const i = date.diff(period.start, 'days');
+			map[i] = dayData.usersList;
+			dauValues[i].y = dayData.users;
+			return map;
+		}, {});
+
+		const distributeValueOverPoints = (usersListsMap, i, T, array, prev) => {
+			const usersSet = new Set();
+			prev[i] = array[i - 1]?.y;
+			for (let k = i; T > 0; k--, T--) {
+				if (usersListsMap[k]) {
+					usersListsMap[k].forEach((userId) => usersSet.add(userId));
+				}
+			}
+			array[i].y = usersSet.size;
+		};
+
+		for (let i = 0; i < 30; i++) {
+			distributeValueOverPoints(usersListsMap, i, 7, wauValues, prevWauValue);
+			distributeValueOverPoints(usersListsMap, i, 30, mauValues, prevMauValue);
 		}
 
 		return [
