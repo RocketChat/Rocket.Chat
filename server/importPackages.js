@@ -98,6 +98,7 @@ import '../app/version-check/server';
 import '../app/search/server';
 import '../app/chatpal-search/server';
 import '../app/discussion/server';
+import '../app/discovery/server';
 import '../app/bigbluebutton/server';
 import '../app/mail-messages/server';
 import '../app/user-status';
