@@ -124,6 +124,8 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
+			case RoomSettingsEnum.TAGS:
+				return false;
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;
 			default:

@@ -381,7 +381,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Field>
 				)*/}
-				{canChangeTags && (
+				{canViewTags && (
 					<Field>
 						<Field.Label>{t('Tags')}</Field.Label>
 						<Field.Row>
@@ -398,7 +398,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
 								onChange={handleRoomTags}
-								disabled={roomType !== 'c'}
+								disabled={!canChangeTags || roomType === 'p'}
 							/>
 						</Field.Row>
 					</Field>
