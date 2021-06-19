@@ -9,13 +9,14 @@ import {
 import { OutOfOffice } from "../../../models/server";
 
 API.v1.addRoute(
-  "outOfOffice.enable",
+  "outOfOffice.toggle",
   { authRequired: true },
   {
     post() {
       check(
         this.bodyParams,
         Match.ObjectIncluding({
+          isEnabled: Boolean,
           roomIds: Array,
           customMessage: String,
           startDate: Match.Optional(String),
@@ -23,7 +24,19 @@ API.v1.addRoute(
         })
       );
 
-      const { roomIds, customMessage, startDate, endDate } = this.bodyParams;
+      const {
+        isEnabled,
+        roomIds,
+        customMessage,
+        startDate,
+        endDate,
+      } = this.bodyParams;
+
+      if (isEnabled === false) {
+        const updated = disableOutOfOffice({ userId: this.userId });
+
+        return API.v1.success(updated);
+      }
 
       if (customMessage.length === 0) {
         throw new Meteor.Error(
@@ -39,18 +52,6 @@ API.v1.addRoute(
         startDate,
         endDate,
       });
-
-      return API.v1.success(updated);
-    },
-  }
-);
-
-API.v1.addRoute(
-  "outOfOffice.disable",
-  { authRequired: true },
-  {
-    post() {
-      const updated = disableOutOfOffice({ userId: this.userId });
 
       return API.v1.success(updated);
     },

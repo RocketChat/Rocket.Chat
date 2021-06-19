@@ -67,11 +67,12 @@ function OutOfOfficePage(): ReactNode {
 		handleRoomIds,
 	} = handlers;
 
-	const enableOutOfOffice = useEndpointAction(
+	const toggleOutOfOffice = useEndpointAction(
 		'POST',
-		'outOfOffice.enable',
+		'outOfOffice.toggle',
 		useMemo(
 			() => ({
+				isEnabled,
 				roomIds,
 				customMessage,
 				startDate,
@@ -81,15 +82,9 @@ function OutOfOfficePage(): ReactNode {
 		),
 	);
 
-	const disableOutOfOffice = useEndpointAction('POST', 'outOfOffice.disable');
-
 	const handleSaveChanges = useCallback(async () => {
 		commit();
-		if (isEnabled) {
-			await disableOutOfOffice();
-		} else {
-			await enableOutOfOffice();
-		}
+		toggleOutOfOffice();
 	}, [commit, values]);
 
 	const {
