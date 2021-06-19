@@ -44,7 +44,7 @@ const defaultFormValues: IFormValues = {
 function OutOfOfficePage(): ReactNode {
 	const t = useTranslation() as any;
 
-	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.getByUser' as any);
+	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.status' as any);
 	const initialFormValues = useMemo(
 		() => ({
 			...defaultFormValues,

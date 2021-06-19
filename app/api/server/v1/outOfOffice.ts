@@ -59,10 +59,9 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-  "outOfOffice.getByUser",
+  "outOfOffice.status",
   { authRequired: true },
   {
-    // doubt - should we change this to a function?
     get() {
       const foundDocument = OutOfOffice.findOneByUserId(this.userId, {
         isEnabled: 1,
