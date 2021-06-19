@@ -20,6 +20,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useForm } from '../../hooks/useForm';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
+import { useToastMessageDispatch } from '/client/contexts/ToastMessagesContext';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
@@ -56,6 +57,7 @@ function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
 
 function OutOfOfficePage(): ReactNode {
 	const t = useTranslation() as any;
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.status' as any);
 
@@ -90,7 +92,14 @@ function OutOfOfficePage(): ReactNode {
 
 	const handleSaveChanges = useCallback(async () => {
 		commit();
-		toggleOutOfOffice();
+		const result = await toggleOutOfOffice();
+		if (result && result.success === true) {
+			if (result.isEnabled === true) {
+				dispatchToastMessage({ type: 'success', message: 'Successfully Enabled Out of Office!' });
+			} else {
+				dispatchToastMessage({ type: 'success', message: 'Successfully Disabled Out of Office!' });
+			}
+		}
 	}, [commit, values]);
 
 	const {

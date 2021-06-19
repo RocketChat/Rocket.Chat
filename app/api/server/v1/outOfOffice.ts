@@ -70,7 +70,8 @@ API.v1.addRoute(
       });
 
       if (!foundDocument) {
-        return API.v1.failure("error-not-found", undefined, undefined, {
+        return API.v1.success({
+          error: "error-not-found",
           details:
             "Out of Office document associated with this user-id could not be found",
         });
@@ -102,5 +103,12 @@ API.v1.addRoute("outOfOffice.getById", {
     const doc = OutOfOffice.findOneById(docId);
 
     return API.v1.success({ "the-found": doc });
+  },
+});
+
+API.v1.addRoute("outOfOffice.removeAll", {
+  get() {
+    OutOfOffice.remove({});
+    return API.v1.success({ result: "deleted all documents" });
   },
 });
