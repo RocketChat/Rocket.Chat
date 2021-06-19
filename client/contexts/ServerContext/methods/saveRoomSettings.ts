@@ -5,6 +5,7 @@ type RoomSettings = {
 	featured: unknown;
 	roomName: unknown;
 	roomTopic: unknown;
+	roomTags: unknown;
 	roomAnnouncement: unknown;
 	roomCustomFields: unknown;
 	roomDescription: unknown;

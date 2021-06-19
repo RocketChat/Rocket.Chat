@@ -7,6 +7,7 @@ import { Rooms } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
+import { saveRoomTags } from '../functions/saveRoomTags';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
 import { saveRoomDescription } from '../functions/saveRoomDescription';
@@ -21,7 +22,7 @@ import { RoomSettingsEnum, roomTypes } from '../../../utils';
 import { Team } from '../../../../server/sdk';
 import { TEAM_TYPE } from '../../../../definition/ITeam';
 
-const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
+const fields = ['roomAvatar', 'featured', 'roomName', 'roomTopic', 'roomTags', 'roomAnnouncement', 'roomCustomFields', 'roomDescription', 'roomType', 'readOnly', 'reactWhenReadOnly', 'systemMessages', 'default', 'joinCode', 'tokenpass', 'streamingOptions', 'retentionEnabled', 'retentionMaxAge', 'retentionExcludePinned', 'retentionFilesOnly', 'retentionIgnoreThreads', 'retentionOverrideGlobal', 'encrypted', 'favorite'];
 
 const validators = {
 	default({ userId }) {
@@ -139,6 +140,11 @@ const settingSavers = {
 	roomTopic({ value, room, rid, user }) {
 		if (value !== room.topic) {
 			saveRoomTopic(rid, value, user);
+		}
+	},
+	roomTags({ value, room, rid, user }) {
+		if (!_.isEqual(value.sort(), (room.tags ? room.tags : []).sort())) {
+			saveRoomTags(rid, value, user);
 		}
 	},
 	roomAnnouncement({ value, room, rid, user }) {
