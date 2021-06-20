@@ -4,11 +4,9 @@ import React, { FC, ReactElement, useState } from 'react';
 
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
+import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
+import Peers from './Peers';
 
-/*
- * TO-DO: Replace direct DOM manipulation by components
- * Current behavior for test only
- */
 interface IVoiceRoom {
 	room: IRoom;
 }
@@ -20,6 +18,7 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 
 	const [connected, setConnected] = useState(false);
 	const [muteMic, setMuteMic] = useState(false);
+	const [peers, setPeers] = useState<Array<IVoiceRoomPeer>>([]);
 
 	const handleJoin = async (): Promise<void> => {
 		roomClient = new VoiceRoomClient({
@@ -29,28 +28,26 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 			consume: true,
 			displayName: room.u.name || 'Anonymous',
 			peerID: room.u._id,
+			username: room.u.username,
 		});
 
 		try {
 			await roomClient.join();
-			roomClient.on('newConsumer', (consumer: types.Consumer, peer) => {
-				const divEle = document.createElement('div');
-				const pEle = document.createElement('p');
+			roomClient.on('newConsumer', (consumer: types.Consumer, peerID: string, peer) => {
+				setPeers((prev) =>
+					prev.concat({
+						id: peerID,
+						track: consumer.track,
+						device: peer.device,
+						displayName: peer.displayName,
+						consumerId: consumer.id,
+						username: peer.username,
+					}),
+				);
+			});
 
-				pEle.innerText = peer.displayName;
-				divEle.appendChild(pEle);
-
-				const audioEle = document.createElement('audio');
-				const audio = new MediaStream();
-
-				audio.addTrack(consumer.track);
-				audioEle.id = consumer.id;
-				audioEle.srcObject = audio;
-				audioEle.autoplay = true;
-
-				divEle.appendChild(audioEle);
-
-				document.getElementById('peer-audio-container')?.appendChild(divEle);
+			roomClient.on('peerClosed', (id: string) => {
+				setPeers((prev) => prev.filter((p) => p.id !== id));
 			});
 			setConnected(true);
 		} catch (err) {
@@ -62,10 +59,7 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 		setConnected(false);
 
 		roomClient.close();
-		const ele = document.getElementById('peer-audio-container');
-		while (ele?.lastElementChild) {
-			ele.removeChild(ele.lastElementChild);
-		}
+		setPeers([]);
 	};
 
 	const toggleMic = (): void => {
@@ -82,7 +76,7 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 
 	return (
 		<>
-			<Box id='peer-audio-container'></Box>
+			<Peers peers={peers} />
 			<Box
 				display='flex'
 				position='fixed'
