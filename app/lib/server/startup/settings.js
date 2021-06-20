@@ -1303,6 +1303,14 @@ settings.addGroup('Push', function() {
 				_id: 'Push_enable',
 				value: true,
 			},
+			{
+				_id: 'Register_Server',
+				value: true,
+			},
+			{
+				_id: 'Cloud_Service_Agree_PrivacyTerms',
+				value: true,
+			},
 		],
 	});
 	this.add('Push_gateway', 'https://gateway.rocket.chat', {
@@ -1337,47 +1345,39 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
-			enableQuery: pushEnabledWithoutGateway,
 			secret: true,
 		});
 	});

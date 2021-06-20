@@ -72,11 +72,11 @@ Meteor.methods({
 });
 
 function configurePush() {
-	if (settings.get('Push_enable') === true) {
+	if (settings.get('Push_enable')) {
 		let apn;
 		let gcm;
 
-		if (settings.get('Push_enable_gateway') === false) {
+		if (!settings.get('Push_enable_gateway') || (!settings.get('Register_Server') && !settings.get('Cloud_Service_Agree_PrivacyTerms'))) {
 			gcm = {
 				apiKey: settings.get('Push_gcm_api_key'),
 				projectNumber: settings.get('Push_gcm_project_number'),
