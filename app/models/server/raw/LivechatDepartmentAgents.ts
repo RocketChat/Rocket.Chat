@@ -4,7 +4,6 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatDepartmentAgents } from '../../../../definition/ILivechatDepartmentAgents';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> {
-
 	findUsersInQueue(usersList: string[]): Cursor<ILivechatDepartmentAgents>;
 
 	findUsersInQueue(usersList: string[], options: WithoutProjection<FindOneOptions<ILivechatDepartmentAgents>>): Cursor<ILivechatDepartmentAgents>;

@@ -37,7 +37,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { ISubscription } from '/definition/ISubscription';
+import { ISubscription } from '../../../definition/ISubscription';
 
 export class TeamService extends ServiceClass implements ITeamService {
 	protected name = 'team';
