@@ -59,7 +59,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	title,
 	icon,
 	onCancel,
-	onClose,
+	onClose = onCancel,
 	onConfirm,
 	dontAskAgain,
 	...props

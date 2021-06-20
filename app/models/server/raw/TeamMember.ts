@@ -65,7 +65,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 	}
 
 	updateOneByUserIdAndTeamId(userId: string, teamId: string, update: Partial<T>): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({ userId, teamId }, { $set: update });
+		return this.updateOne({ userId, teamId }, { $set: update });
 	}
 
 	createOneByTeamIdAndUserId(teamId: string, userId: string, createdBy: Pick<IUser, '_id' | 'username'>): Promise<InsertOneWriteOpResult<T>> {
@@ -73,13 +73,12 @@ export class TeamMemberRaw extends BaseRaw<T> {
 			teamId,
 			userId,
 			createdAt: new Date(),
-			_updatedAt: new Date(),
 			createdBy,
 		});
 	}
 
 	updateRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
+		return this.updateOne({
 			teamId,
 			userId,
 		}, {
@@ -90,7 +89,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 	}
 
 	removeRolesByTeamIdAndUserId(teamId: string, userId: string, roles: Array<string>): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
+		return this.updateOne({
 			teamId,
 			userId,
 		}, {

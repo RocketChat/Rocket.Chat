@@ -228,6 +228,9 @@ settings.addGroup('Accounts', function() {
 				value: true,
 			},
 		});
+		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+			type: 'string',
+		});
 		this.add('Accounts_PasswordReset', true, {
 			type: 'boolean',
 			public: true,
@@ -847,6 +850,11 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+
+	this.add('Enable_CSP', true, {
+		type: 'boolean',
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
