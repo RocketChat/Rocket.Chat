@@ -853,7 +853,6 @@ settings.addGroup('General', function() {
 
 	this.add('Enable_CSP', true, {
 		type: 'boolean',
-		secret: true,
 	});
 
 	this.add('Iframe_Restrict_Access', true, {

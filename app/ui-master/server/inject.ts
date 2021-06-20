@@ -72,8 +72,8 @@ export const injectIntoHead = (key: string, value: Injection): void => {
 };
 
 export const addScript = (key: string, content: string): void => {
-	if (!content.trim) {
-		injectIntoHead(key, '');
+	if (!content.trim()) {
+		injectIntoHead(`${ key }.js`, '');
 		return;
 	}
 	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
@@ -81,8 +81,8 @@ export const addScript = (key: string, content: string): void => {
 };
 
 export const addStyle = (key: string, content: string): void => {
-	if (!content.trim) {
-		injectIntoHead(key, '');
+	if (!content.trim()) {
+		injectIntoHead(`${ key }.css`, '');
 		return;
 	}
 	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
