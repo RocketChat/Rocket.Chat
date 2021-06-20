@@ -19,6 +19,7 @@ import Aside from './Aside';
 import Body from './Body';
 import Footer from './Footer';
 import LazyComponent from './LazyComponent';
+import VoiceRoom from './VoiceRoom';
 
 const Room = () => {
 	const t = useTranslation();
@@ -40,19 +41,24 @@ const Room = () => {
 
 	useDebugValue(room);
 	useDebugValue(tab);
+
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
 				<Header room={room} rid={room._id} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
-				<BlazeTemplate
-					onClick={hideFlexTab ? close : undefined}
-					name='roomOld'
-					tabBar={tabBar}
-					rid={room._id}
-					_id={room._id}
-				/>
+				{room.voice ? (
+					<VoiceRoom room={room} />
+				) : (
+					<BlazeTemplate
+						onClick={hideFlexTab ? close : undefined}
+						name='roomOld'
+						tabBar={tabBar}
+						rid={room._id}
+						_id={room._id}
+					/>
+				)}
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
