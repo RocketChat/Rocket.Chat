@@ -68,6 +68,15 @@ addAction('uploaded-files-list', {
 	order: 7,
 });
 
+addAction('ephemeral-time', {
+	groups: ['ephemeral'],
+	id: 'ephemeral-time',
+	title: 'Ephemeral_time',
+	icon: 'clock',
+	template: lazy(() => import('../../contextualBar/EphemeralTime')),
+	order: 7,
+});
+
 addAction('keyboard-shortcut-list', {
 	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team', 'ephemeral'],
 	id: 'keyboard-shortcut-list',
