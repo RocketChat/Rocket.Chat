@@ -13,6 +13,7 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { IRole } from '../../../definition/IRole';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -96,7 +97,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private getPublicRoles = mem(async (): Promise<string[]> => {
-		const roles = await this.Roles.find({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
+		const roles = await this.Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
 
 		return roles.map(({ _id }) => _id);
 	}, { maxAge: 10000 });

@@ -43,13 +43,13 @@ export type EventSignatures = {
 	'watch.rooms'(data: { clientAction: string; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
 	'watch.subscriptions'(data: { clientAction: string; subscription: Partial<ISubscription> }): void;
 	'watch.userSessions'(data: { clientAction: string; userSession: Partial<IUserSession> }): void;
-	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: Record<string, any> }): void;
+	'watch.inquiries'(data: { clientAction: string; inquiry: IInquiry; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: string; setting: ISetting }): void;
-	'watch.users'(data: { clientAction: string; data?: Partial<IUser>; diff?: Record<string, any>; unset?: Record<string, number>; id: string }): void;
+	'watch.users'(data: { clientAction: string; data?: undefined | Partial<IUser>; diff?: undefined | Record<string, any>; unset?: undefined | Record<string, number>; id: string }): void;
 	'watch.loginServiceConfiguration'(data: { clientAction: string; data: Partial<ILoginServiceConfiguration>; id: string }): void;
-	'watch.instanceStatus'(data: { clientAction: string; data?: Partial<IInstanceStatus>; diff?: Record<string, any>; id: string }): void;
-	'watch.integrationHistory'(data: { clientAction: string; data: Partial<IIntegrationHistory>; diff?: Record<string, any>; id: string }): void;
+	'watch.instanceStatus'(data: { clientAction: string; data?: undefined | Partial<IInstanceStatus>; diff?: undefined | Record<string, any>; id: string }): void;
+	'watch.integrationHistory'(data: { clientAction: string; data: Partial<IIntegrationHistory>; diff?: undefined | Record<string, any>; id: string }): void;
 	'watch.integrations'(data: { clientAction: string; data: Partial<IIntegration>; id: string }): void;
 	'watch.emailInbox'(data: { clientAction: string; data: Partial<IEmailInbox>; id: string }): void;
-	'watch.livechatDepartmentAgents'(data: { clientAction: string; data: Partial<ILivechatDepartmentAgents>; diff?: Record<string, any>; id: string }): void;
+	'watch.livechatDepartmentAgents'(data: { clientAction: string; data: Partial<ILivechatDepartmentAgents>; diff?: undefined | Record<string, any>; id: string }): void;
 }

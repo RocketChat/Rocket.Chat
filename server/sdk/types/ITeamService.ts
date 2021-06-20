@@ -1,4 +1,4 @@
-import { FilterQuery, FindOneOptions } from 'mongodb';
+import { FilterQuery, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { ITeam, IRecordsWithTotal, IPaginationOptions, IQueryOptions, ITeamMember, TEAM_TYPE } from '../../../definition/ITeam';
 import { IRoom } from '../../../definition/IRoom';
@@ -76,11 +76,11 @@ export interface ITeamService {
 	unsetTeamIdOfRooms(teamId: string): void;
 	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | undefined>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
-	getOneByMainRoomId(teamId: string): Promise<ITeam | null>;
+	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
 	getOneByRoomId(teamId: string): Promise<ITeam | undefined>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<Array<IRoom>>;
-	getAllPublicTeams(options: FindOneOptions<ITeam>): Promise<Array<ITeam>>;
+	getAllPublicTeams(options?: WithoutProjection<FindOneOptions<ITeam>>): Promise<Array<ITeam>>;
 	getMembersByTeamIds(teamIds: Array<string>, options: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember>>;
 	update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void>;
 	listTeamsBySubscriberUserId(uid: string, options?: FindOneOptions<ITeamMember>): Promise<Array<ITeamMember> | null>;

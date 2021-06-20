@@ -124,12 +124,18 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 
 					if (UseRealName) {
 						if (message.u?._id) {
-							message.u.name = await getUserNameCached(message.u._id);
+							const name = await getUserNameCached(message.u._id);
+							if (name) {
+								message.u.name = name;
+							}
 						}
 
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
-								mention.name = await getUserNameCached(mention._id);
+								const name = await getUserNameCached(mention._id);
+								if (name) {
+									mention.name = await name;
+								}
 							}
 						}
 					}
@@ -158,7 +164,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } }) as ISubscription;
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
@@ -224,9 +230,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
 
-	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, data, diff }) => {
+	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, diff }) => {
 		if (clientAction === 'removed') {
-			data = await LivechatDepartmentAgents.trashFindOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
 			if (!data) {
 				return;
 			}
@@ -234,7 +240,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		data = await LivechatDepartmentAgents.findOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+		const data = await LivechatDepartmentAgents.findOneById(id, { projection: { agentId: 1, departmentId: 1 } });
 		if (!data) {
 			return;
 		}

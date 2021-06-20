@@ -6,7 +6,7 @@ import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
-import { BannerPlatform, IBanner } from '../../../definition/IBanner';
+import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
 import { api } from '../../sdk/api';
 
 export class BannerService extends ServiceClass implements IBannerService {
@@ -67,7 +67,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, '_id' | 'bannerId'>>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 

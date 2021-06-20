@@ -344,7 +344,7 @@ export class NotificationsModule {
 					);
 				};
 
-				const subscriptions: Pick<ISubscription, 'rid'>[] = await Subscriptions.find(
+				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
 					{ 'u._id': userId },
 					{ projection: { rid: 1 } },
 				).toArray();
