@@ -163,13 +163,15 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				/>
 			</Box>
 			<Box display='flex' marginBlockStart='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Department')}</Label>
-				<AutoCompleteDepartment
-					value={department}
-					onChange={handleDepartment}
-					label={t('All')}
-					onlyMyDepartments
-				/>
+				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
+					<Label mb='x4'>{t('Department')}</Label>
+					<AutoCompleteDepartment
+						value={department}
+						onChange={handleDepartment}
+						label={t('All')}
+						onlyMyDepartments
+					/>
+				</Box>
 			</Box>
 			{Tags && (
 				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
