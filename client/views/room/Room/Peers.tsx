@@ -6,14 +6,15 @@ import PeerView from './PeerView';
 
 interface IProps {
 	peers: IVoiceRoomPeer[];
+	deafen?: boolean;
 }
 
 const Peers: FC<IProps> = (props): React.ReactElement => {
-	const { peers } = props;
+	const { peers, deafen } = props;
 	return (
 		<Box>
 			{peers.map((peer) => (
-				<PeerView key={peer.id} {...peer} />
+				<PeerView key={peer.id} {...peer} deafen={deafen} />
 			))}
 		</Box>
 	);

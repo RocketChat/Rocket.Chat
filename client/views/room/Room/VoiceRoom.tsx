@@ -18,6 +18,7 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 
 	const [connected, setConnected] = useState(false);
 	const [muteMic, setMuteMic] = useState(false);
+	const [deafen, setDeafen] = useState(false);
 	const [peers, setPeers] = useState<Array<IVoiceRoomPeer>>([]);
 
 	const handleJoin = async (): Promise<void> => {
@@ -74,9 +75,13 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 		});
 	};
 
+	const toggleDeafen = (): void => {
+		setDeafen((prev) => !prev);
+	};
+
 	return (
 		<>
-			<Peers peers={peers} />
+			<Peers peers={peers} deafen={deafen} />
 			<Box
 				display='flex'
 				position='fixed'
@@ -97,8 +102,8 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 						<Button primary danger square onClick={handleDisconnect}>
 							<Icon name='phone-off' size='x24' />
 						</Button>
-						<Button square>
-							<Icon name='volume' size='x24' />
+						<Button square onClick={toggleDeafen}>
+							{deafen ? <Icon name='headset-off' size='x24' /> : <Icon name='headset' size='x24' />}
 						</Button>
 					</ButtonGroup>
 				) : (

@@ -5,4 +5,5 @@ export interface IVoiceRoomPeer {
 	device?: object;
 	consumerId: string;
 	username?: string;
+	deafen?: boolean;
 }

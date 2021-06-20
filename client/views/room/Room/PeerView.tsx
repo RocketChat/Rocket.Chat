@@ -5,7 +5,7 @@ import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 
 const PeerView: FC<IVoiceRoomPeer> = (props): ReactElement => {
-	const { id, displayName, track, username } = props;
+	const { id, displayName, track, username, deafen } = props;
 
 	const ref = useRef<HTMLAudioElement>(null);
 	const [muted, setMuted] = useState(false);
@@ -26,7 +26,7 @@ const PeerView: FC<IVoiceRoomPeer> = (props): ReactElement => {
 	return (
 		<Box textAlign='center' alignItems='center' justifyContent='center' id={id} padding='x16'>
 			<UserAvatar size='x124' rounded username={username || ''} />
-			<audio ref={ref} muted={muted} autoPlay />
+			<audio ref={ref} muted={muted || deafen} autoPlay />
 			<p>{displayName}</p>
 			<Button onClick={toggleMute}>
 				{muted ? <Icon name='volume-off' size='x24' /> : <Icon name='volume' size='x24' />}
