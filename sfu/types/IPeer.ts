@@ -8,6 +8,7 @@ export interface IPeer extends Peer {
 		displayName?: string;
 		device?: string;
 		rtpCapabilities?: types.RtpCapabilities;
+		username?: string;
 
 		transports: Map<string|number, types.Transport>;
 		producers: Map<string|number, types.Producer>;
