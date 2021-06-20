@@ -305,7 +305,7 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		if (!saveUserIdentity(userId, {
+		if (!saveUserIdentity({
 			_id: userData._id,
 			username: userData.username,
 			name: userData.name,
