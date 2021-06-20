@@ -10,11 +10,9 @@ import { AppServerOrchestrator } from '../orchestrator';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { userId, ...result } = details;
 		return result;
 	}
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { visitorToken, ...result } = details;
 	return result;
 };
