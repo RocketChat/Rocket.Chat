@@ -28,6 +28,7 @@ const AutoCompleteAgent = (props) => {
 	return (
 		<PaginatedSelectFiltered
 			{...props}
+			flexShrink={0}
 			filter={filter}
 			setFilter={setFilter}
 			options={props.empty ? options : optionsWithAll}

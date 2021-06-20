@@ -11,7 +11,7 @@ type DepartmentsListOptions = {
 	filter: string;
 };
 
-export const useDepartmentsList = (
+export const useDepartmentsByUnitsList = (
 	options: DepartmentsListOptions,
 ): {
 	itemsList: RecordList<ILivechatDepartmentRecord>;

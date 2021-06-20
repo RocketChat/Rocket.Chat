@@ -124,7 +124,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
+		if (!hasPermission(this.userId, 'manage-livechat-departments') && !hasPermission(this.userId, 'remove-livechat-department')) {
 			return API.v1.unauthorized();
 		}
 
