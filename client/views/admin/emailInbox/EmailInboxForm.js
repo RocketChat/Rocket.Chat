@@ -15,7 +15,7 @@ import React, { useCallback, useState } from 'react';
 
 import { isEmail } from '../../../../app/utils/client';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -158,9 +158,14 @@ function EmailInboxForm({ id, data }) {
 		};
 
 		setModal(
-			<DeleteWarningModal onDelete={onDeleteManager} onCancel={() => setModal()}>
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteManager}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			>
 				{t('You_will_not_be_able_to_recover_email_inbox')}
-			</DeleteWarningModal>,
+			</GenericModal>,
 		);
 	});
 

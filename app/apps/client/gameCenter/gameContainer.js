@@ -37,6 +37,9 @@ Template.GameContainer.helpers({
 
 Template.GameContainer.events({
 	'click .rc-game__close'() {
+		const { data: { clearGameManifestInfo } } = Template.instance();
+
+		clearGameManifestInfo();
 		modal.cancel();
 	},
 	'click .js-back'() {
