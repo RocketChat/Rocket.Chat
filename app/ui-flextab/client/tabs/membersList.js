@@ -255,7 +255,7 @@ Template.membersList.events({
 });
 
 Template.membersList.onCreated(function() {
-	this.showAllUsers = new ReactiveVar(false);
+	this.showAllUsers = new ReactiveVar(true);
 	this.usersLimit = new ReactiveVar(100);
 	this.userDetail = new ReactiveVar();
 	this.showDetail = new ReactiveVar(false);

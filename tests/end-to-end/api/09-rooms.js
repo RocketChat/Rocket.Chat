@@ -345,7 +345,7 @@ describe('[Rooms]', function() {
 		let testChannel;
 		let testGroup;
 		let testDM;
-		const expectedKeys = ['_id', 'name', 'fname', 't', 'msgs', 'usersCount', 'u', 'customFields', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
+		const expectedKeys = ['_id', 'name', 'fname', 'groupId', 't', 'msgs', 'usersCount', 'u', 'customFields', 'ts', 'ro', 'sysMes', 'default', '_updatedAt'];
 		const testChannelName = `channel.test.${ Date.now() }-${ Math.random() }`;
 		const testGroupName = `group.test.${ Date.now() }-${ Math.random() }`;
 		after((done) => {
@@ -366,7 +366,7 @@ describe('[Rooms]', function() {
 					done();
 				});
 		});
-		it('create a Direct message room with rocket.cat', (done) => {
+		it('create a Direct message room with genius', (done) => {
 			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					testDM = res.body.room;
@@ -484,7 +484,7 @@ describe('[Rooms]', function() {
 					done();
 				});
 		});
-		it('create a Direct message room with rocket.cat', (done) => {
+		it('create a Direct message room with genius', (done) => {
 			createRoom({ type: 'd', username: 'genius' })
 				.end((err, res) => {
 					testDM = res.body.room;

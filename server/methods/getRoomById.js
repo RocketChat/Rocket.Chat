@@ -37,4 +37,4 @@ DDPRateLimiter.addRule({
 	userId() {
 		return true;
 	},
-}, 10, 60000);
+}, 100, 60000);

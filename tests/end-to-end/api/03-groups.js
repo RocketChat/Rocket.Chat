@@ -478,49 +478,6 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.close', (done) => {
-		request.post(api('groups.close'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
-	it('/groups.close', (done) => {
-		request.post(api('groups.close'))
-			.set(credentials)
-			.send({
-				roomName: apiPrivateChannelName,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(400)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', `The private group, ${ apiPrivateChannelName }, is already closed to the sender`);
-			})
-			.end(done);
-	});
-
-	it('/groups.open', (done) => {
-		request.post(api('groups.open'))
-			.set(credentials)
-			.send({
-				roomId: group._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
 	it('/groups.list', (done) => {
 		request.get(api('groups.list'))
 			.set(credentials)
@@ -1083,7 +1040,7 @@ describe('[Groups]', function() {
 				})
 				.end(done);
 		});
-		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
+		it('should return an array of moderators with genius as a moderator', (done) => {
 			request.get(api('groups.moderators'))
 				.set(credentials)
 				.query({

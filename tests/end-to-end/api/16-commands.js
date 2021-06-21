@@ -38,23 +38,6 @@ describe('[Commands]', function() {
 				})
 				.end(done);
 		});
-		it('should return success when parameters are correct', (done) => {
-			request.get(api('commands.get'))
-				.set(credentials)
-				.query({
-					command: 'help',
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('command');
-					expect(res.body.command).to.have.property('command');
-					expect(res.body.command).to.have.property('description');
-					expect(res.body.command).to.have.property('clientOnly');
-					expect(res.body.command).to.have.property('providesPreview');
-				})
-				.end(done);
-		});
 	});
 
 	describe('[/commands.list]', () => {
@@ -75,7 +58,6 @@ describe('[Commands]', function() {
 
 	describe('[/commands.run]', () => {
 		let testChannel;
-		let threadMessage;
 
 		before((done) => {
 			createRoom({ type: 'c', name: `channel.test.commands.${ Date.now() }` })
@@ -89,10 +71,7 @@ describe('[Commands]', function() {
 							roomId: testChannel._id,
 							text: 'Thread Message',
 							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
+						}).end(done);
 					});
 				});
 		});
@@ -163,53 +142,6 @@ describe('[Commands]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
-				})
-				.end(done);
-		});
-		it('should return an error when call the endpoint with an invalid thread id', (done) => {
-			request.post(api('commands.run'))
-				.set(credentials)
-				.send({
-					command: 'tableflip',
-					params: 'params',
-					roomId: 'GENERAL',
-					tmid: 'invalid-thread',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Invalid thread.');
-				})
-				.end(done);
-		});
-		it('should return an error when call the endpoint with a valid thread id of wrong channel', (done) => {
-			request.post(api('commands.run'))
-				.set(credentials)
-				.send({
-					command: 'tableflip',
-					params: 'params',
-					roomId: 'GENERAL',
-					tmid: threadMessage.tmid,
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Invalid thread.');
-				})
-				.end(done);
-		});
-		it('should return success when parameters are correct', (done) => {
-			request.post(api('commands.run'))
-				.set(credentials)
-				.send({
-					command: 'tableflip',
-					params: 'params',
-					roomId: threadMessage.rid,
-					tmid: threadMessage.tmid,
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
 		});

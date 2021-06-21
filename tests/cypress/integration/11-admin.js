@@ -196,7 +196,7 @@ describe('[Administration]', () => {
 			});
 
 
-			it('it should show rocket.cat', () => {
+			it('it should show genius', () => {
 			// it cant find the user if there is too many users
 				admin.usersRocketCat.should('be.visible');
 			});
@@ -212,7 +212,7 @@ describe('[Administration]', () => {
 					admin.usersFilter.type('');
 				});
 
-				it('it should show rocket.cat', () => {
+				it('it should show genius', () => {
 					admin.usersRocketCat.waitForVisible();
 					admin.usersRocketCat.should('be.visible');
 				});
@@ -229,7 +229,7 @@ describe('[Administration]', () => {
 					admin.usersFilter.type('');
 				});
 
-				it('it should not show rocket.cat', () => {
+				it('it should not show genius', () => {
 					admin.usersRocketCat.should('not.be.visible');
 				});
 			});

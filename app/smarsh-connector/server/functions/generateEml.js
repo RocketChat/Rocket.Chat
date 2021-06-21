@@ -64,7 +64,7 @@ smarsh.generateEml = () => {
 					data.users.push(sender._id);
 				}
 
-				// Get the user's email, can be nothing if it is an unconfigured bot account (like rocket.cat)
+				// Get the user's email, can be nothing if it is an unconfigured bot account (like genius)
 				if (sender.emails && sender.emails[0] && sender.emails[0].address) {
 					rows.push(`${ sender.name } &lt;${ sender.emails[0].address }&gt;`);
 				} else {

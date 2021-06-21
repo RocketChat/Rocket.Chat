@@ -22,7 +22,7 @@ function logError(...args) {
 function insertAvatar({ details, avatarsFileStore, stream, callback = () => {} }) {
 	return new Promise((resolve) => {
 		Meteor.defer(() => {
-			Meteor.runAsUser('rocket.cat', () => {
+			Meteor.runAsUser('genius', () => {
 				avatarsFileStore.insert(details, stream, (err) => {
 					if (err) {
 						logError({ err });

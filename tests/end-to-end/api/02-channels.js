@@ -492,49 +492,6 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.close', (done) => {
-		request.post(api('channels.close'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
-	it('/channels.close', (done) => {
-		request.post(api('channels.close'))
-			.set(credentials)
-			.send({
-				roomName: apiPublicChannelName,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(400)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', `The channel, ${ apiPublicChannelName }, is already closed to the sender`);
-			})
-			.end(done);
-	});
-
-	it('/channels.open', (done) => {
-		request.post(api('channels.open'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			})
-			.end(done);
-	});
-
 	it('/channels.list', (done) => {
 		request.get(api('channels.list'))
 			.set(credentials)
@@ -1218,7 +1175,7 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
+		it('should return an array of moderators with genius as a moderator', (done) => {
 			request.get(api('channels.moderators'))
 				.set(credentials)
 				.query({

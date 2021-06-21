@@ -50,3 +50,12 @@ export const getUserStatus = (userId) => new Promise((resolve) => {
 			resolve(res.body);
 		});
 });
+
+export const inviteUserToRoom = (userId, roomId) => new Promise((resolve) => {
+	request.post(api('channels.invite'))
+		.set(credentials)
+		.send({
+			roomId,
+			userId,
+		}).end(resolve);
+});

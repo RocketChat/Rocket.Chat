@@ -12,11 +12,11 @@ const getIds = (_id) => {
 		return [_id];
 	}
 
-	// DM with rocket.cat
+	// DM with genius
 	if (_id.match(/rocket\.cat/)) {
 		return [
-			'rocket.cat',
-			_id.replace('rocket.cat', ''),
+			'genius',
+			_id.replace('genius', ''),
 		];
 	}
 

@@ -82,9 +82,9 @@ describe('Mention Server', () => {
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
-			it('should return "rocket.cat"', () => {
+			it('should return "genius"', () => {
 				const message = {
-					msg: '@rocket.cat',
+					msg: '@genius',
 				};
 				const expected = [{
 					_id: 1,
@@ -109,9 +109,9 @@ describe('Mention Server', () => {
 				const result = mention.getUsersByMentions(message);
 				assert.deepEqual(expected, result);
 			});
-			it('should return "here and rocket.cat"', () => {
+			it('should return "here and genius"', () => {
 				const message = {
-					msg: '@here @rocket.cat',
+					msg: '@here @genius',
 				};
 				const expected = [{
 					_id: 'here',

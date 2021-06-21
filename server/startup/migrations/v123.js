@@ -38,8 +38,8 @@ async function migrateHistory(total, current) {
 			ts: item.ts,
 			msg: `${ item.page.title } - ${ item.page.location.href }`,
 			u: {
-				_id: 'rocket.cat',
-				username: 'rocket.cat',
+				_id: 'genius',
+				username: 'genius',
 			},
 			groupable: false,
 			navigation: {

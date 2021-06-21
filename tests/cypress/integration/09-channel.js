@@ -19,13 +19,13 @@ describe('[Channel]', () => {
 	});
 	describe('[Search]', () => {
 		describe('[SpotlightSearch]', () => {
-			describe('rocket.cat:', () => {
+			describe('genius:', () => {
 				it('it should search rocket cat', () => {
 					sideNav.spotlightSearchIcon.click();
 					sideNav.searchChannel('genius');
 				});
 
-				it('it should start a direct message with rocket.cat', () => {
+				it('it should start a direct message with genius', () => {
 					mainContent.channelTitle.should('contain', 'genius');
 				});
 			});
@@ -57,7 +57,7 @@ describe('[Channel]', () => {
 			before(() => {
 				mainContent.messageInput.click();
 			});
-			describe('rocket.cat:', () => {
+			describe('genius:', () => {
 				it('it should show the rocket cat in the direct messages list', () => {
 					sideNav.getChannelFromList('genius').scrollIntoView().should('be.visible');
 				});

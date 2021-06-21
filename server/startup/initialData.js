@@ -5,9 +5,9 @@ import _ from 'underscore';
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload';
 import { addUserRoles, getUsersInRole } from '../../app/authorization';
-import { Users, Settings, Rooms } from '../../app/models';
+import { Users, Rooms, Settings } from '../../app/models';
 import { settings } from '../../app/settings';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
+import { checkUsernameAvailability, addUserToChannel } from '../../app/lib';
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
@@ -145,6 +145,13 @@ Meteor.startup(function() {
 		Users.removeById('rocketchat.internal.admin.test');
 
 		if (process.env.TEST_MODE === 'true') {
+			if (!Rooms.findOneById('GENERAL')) {
+				console.log('Creating GENERAL channel'.green);
+				Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+					default: true,
+				});
+			}
+
 			console.log('Inserting admin test user:'.green);
 
 			const adminUser = {
@@ -187,7 +194,7 @@ Meteor.startup(function() {
 				Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 
-			return addUserToDefaultChannels(adminUser, true);
+			return addUserToChannel(adminUser, Rooms.findOneById('GENERAL'));
 		}
 	});
 });

@@ -1,3 +1,4 @@
+export { addUserToChannel } from './addUserToChannel';
 export { addUserToDefaultChannels } from './addUserToDefaultChannels';
 export { addUserToRoom } from './addUserToRoom';
 export { archiveRoom } from './archiveRoom';

@@ -25,7 +25,7 @@ describe('[Channel creation]', function() {
 	});
 
 	describe('direct message:', function() {
-		it('it should start a direct message with rocket.cat', function() {
+		it('it should start a direct message with genius', function() {
 			sideNav.spotlightSearchIcon.click();
 			sideNav.searchChannel(targetUser);
 			setDirectMessageCreated(true);

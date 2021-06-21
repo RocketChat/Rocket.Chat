@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, inviteUserToRoom, login } from '../../data/users.helper';
 import { password } from '../../data/user';
 
 describe('[Incoming Integrations]', function() {
@@ -179,27 +179,20 @@ describe('[Incoming Integrations]', function() {
 	});
 
 	describe('[/integrations.list]', () => {
-		before((done) => {
-			createUser().then((createdUser) => {
-				user = createdUser;
-				login(user.username, password).then((credentials) => {
-					userCredentials = credentials;
-					updatePermission('manage-incoming-integrations', ['user']).then(() => {
-						createIntegration({
-							type: 'webhook-incoming',
-							name: 'Incoming test',
-							enabled: true,
-							alias: 'test',
-							username: 'genius',
-							scriptEnabled: false,
-							channel: '#general',
-						}, userCredentials).then((integration) => {
-							integrationCreatedByAnUser = integration;
-							done();
-						});
-					});
-				});
-			});
+		before(async () => {
+			user = await createUser();
+			await inviteUserToRoom(user._id, 'GENERAL');
+			userCredentials = await login(user.username, password);
+			await updatePermission('manage-incoming-integrations', ['user']);
+			integrationCreatedByAnUser = await createIntegration({
+				type: 'webhook-incoming',
+				name: 'Incoming test',
+				enabled: true,
+				alias: 'test',
+				username: 'genius',
+				scriptEnabled: false,
+				channel: '#general',
+			}, userCredentials);
 		});
 
 		it('should return the list of incoming integrations', (done) => {

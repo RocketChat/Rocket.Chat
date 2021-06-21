@@ -141,7 +141,7 @@ describe.skip('[Permissions]', () => {
 			sideNav.searchChannel('general');
 		});
 
-		it('it should try to use @all and should be warned by rocket.cat ', () => {
+		it('it should try to use @all and should be warned by genius ', () => {
 			mainContent.tryToMentionAll();
 		});
 

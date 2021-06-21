@@ -80,7 +80,7 @@ const strike = {
 
 const headersLevel1 = {
 	'# Hello': headerWrapper('Hello', 1),
-	'# Rocket.Cat': headerWrapper('Genius', 1),
+	'# Genius': headerWrapper('Genius', 1),
 	'# Hi': headerWrapper('Hi', 1),
 	'# Hello this is dog': headerWrapper('Hello this is dog', 1),
 	'# Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 1),
@@ -92,7 +92,7 @@ const headersLevel1 = {
 
 const headersLevel2 = {
 	'## Hello': headerWrapper('Hello', 2),
-	'## Rocket.Cat': headerWrapper('Genius', 2),
+	'## Genius': headerWrapper('Genius', 2),
 	'## Hi': headerWrapper('Hi', 2),
 	'## Hello this is dog': headerWrapper('Hello this is dog', 2),
 	'## Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 2),
@@ -104,7 +104,7 @@ const headersLevel2 = {
 
 const headersLevel3 = {
 	'### Hello': headerWrapper('Hello', 3),
-	'### Rocket.Cat': headerWrapper('Genius', 3),
+	'### Genius': headerWrapper('Genius', 3),
 	'### Hi': headerWrapper('Hi', 3),
 	'### Hello this is dog': headerWrapper('Hello this is dog', 3),
 	'### Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 3),
@@ -116,7 +116,7 @@ const headersLevel3 = {
 
 const headersLevel4 = {
 	'#### Hello': headerWrapper('Hello', 4),
-	'#### Rocket.Cat': headerWrapper('Genius', 4),
+	'#### Genius': headerWrapper('Genius', 4),
 	'#### Hi': headerWrapper('Hi', 4),
 	'#### Hello this is dog': headerWrapper('Hello this is dog', 4),
 	'#### Rocket cat says Hello': headerWrapper('Rocket cat says Hello', 4),
@@ -128,26 +128,26 @@ const headersLevel4 = {
 
 const quote = {
 	'&gt;Hello': s.escapeHTML('&gt;Hello'),
-	'&gt;Rocket.Cat': s.escapeHTML('&gt;Rocket.Cat'),
+	'&gt;Genius': s.escapeHTML('&gt;Genius'),
 	'&gt;Hi': s.escapeHTML('&gt;Hi'),
 	'&gt; Hello this is dog': s.escapeHTML('&gt; Hello this is dog'),
 	'&gt; Rocket cat says Hello': s.escapeHTML('&gt; Rocket cat says Hello'),
 	'&gt; He said Hello to her': s.escapeHTML('&gt; He said Hello to her'),
 	'&gt; He said Hello to her ': s.escapeHTML('&gt; He said Hello to her '),
 	'&lt;Hello': s.escapeHTML('&lt;Hello'),
-	'&lt;Rocket.Cat&gt;': s.escapeHTML('&lt;Rocket.Cat&gt;'),
+	'&lt;Genius&gt;': s.escapeHTML('&lt;Genius&gt;'),
 	' &gt;Hi': s.escapeHTML(' &gt;Hi'),
 	'Hello &gt; this is dog': s.escapeHTML('Hello &gt; this is dog'),
 	'Roc&gt;ket cat says Hello': s.escapeHTML('Roc&gt;ket cat says Hello'),
 	'He said Hello to her&gt;': s.escapeHTML('He said Hello to her&gt;'),
 	'>Hello': quoteWrapper('Hello'),
-	'>Rocket.Cat': quoteWrapper('Genius'),
+	'>Genius': quoteWrapper('Genius'),
 	'>Hi': quoteWrapper('Hi'),
 	'> Hello this is dog': quoteWrapper(' Hello this is dog'),
 	'> Rocket cat says Hello': quoteWrapper(' Rocket cat says Hello'),
 	'> He said Hello to her': quoteWrapper(' He said Hello to her'),
 	'<Hello': s.escapeHTML('<Hello'),
-	'<Rocket.Cat>': s.escapeHTML('<Rocket.Cat>'),
+	'<Genius>': s.escapeHTML('<Genius>'),
 	' >Hi': s.escapeHTML(' >Hi'),
 	'Hello > this is dog': s.escapeHTML('Hello > this is dog'),
 	'Roc>ket cat says Hello': s.escapeHTML('Roc>ket cat says Hello'),

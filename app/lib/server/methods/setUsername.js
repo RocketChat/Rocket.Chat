@@ -10,8 +10,7 @@ import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
 
 Meteor.methods({
-	setUsername(username, param = {}) {
-		const { joinDefaultChannelsSilenced } = param;
+	setUsername(username) {
 		check(username, String);
 
 		if (!Meteor.userId()) {

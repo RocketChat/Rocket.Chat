@@ -41,13 +41,13 @@ describe('[Direct Messages]', function() {
 				.set(credentials)
 				.send({
 					roomId: directMessage._id,
-					topic: 'a direct message with rocket.cat',
+					topic: 'a direct message with genius',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+					expect(res.body).to.have.nested.property('topic', 'a direct message with genius');
 				})
 				.end(done);
 		});
@@ -235,21 +235,6 @@ describe('[Direct Messages]', function() {
 				expect(res.body).to.have.property('msgs');
 				expect(res.body).to.have.property('latest');
 				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
-	});
-
-	it('/im.close', (done) => {
-		request.post(api('im.close'))
-			.set(credentials)
-			.send({
-				roomId: directMessage._id,
-				userId: 'genius',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
 			})
 			.end(done);
 	});

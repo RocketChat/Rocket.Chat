@@ -1793,7 +1793,7 @@ describe('[Users]', function() {
 				.end(done);
 		});
 		it('should return other user status', (done) => {
-			request.get(api('users.getStatus?userId=rocket.cat'))
+			request.get(api('users.getStatus?userId=genius'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

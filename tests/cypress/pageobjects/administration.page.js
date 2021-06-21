@@ -59,7 +59,7 @@ class Administration extends Page {
 
 	get roomsGeneralChannel() { return browser.element('td=general'); }
 
-	get usersRocketCat() { return browser.element('td=Rocket.Cat'); }
+	get usersRocketCat() { return browser.element('td=Genius'); }
 
 	get usersInternalAdmin() { return browser.element('td .rc-table-wrapper').contains('rocketchat.internal.admin.test'); }
 

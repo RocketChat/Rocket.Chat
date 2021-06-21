@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, inviteUserToRoom, login } from '../../data/users.helper';
 import { password } from '../../data/user';
 
 describe('[Outgoing Integrations]', function() {
@@ -209,32 +209,25 @@ describe('[Outgoing Integrations]', function() {
 	});
 
 	describe('[/integrations.list]', () => {
-		before((done) => {
-			createUser().then((createdUser) => {
-				user = createdUser;
-				login(user.username, password).then((credentials) => {
-					userCredentials = credentials;
-					updatePermission('manage-outgoing-integrations', ['user']).then(() => {
-						createIntegration({
-							type: 'webhook-outgoing',
-							name: 'Guggy',
-							enabled: true,
-							username: 'genius',
-							urls: ['http://text2gif.guggy.com/guggify'],
-							scriptEnabled: false,
-							channel: '#general',
-							triggerWords: ['!guggy'],
-							alias: 'guggy',
-							avatar: 'http://res.guggy.com/logo_128.png',
-							emoji: ':ghost:',
-							event: 'sendMessage',
-						}, userCredentials).then((integration) => {
-							integrationCreatedByAnUser = integration;
-							done();
-						});
-					});
-				});
-			});
+		before(async () => {
+			user = await createUser();
+			await inviteUserToRoom(user._id, 'GENERAL');
+			userCredentials = await login(user.username, password);
+			await updatePermission('manage-outgoing-integrations', ['user']);
+			integrationCreatedByAnUser = await createIntegration({
+				type: 'webhook-outgoing',
+				name: 'Guggy',
+				enabled: true,
+				username: 'genius',
+				urls: ['http://text2gif.guggy.com/guggify'],
+				scriptEnabled: false,
+				channel: '#general',
+				triggerWords: ['!guggy'],
+				alias: 'guggy',
+				avatar: 'http://res.guggy.com/logo_128.png',
+				emoji: ':ghost:',
+				event: 'sendMessage',
+			}, userCredentials);
 		});
 
 		it('should return the list of outgoing integrations', (done) => {

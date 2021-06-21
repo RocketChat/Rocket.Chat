@@ -70,8 +70,8 @@ describe('Mention', function() {
 		describe('for simple text, no mentions', () => {
 			const result = [];
 			[
-				'#rocket.cat',
-				'hello rocket.cat how are you?',
+				'#genius',
+				'hello genius how are you?',
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
@@ -81,15 +81,15 @@ describe('Mention', function() {
 		});
 
 		describe('for one user', () => {
-			const result = ['@rocket.cat'];
+			const result = ['@genius'];
 			[
-				'@rocket.cat',
-				' @rocket.cat ',
-				'hello @rocket.cat',
-				// 'hello,@rocket.cat', // this test case is ignored since is not compatible with the message box behavior
-				'@rocket.cat, hello',
-				'@rocket.cat,hello',
-				'hello @rocket.cat how are you?',
+				'@genius',
+				' @genius ',
+				'hello @genius',
+				// 'hello,@genius', // this test case is ignored since is not compatible with the message box behavior
+				'@genius, hello',
+				'@genius,hello',
+				'hello @genius how are you?',
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
@@ -97,27 +97,27 @@ describe('Mention', function() {
 					});
 				});
 
-			it.skip('should return without the "." from "@rocket.cat."', () => {
-				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat.'));
+			it.skip('should return without the "." from "@genius."', () => {
+				assert.deepEqual(result, mentionsParser.getUserMentions('@genius.'));
 			});
 
 			it.skip('should return without the "_" from "@rocket.cat_"', () => {
 				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat_'));
 			});
 
-			it.skip('should return without the "-" from "@rocket.cat-"', () => {
-				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat-'));
+			it.skip('should return without the "-" from "@genius-"', () => {
+				assert.deepEqual(result, mentionsParser.getUserMentions('@genius-'));
 			});
 		});
 
 		describe('for two users', () => {
-			const result = ['@rocket.cat', '@all'];
+			const result = ['@genius', '@all'];
 			[
-				'@rocket.cat @all',
-				' @rocket.cat @all ',
-				'hello @rocket.cat and @all',
-				'@rocket.cat, hello @all',
-				'hello @rocket.cat and @all how are you?',
+				'@genius @all',
+				' @genius @all ',
+				'hello @genius and @all',
+				'@genius, hello @all',
+				'hello @genius and @all how are you?',
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
@@ -131,8 +131,8 @@ describe('Mention', function() {
 		describe('for simple text, no mentions', () => {
 			const result = [];
 			[
-				'@rocket.cat',
-				'hello rocket.cat how are you?',
+				'@genius',
+				'hello genius how are you?',
 			]
 				.forEach((text) => {
 					it(`should return "${ JSON.stringify(result) }" from "${ text }"`, () => {
@@ -295,7 +295,7 @@ describe('replace methods', function() {
 			assert.equal('<a class="mention-link mention-link--room" data-channel="42">#general</a>', result);
 		});
 
-		const str2 = '#rocket.cat';
+		const str2 = '#genius';
 
 		it(`should render for ${ str2 }`, () => {
 			const result = mentionsParser.replaceChannels(str2, message);
@@ -320,10 +320,10 @@ describe('replace methods', function() {
 			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
-		it('should render for "#general and @rocket.cat', () => {
-			message.html = '#general and @rocket.cat';
+		it('should render for "#general and @genius', () => {
+			message.html = '#general and @genius';
 			const result = mentionsParser.parse(message, 'me');
-			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">rocket.cat</a>');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="genius" title="genius">genius</a>');
 		});
 
 		it('should render for "', () => {
@@ -350,10 +350,10 @@ describe('replace methods', function() {
 			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a>');
 		});
 
-		it('should render for "#general and @rocket.cat', () => {
-			message.html = '#general and @rocket.cat';
+		it('should render for "#general and @genius', () => {
+			message.html = '#general and @genius';
 			const result = mentionsParser.parse(message, 'me');
-			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="rocket.cat" title="rocket.cat">Rocket.Cat</a>');
+			assert.equal(result.html, '<a class="mention-link mention-link--room" data-channel="42">#general</a> and <a class="mention-link mention-link--user" data-username="genius" title="genius">Genius</a>');
 		});
 
 		it('should render for "', () => {

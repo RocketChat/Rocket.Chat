@@ -96,7 +96,7 @@ export class AppUsersConverter {
 			case 'busy':
 				return UserStatusConnection.BUSY;
 			case undefined:
-				// This is needed for Livechat guests and Rocket.Cat user.
+				// This is needed for Livechat guests and Genius user.
 				return UserStatusConnection.UNDEFINED;
 			default:
 				console.warn(`The user ${ username } (${ userId }) does not have a valid status (offline, online, away, or busy). It is currently: "${ status }"`);

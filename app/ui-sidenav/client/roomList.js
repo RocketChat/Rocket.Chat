@@ -2,9 +2,28 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
 import { callbacks } from '../../callbacks';
+import { callMethod } from '../../ui-utils';
 import { ChatSubscription, Rooms, Users, Subscriptions } from '../../models';
 import { UiTextContext, getUserPreference, roomTypes } from '../../utils';
 import { settings } from '../../settings';
+
+const updateLastMessage = async (rid) => {
+	try {
+		const room = await callMethod('getRoomById', rid);
+		if (room && room.lastMessage) {
+			Subscriptions.update({
+				rid: room._id,
+			}, {
+				$set: {
+					lastMessage: room.lastMessage,
+					lm: room._updatedAt,
+				},
+			});
+		}
+	} catch (e) {
+		console.error(e);
+	}
+};
 
 Template.roomList.helpers({
 	rooms() {
@@ -100,7 +119,13 @@ Template.roomList.helpers({
 				query.f = { $ne: favoritesEnabled };
 			}
 		}
-		return ChatSubscription.find(query, { sort });
+
+		const subscriptions = ChatSubscription.find(query, { sort }).fetch();
+		subscriptions
+			.filter((s) => s.t === 'd' && !s.lastMessage)
+			.forEach((s) => setTimeout(() => updateLastMessage(s.rid), 0));
+
+		return subscriptions;
 	},
 
 	isLivechat() {
