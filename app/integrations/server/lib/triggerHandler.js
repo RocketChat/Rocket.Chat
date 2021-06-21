@@ -806,5 +806,5 @@ export class RocketChatIntegrationHandler {
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
 }
-
-export { integrations };
+const triggerHandler = new RocketChatIntegrationHandler();
+export { integrations, triggerHandler };
