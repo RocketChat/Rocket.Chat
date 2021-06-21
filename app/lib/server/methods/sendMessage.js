@@ -56,6 +56,7 @@ export function executeSendMessage(uid, message) {
 		fields: {
 			username: 1,
 			type: 1,
+			name: 1,
 		},
 	});
 	let { rid } = message;

@@ -96,18 +96,18 @@ export class BaseRaw<T, C extends DefaultFields<T> = void> implements IBaseRaw<T
 		};
 	}
 
-	async findOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined | null> {
+	async findOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		return this.findOne({ _id }, options);
 	}
 
-	async findOne(query = {}, options: FindOneOptions<T> = {}): Promise<T | undefined | null> {
+	async findOne(query = {}, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const optionsDef = this._ensureDefaultFields(options);
 
 		if (typeof query === 'string') {
 			return this.findOneById(query, options);
 		}
 
-		return this.col.findOne(query, optionsDef);
+		return await this.col.findOne(query, optionsDef) || undefined;
 	}
 
 	findUsersInRoles(): void {
