@@ -43,10 +43,13 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
-	const [department, setDepartment] = useLocalStorage('department', 'all');
+	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>(
+		'department',
+		{ value: 'all', label: t('All') },
+	);
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
-	const [tags, setTags] = useLocalStorage('tags', []);
+	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
 	const [customFields, setCustomFields] = useLocalStorage<any[]>('tags', []);
 
 	const handleGuest = useMutableCallback((e) => setGuest(e.target.value));
@@ -62,7 +65,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		setGuest('');
 		setServedBy('all');
 		setStatus('all');
-		setDepartment('all');
+		setDepartment({ value: 'all', label: t('All') });
 		setFrom('');
 		setTo('');
 		setTags([]);
@@ -86,7 +89,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 			guest,
 			servedBy,
 			status,
-			...(department?.value && { department: department.value }),
+			...(department?.value && department.value !== 'all' && { department: department.value }),
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
