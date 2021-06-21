@@ -13,8 +13,7 @@ const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 		const { userId, ...result } = details;
 		return result;
 	}
-	const { visitorToken, ...result } = details;
-	return result;
+	return details;
 };
 export class AppUploadBridge extends UploadBridge {
 	// eslint-disable-next-line no-empty-function
