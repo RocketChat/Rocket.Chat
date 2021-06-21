@@ -70,6 +70,7 @@ export class Room extends EventEmitter {
 		peer.data.displayName = undefined;
 		peer.data.device = undefined;
 		peer.data.rtpCapabilities = undefined;
+		peer.data.username = undefined;
 
 		peer.data.transports = new Map();
 		peer.data.producers = new Map();
@@ -82,10 +83,15 @@ export class Room extends EventEmitter {
 			if (this.closed) { return; }
 
 			if (peer.data.joined) {
-				// @TODO: Notify other peers, this peer left
+				for (const otherPeer of this.getJoinedPeers(peer)) {
+					otherPeer.notify('peerClosed', { peerId: peer.id })
+						.catch((err) => { console.log(err); });
+				}
 			}
 
 			for (const transport of peer.data.transports.values()) { transport.close(); }
+
+			if (this.protooRoom.peers.length === 0) { this.close(); }
 		});
 	}
 
@@ -157,12 +163,14 @@ export class Room extends EventEmitter {
 					displayName,
 					device,
 					rtpCapabilities,
+					username,
 				} = request.data;
 
 				peer.data.joined = true;
 				peer.data.rtpCapabilities = rtpCapabilities;
 				peer.data.displayName = displayName;
 				peer.data.device = device;
+				peer.data.username = username;
 
 				const joinedPeers = this.getJoinedPeers();
 
@@ -172,6 +180,7 @@ export class Room extends EventEmitter {
 						id: joinedPeer.id,
 						displayName: joinedPeer.data.displayName,
 						device: joinedPeer.data.device,
+						username: joinedPeer.data.username,
 					}));
 
 				accept(peerInfos);
