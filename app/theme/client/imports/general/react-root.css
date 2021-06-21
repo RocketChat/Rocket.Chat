@@ -9,7 +9,5 @@
 	height: 100vh;
 	padding: 0;
 
-	block-size: stretch;
-	block-size: -moz-available;
 	block-size: -webkit-fill-available;
 }
