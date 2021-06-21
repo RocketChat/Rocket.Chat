@@ -3914,6 +3914,7 @@
   "Teams_kept__username__channels": "You did not select the following Channels so __username__ will be kept on them:",
   "Teams_leave_channels": "Select the Team’s Channels you would like to leave.",
   "Teams_leave": "Leave Team",
+  "Teams_left_team_successfully": "Left the Team successfully",
   "Teams_members": "Teams Members",
   "Teams_New_Add_members_Label": "Add Members",
   "Teams_New_Broadcast_Description": "Only authorized users can write new messages, but the other users will be able to reply",
