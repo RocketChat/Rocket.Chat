@@ -11,11 +11,14 @@ import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-cu
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
+import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
+import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
 import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
+import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
@@ -48,6 +51,9 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
+	'livechat/rooms': LivechatRoomsEndpoint;
+	'livechat/users/agent': LivechatUsersAgentEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
