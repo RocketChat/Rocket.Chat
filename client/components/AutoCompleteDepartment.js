@@ -52,7 +52,6 @@ const AutoCompleteDepartment = (props) => {
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
 			options={sortedByName}
-			maxWidth='100%'
 			placeholder={t('Select_an_option')}
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING
