@@ -74,7 +74,7 @@ const useQuery: useQueryType = (
 		if (status !== 'all') {
 			query.open = status === 'opened';
 		}
-		if (servedBy && !servedBy.includes('all')) {
+		if (servedBy && servedBy !== 'all') {
 			query.agents = [servedBy];
 		}
 		if (department && department !== 'all') {

@@ -1,6 +1,6 @@
 export type LivechatUsersAgentEndpoint = {
 	GET: (params?: {
-		text: string;
+		text?: string;
 		offset: number;
 		count: number;
 		sort: string;

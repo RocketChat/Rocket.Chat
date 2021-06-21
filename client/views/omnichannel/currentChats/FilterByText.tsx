@@ -169,6 +169,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Department')}</Label>
 					<AutoCompleteDepartment
+						haveAll
 						value={department}
 						onChange={handleDepartment}
 						label={t('All')}

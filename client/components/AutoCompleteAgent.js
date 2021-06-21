@@ -12,7 +12,7 @@ const AutoCompleteAgent = (props) => {
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
-		useMemo(() => ({ filter: debouncedAgentsFilter }), [debouncedAgentsFilter]),
+		useMemo(() => ({ text: debouncedAgentsFilter }), [debouncedAgentsFilter]),
 	);
 
 	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(
@@ -20,10 +20,14 @@ const AutoCompleteAgent = (props) => {
 	);
 
 	const sortedByName = agentsItems.sort((a, b) => {
-		if (a.name > b.name) {
+		if (a.value === 'all') {
+			return -1;
+		}
+
+		if (a.usename > b.usename) {
 			return 1;
 		}
-		if (a.name < b.name) {
+		if (a.usename < b.usename) {
 			return -1;
 		}
 

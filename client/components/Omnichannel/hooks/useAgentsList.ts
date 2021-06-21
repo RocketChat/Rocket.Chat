@@ -8,7 +8,7 @@ import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
 
 type AgentsListOptions = {
-	filter: string;
+	text: string;
 };
 
 export const useAgentsList = (
@@ -33,7 +33,7 @@ export const useAgentsList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { users: agents, total } = await getAgents({
-				text: options.filter,
+				...(options.text && { text: options.text }),
 				offset: start,
 				count: end + start,
 				sort: JSON.stringify({ name: 1 }),
@@ -41,17 +41,22 @@ export const useAgentsList = (
 
 			const items = agents.map((agent: any) => {
 				agent._updatedAt = new Date(agent._updatedAt);
-				agent.value = { value: agent._id, label: agent.name };
+				agent.label = agent.username;
+				agent.value = agent._id;
 				return agent;
 			});
-			items.unshift({ value: { value: '', label: t('All') }, _updatedAt: new Date() });
+			items.unshift({
+				label: t('All'),
+				value: 'all',
+				_updatedAt: new Date(),
+			});
 
 			return {
 				items,
 				itemCount: total + 1,
 			};
 		},
-		[getAgents, options.filter, t],
+		[getAgents, options.text, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
