@@ -1,37 +1,47 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useTranslation } from '../contexts/TranslationContext';
-import { useEndpointData } from '../hooks/useEndpointData';
+import { useRecordList } from '../hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../lib/asyncState';
+import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 const AutoCompleteAgent = (props) => {
-	const t = useTranslation();
-	const [filter, setFilter] = useState('');
-	const { value: data } = useEndpointData(
-		'livechat/users/agent',
-		useMemo(() => ({ text: filter }), [filter]),
+	const [agentsFilter, setAgentsFilter] = useState('');
+
+	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
+
+	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
+		useMemo(() => ({ filter: debouncedAgentsFilter }), [debouncedAgentsFilter]),
 	);
 
-	const options = useMemo(
-		() => (data && [...data.users.map((user) => ({ value: user._id, label: user.name }))]) || [],
-		[data],
+	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(
+		AgentsList,
 	);
-	const optionsWithAll = useMemo(
-		() =>
-			(data && [
-				{ value: 'all', label: t('All') },
-				...data.users.map((user) => ({ value: user._id, label: user.name })),
-			]) || [{ value: 'all', label: t('All') }],
-		[data, t],
-	);
+
+	const sortedByName = agentsItems.sort((a, b) => {
+		if (a.name > b.name) {
+			return 1;
+		}
+		if (a.name < b.name) {
+			return -1;
+		}
+
+		return 0;
+	});
 
 	return (
 		<PaginatedSelectFiltered
 			{...props}
 			flexShrink={0}
-			filter={filter}
-			setFilter={setFilter}
-			options={props.empty ? options : optionsWithAll}
+			filter={agentsFilter}
+			setFilter={setAgentsFilter}
+			options={sortedByName}
+			endReached={
+				agentsPhase === AsyncStatePhase.LOADING
+					? () => {}
+					: (start) => loadMoreAgents(start, Math.min(50, agentsTotal))
+			}
 		/>
 	);
 };
