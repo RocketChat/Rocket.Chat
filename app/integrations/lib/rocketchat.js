@@ -1,8 +1,4 @@
-import { RocketChatIntegrationHandler } from '../server/lib/triggerHandler';
-
 export const integrations = {
-
-	triggerHandler: new RocketChatIntegrationHandler(),
 	outgoingEvents: {
 		sendMessage: {
 			label: 'Integrations_Outgoing_Type_SendMessage',
