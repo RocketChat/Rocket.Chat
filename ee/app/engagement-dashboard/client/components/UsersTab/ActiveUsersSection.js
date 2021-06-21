@@ -61,9 +61,8 @@ const ActiveUsersSection = () => {
 			return map;
 		}, {});
 
-		const distributeValueOverPoints = (usersListsMap, i, T, array, prev) => {
+		const distributeValueOverPoints = (usersListsMap, i, T, array) => {
 			const usersSet = new Set();
-			prev[i] = array[i - 1]?.y;
 			for (let k = i; T > 0; k--, T--) {
 				if (usersListsMap[k]) {
 					usersListsMap[k].forEach((userId) => usersSet.add(userId));
@@ -73,9 +72,12 @@ const ActiveUsersSection = () => {
 		};
 
 		for (let i = 0; i < 30; i++) {
-			distributeValueOverPoints(usersListsMap, i, 7, wauValues, prevWauValue);
-			distributeValueOverPoints(usersListsMap, i, 30, mauValues, prevMauValue);
+			distributeValueOverPoints(usersListsMap, i, 7, wauValues);
+			distributeValueOverPoints(usersListsMap, i, 30, mauValues);
 		}
+		prevWauValue.y = wauValues[28].y;
+		prevMauValue.y = mauValues[28].y;
+		prevDauValue.y = dauValues[28].y;
 
 		return [
 			dauValues[dauValues.length - 1].y,
