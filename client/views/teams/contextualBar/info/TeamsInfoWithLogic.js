@@ -87,6 +87,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 			try {
 				await leaveTeam({ teamId: room.teamId, rooms });
+				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
