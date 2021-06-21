@@ -3,10 +3,13 @@ import dompurify from 'dompurify';
 import marked from 'marked';
 import React, { FC, useMemo } from 'react';
 
+import { renderMessageEmoji } from '../lib/renderMessageEmoji';
+
 type MarkdownTextParams = {
 	content: string;
 	variant: 'inline' | 'inlineWithoutBreaks' | 'document';
 	preserveHtml: boolean;
+	parseEmoji: boolean;
 	withTruncatedText: boolean;
 };
 
@@ -66,6 +69,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	variant = 'document',
 	withTruncatedText = false,
 	preserveHtml = false,
+	parseEmoji = false,
 	...props
 }) => {
 	const sanitizer = dompurify.sanitize;
@@ -86,9 +90,19 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	}
 
 	const __html = useMemo(() => {
-		const html = content && typeof content === 'string' && marked(content, markedOptions);
+		const html = ((): any => {
+			if (content && typeof content === 'string') {
+				const markedHtml = marked(content, markedOptions);
+
+				if (parseEmoji) {
+					return renderMessageEmoji({ html: markedHtml });
+				}
+
+				return markedHtml;
+			}
+		})();
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
-	}, [content, preserveHtml, sanitizer, markedOptions]);
+	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
 	return __html ? (
 		<Box
