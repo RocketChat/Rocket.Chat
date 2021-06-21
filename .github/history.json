@@ -61066,6 +61066,82 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.14.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.25.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22258",
+          "title": "[IMPROVE] Send only relevant data via WebSocket",
+          "userLogin": "sampaiodiego",
+          "description": "Previously when any data changed on subscriptions or rooms we were getting fresh data from database, to also remove undesired fields, but sometimes the data that changed was not relevant so we were sending the whole object everytime **without** the fields that actually changed. This change aims to reduce this overhead and also send less data to clients.",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22257",
+          "title": "[FIX] Support DISABLE_PRESENCE_MONITOR env var in new DB watchers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22290",
+          "title": "[FIX] Attachments and avatars not rendered if deployed on subfolder",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.1",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22395",
+          "title": "[FIX] Setup wizard infinite loop when on subfolder.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.1",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22257",
+          "title": "[FIX] Support DISABLE_PRESENCE_MONITOR env var in new DB watchers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
