@@ -59,7 +59,7 @@ const AnalyticsPage = () => {
 							<Label mb='x4'>{t('Type')}</Label>
 							<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
 						</Box>
-						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
+						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
 							<AutoCompleteDepartment
 								value={department}

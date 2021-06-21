@@ -29,6 +29,7 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }) =>
 			<Field.Row>
 				<Box w='100%'>
 					<PaginatedMultiSelectFiltered
+						withTitle
 						maxWidth='100%'
 						w='100%'
 						flexGrow={1}
