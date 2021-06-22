@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
+import { FileProp } from '../../../../../definition/IMessage/MessageAttachment/Files/FileProp';
+import { MessageAttachmentBase } from '../../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
 import { useMediaUrl } from '../context/AttachmentContext';
 
 export type GenericFileAttachmentProps = {
 	file?: FileProp;
-} & AttachmentPropsBase;
+} & MessageAttachmentBase;
 
 export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 	title,
