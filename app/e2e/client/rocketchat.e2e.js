@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -26,6 +27,8 @@ import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from './waitUntilFind';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
 
 let failedToDecodeKey = false;
 
@@ -151,20 +154,24 @@ class E2E extends Emitter {
 				closable: false,
 				icon: 'key',
 				action: () => {
-					modal.open({
-						title: TAPi18n.__('Save_your_encryption_password'),
-						html: true,
-						text: `<div>${ passwordRevealText }</div>`,
-						showConfirmButton: true,
-						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('I_saved_my_password_close_this_message'),
-						cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
-					}, (confirm) => {
-						if (!confirm) {
-							return;
-						}
-						Meteor._localStorage.removeItem('e2e.randomPassword');
-						this.closeAlert();
+					imperativeModal.open({ component: GenericModal,
+						props: {
+							variant: 'warning',
+							title: TAPi18n.__('Save_your_encryption_password'),
+							children: <div dangerouslySetInnerHTML={{ __html: passwordRevealText }} />,
+							cancelText: TAPi18n.__('I_ll_do_it_later'),
+							confirmText: TAPi18n.__('I_saved_my_password_close_this_message'),
+							onClose: imperativeModal.close,
+							onCancel: () => {
+								this.closeAlert();
+								imperativeModal.close();
+							},
+							onConfirm: () => {
+								Meteor._localStorage.removeItem('e2e.randomPassword');
+								this.closeAlert();
+								imperativeModal.close();
+							},
+						},
 					});
 				},
 			});
