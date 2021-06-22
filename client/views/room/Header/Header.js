@@ -9,6 +9,7 @@ import RoomHeader from './RoomHeader';
 
 const Header = ({ room }) => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+
 	const slots = useMemo(
 		() => ({
 			start: isMobile && (
@@ -19,6 +20,7 @@ const Header = ({ room }) => {
 		}),
 		[isMobile],
 	);
+
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
@@ -28,7 +30,7 @@ const Header = ({ room }) => {
 	}
 
 	if (room.t === 'l') {
-		return <OmnichannelRoomHeader slots={slots} room={room} />;
+		return <OmnichannelRoomHeader slots={slots} />;
 	}
 
 	return <RoomHeader slots={slots} room={room} topic={room.topic} />;

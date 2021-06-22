@@ -48,9 +48,29 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'ult',
+		system: true,
+		message: 'User_left_team',
+		data(message) {
+			return {
+				user_left: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',
+		data(message) {
+			return {
+				user: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'ujt',
+		system: true,
+		message: 'User_joined_team',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -114,6 +134,11 @@ Meteor.startup(function() {
 				user_by: message.u.username,
 			};
 		},
+	});
+	MessageTypes.registerType({
+		id: 'message_pinned',
+		system: true,
+		message: 'Pinned_a_message',
 	});
 	MessageTypes.registerType({
 		id: 'subscription-role-added',
@@ -197,6 +222,9 @@ export const MessageTypesValues = [
 	}, {
 		key: 'mute_unmute',
 		i18nLabel: 'Message_HideType_mute_unmute',
+	}, {
+		key: 'message_pinned',
+		i18nLabel: 'Message_HideType_message_pinned',
 	}, {
 		key: 'r',
 		i18nLabel: 'Message_HideType_r',
