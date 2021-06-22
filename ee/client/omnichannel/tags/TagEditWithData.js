@@ -7,22 +7,25 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import TagEdit from './TagEdit';
 
-function TagEditWithData({ title, id, reload }) {
-	const query = useMemo(() => ({ tagId: id }), [id]);
+function TagEditWithData({ tagId, reload }) {
+	const query = useMemo(() => ({ tagId }), [tagId]);
 	const { value: data, phase: state, error } = useEndpointData('livechat/tags.getOne', query);
 	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
+		value: currentDepartments,
+		phase: currentDepartmentsState,
+		error: currentDepartmentsError,
+	} = useEndpointData(
+		'livechat/department.listByIds',
+		useMemo(() => ({ ids: tagId && data ? data.departments : [] }), [data, tagId]),
+	);
 
 	const t = useTranslation();
 
-	if ([state, availableDepartmentsState].includes(AsyncStatePhase.LOADING)) {
+	if ([state, currentDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error || availableDepartmentsError) {
+	if (error || currentDepartmentsError) {
 		return (
 			<Callout m='x16' type='danger'>
 				{t('Not_Available')}
@@ -31,13 +34,7 @@ function TagEditWithData({ title, id, reload }) {
 	}
 
 	return (
-		<TagEdit
-			title={title}
-			tagId={id}
-			data={data}
-			availableDepartments={availableDepartments}
-			reload={reload}
-		/>
+		<TagEdit tagId={tagId} data={data} currentDepartments={currentDepartments} reload={reload} />
 	);
 }
 

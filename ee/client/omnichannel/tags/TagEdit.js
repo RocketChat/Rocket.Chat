@@ -1,15 +1,8 @@
-import {
-	Field,
-	TextInput,
-	Button,
-	MultiSelect,
-	ButtonGroup,
-	Icon,
-	FieldGroup,
-} from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
+import AutoCompleteDepartmentMultiple from '../../../../client/components/AutoCompleteDepartmentMultiple';
 import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -17,24 +10,19 @@ import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessag
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 
-function TagEdit({ title, data, tagId, isNew, availableDepartments, reload, ...props }) {
+function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...props }) {
 	const t = useTranslation();
 	const tagsRoute = useRoute('omnichannel-tags');
 
 	const tag = data || {};
 
-	const options = useMemo(
-		() =>
-			availableDepartments && availableDepartments.departments
-				? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableDepartments],
-	);
-
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: tag.name,
 		description: tag.description,
-		departments: tag.departments && tag.departments[0] === '' ? [] : tag.departments,
+		departments:
+			currentDepartments &&
+			currentDepartments.departments &&
+			currentDepartments.departments.map((dep) => ({ label: dep.name, value: dep._id })),
 	});
 
 	const { handleName, handleDescription, handleDepartments } = handlers;
@@ -62,7 +50,7 @@ function TagEdit({ title, data, tagId, isNew, availableDepartments, reload, ...p
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
-		const finalDepartments = departments || [''];
+		const finalDepartments = departments ? departments.map((dep) => dep.value) : [''];
 
 		try {
 			await saveTag(tagId, tagData, finalDepartments);
@@ -128,14 +116,7 @@ function TagEdit({ title, data, tagId, isNew, availableDepartments, reload, ...p
 						<Field>
 							<Field.Label>{t('Departments')}</Field.Label>
 							<Field.Row>
-								<MultiSelect
-									options={options}
-									value={departments}
-									maxWidth='100%'
-									placeholder={t('Select_an_option')}
-									onChange={handleDepartments}
-									flexGrow={1}
-								/>
+								<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} />
 							</Field.Row>
 						</Field>
 					</FieldGroup>
