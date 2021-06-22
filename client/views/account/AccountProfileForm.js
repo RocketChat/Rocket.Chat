@@ -150,9 +150,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				: t('Max_length_is', STATUS_TEXT_MAX_LENGTH),
 		[statusText, t],
 	);
-	const {
-		emails: [{ verified = false } = { verified: false }],
-	} = user;
+
+	const verified = (user.emails && user.emails.length && user.emails[0].verified) || false;
 
 	const canSave = !![
 		!!passwordError,
