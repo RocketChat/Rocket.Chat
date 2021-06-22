@@ -81,7 +81,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
 		departmentsAllowedToForward:
-			(allowedToForwardData && allowedToForwardData.map((dep) => ({ label: dep.name, value: dep._id }))) ||
+			(allowedToForwardData &&
+				allowedToForwardData.map((dep) => ({ label: dep.name, value: dep._id }))) ||
 			[],
 	});
 	const {
