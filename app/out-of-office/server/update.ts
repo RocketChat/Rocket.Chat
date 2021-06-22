@@ -11,6 +11,10 @@ interface IUpdateOutOfOfficeParams {
   isEnabled: boolean;
 }
 
+interface IUpdateOutOfOffice {
+  message: string;
+}
+
 export function updateOutOfOffice({
   userId,
   customMessage,
@@ -18,7 +22,7 @@ export function updateOutOfOffice({
   startDate,
   endDate,
   isEnabled,
-}: IUpdateOutOfOfficeParams): void {
+}: IUpdateOutOfOfficeParams): IUpdateOutOfOffice {
   if (!isEnabled) {
     const affected = OutOfOffice.setDisabled(userId);
     if (affected === 0) {
@@ -28,7 +32,7 @@ export function updateOutOfOffice({
         "Please enable out of office before disabling."
       );
     }
-    return;
+    return { message: "Successfully disabled Out Of Office." };
   }
 
   if (customMessage.length === 0) {
@@ -51,4 +55,6 @@ export function updateOutOfOffice({
   if (!upsertResult || upsertResult.numberAffected !== 1) {
     throw new Meteor.Error("error-database-error");
   }
+
+  return { message: "Successfully Enabled Out Of Office" };
 }

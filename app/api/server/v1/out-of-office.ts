@@ -20,9 +20,12 @@ API.v1.addRoute(
         })
       );
 
-      updateOutOfOffice({ userId: this.userId, ...this.bodyParams });
+      const { message } = updateOutOfOffice({
+        userId: this.userId,
+        ...this.bodyParams,
+      });
 
-      return API.v1.success();
+      return API.v1.success({ message });
     },
   }
 );
