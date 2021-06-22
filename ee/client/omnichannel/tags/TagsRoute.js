@@ -112,7 +112,7 @@ function TagsRoute() {
 		return (
 			<TagEditWithData
 				reload={reload}
-				id={id}
+				tagId={id}
 				title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')}
 			/>
 		);

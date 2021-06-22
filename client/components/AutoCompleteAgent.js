@@ -7,12 +7,13 @@ import { AsyncStatePhase } from '../lib/asyncState';
 import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 const AutoCompleteAgent = (props) => {
+	const { value, onChange = () => {}, haveAll = false } = props;
 	const [agentsFilter, setAgentsFilter] = useState('');
 
 	const debouncedAgentsFilter = useDebouncedValue(agentsFilter, 500);
 
 	const { itemsList: AgentsList, loadMoreItems: loadMoreAgents } = useAgentsList(
-		useMemo(() => ({ text: debouncedAgentsFilter }), [debouncedAgentsFilter]),
+		useMemo(() => ({ text: debouncedAgentsFilter, haveAll }), [debouncedAgentsFilter, haveAll]),
 	);
 
 	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(
@@ -36,7 +37,8 @@ const AutoCompleteAgent = (props) => {
 
 	return (
 		<PaginatedSelectFiltered
-			{...props}
+			value={value}
+			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter}

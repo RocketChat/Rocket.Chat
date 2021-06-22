@@ -9,6 +9,7 @@ import { RecordList } from '../../../lib/lists/RecordList';
 
 type AgentsListOptions = {
 	text: string;
+	haveAll: boolean;
 };
 
 export const useAgentsList = (
@@ -45,18 +46,20 @@ export const useAgentsList = (
 				agent.value = agent._id;
 				return agent;
 			});
-			items.unshift({
-				label: t('All'),
-				value: 'all',
-				_updatedAt: new Date(),
-			});
+
+			options.haveAll &&
+				items.unshift({
+					label: t('All'),
+					value: 'all',
+					_updatedAt: new Date(),
+				});
 
 			return {
 				items,
 				itemCount: total + 1,
 			};
 		},
-		[getAgents, options.text, t],
+		[getAgents, options.haveAll, options.text, t],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
