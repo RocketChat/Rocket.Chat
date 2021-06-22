@@ -1,12 +1,15 @@
-const path = require('path');
+const { resolve, relative, join } = require('path');
 
 const webpack = require('webpack');
 
 module.exports = {
+	typescript: {
+		reactDocgen: 'none',
+	},
 	stories: [
-		'../app/**/*.stories.js',
-		'../client/**/*.stories.js',
-		'../ee/**/*.stories.js',
+		'../app/**/*.stories.{js,tsx}',
+		'../client/**/*.stories.{js,tsx}',
+		'../ee/**/*.stories.{js,tsx}',
 	],
 	addons: [
 		'@storybook/addon-essentials',
@@ -26,8 +29,8 @@ module.exports = {
 					require('autoprefixer')(),
 					require('postcss-url')({ url: ({ absolutePath, relativePath, url }) => {
 						const absoluteDir = absolutePath.slice(0, -relativePath.length);
-						const relativeDir = path.relative(absoluteDir, path.resolve(__dirname, '../public'));
-						const newPath = path.join(relativeDir, url);
+						const relativeDir = relative(absoluteDir, resolve(__dirname, '../public'));
+						const newPath = join(relativeDir, url);
 						return newPath;
 					} }),
 				],
@@ -50,15 +53,11 @@ module.exports = {
 				{
 					loader: 'ts-loader',
 					options: {
-						compilerOptions: {
-							noEmit: false,
-						},
+						configFile: join(__dirname, '../tsconfig.webpack.json'),
 					},
 				},
 			],
 		});
-
-		config.resolve.extensions.push('.ts', '.tsx');
 
 		config.plugins.push(
 			new webpack.NormalModuleReplacementPlugin(
@@ -67,7 +66,7 @@ module.exports = {
 			),
 			new webpack.NormalModuleReplacementPlugin(
 				/(app)\/*.*\/(server)\/*/,
-				require.resolve('./mocks/empty.js'),
+				require.resolve('./mocks/empty.ts'),
 			),
 		);
 
