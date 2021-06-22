@@ -4,9 +4,13 @@ import React, { FC, ReactElement, useRef, useEffect, useState } from 'react';
 import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 
-const PeerView: FC<IVoiceRoomPeer> = (props): ReactElement => {
-	const { id, displayName, track, username, deafen } = props;
-
+const VoicePeer: FC<IVoiceRoomPeer> = ({
+	id,
+	displayName,
+	track,
+	username,
+	deafen,
+}): ReactElement => {
 	const ref = useRef<HTMLAudioElement>(null);
 	const [muted, setMuted] = useState(false);
 
@@ -18,11 +22,12 @@ const PeerView: FC<IVoiceRoomPeer> = (props): ReactElement => {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			ref.current!.srcObject = stream;
 		}
-	}, []);
+	}, [track]);
 
 	const toggleMute = (): void => {
 		setMuted((prev) => !prev);
 	};
+
 	return (
 		<Box textAlign='center' alignItems='center' justifyContent='center' id={id} padding='x16'>
 			<UserAvatar size='x124' rounded username={username || ''} />
@@ -35,4 +40,4 @@ const PeerView: FC<IVoiceRoomPeer> = (props): ReactElement => {
 	);
 };
 
-export default PeerView;
+export default VoicePeer;

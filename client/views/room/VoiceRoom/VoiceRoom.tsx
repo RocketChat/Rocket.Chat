@@ -5,7 +5,7 @@ import React, { FC, ReactElement, useState } from 'react';
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
 import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
-import Peers from './Peers';
+import VoicePeersList from './VoicePeersList';
 
 interface IVoiceRoom {
 	room: IRoom;
@@ -13,9 +13,7 @@ interface IVoiceRoom {
 
 let roomClient: VoiceRoomClient;
 
-const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
-	const { room } = props;
-
+const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 	const [connected, setConnected] = useState(false);
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
@@ -50,15 +48,15 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 			roomClient.on('peerClosed', (id: string) => {
 				setPeers((prev) => prev.filter((p) => p.id !== id));
 			});
+
 			setConnected(true);
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 		}
 	};
 
 	const handleDisconnect = (): void => {
 		setConnected(false);
-
 		roomClient.close();
 		setPeers([]);
 	};
@@ -75,13 +73,11 @@ const VoiceRoom: FC<IVoiceRoom> = (props): ReactElement => {
 		});
 	};
 
-	const toggleDeafen = (): void => {
-		setDeafen((prev) => !prev);
-	};
+	const toggleDeafen = (): void => setDeafen((prev) => !prev);
 
 	return (
 		<>
-			<Peers peers={peers} deafen={deafen} />
+			<VoicePeersList peers={peers} deafen={deafen} />
 			<Box
 				display='flex'
 				position='fixed'
