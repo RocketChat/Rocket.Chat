@@ -4,19 +4,10 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { FC } from 'react';
 
 import Attachments from '.';
+import { MessageQuoteAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageQuoteAttachment';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import MarkdownText from '../../MarkdownText';
 import Attachment from './Attachment';
-import { AttachmentPropsBase } from './Attachment/AttachmentPropsBase';
-
-export type QuoteAttachmentProps = {
-	author_name: string;
-	author_link: string;
-	author_icon: string;
-	message_link?: string;
-	text: string;
-	attachments?: Array<QuoteAttachmentProps>;
-} & AttachmentPropsBase;
 
 const hover = css`
 	&:hover,
@@ -29,7 +20,7 @@ const hover = css`
 	}
 `;
 
-export const QuoteAttachment: FC<QuoteAttachmentProps> = ({
+export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 	author_icon: url,
 	author_name: name,
 	author_link: authorLink,

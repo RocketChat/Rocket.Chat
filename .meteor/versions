@@ -17,6 +17,10 @@ blaze@2.3.4
 blaze-html-templates@1.1.2
 blaze-tools@1.0.10
 boilerplate-generator@1.7.1
+browser-policy@1.1.0
+browser-policy-common@1.0.11
+browser-policy-content@1.1.1
+browser-policy-framing@1.1.0
 caching-compiler@1.2.2
 caching-html-compiler@1.1.3
 callback-hook@1.3.0
