@@ -20,9 +20,9 @@ function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...pro
 		name: tag.name,
 		description: tag.description,
 		departments:
-			currentDepartments &&
-			currentDepartments.departments &&
-			currentDepartments.departments.map((dep) => ({ label: dep.name, value: dep._id })),
+			currentDepartments && currentDepartments.departments
+				? currentDepartments.departments.map((dep) => ({ label: dep.name, value: dep._id }))
+				: [],
 	});
 
 	const { handleName, handleDescription, handleDepartments } = handlers;
