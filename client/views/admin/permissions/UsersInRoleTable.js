@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import GenericTable from '../../../components/GenericTable';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -31,11 +31,14 @@ function UsersInRoleTable({ data, reload, roleName, total, params, setParams, ri
 			reload();
 		};
 		setModal(
-			<DeleteWarningModal
-				children={t('The_user_s_will_be_removed_from_role_s', username, roleName)}
+			<GenericModal
+				variant='danger'
+				onConfirm={remove}
 				onCancel={closeModal}
-				onDelete={remove}
-			/>,
+				confirmText={t('Delete')}
+			>
+				{t('The_user_s_will_be_removed_from_role_s', username, roleName)}
+			</GenericModal>,
 		);
 	});
 
