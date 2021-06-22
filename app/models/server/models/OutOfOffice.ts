@@ -7,7 +7,7 @@ class OutOfOffice extends Base {
   // insert
   createWithFullOutOfOfficeData(
     data: Omit<IOutOfOffice, "_id">
-  ): IOutOfOffice["_id"] {
+  ): Record<string, unknown> {
     return this.upsert({ userId: data.userId }, { ...data });
   }
 

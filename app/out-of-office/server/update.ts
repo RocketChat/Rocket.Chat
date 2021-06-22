@@ -2,7 +2,7 @@ import { Meteor } from "meteor/meteor";
 
 import { OutOfOffice } from "../../models/server";
 
-interface IEnableOutOfOfficeParams {
+interface IUpdateOutOfOfficeParams {
   userId: string;
   roomIds: string[];
   customMessage: string;
@@ -18,9 +18,17 @@ export function updateOutOfOffice({
   startDate,
   endDate,
   isEnabled,
-}: IEnableOutOfOfficeParams) {
+}: IUpdateOutOfOfficeParams): void {
   if (!isEnabled) {
-    return OutOfOffice.setDisabled(userId);
+    const affected = OutOfOffice.setDisabled(userId);
+    if (affected === 0) {
+      // this will if the user had not enabled out-of-office before
+      throw new Meteor.Error(
+        "error-invalid-user",
+        "Please enable out of office before disabling."
+      );
+    }
+    return;
   }
 
   if (customMessage.length === 0) {
@@ -30,7 +38,7 @@ export function updateOutOfOffice({
     );
   }
 
-  return OutOfOffice.createWithFullOutOfOfficeData({
+  const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
     userId,
     startDate,
     endDate,
@@ -39,4 +47,8 @@ export function updateOutOfOffice({
     roomIds,
     sentRoomIds: [],
   });
+
+  if (!upsertResult || upsertResult.numberAffected !== 1) {
+    throw new Meteor.Error("error-database-error");
+  }
 }
