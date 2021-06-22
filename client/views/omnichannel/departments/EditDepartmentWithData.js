@@ -20,7 +20,12 @@ function EditDepartmentWithData({ id, reload, title }) {
 	} = useEndpointData(
 		'livechat/department.listByIds',
 		useMemo(
-			() => ({ ids: data && data.department ? data.department?.departmentsAllowedToForward : [] }),
+			() => ({
+				ids:
+					data && data.department && data.department.departmentsAllowedToForward
+						? data.department.departmentsAllowedToForward
+						: [],
+			}),
 			[data],
 		),
 	);
