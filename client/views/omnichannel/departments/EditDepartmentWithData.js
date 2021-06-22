@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -13,14 +13,38 @@ function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
 	const { value: data, phase: state, error } = useEndpointData(`livechat/department/${id}`, param);
 
-	if ([state].includes(AsyncStatePhase.LOADING)) {
+	const {
+		value: allowedToForwardData,
+		phase: allowedToForwardState,
+		error: allowedToForwardError,
+	} = useEndpointData(
+		'livechat/department.autocomplete',
+		useMemo(
+			() => ({
+				selector: JSON.stringify({
+					_id: { $in: data?.department?.departmentsAllowedToForward },
+				}),
+			}),
+			[data.department.departmentsAllowedToForward],
+		),
+	);
+
+	if ([state, allowedToForwardState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error || (id && !data?.department)) {
+	if (error || allowedToForwardError || (id && !data?.department)) {
 		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
 	}
-	return <EditDepartment id={id} data={data} reload={reload} title={title} />;
+	return (
+		<EditDepartment
+			id={id}
+			data={data}
+			reload={reload}
+			title={title}
+			allowedToForwardData={allowedToForwardData}
+		/>
+	);
 }
 
 export default EditDepartmentWithData;
