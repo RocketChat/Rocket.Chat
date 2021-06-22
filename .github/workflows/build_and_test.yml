@@ -64,7 +64,7 @@ jobs:
         path: |
           ./node_modules
           ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-3-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -246,7 +246,7 @@ jobs:
         path: |
           ./node_modules
           ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-3-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -310,7 +310,7 @@ jobs:
         path: |
           ./node_modules
           ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-3-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
