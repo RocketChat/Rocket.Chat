@@ -1,23 +1,12 @@
 import React, { FC } from 'react';
 
-import { FileProp } from '..';
+import { ImageAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/ImageAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
-import { AttachmentPropsBase } from '../Attachment/AttachmentPropsBase';
-import { Dimensions } from '../components/Dimensions';
 import Image from '../components/Image';
 import { useMediaUrl } from '../context/AttachmentContext';
 import { useCollapse } from '../hooks/useCollapse';
 import { useLoadImage } from '../hooks/useLoadImage';
-
-export type ImageAttachmentProps = {
-	image_dimensions: Dimensions;
-	image_preview?: string;
-	image_url: string;
-	image_type: string;
-	image_size?: number;
-	file?: FileProp;
-} & AttachmentPropsBase;
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	title,
@@ -38,7 +27,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			<MarkdownText variant='inline' content={description} />
+			{description && <MarkdownText variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{title}</Attachment.Title>
 				{size && <Attachment.Size size={size} />}

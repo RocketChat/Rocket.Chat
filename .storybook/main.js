@@ -3,6 +3,9 @@ const { resolve, relative, join } = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+	typescript: {
+		reactDocgen: 'none',
+	},
 	stories: [
 		'../app/**/*.stories.{js,tsx}',
 		'../client/**/*.stories.{js,tsx}',

@@ -150,7 +150,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (role.protected) {
+		if (role.protected && ((roleData.name && roleData.name !== role.name) || (roleData.scope && roleData.scope !== role.scope))) {
 			throw new Meteor.Error('error-role-protected', 'Role is protected');
 		}
 
