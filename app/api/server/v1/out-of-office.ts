@@ -5,7 +5,7 @@ import { API } from "../api";
 import {
   disableOutOfOffice,
   enableOutOffice,
-} from "../../../outOfOffice/server/index";
+} from "../../../out-of-office/server/index";
 import { OutOfOffice } from "../../../models/server";
 
 API.v1.addRoute(
