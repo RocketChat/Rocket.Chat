@@ -94,11 +94,7 @@ function OutOfOfficePage(): ReactNode {
 		commit();
 		const result = await toggleOutOfOffice();
 		if (result && result.success === true) {
-			if (result.isEnabled === true) {
-				dispatchToastMessage({ type: 'success', message: 'Successfully Enabled Out of Office!' });
-			} else {
-				dispatchToastMessage({ type: 'success', message: 'Successfully Disabled Out of Office!' });
-			}
+			dispatchToastMessage({ type: 'success', message: result.message });
 		}
 	}, [commit, values]);
 
