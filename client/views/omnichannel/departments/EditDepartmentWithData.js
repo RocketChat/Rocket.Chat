@@ -19,7 +19,10 @@ function EditDepartmentWithData({ id, reload, title }) {
 		error: allowedToForwardError,
 	} = useEndpointData(
 		'livechat/department.listByIds',
-		useMemo(() => ({ ids: data ? data.department?.departmentsAllowedToForward : [] }), [data]),
+		useMemo(
+			() => ({ ids: data && data.department ? data.department?.departmentsAllowedToForward : [] }),
+			[data],
+		),
 	);
 
 	if ([state, allowedToForwardState].includes(AsyncStatePhase.LOADING)) {
