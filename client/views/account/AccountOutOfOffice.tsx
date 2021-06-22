@@ -16,11 +16,11 @@ import React, { ReactNode, useCallback, useMemo } from 'react';
 
 import { ISubscription } from '../../../definition/ISubscription';
 import Page from '../../components/Page/Page';
+import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useForm } from '../../hooks/useForm';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
-import { useToastMessageDispatch } from '/client/contexts/ToastMessagesContext';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
@@ -86,7 +86,7 @@ function OutOfOfficePage(): ReactNode {
 				startDate,
 				endDate,
 			}),
-			[roomIds, customMessage, startDate, endDate],
+			[roomIds, customMessage, startDate, endDate, isEnabled],
 		),
 	);
 
@@ -96,7 +96,7 @@ function OutOfOfficePage(): ReactNode {
 		if (result && result.success === true) {
 			dispatchToastMessage({ type: 'success', message: result.message });
 		}
-	}, [commit, values]);
+	}, [commit, dispatchToastMessage, toggleOutOfOffice]);
 
 	const {
 		value: { update: subscribedRooms = [] } = { update: [] },

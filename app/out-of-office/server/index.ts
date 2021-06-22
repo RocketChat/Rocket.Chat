@@ -1,1 +1,1 @@
-export { updateOutOfOffice } from "./update";
+export { updateOutOfOffice } from './update';
