@@ -127,7 +127,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Served_By')}</Label>
-					<AutoCompleteAgent value={servedBy} onChange={handleServedBy} />
+					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
 				</Box>
 				<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 					<Label mb='x4'>{t('Status')}</Label>
