@@ -8,7 +8,7 @@ class OutOfOffice extends Base {
   createWithFullOutOfOfficeData(
     data: Omit<IOutOfOffice, "_id">
   ): IOutOfOffice["_id"] {
-    return this.insert(data);
+    return this.upsert({ userId: data.userId }, { ...data });
   }
 
   // find
@@ -42,8 +42,8 @@ class OutOfOffice extends Base {
     );
   }
 
-  setDisabled(docId: string) {
-    return this.update({ _id: docId }, { $set: { isEnabled: false } });
+  setDisabled(userId: string) {
+    return this.update({ userId }, { $set: { isEnabled: false } });
   }
 }
 

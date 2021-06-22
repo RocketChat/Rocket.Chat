@@ -1,11 +1,7 @@
-import { Meteor } from "meteor/meteor";
 import { check, Match } from "meteor/check";
 
 import { API } from "../api";
-import {
-  disableOutOfOffice,
-  enableOutOffice,
-} from "../../../out-of-office/server/index";
+import { updateOutOfOffice } from "../../../out-of-office/server/index";
 import { OutOfOffice } from "../../../models/server";
 
 API.v1.addRoute(
@@ -24,36 +20,9 @@ API.v1.addRoute(
         })
       );
 
-      const {
-        isEnabled,
-        roomIds,
-        customMessage,
-        startDate,
-        endDate,
-      } = this.bodyParams;
+      updateOutOfOffice({ userId: this.userId, ...this.bodyParams });
 
-      if (isEnabled === false) {
-        const updated = disableOutOfOffice({ userId: this.userId });
-
-        return API.v1.success(updated);
-      }
-
-      if (customMessage.length === 0) {
-        throw new Meteor.Error(
-          "error-invalid-params",
-          "The custom message is mandatory"
-        );
-      }
-
-      const updated = enableOutOffice({
-        userId: this.userId,
-        roomIds,
-        customMessage,
-        startDate,
-        endDate,
-      });
-
-      return API.v1.success(updated);
+      return API.v1.success();
     },
   }
 );
