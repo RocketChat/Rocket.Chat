@@ -10,6 +10,7 @@ interface IData {
 	produce: boolean;
 	consume: boolean;
 	displayName: string;
+	username?: string;
 }
 
 export default class VoiceRoom extends EventEmitter {
@@ -27,6 +28,8 @@ export default class VoiceRoom extends EventEmitter {
 
 	protooUrl: string;
 
+	username?: string;
+
 	protoo?: Peer;
 
 	mediasoupDevice?: types.Device;
@@ -39,7 +42,7 @@ export default class VoiceRoom extends EventEmitter {
 
 	consumers: Map<string, types.Consumer>;
 
-	constructor({ roomID, device, produce, consume, displayName, peerID }: IData) {
+	constructor({ roomID, device, produce, consume, displayName, peerID, username }: IData) {
 		super();
 		this.roomID = roomID;
 		this.device = device;
@@ -49,6 +52,7 @@ export default class VoiceRoom extends EventEmitter {
 		this.consume = consume;
 		this.protooUrl = `ws://${ window.location.hostname }:8989/?roomId=${ roomID }&peerId=${ peerID }`;
 		this.consumers = new Map();
+		this.username = username;
 	}
 
 	async join(): Promise<void> {
@@ -104,7 +108,7 @@ export default class VoiceRoom extends EventEmitter {
 							this.consumers.set(consumer.id, consumer);
 
 							const peer = await this.protoo?.request('getPeer', peerID);
-							this.emit('newConsumer', consumer, peer);
+							this.emit('newConsumer', consumer, peerID, peer);
 
 							consumer.on('transportclose', () => {
 								this.consumers.delete(consumer.id);
@@ -118,6 +122,15 @@ export default class VoiceRoom extends EventEmitter {
 						reject(error);
 					}
 
+					break;
+				}
+			}
+		});
+
+		this.protoo.on('notification', (notif) => {
+			switch (notif.method) {
+				case 'peerClosed': {
+					this.emit('peerClosed', notif.data.peerId);
 					break;
 				}
 			}
@@ -223,6 +236,7 @@ export default class VoiceRoom extends EventEmitter {
 				displayName: this.displayName,
 				device: this.device,
 				rtpCapabilities: this.consume && this.mediasoupDevice.rtpCapabilities,
+				username: this.username,
 			});
 
 			if (this.produce) {

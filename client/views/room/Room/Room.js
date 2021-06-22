@@ -5,6 +5,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import Header from '../Header';
+import VoiceRoom from '../VoiceRoom';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
@@ -19,7 +20,6 @@ import Aside from './Aside';
 import Body from './Body';
 import Footer from './Footer';
 import LazyComponent from './LazyComponent';
-import VoiceRoom from './VoiceRoom';
 
 const Room = () => {
 	const t = useTranslation();
