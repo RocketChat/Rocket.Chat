@@ -18,15 +18,8 @@ function EditDepartmentWithData({ id, reload, title }) {
 		phase: allowedToForwardState,
 		error: allowedToForwardError,
 	} = useEndpointData(
-		'livechat/department.autocomplete',
-		useMemo(
-			() => ({
-				selector: JSON.stringify({
-					_id: { $in: data?.department?.departmentsAllowedToForward },
-				}),
-			}),
-			[data.department.departmentsAllowedToForward],
-		),
+		'livechat/department.listByIds',
+		useMemo(() => ({ ids: data ? data.department?.departmentsAllowedToForward : [] }), [data]),
 	);
 
 	if ([state, allowedToForwardState].includes(AsyncStatePhase.LOADING)) {

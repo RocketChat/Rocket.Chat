@@ -81,7 +81,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
 		departmentsAllowedToForward:
-			(allowedToForwardData && allowedToForwardData.map((dep) => ({ label: dep.name, value: dep._id }))) ||
+			(allowedToForwardData &&
+				allowedToForwardData.departments &&
+				allowedToForwardData.departments.map((dep) => ({ label: dep.name, value: dep._id }))) ||
 			[],
 	});
 	const {
@@ -213,7 +215,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.label).join(),
+				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.value).join(),
 		};
 
 		const agentListPayload = {
