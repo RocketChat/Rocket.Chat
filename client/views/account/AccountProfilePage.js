@@ -108,6 +108,7 @@ const AccountProfilePage = () => {
 		statusText,
 		statusType,
 		customFields,
+		confirmationPassword,
 		bio,
 		nickname,
 	} = values;
@@ -123,7 +124,9 @@ const AccountProfilePage = () => {
 					{
 						...(allowRealNameChange && { realname }),
 						...(allowEmailChange && getUserEmailAddress(user) !== email && { email }),
-						...(allowPasswordChange && { newPassword: password }),
+						...(allowPasswordChange && {
+							newPassword: password === confirmationPassword ? password : '',
+						}),
 						...(canChangeUsername && { username }),
 						...(allowUserStatusMessageChange && { statusText }),
 						...(typedPassword && { typedPassword: SHA256(typedPassword) }),
@@ -157,6 +160,7 @@ const AccountProfilePage = () => {
 		canChangeUsername,
 		email,
 		password,
+		confirmationPassword,
 		realname,
 		statusText,
 		username,

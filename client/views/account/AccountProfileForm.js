@@ -88,13 +88,16 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
-	const passwordError = useMemo(
-		() =>
-			!password || !confirmationPassword || password === confirmationPassword
-				? undefined
-				: t('Passwords_do_not_match'),
-		[t, password, confirmationPassword],
-	);
+	const passwordError = useMemo(() => {
+		if (password && !confirmationPassword) {
+			return t('Confirm to change password');
+		}
+		if (password !== confirmationPassword) {
+			return t('Passwords_do_not_match');
+		}
+		return undefined;
+	}, [t, password, confirmationPassword]);
+
 	const emailError = useMemo(() => (isEmail(email) ? undefined : 'error-invalid-email-address'), [
 		email,
 	]);
