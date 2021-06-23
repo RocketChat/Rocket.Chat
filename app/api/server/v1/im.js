@@ -18,7 +18,7 @@ function findDirectMessageRoom(params, user) {
 		nameOrId: params.username || params.roomId,
 	});
 
-	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
+	const canAccess = Meteor.call('canAccessRoom', room._id, user._id) || hasPermission(user._id, 'view-room-administration');
 	if (!canAccess || !room || room.t !== 'd') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
@@ -33,19 +33,50 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const { username, usernames } = this.requestParams();
+		const { username, usernames, excludeSelf } = this.requestParams();
 
 		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
+		const selfExcluded = excludeSelf && hasPermission(this.userId, 'view-room-administration');
 
 		if (!users) {
 			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
 		}
 
-		const room = Meteor.call('createDirectMessage', ...users);
+		const room = Meteor.call(excludeSelf ? 'createDirectMessageForOthers' : 'createDirectMessage', ...users);
+
+		// If we haven't included our self then we need to open the room for the other participants
+		if (selfExcluded) {
+			room.usernames.forEach((username) => {
+				const user = Users.findOneByUsernameIgnoringCase(username);
+				const subscription = Subscriptions.findOneByRoomIdAndUserId(room.rid, user._id);
+
+				if (!subscription.open) {
+					Meteor.runAsUser(user._id, () => {
+						Meteor.call('openRoom', room.rid);
+					});
+				}
+			});
+		}
 
 		return API.v1.success({
 			room: { ...room, _id: room.rid },
 		});
+	},
+});
+
+API.v1.addRoute(['dm.delete', 'im.delete'], { authRequired: true }, {
+	post() {
+		if (!hasPermission(this.userId, 'view-room-administration')) {
+			return API.v1.unauthorized();
+		}
+
+		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('eraseRoom', findResult.room._id);
+		});
+
+		return API.v1.success();
 	},
 });
 
