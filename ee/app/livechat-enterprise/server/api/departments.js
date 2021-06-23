@@ -15,6 +15,7 @@ import {
 import {
 	findAllDepartmentsAvailable,
 	findAllDepartmentsByUnit,
+	findAllDepartmentsByTag,
 } from '../lib/Department';
 
 API.v1.addRoute('livechat/analytics/departments/amount-of-chats', { authRequired: true }, {
@@ -359,6 +360,21 @@ API.v1.addRoute('livechat/departments.by-unit/:unitId', { authRequired: true }, 
 			count: departments.length,
 			offset,
 			total,
+		});
+	},
+});
+
+API.v1.addRoute('livechat/departments.by-tag/:tagId', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			tagId: String,
+		});
+		const { tagId } = this.urlParams;
+
+		const { departments } = Promise.await(findAllDepartmentsByTag(tagId));
+
+		return API.v1.success({
+			departments,
 		});
 	},
 });
