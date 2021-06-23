@@ -32,21 +32,22 @@ export const findAllDepartmentsByUnit = async (unitId, offset, count) => {
 	return { departments, total };
 };
 
-export const findAllDepartmentsByTag = async (tagId) => {
+export const findAllDepartmentsByTag = async (tagId, offset, count) => {
 	const tag = LivechatTag.findOneById(tagId);
 
-	const departments = [];
+	let departmentsResult = [];
+	let total = 0;
 
 	if (!tag) {
-		return { departments };
+		return { departmentsResult };
 	}
 
 	if (tag.departments && tag.departments.length) {
-		tag.departments.forEach((departmentId) => {
-			const department = Promise.await(LivechatDepartment.findOneById(departmentId));
-			departments.push(department);
-		});
+		const cursor = LivechatDepartment.findInIds(tag.departments, { limit: count, offset });
+		const departments = await cursor.toArray();
+		total = await cursor.count();
+		departmentsResult = departments;
 	}
 
-	return { departments };
+	return { departments: departmentsResult, total };
 };

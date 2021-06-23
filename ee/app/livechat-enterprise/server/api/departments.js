@@ -369,12 +369,16 @@ API.v1.addRoute('livechat/departments.by-tag/:tagId', { authRequired: true }, {
 		check(this.urlParams, {
 			tagId: String,
 		});
+		const { offset, count } = this.getPaginationItems();
 		const { tagId } = this.urlParams;
 
-		const { departments } = Promise.await(findAllDepartmentsByTag(tagId));
+		const { departments, total } = Promise.await(findAllDepartmentsByTag(tagId, offset, count));
 
 		return API.v1.success({
 			departments,
+			count: departments.length,
+			offset,
+			total,
 		});
 	},
 });
