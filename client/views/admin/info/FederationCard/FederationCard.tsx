@@ -7,6 +7,7 @@ import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useSetting, useSettingSetValue } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import SettingsProvider from '../../../../providers/SettingsProvider';
 import { CardHeader, Section } from './components';
 import FederationModal from './components/FederationModal';
 import { SectionStatus } from './components/Section';
@@ -45,11 +46,13 @@ const FederationCard = () => {
 
 	const handleModal = useMutableCallback(() =>
 		setModal(
-			<FederationModal
-				onClose={() => {
-					setModal();
-				}}
-			/>,
+			<SettingsProvider privileged>
+				<FederationModal
+					onClose={() => {
+						setModal();
+					}}
+				/>
+			</SettingsProvider>,
 		),
 	);
 
