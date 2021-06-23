@@ -4,7 +4,7 @@
 	  "color": "B60205"
 	},
 	"CHECKS": {
-	  "regexp": "^(?:(?:\\[(NEW|BREAK|IMPROVE|FIX)\\](\\[(ENTERPRISE|APPS)\\])?|(?:Regression|Chore|Bump):) .+|Release [0-9]+\\.[0-9]+\\.[0-9]+)",
+	  "regexp": "^(?:(?:\\[(NEW|BREAK|IMPROVE|FIX)\\](\\[(ENTERPRISE|APPS)\\])?|(?:Regression|Chore|Bump|Revert):) .+|Release [0-9]+\\.[0-9]+\\.[0-9]+)",
 	  "ignoreLabels" : ["[ignore-title]"]
 	}
   }
