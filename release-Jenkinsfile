@@ -1,0 +1,101 @@
+def repoName = determineRepoName()
+def releaseVersion
+def major
+def minor
+def patch
+def tempDirName = "TemporaryDirectoryForGitBranch${repoName}"
+pipeline {
+    agent {
+        label "linux"
+    }
+    parameters {
+        string(name: 'RELEASE_VERSION', description: 'Override the automatic release version')
+
+        choice(name: 'RELEASE_TYPE', choices: ['Minor', 'Major', 'Patch'], description: 'Major.Minor.Patch choose which version gets bumped')
+    }
+    stages {
+        stage('Run Script') {
+            steps{
+                script{
+                    sh("""
+                    #!/bin/bash -x
+                    tempDir=${tempDirName}
+                    rm -rf \$tempDir
+                    mkdir \$tempDir
+                    cd \$tempDir
+                    git clone git@github.com:drivevelocity/${repoName}.git
+                    cd ${repoName}
+                    git pull
+                    """)
+                    
+                    boolean isEmpty = params.RELEASE_VERSION.isEmpty()
+                    if(isEmpty) {
+                        releaseVersion = sh(returnStdout: true, script: """
+                        tempDir=${tempDirName}
+                        cd \$tempDir
+                        cd ${repoName}
+                        echo \$(git describe --tags --abbrev=0)
+                        """)
+                        echo "Use Version from tag: ${releaseVersion}"
+                        String[] versionsSplit = releaseVersion.split('\\.');
+                        major = versionsSplit[0] as Integer;
+                        echo "major: ${major}"
+                        minor = versionsSplit[1] as Integer;
+                        echo "minor: ${minor}"
+                        patch = versionsSplit[2] as Integer;
+                        echo "patch: ${patch}"
+                        switch(params.RELEASE_TYPE) {
+                                case "Major":
+                                    echo "Updating Major version";
+                                    major++;
+                                    minor = 0;
+                                    patch = 0;
+                                    echo "major: ${major}"
+                                    break;
+                                case "Minor":
+                                    echo "Updating Minor version";
+                                    minor++;
+                                    patch = 0;
+                                    echo "minor: ${minor}"
+                                    break;
+                                case "Patch":
+                                    echo "Updating Patch version";
+                                    patch++;
+                                    echo "patch: ${patch}"
+                                    break;
+                        }
+                        releaseVersion = "${major}.${minor}.${patch}"
+                        echo "Bumped version to: ${releaseVersion}"
+                    } else {
+                        releaseVersion = params.RELEASE_VERSION
+                        echo "Override version: ${releaseVersion}"
+                    }
+                    sh("""
+                        tempDir=${tempDirName}
+                        branchName=release/${releaseVersion}
+                        cd \$tempDir
+                        cd ${repoName}
+                        echo "git checkout -b \${branchName}"
+                        git checkout -b \${branchName}
+                        echo "git tag ${releaseVersion}"
+                        git tag ${releaseVersion}
+                        echo "git push --set-upstream origin \$branchName ${releaseVersion}"
+                        git push --set-upstream origin \$branchName ${releaseVersion}
+                        cd ..
+                        cd ..
+                        rm -rf \$tempDir
+                    """)              
+                }
+            }
+        }
+    }
+    post{
+        always {
+            cleanWs()
+        }
+    }
+}
+
+String determineRepoName() {
+    return scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+}
