@@ -55,6 +55,7 @@ export default memo(function Message({
 					<MessageTemplate.Timestamp ts={formatDate(ts)} />
 				</MessageTemplate.Header>
 				<MessageTemplate.BodyClamp>
+					<h1>Hello</h1>
 					<RawText>{msg}</RawText>
 				</MessageTemplate.BodyClamp>
 				<Metrics color='neutral-600' mi='neg-x8'>

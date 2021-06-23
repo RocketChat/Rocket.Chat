@@ -12,7 +12,6 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
-	console.log(room);
 	if (room.taskRoomId) {
 		return 'taskRoom';
 	}

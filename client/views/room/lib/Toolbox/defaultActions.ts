@@ -60,7 +60,7 @@ addAction('members-list', ({ room }) => {
 });
 
 addAction('uploaded-files-list', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team', 'taskRoom'],
 	id: 'uploaded-files-list',
 	title: 'Files',
 	icon: 'clip',

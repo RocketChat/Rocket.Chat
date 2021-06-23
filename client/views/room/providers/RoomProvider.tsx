@@ -15,7 +15,7 @@ export type Props = {
 
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const { phase, value: room } = useHandleRoom(rid);
-	console.log(room);
+
 	const context = useMemo(() => {
 		if (!room) {
 			return null;

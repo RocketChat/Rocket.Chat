@@ -40,6 +40,7 @@ const Room = () => {
 
 	useDebugValue(room);
 	useDebugValue(tab);
+
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
