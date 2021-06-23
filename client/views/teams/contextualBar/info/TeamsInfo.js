@@ -26,6 +26,7 @@ const TeamsInfo = ({
 	onClickEdit,
 	onClickDelete,
 	onClickViewChannels,
+	onClickConvertToChannel,
 }) => {
 	const t = useTranslation();
 
@@ -66,8 +67,15 @@ const TeamsInfo = ({
 					icon: 'sign-out',
 				},
 			}),
+			...(onClickConvertToChannel && {
+				convertToChannel: {
+					label: t('Convert_to_channel'),
+					action: onClickConvertToChannel,
+					icon: 'key',
+				},
+			}),
 		}),
-		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete],
+		[t, onClickHide, onClickLeave, onClickEdit, onClickDelete, onClickConvertToChannel],
 	);
 
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);

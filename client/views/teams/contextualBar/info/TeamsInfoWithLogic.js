@@ -2,7 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 
 import { roomTypes, UiTextContext } from '../../../../../app/utils/client';
-import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
+import GenericModal, { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -135,6 +135,21 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
 
+	const onClickConvertToChannel = useMutableCallback(async () => {
+		// const data = type === 'c' ? { channelId: rid } : { roomId: rid };
+		const onConfirm = async () => {
+			// try {
+			// 	await convertRoomToTeam(data);
+			// } catch (error) {
+			// 	dispatchToastMessage({ type: 'error', message: error });
+			// } finally {
+			// 	closeModal();
+			// }
+		};
+
+		setModal(<GenericModal onClose={closeModal} onConfirm={onConfirm} />);
+	});
+
 	return (
 		<TeamsInfo
 			archived={archived}
@@ -147,6 +162,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 			onClickLeave={/* canLeave && */ onClickLeave}
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
+			onClickConvertToChannel={onClickConvertToChannel}
 			{...room}
 			announcement={
 				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
