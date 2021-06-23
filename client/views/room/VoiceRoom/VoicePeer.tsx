@@ -15,12 +15,14 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 	const [muted, setMuted] = useState(false);
 
 	useEffect(() => {
-		const stream = new MediaStream();
-		stream.addTrack(track);
+		if (track) {
+			const stream = new MediaStream();
+			stream.addTrack(track);
 
-		if (ref.current) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			ref.current!.srcObject = stream;
+			if (ref.current) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				ref.current!.srcObject = stream;
+			}
 		}
 	}, [track]);
 
@@ -33,9 +35,11 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 			<UserAvatar size='x124' rounded username={username || ''} />
 			<audio ref={ref} muted={muted || deafen} autoPlay />
 			<p>{displayName}</p>
-			<Button onClick={toggleMute}>
-				{muted ? <Icon name='volume-off' size='x24' /> : <Icon name='volume' size='x24' />}
-			</Button>
+			{track && (
+				<Button onClick={toggleMute}>
+					{muted ? <Icon name='volume-off' size='x24' /> : <Icon name='volume' size='x24' />}
+				</Button>
+			)}
 		</Box>
 	);
 };

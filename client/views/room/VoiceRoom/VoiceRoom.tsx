@@ -1,72 +1,53 @@
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { types } from 'mediasoup-client';
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
-import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
+import useVoiceRoom from '../hooks/useVoiceRoom';
 import VoicePeersList from './VoicePeersList';
 
 interface IVoiceRoom {
 	room: IRoom;
 }
 
-let roomClient: VoiceRoomClient;
+let roomClient: VoiceRoomClient | null = null;
 
 const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
-	const [connected, setConnected] = useState(false);
+	const [connected, setConnected] = useState(roomClient?.joined || false);
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
-	const [peers, setPeers] = useState<Array<IVoiceRoomPeer>>([]);
 
-	const handleJoin = async (): Promise<void> => {
-		roomClient = new VoiceRoomClient({
-			roomID: room._id,
-			device: {},
-			produce: true,
-			consume: true,
-			displayName: room.u.name || 'Anonymous',
-			peerID: room.u._id,
-			username: room.u.username,
-		});
+	const [voiceRoomClient, peers] = useVoiceRoom(room);
 
+	const handleInitialConnection = async (): Promise<void> => {
 		try {
+			if (roomClient) {
+				roomClient.close();
+			}
+
+			roomClient = null;
+			roomClient = voiceRoomClient;
 			await roomClient.join();
-			roomClient.on('newConsumer', (consumer: types.Consumer, peerID: string, peer) => {
-				setPeers((prev) =>
-					prev.concat({
-						id: peerID,
-						track: consumer.track,
-						device: peer.device,
-						displayName: peer.displayName,
-						consumerId: consumer.id,
-						username: peer.username,
-					}),
-				);
-			});
-
-			roomClient.on('peerClosed', (id: string) => {
-				setPeers((prev) => prev.filter((p) => p.id !== id));
-			});
-
-			setConnected(true);
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
+	useEffect(() => {
+		console.log(peers);
+	}, [peers]);
+
 	const handleDisconnect = (): void => {
 		setConnected(false);
-		roomClient.close();
-		setPeers([]);
+		handleInitialConnection();
 	};
 
 	const toggleMic = (): void => {
 		setMuteMic((prev) => {
 			if (prev) {
-				roomClient.unmuteMic();
+				roomClient?.unmuteMic();
 			} else {
-				roomClient.muteMic();
+				roomClient?.muteMic();
 			}
 
 			return !prev;
@@ -75,9 +56,33 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 
 	const toggleDeafen = (): void => setDeafen((prev) => !prev);
 
+	const handleJoin = async (): Promise<void> => {
+		try {
+			await handleInitialConnection();
+			roomClient?.on('connectionOpened', async () => {
+				await roomClient?.joinRoom();
+				setConnected(true);
+				roomClient?.removeListener('connectionOpened', () => null);
+			});
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	useEffect(() => {
+		if (!roomClient || !roomClient.joined) {
+			roomClient?.closeProtoo();
+			handleInitialConnection();
+		}
+	}, [room._id]);
+
+	// @TO-DO change views for different room when client is joined
+
 	return (
 		<>
-			<VoicePeersList peers={peers} deafen={deafen} />
+			<Box display={roomClient?.roomID !== voiceRoomClient.roomID ? 'none' : 'block'}>
+				<VoicePeersList peers={peers} deafen={deafen} />
+			</Box>
 			<Box
 				display='flex'
 				position='fixed'
@@ -90,7 +95,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 				alignItems='center'
 				pb='x24'
 			>
-				{connected ? (
+				{connected && roomClient?.roomID === voiceRoomClient.roomID ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
 							{muteMic ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
