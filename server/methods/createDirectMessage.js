@@ -8,7 +8,7 @@ import { RateLimiter } from '../../app/lib';
 import { addUser } from '../../app/federation/server/functions/addUser';
 import { createRoom } from '../../app/lib/server';
 
-function createDirectMessage(usernames, excludeSelf) {
+export function createDirectMessage(usernames, excludeSelf) {
 	check(usernames, [String]);
 	check(excludeSelf, Match.Optional(Boolean));
 
@@ -76,7 +76,11 @@ function createDirectMessage(usernames, excludeSelf) {
 		});
 	}
 
-	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, { }, { creator: me._id });
+	const options = { creator: me._id };
+	if (excludeSelf && hasPermission(this.userId, 'view-room-administration')) {
+		options.subscriptionExtra = { open: true };
+	}
+	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, { }, options);
 
 	return {
 		t: 'd',
@@ -89,19 +93,9 @@ Meteor.methods({
 	createDirectMessage(...usernames) {
 		return createDirectMessage(usernames, false);
 	},
-
-	createDirectMessageForOthers(...usernames) {
-		return createDirectMessage(usernames, true);
-	},
 });
 
 RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
-	userId(userId) {
-		return !hasPermission(userId, 'send-many-messages');
-	},
-});
-
-RateLimiter.limitMethod('createDirectMessageForOthers', 10, 60000, {
 	userId(userId) {
 		return !hasPermission(userId, 'send-many-messages');
 	},
