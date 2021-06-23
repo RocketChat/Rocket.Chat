@@ -1,8 +1,27 @@
 
 # 3.16.0 (Under Release Candidate Process)
 
+## 3.16.0-rc.1
+`2021-06-22  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Apps not syncing status correctly on HA setups ([#22415](https://github.com/RocketChat/Rocket.Chat/pull/22415))
+
+  FIxes erros where, on HA setups, instances that DID NOT originate the action of uninstalling and updating an app would maintain the wrong status of apps when they received the notification of these events via Streamer.
+
+- Chore: `team.addMembers` doesn't add member to main team room ([#22169](https://github.com/RocketChat/Rocket.Chat/pull/22169))
+
+  Fix `team.addMembers` endpoint as it currently doesn't work properly. The API call is adding members to a team's channels but not to the main team room.
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@lucassartor](https://github.com/lucassartor)
+
 ## 3.16.0-rc.0
-`2021-06-21  ·  5 🎉  ·  14 🚀  ·  41 🐛  ·  20 🔍  ·  22 👩‍💻👨‍💻`
+`2021-06-21  ·  5 🎉  ·  13 🚀  ·  41 🐛  ·  20 🔍  ·  22 👩‍💻👨‍💻`
 
 ### 🎉 New features
 
@@ -98,13 +117,6 @@
 - Send only relevant data via WebSocket ([#22258](https://github.com/RocketChat/Rocket.Chat/pull/22258))
 
   Previously when any data changed on subscriptions or rooms we were getting fresh data from database, to also remove undesired fields, but sometimes the data that changed was not relevant so we were sending the whole object everytime **without** the fields that actually changed. This change aims to reduce this overhead and also send less data to clients.
-
-- Update system messages' behavior in rooms ([#22018](https://github.com/RocketChat/Rocket.Chat/pull/22018))
-
-  - Update room's `lastMessage` when its "Hide System Messages" setting is updated;  
-  - Display system messages in the last message field (in the sidebar, using the extended view) -- iff the system message sent is not hidden in the room;  
-  - Send an alert to the room members when a system message is sent -- iff the system message sent is not hidden in the room;  
-  - Properly update a room's `lastMessage` field when the previous `lastMessage` is deleted -- system messages can now be set as last messages.
 
 ### 🐛 Bug fixes
 
@@ -380,6 +392,38 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.15.1
+`2021-06-21  ·  3 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.26.0`
+
+### 🐛 Bug fixes
+
+
+- Attachments and avatars not rendered if deployed on subfolder ([#22290](https://github.com/RocketChat/Rocket.Chat/pull/22290))
+
+- Setup wizard infinite loop when on subfolder. ([#22395](https://github.com/RocketChat/Rocket.Chat/pull/22395))
+
+- Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.15.1 ([#22432](https://github.com/RocketChat/Rocket.Chat/pull/22432))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
 
 # 3.15.0
 `2021-05-28  ·  8 🎉  ·  12 🚀  ·  62 🐛  ·  47 🔍  ·  34 👩‍💻👨‍💻`

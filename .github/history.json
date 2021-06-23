@@ -61314,18 +61314,6 @@
           ]
         },
         {
-          "pr": "22018",
-          "title": "[IMPROVE] Update system messages' behavior in rooms",
-          "userLogin": "matheusbsilva137",
-          "description": "- Update room's `lastMessage` when its \"Hide System Messages\" setting is updated;\r\n- Display system messages in the last message field (in the sidebar, using the extended view) -- iff the system message sent is not hidden in the room;\r\n- Send an alert to the room members when a system message is sent -- iff the system message sent is not hidden in the room;\r\n- Properly update a room's `lastMessage` field when the previous `lastMessage` is deleted -- system messages can now be set as last messages.",
-          "contributors": [
-            "matheusbsilva137",
-            "web-flow",
-            "pierre-lehnen-rc",
-            "sampaiodiego"
-          ]
-        },
-        {
           "pr": "22223",
           "title": "[IMPROVE] Missing tests to `fname` and `prid` in the `rooms.createDiscussion` endpoint",
           "userLogin": "matheusbsilva137",
@@ -61935,6 +61923,91 @@
           "contributors": [
             "sampaiodiego",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.15.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22432",
+          "title": "Release 3.15.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "22290",
+          "title": "[FIX] Attachments and avatars not rendered if deployed on subfolder",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.1",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22395",
+          "title": "[FIX] Setup wizard infinite loop when on subfolder.",
+          "userLogin": "gabriellsh",
+          "milestone": "3.15.1",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22257",
+          "title": "[FIX] Support DISABLE_PRESENCE_MONITOR env var in new DB watchers",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.14.5",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.16.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.0-alpha.5237",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22169",
+          "title": "[FIX] Chore: `team.addMembers` doesn't add member to main team room",
+          "userLogin": "lucassartor",
+          "description": "Fix `team.addMembers` endpoint as it currently doesn't work properly. The API call is adding members to a team's channels but not to the main team room.",
+          "contributors": [
+            "lucassartor",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22415",
+          "title": "[FIX] Apps not syncing status correctly on HA setups",
+          "userLogin": "d-gubert",
+          "description": "FIxes erros where, on HA setups, instances that DID NOT originate the action of uninstalling and updating an app would maintain the wrong status of apps when they received the notification of these events via Streamer.",
+          "contributors": [
+            "d-gubert"
           ]
         }
       ]
