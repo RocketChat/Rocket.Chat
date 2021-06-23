@@ -1810,6 +1810,8 @@
   "Federation_Discovery_method": "Discovery Method",
   "Federation_Discovery_method_details": "You can use the hub or a DNS record (SRV and a TXT entry). Learn more",
   "Federation_Dashboard": "Federation Dashboard",
+  "Federation_Protocol": "Protocol",
+  "Federation_Protocol_details": "We only recommend using HTTP on internal, very specific cases.",
   "FEDERATION_Discovery_Method": "Discovery Method",
   "FEDERATION_Discovery_Method_Description": "You can use the hub or a SRV and a TXT entry on your DNS records.",
   "FEDERATION_Domain": "Domain",

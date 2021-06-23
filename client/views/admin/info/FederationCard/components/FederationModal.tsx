@@ -1,49 +1,195 @@
 import {
-	Modal,
 	Box,
-	Field,
-	TextInput,
-	Select,
-	ButtonGroup,
 	Button,
+	ButtonGroup,
+	Field,
 	FieldGroup,
+	Modal,
+	Select,
+	Tabs,
+	TextInput,
 } from '@rocket.chat/fuselage';
-import React, { FormEvent, useCallback, useState } from 'react';
-import _ from 'underscore';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import * as psl from 'psl';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
-import { ISetting } from '../../../../../../definition/ISetting';
 import { useSetting, useSettingSetValue } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { useForm } from '../../../../../hooks/useForm';
+import { SectionStatus } from './Section';
+import getStatusIcon from './SectionStatusIcon';
 
-const debounced = <T extends ISetting['value']>(setter: (value: T) => Promise<void>) =>
-	_.debounce((e: FormEvent<HTMLOrSVGElement> | string) => {
-		const value = typeof e === 'string' ? e : e.target.value;
-		setter(value);
-	}, 300);
+const DNSText: FC<{
+	text: string;
+}> = ({ text }) => <Box style={{ marginTop: 8, fontWeight: 'bold', fontSize: '95%' }}>{text}</Box>;
 
-const FederationModal = ({ onClose, ...props }) => {
+const DNSRecord: FC<{
+	status: SectionStatus;
+	title: string;
+	value: string;
+}> = ({ status, title, value }) => (
+	<Box display='flex' alignItems='flex-start'>
+		{getStatusIcon(status)}
+		<Box flexDirection='column' style={{ marginTop: -2, fontWeight: 'bold', fontSize: '85%' }}>
+			{title}: {value}
+		</Box>
+	</Box>
+);
+
+const DNSRecords: FC<{
+	federationSubdomain: string;
+	rocketChatProtocol: string;
+	rocketChatDomain: string;
+	rocketChatPort: string;
+	basicEntries?: string[];
+	resolvedEntries:
+		| { resolved: Record<string, string | number>; success: true }
+		| { success: false };
+	legacy?: boolean;
+}> = ({
+	federationSubdomain,
+	rocketChatProtocol,
+	rocketChatDomain,
+	rocketChatPort,
+	basicEntries = ['Service', 'Protocol', 'Name', 'TTL'],
+	resolvedEntries,
+	legacy,
+}) => {
+	function getDNSRecordStatus(dnsRecord: {
+		status: SectionStatus;
+		title: string;
+		expectedValue: string;
+	}): SectionStatus {
+		// If this is a basic entry, it will fail or succeed according to the resolved entries
+		if (basicEntries.includes(dnsRecord.title)) {
+			return resolvedEntries.success ? SectionStatus.SUCCESS : SectionStatus.FAILED;
+		}
+		// Otherwise, we need to validate if the values match
+		if (resolvedEntries.success) {
+			const resolvedValue = resolvedEntries.resolved[dnsRecord.title.toLowerCase()];
+
+			return resolvedValue.toString() === dnsRecord.expectedValue
+				? SectionStatus.SUCCESS
+				: SectionStatus.FAILED;
+		}
+
+		return SectionStatus.UNKNOWN;
+	}
+
+	const srvDNSRecords = [
+		{ status: SectionStatus.UNKNOWN, title: 'Service', expectedValue: '_rocketchat' },
+		{
+			status: SectionStatus.UNKNOWN,
+			title: 'Protocol',
+			expectedValue: legacy ? '_tcp' : `_${rocketChatProtocol}`,
+		},
+		{ status: SectionStatus.UNKNOWN, title: 'Name', expectedValue: federationSubdomain },
+		{ status: SectionStatus.UNKNOWN, title: 'Target', expectedValue: rocketChatDomain },
+		{ status: SectionStatus.UNKNOWN, title: 'Port', expectedValue: rocketChatPort },
+		{ status: SectionStatus.UNKNOWN, title: 'Weight', expectedValue: '1' },
+		{ status: SectionStatus.UNKNOWN, title: 'Priority', expectedValue: '1' },
+		{ status: SectionStatus.UNKNOWN, title: 'TTL', expectedValue: '1' },
+	];
+
+	// Define status for SRV DNS records
+	for (const dnsRecord of srvDNSRecords) {
+		dnsRecord.status = getDNSRecordStatus(dnsRecord);
+	}
+
+	return (
+		<>
+			<DNSText text='You must add the following DNS records on your server:' />
+			<DNSText text='SRV Record (2.0.0 or newer)' />
+			<Box style={{ marginTop: 10 }}>
+				{srvDNSRecords.map(({ status, title, expectedValue }) => (
+					<DNSRecord key={title} status={status} title={title} value={expectedValue} />
+				))}
+			</Box>
+			<DNSText text='Public Key TXT Record' />
+			<Box style={{ marginTop: 10 }}>
+				<DNSRecord
+					status={SectionStatus.UNKNOWN}
+					title='Host'
+					value={`rocketchat-public-key${federationSubdomain ? `.${federationSubdomain}` : ''}`}
+				/>
+				<DNSRecord status={SectionStatus.UNKNOWN} title='Value' value='<my-public-key>' />
+			</Box>
+			{legacy && (
+				<>
+					<DNSText text='Protocol TXT Record' />
+					<Box style={{ marginTop: 10 }}>
+						<DNSRecord
+							status={SectionStatus.UNKNOWN}
+							title='Host'
+							value={`rocketchat-tcp-protocol${
+								federationSubdomain ? `.${federationSubdomain}` : ''
+							}`}
+						/>
+						<DNSRecord status={SectionStatus.UNKNOWN} title='Value' value='http or https' />
+					</Box>
+				</>
+			)}
+		</>
+	);
+};
+
+const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
 	const t = useTranslation();
 
+	// State
 	const [currentStep, setCurrentStep] = useState(1);
+	const [currentTab, setCurrentTab] = useState(1);
+
+	// Settings
+	const siteUrl = useSetting('Site_Url') as string;
+	const { protocol, hostname: rocketChatDomain, port: rocketChatPort } = new URL(siteUrl);
+	const rocketChatProtocol = protocol.slice(0, -1);
 
 	const federationDomain = useSetting('FEDERATION_Domain') as string;
 	const setFederationDomain = useSettingSetValue('FEDERATION_Domain');
+	const { subdomain: federationSubdomain } = psl.parse(federationDomain);
 
 	const federationDiscoveryMethod = useSetting('FEDERATION_Discovery_Method') as string;
 	const setFederationDiscoveryMethod = useSettingSetValue('FEDERATION_Discovery_Method');
 
+	// Form
 	const discoveryOptions = [
 		['dns', 'DNS (recommended)'],
 		['hub', 'HUB'],
 	];
 
+	const initialValues = {
+		domain: federationDomain,
+		discoveryMethod: federationDiscoveryMethod,
+	};
+	const { values, handlers, hasUnsavedChanges, commit } = useForm(initialValues);
+
+	const { domain, discoveryMethod } = values as { domain: string; discoveryMethod: string };
+	const { handleDomain, handleDiscoveryMethod } = handlers;
+
+	const onChangeDomain = useMutableCallback((value) => {
+		handleDomain(value);
+	});
+
+	const onChangeDiscoveryMethod = useMutableCallback((value) => {
+		handleDiscoveryMethod(value);
+	});
+
+	// Wizard
 	const nextStep = useCallback(() => {
+		if (currentStep === 1 && hasUnsavedChanges) {
+			setFederationDomain(domain);
+			setFederationDiscoveryMethod(discoveryMethod);
+			commit();
+		}
+
 		if (currentStep === 3) {
-			console.log('submit');
+			onClose();
 		} else {
 			setCurrentStep(currentStep + 1);
 		}
-	}, [currentStep]);
+	}, [currentStep, hasUnsavedChanges, domain, discoveryMethod]);
 
 	const previousStep = useCallback(() => {
 		if (currentStep === 1) {
@@ -52,6 +198,16 @@ const FederationModal = ({ onClose, ...props }) => {
 			setCurrentStep(currentStep - 1);
 		}
 	}, [currentStep]);
+
+	// Resolve DNS
+	const srvURL = useMemo(
+		() => ({
+			url: `_rocketchat._${rocketChatProtocol}.${federationDomain}`,
+		}),
+		[rocketChatProtocol, federationDomain],
+	);
+
+	const { value: srvResolveResult } = useEndpointData('dns.resolve.srv', srvURL);
 
 	return (
 		<Modal {...props}>
@@ -67,11 +223,7 @@ const FederationModal = ({ onClose, ...props }) => {
 								<Field.Label>{t('Federation_Domain')}</Field.Label>
 								<Field.Description>{t('Federation_Domain_details')}</Field.Description>
 								<Field.Row>
-									<TextInput
-										placeholder='@rocket.chat'
-										value={federationDomain}
-										onChange={debounced(setFederationDomain)}
-									/>
+									<TextInput placeholder='rocket.chat' value={domain} onChange={onChangeDomain} />
 								</Field.Row>
 							</Field>
 							<Field>
@@ -80,9 +232,9 @@ const FederationModal = ({ onClose, ...props }) => {
 								<Field.Row>
 									<Select
 										width='250px'
-										value={federationDiscoveryMethod || 'dns'}
+										value={discoveryMethod || 'dns'}
 										options={discoveryOptions}
-										onChange={debounced(setFederationDiscoveryMethod)}
+										onChange={onChangeDiscoveryMethod}
 									/>
 								</Field.Row>
 							</Field>
@@ -97,8 +249,43 @@ const FederationModal = ({ onClose, ...props }) => {
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
-						<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-							2
+						<Tabs>
+							<Tabs.Item selected={currentTab === 1} onClick={() => setCurrentTab(1)}>
+								Configure DNS
+							</Tabs.Item>
+							<Tabs.Item selected={currentTab === 2} onClick={() => setCurrentTab(2)}>
+								Legacy Support
+							</Tabs.Item>
+						</Tabs>
+						<Box style={{ marginTop: 30 }}>
+							{currentTab === 1 && (
+								<DNSRecords
+									federationSubdomain={federationSubdomain}
+									rocketChatProtocol={rocketChatProtocol}
+									rocketChatDomain={rocketChatDomain}
+									rocketChatPort={rocketChatPort}
+									resolvedEntries={srvResolveResult || { success: false }}
+								/>
+							)}
+							{currentTab === 2 && (
+								<>
+									<Box style={{ marginBottom: 15 }}>
+										<b>If your DNS provider does not support SRV records with _http or _https</b>
+										<p style={{ marginTop: 8 }}>
+											Some DNS providers will not allow setting _https or _http on SRV records, so
+											we have support for those cases, using our old DNS record resolution method.
+										</p>
+									</Box>
+									<DNSRecords
+										federationSubdomain={federationSubdomain}
+										rocketChatProtocol={rocketChatProtocol}
+										rocketChatDomain={rocketChatDomain}
+										rocketChatPort={rocketChatPort}
+										resolvedEntries={srvResolveResult || { success: false }}
+										legacy={true}
+									/>
+								</>
+							)}
 						</Box>
 					</Modal.Content>
 				</>

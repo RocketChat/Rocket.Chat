@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
 import Card from '../../../../../components/Card';
-import getIcon from './SectionStatusIcon';
+import getStatusIcon from './SectionStatusIcon';
 
 export enum SectionStatus {
 	UNKNOWN,
@@ -13,15 +13,13 @@ export enum SectionStatus {
 const Section: FC<{
 	status: SectionStatus;
 	title: string;
-	subtitle: string;
+	subtitle?: string;
 }> = ({ status, title, subtitle, children }) => (
 	<Card.Col.Section display='flex' alignItems='flex-start'>
-		<Box position='relative' style={{ width: 20 }}>
-			{getIcon(status)}
-		</Box>
+		{getStatusIcon(status)}
 		<Box flexDirection='column'>
 			<Card.Col.Title>{title}</Card.Col.Title>
-			<Box style={{ marginTop: 3 }}>{subtitle}</Box>
+			{subtitle && <Box style={{ marginTop: 3 }}>{subtitle}</Box>}
 			{children}
 		</Box>
 	</Card.Col.Section>
