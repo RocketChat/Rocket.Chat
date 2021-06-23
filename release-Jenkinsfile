@@ -1,4 +1,4 @@
-def repoName = determineRepoName()
+def repoName = "Rocket.Chat"
 def releaseVersion
 def major
 def minor
@@ -27,7 +27,7 @@ pipeline {
                     cd ${repoName}
                     git pull
                     """)
-                    
+
                     boolean isEmpty = params.RELEASE_VERSION.isEmpty()
                     if(isEmpty) {
                         releaseVersion = sh(returnStdout: true, script: """
@@ -84,7 +84,7 @@ pipeline {
                         cd ..
                         cd ..
                         rm -rf \$tempDir
-                    """)              
+                    """)
                 }
             }
         }
@@ -94,8 +94,4 @@ pipeline {
             cleanWs()
         }
     }
-}
-
-String determineRepoName() {
-    return scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
 }
