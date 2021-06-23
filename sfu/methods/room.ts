@@ -83,7 +83,7 @@ export class Room extends EventEmitter {
 			if (this.closed) { return; }
 
 			if (peer.data.joined) {
-				for (const otherPeer of this.getJoinedPeers(peer)) {
+				for (const otherPeer of this.getAllPeers(peer)) {
 					otherPeer.notify('peerClosed', { peerId: peer.id })
 						.catch((err) => { console.log(err); });
 				}
@@ -97,6 +97,16 @@ export class Room extends EventEmitter {
 
 	getJoinedPeers(excludePeer?: IPeer): Array<IPeer> {
 		return this.protooRoom.peers.filter((peer) => peer.data.joined && peer !== excludePeer);
+	}
+
+	getAllPeers(excludePeer?: IPeer, joined?: boolean): Array<IPeer> {
+		return this.protooRoom.peers.filter((peer) => {
+			if (joined !== undefined) {
+				return peer.data.joined === joined && peer !== excludePeer;
+			}
+
+			return peer !== excludePeer;
+		});
 	}
 
 	async handleProtooRequest(peer: IPeer, request: protoo.ProtooRequest, accept: protoo.AcceptFn, _reject: protoo.RejectFn): Promise<void> {
@@ -164,9 +174,10 @@ export class Room extends EventEmitter {
 					device,
 					rtpCapabilities,
 					username,
+					joined,
 				} = request.data;
 
-				peer.data.joined = true;
+				peer.data.joined = joined;
 				peer.data.rtpCapabilities = rtpCapabilities;
 				peer.data.displayName = displayName;
 				peer.data.device = device;
@@ -185,13 +196,19 @@ export class Room extends EventEmitter {
 
 				accept(peerInfos);
 
-				peer.data.joined = true;
+				if (joined) {
+					joinedPeers.forEach((joinedPeer) => {
+						for (const producer of joinedPeer.data.producers.values()) {
+							createConsumer(this.mediasoupRouter, peer, joinedPeer, producer);
+						}
+					});
 
-				joinedPeers.forEach((joinedPeer) => {
-					for (const producer of joinedPeer.data.producers.values()) {
-						createConsumer(this.mediasoupRouter, peer, joinedPeer, producer);
+					// Notification when peer joins in IDLE room view
+					for (const otherPeer of this.getAllPeers(peer, false)) {
+						otherPeer.notify('peerJoined', { id: peer.id, ...peer.data })
+							.catch((err) => { console.log(err); });
 					}
-				});
+				}
 
 				break;
 			}
@@ -301,6 +318,14 @@ export class Room extends EventEmitter {
 				await consumer.resume();
 
 				accept(null);
+
+				break;
+			}
+
+			case 'getAllJoinedPeers': {
+				const allPeers = this.getJoinedPeers().map((peer) => ({ id: peer.id, ...peer.data }));
+
+				accept(allPeers);
 
 				break;
 			}
