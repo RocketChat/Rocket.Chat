@@ -431,7 +431,6 @@
   "Apps_Framework_enabled": "Включить App Framework",
   "Apps_Game_Center": "Игровой центр",
   "Apps_Game_Center_Back": "Назад в игровой центр",
-  "Apps_Game_Center_enabled": "Включить игровой центр",
   "Apps_Game_Center_Invite_Friends": "Пригласить своих друзей присоединиться",
   "Apps_Game_Center_Play_Game_Together": "@here Давай поиграем в  __name__ вметсе!",
   "Apps_Interface_IPostExternalComponentClosed": "Событие, происходящее после закрытия внешнего компонента",

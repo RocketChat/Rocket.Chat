@@ -2051,7 +2051,6 @@
   "Message_GroupingPeriod": "Período de Agrupamento (em segundos)",
   "Message_GroupingPeriodDescription": "As mensagens serão agrupadas com as anteriores se pertencerem ao mesmo utilizador e o tempo decorrido for menor do que o tempo em segundos informado.",
   "Message_HideType_au": "Ocultar mensagens \"User Added\"",
-  "Message_HideType_message_pinned": "Ocultar mensagens \"Fixou uma mensagem\"",
   "Message_HideType_mute_unmute": "Ocultar mensagens \"utilizador silenciado / não modificado\"",
   "Message_HideType_ru": "Ocultar mensagens \"utilizador removido\"",
   "Message_HideType_uj": "Ocultar mensagens de \"Aderir ao utilizador\"",
