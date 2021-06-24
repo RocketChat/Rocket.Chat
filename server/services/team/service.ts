@@ -559,16 +559,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		const membersList: Array<InsertionModel<ITeamMember>> = members?.map((member) => ({
-			teamId,
-			userId: member.userId,
-			roles: member.roles || [],
-			createdAt: new Date(),
-			createdBy,
-		})) || [];
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('team-does-not-exist');
+		}
 
-		await this.TeamMembersModel.insertMany(membersList);
-		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
+		for await (const member of members) {
+			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			await addUserToRoom(team.roomId, user, createdBy, false);
+
+			if (member.roles) {
+				await this.addRolesToMember(teamId, member.userId, member.roles);
+			}
+		}
 	}
 
 	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
