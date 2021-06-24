@@ -1,8 +1,12 @@
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
+import { useSetModal } from '../../../contexts/ModalContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import WarningModal from '../../admin/apps/WarningModal';
 import useVoiceRoom from '../hooks/useVoiceRoom';
 import VoicePeersList from './VoicePeersList';
 
@@ -20,6 +24,11 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 
 	const [firstClient, peers] = useVoiceRoom(room);
 	const [secondClient, secondPeers] = useVoiceRoom(room);
+
+	const setModal = useSetModal();
+	const t = useTranslation();
+
+	const closeModal = useMutableCallback(() => setModal(null));
 
 	const handleInitialConnection = async (): Promise<void> => {
 		try {
@@ -67,13 +76,8 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 
 	const toggleDeafen = (): void => setDeafen((prev) => !prev);
 
-	const handleJoin = async (): Promise<void> => {
+	const join = async (): Promise<void> => {
 		try {
-			if (wsConnectedClient) {
-				wsConnectedClient.close();
-				wsConnectedClient = null;
-			}
-
 			await handleInitialConnection();
 			mediasoupConnectedClient?.on('connectionOpened', async () => {
 				await mediasoupConnectedClient?.joinRoom();
@@ -83,6 +87,31 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 		} catch (err) {
 			console.log(err);
 		}
+	};
+
+	const handleModalConfirm = (): void => {
+		wsConnectedClient?.close();
+		wsConnectedClient = null;
+		join();
+		closeModal();
+	};
+
+	const handleJoin = (): void => {
+		if (wsConnectedClient) {
+			setModal(
+				<WarningModal
+					text={`You will be disconnected from ${mediasoupConnectedClient?.roomName} channel.`}
+					confirmText={t('Yes')}
+					close={closeModal}
+					cancel={closeModal}
+					cancelText={t('Cancel')}
+					confirm={handleModalConfirm}
+				/>,
+			);
+			return;
+		}
+
+		join();
 	};
 
 	useEffect(() => {
