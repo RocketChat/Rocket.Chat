@@ -10,32 +10,43 @@ interface IVoiceRoom {
 	room: IRoom;
 }
 
-let roomClient: VoiceRoomClient | null = null;
+let mediasoupConnectedClient: VoiceRoomClient | null = null;
+let wsConnectedClient: VoiceRoomClient | null = null;
 
 const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
-	const [connected, setConnected] = useState(roomClient?.joined || false);
+	const [connected, setConnected] = useState(mediasoupConnectedClient?.joined || false);
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
 
-	const [voiceRoomClient, peers] = useVoiceRoom(room);
+	const [firstClient, peers] = useVoiceRoom(room);
+	const [secondClient, secondPeers] = useVoiceRoom(room);
 
 	const handleInitialConnection = async (): Promise<void> => {
 		try {
-			if (roomClient) {
-				roomClient.close();
+			if (mediasoupConnectedClient) {
+				mediasoupConnectedClient.close();
 			}
 
-			roomClient = null;
-			roomClient = voiceRoomClient;
-			await roomClient.join();
+			mediasoupConnectedClient = null;
+			mediasoupConnectedClient = firstClient;
+			await mediasoupConnectedClient.join();
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
-	useEffect(() => {
-		console.log(peers);
-	}, [peers]);
+	const handleSecondConnection = async (): Promise<void> => {
+		try {
+			if (wsConnectedClient) {
+				wsConnectedClient.close();
+			}
+			wsConnectedClient = null;
+			wsConnectedClient = secondClient;
+			await wsConnectedClient.join();
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
 	const handleDisconnect = (): void => {
 		setConnected(false);
@@ -45,9 +56,9 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 	const toggleMic = (): void => {
 		setMuteMic((prev) => {
 			if (prev) {
-				roomClient?.unmuteMic();
+				mediasoupConnectedClient?.unmuteMic();
 			} else {
-				roomClient?.muteMic();
+				mediasoupConnectedClient?.muteMic();
 			}
 
 			return !prev;
@@ -58,11 +69,16 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 
 	const handleJoin = async (): Promise<void> => {
 		try {
+			if (wsConnectedClient) {
+				wsConnectedClient.close();
+				wsConnectedClient = null;
+			}
+
 			await handleInitialConnection();
-			roomClient?.on('connectionOpened', async () => {
-				await roomClient?.joinRoom();
+			mediasoupConnectedClient?.on('connectionOpened', async () => {
+				await mediasoupConnectedClient?.joinRoom();
 				setConnected(true);
-				roomClient?.removeListener('connectionOpened', () => null);
+				mediasoupConnectedClient?.removeListener('connectionOpened', () => null);
 			});
 		} catch (err) {
 			console.log(err);
@@ -70,17 +86,27 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 	};
 
 	useEffect(() => {
-		if (!roomClient || !roomClient.joined) {
-			roomClient?.closeProtoo();
+		if (!mediasoupConnectedClient || !mediasoupConnectedClient.joined) {
+			mediasoupConnectedClient?.closeProtoo();
 			handleInitialConnection();
+		}
+
+		if (
+			mediasoupConnectedClient &&
+			mediasoupConnectedClient.joined &&
+			mediasoupConnectedClient.roomID !== secondClient.roomID
+		) {
+			secondClient?.closeProtoo();
+			handleSecondConnection();
 		}
 	}, [room._id]);
 
-	// @TO-DO change views for different room when client is joined
-
 	return (
 		<>
-			<Box display={roomClient?.roomID !== voiceRoomClient.roomID ? 'none' : 'block'}>
+			{mediasoupConnectedClient?.roomID !== room._id && (
+				<VoicePeersList peers={secondPeers} deafen={deafen} />
+			)}
+			<Box display={mediasoupConnectedClient?.roomID !== room._id ? 'none' : 'block'}>
 				<VoicePeersList peers={peers} deafen={deafen} />
 			</Box>
 			<Box
@@ -95,7 +121,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 				alignItems='center'
 				pb='x24'
 			>
-				{connected && roomClient?.roomID === voiceRoomClient.roomID ? (
+				{connected && mediasoupConnectedClient?.roomID === firstClient.roomID ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
 							{muteMic ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
