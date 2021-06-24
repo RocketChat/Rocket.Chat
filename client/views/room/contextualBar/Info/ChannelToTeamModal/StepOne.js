@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
@@ -18,7 +18,12 @@ const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 		>
-			<Box withRichContent>{t('Teams_move_channel_to_team_description')}</Box>
+			<Margins blockEnd='x20'>
+				<Box>{t('Teams_move_channel_to_team_description_first')}</Box>
+				<Box>{t('Teams_move_channel_to_team_description_second')}</Box>
+				<Box>{t('Teams_move_channel_to_team_description_third')}</Box>
+				<Box>{t('Teams_move_channel_to_team_description_fourth')}</Box>
+			</Margins>
 
 			<Box display='flex' width='100%'>
 				<TeamAutocomplete onChange={onChange} value={teamId} />

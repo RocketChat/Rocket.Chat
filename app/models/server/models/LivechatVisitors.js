@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Settings from './Settings';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const settingsRaw = Settings.model.rawCollection();
 const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);

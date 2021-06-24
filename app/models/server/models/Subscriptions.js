@@ -1350,7 +1350,7 @@ export class Subscriptions extends Base {
 	removeUnreadThreadsByRoomId(rid, tunread) {
 		const query = {
 			rid,
-			tunread,
+			tunread: { $in: tunread },
 		};
 
 		const update = {

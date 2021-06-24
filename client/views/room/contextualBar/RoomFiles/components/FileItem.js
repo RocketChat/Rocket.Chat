@@ -14,21 +14,11 @@ const hoverClass = css`
 	}
 `;
 
-const FileItem = ({
-	_id,
-	name,
-	url,
-	uploadedAt,
-	ts,
-	user,
-	type,
-	typeGroup,
-	style,
-	onClickDelete,
-	className,
-	isDeletionAllowed,
-}) => {
+const FileItem = ({ fileData, isDeletionAllowed, onClickDelete, index }) => {
 	const format = useFormatDateAndTime();
+
+	const { _id, name, url, uploadedAt, ts, type, typeGroup, style, className, user } = fileData;
+
 	return (
 		<Box display='flex' p='x12' style={style} className={[className, hoverClass]}>
 			<Box
@@ -43,6 +33,7 @@ const FileItem = ({
 				flexGrow={1}
 				flexShrink={1}
 				href={url}
+				key={index}
 			>
 				{typeGroup === 'image' ? <Avatar size='x48' url={url} /> : <FileItemIcon type={type} />}
 				<Box mis='x8' flexShrink={1} overflow='hidden'>
@@ -62,7 +53,9 @@ const FileItem = ({
 				_id={_id}
 				name={name}
 				url={url}
-				onClickDelete={isDeletionAllowed({ uid: user?._id, ts }) && onClickDelete}
+				onClickDelete={
+					isDeletionAllowed && isDeletionAllowed({ uid: user?._id, ts }) && onClickDelete
+				}
 			/>
 		</Box>
 	);

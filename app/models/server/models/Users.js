@@ -2,29 +2,22 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
-const queryStatusAgentOnline = (extraFilters = {}) => {
-	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
-		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
-	}
-
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-		...extraFilters,
-	};
-
-	return query;
-};
+const queryStatusAgentOnline = (extraFilters = {}) => ({
+	status: {
+		$exists: true,
+		$ne: 'offline',
+	},
+	statusLivechat: 'available',
+	roles: 'livechat-agent',
+	...extraFilters,
+	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
+});
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -95,7 +88,7 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	setOperator(_id, operator) {
+	setOperator(_id, operator) { // TODO:: Create class Agent
 		const update = {
 			$set: {
 				operator,
@@ -105,13 +98,19 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	findOnlineAgents(agentId) {
+	checkOnlineAgents(agentId) { // TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return Boolean(this.findOne(query));
+	}
+
+	findOnlineAgents(agentId) { // TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
 
-	findBotAgents(usernameList) {
+	findBotAgents(usernameList) { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -126,7 +125,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOneBotAgent() {
+	findOneBotAgent() { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -136,19 +135,19 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username, options) {
+	findOneOnlineAgentByUsername(username, options) { // TODO:: Create class Agent
 		const query = queryStatusAgentOnline({ username });
 
 		return this.findOne(query, options);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id) { // TODO: Create class Agent
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
 
-	findOneAgentById(_id, options) {
+	findOneAgentById(_id, options) { // TODO: Create class Agent
 		const query = {
 			_id,
 			roles: 'livechat-agent',
@@ -157,7 +156,7 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findAgents() {
+	findAgents() { // TODO: Create class Agent
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -165,7 +164,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOnlineUserFromList(userList) {
+	findOnlineUserFromList(userList) { // TODO: Create class Agent
 		const username = {
 			$in: [].concat(userList),
 		};
@@ -175,7 +174,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId) {
+	getNextAgent(ignoreAgentId) { // TODO: Create class Agent
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
@@ -205,7 +204,7 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent(ignoreAgentId) {
+	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -237,7 +236,7 @@ export class Users extends Base {
 		return null;
 	}
 
-	setLivechatStatus(userId, status) {
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -251,7 +250,7 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	setLivechatData(userId, data = {}) {
+	setLivechatData(userId, data = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -265,15 +264,15 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	closeOffice() {
+	closeOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
 
-	openOffice() {
+	openOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'available'));
 	}
 
-	getAgentInfo(agentId) {
+	getAgentInfo(agentId) { // TODO: Create class Agent
 		const query = {
 			_id: agentId,
 		};
@@ -774,7 +773,7 @@ export class Users extends Base {
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
+		if (!searchTerm) {
 			const query = {
 				$and: [
 					{

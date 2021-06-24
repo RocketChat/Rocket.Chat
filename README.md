@@ -162,12 +162,12 @@ Host your docker container at [sloppy.io](http://sloppy.io). Get an account and 
 OR Use the automated build image of our [most recent release](https://hub.docker.com/r/rocketchat/rocket.chat/)
 
 ```
-docker pull rocketchat/rocket.chat:latest
+docker pull registry.rocket.chat/rocketchat/rocket.chat:latest
 ```
 
 OR select a specific release ([details of releases available](https://github.com/RocketChat/Rocket.Chat/releases)):
 ```
-docker pull rocketchat/rocket.chat:vX.X.X
+docker pull registry.rocket.chat/rocketchat/rocket.chat:vX.X.X
 ```
 
 OR our [official docker registry image](https://hub.docker.com/_/rocket.chat/), containing recent stable release build approved by Docker:

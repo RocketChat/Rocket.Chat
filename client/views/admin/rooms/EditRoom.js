@@ -13,7 +13,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
 import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
-import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
@@ -120,7 +120,7 @@ function EditRoom({ room, onChange }) {
 		const save = () =>
 			saveAction({
 				rid: room._id,
-				roomName,
+				roomName: roomType === 'd' ? undefined : roomName,
 				roomTopic,
 				roomType,
 				readOnly,
@@ -154,7 +154,16 @@ function EditRoom({ room, onChange }) {
 			setDeleted(true);
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={onCancel}
+				confirmText={t('Yes_delete_it')}
+			>
+				{t('Delete_Room_Warning')}
+			</GenericModal>,
+		);
 	});
 
 	return (
@@ -257,7 +266,7 @@ function EditRoom({ room, onChange }) {
 						<Field>
 							<Field.Row>
 								<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-									<Field.Label>{t('Archived')}</Field.Label>
+									<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 									<ToggleSwitch disabled={deleted} checked={archived} onChange={handleArchived} />
 								</Box>
 							</Field.Row>

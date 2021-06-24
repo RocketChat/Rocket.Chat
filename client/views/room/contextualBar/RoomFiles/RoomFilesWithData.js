@@ -1,7 +1,7 @@
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import DeleteFileWarning from '../../../../components/DeleteFileWarning';
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -30,7 +30,7 @@ const RoomFilesWithData = ({ rid }) => {
 		setText(event.currentTarget.value);
 	}, []);
 
-	const { filesList, loadMoreItems } = useFilesList(
+	const { filesList, loadMoreItems, reload } = useFilesList(
 		useMemo(() => ({ rid, type, text }), [rid, type, text]),
 	);
 	const { phase, items: filesItems, itemCount: totalItemCount } = useRecordList(filesList);
@@ -40,13 +40,23 @@ const RoomFilesWithData = ({ rid }) => {
 			try {
 				await deleteFile(_id);
 				dispatchToastMessage({ type: 'success', message: t('Deleted') });
+				reload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
 
-		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={closeModal}
+				confirmText={t('Delete')}
+			>
+				{t('Delete_File_Warning')}
+			</GenericModal>,
+		);
 	}, []);
 
 	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);

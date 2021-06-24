@@ -1,8 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo, useEffect, FC, ChangeEvent } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useAbsoluteUrl } from '../../../contexts/ServerContext';
@@ -95,7 +94,9 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 			try {
 				await deleteAction();
 				setModal(() => (
-					<DeleteSuccessModal children={t('Custom_Emoji_Has_Been_Deleted')} onClose={handleClose} />
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Custom_Emoji_Has_Been_Deleted')}
+					</GenericModal>
 				));
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -108,11 +109,15 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		};
 
 		setModal(() => (
-			<DeleteWarningModal
-				children={t('Custom_Emoji_Delete_Warning')}
-				onDelete={handleDelete}
+			<GenericModal
+				variant='danger'
+				onConfirm={handleDelete}
 				onCancel={handleCancel}
-			/>
+				onClose={handleCancel}
+				confirmText={t('Delete')}
+			>
+				{t('Custom_Emoji_Delete_Warning')}
+			</GenericModal>
 		));
 	}, [close, deleteAction, dispatchToastMessage, onChange, setModal, t]);
 

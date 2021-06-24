@@ -8,7 +8,7 @@ import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponsesForm from './CannedResponseForm';
 import { withResponseData } from './withResponseData';
 
-const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
+export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 	const t = useTranslation();
 	const [errors, setErrors] = useState();
 
@@ -43,6 +43,7 @@ const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
+					<Button onClick={onReturn}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
 					</Button>

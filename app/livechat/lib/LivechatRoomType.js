@@ -130,4 +130,8 @@ export default class LivechatRoomType extends RoomTypeConfig {
 	showQuickActionButtons() {
 		return true;
 	}
+
+	isLivechatRoom() {
+		return true;
+	}
 }

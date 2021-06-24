@@ -26,12 +26,15 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
+
+	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
+
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
+		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
 	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(
@@ -163,13 +166,83 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	});
 
 	return (
-		<Page flexDirection='row'>
-			<Page>
-				<Page.Header title={title}>
-					<ButtonGroup>
-						<Button onClick={handleReturn}>
-							<Icon name='back' /> {t('Back')}
-						</Button>
+		<VerticalBar.ScrollableContent is='form' {...props}>
+			<Field>
+				<Field.Label>{t('Name')}*</Field.Label>
+				<Field.Row>
+					<TextInput
+						placeholder={t('Name')}
+						flexGrow={1}
+						value={name}
+						onChange={handleName}
+						error={hasUnsavedChanges && nameError}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Visibility')}*</Field.Label>
+				<Field.Row>
+					<Select
+						options={visibilityOpts}
+						value={visibility}
+						error={hasUnsavedChanges && visibilityError}
+						placeholder={t('Select_an_option')}
+						onChange={handleVisibility}
+						flexGrow={1}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Departments')}*</Field.Label>
+				<Field.Row>
+					<PaginatedMultiSelectFiltered
+						filter={debouncedDepartmentsFilter}
+						setFilter={setDepartmentsFilter}
+						options={departmentsItems}
+						value={departments}
+						error={hasUnsavedChanges && departmentError}
+						maxWidth='100%'
+						placeholder={t('Select_an_option')}
+						onChange={handleDepartments}
+						flexGrow={1}
+						endReached={
+							departmentsPhase === AsyncStatePhase.LOADING
+								? () => {}
+								: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+						}
+					/>
+				</Field.Row>
+			</Field>
+			<Field>
+				<Field.Label>{t('Monitors')}*</Field.Label>
+				<Field.Row>
+					<PaginatedMultiSelectFiltered
+						filter={debouncedMonitorsFilter}
+						setFilter={setMonitorsFilter}
+						options={monitorsItems}
+						value={monitors}
+						error={hasUnsavedChanges && unitMonitorsError}
+						maxWidth='100%'
+						placeholder={t('Select_an_option')}
+						onChange={handleMonitors}
+						flexGrow={1}
+						endReached={
+							monitorsPhase === AsyncStatePhase.LOADING
+								? () => {}
+								: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
+						}
+					/>
+				</Field.Row>
+			</Field>
+
+			<Field.Row>
+				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
+					<Margins inlineEnd='x4'>
+						{!isNew && (
+							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>
+								{t('Reset')}
+							</Button>
+						)}
 						<Button
 							primary
 							mie='none'
