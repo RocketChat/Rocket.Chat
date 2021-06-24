@@ -9,3 +9,5 @@ import './oembedYoutubeWidget.html';
 import './oembedUrlWidget.html';
 import './oembedUrlWidget';
 import './oembedFrameWidget.html';
+import './admin/startup';
+import './admin/route';
