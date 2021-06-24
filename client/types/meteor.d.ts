@@ -1,6 +1,4 @@
 declare module 'meteor/meteor' {
-	import { EJSON } from 'meteor/ejson';
-
 	namespace Meteor {
 		interface IDDPMessage {
 			msg: 'method';

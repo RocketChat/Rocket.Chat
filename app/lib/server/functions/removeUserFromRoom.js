@@ -30,6 +30,8 @@ export const removeUserFromRoom = function(rid, user, options = {}) {
 				Messages.createUserRemovedWithRoomIdAndUser(rid, user, {
 					u: options.byUser,
 				});
+			} else if (room.teamMain) {
+				Messages.createUserLeaveTeamWithRoomIdAndUser(rid, removedUser);
 			} else {
 				Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
 			}
