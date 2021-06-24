@@ -282,7 +282,7 @@ function EditDepartment({ data, id, title, reload }) {
 				<Page.Header title={title}>
 					<ButtonGroup>
 						{id && hasCannedResponsesLicense && cannedResponsesEnabled && (
-							<Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}>
+							<Button onClick={handleOpenCannedResponses} title={t('Canned_Responses')}>
 								<Icon name='baloon-exclamation' size='x16' />
 							</Button>
 						)}
