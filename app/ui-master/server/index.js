@@ -13,14 +13,19 @@ import './scripts';
 export * from './inject';
 
 Meteor.startup(() => {
+	console.log(BrowserPolicy.content);
 	settings.get('Enable_CSP', (_, enabled) => {
 		if (!enabled) {
 			return BrowserPolicy.content.setPolicy("default-src 'self'; "
 			+ "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+			+ 'media-src * data: ; '
 			+ 'connect-src * data:; '
+			+ 'frame-src * data:; '
 			+ 'img-src * data: ; '
 			+ "style-src 'self' 'unsafe-inline';");
 		}
+		BrowserPolicy.content.allowMediaOrigin('*');
+		BrowserPolicy.content.allowFrameOrigin('*');
 		BrowserPolicy.content.allowImageOrigin('*');
 		BrowserPolicy.content.disallowInlineScripts();
 		BrowserPolicy.content.allowFontDataUrl();
