@@ -16,6 +16,7 @@ const useVoiceRoom = (room: IRoom): [VoiceRoomClient, Array<IVoiceRoomPeer>] => 
 		displayName: room.u.name || 'Anonymous',
 		peerID: room.u._id,
 		username: room.u.username,
+		roomName: room.fname,
 	});
 
 	roomClient.on('allJoinedPeers', (data) => {

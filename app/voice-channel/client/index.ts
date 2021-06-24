@@ -13,10 +13,13 @@ interface IData {
 	consume: boolean;
 	displayName: string;
 	username?: string;
+	roomName: string;
 }
 
 export default class VoiceRoom extends EventEmitter {
 	roomID: string;
+
+	roomName: string;
 
 	closed: boolean;
 
@@ -46,7 +49,7 @@ export default class VoiceRoom extends EventEmitter {
 
 	consumers: Map<string, types.Consumer>;
 
-	constructor({ roomID, device, produce, consume, displayName, peerID, username }: IData) {
+	constructor({ roomID, device, produce, consume, displayName, peerID, username, roomName }: IData) {
 		super();
 		this.roomID = roomID;
 		this.device = device;
@@ -58,6 +61,7 @@ export default class VoiceRoom extends EventEmitter {
 		this.consumers = new Map();
 		this.username = username;
 		this.joined = false;
+		this.roomName = roomName;
 	}
 
 	closeProtoo(): void {
