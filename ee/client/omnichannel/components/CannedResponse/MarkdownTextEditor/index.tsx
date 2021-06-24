@@ -7,7 +7,7 @@ import { useUserPreference } from '../../../../../../client/contexts/UserContext
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
-const MarkdownTextEditor: FC = () => {
+const MarkdownTextEditor: FC<{ onChange: () => void; value: string }> = ({ onChange, value }) => {
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -114,7 +114,7 @@ const MarkdownTextEditor: FC = () => {
 				</PositionAnimated>
 			</TextEditor.Toolbox>
 			<Divider w='full' mbe='16px' />
-			<TextEditor.Textarea rows={10} ref={textAreaRef} />
+			<TextEditor.Textarea value={value} onChange={onChange} rows={10} ref={textAreaRef} />
 		</TextEditor>
 	);
 };

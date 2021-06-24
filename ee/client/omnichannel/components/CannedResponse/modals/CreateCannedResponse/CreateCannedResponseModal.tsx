@@ -5,6 +5,7 @@ import React, { FC, memo, ReactNode } from 'react';
 import AutoCompleteDepartment from '../../../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../../../client/components/Omnichannel/Tags';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import MarkdownTextEditor from '../../MarkdownTextEditor';
 import SharingOptions from './SharingOptions';
 
 const CreateCannedResponseModal: FC<{
@@ -74,7 +75,7 @@ const CreateCannedResponseModal: FC<{
 							</Box>
 						</Box>
 					</Field.Label>
-					<TextInput value={text} onChange={handleText} error={errors.text} />
+					<MarkdownTextEditor value={text} onChange={handleText} />
 				</Field>
 				<Field mbe='x24'>
 					<Tags handler={handleTags} tags={tags} />
