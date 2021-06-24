@@ -1067,6 +1067,12 @@ settings.addGroup('General', function() {
 			type: 'boolean',
 		});
 	});
+
+	this.section('Security', function() {
+		this.add('ECDH_Enabled', false, {
+			type: 'boolean',
+		});
+	});
 });
 
 settings.addGroup('Message', function() {
