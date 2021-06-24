@@ -121,6 +121,7 @@ export type ServerMethods = {
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'toggleFavorite': (...args: any[]) => any;
+	'updateEphemeralRoom': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;
 	'unmuteUserInRoom': (...args: any[]) => any;

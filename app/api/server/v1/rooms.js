@@ -449,3 +449,13 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 		return API.v1.error();
 	},
 });
+
+API.v1.addRoute('rooms.updateEphemeral', { authRequired: true }, {
+	post() {
+		const { rid, newEphemeralTime, updateEphemeralTime } = this.bodyParams;
+		Meteor.runAsUser(this.userId, () => {
+			Meteor.call('updateEphemeralRoom', rid, newEphemeralTime, updateEphemeralTime);
+		});
+	},
+
+});

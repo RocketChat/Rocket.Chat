@@ -1594,6 +1594,7 @@
   "Enterprise_License_Description": "If your workspace is registered and license is provided by Rocket.Chat Cloud you don't need to manually update the license here.",
   "Entertainment": "Entertainment",
   "Ephemeral_time":"Ephemeral Time",
+  "Update_Room_Ephemeral":"Update Room Ephemeral Time",
   "Ephemeral_time_description":"Channel with automatically be deleted after the above mentioned time.",
   "Error": "Error",
   "Error_404": "Error:404",

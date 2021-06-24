@@ -12,7 +12,7 @@ export interface ISubscription extends IRocketChatRecord {
 	ts: Date;
 
 	name: string;
-	ephemeralTime: string;
+	ephemeralTime: Date;
 	alert?: boolean;
 	unread: number;
 	t: RoomType;
