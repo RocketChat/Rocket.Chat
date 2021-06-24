@@ -34,6 +34,7 @@ const CannedResponseList: FC<{
 	onClickItem: (data: any) => void;
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
+	reload: () => void;
 }> = ({
 	loadMoreItems,
 	cannedItems,
@@ -48,6 +49,7 @@ const CannedResponseList: FC<{
 	onClickItem,
 	onClickCreate,
 	onClickUse,
+	reload,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -122,6 +124,7 @@ const CannedResponseList: FC<{
 						cannedItem={cannedItems.find((canned) => canned._id === (cannedId as unknown))}
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}
+						reload={reload}
 					/>
 				</VerticalBar.InnerContent>
 			)}

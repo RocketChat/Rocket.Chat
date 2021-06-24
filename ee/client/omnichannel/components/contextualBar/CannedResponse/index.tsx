@@ -78,6 +78,7 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 			onClickUse={onClickUse}
 			onClickItem={onClickItem}
 			onClickCreate={onClickCreate}
+			reload={reload}
 		/>
 	);
 };

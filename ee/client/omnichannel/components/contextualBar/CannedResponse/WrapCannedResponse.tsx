@@ -9,14 +9,21 @@ const WrapCannedResponse: FC<{
 	cannedItem: any;
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
+	reload: () => void;
 }> = ({
 	cannedItem: { _id, departmentName, departmentId, shortcut, tags, scope, text },
 	onClickBack,
 	onClickUse,
+	reload,
 }) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
-		setModal(<CreateCannedResponse data={{ _id, departmentId, shortcut, tags, scope, text }} />);
+		setModal(
+			<CreateCannedResponse
+				data={{ _id, departmentId, shortcut, tags, scope, text }}
+				reloadCannedList={reload}
+			/>,
+		);
 	};
 
 	const hasManagerRole = useRole('livechat-manager');
