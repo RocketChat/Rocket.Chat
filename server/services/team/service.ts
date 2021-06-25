@@ -474,10 +474,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
 		let teamRoomIds: any[];
 		if (showCanDeleteOnly) {
-			const canDeleteCRoom = await Authorization.hasPermission(userId, 'delete-c');
-			const canDeletePRoom = await Authorization.hasPermission(userId, 'delete-p');
+			for await (const room of teamRooms) {
+				const roomType = room.t;
+				const canDeleteRoom = await Authorization.hasPermission(userId, roomType === 'c' ? 'delete-c' : 'delete-p', room._id);
+				room.userCanDelete = canDeleteRoom;
+			}
 
-			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' && canDeleteCRoom) || (room.t === 'p' && canDeletePRoom));
+			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' || room.t === 'p') && room.userCanDelete);
 		} else {
 			teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
 		}
