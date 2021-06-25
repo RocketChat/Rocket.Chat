@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
@@ -12,6 +13,7 @@ import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 const ActiveUsersSection = () => {
 	const t = useTranslation();
+	const formatDate = useFormatDate();
 	const period = useMemo(() => ({
 		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
 		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
@@ -228,12 +230,15 @@ const ActiveUsersSection = () => {
 									}}
 									enableSlices='x'
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
-										{points.map(({ serieId, data: { y: activeUsers } }) =>
-											<Box key={serieId} fontScale='p2'>
-												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
-										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
-										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
-											</Box>)}
+										<Box>
+											<Box>{formatDate(points[0].data.x)}</Box>
+											{points.map(({ serieId, data: { y: activeUsers } }) =>
+												<Box key={serieId} fontScale='p2'>
+													<Box>{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
+													|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
+													|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}</Box>
+												</Box>)}
+										</Box>
 									</Tile>}
 								/>
 							</Box>
