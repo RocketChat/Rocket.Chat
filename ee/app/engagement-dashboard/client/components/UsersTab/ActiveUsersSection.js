@@ -56,8 +56,10 @@ const ActiveUsersSection = () => {
 		const usersListsMap = data.month.reduce((map, dayData) => {
 			const date = moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day });
 			const i = date.diff(period.start, 'days');
-			map[i] = dayData.usersList;
-			dauValues[i].y = dayData.users;
+			if (i >= 0) {
+				map[i] = dayData.usersList;
+				dauValues[i].y = dayData.users;
+			}
 			return map;
 		}, {});
 
