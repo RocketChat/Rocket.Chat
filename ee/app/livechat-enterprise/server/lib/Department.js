@@ -39,7 +39,7 @@ export const findAllDepartmentsByTag = async (tagId, offset, count) => {
 	let total = 0;
 
 	if (!tag) {
-		return { departmentsResult };
+		return { departments: departmentsResult, total };
 	}
 
 	if (tag.departments && tag.departments.length) {
