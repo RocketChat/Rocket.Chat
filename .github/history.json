@@ -62011,6 +62011,39 @@
           ]
         }
       ]
+    },
+    "3.16.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.0-alpha.5237",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22461",
+          "title": "Update README.md",
+          "userLogin": "Faria-TechWrite",
+          "contributors": [
+            "Faria-TechWrite",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "22433",
+          "title": "Regression: Block-size property on firefox",
+          "userLogin": "dougfabris",
+          "contributors": [
+            null,
+            "tassoevan",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

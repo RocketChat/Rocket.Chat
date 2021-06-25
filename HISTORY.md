@@ -1,6 +1,25 @@
 
 # 3.16.0 (Under Release Candidate Process)
 
+## 3.16.0-rc.2
+`2021-06-25  ·  2 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Block-size property on firefox ([#22433](https://github.com/RocketChat/Rocket.Chat/pull/22433))
+
+- Update README.md ([#22461](https://github.com/RocketChat/Rocket.Chat/pull/22461))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Faria-TechWrite](https://github.com/Faria-TechWrite)
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.16.0-rc.1
 `2021-06-22  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
