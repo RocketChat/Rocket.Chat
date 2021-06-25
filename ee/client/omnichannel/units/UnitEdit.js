@@ -7,7 +7,7 @@ import {
 	Select,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
@@ -18,25 +18,36 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useForm } from '../../../../client/hooks/useForm';
-import { useDepartmentsList } from '../../../../client/views/hooks/useDepartmentsList';
+import { useDepartmentsByUnitsList } from '../../../../client/views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
 function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
+
+	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
+
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
+		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
 	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(
 		monitorsList,
 	);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: departmentsFilter, unitId }), [departmentsFilter, unitId]),
+	const {
+		itemsList: departmentsList,
+		loadMoreItems: loadMoreDepartments,
+	} = useDepartmentsByUnitsList(
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, unitId }), [
+			debouncedDepartmentsFilter,
+			unitId,
+		]),
 	);
 
 	const {
@@ -173,7 +184,7 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 				<Field.Label>{t('Departments')}*</Field.Label>
 				<Field.Row>
 					<PaginatedMultiSelectFiltered
-						filter={departmentsFilter}
+						filter={debouncedDepartmentsFilter}
 						setFilter={setDepartmentsFilter}
 						options={departmentsItems}
 						value={departments}
@@ -194,7 +205,7 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 				<Field.Label>{t('Monitors')}*</Field.Label>
 				<Field.Row>
 					<PaginatedMultiSelectFiltered
-						filter={monitorsFilter}
+						filter={debouncedMonitorsFilter}
 						setFilter={setMonitorsFilter}
 						options={monitorsItems}
 						value={monitors}
