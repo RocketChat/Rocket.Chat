@@ -13,7 +13,6 @@ import './scripts';
 export * from './inject';
 
 Meteor.startup(() => {
-	console.log(BrowserPolicy.content);
 	settings.get('Enable_CSP', (_, enabled) => {
 		if (!enabled) {
 			return BrowserPolicy.content.setPolicy("default-src 'self'; "
