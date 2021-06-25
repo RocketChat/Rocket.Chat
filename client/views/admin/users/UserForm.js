@@ -10,7 +10,7 @@ import {
 	Divider,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
 import { isEmail } from '../../../../app/utils/lib/isEmail.js';
 import CustomFieldsForm from '../../../components/CustomFieldsForm';
@@ -67,6 +67,10 @@ export default function UserForm({
 		(hasCustomFields) => setHasCustomFields(hasCustomFields),
 		[],
 	);
+
+	const roleKeys = Array.from(new Map(availableRoles).keys());
+	const rolesToShow = roles.filter((r) => roleKeys.indexOf(r) >= 0);
+	useEffect(() => handleRoles(rolesToShow), []);
 
 	return (
 		<VerticalBar.ScrollableContent
@@ -260,7 +264,7 @@ export default function UserForm({
 							<Field.Row>
 								<MultiSelectFiltered
 									options={availableRoles}
-									value={roles}
+									value={rolesToShow}
 									onChange={handleRoles}
 									placeholder={t('Select_role')}
 									flexShrink={1}
@@ -268,7 +272,7 @@ export default function UserForm({
 							</Field.Row>
 						</Field>
 					),
-					[availableRoles, handleRoles, roles, t],
+					[availableRoles, handleRoles, t, rolesToShow],
 				)}
 				{useMemo(
 					() =>
