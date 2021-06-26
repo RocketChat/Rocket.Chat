@@ -3,6 +3,8 @@ import { EventEmitter } from 'events';
 import { Peer, WebSocketTransport } from 'protoo-client';
 import { Device, types } from 'mediasoup-client';
 
+import { IPeer } from '../../../sfu/types';
+
 interface IData {
 	roomID: string;
 	peerID: string;
@@ -11,12 +13,17 @@ interface IData {
 	consume: boolean;
 	displayName: string;
 	username?: string;
+	roomName: string;
 }
 
 export default class VoiceRoom extends EventEmitter {
 	roomID: string;
 
+	roomName: string;
+
 	closed: boolean;
+
+	joined: boolean;
 
 	displayName: string;
 
@@ -42,7 +49,7 @@ export default class VoiceRoom extends EventEmitter {
 
 	consumers: Map<string, types.Consumer>;
 
-	constructor({ roomID, device, produce, consume, displayName, peerID, username }: IData) {
+	constructor({ roomID, device, produce, consume, displayName, peerID, username, roomName }: IData) {
 		super();
 		this.roomID = roomID;
 		this.device = device;
@@ -53,13 +60,28 @@ export default class VoiceRoom extends EventEmitter {
 		this.protooUrl = `ws://${ window.location.hostname }:8989/?roomId=${ roomID }&peerId=${ peerID }`;
 		this.consumers = new Map();
 		this.username = username;
+		this.joined = false;
+		this.roomName = roomName;
+	}
+
+	closeProtoo(): void {
+		this.protoo?.close();
 	}
 
 	async join(): Promise<void> {
 		const protooTransport = new WebSocketTransport(this.protooUrl);
 		this.protoo = new Peer(protooTransport);
 
-		this.protoo.on('open', () => this.joinRoom());
+		this.protoo.on('open', async () => {
+			this.emit('connectionOpened');
+			const peers: Array<IPeer> =	await this.protoo?.request('join', {
+				displayName: this.displayName,
+				device: this.device,
+				username: this.username,
+				joined: false,
+			});
+			this.emit('allJoinedPeers', peers);
+		});
 
 		this.protoo.on('disconnected', () => {
 			if (this.sendTransport) {
@@ -77,6 +99,7 @@ export default class VoiceRoom extends EventEmitter {
 
 		this.protoo.on('request', async (request, accept, reject) => {
 			switch (request.method) {
+				// Event triggered when new peer/consumer joins the room
 				case 'newConsumer':
 				{
 					if (!this.consume) {
@@ -129,9 +152,14 @@ export default class VoiceRoom extends EventEmitter {
 
 		this.protoo.on('notification', (notif) => {
 			switch (notif.method) {
+				// Event triggered when peer disconnects
 				case 'peerClosed': {
 					this.emit('peerClosed', notif.data.peerId);
 					break;
+				}
+				// Event triggered only when new peer joins & current peer hasnt joined the room
+				case 'peerJoined': {
+					this.emit('peerJoined', notif.data);
 				}
 			}
 		});
@@ -149,6 +177,7 @@ export default class VoiceRoom extends EventEmitter {
 
 	async joinRoom(): Promise<void> {
 		try {
+			this.joined = true;
 			this.mediasoupDevice = new Device();
 
 			const routerRtpCapabilities = await this.protoo?.request('getRouterRtpCapibilities');
@@ -237,6 +266,7 @@ export default class VoiceRoom extends EventEmitter {
 				device: this.device,
 				rtpCapabilities: this.consume && this.mediasoupDevice.rtpCapabilities,
 				username: this.username,
+				joined: true,
 			});
 
 			if (this.produce) {
