@@ -7,9 +7,10 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
+import { Users, Messages } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
+import Message from '/client/views/room/contextualBar/Discussions/components/Message';
 
 // API.v1.addRoute('teams.list', { authRequired: true }, {
 // 	get() {
@@ -69,6 +70,22 @@ API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 		}));
 
 		return API.v1.success({ taskRoom });
+	},
+});
+
+API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
+	get() {
+		const { taskId } = this.queryParams;
+
+		if (!taskId) {
+			return API.v1.failure('task-does-not-exist');
+		}
+
+		// permission
+
+		const { messageDetails } = Promise.await(Messages.findOne(taskId));
+
+		return API.v1.success(messageDetails);
 	},
 });
 
