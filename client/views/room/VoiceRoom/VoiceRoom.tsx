@@ -2,72 +2,69 @@ import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
-import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import WarningModal from '../../admin/apps/WarningModal';
-import useVoiceRoom from '../hooks/useVoiceRoom';
+import { useVoiceRoomContext } from '../contexts/VoiceRoomContext';
 import VoicePeersList from './VoicePeersList';
+import { protooConnectionWithVoiceRoomClient, addListenersToMediasoupClient } from './util';
 
 interface IVoiceRoom {
 	room: IRoom;
+	rid: string;
 }
 
-let mediasoupConnectedClient: VoiceRoomClient | null = null;
-let wsConnectedClient: VoiceRoomClient | null = null;
+const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
+	const {
+		mediasoupClient,
+		mediasoupPeers,
+		setMediasoupPeers,
+		setMediasoupClient,
+		wsClient,
+		wsPeers,
+		setWsPeers,
+		setWsClient,
+	} = useVoiceRoomContext();
 
-const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
-	const [connected, setConnected] = useState(mediasoupConnectedClient?.joined || false);
+	const [connected, setConnected] = useState(mediasoupClient?.joined || false);
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
-
-	const [firstClient, peers] = useVoiceRoom(room);
-	const [secondClient, secondPeers] = useVoiceRoom(room);
 
 	const setModal = useSetModal();
 	const t = useTranslation();
 
 	const closeModal = useMutableCallback(() => setModal(null));
 
-	const handleInitialConnection = async (): Promise<void> => {
+	const handleConnection = async (type: 'mediasoup' | 'ws'): Promise<void> => {
 		try {
-			if (mediasoupConnectedClient) {
-				mediasoupConnectedClient.close();
+			if (type === 'mediasoup') {
+				if (mediasoupClient) {
+					mediasoupClient.close();
+				}
+				await protooConnectionWithVoiceRoomClient(room, setMediasoupPeers, setMediasoupClient);
+			} else {
+				if (wsClient) {
+					wsClient.close();
+				}
+				await protooConnectionWithVoiceRoomClient(room, setWsPeers, setWsClient);
 			}
-
-			mediasoupConnectedClient = null;
-			mediasoupConnectedClient = firstClient;
-			await mediasoupConnectedClient.join();
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
-	const handleSecondConnection = async (): Promise<void> => {
-		try {
-			if (wsConnectedClient) {
-				wsConnectedClient.close();
-			}
-			wsConnectedClient = null;
-			wsConnectedClient = secondClient;
-			await wsConnectedClient.join();
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	const handleDisconnect = (): void => {
 		setConnected(false);
-		handleInitialConnection();
+		handleConnection('mediasoup');
 	};
 
 	const toggleMic = (): void => {
 		setMuteMic((prev) => {
 			if (prev) {
-				mediasoupConnectedClient?.unmuteMic();
+				mediasoupClient?.unmuteMic();
 			} else {
-				mediasoupConnectedClient?.muteMic();
+				mediasoupClient?.muteMic();
 			}
 
 			return !prev;
@@ -78,29 +75,31 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 
 	const join = async (): Promise<void> => {
 		try {
-			await handleInitialConnection();
-			mediasoupConnectedClient?.on('connectionOpened', async () => {
-				await mediasoupConnectedClient?.joinRoom();
-				setConnected(true);
-				mediasoupConnectedClient?.removeListener('connectionOpened', () => null);
-			});
+			await mediasoupClient?.joinRoom();
+			setConnected(true);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
-	const handleModalConfirm = (): void => {
-		wsConnectedClient?.close();
-		wsConnectedClient = null;
-		join();
+	const handleModalConfirm = async (): Promise<void> => {
+		mediasoupClient?.close();
+		await wsClient?.joinRoom();
+		setMediasoupPeers(wsPeers);
+		wsClient?.removeAllListeners();
+		if (wsClient) {
+			addListenersToMediasoupClient(wsClient, setMediasoupPeers);
+		}
+		setMediasoupClient(wsClient);
+		setWsClient(null);
 		closeModal();
 	};
 
 	const handleJoin = (): void => {
-		if (wsConnectedClient) {
+		if (wsClient && mediasoupClient?.roomID !== rid) {
 			setModal(
 				<WarningModal
-					text={`You will be disconnected from ${mediasoupConnectedClient?.roomName} channel.`}
+					text={`You will be disconnected from ${mediasoupClient?.roomName} channel.`}
 					confirmText={t('Yes')}
 					close={closeModal}
 					cancel={closeModal}
@@ -115,28 +114,25 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 	};
 
 	useEffect(() => {
-		if (!mediasoupConnectedClient || !mediasoupConnectedClient.joined) {
-			mediasoupConnectedClient?.closeProtoo();
-			handleInitialConnection();
+		if (!mediasoupClient || !mediasoupClient.joined) {
+			handleConnection('mediasoup');
 		}
 
-		if (
-			mediasoupConnectedClient &&
-			mediasoupConnectedClient.joined &&
-			mediasoupConnectedClient.roomID !== secondClient.roomID
-		) {
-			secondClient?.closeProtoo();
-			handleSecondConnection();
+		if (mediasoupClient && mediasoupClient.joined) {
+			if (mediasoupClient.roomID !== rid && wsClient?.roomID !== rid) {
+				handleConnection('ws');
+			} else {
+				wsClient?.close();
+				setWsClient(null);
+			}
 		}
-	}, [room._id]);
+	}, [rid]);
 
 	return (
 		<>
-			{mediasoupConnectedClient?.roomID !== room._id && (
-				<VoicePeersList peers={secondPeers} deafen={deafen} />
-			)}
-			<Box display={mediasoupConnectedClient?.roomID !== room._id ? 'none' : 'block'}>
-				<VoicePeersList peers={peers} deafen={deafen} />
+			{mediasoupClient?.roomID !== room._id && <VoicePeersList peers={wsPeers} deafen={deafen} />}
+			<Box display={mediasoupClient?.roomID !== rid ? 'none' : 'block'}>
+				<VoicePeersList peers={mediasoupPeers} deafen={deafen} />
 			</Box>
 			<Box
 				display='flex'
@@ -150,7 +146,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 				alignItems='center'
 				pb='x24'
 			>
-				{connected && mediasoupConnectedClient?.roomID === firstClient.roomID ? (
+				{connected && mediasoupClient?.roomID === rid ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
 							{muteMic ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
