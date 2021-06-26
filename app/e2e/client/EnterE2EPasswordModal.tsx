@@ -10,7 +10,7 @@ type EnterE2EPasswordModalProps = {
 	onClose: () => void;
 };
 
-const EnterE2EPasswordModal: FC<EnterE2EPasswordModalProps> = ({ onClose, onConfirm, ...props }) => {
+const EnterE2EPasswordModal: FC<EnterE2EPasswordModalProps> = ({ onConfirm, ...props }) => {
 	const t = useTranslation();
 	const [password, setPassword] = useState('');
 	const [passwordError, setPasswordError] = useState<string | undefined>();
@@ -31,7 +31,14 @@ const EnterE2EPasswordModal: FC<EnterE2EPasswordModalProps> = ({ onClose, onConf
 	});
 
 	return (
-		<GenericModal onClose={onClose} onConfirm={handleConfirm} {...props}>
+		<GenericModal
+			variant='warning'
+			title={t('Enter_E2E_password_to_decode_your_key')}
+			cancelText={t('I_ll_do_it_later')}
+			confirmText={t('Decode_Key')}
+			onConfirm={handleConfirm}
+			{...props}
+		>
 			<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_request_text') }} />
 			<FieldGroup mbs='x24' w='full'>
 				<Field>

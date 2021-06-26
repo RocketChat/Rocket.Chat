@@ -299,10 +299,6 @@ class E2E extends Emitter {
 			const showModal = () => {
 				imperativeModal.open({ component: EnterE2EPasswordModal,
 					props: {
-						variant: 'warning',
-						title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
-						cancelText: TAPi18n.__('I_ll_do_it_later'),
-						confirmText: TAPi18n.__('Decode_Key'),
 						onClose: imperativeModal.close,
 						onCancel: () => {
 							failedToDecodeKey = false;
