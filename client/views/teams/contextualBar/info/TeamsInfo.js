@@ -71,7 +71,7 @@ const TeamsInfo = ({
 				convertToChannel: {
 					label: t('Convert_to_channel'),
 					action: onClickConvertToChannel,
-					icon: 'key',
+					icon: 'hash',
 				},
 			}),
 		}),

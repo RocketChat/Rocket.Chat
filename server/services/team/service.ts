@@ -480,7 +480,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 				room.userCanDelete = canDeleteRoom;
 			}
 
-			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' || room.t === 'p') && room.userCanDelete);
+			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' || room.t === 'p') && room.userCanDelete).map((room) => room._id);
 		} else {
 			teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
 		}

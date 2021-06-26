@@ -1,10 +1,10 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import GenericTable from '../../../components/GenericTable';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import ChannelRow from './ChannelRow';
+import GenericTable from '../../components/GenericTable';
+import { useTranslation } from '../../contexts/TranslationContext';
+import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
+import ChannelRow from './contextualBar/ChannelRow';
 
 const ChannelDesertionTable = ({
 	rooms,
