@@ -261,13 +261,14 @@ export default class VoiceRoom extends EventEmitter {
 					});
 			}
 
-			await this.protoo?.request('join', {
+			const peerData = await this.protoo?.request('join', {
 				displayName: this.displayName,
 				device: this.device,
 				rtpCapabilities: this.consume && this.mediasoupDevice.rtpCapabilities,
 				username: this.username,
 				joined: true,
 			});
+			this.emit('allJoinedPeers', peerData);
 
 			if (this.produce) {
 				this.enableMic();

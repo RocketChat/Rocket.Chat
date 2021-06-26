@@ -10,7 +10,7 @@ interface IProps {
 }
 
 const VoicePeersList: FC<IProps> = ({ peers, deafen }): React.ReactElement => (
-	<Box>
+	<Box display='flex' justifyContent='center'>
 		{peers.map((peer) => (
 			<VoicePeer key={peer.id} {...peer} deafen={deafen} />
 		))}

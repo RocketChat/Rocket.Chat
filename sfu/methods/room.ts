@@ -186,7 +186,6 @@ export class Room extends EventEmitter {
 				const joinedPeers = this.getJoinedPeers();
 
 				const peerInfos = joinedPeers
-					.filter((joinedPeer) => joinedPeer.id !== peer.id)
 					.map((joinedPeer) => ({
 						id: joinedPeer.id,
 						displayName: joinedPeer.data.displayName,
