@@ -12,6 +12,7 @@ import { TaskRoom } from '../../../app/models/server/raw/TaskRoom';
 import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRoom } from '../../../definition/IRoom';
+import { IMessage } from '../../../definition/IMessage';
 import {
 	IPaginationOptions,
 	IQueryOptions,
@@ -147,6 +148,13 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 		} catch (e) {
 			throw new Error('error-team-creation');
 		}
+	}
+
+	async findByMessageId(id: string): Promise<IMessage> {
+ 		const [messageDetails] = await Promise.all([
+ 			this.MessagesModel.find({ id: id }).fetch(),
+ 		]);
+		return messageDetails;
 	}
 
 // 	async update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void> {

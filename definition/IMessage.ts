@@ -33,4 +33,8 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: string;
 	e2e?: 'pending';
+
+	taskAssignee?: Pick<IUser, '_id' | 'username' | 'name'>;
+	taskDescription?: string;
+	taskStatut?: string;
 }
