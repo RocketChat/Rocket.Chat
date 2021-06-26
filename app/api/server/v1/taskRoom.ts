@@ -83,9 +83,9 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 		// permission
 
-		const { messageDetails } = Promise.await(Messages.findOne(taskId));
+		const { messageDetails } = Promise.await(Messages.findOne({ _id: taskId }));
 
-		return API.v1.success(messageDetails);
+		return API.v1.success({ message: messageDetails });
 	},
 });
 
