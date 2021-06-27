@@ -4,9 +4,9 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import VoiceRoomClient from '../../../../app/voice-channel/client';
 import { IRoom } from '../../../../definition/IRoom';
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import WarningModal from '../../admin/apps/WarningModal';
 import useVoiceRoom from '../hooks/useVoiceRoom';
 import VoicePeersList from './VoicePeersList';
 
@@ -99,13 +99,16 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room }): ReactElement => {
 	const handleJoin = (): void => {
 		if (wsConnectedClient) {
 			setModal(
-				<WarningModal
-					text={`You will be disconnected from ${mediasoupConnectedClient?.roomName} channel.`}
-					confirmText={t('Yes')}
-					close={closeModal}
-					cancel={closeModal}
+				<GenericModal
+					variant='warning'
+					children={t('You_will_be_disconnected_from_channel', {
+						roomName: mediasoupConnectedClient?.roomName,
+					})}
+					confirmText={t('Disconnect')}
 					cancelText={t('Cancel')}
-					confirm={handleModalConfirm}
+					onClose={closeModal}
+					onCancel={closeModal}
+					onConfirm={handleModalConfirm}
 				/>,
 			);
 			return;
