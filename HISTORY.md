@@ -1,6 +1,24 @@
 
 # 3.16.0 (Under Release Candidate Process)
 
+## 3.16.0-rc.3
+`2021-06-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: CSP for external Media and Frames ([#22465](https://github.com/RocketChat/Rocket.Chat/pull/22465))
+
+- Regression: Fix livechat find departments ([#22472](https://github.com/RocketChat/Rocket.Chat/pull/22472))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.16.0-rc.2
 `2021-06-25  ·  2 🔍  ·  3 👩‍💻👨‍💻`
 
@@ -3021,7 +3039,7 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 3.11.5
-`2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2021-06-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
