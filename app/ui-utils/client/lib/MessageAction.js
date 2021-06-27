@@ -412,7 +412,8 @@ Meteor.startup(async function() {
 				data: { message,
 					onCreate() {
 						modal.close();
-					} },
+					},
+					onClose: () => modal.close() },
 				confirmOnEnter: false,
 				showConfirmButton: false,
 				showCancelButton: false,
