@@ -50,6 +50,10 @@ settings.get('Support_Cordova_App', (key, value) => {
 	Support_Cordova_App = value;
 });
 
+settings.get('Enable_CSP', (_, enabled) => {
+	WebAppInternals.setInlineScriptsAllowed(!enabled);
+});
+
 WebApp.rawConnectHandlers.use(function(req, res, next) {
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
@@ -59,6 +63,10 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 
 	if (settings.get('Iframe_Restrict_Access')) {
 		res.setHeader('X-Frame-Options', settings.get('Iframe_X_Frame_Options'));
+	}
+
+	if (settings.get('Enable_CSP')) {
+		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
 	}
 
 	// Deprecated behavior
