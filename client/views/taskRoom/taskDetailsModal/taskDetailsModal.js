@@ -1,5 +1,4 @@
-import { t } from '../../../../app/utils/client';
-import GenericModal from '../../../components/GenericModal';
+import React from 'react';
 
 const TaskDetailsModal = ({
 	onUpdate,
@@ -10,13 +9,7 @@ const TaskDetailsModal = ({
 	taskStatut,
 	...props
 }) => (
-	<GenericModal
-		variant='info'
-		confirmText={t('Save')}
-		onConfirm={onUpdate}
-		onCancel={onCancel}
-		onClose={onCancel}
-	>
+	<>
 		{console.log(props)}
 		<div>
 			<h4>Task Title: </h4>
@@ -34,7 +27,7 @@ const TaskDetailsModal = ({
 			<h4>Task Statut: </h4>
 			<p>{taskStatut}</p>
 		</div>
-	</GenericModal>
+	</>
 );
 
 export default TaskDetailsModal;

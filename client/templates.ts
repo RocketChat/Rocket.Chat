@@ -243,3 +243,8 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent(
+	'taskDetailsModalWithData',
+	() => import('./views/taskRoom/taskDetailsModal/index'),
+);
