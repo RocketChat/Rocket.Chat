@@ -1,3 +1,4 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -14,6 +15,16 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
+	const onChangeAssignee = useMutableCallback((value, action) => {
+		if (!action) {
+			if (values.taskAssignee.includes(value)) {
+				return;
+			}
+			return handlers.handleTaskAssignee([...values.taskAssignee, value]);
+		}
+		handlers.handleTaskAssignee(values.taskAssignee.filter((current) => current !== value));
+	});
+
 	return (
 		<TaskDetailsModal
 			taskTitle={message.msg}
@@ -25,6 +36,7 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 			hasUnsavedChanges={hasUnsavedChanges}
 			onCreate={onCreate}
 			onClose={onClose}
+			onChangeAssignee={onChangeAssignee}
 			{...props}
 		/>
 	);
