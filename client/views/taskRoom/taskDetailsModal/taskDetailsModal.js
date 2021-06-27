@@ -7,25 +7,48 @@ const TaskDetailsModal = ({
 	taskDescription,
 	taskAssignee,
 	taskStatut,
-	...props
+	values,
+	handlers,
+	hasUnsavedChanges,
 }) => (
 	<>
-		{console.log(props)}
 		<div>
-			<h4>Task Title: </h4>
+			<form>
+				<label>
+					<h4>Task Title: </h4>
+				</label>
+				<input type='text' value={values.taskTitle} onChange={handlers.handleTaskTitle} />
+			</form>
+
 			<p>{taskTitle}</p>
 		</div>
 		<div>
-			<h4>Task Description: </h4>
-			<p>{taskDescription}</p>
+			<form>
+				<label>
+					<h4>Task Description: </h4>
+				</label>
+				<input
+					type='text'
+					value={values.taskDescription}
+					onChange={handlers.handleTaskDescription}
+				/>
+			</form>
 		</div>
 		<div>
-			<h4>Task Assignee: </h4>
-			<p>{taskAssignee}</p>
+			<form>
+				<label>
+					<h4>Task Assignee: </h4>
+				</label>
+				<input type='text' value={taskAssignee} onChange={handlers.handleTaskAssignee} />
+			</form>
 		</div>
 		<div>
-			<h4>Task Statut: </h4>
-			<p>{taskStatut}</p>
+			<form>
+				<label>
+					<h4>Task Statut: </h4>
+				</label>
+				<input type='text' value={taskStatut} onChange={handlers.handleTaskStatut} />
+			</form>
 		</div>
 	</>
 );
