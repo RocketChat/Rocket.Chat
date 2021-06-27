@@ -3,9 +3,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import WarningModal from '../../admin/apps/WarningModal';
 import { useVoiceRoomContext } from '../contexts/VoiceRoomContext';
 import VoicePeersList from './VoicePeersList';
 import { protooConnectionWithVoiceRoomClient, addListenersToMediasoupClient } from './util';
@@ -98,13 +98,16 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	const handleJoin = (): void => {
 		if (wsClient && mediasoupClient?.roomID !== rid) {
 			setModal(
-				<WarningModal
-					text={`You will be disconnected from ${mediasoupClient?.roomName} channel.`}
-					confirmText={t('Yes')}
-					close={closeModal}
-					cancel={closeModal}
+				<GenericModal
+					variant='warning'
+					children={t('You_will_be_disconnected_from_channel', {
+						roomName: mediasoupClient?.roomName,
+					})}
+					confirmText={t('Disconnect')}
 					cancelText={t('Cancel')}
-					confirm={handleModalConfirm}
+					onClose={closeModal}
+					onCancel={closeModal}
+					onConfirm={handleModalConfirm}
 				/>,
 			);
 			return;
