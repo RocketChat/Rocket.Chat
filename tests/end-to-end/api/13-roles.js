@@ -339,7 +339,6 @@ describe('[Roles]', function() {
 			roleWithoutUser = await createRole(`roleWithoutUser-${ Date.now() }`, 'Users');
 
 			await addUserToRole(roleWithUser._id, login.user);
-			console.log(login.user);
 		});
 
 		it('should delete a role that it is not being used', (done) => {
