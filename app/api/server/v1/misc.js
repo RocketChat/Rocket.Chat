@@ -54,7 +54,8 @@ API.v1.addRoute('me', { authRequired: true }, {
 
 		// The password hash shouldn't be leaked but the client may need to know if it exists.
 		if (user?.services?.password?.bcrypt) {
-			user.services.password.bcrypt = 'filtered';
+			user.services.password.exists = true;
+			delete user.services.password.bcrypt;
 		}
 
 		return API.v1.success(this.getUserInfo(user));
