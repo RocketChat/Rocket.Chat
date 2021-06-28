@@ -1,6 +1,22 @@
 
 # 3.16.0 (Under Release Candidate Process)
 
+## 3.16.0-rc.5
+`2021-06-28  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump: Fuselage 0.27.0 ([#22486](https://github.com/RocketChat/Rocket.Chat/pull/22486))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 3.16.0-rc.4
 `2021-06-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
@@ -3093,7 +3109,7 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 3.11.5
-`2021-06-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2021-06-28  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
