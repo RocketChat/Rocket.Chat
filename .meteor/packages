@@ -89,5 +89,3 @@ rocketchat:i18n
 rocketchat:postcss
 dandv:caret-position
 facts-base@1.0.1
-jquery
-browser-policy
