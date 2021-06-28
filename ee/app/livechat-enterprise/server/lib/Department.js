@@ -1,5 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import LivechatTag from '../../../models/server/models/LivechatTag';
 import {
 	LivechatDepartment,
 } from '../../../../../app/models/server/raw';
@@ -29,4 +30,24 @@ export const findAllDepartmentsByUnit = async (unitId, offset, count) => {
 	const departments = await cursor.toArray();
 
 	return { departments, total };
+};
+
+export const findAllDepartmentsByTag = async (tagId, offset, count) => {
+	const tag = LivechatTag.findOneById(tagId);
+
+	let departmentsResult = [];
+	let total = 0;
+
+	if (!tag) {
+		return { departments: departmentsResult, total };
+	}
+
+	if (tag.departments && tag.departments.length) {
+		const cursor = LivechatDepartment.findInIds(tag.departments, { limit: count, offset });
+		const departments = await cursor.toArray();
+		total = await cursor.count();
+		departmentsResult = departments;
+	}
+
+	return { departments: departmentsResult, total };
 };
