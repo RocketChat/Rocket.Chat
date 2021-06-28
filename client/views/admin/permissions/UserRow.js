@@ -2,8 +2,8 @@ import { Box, Table, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAvatar from '../../../components/avatar/UserAvatar';
-import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
 const UserRow = ({ _id, username, name, avatarETag, emails, onRemove }) => {
 	const email = getUserEmailAddress({ emails });

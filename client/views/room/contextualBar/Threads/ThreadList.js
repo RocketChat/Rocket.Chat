@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Select, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -73,6 +73,7 @@ function ThreadList({
 				<VerticalBar.Text>{t('Threads')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
+
 			<VerticalBar.Content paddingInline={0} ref={ref}>
 				<Box
 					display='flex'
@@ -102,16 +103,32 @@ function ThreadList({
 						</Margins>
 					</Box>
 				</Box>
+
+				{loading && (
+					<Box pi='x24' pb='x12'>
+						<Throbber size='x12' />
+					</Box>
+				)}
+
+				{error && (
+					<Callout mi='x24' type='danger'>
+						{error.toString()}
+					</Callout>
+				)}
+
+				{!loading && total === 0 && (
+					<Box p='x24' color='neutral-600' textAlign='center' width='full'>
+						{t('No_Threads')}
+					</Box>
+				)}
+
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{error && (
-						<Callout mi='x24' type='danger'>
-							{error.toString()}
-						</Callout>
-					)}
-					{total === 0 && <Box p='x24'>{t('No_Threads')}</Box>}
 					{!error && total > 0 && threads.length > 0 && (
 						<Virtuoso
-							style={{ minHeight: blockSize, width: inlineSize }}
+							style={{
+								minHeight: blockSize,
+								width: inlineSize,
+							}}
 							totalCount={total}
 							endReached={
 								loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
@@ -134,6 +151,7 @@ function ThreadList({
 					)}
 				</Box>
 			</VerticalBar.Content>
+
 			{mid && (
 				<VerticalBar.InnerContent>
 					<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />

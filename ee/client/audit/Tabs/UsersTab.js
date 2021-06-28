@@ -1,8 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import UserAutoCompleteMultiple from '../../../../client/components/UserAutoCompleteMultiple';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 
 const UsersTab = ({ errors, users, onChangeUsers }) => {
 	const t = useTranslation();
