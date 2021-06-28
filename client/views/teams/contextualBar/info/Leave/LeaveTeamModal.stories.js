@@ -25,6 +25,4 @@ export const Default = () => <LeaveTeamModal rooms={rooms} />;
 
 export const ModalStepOne = () => <StepOne rooms={rooms} selectedRooms={{}} {...commonProps} />;
 
-export const ModalStepTwo = () => (
-	<StepTwo keptRooms={rooms} lastOwnerRooms={{}} {...commonProps} />
-);
+export const ModalStepTwo = () => <StepTwo {...commonProps} />;

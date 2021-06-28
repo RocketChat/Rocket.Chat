@@ -5,6 +5,9 @@ import { Base } from '../../../../../app/models';
 export class LivechatUnitMonitors extends Base {
 	constructor() {
 		super('livechat_unit_monitors');
+
+		this.tryEnsureIndex({ monitorId: 1 });
+		this.tryEnsureIndex({ unitId: 1 });
 	}
 
 	findByUnitId(unitId) {
