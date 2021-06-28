@@ -208,8 +208,12 @@ Meteor.startup(async function() {
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
-		condition({ subscription }) {
+		condition({ subscription, room }) {
 			if (subscription == null) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -303,8 +307,12 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
 		},
-		condition({ msg: message, subscription }) {
+		condition({ msg: message, subscription, room }) {
 			if (!subscription) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -358,7 +366,11 @@ Meteor.startup(async function() {
 				});
 			});
 		},
-		condition({ subscription }) {
+		condition({ subscription, room }) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return Boolean(subscription);
 		},
 		order: 17,

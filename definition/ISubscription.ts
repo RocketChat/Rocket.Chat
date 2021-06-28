@@ -40,6 +40,10 @@ export interface ISubscription extends IRocketChatRecord {
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 }
 
+export interface IOmnichannelSubscription extends ISubscription {
+	department?: string; // TODO REMOVE/DEPRECATE no need keeo in both room and subscription
+}
+
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
 	t: 'd';
 }

@@ -66,6 +66,21 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
+const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolean =>
+	(data?: Record<string, any>): boolean => {
+		if (!data) {
+			return false;
+		}
+
+		return Object.keys(data)
+			.filter((key) => key !== '_id')
+			.map((key) => key.split('.')[0])
+			.some((key) => requiredKeys.includes(key));
+	};
+
+const hasRoomFields = hasKeys(Object.keys(roomFields));
+const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
+
 const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
 	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
@@ -125,10 +140,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id }) => {
+	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
+				if (!hasSubscriptionFields(data || diff)) {
+					return;
+				}
+
 				// Override data cuz we do not publish all fields
 				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
 				if (!subscription) {
@@ -283,9 +302,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.settings', { clientAction, setting });
 	});
 
-	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
+	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			return;
+		}
+
+		if (!hasRoomFields(data || diff)) {
 			return;
 		}
 

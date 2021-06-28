@@ -1,6 +1,408 @@
 
+# 3.16.0
+`2021-06-28  ·  5 🎉  ·  13 🚀  ·  44 🐛  ·  26 🔍  ·  23 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.0-alpha.5237`
+
+### 🎉 New features
+
+
+- Add `teams.convertToChannel` endpoint ([#22188](https://github.com/RocketChat/Rocket.Chat/pull/22188))
+
+  - Add new `teams.converToChannel` endpoint;  
+  - Update `ConvertToTeam` modal text (since this action can now be reversed);  
+  - Remove corresponding team memberships when a team is deleted or converted to a channel;
+
+- Add setting to configure default role for user on manual registration ([#20650](https://github.com/RocketChat/Rocket.Chat/pull/20650))
+
+  Add an `admin` setting to determine the initial `role` for new users who registered manually (through the register form and via API, not using an authentication service), normally all new users are assigned to the `user` role.
+
+  The setting can be found in `Admin`->`Accounts`->`Registration`.
+
+  ![image](https://user-images.githubusercontent.com/49413772/107252603-47b70900-6a14-11eb-9cc6-df76720b7365.png)
+  The setting initial value is false, so the default behaviour stays the same while creating a new server or upgrading one.
+
+  https://user-images.githubusercontent.com/49413772/107253220-ddeb2f00-6a14-11eb-85b4-f770dbbe4970.mp4
+
+  Video showing an example of the setting being used and creating an new user with the default roles via API.
+
+- Content-Security-Policy for inline scripts ([#20724](https://github.com/RocketChat/Rocket.Chat/pull/20724))
+
+  Security policies were applied for inline scripts cases. Due to the libraries and components we use it is not possible to disable inline styles and images as they would break Oembeds and other libraries.
+
+
+  basically the inline scripts were moved to a js file
+
+  and besides that some suggars syntax like `addScript` and `addStyle` were added, this way the application already takes care of inserting the elements and providing the content automatically.
+
+- Open modals in side effects outside React ([#22247](https://github.com/RocketChat/Rocket.Chat/pull/22247))
+
+- Remove "Game Center" setting ([#22232](https://github.com/RocketChat/Rocket.Chat/pull/22232))
+
+### 🚀 Improvements
+
+
+- **APPS:** Refactor bridges ([#21253](https://github.com/RocketChat/Rocket.Chat/pull/21253))
+
+  Make the bridge classes extend abstract classes provided by the engine instead of just implementing an interface. The new abstract classes feature proxy methods used for permission verification in each method. This is also offers space to add more behaviors before executing the actual bridge methods.
+
+- Add BBB and Jitsi to Team ([#22312](https://github.com/RocketChat/Rocket.Chat/pull/22312))
+
+  Added 2 new settings:  
+  - `Admin > Video Conference > Big Blue Button > Enable for teams`  
+  - `Admin > Video Conference > Jitsi > Enable in teams`
+
+- Add debouncing to units selects filters ([#22097](https://github.com/RocketChat/Rocket.Chat/pull/22097))
+
+- Add modal to close chats when tags/comments are not required ([#22245](https://github.com/RocketChat/Rocket.Chat/pull/22245))
+
+  When neither tags or comments are required to close a livechat, show this modal instead: 
+  ![Screen Shot 2021-05-20 at 7 33 19 PM](https://user-images.githubusercontent.com/20868078/119057741-6af23c80-b9a3-11eb-902f-f8a7458ad11c.png)
+
+- Fallback messages on contextual bar ([#22376](https://github.com/RocketChat/Rocket.Chat/pull/22376))
+
+  ![image](https://user-images.githubusercontent.com/27704687/122301100-9569e380-ced6-11eb-992a-e3a7fd9d0d73.png)
+
+- Missing tests to `fname` and `prid` in the `rooms.createDiscussion` endpoint ([#22223](https://github.com/RocketChat/Rocket.Chat/pull/22223))
+
+  - Add tests to the values of `fname` and `prid` in the `rooms.createDiscussion` endpoint's results.
+
+- New indexes for Omnichannel-related collections ([#22367](https://github.com/RocketChat/Rocket.Chat/pull/22367))
+
+- Paginated department select on forward chat ([#22123](https://github.com/RocketChat/Rocket.Chat/pull/22123))
+
+  Changes the department dropdown to use the new paginated selects, allowing for searching and displaying more than 50 departments
+
+- Paginated multiselect for EE tags ([#22315](https://github.com/RocketChat/Rocket.Chat/pull/22315))
+
+  This uses the paginated multiselect for the EE tags selection, allowing more than 50 tags to be shown.
+
+- Remove differentiation between public x private channels in sidebar ([#22160](https://github.com/RocketChat/Rocket.Chat/pull/22160))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/119752184-e7d55880-be72-11eb-9167-be2f305ddb3f.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/119752125-c8d6c680-be72-11eb-8444-2e0c7cb1c600.png)
+
+- Rewrite create direct modal ([#22209](https://github.com/RocketChat/Rocket.Chat/pull/22209))
+
+  ![image](https://user-images.githubusercontent.com/27704687/120384584-bb02c480-c2fc-11eb-8e8e-c197b08b5201.png)
+
+- Rewrite Create Discussion Modal (only through sidebar) ([#22224](https://github.com/RocketChat/Rocket.Chat/pull/22224))
+
+  This is only available by creating a new discussion when clicking on the sidebar button. Other places will be implemented afterwards.
+
+  ![image](https://user-images.githubusercontent.com/40830821/120556093-6af63180-c3d2-11eb-97ea-63c5423049dc.png)
+
+- Send only relevant data via WebSocket ([#22258](https://github.com/RocketChat/Rocket.Chat/pull/22258))
+
+  Previously when any data changed on subscriptions or rooms we were getting fresh data from database, to also remove undesired fields, but sometimes the data that changed was not relevant so we were sending the whole object everytime **without** the fields that actually changed. This change aims to reduce this overhead and also send less data to clients.
+
+### 🐛 Bug fixes
+
+
+- _updatedAt attribute not being automatically updated by raw models ([#22306](https://github.com/RocketChat/Rocket.Chat/pull/22306))
+
+- **EE:** Canned responses can't be deleted ([#22095](https://github.com/RocketChat/Rocket.Chat/pull/22095))
+
+  Deletion button has been removed from the edition option.
+
+  ## Before
+  ![image](https://user-images.githubusercontent.com/2493803/119059416-9f1b2c80-b9a6-11eb-933a-4efa1ac0552a.png)
+
+  ### After
+  ![Rocket Chat (2)](https://user-images.githubusercontent.com/2493803/119172517-72b1ef80-ba3c-11eb-9178-04a12176f312.gif)
+
+- **ENTERPRISE:** Omnichannel enterprise permissions being added back to its default roles ([#22322](https://github.com/RocketChat/Rocket.Chat/pull/22322))
+
+  Fix omnichannel monitor permissions being added back to omnichannel monitor role on every startup.
+
+- **ENTERPRISE:** Prevent Visitor Abandonment after forwarding chat ([#22243](https://github.com/RocketChat/Rocket.Chat/pull/22243))
+
+  Currently the Visitor Abandonment timer isn't affected when the chat is forwarded. However this is affecting the UX in certain situations like eg: A bot forwarding a chat to an human agent
+  ![image](https://user-images.githubusercontent.com/34130764/120896383-e4925780-c63e-11eb-937e-ffd7c4836159.png)
+
+  To solve this issue, we'll now be stoping the Visitor Abandonment timer once a chat is forwarded.
+
+- **IMPROVE:** Prevent creation of duplicated roles and new `roles.update` endpoint ([#22279](https://github.com/RocketChat/Rocket.Chat/pull/22279))
+
+  Currently, the action of updating a role is broken: because roles have their `_id` = `name`, when updating a role there's no way to validate if the user is trying to update or create a new role with a name that already exists   -  which causes wrong behaviors, such as roles with the same name and not being able to update them.
+
+  To proper fix this, this PR looks to change the creation of roles. Now, roles have a unique  `_id` value and there's a endpoint to update roles: `/api/v1/roles.update`.
+
+  Doing so, it's possible to validate on both endpoints (`roles.create` and `roles.update`) to not allow roles with duplicated names.
+
+  **OBS:** The unique id changes only reflect new roles, the standard roles (such as admin and user) still have `_id` = `name`, but new roles now **can't** have the same name as them.
+
+- `channels.history`, `groups.history` and `im.history` REST endpoints not respecting hide system message config ([#22364](https://github.com/RocketChat/Rocket.Chat/pull/22364))
+
+- Apps not syncing status correctly on HA setups ([#22415](https://github.com/RocketChat/Rocket.Chat/pull/22415))
+
+  FIxes erros where, on HA setups, instances that DID NOT originate the action of uninstalling and updating an app would maintain the wrong status of apps when they received the notification of these events via Streamer.
+
+- Attachments and avatars not rendered if deployed on subfolder ([#22290](https://github.com/RocketChat/Rocket.Chat/pull/22290))
+
+- Auditing page not printing all messages ([#22272](https://github.com/RocketChat/Rocket.Chat/pull/22272))
+
+  Changed CSS so printed media from the auditing page includes all page content.
+
+- Can't delete file from Room's file list ([#22191](https://github.com/RocketChat/Rocket.Chat/pull/22191))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/120215931-bb239700-c20c-11eb-9494-d4bc017df390.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/120216113-f8882480-c20c-11eb-9afb-b127e66a43da.png)
+
+- Cancel button and success toast at Leave Team modal ([#22373](https://github.com/RocketChat/Rocket.Chat/pull/22373))
+
+- Chore: `team.addMembers` doesn't add member to main team room ([#22169](https://github.com/RocketChat/Rocket.Chat/pull/22169))
+
+  Fix `team.addMembers` endpoint as it currently doesn't work properly. The API call is adding members to a team's channels but not to the main team room.
+
+- Convert and Move team permission ([#22350](https://github.com/RocketChat/Rocket.Chat/pull/22350))
+
+  ### before
+  https://user-images.githubusercontent.com/45966964/114909360-5c04f100-9e1d-11eb-9363-f308e5d0be68.mp4
+
+  ### after
+  https://user-images.githubusercontent.com/45966964/114909388-61fad200-9e1d-11eb-9bbe-114b55954a9f.mp4
+
+- CORS error while interacting with any action button on Livechat  ([#22150](https://github.com/RocketChat/Rocket.Chat/pull/22150))
+
+- DeepL supported languages ([#22326](https://github.com/RocketChat/Rocket.Chat/pull/22326) by [@mrsimpson](https://github.com/mrsimpson))
+
+- Error generating Jitsi Token ([#22301](https://github.com/RocketChat/Rocket.Chat/pull/22301))
+
+- Game center close button ([#22353](https://github.com/RocketChat/Rocket.Chat/pull/22353))
+
+  ![Peek 2021-06-14 18-19](https://user-images.githubusercontent.com/27704687/121960896-155c4600-cd3d-11eb-9be9-9712f4a1087b.gif)
+
+- Jitsi integration sending random "join now" messages ([#22277](https://github.com/RocketChat/Rocket.Chat/pull/22277))
+
+- LDAP and SAML: changed usernames are not reflected on old data ([#22304](https://github.com/RocketChat/Rocket.Chat/pull/22304))
+
+- Members tab visual issues ([#22138](https://github.com/RocketChat/Rocket.Chat/pull/22138))
+
+  ## Before
+  ![image](https://user-images.githubusercontent.com/27704687/119558283-95fbd800-bd77-11eb-91b4-91821f365bf3.png)
+
+  ## After
+  ![image](https://user-images.githubusercontent.com/27704687/119558120-6947c080-bd77-11eb-8ecb-7fedc07afa82.png)
+
+- Memory leak generated by Stream Cast usage ([#22329](https://github.com/RocketChat/Rocket.Chat/pull/22329))
+
+  Stream Cast uses a different approach to broadcast data to the instances, it uses the DDP subscription method that requires a collection on the other side, if no collection exists with the given name `broadcast-stream` it caches in memory waiting for the collection to be set later. The cache is cleared only when a reconnection happens.
+
+  This PR overrides the function that processes the data for that specific connection, preventing the cache and everything else to be processed since we already have our low-level listener to process the data.
+
+- Message box hiding on mobile view (Safari) ([#22212](https://github.com/RocketChat/Rocket.Chat/pull/22212))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/120404256-5b1c1600-c31c-11eb-96e9-860e4132db5f.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/120404406-acc4a080-c31c-11eb-9efb-c2ad88664fda.png)
+
+- Missing burger menu on direct messages ([#22211](https://github.com/RocketChat/Rocket.Chat/pull/22211))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/120403671-09bf5700-c31b-11eb-92a1-a2f589bd85fc.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/120403693-1643af80-c31b-11eb-8027-dbdc4f560647.png)
+
+- Missing Throbber while thread list is loading ([#22316](https://github.com/RocketChat/Rocket.Chat/pull/22316))
+
+  ### before
+  List was starting with no results even if there's results:
+
+  ![image](https://user-images.githubusercontent.com/27704687/121606744-1e8ba100-ca25-11eb-9b31-706fb998d05f.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/121606635-e97f4e80-ca24-11eb-81f7-af8b0cc41c89.png)
+
+- Not possible to edit some messages inside threads ([#22325](https://github.com/RocketChat/Rocket.Chat/pull/22325))
+
+  ### Before
+  ![before](https://user-images.githubusercontent.com/27704687/121755733-4eeb4200-caee-11eb-9d77-1b498c38c478.gif)
+
+  ### After
+  ![after](https://user-images.githubusercontent.com/27704687/121755736-514d9c00-caee-11eb-9897-78fcead172f2.gif)
+
+- Notifications not using user's name ([#22309](https://github.com/RocketChat/Rocket.Chat/pull/22309))
+
+- OAuth login not working on electron app with temp sessions. ([#22401](https://github.com/RocketChat/Rocket.Chat/pull/22401))
+
+- Omnichannel information panel is not displaying departments correctly ([#22155](https://github.com/RocketChat/Rocket.Chat/pull/22155))
+
+- Permission check for teams.listRoomsOfUser ([#22313](https://github.com/RocketChat/Rocket.Chat/pull/22313))
+
+  If the user is trying to list his own channels, the permission check is skipped.
+
+- Read receipts are broken ([#22203](https://github.com/RocketChat/Rocket.Chat/pull/22203))
+
+- Remove invalid check before sending notifications to Omnichannel online agents ([#22278](https://github.com/RocketChat/Rocket.Chat/pull/22278))
+
+- Remove useless message options from Omnichannel Rooms ([#21549](https://github.com/RocketChat/Rocket.Chat/pull/21549))
+
+- Removed follow button from message box in threads ([#21019](https://github.com/RocketChat/Rocket.Chat/pull/21019) by [@Darshilp326](https://github.com/Darshilp326))
+
+  Removed follow button from message box as it was coinciding with audio/file message in threads.
+
+- Setup wizard infinite loop when on subfolder. ([#22395](https://github.com/RocketChat/Rocket.Chat/pull/22395))
+
+- Sidebar not closing when clicking on a channel ([#22271](https://github.com/RocketChat/Rocket.Chat/pull/22271))
+
+  ### before
+  ![before](https://user-images.githubusercontent.com/27704687/121074843-c6e20100-c7aa-11eb-88db-76e39b57b064.gif)
+
+  ### after
+  ![after](https://user-images.githubusercontent.com/27704687/121074860-cb0e1e80-c7aa-11eb-9e96-06d75044b763.gif)
+
+- Sound notification is not emitted when the Omnichannel chat comes from another department ([#22291](https://github.com/RocketChat/Rocket.Chat/pull/22291))
+
+- Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+- Unable to change protected role's description ([#22402](https://github.com/RocketChat/Rocket.Chat/pull/22402))
+
+- Undefined error when forwarding chats to offline department ([#22154](https://github.com/RocketChat/Rocket.Chat/pull/22154))
+
+  ![Screen Shot 2021-05-26 at 5 29 17 PM](https://user-images.githubusercontent.com/59577424/119727520-c495b380-be48-11eb-88a2-158017c7ad0a.png)
+
+  Omnichannel agents are facing the error shown above when forwarding chats to offline departments.
+  The error usually takes place when the routing system algorithm is **Manual Selection**.
+
+- Unread bar in channel flash quickly and then disappear ([#22275](https://github.com/RocketChat/Rocket.Chat/pull/22275))
+
+  ![unread_messages](https://user-images.githubusercontent.com/27704687/121092865-960dc600-c7c2-11eb-9074-81060d826811.gif)
+
+- User Info displaying own user. ([#22219](https://github.com/RocketChat/Rocket.Chat/pull/22219))
+
+- Visitor info screen being updated multiple times ([#22482](https://github.com/RocketChat/Rocket.Chat/pull/22482))
+
+- Web navigation breaks after visiting integrations admin page ([#21983](https://github.com/RocketChat/Rocket.Chat/pull/21983) by [@rexzing](https://github.com/rexzing))
+
+  Fix the navigation breaks issue after visiting the integrations administration page
+
+- Wrong member's contextualBar on direct multiple ([#21452](https://github.com/RocketChat/Rocket.Chat/pull/21452))
+
+  ![image](https://user-images.githubusercontent.com/27704687/113620310-893cec80-9630-11eb-83e2-0e8b2181cc42.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump: Fuselage 0.27.0 ([#22486](https://github.com/RocketChat/Rocket.Chat/pull/22486))
+
+- Chore: Attachment Definitions and UiKitDefinitions ([#22354](https://github.com/RocketChat/Rocket.Chat/pull/22354))
+
+- Chore: Bump node_modules cache key ([#22250](https://github.com/RocketChat/Rocket.Chat/pull/22250))
+
+- Chore: Change modals for remove user from team && leave team ([#22141](https://github.com/RocketChat/Rocket.Chat/pull/22141))
+
+  ![image](https://user-images.githubusercontent.com/40830821/119576154-93f14380-bd8e-11eb-8885-f889f2939bf4.png)
+  ![image](https://user-images.githubusercontent.com/40830821/119576219-b5eac600-bd8e-11eb-832c-ea7a17a56bdd.png)
+
+- Chore: Check PR Title on every submission ([#22140](https://github.com/RocketChat/Rocket.Chat/pull/22140))
+
+- Chore: Enable push gateway only if the server is registered ([#22346](https://github.com/RocketChat/Rocket.Chat/pull/22346))
+
+  Currently, when creating an unregistered server, the default value of the push gateway setting is set to true and is disabled (it can't be changed unless the server is registered). This is a wrong behavior as an unregistered server **can't** use the push gateway.
+
+  This PR creates a validation to check if the server is registered when enabling the push gateway. That way, even if the push gateway setting is turned on, but the server is unregistered, the push gateway **won't** work   - it will behave like it is off.
+
+- Chore: Enforce TypeScript on Storybook ([#22317](https://github.com/RocketChat/Rocket.Chat/pull/22317))
+
+  Rewrite some Storybook stories in TypeScript, as an example.
+
+- Chore: Move getUserRoles to service and add cache ([#22345](https://github.com/RocketChat/Rocket.Chat/pull/22345))
+
+- Chore: Remove Meter.wrapAsync from upload api ([#22286](https://github.com/RocketChat/Rocket.Chat/pull/22286))
+
+- Chore: Remove not used scripts and its dependencies ([#22167](https://github.com/RocketChat/Rocket.Chat/pull/22167))
+
+- Chore: Remove unnecessary modals replacing to GenericModal ([#21853](https://github.com/RocketChat/Rocket.Chat/pull/21853))
+
+- Chore: Update delete team modal to new design ([#22127](https://github.com/RocketChat/Rocket.Chat/pull/22127))
+
+  Now the modal has only 2 steps (steps 1 and 2 were merged)
+  ![image](https://user-images.githubusercontent.com/40830821/119414580-2e398480-bcc6-11eb-9a47-515568257974.png)
+
+- Language update from LingoHub 🤖 on 2021-05-31Z ([#22196](https://github.com/RocketChat/Rocket.Chat/pull/22196))
+
+- Language update from LingoHub 🤖 on 2021-06-14Z ([#22340](https://github.com/RocketChat/Rocket.Chat/pull/22340))
+
+- Merge master into develop & Set version to 3.16.0-develop ([#22184](https://github.com/RocketChat/Rocket.Chat/pull/22184))
+
+- Refactor few methods to improve Omnichannel flow ([#22321](https://github.com/RocketChat/Rocket.Chat/pull/22321))
+
+- Regression: Api tests not running ([#22369](https://github.com/RocketChat/Rocket.Chat/pull/22369))
+
+- Regression: Block-size property on firefox ([#22433](https://github.com/RocketChat/Rocket.Chat/pull/22433))
+
+- Regression: CSP for external Media and Frames ([#22465](https://github.com/RocketChat/Rocket.Chat/pull/22465))
+
+- Regression: Enable unregistered servers to use their own push gateway ([#22391](https://github.com/RocketChat/Rocket.Chat/pull/22391))
+
+  https://github.com/RocketChat/Rocket.Chat/pull/22346 prevented unregistered servers from using the RC push gateway but was still blocking this servers from using their own push gateway, this PR looks to fix that.
+
+- Regression: Fix CORS in uikit endpoints ([#22214](https://github.com/RocketChat/Rocket.Chat/pull/22214))
+
+- Regression: Fix livechat find departments ([#22472](https://github.com/RocketChat/Rocket.Chat/pull/22472))
+
+- Regression: Missing flexDirection on select field ([#22300](https://github.com/RocketChat/Rocket.Chat/pull/22300))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/121425905-532a2a80-c949-11eb-885f-e8ddaf5c8d5c.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/121425770-283fd680-c949-11eb-8d94-86886f174599.png)
+
+- Regression: RoomProvider using wrong types ([#22370](https://github.com/RocketChat/Rocket.Chat/pull/22370))
+
+- Release 3.15.2 ([#22483](https://github.com/RocketChat/Rocket.Chat/pull/22483))
+
+- Update README.md ([#22461](https://github.com/RocketChat/Rocket.Chat/pull/22461))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Darshilp326](https://github.com/Darshilp326)
+- [@mrsimpson](https://github.com/mrsimpson)
+- [@rexzing](https://github.com/rexzing)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Faria-TechWrite](https://github.com/Faria-TechWrite)
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@lolimay](https://github.com/lolimay)
+- [@lucassartor](https://github.com/lucassartor)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rafaelblink](https://github.com/rafaelblink)
+- [@renatobecker](https://github.com/renatobecker)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 # 3.15.2
-`2021-06-27  ·  3 🐛  ·  2 👩‍💻👨‍💻`
+`2021-06-27  ·  3 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.22.1`
@@ -19,13 +421,21 @@
 
 - Visitor info screen being updated multiple times ([#22482](https://github.com/RocketChat/Rocket.Chat/pull/22482))
 
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.15.2 ([#22483](https://github.com/RocketChat/Rocket.Chat/pull/22483))
+
+</details>
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.15.1
-`2021-06-21  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+`2021-06-21  ·  3 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.22.1`
@@ -41,6 +451,14 @@
 - Setup wizard infinite loop when on subfolder. ([#22395](https://github.com/RocketChat/Rocket.Chat/pull/22395))
 
 - Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.15.1 ([#22432](https://github.com/RocketChat/Rocket.Chat/pull/22432))
+
+</details>
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -2625,7 +3043,7 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 3.11.5
-`2021-06-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2021-06-28  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
