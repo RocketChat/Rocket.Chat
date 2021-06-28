@@ -21,11 +21,13 @@ export interface IRoom extends IRocketChatRecord {
 	msgs: number;
 	default?: true;
 	broadcast?: true;
+	voice?: boolean;
 	featured?: true;
 	encrypted?: boolean;
 	topic: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	uids: Array<string>;
 
 	lastMessage?: IMessage;
 	lm?: Date;
@@ -57,6 +59,8 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+
+	sysMes?: string[];
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

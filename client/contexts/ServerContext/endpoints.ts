@@ -1,5 +1,6 @@
 import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
+import { ChannelsMembersEndpoint } from './endpoints/v1/channels/members';
 import { FollowMessageEndpoint as ChatFollowMessageEndpoint } from './endpoints/v1/chat/followMessage';
 import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
 import { GetMessageEndpoint as ChatGetMessageEndpoint } from './endpoints/v1/chat/getMessage';
@@ -9,12 +10,15 @@ import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoin
 import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
+import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
+import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
+import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
@@ -32,7 +36,10 @@ export type ServerEndpoints = {
 	'emoji-custom.list': EmojiCustomListEndpoint;
 	'channels.files': ChannelsFilesEndpoint;
 	'im.files': ImFilesEndpoint;
+	'im.members': ImMembersEndpoint;
 	'groups.files': GroupsFilesEndpoint;
+	'groups.members': GroupsMembersEndpoint;
+	'channels.members': ChannelsMembersEndpoint;
 	'users.autocomplete': UsersAutocompleteEndpoint;
 	'livechat/appearance': LivechatAppearanceEndpoint;
 	'custom-user-status.list': CustomUserStatusListEndpoint;
@@ -44,6 +51,7 @@ export type ServerEndpoints = {
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
 	'livechat/monitors.list': LivechatMonitorsList;
+	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 };

@@ -9,7 +9,7 @@ import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 
 Meteor.methods({
-	'jitsi:updateTimeout': (rid) => {
+	'jitsi:updateTimeout': (rid, joiningNow = true) => {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'jitsi:updateTimeout' });
 		}
@@ -36,7 +36,7 @@ Meteor.methods({
 				Rooms.setJitsiTimeout(rid, nextTimeOut);
 			}
 
-			if (!jitsiTimeout || currentTime > jitsiTimeout) {
+			if (joiningNow && (!jitsiTimeout || currentTime > jitsiTimeout)) {
 				metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
 				const message = Messages.createWithTypeRoomIdMessageAndUser('jitsi_call_started', rid, '', Meteor.user(), {

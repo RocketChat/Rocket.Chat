@@ -5,6 +5,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import Header from '../Header';
+import VoiceRoom from '../VoiceRoom';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
@@ -40,19 +41,24 @@ const Room = () => {
 
 	useDebugValue(room);
 	useDebugValue(tab);
+
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
 				<Header room={room} rid={room._id} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
-				<BlazeTemplate
-					onClick={hideFlexTab ? close : undefined}
-					name='roomOld'
-					tabBar={tabBar}
-					rid={room._id}
-					_id={room._id}
-				/>
+				{room.voice ? (
+					<VoiceRoom room={room} />
+				) : (
+					<BlazeTemplate
+						onClick={hideFlexTab ? close : undefined}
+						name='roomOld'
+						tabBar={tabBar}
+						rid={room._id}
+						_id={room._id}
+					/>
+				)}
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
