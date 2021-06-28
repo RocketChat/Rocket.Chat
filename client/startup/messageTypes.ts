@@ -73,4 +73,32 @@ Meteor.startup(() => {
 			};
 		},
 	});
+
+	MessageTypes.registerType({
+		id: 'room_added_to_team',
+		system: true,
+		message: 'room_added_to_team',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				user_by: message.u && message.u.username,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				room_names: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+			};
+		},
+	});
+
+	MessageTypes.registerType({
+		id: 'room_removed_from_team',
+		system: true,
+		message: 'room_removed_from_team',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				user_by: message.u && message.u.username,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				room_name: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+			};
+		},
+	});
 });

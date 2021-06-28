@@ -6,6 +6,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import type { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
+import { Messages } from '../../../app/models/server';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -295,7 +296,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('missing-userId');
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOne(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -305,6 +306,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		const user = await this.Users.findOneById(uid);
 		const rids = rooms.filter((rid) => rid && typeof rid === 'string');
 		const validRooms = await this.RoomsModel.findManyByRoomIds(rids).toArray();
+		const roomNames = [];
 		if (validRooms.length < rids.length) {
 			throw new Error('invalid-room');
 		}
@@ -325,11 +327,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 			if (!await this.SubscriptionsModel.isUserInRole(uid, 'owner', room._id)) {
 				throw new Error('error-no-owner-channel');
 			}
-
+			roomNames.push(room.name);
 			room.teamId = teamId;
 		}
 
 		this.RoomsModel.setTeamByIds(rids, teamId);
+		Messages.createRoomAddedToTeamWithRoomIdAndUser(team.roomId, roomNames.join(), user, {});
 		return validRooms;
 	}
 
@@ -349,15 +352,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById(uid);
 		if (!canRemoveAnyRoom) {
-			const user = await this.Users.findOneById(uid);
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1 } });
+		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -369,6 +372,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		delete room.teamId;
 		delete room.teamDefault;
 		this.RoomsModel.unsetTeamById(room._id);
+		Messages.createRoomRemovedFromTeamWithRoomIdAndUser(team.roomId, room.name, user, {});
 		return {
 			...room,
 		};
