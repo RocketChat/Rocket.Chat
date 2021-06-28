@@ -1,7 +1,7 @@
 {
 	"name": "Rocket.Chat",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "3.16.0-develop",
+	"version": "3.17.0-develop",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -53,7 +53,7 @@
 		"@babel/preset-react": "^7.10.4",
 		"@babel/register": "^7.12.1",
 		"@rocket.chat/eslint-config": "^0.3.0",
-		"@rocket.chat/icons": "^0.26.0",
+		"@rocket.chat/icons": "^0.27.0",
 		"@rocket.chat/livechat": "^1.9.3",
 		"@settlin/spacebars-loader": "^1.0.8",
 		"@storybook/addon-essentials": "^6.2.2",
