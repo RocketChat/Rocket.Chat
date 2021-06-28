@@ -1,101 +1,12 @@
 
-# 3.16.0 (Under Release Candidate Process)
+# 3.16.0
+`2021-06-28  ·  5 🎉  ·  13 🚀  ·  44 🐛  ·  26 🔍  ·  23 👩‍💻👨‍💻`
 
-## 3.16.0-rc.5
-`2021-06-28  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Bump: Fuselage 0.27.0 ([#22486](https://github.com/RocketChat/Rocket.Chat/pull/22486))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.16.0-rc.4
-`2021-06-27  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Visitor info screen being updated multiple times ([#22482](https://github.com/RocketChat/Rocket.Chat/pull/22482))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Release 3.15.2 ([#22483](https://github.com/RocketChat/Rocket.Chat/pull/22483))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.16.0-rc.3
-`2021-06-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: CSP for external Media and Frames ([#22465](https://github.com/RocketChat/Rocket.Chat/pull/22465))
-
-- Regression: Fix livechat find departments ([#22472](https://github.com/RocketChat/Rocket.Chat/pull/22472))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 3.16.0-rc.2
-`2021-06-25  ·  2 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Block-size property on firefox ([#22433](https://github.com/RocketChat/Rocket.Chat/pull/22433))
-
-- Update README.md ([#22461](https://github.com/RocketChat/Rocket.Chat/pull/22461))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@Faria-TechWrite](https://github.com/Faria-TechWrite)
-- [@rodrigok](https://github.com/rodrigok)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 3.16.0-rc.1
-`2021-06-22  ·  2 🐛  ·  2 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Apps not syncing status correctly on HA setups ([#22415](https://github.com/RocketChat/Rocket.Chat/pull/22415))
-
-  FIxes erros where, on HA setups, instances that DID NOT originate the action of uninstalling and updating an app would maintain the wrong status of apps when they received the notification of these events via Streamer.
-
-- Chore: `team.addMembers` doesn't add member to main team room ([#22169](https://github.com/RocketChat/Rocket.Chat/pull/22169))
-
-  Fix `team.addMembers` endpoint as it currently doesn't work properly. The API call is adding members to a team's channels but not to the main team room.
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@d-gubert](https://github.com/d-gubert)
-- [@lucassartor](https://github.com/lucassartor)
-
-## 3.16.0-rc.0
-`2021-06-21  ·  5 🎉  ·  13 🚀  ·  41 🐛  ·  20 🔍  ·  22 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.0-alpha.5237`
 
 ### 🎉 New features
 
@@ -230,6 +141,10 @@
 
 - `channels.history`, `groups.history` and `im.history` REST endpoints not respecting hide system message config ([#22364](https://github.com/RocketChat/Rocket.Chat/pull/22364))
 
+- Apps not syncing status correctly on HA setups ([#22415](https://github.com/RocketChat/Rocket.Chat/pull/22415))
+
+  FIxes erros where, on HA setups, instances that DID NOT originate the action of uninstalling and updating an app would maintain the wrong status of apps when they received the notification of these events via Streamer.
+
 - Attachments and avatars not rendered if deployed on subfolder ([#22290](https://github.com/RocketChat/Rocket.Chat/pull/22290))
 
 - Auditing page not printing all messages ([#22272](https://github.com/RocketChat/Rocket.Chat/pull/22272))
@@ -245,6 +160,10 @@
   ![image](https://user-images.githubusercontent.com/27704687/120216113-f8882480-c20c-11eb-9afb-b127e66a43da.png)
 
 - Cancel button and success toast at Leave Team modal ([#22373](https://github.com/RocketChat/Rocket.Chat/pull/22373))
+
+- Chore: `team.addMembers` doesn't add member to main team room ([#22169](https://github.com/RocketChat/Rocket.Chat/pull/22169))
+
+  Fix `team.addMembers` endpoint as it currently doesn't work properly. The API call is adding members to a team's channels but not to the main team room.
 
 - Convert and Move team permission ([#22350](https://github.com/RocketChat/Rocket.Chat/pull/22350))
 
@@ -365,6 +284,8 @@
 
 - User Info displaying own user. ([#22219](https://github.com/RocketChat/Rocket.Chat/pull/22219))
 
+- Visitor info screen being updated multiple times ([#22482](https://github.com/RocketChat/Rocket.Chat/pull/22482))
+
 - Web navigation breaks after visiting integrations admin page ([#21983](https://github.com/RocketChat/Rocket.Chat/pull/21983) by [@rexzing](https://github.com/rexzing))
 
   Fix the navigation breaks issue after visiting the integrations administration page
@@ -376,6 +297,8 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+
+- Bump: Fuselage 0.27.0 ([#22486](https://github.com/RocketChat/Rocket.Chat/pull/22486))
 
 - Chore: Attachment Definitions and UiKitDefinitions ([#22354](https://github.com/RocketChat/Rocket.Chat/pull/22354))
 
@@ -421,11 +344,17 @@
 
 - Regression: Api tests not running ([#22369](https://github.com/RocketChat/Rocket.Chat/pull/22369))
 
+- Regression: Block-size property on firefox ([#22433](https://github.com/RocketChat/Rocket.Chat/pull/22433))
+
+- Regression: CSP for external Media and Frames ([#22465](https://github.com/RocketChat/Rocket.Chat/pull/22465))
+
 - Regression: Enable unregistered servers to use their own push gateway ([#22391](https://github.com/RocketChat/Rocket.Chat/pull/22391))
 
   https://github.com/RocketChat/Rocket.Chat/pull/22346 prevented unregistered servers from using the RC push gateway but was still blocking this servers from using their own push gateway, this PR looks to fix that.
 
 - Regression: Fix CORS in uikit endpoints ([#22214](https://github.com/RocketChat/Rocket.Chat/pull/22214))
+
+- Regression: Fix livechat find departments ([#22472](https://github.com/RocketChat/Rocket.Chat/pull/22472))
 
 - Regression: Missing flexDirection on select field ([#22300](https://github.com/RocketChat/Rocket.Chat/pull/22300))
 
@@ -437,6 +366,10 @@
 
 - Regression: RoomProvider using wrong types ([#22370](https://github.com/RocketChat/Rocket.Chat/pull/22370))
 
+- Release 3.15.2 ([#22483](https://github.com/RocketChat/Rocket.Chat/pull/22483))
+
+- Update README.md ([#22461](https://github.com/RocketChat/Rocket.Chat/pull/22461))
+
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
@@ -447,6 +380,7 @@
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
+- [@Faria-TechWrite](https://github.com/Faria-TechWrite)
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
