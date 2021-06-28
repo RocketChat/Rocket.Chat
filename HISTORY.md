@@ -1,4 +1,29 @@
 
+# 3.15.2
+`2021-06-27  ·  3 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.26.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel enterprise permissions being added back to its default roles ([#22322](https://github.com/RocketChat/Rocket.Chat/pull/22322))
+
+  Fix omnichannel monitor permissions being added back to omnichannel monitor role on every startup.
+
+- Sound notification is not emitted when the Omnichannel chat comes from another department ([#22291](https://github.com/RocketChat/Rocket.Chat/pull/22291))
+
+- Visitor info screen being updated multiple times ([#22482](https://github.com/RocketChat/Rocket.Chat/pull/22482))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.15.1
 `2021-06-21  ·  3 🐛  ·  3 👩‍💻👨‍💻`
 
@@ -2600,7 +2625,7 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 3.11.5
-`2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2021-06-27  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
