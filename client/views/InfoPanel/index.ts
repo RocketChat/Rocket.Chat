@@ -5,6 +5,8 @@ import Field from './Field';
 import InfoPanel from './InfoPanel';
 import Label from './Label';
 import Section from './Section';
+import Tag from './Tag';
+import TagGroup from './TagGroup';
 import Text from './Text';
 import Title from './Title';
 
@@ -17,4 +19,6 @@ export default Object.assign(InfoPanel, {
 	Action,
 	Section,
 	ActionGroup,
+	Tag,
+	TagGroup,
 });

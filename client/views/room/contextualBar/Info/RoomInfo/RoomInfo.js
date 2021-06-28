@@ -1,4 +1,4 @@
-import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Callout, Chip, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
@@ -12,6 +12,7 @@ function RoomInfo({
 	name,
 	fname,
 	description,
+	tags = [],
 	archived,
 	broadcast,
 	announcement,
@@ -133,6 +134,12 @@ function RoomInfo({
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
+	
+	const mapTags = (label) => (
+		<InfoPanel.Tag key={label} label={label} /*onClick={}*/ />
+	);
+
+	const tagsGroup = tags.map(mapTags).filter(Boolean);
 
 	return (
 		<>
@@ -179,6 +186,13 @@ function RoomInfo({
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
 								<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
+
+						{tags && tags.length !== 0 && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Tags')}</InfoPanel.Label>
+								<InfoPanel.TagGroup>{tagsGroup}</InfoPanel.TagGroup>
 							</InfoPanel.Field>
 						)}
 

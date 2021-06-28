@@ -61,6 +61,32 @@ Meteor.startup(() => {
 	});
 
 	MessageTypes.registerType({
+		id: 'room_changed_tags',
+		system: true,
+		message: 'room_changed_tags',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				user_by: message.u && message.u.username,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				room_tags: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+			};
+		},
+	});
+
+	MessageTypes.registerType({
+		id: 'room_removed_tags',
+		system: true,
+		message: 'room_removed_tags',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				user_by: message.u && message.u.username,
+			};
+		},
+	});
+
+	MessageTypes.registerType({
 		id: 'room_changed_description',
 		system: true,
 		message: 'room_changed_description',

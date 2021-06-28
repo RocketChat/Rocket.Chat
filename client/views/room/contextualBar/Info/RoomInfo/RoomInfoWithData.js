@@ -206,6 +206,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 			description={room.description && <MarkdownText variant='inline' content={room.description} />}
 			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
+			tags={room.tags}
 		/>
 	);
 };

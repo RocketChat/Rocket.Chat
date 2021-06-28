@@ -88,6 +88,7 @@ export async function findAdminRoom({ uid, rid }) {
 		tokenpass: 1,
 		announcement: 1,
 		description: 1,
+		tags: 1,
 	};
 
 	return Rooms.findOneById(rid, { fields });
