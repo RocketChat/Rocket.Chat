@@ -62178,6 +62178,18 @@
           ]
         }
       ]
+    },
+    "3.16.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.0-alpha.5237",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
     }
   }
 }
