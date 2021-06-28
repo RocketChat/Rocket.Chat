@@ -86,7 +86,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		}
 
 		onClose();
-		reload();
+		reload && reload();
 	}, [
 		broadcast,
 		createChannel,
