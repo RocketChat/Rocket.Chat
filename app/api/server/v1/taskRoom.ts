@@ -1,15 +1,19 @@
 import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
-import { Match, check } from 'meteor/check';
+import { Match, check, Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import moment from 'moment';
 
+import { settings } from '../settings';
+import { updateMessage } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
-import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
 import { Users, Messages } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
+
 import Message from '/client/views/room/contextualBar/Discussions/components/Message';
 
 // API.v1.addRoute('teams.list', { authRequired: true }, {
@@ -86,6 +90,63 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 		const messageDetails = Promise.await(Messages.findOne({ _id: taskId }));
 
 		return API.v1.success({ message: messageDetails });
+	},
+});
+
+API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
+	post() {
+		const { taskId } = this.queryParams;
+
+		if (!taskId) {
+			return API.v1.failure('task-does-not-exist');
+		}
+
+		// permissions
+
+		const originalMessage = Messages.findOneById(taskId);
+
+		if (!originalMessage || !originalMessage._id) {
+			return;
+		}
+
+		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', originalMessage.rid);
+
+		const editAllowed = settings.get('Message_AllowEditing');
+		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
+
+		if (!_hasPermission && (!editAllowed || !editOwn)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
+		}
+
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
+		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
+			let currentTsDiff;
+			let msgTs;
+
+			if (Match.test(originalMessage.ts, Number)) {
+				msgTs = moment(originalMessage.ts);
+			}
+			if (msgTs) {
+				currentTsDiff = moment().diff(msgTs, 'minutes');
+			}
+			if (currentTsDiff > blockEditInMinutes) {
+				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
+			}
+		}
+
+		const user = Meteor.users.findOne(Meteor.userId());
+		canSendMessage(message.rid, { uid: user._id, ...user });
+
+		// It is possible to have an empty array as the attachments property, so ensure both things exist
+		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
+			message.attachments = originalMessage.attachments;
+			message.attachments[0].description = message.msg;
+			message.msg = originalMessage.msg;
+		}
+
+		message.u = originalMessage.u;
+
+		return updateMessage(originalMessage, Meteor.user());
 	},
 });
 
