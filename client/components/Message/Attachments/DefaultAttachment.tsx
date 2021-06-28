@@ -1,56 +1,23 @@
-import React, { ComponentProps, FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 
-import { AttachmentProps } from '.';
+import { isActionAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentAction';
+import {
+	MarkdownFields,
+	MessageAttachmentDefault,
+} from '../../../../definition/IMessage/MessageAttachment/MessageAttachmentDefault';
 import MarkdownText from '../../MarkdownText';
-import { ActionAttachment, ActionAttachmentProps } from './ActionAttachtment';
+import { ActionAttachment } from './ActionAttachtment';
 import Attachment from './Attachment';
 import FieldsAttachment from './FieldsAttachment';
-import { Dimensions } from './components/Dimensions';
 import { useCollapse } from './hooks/useCollapse';
 
-type MarkdownFields = 'text' | 'pretext' | 'fields';
-
-type DefaultAttachmentProps = {
-	collapsed?: true;
-
-	author_icon?: string;
-	author_link?: string;
-	author_name?: string;
-
-	// TODO: replace this component props type with a payload-based type because
-	// `value` comes as `string` and is passed as `ReactNode`
-	fields: ComponentProps<typeof FieldsAttachment>['fields'];
-
-	// footer
-	// footer_icon
-
-	image_url?: string;
-	image_dimensions?: Dimensions;
-
-	mrkdwn_in?: Array<MarkdownFields>;
-	pretext?: string;
-	text?: string;
-
-	thumb_url?: string;
-
-	title?: string;
-	title_link?: string;
-
-	ts?: Date;
-
-	color?: string;
-};
-
-const isActionAttachment = (attachment: AttachmentProps): attachment is ActionAttachmentProps =>
-	'actions' in attachment;
-
 const applyMarkdownIfRequires = (
-	list: DefaultAttachmentProps['mrkdwn_in'] = ['text', 'pretext'],
+	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
 ): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
 
-const DefaultAttachment: FC<DefaultAttachmentProps> = (attachment) => {
+const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
 
 	return (

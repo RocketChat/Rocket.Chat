@@ -9,6 +9,7 @@ import './routes';
 import './loginViaQuery';
 import './messageTypes';
 import './notifications';
+import './oauth';
 import './readReceipt';
 import './renderMessage';
 import './renderNotification';

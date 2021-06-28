@@ -5,6 +5,7 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import type { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -100,14 +101,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			const excludeFromMembers = owner ? [owner] : [uid];
 
 			// filter empty strings and falsy values from members list
-			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter(Boolean)
+			const membersList: Array<InsertionModel<ITeamMember>> = members?.filter(Boolean)
 				.filter((memberId) => !excludeFromMembers.includes(memberId))
 				.map((memberId) => ({
 					teamId,
 					userId: memberId,
 					createdAt: new Date(),
 					createdBy,
-					_updatedAt: new Date(), // TODO how to avoid having to do this?
 				})) || [];
 
 			membersList.push({
@@ -116,7 +116,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 				roles: ['owner'],
 				createdAt: new Date(),
 				createdBy,
-				_updatedAt: new Date(), // TODO how to avoid having to do this?
 			});
 
 			await this.TeamMembersModel.insertMany(membersList);
@@ -560,17 +559,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
-			teamId,
-			userId: member.userId,
-			roles: member.roles || [],
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		})) || [];
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('team-does-not-exist');
+		}
 
-		await this.TeamMembersModel.insertMany(membersList);
-		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
+		for await (const member of members) {
+			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			await addUserToRoom(team.roomId, user, createdBy, false);
+
+			if (member.roles) {
+				await this.addRolesToMember(teamId, member.userId, member.roles);
+			}
+		}
 	}
 
 	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
@@ -580,7 +581,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		const memberUpdate: Partial<ITeamMember> = {
 			roles: member.roles ? member.roles : [],
-			_updatedAt: new Date(),
 		};
 
 		await this.TeamMembersModel.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
