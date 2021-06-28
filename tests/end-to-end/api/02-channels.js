@@ -68,16 +68,6 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('should hide message pins (system messages)', (done) => {
-			request.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testChannel._id,
-					systemMessages: ['message_pinned'],
-				})
-				.expect(200)
-				.end(done);
-		});
 		it('should return channel basic structure', (done) => {
 			request.get(api('channels.info'))
 				.set(credentials)
