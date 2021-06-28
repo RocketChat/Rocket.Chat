@@ -48,7 +48,7 @@ const AccountProfilePage = () => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const localPassword = Boolean(user?.services?.password?.bcrypt?.trim());
+	const localPassword = Boolean(user?.services?.password?.exists);
 
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
@@ -67,7 +67,7 @@ const AccountProfilePage = () => {
 	const namesRegexSetting = useSetting('UTF8_Names_Validation');
 
 	if (allowPasswordChange && !allowOAuthPasswordChange) {
-		allowPasswordChange = Boolean(user?.services?.password?.bcrypt);
+		allowPasswordChange = localPassword;
 	}
 
 	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
