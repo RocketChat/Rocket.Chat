@@ -193,11 +193,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	if (startMonitor) {
-		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
+		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
 			switch (clientAction) {
 				case 'inserted':
 				case 'updated':
-					data = data ?? await UsersSessions.findOneById(id);
+					const data = eventData ?? await UsersSessions.findOneById(id);
 					if (!data) {
 						return;
 					}
@@ -248,15 +248,16 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 
-	watch<IPermission>(Permissions, async ({ clientAction, id, data, diff }) => {
+	watch<IPermission>(Permissions, async ({ clientAction, id, data: eventData, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 			// avoid useless changes
 			return;
 		}
+		let data;
 		switch (clientAction) {
 			case 'updated':
 			case 'inserted':
-				data = data ?? await Permissions.findOneById(id);
+				data = eventData ?? await Permissions.findOneById(id);
 				break;
 
 			case 'removed':
@@ -380,13 +381,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.integrations', { clientAction, data, id });
 	});
 
-	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data }) => {
+	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
 			return;
 		}
 
-		data = data ?? await EmailInbox.findOneById(id);
+		const data = eventData ?? await EmailInbox.findOneById(id);
 		if (!data) {
 			return;
 		}

@@ -12,7 +12,7 @@ export class SettingsRaw extends BaseRaw<T> {
 		return setting?.value;
 	}
 
-	findOneNotHiddenById(_id: string): Promise<T | undefined> {
+	findOneNotHiddenById(_id: string): Promise<T | null> {
 		const query = {
 			_id,
 			hidden: { $ne: true },
