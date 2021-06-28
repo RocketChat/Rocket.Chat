@@ -56,7 +56,7 @@ export class TeamRaw extends BaseRaw<T> {
 	}
 
 	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
+		return this.updateOne({
 			_id: id,
 		}, {
 			$set: {
@@ -92,6 +92,6 @@ export class TeamRaw extends BaseRaw<T> {
 			Object.assign(update.$set, { type: nameAndType.type });
 		}
 
-		return this.col.updateOne(query, update);
+		return this.updateOne(query, update);
 	}
 }

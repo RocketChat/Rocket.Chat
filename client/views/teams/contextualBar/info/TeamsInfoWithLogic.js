@@ -87,6 +87,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 			try {
 				await leaveTeam({ teamId: room.teamId, rooms });
+				dispatchToastMessage({ type: 'success', message: t('Teams_left_team_successfully') });
 				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -147,9 +148,11 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
 			{...room}
-			announcement={room.announcement && <MarkdownText content={room.announcement} />}
-			description={room.description && <MarkdownText content={room.description} />}
-			topic={room.topic && <MarkdownText content={room.topic} />}
+			announcement={
+				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
+			}
+			description={room.description && <MarkdownText variant='inline' content={room.description} />}
+			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
 }

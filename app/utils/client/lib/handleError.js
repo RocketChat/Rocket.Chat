@@ -1,8 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import toastr from 'toastr';
-
-import { escapeHTML } from '../../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 export const handleError = function(error, useToastr = true) {
 	if (error.xhr) {

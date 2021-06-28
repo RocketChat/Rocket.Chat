@@ -4,7 +4,7 @@ import SetupWizardPage from './SetupWizardPage';
 import { finalStep } from './SetupWizardState';
 
 export default {
-	title: 'views/setupWizard/SetupWizardPage',
+	title: 'components/setupWizard/SetupWizardPage',
 	component: SetupWizardPage,
 };
 

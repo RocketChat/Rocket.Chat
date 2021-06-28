@@ -33,7 +33,6 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room is not OnHold', { method: 'livechat:resumeOnHold' });
 		}
 
-
 		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', { method: 'livechat:resumeOnHold' });

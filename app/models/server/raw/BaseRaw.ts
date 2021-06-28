@@ -18,6 +18,8 @@ import {
 	WriteOpResult,
 } from 'mongodb';
 
+import { setUpdatedAt } from '../lib/setUpdatedAt';
+
 // [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
 type EnhancedOmit<T, K> = string | number extends keyof T
 	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
@@ -35,6 +37,8 @@ type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defin
 	: ObjectId;
 
 type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
+// InsertionModel forces both _id and _updatedAt to be optional, regardless of how they are declared in T
+export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & { _updatedAt?: Date };
 
 interface ITrash {
 	__collection__: string;
@@ -103,23 +107,27 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 	}
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.update(filter, update, options);
 	}
 
 	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.updateOne(filter, update, options);
 	}
 
 	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.updateMany(filter, update, options);
 	}
 
-	insertMany(docs: Array<ModelOptionalId<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
+	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectID();
 				return { _id: oid.toHexString(), ...doc };
 			}
+			setUpdatedAt(doc);
 			return doc;
 		});
 
@@ -127,11 +135,13 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		return this.col.insertMany(docs as unknown as Array<OptionalId<T>>, options);
 	}
 
-	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
 			doc = { _id: oid.toHexString(), ...doc };
 		}
+
+		setUpdatedAt(doc);
 
 		// TODO reavaluate following type casting
 		return this.col.insertOne(doc as unknown as OptionalId<T>, options);

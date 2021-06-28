@@ -13,8 +13,8 @@ import UAParser from 'ua-parser-js';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
 import {
 	Users,
 	LivechatRooms,
@@ -27,7 +27,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatInquiry,
-} from '../../../models';
+} from '../../../models/server';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
@@ -50,6 +50,19 @@ export const Livechat = {
 		},
 	}),
 
+
+	findGuest(token) {
+		return LivechatVisitors.getVisitorByToken(token, {
+			fields: {
+				name: 1,
+				username: 1,
+				token: 1,
+				visitorEmails: 1,
+				department: 1,
+			},
+		});
+	},
+
 	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
 			return true;
@@ -57,13 +70,12 @@ export const Livechat = {
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			const botAgents = Livechat.getBotAgents(department);
-			if (botAgents && botAgents.count() > 0) {
+			if (botAgents.count() > 0) {
 				return true;
 			}
 		}
 
-		const onlineAgents = Livechat.getOnlineAgents(department);
-		return onlineAgents && onlineAgents.count() > 0;
+		return Livechat.checkOnlineAgents(department);
 	},
 
 	getNextAgent(department) {
@@ -87,6 +99,18 @@ export const Livechat = {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
+	},
+
+	checkOnlineAgents(department, agent) {
+		if (agent?.agentId) {
+			return Users.checkOnlineAgents(agent.agentId);
+		}
+
+		if (department) {
+			return LivechatDepartmentAgents.checkOnlineForDepartment(department);
+		}
+
+		return Users.checkOnlineAgents();
 	},
 
 	getBotAgents(department) {
@@ -238,7 +262,7 @@ export const Livechat = {
 			}
 		}
 
-		if (phone) {
+		if (phone?.number) {
 			updateUser.$set.phone = [
 				{ phoneNumber: phone.number },
 			];
@@ -383,8 +407,8 @@ export const Livechat = {
 			 */
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-			callbacks.runAsync('livechat.closeRoom', room);
 		});
+		callbacks.runAsync('livechat.closeRoom', room);
 
 		return true;
 	},
@@ -427,6 +451,10 @@ export const Livechat = {
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
 
+	enabled() {
+		return settings.get('Livechat_enabled');
+	},
+
 	getInitSettings() {
 		const rcSettings = {};
 
@@ -464,9 +492,7 @@ export const Livechat = {
 			rcSettings[setting._id] = setting.value;
 		});
 
-		settings.get('Livechat_history_monitor_type', (key, value) => {
-			rcSettings[key] = value;
-		});
+		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
@@ -501,8 +527,8 @@ export const Livechat = {
 
 		Meteor.defer(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
-			callbacks.run('livechat.saveRoom', roomData);
 		});
+		callbacks.runAsync('livechat.saveRoom', roomData);
 
 		if (!_.isEmpty(guestData.name)) {
 			const { _id: rid } = roomData;
@@ -533,30 +559,31 @@ export const Livechat = {
 	},
 
 	savePageHistory(token, roomId, pageInfo) {
-		if (pageInfo.change === Livechat.historyMonitorType) {
-			const user = Users.findOneById('rocket.cat');
-
-			const pageTitle = pageInfo.title;
-			const pageUrl = pageInfo.location.href;
-			const extraData = {
-				navigation: {
-					page: pageInfo,
-					token,
-				},
-			};
-
-			if (!roomId) {
-				// keep history of unregistered visitors for 1 month
-				const keepHistoryMiliseconds = 2592000000;
-				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
-			}
-
-			if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
-				extraData._hidden = true;
-			}
-
-			return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
+		if (pageInfo.change !== Livechat.historyMonitorType) {
+			return;
 		}
+		const user = Users.findOneById('rocket.cat');
+
+		const pageTitle = pageInfo.title;
+		const pageUrl = pageInfo.location.href;
+		const extraData = {
+			navigation: {
+				page: pageInfo,
+				token,
+			},
+		};
+
+		if (!roomId) {
+			// keep history of unregistered visitors for 1 month
+			const keepHistoryMiliseconds = 2592000000;
+			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+		}
+
+		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
+			extraData._hidden = true;
+		}
+
+		return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 	},
 
 	saveTransferHistory(room, transferData) {
@@ -638,31 +665,27 @@ export const Livechat = {
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterReturnRoomAsInquiry', { room });
-		});
+		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
 	},
 
-	sendRequest(postData, callback, trying = 1) {
+	sendRequest(postData, callback, attempts = 10) {
+		if (!attempts) {
+			return;
+		}
+		const secretToken = settings.get('Livechat_secret_token');
+		const headers = { headers: { 'X-RocketChat-Livechat-Token': secretToken } };
+		const options = { data: postData, ...secretToken !== '' && secretToken !== undefined && { headers } };
 		try {
-			const options = { data: postData };
-			const secretToken = settings.get('Livechat_secret_token');
-			if (secretToken !== '' && secretToken !== undefined) {
-				Object.assign(options, { headers: { 'X-RocketChat-Livechat-Token': secretToken } });
-			}
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
+			Livechat.logger.webhook.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
-			if (trying < 10) {
-				Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
-				trying++;
-				setTimeout(Meteor.bindEnvironment(() => {
-					Livechat.sendRequest(postData, callback, trying);
-				}), 10000);
-			}
+			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+			setTimeout(Meteor.bindEnvironment(function() {
+				Livechat.sendRequest(postData, callback, attempts--);
+			}), 10000);
 		}
 	},
 

@@ -9,35 +9,35 @@ import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const ContactContextualBar = ({ contactReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
-	const context = useRouteParameter('context');
+	const bar = useRouteParameter('bar');
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
 
 	const handleContactsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({ tab: 'contacts' });
+		directoryRoute.push({ page: 'contacts' });
 	};
 
 	const handleContactsVerticalBarBackButtonClick = () => {
-		directoryRoute.push({ tab: 'contacts', context: 'info', id });
+		directoryRoute.push({ page: 'contacts', id, bar: 'info' });
 	};
 
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'new' && (
+				{bar === 'new' && (
 					<>
 						<VerticalBar.Icon name='user' />
 						<VerticalBar.Text>{t('New_Contact')}</VerticalBar.Text>
 					</>
 				)}
-				{context === 'info' && (
+				{bar === 'info' && (
 					<>
 						<VerticalBar.Icon name='user' />
 						<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
 					</>
 				)}
-				{context === 'edit' && (
+				{bar === 'edit' && (
 					<>
 						<VerticalBar.Icon name='pencil' />
 						<VerticalBar.Text>{t('Edit_Contact_Profile')}</VerticalBar.Text>
@@ -45,11 +45,11 @@ const ContactContextualBar = ({ contactReload }) => {
 				)}
 				<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{context === 'new' && (
-				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarBackButtonClick} />
+			{bar === 'new' && (
+				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />
 			)}
-			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
-			{context === 'edit' && (
+			{bar === 'info' && <ContactInfo reload={contactReload} id={id} />}
+			{bar === 'edit' && (
 				<ContactEditWithData
 					id={id}
 					reload={contactReload}
