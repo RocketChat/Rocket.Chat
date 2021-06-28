@@ -49,7 +49,7 @@ const Room = () => {
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
 				{room.voice ? (
-					<VoiceRoom room={room} />
+					<VoiceRoom room={room} rid={room._id} />
 				) : (
 					<BlazeTemplate
 						onClick={hideFlexTab ? close : undefined}

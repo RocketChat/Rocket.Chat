@@ -3,7 +3,6 @@ import _ from 'underscore';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
-import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 export class Messages extends Base {
@@ -477,13 +476,11 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentByRoomId(rid, messageId) {
-		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(rid);
-		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
 		const query = {
 			rid,
 			_hidden: { $ne: true },
-			t: hiddenSysMes ? { $nin: hiddenSysMes } : undefined,
+			t: { $exists: false },
 			$or: [
 				{ tmid: { $exists: false } },
 				{ tshow: true },
@@ -741,17 +738,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-
-		const { sysMes } = Rooms.getHiddenSystemMessagesTypesById(roomId);
-		const hiddenSysMes = sysMes || settings.get('Hide_System_Messages');
-		if (hiddenSysMes.length && hiddenSysMes.includes(type)) {
-			Rooms.incMsgCountById(roomId, 1);
-		} else {
-			const byUser = extraData && extraData.u ? extraData.u._id : user._id;
-			Rooms.incMsgCountAndSetLastMessageById(roomId, 1, record.ts, settings.get('Store_Last_Message') && record);
-			Subscriptions.setAlertForRoomIdExcludingUserId(roomId, byUser);
-		}
-
+		Rooms.incMsgCountById(roomId, 1);
 		return record;
 	}
 
