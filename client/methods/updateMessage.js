@@ -13,6 +13,7 @@ import { t } from '../../app/utils/client';
 
 Meteor.methods({
 	updateMessage(message) {
+		console.log(message);
 		if (!Meteor.userId()) {
 			return false;
 		}

@@ -1,5 +1,16 @@
 <template name="message">
 	<li id="{{templatePrefix}}{{msg._id}}" data-id="{{msg._id}}" data-context={{actionContext}} class="message {{className}} {{ignoredClass}} {{system}} {{t}} {{own}} {{isTemp}} {{chatops}} {{collapsed}} {{customClass}}" data-username="{{msg.u.username}}" data-tmid="{{msg.tmid}}" data-groupable="{{isGroupable}}" data-date="{{date}}" data-timestamp="{{timestamp}}" data-alias="{{msg.alias}}">
+		{{#if isThreadReply}}
+			{{> messageThread parentMessage=parentMessage msg=msg tmid=msg.tmid class=bodyClass following=msg.following}}
+			<div class="thread-replied js-open-thread">
+				<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
+					{{> avatar username=msg.u.username}}
+				</button>
+				<span role="button" class="js-toggle-thread-reply thread-reply-preview color-primary-font-color">
+					<span class="message-body--unstyled">{{{threadMessage}}}</span>
+				</span>
+			</div>
+		{{/if}}
 		{{#unless shouldHideBody}}
 			{{#if msg.avatar}}
 				{{#if avatarFromUsername}}
@@ -104,6 +115,15 @@
 					{{/if}}
 				</div>
 			</div>
+
+			{{#if hasOembed}}
+				{{#each msg.urls}}
+					{{injectMessage . ../msg}}
+					{{injectSettings . ../settings}}
+					{{injectIndex . @index}}
+					{{> oembedBaseWidget}}
+				{{/each}}
+			{{/if}}
 			{{#if hasAttachments}}
 				{{> reactAttachments attachments=msg.attachments file=msg.file }}
 			{{/if}}
@@ -150,6 +170,11 @@
 				{{/unless}}
 			</ul>
 			{{/unless}}
+
+			{{#if msg.drid}}
+				{{> DiscussionMetric count=msg.dcount drid=msg.drid lm=msg.dlm openDiscussion=actions.openDiscussion }}
+			{{/if}}
+
 			{{#if $and settings.showReplyButton msg.tcount}}
 			    {{> ThreadMetric counter=msg.tcount following=following lm=msg.tlm rid=msg.rid mid=msg._id unread=unread mention=mention all=all openThread=actions.openThread }}
 			{{/if}}

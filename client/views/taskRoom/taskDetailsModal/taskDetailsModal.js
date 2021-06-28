@@ -1,12 +1,4 @@
-import {
-	Modal,
-	ButtonGroup,
-	Button,
-	TextInput,
-	Field,
-	TextAreaInput,
-	Icon,
-} from '@rocket.chat/fuselage';
+import { Modal, ButtonGroup, Button, TextInput, Field, TextAreaInput } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import UserAutoCompleteMultiple from '../../../../ee/client/audit/UserAutoCompleteMultiple';
