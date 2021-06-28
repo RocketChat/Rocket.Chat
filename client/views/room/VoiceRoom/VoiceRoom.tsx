@@ -132,23 +132,14 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	}, [rid]);
 
 	return (
-		<>
+		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
 			{mediasoupClient?.roomID !== room._id && <VoicePeersList peers={wsPeers} deafen={deafen} />}
+
 			<Box display={mediasoupClient?.roomID !== rid ? 'none' : 'block'}>
 				<VoicePeersList peers={mediasoupPeers} deafen={deafen} />
 			</Box>
-			<Box
-				display='flex'
-				position='fixed'
-				style={{
-					bottom: 0,
-					left: 0,
-					right: 0,
-				}}
-				justifyContent='center'
-				alignItems='center'
-				pb='x24'
-			>
+
+			<Box display='flex' justifyContent='center' alignItems='center' pb='x24'>
 				{connected && mediasoupClient?.roomID === rid ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
@@ -158,7 +149,11 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 							<Icon name='phone-off' size='x24' />
 						</Button>
 						<Button square onClick={toggleDeafen}>
-							{deafen ? <Icon name='headset-off' size='x24' /> : <Icon name='headset' size='x24' />}
+							{deafen ? (
+								<Icon name='headphone-off' size='x24' />
+							) : (
+								<Icon name='headphone' size='x24' />
+							)}
 						</Button>
 					</ButtonGroup>
 				) : (
@@ -167,7 +162,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 					</Button>
 				)}
 			</Box>
-		</>
+		</Box>
 	);
 };
 

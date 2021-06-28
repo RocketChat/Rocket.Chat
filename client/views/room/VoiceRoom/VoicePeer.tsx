@@ -31,7 +31,7 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 	};
 
 	return (
-		<Box display='inline-block' textAlign='center' justifyContent='center' id={id} padding='x16'>
+		<Box textAlign='center' justifyContent='center' id={id} padding='x16'>
 			<UserAvatar size='x124' username={username || ''} />
 			<audio ref={ref} muted={muted || deafen} autoPlay />
 			<p>{displayName}</p>
