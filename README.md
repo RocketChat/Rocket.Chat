@@ -13,16 +13,16 @@ Every day, tens of millions of users in over 150 countries and in organizations 
 
 Table of Contents
 =================
-* [Editions](Editions)
-* [Installation](Installation)
-* [Feature Request](Feature-Request)
-* [Community](Community)
-* [Contributions](Contributions)
-* [Credits](Credits)
-* [Mobile Apps](Mobile-Apps)
-* [Learn More](Learn-More)
-* [Become a Rocketeer](Become-a-Rocketeer)
-* [Get the Latest News](Get-the-Latest-News)
+* [Editions](#editions)
+* [Installation](#installation)
+* [Feature Request](#feature-request)
+* [Community](#community)
+* [Contributions](#contributions)
+* [Credits](#credits)
+* [Mobile Apps](#mobile-apps)
+* [Learn More](#learn-more)
+* [Become a Rocketeer](#become-a-rocketeer)
+* [Get the Latest News](#get-the-latest-news)
 
 
 ## Editions
