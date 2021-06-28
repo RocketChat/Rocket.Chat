@@ -11,8 +11,6 @@ import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonR
 
 const LIMIT_DEFAULT = 50;
 
-Template.pinnedMessages.events(getCommonRoomEvents());
-
 Template.pinnedMessages.helpers({
 	hasMessages() {
 		return Template.instance().messages.find().count();
@@ -41,7 +39,7 @@ Template.pinnedMessages.onCreated(function() {
 			pinned: true,
 			rid: this.data.rid,
 			_updatedAt: {
-				$gt: new Date(),
+				$gte: new Date(),
 			},
 		};
 

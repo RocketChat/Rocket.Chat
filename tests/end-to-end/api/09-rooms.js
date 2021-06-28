@@ -753,6 +753,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -768,6 +770,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -784,6 +788,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -801,6 +807,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -897,6 +905,30 @@ describe('[Rooms]', function() {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+	describe('[/rooms.autocomplete.availableForTeams]', () => {
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return the filtered rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.availableForTeams?name=group'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

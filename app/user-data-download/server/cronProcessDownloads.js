@@ -7,13 +7,16 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
+import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
 import { readSecondaryPreferred } from '../../../server/database/readSecondaryPreferred';
 import { joinPath } from '../../../server/lib/fileUtils';
+import { getURL } from '../../utils/lib/getURL';
 
 const fsStat = util.promisify(fs.stat);
 const fsOpen = util.promisify(fs.open);
@@ -156,6 +159,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 			case 'ul':
 				messageObject.msg = TAPi18n.__('User_left');
 				break;
+			case 'ult':
+				messageObject.msg = TAPi18n.__('User_left_team');
+				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
@@ -170,6 +176,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 				break;
 			case 'livechat-close':
 				messageObject.msg = TAPi18n.__('Conversation_finished');
+				break;
+			case 'livechat-started':
+				messageObject.msg = TAPi18n.__('Chat_started');
 				break;
 		}
 	}
@@ -499,12 +508,14 @@ const continueExportOperation = async function(exportOperation) {
 			}
 		}
 
+		const generatedFileName = uuidv4();
+
 		if (exportOperation.status === 'downloading') {
 			exportOperation.fileList.forEach((attachmentData) => {
 				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+			const targetFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (await fsExists(targetFile)) {
 				await fsUnlink(targetFile);
 			}
@@ -515,7 +526,7 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'compressing') {
 			createDir(zipFolder);
 
-			exportOperation.generatedFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+			exportOperation.generatedFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (!await fsExists(exportOperation.generatedFile)) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}
@@ -566,7 +577,7 @@ async function processDataDownloads() {
 		}
 
 		const subject = TAPi18n.__('UserDataDownload_EmailSubject');
-		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: file.url });
+		const body = TAPi18n.__('UserDataDownload_EmailBody', { download_link: getURL(DataExport.getPath(file._id), { cdn: false, full: true }) });
 
 		sendEmail(operation.userData, subject, body);
 	}

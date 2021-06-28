@@ -1,3 +1,5 @@
+import mem from 'mem';
+
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
@@ -13,7 +15,7 @@ import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
-import { ISetting } from '../../../definition/ISetting';
+import { ISetting, SettingValue } from '../../../definition/ISetting';
 import { IInquiry } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
@@ -64,6 +66,24 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
+const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolean =>
+	(data?: Record<string, any>): boolean => {
+		if (!data) {
+			return false;
+		}
+
+		return Object.keys(data)
+			.filter((key) => key !== '_id')
+			.map((key) => key.split('.')[0])
+			.some((key) => requiredKeys.includes(key));
+	};
+
+const hasRoomFields = hasKeys(Object.keys(roomFields));
+const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
+
+const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
+	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
+
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
@@ -83,6 +103,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		EmailInbox,
 	} = models;
 
+	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+
+	const getUserNameCached = mem(async (userId: string): Promise<string | undefined> => {
+		const user = await Users.findOneById(userId, { projection: { name: 1 } });
+		return user?.name;
+	}, { maxAge: 10000 });
+
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -93,18 +120,16 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = await Settings.getValueById('UI_Use_Real_Name') === true;
+					const UseRealName = await getSettingCached('UI_Use_Real_Name') === true;
 
 					if (UseRealName) {
 						if (message.u?._id) {
-							const user = await Users.findOneById(message.u._id);
-							message.u.name = user?.name;
+							message.u.name = await getUserNameCached(message.u._id);
 						}
 
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
-								const user = await Users.findOneById(mention._id);
-								mention.name = user?.name;
+								mention.name = await getUserNameCached(mention._id);
 							}
 						}
 					}
@@ -115,10 +140,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id }) => {
+	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
+				if (!hasSubscriptionFields(data || diff)) {
+					return;
+				}
+
 				// Override data cuz we do not publish all fields
 				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
 				if (!subscription) {
@@ -157,22 +186,24 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	});
 
-	watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-			case 'updated':
-				data = data ?? await UsersSessions.findOneById(id);
-				if (!data) {
-					return;
-				}
+	if (startMonitor) {
+		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					data = data ?? await UsersSessions.findOneById(id);
+					if (!data) {
+						return;
+					}
 
-				broadcast('watch.userSessions', { clientAction, userSession: data });
-				break;
-			case 'removed':
-				broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
-				break;
-		}
-	});
+					broadcast('watch.userSessions', { clientAction, userSession: data });
+					break;
+				case 'removed':
+					broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
+					break;
+			}
+		});
+	}
 
 	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
@@ -271,9 +302,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.settings', { clientAction, setting });
 	});
 
-	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
+	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			return;
+		}
+
+		if (!hasRoomFields(data || diff)) {
 			return;
 		}
 

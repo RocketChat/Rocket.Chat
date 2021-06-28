@@ -1,20 +1,21 @@
+import { EventHandlerOf } from '@rocket.chat/emitter';
 import { createContext } from 'react';
-import { Handler } from '@rocket.chat/emitter';
 
-import { actions, listen, ToolboxActionConfig, ToolboxAction } from '.';
+import { actions, listen, ToolboxActionConfig, ToolboxAction, Events } from '.';
 import './defaultActions';
 
+export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => Function;
 
 export type ChannelContextValue = {
 	actions: Map<ToolboxActionConfig['id'], ToolboxAction>;
-	listen: (handler: Handler) => Function;
+	listen: ToolboxEventHandler;
 	tabBar?: any;
 	context?: any;
 	open: Function;
 	openUserInfo: Function;
 	close: Function;
 	activeTabBar?: ToolboxActionConfig;
-}
+};
 
 export const ToolboxContext = createContext<ChannelContextValue>({
 	actions,
