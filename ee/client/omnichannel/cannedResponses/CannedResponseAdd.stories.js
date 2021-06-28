@@ -4,7 +4,7 @@ import React from 'react';
 import CannedResponseAdd from './CannedResponseAdd';
 
 export default {
-	title: 'omnichannel/CannedResponseAdd',
+	title: 'omnichannel/CannedResponse/CannedResponseAdd',
 	component: CannedResponseAdd,
 };
 

@@ -175,7 +175,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+						expect(res.body).to.have.property('error', `${ name } is blocked and can't be used! [error-blocked-username]`);
 					})
 					.end(done);
 			});
@@ -225,6 +225,67 @@ describe('[Users]', function() {
 
 		reservedWords.forEach((name) => {
 			failCreateUser(name);
+		});
+
+		describe('users default roles configuration', () => {
+			before(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user,admin');
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user');
+			});
+
+			it('should create a new user with default roles', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['user', 'admin']);
+					})
+					.end(done);
+			});
+
+			it('should create a new user with only the role provided', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+						roles: ['guest'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['guest']);
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -282,7 +343,7 @@ describe('[Users]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});
@@ -2776,13 +2837,14 @@ describe('[Users]', function() {
 
 	describe('[/users.setStatus]', () => {
 		let user;
-		before((done) => {
-			createUser()
-				.then((createdUser) => {
-					user = createdUser;
-					done();
-				});
+		before(async () => {
+			user = await createUser();
 		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
 				request.post(api('users.setStatus'))
@@ -2871,6 +2933,24 @@ describe('[Users]', function() {
 					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy. [error-invalid-status]');
 				})
 				.end(done);
+		});
+		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'offline',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+					expect(res.body.error).to.be.equal('Invisible status is disabled [error-status-not-allowed]');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
 	});
 

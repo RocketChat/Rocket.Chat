@@ -1,21 +1,21 @@
 import React from 'react';
 
 import { useUserId } from '../../contexts/UserContext';
+import { useRoom } from './contexts/RoomContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
-import { useRoom } from './providers/RoomProvider';
 import { useTab, useTabBarClose, useTabContext } from './providers/ToolboxProvider';
 
 const getUid = (room, ownUserId) => {
-	if (room.uids.length === 1) {
+	if (room.uids?.length === 1) {
 		return room.uids[0];
 	}
 
-	const uid = room.uids.filter((uid) => uid !== ownUserId).shift();
+	const uid = room.uids?.filter((uid) => uid !== ownUserId).shift();
 
 	// Self DMs used to be created with the userId duplicated.
 	// Sometimes rooms can have 2 equal uids, but it's a self DM.
-	return uid ?? room.uids[0];
+	return uid || room.uids[0];
 };
 
 const MemberListRouter = ({ rid }) => {

@@ -1,10 +1,11 @@
-import { Db, FindOneOptions } from 'mongodb';
+import { Db, FindOneOptions, FilterQuery } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { checkUsernameAvailability } from '../../../app/lib/server/functions';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Subscriptions } from '../../../app/models/server';
+import type { InsertionModel } from '../../../app/models/server/raw/BaseRaw';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
@@ -22,7 +23,6 @@ import {
 	TEAM_TYPE,
 } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { Room } from '../../sdk';
 import {
 	IListRoomsFilter,
@@ -101,14 +101,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 			const excludeFromMembers = owner ? [owner] : [uid];
 
 			// filter empty strings and falsy values from members list
-			const membersList: Array<Omit<ITeamMember, '_id'>> = members?.filter(Boolean)
+			const membersList: Array<InsertionModel<ITeamMember>> = members?.filter(Boolean)
 				.filter((memberId) => !excludeFromMembers.includes(memberId))
 				.map((memberId) => ({
 					teamId,
 					userId: memberId,
 					createdAt: new Date(),
 					createdBy,
-					_updatedAt: new Date(), // TODO how to avoid having to do this?
 				})) || [];
 
 			membersList.push({
@@ -117,7 +116,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 				roles: ['owner'],
 				createdAt: new Date(),
 				createdBy,
-				_updatedAt: new Date(), // TODO how to avoid having to do this?
 			});
 
 			await this.TeamMembersModel.insertMany(membersList);
@@ -397,8 +395,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
+		const user = await this.Users.findOneById(uid);
 		if (!canUpdateAnyRoom) {
-			const user = await this.Users.findOneById(uid);
 			const canSeeRoom = await canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
@@ -410,6 +408,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 		room.teamDefault = isDefault;
 		this.RoomsModel.setTeamDefaultById(rid, isDefault);
+
+		if (room.teamDefault) {
+			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+
+			teamMembers.records.map((m) => addUserToRoom(room._id, m.user, user));
+		}
+
 		return {
 			...room,
 		};
@@ -509,7 +514,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamMembersModel.findByTeamIds(teamIds, options).toArray();
 	}
 
-	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, { query }: IQueryOptions<ITeam>): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
+	async members(uid: string, teamId: string, canSeeAll: boolean, { offset, count }: IPaginationOptions = { offset: 0, count: 50 }, query: FilterQuery<IUser> = {}): Promise<IRecordsWithTotal<ITeamMemberInfo>> {
 		const isMember = await this.TeamMembersModel.findOneByUserIdAndTeamId(uid, teamId);
 		if (!isMember && !canSeeAll) {
 			return {
@@ -518,28 +523,28 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, query);
+		const users = await this.Users.find({ ...query }).toArray();
+		const userIds = users.map((m) => m._id);
+		const cursor = this.TeamMembersModel.findMembersInfoByTeamId(teamId, count, offset, { userId: { $in: userIds } });
 
 		const records = await cursor.toArray();
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of records) {
-			const user = await this.Users.findOneById(record.userId);
-			if (user) {
-				results.push({
-					user: {
-						_id: user._id,
-						username: user.username,
-						name: user.name,
-						status: user.status,
-					},
-					roles: record.roles,
-					createdBy: {
-						_id: record.createdBy._id,
-						username: record.createdBy.username,
-					},
-					createdAt: record.createdAt,
-				});
-			}
+			const user = users.find((u) => u._id === record.userId);
+			results.push({
+				user: {
+					_id: user._id,
+					username: user.username,
+					name: user.name,
+					status: user.status,
+				},
+				roles: record.roles,
+				createdBy: {
+					_id: record.createdBy._id,
+					username: record.createdBy.username,
+				},
+				createdAt: record.createdAt,
+			});
 		}
 
 		return {
@@ -554,17 +559,19 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		const membersList: Array<Omit<ITeamMember, '_id'>> = members?.map((member) => ({
-			teamId,
-			userId: member.userId,
-			roles: member.roles || [],
-			createdAt: new Date(),
-			createdBy,
-			_updatedAt: new Date(), // TODO how to avoid having to do this?
-		})) || [];
+		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		if (!team) {
+			throw new Error('team-does-not-exist');
+		}
 
-		await this.TeamMembersModel.insertMany(membersList);
-		await this.addMembersToDefaultRooms(createdBy, teamId, membersList);
+		for await (const member of members) {
+			const user = await this.Users.findOneById(member.userId, { projection: { username: 1 } });
+			await addUserToRoom(team.roomId, user, createdBy, false);
+
+			if (member.roles) {
+				await this.addRolesToMember(teamId, member.userId, member.roles);
+			}
+		}
 	}
 
 	async updateMember(teamId: string, member: ITeamMemberParams): Promise<void> {
@@ -574,7 +581,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 		const memberUpdate: Partial<ITeamMember> = {
 			roles: member.roles ? member.roles : [],
-			_updatedAt: new Date(),
 		};
 
 		await this.TeamMembersModel.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate);
@@ -584,11 +590,15 @@ export class TeamService extends ServiceClass implements ITeamService {
 		await this.TeamMembersModel.deleteByUserIdAndTeamId(userId, teamId);
 	}
 
-	async removeMembers(teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
+	async removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
 		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
+
+		const membersIds = members.map((m) => m.userId);
+		const usersToRemove = await this.Users.findByIds(membersIds, { projection: { _id: 1, username: 1 } }).toArray();
+		const byUser = await this.Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -609,8 +619,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			}
 
 			this.TeamMembersModel.removeById(existingMember._id);
-
-			await this.unsubscribeFromMain(team.roomId, member.userId);
+			const removedUser = usersToRemove.find((u) => u._id === existingMember.userId);
+			removeUserFromRoom(team.roomId, removedUser, { byUser: uid !== member.userId ? byUser : undefined });
 		}
 
 		return true;
@@ -642,6 +652,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 
 			await removeUserFromRoom(team.roomId, user);
 		}));
+	}
+
+	async removeAllMembersFromTeam(teamId: string): Promise<void> {
+		const team = await this.TeamModel.findOneById(teamId);
+
+		if (!team) {
+			return;
+		}
+
+		await this.TeamMembersModel.deleteByTeamId(team._id);
 	}
 
 	async addMember(inviter: IUser, userId: string, teamId: string): Promise<boolean> {
@@ -820,13 +840,5 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}).toArray();
 
 		return rooms;
-	}
-
-	async unsubscribeFromMain(roomId: string, userId: string): Promise<void> {
-		// we need to use the normal model here. The raw one didn't propagate the changes to the FE
-		// let me know if there's a way of doing that
-		await Subscriptions.removeByRoomIdsAndUserId([roomId], userId);
-		await this.RoomsModel.incUsersCountByIds([roomId], -1);
-		await this.Users.removeRoomsByRoomIdsAndUserId([roomId], userId);
 	}
 }

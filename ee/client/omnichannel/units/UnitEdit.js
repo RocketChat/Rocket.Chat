@@ -26,12 +26,15 @@ function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, r
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
+
+	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
+
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
-		useMemo(() => ({ filter: monitorsFilter }), [monitorsFilter]),
+		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
 	);
 
 	const { phase: monitorsPhase, items: monitorsItems, itemCount: monitorsTotal } = useRecordList(

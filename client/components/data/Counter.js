@@ -8,7 +8,15 @@ function Counter({ count, variation = 0, description }) {
 		<>
 			<Flex.Container alignItems='end'>
 				<Box>
-					<Box is='span' color='default' fontScale='h1' style={{ fontSize: '3em', lineHeight: 1 }}>
+					<Box
+						is='span'
+						color='default'
+						fontScale='h1'
+						style={{
+							fontSize: '3em',
+							lineHeight: 1,
+						}}
+					>
 						{count}
 					</Box>
 					<Growth fontScale='s1'>{variation}</Growth>

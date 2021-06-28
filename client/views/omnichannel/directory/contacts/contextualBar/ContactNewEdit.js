@@ -45,7 +45,7 @@ const getInitialValues = (data) => {
 	};
 };
 
-function ContactNewEdit({ id, data, reload, close }) {
+function ContactNewEdit({ id, data, close }) {
 	const t = useTranslation();
 
 	const canViewCustomFields = () =>
@@ -54,6 +54,7 @@ function ContactNewEdit({ id, data, reload, close }) {
 	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
 		getInitialValues(data),
 	);
+
 	const eeForms = useSubscription(formsSubscription);
 
 	const { useContactManager = () => {} } = eeForms;
@@ -182,7 +183,6 @@ function ContactNewEdit({ id, data, reload, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

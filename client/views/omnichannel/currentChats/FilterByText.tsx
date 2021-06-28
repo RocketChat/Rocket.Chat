@@ -115,7 +115,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 			setModal(null);
 		};
 
-		const handleClose = () => {
+		const handleClose = (): void => {
 			setModal(null);
 		};
 
