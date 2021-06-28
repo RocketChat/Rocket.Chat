@@ -181,3 +181,35 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('roles.delete', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			roleId: String
+		});
+
+		if (!hasPermission(Meteor.userId(), 'access-permissions')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+		}
+
+		const role = Roles.findOneByIdOrName(this.bodyParams.roleId);
+
+		if (!role) {
+			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+		}
+
+		if (role.protected) {
+			throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
+		}
+
+		const existingUsers = Roles.findUsersInRole(role._id, role.scope);
+
+		if (existingUsers && existingUsers.count() > 0) {
+			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
+		}
+
+		Roles.remove(role._id)
+
+		return API.v1.success();
+	}
+});
