@@ -37,7 +37,7 @@ function addUserToRole(roleId, username) {
 			.set(credentials)
 			.send({
 				roleName: roleId,
-				username
+				username,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -346,7 +346,7 @@ describe.only('[Roles]', function() {
 			request.post(api('roles.delete'))
 				.set(credentials)
 				.send({
-					roleId: roleWithoutUser._id
+					roleId: roleWithoutUser._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -360,7 +360,7 @@ describe.only('[Roles]', function() {
 			request.post(api('roles.delete'))
 				.set(credentials)
 				.send({
-					roleId: 'admin'
+					roleId: 'admin',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -375,7 +375,7 @@ describe.only('[Roles]', function() {
 			request.post(api('roles.delete'))
 				.set(credentials)
 				.send({
-					roleId: roleWithUser._id
+					roleId: roleWithUser._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

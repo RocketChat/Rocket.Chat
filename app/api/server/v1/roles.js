@@ -185,7 +185,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 API.v1.addRoute('roles.delete', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
-			roleId: String
+			roleId: String,
 		});
 
 		if (!hasPermission(Meteor.userId(), 'access-permissions')) {
@@ -208,8 +208,8 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
 		}
 
-		Roles.remove(role._id)
+		Roles.remove(role._id);
 
 		return API.v1.success();
-	}
+	},
 });
