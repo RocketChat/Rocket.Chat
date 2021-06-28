@@ -10,40 +10,6 @@ import { Logger } from '../../logger';
 
 const logger = new Logger('CORS', {});
 
-WebApp.rawConnectHandlers.use(Meteor.bindEnvironment(function(req, res, next) {
-	if (req._body) {
-		return next();
-	}
-	if (req.headers['transfer-encoding'] === undefined && isNaN(req.headers['content-length'])) {
-		return next();
-	}
-	if (req.headers['content-type'] !== '' && req.headers['content-type'] !== undefined) {
-		return next();
-	}
-	if (req.url.indexOf(`${ __meteor_runtime_config__.ROOT_URL_PATH_PREFIX }/ufs/`) === 0) {
-		return next();
-	}
-
-	let buf = '';
-	req.setEncoding('utf8');
-	req.on('data', function(chunk) {
-		buf += chunk;
-	});
-
-	req.on('end', function() {
-		logger.debug('[request]'.green, req.method, req.url, '\nheaders ->', req.headers, '\nbody ->', buf);
-
-		try {
-			req.body = JSON.parse(buf);
-		} catch (error) {
-			req.body = buf;
-		}
-		req._body = true;
-
-		return next();
-	});
-}));
-
 // Deprecated setting
 let Support_Cordova_App = false;
 settings.get('Support_Cordova_App', (key, value) => {
