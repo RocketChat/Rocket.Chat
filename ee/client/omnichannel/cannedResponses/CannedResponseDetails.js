@@ -4,7 +4,7 @@ import React, { memo, useCallback } from 'react';
 import toastr from 'toastr';
 
 import { handleError } from '../../../../app/utils/client';
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import GenericModal from '../../../../client/components/GenericModal';
 import VerticalBar from '../../../../client/components/VerticalBar';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -42,11 +42,15 @@ export const CannedResponseDetails = ({
 			}
 		};
 		setModal(() => (
-			<DeleteWarningModal
-				children={t('Canned_Response_Delete_Warning')}
-				onDelete={handleDelete}
+			<GenericModal
+				variant='danger'
+				onConfirm={handleDelete}
 				onCancel={handleCancel}
-			/>
+				onClose={handleCancel}
+				confirmText={t('Delete')}
+			>
+				{t('Canned_Response_Delete_Warning')}
+			</GenericModal>
 		));
 	}, [onReturn, removeCannedResponse, _id, setModal, t]);
 

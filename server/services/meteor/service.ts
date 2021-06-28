@@ -16,7 +16,7 @@ import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager'
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
-import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
+import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
@@ -219,17 +219,17 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			switch (clientAction) {
 				case 'inserted':
 					if (data.type === 'webhook-outgoing') {
-						integrations.triggerHandler.addIntegration(data);
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
 					if (data.type === 'webhook-outgoing') {
-						integrations.triggerHandler.removeIntegration(data);
-						integrations.triggerHandler.addIntegration(data);
+						triggerHandler.removeIntegration(data);
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'removed':
-					integrations.triggerHandler.removeIntegration({ _id: id });
+					triggerHandler.removeIntegration({ _id: id });
 					break;
 			}
 		});
