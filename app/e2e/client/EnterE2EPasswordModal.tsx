@@ -33,7 +33,7 @@ const EnterE2EPasswordModal: FC<EnterE2EPasswordModalProps> = ({ onConfirm, ...p
 	return (
 		<GenericModal
 			variant='warning'
-			title={t('Enter_E2E_password_to_decode_your_key')}
+			title={t('Enter_E2E_password')}
 			cancelText={t('I_ll_do_it_later')}
 			confirmText={t('Decode_Key')}
 			onConfirm={handleConfirm}
