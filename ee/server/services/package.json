@@ -37,7 +37,6 @@
 		"ws": "^7.2.3"
 	},
 	"devDependencies": {
-		"@rocket.chat/ui-kit": "^0.27.0",
 		"@types/cookie": "^0.4.0",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/ejson": "^2.1.2",
