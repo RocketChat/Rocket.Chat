@@ -81,7 +81,7 @@ We're hiring developers, support people, and product managers all the time. Plea
 ## Get the Latest News
 
 * [Twitter](https://twitter.com/RocketChat)
-* [Blog](https://rocket.chat/blog/).
+* [Blog](https://rocket.chat/blog/)
 * [Facebook](https://www.facebook.com/RocketChatApp/)
 * [LinkedIn](https://www.linkedin.com/company/rocket-chat/)
 * [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
