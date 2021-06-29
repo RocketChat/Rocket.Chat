@@ -7,7 +7,7 @@ import { useUserPreference } from '../../../../../../client/contexts/UserContext
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
-const MarkdownTextEditor: FC<{ onChange: () => void; value: string }> = ({ onChange, value }) => {
+const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, value }) => {
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -46,6 +46,8 @@ const MarkdownTextEditor: FC<{ onChange: () => void; value: string }> = ({ onCha
 				} else {
 					textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
 				}
+
+				onChange(textAreaRef.current.value);
 			}
 		}, [char]);
 
@@ -62,6 +64,8 @@ const MarkdownTextEditor: FC<{ onChange: () => void; value: string }> = ({ onCha
 				startPos + emojiValue.length,
 				startPos + emojiValue.length,
 			);
+
+			onChange(textAreaRef.current.value);
 		}
 	};
 
@@ -109,7 +113,11 @@ const MarkdownTextEditor: FC<{ onChange: () => void; value: string }> = ({ onCha
 				/>
 				<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
 					<Tile elevation='1' w='224px'>
-						<InsertPlaceholderDropdown textAreaRef={textAreaRef} setVisible={setVisible} />
+						<InsertPlaceholderDropdown
+							onChange={onChange}
+							textAreaRef={textAreaRef}
+							setVisible={setVisible}
+						/>
 					</Tile>
 				</PositionAnimated>
 			</TextEditor.Toolbox>
