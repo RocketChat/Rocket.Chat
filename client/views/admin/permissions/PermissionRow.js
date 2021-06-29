@@ -60,10 +60,11 @@ const PermissionRow = ({ permission, t, roleList, onGrant, onRemove, ...props })
 			<Table.Cell maxWidth='x300' withTruncatedText title={t(`${_id}_description`)}>
 				{getName(t, permission)}
 			</Table.Cell>
-			{roleList.map(({ _id, description }) => (
+			{roleList.map(({ _id, name, description }) => (
 				<RoleCell
 					key={_id}
 					_id={_id}
+					name={name}
 					description={description}
 					grantedRoles={roles}
 					onChange={changeRole}

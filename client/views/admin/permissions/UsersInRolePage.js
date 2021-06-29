@@ -20,7 +20,7 @@ const UsersInRolePage = ({ data }) => {
 	const [user, setUser] = useState();
 	const [rid, setRid] = useState();
 
-	const { name } = data;
+	const { _id, name } = data;
 
 	const router = useRoute('admin-permissions');
 
@@ -29,7 +29,7 @@ const UsersInRolePage = ({ data }) => {
 	const handleReturn = useMutableCallback(() => {
 		router.push({
 			context: 'edit',
-			_id: name,
+			_id,
 		});
 	});
 
@@ -48,7 +48,6 @@ const UsersInRolePage = ({ data }) => {
 		<Page>
 			<Page.Header title={`${t('Users_in_role')} "${name}"`}>
 				<ButtonGroup>
-					{/* <Button primary onClick={handleSave}>{t('Save')}</Button> */}
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 				</ButtonGroup>
 			</Page.Header>
