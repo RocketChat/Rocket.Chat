@@ -334,7 +334,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
-		const data = await InstanceStatus.findOneById(id, { projection: { secret: 0 } });
+		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
 		if (!data) {
 			return;
 		}

@@ -75,7 +75,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('room-name-already-exists');
 		}
 
-		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
+		const createdBy = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(uid, { projection: { username: 1 } });
 		if (!createdBy) {
 			throw new Error('invalid-user');
 		}
@@ -156,7 +156,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void> {
-		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'roomId'>>(teamId, { projection: { roomId: 1 } });
 		if (!team) {
 			return;
 		}
@@ -453,7 +453,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, type: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, '_id' | 'type'>>(teamId, { projection: { _id: 1, type: 1 } });
 		if (!team) {
 			throw new Error('invalid-team');
 		}
@@ -473,8 +473,8 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const user = await this.Users.findOneById(uid, { fields: { __rooms: 1 } });
-		const userRooms = user.__rooms;
+		const user = await this.Users.findOneById<{ __rooms: string[] }>(uid, { fields: { __rooms: 1 } });
+		const userRooms = user?.__rooms;
 		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
 
 		return {
@@ -584,7 +584,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		const team = await this.TeamModel.findOneById(teamId, { projection: { roomId: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, 'roomId'>>(teamId, { projection: { roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
@@ -616,7 +616,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean> {
-		const team = await this.TeamModel.findOneById(teamId, { projection: { _id: 1, roomId: 1 } });
+		const team = await this.TeamModel.findOneById<Pick<ITeam, 'roomId' | '_id'>>(teamId, { projection: { _id: 1, roomId: 1 } });
 		if (!team) {
 			throw new Error('team-does-not-exist');
 		}
@@ -718,7 +718,10 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return options ? this.TeamModel.findByType(TEAM_TYPE.PUBLIC, options).toArray() : this.TeamModel.findByType(TEAM_TYPE.PUBLIC).toArray();
 	}
 
-	async getOneById(teamId: string, options: FindOneOptions<ITeam> | undefined): Promise<ITeam | undefined> {
+	async getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null> {
+		if (options === undefined) {
+			return this.TeamModel.findOneById(teamId);
+		}
 		return this.TeamModel.findOneById(teamId, options);
 	}
 
@@ -740,7 +743,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return this.TeamModel.findOneByMainRoomId<Pick<ITeam, '_id'>>(roomId, { projection: { _id: 1 } });
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | undefined> {
+	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
 		const room = await this.RoomsModel.findOneById(roomId);
 
 		if (!room) {
@@ -776,16 +779,16 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return !!await this.TeamMembersModel.removeRolesByTeamIdAndUserId(teamId, userId, roles);
 	}
 
-	async getInfoByName(teamName: string): Promise<Partial<ITeam> | undefined> {
-		return this.TeamModel.findOne({
+	async getInfoByName(teamName: string): Promise<Omit<ITeam, 'usernames'> | null> {
+		return this.TeamModel.findOne<Omit<ITeam, 'usernames'>>({
 			name: teamName,
-		}, { projection: { usernames: 0 } });
+		}, { projection: { usernames: 0 } }) as unknown as Omit<ITeam, 'usernames'>;
 	}
 
-	async getInfoById(teamId: string): Promise<Partial<ITeam> | undefined> {
-		return this.TeamModel.findOne({
+	async getInfoById(teamId: string): Promise<Omit<ITeam, 'usernames'> | null> {
+		return this.TeamModel.findOne<Omit<ITeam, 'usernames'>>({
 			_id: teamId,
-		}, { projection: { usernames: 0 } });
+		}, { projection: { usernames: 0 } }) as unknown as Omit<ITeam, 'usernames'>;
 	}
 
 	async addMembersToDefaultRooms(inviter: IUser, teamId: string, members: Array<Partial<ITeamMember>>): Promise<void> {
