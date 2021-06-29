@@ -32,6 +32,7 @@ export interface ISetting {
 	packageEditor?: SettingEditor;
 	blocked: boolean;
 	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	sorter?: number;
 	properties?: unknown;
 	enterprise?: boolean;
