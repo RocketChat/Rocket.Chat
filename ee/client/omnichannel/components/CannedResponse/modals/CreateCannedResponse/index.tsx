@@ -35,6 +35,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	const [radioDescription, setRadioDescription] = useState<string>(
 		t('Canned_Response_Sharing_Private_Description'),
 	);
+	const [preview, setPreview] = useState(false);
 
 	const listErrors = useMemo(() => {
 		const empty: any = {};
@@ -100,7 +101,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	}, [values, saveCannedResponse, dispatchToastMessage, t, closeModal, reloadCannedList]);
 
 	const onPreview = (): void => {
-		console.log('preview');
+		setPreview(!preview);
 	};
 
 	return (
@@ -115,6 +116,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 			onClose={closeModal}
 			onSave={onSave}
 			onPreview={onPreview}
+			previewState={preview}
 		/>
 	);
 };

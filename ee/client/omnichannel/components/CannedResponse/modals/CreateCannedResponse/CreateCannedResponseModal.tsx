@@ -6,6 +6,7 @@ import AutoCompleteDepartment from '../../../../../../../client/components/AutoC
 import Tags from '../../../../../../../client/components/Omnichannel/Tags';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import MarkdownTextEditor from '../../MarkdownTextEditor';
+import PreviewText from './PreviewText';
 import SharingOptions from './SharingOptions';
 
 const CreateCannedResponseModal: FC<{
@@ -19,6 +20,7 @@ const CreateCannedResponseModal: FC<{
 	onClose: (modal: ReactNode) => void;
 	onSave: () => void;
 	onPreview: () => void;
+	previewState: boolean;
 }> = ({
 	isManager,
 	values,
@@ -30,6 +32,7 @@ const CreateCannedResponseModal: FC<{
 	onClose,
 	onSave,
 	onPreview,
+	previewState,
 }) => {
 	const t = useTranslation();
 
@@ -71,11 +74,15 @@ const CreateCannedResponseModal: FC<{
 						<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
 							{t('Message')}
 							<Box className={clickable} color='link' onClick={onPreview}>
-								{/* {t('Preview')} */}
+								{previewState ? t('Editor') : t('Preview')}
 							</Box>
 						</Box>
 					</Field.Label>
-					<MarkdownTextEditor value={text} onChange={handleText} />
+					{previewState ? (
+						<PreviewText text={text} />
+					) : (
+						<MarkdownTextEditor value={text} onChange={handleText} />
+					)}
 				</Field>
 				<Field mbe='x24'>
 					<Tags handler={handleTags} tags={tags} />
