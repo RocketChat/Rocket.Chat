@@ -188,7 +188,7 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			roleId: String,
 		});
 
-		if (!hasPermission(Meteor.userId(), 'access-permissions')) {
+		if (!hasPermission(this.userId, 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
