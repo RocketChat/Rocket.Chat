@@ -23,4 +23,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		setPredictedVisitorAbandonmentTime(room);
 	}
 	return message;
-}, callbacks.priority.HIGH, 'save-visitor-inactivity');
+}, callbacks.priority.MEDIUM, 'save-visitor-inactivity'); // This hook priority should always be less than the priority of hook "save-last-visitor-message-timestamp" bcs, the room.v.lastMessage property set there is being used here for determinting visitor abandonment
