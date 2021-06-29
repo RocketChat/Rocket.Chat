@@ -5,12 +5,12 @@ import UserAutoCompleteMultiple from '../../../../ee/client/audit/UserAutoComple
 import { useTranslation } from '../../../contexts/TranslationContext';
 
 const TaskDetailsModal = ({
-	onCreate,
 	values,
 	handlers,
 	hasUnsavedChanges,
 	onClose,
 	onChangeAssignee,
+	onUpdate,
 }) => {
 	const canSave = useMemo(() => hasUnsavedChanges, [hasUnsavedChanges]);
 	const t = useTranslation();
@@ -48,7 +48,7 @@ const TaskDetailsModal = ({
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!canSave} onClick={onCreate} primary>
+					<Button disabled={!canSave} onClick={onUpdate} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

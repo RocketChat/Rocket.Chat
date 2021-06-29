@@ -5,7 +5,7 @@ import { Match, check, Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
-import { settings } from '../settings';
+import { settings } from '../../../settings';
 import { updateMessage } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
@@ -95,24 +95,24 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 	post() {
-		const { taskId } = this.queryParams;
+		const { id, taskTitle, taskAssignee, taskDescription, taskStatut } = this.bodyParams;
 
-		if (!taskId) {
+		if (!id) {
 			return API.v1.failure('task-does-not-exist');
 		}
 
 		// permissions
 
-		const originalMessage = Messages.findOneById(taskId);
+		const message = Messages.findOneById(id);
 
-		if (!originalMessage || !originalMessage._id) {
+		if (!message || !message._id) {
 			return;
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', originalMessage.rid);
+		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
 
 		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
+		const editOwn = message.u && message.u._id === Meteor.userId();
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
@@ -123,12 +123,13 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			let currentTsDiff;
 			let msgTs;
 
-			if (Match.test(originalMessage.ts, Number)) {
-				msgTs = moment(originalMessage.ts);
+			if (Match.test(message.ts, Number)) {
+				msgTs = moment(message.ts);
 			}
 			if (msgTs) {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
+
 			if (currentTsDiff > blockEditInMinutes) {
 				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
 			}
@@ -138,15 +139,31 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
-		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
-			message.attachments = originalMessage.attachments;
+		if (message.attachments && message.attachments.length > 0 && message.attachments[0].description !== undefined) {
+			message.attachments = message.attachments;
 			message.attachments[0].description = message.msg;
-			message.msg = originalMessage.msg;
+			message.msg = message.msg;
 		}
 
-		message.u = originalMessage.u;
+		if (taskStatut) {
+			message.taskStatut = taskStatut;
+		}
 
-		return updateMessage(originalMessage, Meteor.user());
+		if (taskDescription) {
+			message.taskDescription = taskDescription;
+		}
+
+		if (taskTitle) {
+			message.msg = taskTitle;
+		}
+
+		if (taskAssignee) {
+			message.taskAssignee = taskAssignee;
+		}
+
+		updateMessage(message, Meteor.user());
+
+		return API.v1.success();
 	},
 });
 

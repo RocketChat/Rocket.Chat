@@ -1,11 +1,17 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { useCallback } from 'react';
+import toastr from 'toastr';
 
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import TaskDetailsModal from './taskDetailsModal';
 
 const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props }) => {
+	const t = useTranslation();
+
+	const updateTask = useEndpointActionExperimental('POST', 'taskRoom.taskUpdate');
+
 	const initialValues = {
 		taskTitle: message.msg ? message.msg : '',
 		taskDescription: message.taskDescription ? message.taskDescription : '',
@@ -15,15 +21,36 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
+	const { taskTitle, taskDescription, taskAssignee, taskStatut } = values;
+
 	const onChangeAssignee = useMutableCallback((value, action) => {
 		if (!action) {
-			if (values.taskAssignee.includes(value)) {
+			if (taskAssignee.includes(value)) {
 				return;
 			}
-			return handlers.handleTaskAssignee([...values.taskAssignee, value]);
+			return handlers.handleTaskAssignee([...taskAssignee, value]);
 		}
-		handlers.handleTaskAssignee(values.taskAssignee.filter((current) => current !== value));
+		handlers.handleTaskAssignee(taskAssignee.filter((current) => current !== value));
 	});
+
+	const onUpdate = useCallback(async () => {
+		const params = {
+			id: message._id,
+			taskTitle,
+			taskDescription,
+			taskAssignee,
+			taskStatut,
+		};
+
+		const data = await updateTask(params);
+
+		if (data.success) {
+			toastr.success(t('Saved'));
+			onClose();
+		}
+
+		onClose();
+	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, message._id]);
 
 	return (
 		<TaskDetailsModal
@@ -34,9 +61,9 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 			values={values}
 			handlers={handlers}
 			hasUnsavedChanges={hasUnsavedChanges}
-			onCreate={onCreate}
 			onClose={onClose}
 			onChangeAssignee={onChangeAssignee}
+			onUpdate={onUpdate}
 			{...props}
 		/>
 	);

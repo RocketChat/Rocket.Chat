@@ -161,7 +161,7 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (userData.username && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || !editingMyself)) {
+	if (userData.username && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
