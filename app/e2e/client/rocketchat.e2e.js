@@ -148,7 +148,7 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_your_encryption_password'),
+				title: TAPi18n.__('Save_Your_Encryption_Password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
@@ -157,10 +157,10 @@ class E2E extends Emitter {
 					imperativeModal.open({ component: GenericModal,
 						props: {
 							variant: 'warning',
-							title: TAPi18n.__('Save_your_encryption_password'),
+							title: TAPi18n.__('Save_Your_Encryption_Password'),
 							children: <div dangerouslySetInnerHTML={{ __html: passwordRevealText }} />,
-							cancelText: TAPi18n.__('I_ll_do_it_later'),
-							confirmText: TAPi18n.__('I_saved_my_password_close_this_message'),
+							cancelText: TAPi18n.__('Do_It_Later'),
+							confirmText: TAPi18n.__('I_Saved_My_Password'),
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
@@ -311,7 +311,7 @@ class E2E extends Emitter {
 					showConfirmButton: true,
 					showCancelButton: true,
 					confirmButtonText: TAPi18n.__('Decode_Key'),
-					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
+					cancelButtonText: TAPi18n.__('Do_It_Later'),
 				}, (password) => {
 					if (password) {
 						this.closeAlert();
