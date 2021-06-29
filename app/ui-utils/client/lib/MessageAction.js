@@ -419,14 +419,11 @@ Meteor.startup(async function() {
 				showCancelButton: false,
 			});
 		},
-		condition({ msg: { taskAssignee }, room: { taskRoomId, t }, subscription }) {
+		condition({ room: { taskRoomId, t }, subscription }) {
 			if (!taskRoomId) {
 				return false;
 			}
 			if (!subscription) {
-				return false;
-			}
-			if (!taskAssignee) {
 				return false;
 			}
 

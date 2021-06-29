@@ -50,7 +50,7 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 		}
 
 		onClose();
-	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, message._id]);
+	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, message._id, t]);
 
 	return (
 		<TaskDetailsModal
