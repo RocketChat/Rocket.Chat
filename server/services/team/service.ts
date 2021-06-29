@@ -180,13 +180,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 	}
 
 	async findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]> {
-		const unfilteredTeams = await this.TeamMembersModel.findByUserId<Pick<ITeamMember, 'roles' | 'teamId'>>(userId, { projection: { teamId: 0, roles: 1 } }).toArray();
+		const unfilteredTeams = await this.TeamMembersModel.findByUserId<Pick<ITeamMember, 'roles' | 'teamId'>>(userId, { projection: { teamId: 1, roles: 1 } }).toArray();
 		const unfilteredTeamIds = unfilteredTeams.map(({ teamId }) => teamId);
 
 		let teamIds = unfilteredTeamIds;
 
 		if (callerId) {
-			const publicTeams = await this.TeamModel.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TEAM_TYPE.PUBLIC, { projection: { _id: '1' } }).toArray();
+			const publicTeams = await this.TeamModel.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TEAM_TYPE.PUBLIC, { projection: { _id: 1 } }).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
 			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIds.includes(teamId));
 
