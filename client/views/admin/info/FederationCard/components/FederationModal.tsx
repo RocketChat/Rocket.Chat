@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import * as psl from 'psl';
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, ReactText, useCallback, useMemo, useState } from 'react';
 
 import { useSetting, useSettingSetValue } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -37,37 +37,41 @@ const DNSRecord: FC<{
 	</Box>
 );
 
+type ResolvedDNS = {
+	srv: Record<string, ReactText> | undefined;
+	txt: Record<string, ReactText> | undefined;
+};
+
 const DNSRecords: FC<{
 	federationSubdomain: string;
 	rocketChatProtocol: string;
 	rocketChatDomain: string;
 	rocketChatPort: string;
+	resolvedEntries: ResolvedDNS;
 	basicEntries?: string[];
-	resolvedEntries:
-		| { resolved: Record<string, string | number>; success: true }
-		| { success: false };
 	legacy?: boolean;
 }> = ({
 	federationSubdomain,
 	rocketChatProtocol,
 	rocketChatDomain,
 	rocketChatPort,
-	basicEntries = ['Service', 'Protocol', 'Name', 'TTL'],
 	resolvedEntries,
+	basicEntries,
 	legacy,
 }) => {
 	function getDNSRecordStatus(dnsRecord: {
+		type: 'srv' | 'txt';
 		status: SectionStatus;
 		title: string;
 		expectedValue: string;
 	}): SectionStatus {
 		// If this is a basic entry, it will fail or succeed according to the resolved entries
-		if (basicEntries.includes(dnsRecord.title)) {
-			return resolvedEntries.success ? SectionStatus.SUCCESS : SectionStatus.FAILED;
+		if (basicEntries?.includes(dnsRecord.title)) {
+			return resolvedEntries[dnsRecord.type] ? SectionStatus.SUCCESS : SectionStatus.FAILED;
 		}
 		// Otherwise, we need to validate if the values match
-		if (resolvedEntries.success) {
-			const resolvedValue = resolvedEntries.resolved[dnsRecord.title.toLowerCase()];
+		if (resolvedEntries[dnsRecord.type]) {
+			const resolvedValue = resolvedEntries[dnsRecord.type][dnsRecord.title.toLowerCase()];
 
 			return resolvedValue.toString() === dnsRecord.expectedValue
 				? SectionStatus.SUCCESS
@@ -209,6 +213,22 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 
 	const { value: srvResolveResult } = useEndpointData('dns.resolve.srv', srvURL);
 
+	const txtURL = useMemo(
+		() => ({
+			url: `rocketchat-public-key.${federationSubdomain}`,
+		}),
+		[rocketChatProtocol, federationDomain],
+	);
+
+	const { value: txtResolveResult } = useEndpointData('dns.resolve.txt', txtURL);
+
+	const resolvedDNS: ResolvedDNS = {
+		srv: srvResolveResult?.resolved,
+		srvResolved: !!srvResolveResult,
+		txt: txtResolveResult?.resolved,
+		txtResolved: !!txtResolveResult,
+	};
+
 	return (
 		<Modal {...props}>
 			{currentStep === 1 && (
@@ -264,7 +284,8 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 									rocketChatProtocol={rocketChatProtocol}
 									rocketChatDomain={rocketChatDomain}
 									rocketChatPort={rocketChatPort}
-									resolvedEntries={srvResolveResult || { success: false }}
+									basicEntries={['Service', 'Protocol', 'Name', 'TTL', 'Host']}
+									resolvedEntries={resolvedDNS}
 								/>
 							)}
 							{currentTab === 2 && (
@@ -281,7 +302,8 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 										rocketChatProtocol={rocketChatProtocol}
 										rocketChatDomain={rocketChatDomain}
 										rocketChatPort={rocketChatPort}
-										resolvedEntries={srvResolveResult || { success: false }}
+										basicEntries={['Service', 'Protocol', 'Name', 'TTL', 'Host']}
+										resolvedEntries={resolvedDNS}
 										legacy={true}
 									/>
 								</>
