@@ -34,7 +34,7 @@ const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_CONVERT));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));
 
-	const eligibleRooms = rooms?.filter(({ isLastOwner }) => !isLastOwner);
+	const eligibleRooms = rooms;
 
 	const onChangeRoomSelection = useCallback((room) => {
 		setSelectedRooms((selectedRooms) => {

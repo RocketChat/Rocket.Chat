@@ -51,13 +51,11 @@ const FirstStep: FC<FirstStepProps> = ({
 			</Box>
 
 			<ChannelDesertionTable
-				lastOwnerWarning={t('Teams_channels_last_owner_delete_channel_warning')}
+				lastOwnerWarning={undefined}
 				onToggleAllRooms={onToggleAllRooms}
 				rooms={rooms}
 				params={{}}
-				onChangeParams={(): void => {
-					null;
-				}}
+				onChangeParams={(): void => undefined}
 				onChangeRoomSelection={onChangeRoomSelection}
 				selectedRooms={selectedRooms}
 				eligibleRoomsLength={eligibleRoomsLength}
