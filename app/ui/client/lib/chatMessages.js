@@ -28,6 +28,8 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import GenericModal from '../../../../client/components/GenericModal';
 
 
 const messageBoxState = {
@@ -463,24 +465,7 @@ export class ChatMessages {
 			prid: { $exists: true },
 		});
 
-		modal.open({
-			title: t('Are_you_sure'),
-			text: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_delete_it'),
-			cancelButtonText: t('Cancel'),
-			html: false,
-		}, () => {
-			modal.open({
-				title: t('Deleted'),
-				text: t('Your_entry_has_been_deleted'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false,
-			});
-
+		const onConfirm = () => {
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
@@ -489,12 +474,41 @@ export class ChatMessages {
 
 			this.$input.focus();
 			done();
-		}, () => {
+
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					title: t('Deleted'),
+					children: t('Your_entry_has_been_deleted'),
+					variant: 'success',
+					onConfirm: imperativeModal.close,
+					onClose: imperativeModal.close,
+				},
+			});
+
+			setTimeout(imperativeModal.close, 1000);
+		};
+
+		const onCloseModal = () => {
+			imperativeModal.close();
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
 			this.$input.focus();
 			done();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Are_you_sure'),
+				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
+				variant: 'danger',
+				confirmText: t('Yes_delete_it'),
+				onConfirm,
+				onClose: onCloseModal,
+				onCancel: onCloseModal,
+			},
 		});
 	}
 
