@@ -1615,6 +1615,7 @@
   "error-avatar-invalid-url": "Invalid avatar URL: __url__",
   "error-avatar-url-handling": "Error while handling avatar setting from a URL (__url__) for __username__",
   "error-business-hours-are-closed": "Business Hours are closed",
+  "error-blocked-username": "<strong>__field__</strong> is blocked and can't be used!",
   "error-canned-response-not-found": "Canned Response Not Found",
   "error-cannot-delete-app-user": "Deleting app user is not allowed, uninstall the corresponding app to remove it.",
   "error-cant-invite-for-direct-room": "Can't invite user to direct rooms",
