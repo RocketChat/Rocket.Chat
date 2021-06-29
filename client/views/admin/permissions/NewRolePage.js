@@ -4,7 +4,7 @@ import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -22,7 +22,7 @@ const NewRolePage = () => {
 		mandatory2fa: false,
 	});
 
-	const saveRole = useMethod('authorization:saveRole');
+	const saveRole = useEndpoint('POST', 'roles.create');
 
 	const handleSave = useMutableCallback(async () => {
 		try {
