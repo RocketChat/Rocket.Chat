@@ -101,7 +101,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			return API.v1.failure('task-does-not-exist');
 		}
 
-		// permissions
+		// TO DO: permissions
 
 		const message = Messages.findOneById(id);
 

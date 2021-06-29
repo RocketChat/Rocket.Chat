@@ -56,6 +56,11 @@ createTemplateForComponent(
 
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
 
+createTemplateForComponent(
+	'task66',
+	() => import('./views/room/contextualBar/Threads/components/Message.js'),
+);
+
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {

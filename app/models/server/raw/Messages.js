@@ -32,16 +32,6 @@ export class MessagesRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findById(id, options) {
-		const query = {
-			id,
-		};
-
-		if (options == null) { options = {}; }
-
-		return this.find(query, options);
-	}
-
 	findSnippetedByRoom(roomId, options) {
 		const query = {
 			_hidden: { $ne: true },

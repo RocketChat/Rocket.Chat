@@ -1,12 +1,12 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
-import Metrics from '../../../../../components/Message/Metrics';
-import * as NotificationStatus from '../../../../../components/Message/NotificationStatus';
-import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
-import RawText from '../../../../../components/RawText';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import * as MessageTemplate from '../../../components/MessageTemplate';
+import Metrics from '../../../components/Message/Metrics';
+import * as NotificationStatus from '../../../components/Message/NotificationStatus';
+import { followStyle, anchor } from '../../../components/Message/helpers/followSyle';
+import RawText from '../../../components/RawText';
+import UserAvatar from '../../../components/avatar/UserAvatar';
+import * as MessageTemplate from '../../room/components/MessageTemplate';
 
 function isIterable(obj) {
 	// checks for null and undefined
