@@ -7,7 +7,7 @@ type T = ISetting;
 
 export class SettingsRaw extends BaseRaw<T> {
 	async getValueById(_id: string): Promise<ISetting['value'] | undefined> {
-		const setting = await this.findOne({ _id }, { projection: { value: 1 } });
+		const setting = await this.findOne<Pick<ISetting, 'value'>>({ _id }, { projection: { value: 1 } });
 
 		return setting?.value;
 	}

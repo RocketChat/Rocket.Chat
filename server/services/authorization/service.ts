@@ -14,6 +14,7 @@ import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRole } from '../../../definition/IRole';
+import { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -133,7 +134,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
 		const { roles: userRoles = [] } = await this.Users.findOneById(uid, { projection: { roles: 1 } }) || {};
-		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 

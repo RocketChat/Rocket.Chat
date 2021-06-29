@@ -106,7 +106,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 	const getUserNameCached = mem(async (userId: string): Promise<string | undefined> => {
-		const user = await Users.findOneById(userId, { projection: { name: 1 } });
+		const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
 		return user?.name;
 	}, { maxAge: 10000 });
 
@@ -155,7 +155,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
+				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, { projection: subscriptionFields });
 				if (!subscription) {
 					return;
 				}
@@ -164,7 +164,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } }) as ISubscription;
+				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, { projection: { u: 1, rid: 1 } });
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
@@ -187,7 +187,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.roles', {
-			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
+			clientAction: clientAction !== 'removed' ? 'changed' as const : clientAction,
 			role,
 		});
 	});
@@ -240,7 +240,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		const data = await LivechatDepartmentAgents.findOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+		const data = await LivechatDepartmentAgents.findOneById<Pick<ILivechatDepartmentAgents, 'agentId' |'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
 		if (!data) {
 			return;
 		}
@@ -349,12 +349,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'updated': {
-				const history = await IntegrationHistory.findOneById(id, { projection: { 'integration._id': 1 } });
+				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, { projection: { 'integration._id': 1 } });
 				if (!history || !history.integration) {
 					return;
 				}
-				data = history;
-				broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				broadcast('watch.integrationHistory', { clientAction, data: history, diff, id });
 				break;
 			}
 			case 'inserted': {

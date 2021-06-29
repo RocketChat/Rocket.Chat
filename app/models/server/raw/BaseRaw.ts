@@ -55,8 +55,8 @@ const isWithoutProjection = <T>(props: T): props is WithoutProjection<T> => !('p
 
 type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 type ResultFields<Base, Defaults> = Defaults extends void ? Base : Defaults[keyof Defaults] extends 1 ? Pick<Defaults, keyof Defaults> : Omit<Defaults, keyof Defaults>;
-export class BaseRaw<T, C extends DefaultFields<T> = void> implements IBaseRaw<T> {
-	public readonly defaultFields?: C;
+export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
+	public readonly defaultFields: C;
 
 	protected name: string;
 
@@ -67,73 +67,58 @@ export class BaseRaw<T, C extends DefaultFields<T> = void> implements IBaseRaw<T
 		this.name = this.col.collectionName.replace(baseName, '');
 	}
 
-	_ensureDefaultFields(options?: undefined): FindOneOptions<ResultFields<T, C>>;
+	ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
 
-	_ensureDefaultFields<P>(options: FindOneOptions<T>): FindOneOptions<T>;
+	ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
 
-	// _ensureDefaultFields<P>(options: FindOneOptions<P extends T ? T : P>): FindOneOptions<P>;
+	ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
 
-	_ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): FindOneOptions<ResultFields<T, C>>;
-
-
-	_ensureDefaultFields<P>(options?: undefined | FindOneOptions<T> | WithoutProjection<FindOneOptions<T>>): FindOneOptions<P> | FindOneOptions<T> | FindOneOptions<ResultFields<T, C>> | undefined {
-		if (!this.defaultFields) {
-			return options;
+	ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
+		if (options === undefined) {
+			if (this.defaultFields !== undefined) {
+				return { projection: this.defaultFields } as unknown as WithoutProjection<FindOneOptions<T>>; // TODO remove defaultFields
+			}
+			return undefined;
 		}
-
-		if (!options) {
-			return { projection: this.defaultFields };
-		}
-
-		// TODO: change all places using "fields" for raw models and remove the additional condition here
-		if (isWithoutProjection(options)) {
-			return options;
-		}
-
-		return {
-			...options,
-			projection: this.defaultFields,
-		};
+		return options;
 	}
 
-	async findOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | null> {
-		return this.findOne({ _id }, options);
-	}
+	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
 
-	async findOne(query = {}, options: FindOneOptions<T> = {}): Promise<T | null> {
-		const optionsDef = this._ensureDefaultFields(options);
+	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
 
-		if (typeof query === 'string') {
-			return this.findOneById(query, options);
-		}
-
+	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
+		const query = { _id } as FilterQuery<T>;
+		const optionsDef = this.ensureDefaultFields(options);
 		return this.col.findOne(query, optionsDef);
+	}
+
+	async findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
+
+	async findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
+
+	async findOne<P>(query: FilterQuery<T> | string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+
+	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
+		const q = typeof query === 'string' ? { _id: query } as FilterQuery<T> : query;
+
+		const optionsDef = this.ensureDefaultFields(options);
+		return this.col.findOne(q, optionsDef);
 	}
 
 	findUsersInRoles(): void {
 		throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
 	}
 
+	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
 
-	find(): Cursor<ResultFields<T, C>>;
-
-	find(query: FilterQuery<T>): Cursor<ResultFields<T, C>>;
-
-	find(query: FilterQuery<T>, options?: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
+	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
 
 	find<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
 
-	find<P>(query: FilterQuery<T> | undefined = {}, options?: undefined | WithoutProjection<FindOneOptions<T>> | FindOneOptions<P extends T ? T : P>): Cursor<P> | Cursor<T> | Cursor<ResultFields<T, C>> {
-		if (options === undefined) {
-			return this.col.find(query, this._ensureDefaultFields() as FindOneOptions<P extends T ? T : P>) as unknown as Cursor<ResultFields<T, C>>;
-		}
-
-		if (isWithoutProjection(options)) {
-			const optionsDef = this._ensureDefaultFields(options);
-			return this.col.find(query, optionsDef as FindOneOptions<P extends T ? T : P>) as unknown as Cursor<ResultFields<T, C>>;
-		}
-		const optionsDef = this._ensureDefaultFields(options as FindOneOptions<T>);
-		return this.col.find(query, optionsDef as FindOneOptions<P extends T ? T : P>) as unknown as Cursor<T>;
+	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
+		const optionsDef = this.ensureDefaultFields(options);
+		return this.col.find(query, optionsDef);
 	}
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
