@@ -74,13 +74,14 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
 
 	ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
-		if (options === undefined) {
-			if (this.defaultFields !== undefined) {
-				return { projection: this.defaultFields } as unknown as WithoutProjection<FindOneOptions<T>>; // TODO remove defaultFields
-			}
-			return undefined;
+		if (this.defaultFields === undefined) {
+			return options;
 		}
-		return options;
+
+		return {
+			projection: this.defaultFields,
+			...options,
+		};
 	}
 
 	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
