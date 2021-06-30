@@ -78,7 +78,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			return options;
 		}
 
-		const { fields, ...rest } = options;
+		const { fields, ...rest } = options || {};
 
 		if (fields) {
 			warnFields('Using \'fields\' in models is deprecated.', options);
