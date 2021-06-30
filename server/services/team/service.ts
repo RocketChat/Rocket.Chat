@@ -26,6 +26,7 @@ import { IUser } from '../../../definition/IUser';
 import { Room } from '../../sdk';
 import {
 	IListRoomsFilter,
+	ITeamAutocompleteResult,
 	ITeamCreateParams,
 	ITeamInfo,
 	ITeamMemberInfo,
@@ -847,13 +848,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 		return stats;
 	}
 
-	async autocomplete(uid: string, name: string): Promise<IRoom[]> {
+	async autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]> {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
 		const subscriptions = await this.SubscriptionsModel.find<Pick<ISubscription, 'rid'>>({ 'u._id': uid }, { projection: { rid: 1 } }).toArray();
 		const subscriptionIds = subscriptions.map(({ rid }) => rid);
 
-		const rooms = await this.RoomsModel.find({
+		const rooms = await this.RoomsModel.find<ITeamAutocompleteResult>({
 			teamMain: true,
 			$and: [{
 				$or: [{
@@ -869,8 +870,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 				}],
 			}],
 		}, {
-			fields: {
-				_id: 1,
+			projection: {
 				fname: 1,
 				teamId: 1,
 				name: 1,

@@ -48,9 +48,13 @@ export interface IBaseRaw<T> {
 const baseName = 'rocketchat_';
 const isWithoutProjection = <T>(props: T): props is WithoutProjection<T> => !('projection' in props) && !('fields' in props);
 
-
 type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 type ResultFields<Base, Defaults> = Defaults extends void ? Base : Defaults[keyof Defaults] extends 1 ? Pick<Defaults, keyof Defaults> : Omit<Defaults, keyof Defaults>;
+
+const warnFields = process.env.NODE_ENV !== 'production'
+	? (warn: string): void => { console.warn(warn, new Error().stack); }
+	: new Function();
+
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
 	public readonly defaultFields: C;
 
@@ -74,9 +78,16 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			return options;
 		}
 
+		const { fields, ...rest } = options;
+
+		if (fields) {
+			warnFields('Using \'fields\' in models is deprecated.');
+		}
+
 		return {
 			projection: this.defaultFields,
-			...options,
+			...fields && { projection: fields },
+			...rest,
 		};
 	}
 
