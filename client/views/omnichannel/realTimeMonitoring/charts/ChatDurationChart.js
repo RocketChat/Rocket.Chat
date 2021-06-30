@@ -17,7 +17,7 @@ const init = (canvas, context, t) =>
 		context,
 		[t('Avg_chat_duration'), t('Longest_chat_duration')],
 		labels,
-		[initialData, initialData],
+		[initialData, initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true },
 	);
 

@@ -2,7 +2,13 @@ import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepar
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
 export type LivechatDepartment = {
-	GET: (params: { text: string; offset: number; count: number }) => {
+	GET: (params: {
+		text: string;
+		offset: number;
+		count: number;
+		sort?: string;
+		onlyMyDepartments?: boolean;
+	}) => {
 		departments: ObjectFromApi<ILivechatDepartment>[];
 		total: number;
 	};

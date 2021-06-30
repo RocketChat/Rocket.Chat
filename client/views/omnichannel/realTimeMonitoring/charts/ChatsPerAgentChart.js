@@ -39,7 +39,7 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.chatsPerAgentChart = reload;
 
-	const { agents = {} } = data ?? initialData;
+	const chartData = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -50,11 +50,14 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			Object.entries(agents).forEach(([name, value]) => {
-				updateChartData(name, [value.open, value.closed]);
-			});
+			if (chartData && chartData.success) {
+				delete chartData.success;
+				Object.entries(chartData).forEach(([name, value]) => {
+					updateChartData(name, [value.open, value.closed]);
+				});
+			}
 		}
-	}, [agents, state, t, updateChartData]);
+	}, [chartData, state, t, updateChartData]);
 
 	return <Chart ref={canvas} {...props} />;
 };

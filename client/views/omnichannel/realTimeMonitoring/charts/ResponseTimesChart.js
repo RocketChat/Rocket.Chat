@@ -22,7 +22,7 @@ const init = (canvas, context, t) =>
 			t('Longest_response_time'),
 		],
 		labels,
-		[initialData, initialData, initialData, initialData],
+		[initialData, initialData.slice(), initialData.slice(), initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true },
 	);
 
