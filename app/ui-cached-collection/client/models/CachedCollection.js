@@ -206,11 +206,8 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		try {
-			this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
-		} catch (e) {
-			console.log(e);
-		}
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
