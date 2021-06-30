@@ -1,5 +1,5 @@
 import { Box, Table, Icon, Button } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
@@ -26,12 +26,40 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 	);
 
 	const customSound = useCustomSound();
+	const [currentSound, setcurrentSound] = useState({ id: '', state: '' });
 
 	const handlePlay = useCallback(
 		(sound) => {
 			customSound.play(sound);
 		},
 		[customSound],
+	);
+
+	const handlePause = useCallback(
+		(sound) => {
+			customSound.pause(sound);
+		},
+		[customSound],
+	);
+
+	const handleAction = useCallback(
+		(sound) => {
+			if (currentSound.id === sound) {
+				if (currentSound.state === 'pause') {
+					handlePause(sound);
+					setcurrentSound({ id: sound, state: 'play' });
+				} else {
+					handlePlay(sound);
+					setcurrentSound({ id: sound, state: 'pause' });
+				}
+			} else {
+				handlePause(currentSound.id);
+
+				setcurrentSound({ id: sound, state: 'pause' });
+				handlePlay(sound);
+			}
+		},
+		[currentSound, handlePlay, handlePause],
 	);
 
 	const renderRow = (sound) => {
@@ -56,9 +84,9 @@ function AdminSounds({ data, sort, onClick, onHeaderClick, setParams, params }) 
 						small
 						square
 						aria-label={t('Play')}
-						onClick={(e) => e.preventDefault() & e.stopPropagation() & handlePlay(_id)}
+						onClick={(e) => e.preventDefault() & e.stopPropagation() & handleAction(_id)}
 					>
-						<Icon name='play' size='x20' />
+						<Icon name={currentSound.id === _id ? currentSound.state : 'play'} size='x20' />
 					</Button>
 				</Table.Cell>
 			</Table.Row>
