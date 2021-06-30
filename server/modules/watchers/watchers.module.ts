@@ -134,7 +134,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 							for await (const mention of message.mentions) {
 								const name = await getUserNameCached(mention._id);
 								if (name) {
-									mention.name = await name;
+									mention.name = name;
 								}
 							}
 						}

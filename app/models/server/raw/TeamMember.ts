@@ -37,7 +37,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options: FindOneOptions<P>): Promise<P| null>;
 
 	findOneByUserIdAndTeamId<P>(userId: string, teamId: string, options?: undefined | WithoutProjection<FindOneOptions<ITeamMember>> | FindOneOptions<P extends ITeamMember ? ITeamMember : P>): Promise<P| null | ITeamMember> {
-		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId }, options);
+		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
 
 

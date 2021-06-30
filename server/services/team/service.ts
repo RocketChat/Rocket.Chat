@@ -782,13 +782,13 @@ export class TeamService extends ServiceClass implements ITeamService {
 	async getInfoByName(teamName: string): Promise<Omit<ITeam, 'usernames'> | null> {
 		return this.TeamModel.findOne<Omit<ITeam, 'usernames'>>({
 			name: teamName,
-		}, { projection: { usernames: 0 } }) as unknown as Omit<ITeam, 'usernames'>;
+		}, { projection: { usernames: 0 } });
 	}
 
 	async getInfoById(teamId: string): Promise<Omit<ITeam, 'usernames'> | null> {
 		return this.TeamModel.findOne<Omit<ITeam, 'usernames'>>({
 			_id: teamId,
-		}, { projection: { usernames: 0 } }) as unknown as Omit<ITeam, 'usernames'>;
+		}, { projection: { usernames: 0 } });
 	}
 
 	async addMembersToDefaultRooms(inviter: IUser, teamId: string, members: Array<Partial<ITeamMember>>): Promise<void> {
@@ -884,6 +884,6 @@ export class TeamService extends ServiceClass implements ITeamService {
 			},
 		}).toArray();
 
-		return rooms as IRoom[]; // TODO: Remove
+		return rooms;
 	}
 }
