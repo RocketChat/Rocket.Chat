@@ -11,9 +11,8 @@ import {
 	TextAreaInput,
 	Button,
 	ButtonGroup,
-	Throbber,
 } from '@rocket.chat/fuselage';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { ISubscription } from '../../../definition/ISubscription';
 import Page from '../../components/Page/Page';
@@ -22,7 +21,6 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useForm } from '../../hooks/useForm';
-import { AsyncStatePhase } from '../../lib/asyncState';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
@@ -225,18 +223,4 @@ function OutOfOfficeForm({
 	);
 }
 
-function OutOfOfficePage(): ReactNode {
-	const { value, phase } = useEndpointData('outOfOffice.status' as any);
-
-	if (phase === AsyncStatePhase.LOADING) {
-		return (
-			<Box maxWidth='x800' w='full' alignSelf='center'>
-				<Throbber />
-			</Box>
-		);
-	}
-	console.log('received form values', value);
-	return <OutOfOfficeForm receivedOutOfOfficeValues={value} />;
-}
-
-export default OutOfOfficePage;
+export default OutOfOfficeForm;

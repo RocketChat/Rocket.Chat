@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
@@ -21,11 +22,11 @@ API.v1.addRoute(
 			);
 
 
-			const startDate = this.bodyParams.startDate ? new Date(this.bodyParams.startDate) :null;
-			const endDate = this.bodyParams.endDate?new Date(this.bodyParams.endDate):null 
+			const startDate = this.bodyParams.startDate ? new Date(this.bodyParams.startDate) : null;
+			const endDate = this.bodyParams.endDate ? new Date(this.bodyParams.endDate) : null;
 
-			if(startDate && endDate && startDate > endDate){
-				throw new Meteor.Error('invalid-date','Your Start data has to be before the End Date');
+			if (startDate && endDate && startDate > endDate) {
+				throw new Meteor.Error('invalid-date', 'Your Start data has to be before the End Date');
 			}
 
 			const { message } = updateOutOfOffice({
