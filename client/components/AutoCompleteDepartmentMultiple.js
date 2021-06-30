@@ -16,10 +16,10 @@ const AutoCompleteDepartmentMultiple = (props) => {
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }), [
-			debouncedDepartmentsFilter,
-			onlyMyDepartments,
-		]),
+		useMemo(
+			() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }),
+			[debouncedDepartmentsFilter, onlyMyDepartments],
+		),
 	);
 
 	const {

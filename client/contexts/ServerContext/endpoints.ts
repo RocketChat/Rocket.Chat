@@ -68,29 +68,29 @@ export type ServerEndpointMethodOf<Path extends ServerEndpointPath> = keyof Serv
 
 type ServerEndpoint<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ServerEndpoints[Path][Method] extends (...args: any[]) => any
 	? ServerEndpoints[Path][Method]
 	: (...args: any[]) => any;
 
 export type ServerEndpointRequestPayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[0];
 
 export type ServerEndpointFormData<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[1];
 
 export type ServerEndpointResponsePayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ReturnType<ServerEndpoint<Method, Path>>;
 
 export type ServerEndpointFunction<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = {
 	(params: ServerEndpointRequestPayload<Method, Path>): Promise<
 		ServerEndpointResponsePayload<Method, Path>
