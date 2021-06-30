@@ -13,6 +13,8 @@ import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { IRole } from '../../../definition/IRole';
+import { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -96,7 +98,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private getPublicRoles = mem(async (): Promise<string[]> => {
-		const roles = await this.Roles.find({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
+		const roles = await this.Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
 
 		return roles.map(({ _id }) => _id);
 	}, { maxAge: 10000 });
@@ -106,7 +108,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			sort: {
 				username: 1,
 			},
-			fields: {
+			projection: {
 				username: 1,
 				roles: 1,
 			},
@@ -132,7 +134,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
 		const { roles: userRoles = [] } = await this.Users.findOneById(uid, { projection: { roles: 1 } }) || {};
-		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
