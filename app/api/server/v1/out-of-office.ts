@@ -15,10 +15,18 @@ API.v1.addRoute(
 					isEnabled: Boolean,
 					roomIds: Array,
 					customMessage: String,
-					startDate: Match.Optional(String),
-					endDate: Match.Optional(String),
+					startDate: String,
+					endDate: String,
 				}),
 			);
+
+
+			const startDate = this.bodyParams.startDate ? new Date(this.bodyParams.startDate) :null;
+			const endDate = this.bodyParams.endDate?new Date(this.bodyParams.endDate):null 
+
+			if(startDate && endDate && startDate > endDate){
+				throw new Meteor.Error('invalid-date','Your Start data has to be before the End Date');
+			}
 
 			const { message } = updateOutOfOffice({
 				userId: this.userId,

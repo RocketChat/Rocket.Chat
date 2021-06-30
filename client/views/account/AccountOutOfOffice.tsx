@@ -11,6 +11,7 @@ import {
 	TextAreaInput,
 	Button,
 	ButtonGroup,
+	Throbber,
 } from '@rocket.chat/fuselage';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 
@@ -21,6 +22,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import { useForm } from '../../hooks/useForm';
+import { AsyncStatePhase } from '../../lib/asyncState';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
@@ -46,20 +48,23 @@ function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
 	if (!receivedFormValues) {
 		return { ...defaultFormValues };
 	}
-	return { ...receivedFormValues };
-	// return {
-	// 	...defaultFormValues,
-	// 	isEnabled: !!receivedFormValues.isEnabled,
-	// 	customMessage: receivedFormValues.customMessage,
-	// 	roomIds: receivedFormValues.roomIds ?? [],
-	// };
+	return {
+		...defaultFormValues,
+		isEnabled: !!receivedFormValues.isEnabled,
+		customMessage: receivedFormValues.customMessage,
+		roomIds: receivedFormValues.roomIds ?? [],
+		startDate: receivedFormValues.startDate ?? '',
+		endDate: receivedFormValues.endDate ?? '',
+	};
 }
 
-function OutOfOfficePage(): ReactNode {
+function OutOfOfficeForm({
+	receivedOutOfOfficeValues,
+}: {
+	receivedOutOfOfficeValues: IFormValues;
+}): JSX.Element {
 	const t = useTranslation() as any;
 	const dispatchToastMessage = useToastMessageDispatch();
-
-	const { value: receivedOutOfOfficeValues } = useEndpointData('outOfOffice.status' as any);
 
 	const { values, handlers, commit, hasUnsavedChanges } = useForm(
 		getInitialFormValues(receivedOutOfOfficeValues) as any,
@@ -91,10 +96,10 @@ function OutOfOfficePage(): ReactNode {
 	);
 
 	const handleSaveChanges = useCallback(async () => {
-		commit();
 		const result = await toggleOutOfOffice();
 		if (result && result.success === true) {
 			dispatchToastMessage({ type: 'success', message: result.message });
+			commit();
 		}
 	}, [commit, dispatchToastMessage, toggleOutOfOffice]);
 
@@ -158,7 +163,7 @@ function OutOfOfficePage(): ReactNode {
 									<Field.Label>{t('Start Date')}</Field.Label>
 									<Field.Row>
 										<InputBox
-											type='date'
+											type='datetime-local'
 											flexGrow={1}
 											h='x20'
 											value={startDate as string}
@@ -171,7 +176,7 @@ function OutOfOfficePage(): ReactNode {
 									<Field.Label>{t('End Date')}</Field.Label>
 									<Field.Row>
 										<InputBox
-											type='date'
+											type='datetime-local'
 											flexGrow={1}
 											h='x20'
 											value={endDate as string}
@@ -201,6 +206,7 @@ function OutOfOfficePage(): ReactNode {
 									<Field.Label>{t('Select the Channels for Out of Office')}</Field.Label>
 									<Field.Row>
 										<MultiSelect
+											value={roomIds}
 											placeholder={'channels to be selected'}
 											options={roomOptions}
 											onChange={handleRoomIds}
@@ -217,6 +223,20 @@ function OutOfOfficePage(): ReactNode {
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
+}
+
+function OutOfOfficePage(): ReactNode {
+	const { value, phase } = useEndpointData('outOfOffice.status' as any);
+
+	if (phase === AsyncStatePhase.LOADING) {
+		return (
+			<Box maxWidth='x800' w='full' alignSelf='center'>
+				<Throbber />
+			</Box>
+		);
+	}
+	console.log('received form values', value);
+	return <OutOfOfficeForm receivedOutOfOfficeValues={value} />;
 }
 
 export default OutOfOfficePage;

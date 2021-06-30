@@ -32,7 +32,7 @@ export function updateOutOfOffice({
 				'Please enable out of office before disabling.',
 			);
 		}
-		return { message: 'Successfully disabled Out Of Office.' };
+		return { message: 'Successfully Disabled Out Of Office.' };
 	}
 
 	if (customMessage.length === 0) {
