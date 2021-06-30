@@ -236,7 +236,7 @@
 		"marked": "^0.7.0",
 		"mem": "^6.1.0",
 		"memoize-one": "^5.1.1",
-		"meteor-node-stubs": "^1.0.1",
+		"meteor-node-stubs": "^1.0.3",
 		"mime-db": "^1.44.0",
 		"mime-type": "^3.1.0",
 		"mkdirp": "^0.5.5",
