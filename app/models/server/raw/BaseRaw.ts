@@ -41,10 +41,6 @@ type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
 // InsertionModel forces both _id and _updatedAt to be optional, regardless of how they are declared in T
 export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & { _updatedAt?: Date };
 
-// interface ITrash {
-// 	__collection__: string;
-// }
-
 export interface IBaseRaw<T> {
 	col: Collection<T>;
 }
@@ -67,13 +63,13 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		this.name = this.col.collectionName.replace(baseName, '');
 	}
 
-	ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
+	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
 
-	ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
+	private ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
 
-	ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
+	private ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
 
-	ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
+	private ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
 		if (this.defaultFields === undefined) {
 			return options;
 		}
