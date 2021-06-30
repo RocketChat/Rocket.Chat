@@ -7,14 +7,10 @@ export default {
 	component: Counter,
 };
 
-export const Default = () =>
-	<Counter count={123} />;
+export const Default = () => <Counter count={123} />;
 
-export const WithPositiveVariation = () =>
-	<Counter count={123} variation={4} />;
+export const WithPositiveVariation = () => <Counter count={123} variation={4} />;
 
-export const WithNegativeVariation = () =>
-	<Counter count={123} variation={-4} />;
+export const WithNegativeVariation = () => <Counter count={123} variation={-4} />;
 
-export const WithDescription = () =>
-	<Counter count={123} description='Description' />;
+export const WithDescription = () => <Counter count={123} description='Description' />;

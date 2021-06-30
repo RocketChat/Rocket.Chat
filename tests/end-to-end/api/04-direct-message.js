@@ -441,5 +441,40 @@ describe('[Direct Messages]', function() {
 				})
 				.end(done);
 		});
+		it('should return and array with one member', (done) => {
+			request.get(api('im.members'))
+				.set(credentials)
+				.query({
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').and.to.be.equal(2);
+					expect(res.body).to.have.property('offset').and.to.be.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.equal(2);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(2);
+				})
+				.end(done);
+		});
+		it('should return and array with one member queried by status', (done) => {
+			request.get(api('im.members'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+					'status[]': ['online'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count').and.to.be.equal(1);
+					expect(res.body).to.have.property('offset').and.to.be.equal(0);
+					expect(res.body).to.have.property('total').and.to.be.equal(1);
+					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
+				})
+				.end(done);
+		});
 	});
 });

@@ -10,7 +10,7 @@ class Settings extends SettingsBase {
 
 	collection = PublicSettingsCachedCollection.get().collection;
 
-	dict = new ReactiveDict<any>('settings');
+	dict = new ReactiveDict('settings');
 
 	get(_id: string): any {
 		return this.dict.get(_id);
