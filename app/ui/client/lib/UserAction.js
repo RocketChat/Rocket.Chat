@@ -102,7 +102,7 @@ export const UserAction = new class {
 			delete timeouts[rid];
 		}
 
-		timeouts[rid] = setTimeout(() => this.stop(rid), timeout);
+		timeouts[rid] = setTimeout(() => this.stop(rid, activityType), timeout);
 		return timeouts[rid];
 	}
 
