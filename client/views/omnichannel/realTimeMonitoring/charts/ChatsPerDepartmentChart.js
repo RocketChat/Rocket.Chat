@@ -38,7 +38,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.chatsPerDepartmentChart = reload;
 
-	const { departments = {} } = data ?? initialData;
+	const chartData = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -49,11 +49,14 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			Object.entries(departments).forEach(([name, value]) => {
-				updateChartData(name, [value.open, value.closed]);
-			});
+			if (chartData && chartData.success) {
+				delete chartData.success;
+				Object.entries(chartData).forEach(([name, value]) => {
+					updateChartData(name, [value.open, value.closed]);
+				});
+			}
 		}
-	}, [departments, state, t, updateChartData]);
+	}, [chartData, state, t, updateChartData]);
 
 	return <Chart ref={canvas} {...props} />;
 };
