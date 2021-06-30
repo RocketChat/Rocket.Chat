@@ -1,6 +1,5 @@
 import { ClientStream } from 'meteor/socket-stream-client';
 
-ClientStream.prototype.connectionAllowed = false;
 const { _launchConnection } = ClientStream.prototype;
 ClientStream.prototype.allowConnection = function() {
 	_launchConnection.call(this);
