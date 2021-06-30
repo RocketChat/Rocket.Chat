@@ -1,4 +1,4 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -7,8 +7,8 @@ import { useRecordList } from '../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
-const AutoCompleteDepartment = (props) => {
-	const { value, onlyMyDepartments = false, onChange = () => {}, haveAll = false } = props;
+const AutoCompleteDepartmentMultiple = (props) => {
+	const { value, onlyMyDepartments = false, onChange = () => {} } = props;
 
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
@@ -16,10 +16,9 @@ const AutoCompleteDepartment = (props) => {
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
 	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments, haveAll }), [
+		useMemo(() => ({ filter: debouncedDepartmentsFilter, onlyMyDepartments }), [
 			debouncedDepartmentsFilter,
 			onlyMyDepartments,
-			haveAll,
 		]),
 	);
 
@@ -30,10 +29,6 @@ const AutoCompleteDepartment = (props) => {
 	} = useRecordList(departmentsList);
 
 	const sortedByName = departmentsItems.sort((a, b) => {
-		if (a.value.value === 'all') {
-			return -1;
-		}
-
 		if (a.name > b.name) {
 			return 1;
 		}
@@ -45,13 +40,16 @@ const AutoCompleteDepartment = (props) => {
 	});
 
 	return (
-		<PaginatedSelectFiltered
+		<PaginatedMultiSelectFiltered
 			withTitle
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}
 			options={sortedByName}
+			width='100%'
+			flexShrink={0}
+			flexGrow={0}
 			placeholder={t('Select_an_option')}
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING
@@ -62,4 +60,4 @@ const AutoCompleteDepartment = (props) => {
 	);
 };
 
-export default memo(AutoCompleteDepartment);
+export default memo(AutoCompleteDepartmentMultiple);

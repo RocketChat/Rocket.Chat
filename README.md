@@ -80,12 +80,12 @@ We're hiring developers, support people, and product managers all the time. Plea
 
 ## Get the Latest News
 
-* Twitter - Follow [Rocket.Chat](https://twitter.com/RocketChat)
-* Blog - Get the latest updates from the [Rocket.Chat blog](https://rocket.chat/blog/).
-* Facebook - Follow [Rocket.Chat](https://www.facebook.com/RocketChatApp/)
-* LinkedIn - Follow [Rocket.Chat](https://www.linkedin.com/company/rocket-chat/)
-* Youtube - Follow [Rocket.Chat](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
-* Email - Subscribe to our [newsletter](https://rocket.chat/newsletter/)
+* [Twitter](https://twitter.com/RocketChat)
+* [Blog](https://rocket.chat/blog/)
+* [Facebook](https://www.facebook.com/RocketChatApp/)
+* [LinkedIn](https://www.linkedin.com/company/rocket-chat/)
+* [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
+* [Email Newsletter](https://rocket.chat/newsletter/)
 
 Any other questions, mail us at [info@rocket.chat](info@rocket.chat). We’d love to meet you!
 

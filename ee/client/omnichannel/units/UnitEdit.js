@@ -2,15 +2,16 @@ import {
 	Field,
 	TextInput,
 	Button,
-	Box,
 	PaginatedMultiSelectFiltered,
 	Select,
-	Margins,
+	ButtonGroup,
+	Icon,
+	FieldGroup,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState } from 'react';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
@@ -21,7 +22,7 @@ import { useForm } from '../../../../client/hooks/useForm';
 import { useDepartmentsByUnitsList } from '../../../../client/views/hooks/useDepartmentsByUnitsList';
 import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
-function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
+function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
 	const [monitorsFilter, setMonitorsFilter] = useState('');
@@ -55,6 +56,17 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 		items: departmentsItems,
 		itemCount: departmentsTotal,
 	} = useRecordList(departmentsList);
+
+	const departmentsSortedByName = departmentsItems.sort((a, b) => {
+		if (a.name > b.name) {
+			return 1;
+		}
+		if (a.name < b.name) {
+			return -1;
+		}
+
+		return 0;
+	});
 
 	const unit = data || {};
 
@@ -122,8 +134,8 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleReset = useMutableCallback(() => {
-		reload();
+	const handleReturn = useMutableCallback(() => {
+		unitsRoute.push({});
 	});
 
 	const canSave = useMemo(
@@ -154,83 +166,13 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
-					<TextInput
-						placeholder={t('Name')}
-						flexGrow={1}
-						value={name}
-						onChange={handleName}
-						error={hasUnsavedChanges && nameError}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Visibility')}*</Field.Label>
-				<Field.Row>
-					<Select
-						options={visibilityOpts}
-						value={visibility}
-						error={hasUnsavedChanges && visibilityError}
-						placeholder={t('Select_an_option')}
-						onChange={handleVisibility}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Departments')}*</Field.Label>
-				<Field.Row>
-					<PaginatedMultiSelectFiltered
-						filter={debouncedDepartmentsFilter}
-						setFilter={setDepartmentsFilter}
-						options={departmentsItems}
-						value={departments}
-						error={hasUnsavedChanges && departmentError}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={handleDepartments}
-						flexGrow={1}
-						endReached={
-							departmentsPhase === AsyncStatePhase.LOADING
-								? () => {}
-								: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
-						}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Monitors')}*</Field.Label>
-				<Field.Row>
-					<PaginatedMultiSelectFiltered
-						filter={debouncedMonitorsFilter}
-						setFilter={setMonitorsFilter}
-						options={monitorsItems}
-						value={monitors}
-						error={hasUnsavedChanges && unitMonitorsError}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={handleMonitors}
-						flexGrow={1}
-						endReached={
-							monitorsPhase === AsyncStatePhase.LOADING
-								? () => {}
-								: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
-						}
-					/>
-				</Field.Row>
-			</Field>
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						{!isNew && (
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>
-								{t('Reset')}
-							</Button>
-						)}
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={title}>
+					<ButtonGroup>
+						<Button onClick={handleReturn}>
+							<Icon name='back' /> {t('Back')}
+						</Button>
 						<Button
 							primary
 							mie='none'
@@ -240,10 +182,90 @@ function UnitEdit({ data, unitId, isNew, unitMonitors, unitDepartments, reload, 
 						>
 							{t('Save')}
 						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</VerticalBar.ScrollableContent>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<FieldGroup
+						w='full'
+						alignSelf='center'
+						maxWidth='x600'
+						is='form'
+						autoComplete='off'
+						{...props}
+					>
+						<Field>
+							<Field.Label>{t('Name')}*</Field.Label>
+							<Field.Row>
+								<TextInput
+									placeholder={t('Name')}
+									flexGrow={1}
+									value={name}
+									onChange={handleName}
+									error={hasUnsavedChanges && nameError}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Visibility')}*</Field.Label>
+							<Field.Row>
+								<Select
+									options={visibilityOpts}
+									value={visibility}
+									error={hasUnsavedChanges && visibilityError}
+									placeholder={t('Select_an_option')}
+									onChange={handleVisibility}
+									flexGrow={1}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Departments')}*</Field.Label>
+							<Field.Row>
+								<PaginatedMultiSelectFiltered
+									withTitle
+									filter={departmentsFilter}
+									setFilter={setDepartmentsFilter}
+									options={departmentsSortedByName}
+									value={departments}
+									error={hasUnsavedChanges && departmentError}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleDepartments}
+									flexGrow={1}
+									endReached={
+										departmentsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+									}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Monitors')}*</Field.Label>
+							<Field.Row>
+								<PaginatedMultiSelectFiltered
+									withTitle
+									filter={monitorsFilter}
+									setFilter={setMonitorsFilter}
+									options={monitorsItems}
+									value={monitors}
+									error={hasUnsavedChanges && unitMonitorsError}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleMonitors}
+									flexGrow={1}
+									endReached={
+										monitorsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
+									}
+								/>
+							</Field.Row>
+						</Field>
+					</FieldGroup>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		</Page>
 	);
 }
 
