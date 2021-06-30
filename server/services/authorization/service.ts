@@ -108,7 +108,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			sort: {
 				username: 1,
 			},
-			fields: {
+			projection: {
 				username: 1,
 				roles: 1,
 			},

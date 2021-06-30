@@ -474,7 +474,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 			};
 		}
 
-		const user = await this.Users.findOneById<{ __rooms: string[] }>(uid, { fields: { __rooms: 1 } });
+		const user = await this.Users.findOneById<{ __rooms: string[] }>(uid, { projection: { __rooms: 1 } });
 		const userRooms = user?.__rooms;
 		const validTeamRoomsCursor = this.RoomsModel.findByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
 
