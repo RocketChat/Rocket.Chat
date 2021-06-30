@@ -5,15 +5,25 @@ import { t } from '../../../utils';
 import { modal } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { hasRole } from '../../../authorization';
+import { Roles, Users } from '../../../models/client';
 
 Meteor.startup(function() {
 	Tracker.autorun(function(c) {
-		const siteUrl = settings.get('Site_Url');
-		if (!siteUrl || (Meteor.userId() == null)) {
+		if (!Meteor.userId()) {
 			return;
 		}
+
+		if (!Roles.ready.get() || Users.find().count() === 0) {
+			return;
+		}
+
 		if (hasRole(Meteor.userId(), 'admin') === false) {
 			return c.stop();
+		}
+
+		const siteUrl = settings.get('Site_Url');
+		if (!siteUrl) {
+			return;
 		}
 		Meteor.setTimeout(function() {
 			const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
