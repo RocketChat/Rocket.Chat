@@ -995,6 +995,10 @@ settings.addGroup('General', function() {
 		],
 		public: true,
 	});
+	this.add('ECDH_Enabled', false, {
+		type: 'boolean',
+		alert: 'This_feature_is_currently_in_alpha',
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -1064,12 +1068,6 @@ settings.addGroup('General', function() {
 	});
 	this.section('NPS', function() {
 		this.add('NPS_survey_enabled', true, {
-			type: 'boolean',
-		});
-	});
-
-	this.section('Security', function() {
-		this.add('ECDH_Enabled', false, {
 			type: 'boolean',
 		});
 	});
