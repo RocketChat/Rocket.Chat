@@ -11,132 +11,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import * as psl from 'psl';
-import React, { FC, ReactElement, ReactText, useCallback, useMemo, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { useSetting, useSettingSetValue } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
-import { SectionStatus } from './Section';
-import getStatusIcon from './SectionStatusIcon';
-
-const DNSText: FC<{
-	text: string;
-}> = ({ text }) => <Box style={{ marginTop: 8, fontWeight: 'bold', fontSize: '95%' }}>{text}</Box>;
-
-const DNSRecord: FC<{
-	status: SectionStatus;
-	title: string;
-	value: string;
-}> = ({ status, title, value }) => (
-	<Box display='flex' alignItems='flex-start'>
-		{getStatusIcon(status)}
-		<Box flexDirection='column' style={{ marginTop: -2, fontWeight: 'bold', fontSize: '85%' }}>
-			{title}: {value}
-		</Box>
-	</Box>
-);
-
-type ResolvedDNS = {
-	srv: Record<string, ReactText> | undefined;
-	txt: Record<string, ReactText> | undefined;
-};
-
-const DNSRecords: FC<{
-	federationSubdomain: string;
-	rocketChatProtocol: string;
-	rocketChatDomain: string;
-	rocketChatPort: string;
-	resolvedEntries: ResolvedDNS;
-	basicEntries?: string[];
-	legacy?: boolean;
-}> = ({
-	federationSubdomain,
-	rocketChatProtocol,
-	rocketChatDomain,
-	rocketChatPort,
-	resolvedEntries,
-	basicEntries,
-	legacy,
-}) => {
-	function getDNSRecordStatus(dnsRecord: {
-		type: 'srv' | 'txt';
-		status: SectionStatus;
-		title: string;
-		expectedValue: string;
-	}): SectionStatus {
-		// If this is a basic entry, it will fail or succeed according to the resolved entries
-		if (basicEntries?.includes(dnsRecord.title)) {
-			return resolvedEntries[dnsRecord.type] ? SectionStatus.SUCCESS : SectionStatus.FAILED;
-		}
-		// Otherwise, we need to validate if the values match
-		if (resolvedEntries[dnsRecord.type]) {
-			const resolvedValue = resolvedEntries[dnsRecord.type][dnsRecord.title.toLowerCase()];
-
-			return resolvedValue.toString() === dnsRecord.expectedValue
-				? SectionStatus.SUCCESS
-				: SectionStatus.FAILED;
-		}
-
-		return SectionStatus.UNKNOWN;
-	}
-
-	const srvDNSRecords = [
-		{ status: SectionStatus.UNKNOWN, title: 'Service', expectedValue: '_rocketchat' },
-		{
-			status: SectionStatus.UNKNOWN,
-			title: 'Protocol',
-			expectedValue: legacy ? '_tcp' : `_${rocketChatProtocol}`,
-		},
-		{ status: SectionStatus.UNKNOWN, title: 'Name', expectedValue: federationSubdomain },
-		{ status: SectionStatus.UNKNOWN, title: 'Target', expectedValue: rocketChatDomain },
-		{ status: SectionStatus.UNKNOWN, title: 'Port', expectedValue: rocketChatPort },
-		{ status: SectionStatus.UNKNOWN, title: 'Weight', expectedValue: '1' },
-		{ status: SectionStatus.UNKNOWN, title: 'Priority', expectedValue: '1' },
-		{ status: SectionStatus.UNKNOWN, title: 'TTL', expectedValue: '1' },
-	];
-
-	// Define status for SRV DNS records
-	for (const dnsRecord of srvDNSRecords) {
-		dnsRecord.status = getDNSRecordStatus(dnsRecord);
-	}
-
-	return (
-		<>
-			<DNSText text='You must add the following DNS records on your server:' />
-			<DNSText text='SRV Record (2.0.0 or newer)' />
-			<Box style={{ marginTop: 10 }}>
-				{srvDNSRecords.map(({ status, title, expectedValue }) => (
-					<DNSRecord key={title} status={status} title={title} value={expectedValue} />
-				))}
-			</Box>
-			<DNSText text='Public Key TXT Record' />
-			<Box style={{ marginTop: 10 }}>
-				<DNSRecord
-					status={SectionStatus.UNKNOWN}
-					title='Host'
-					value={`rocketchat-public-key${federationSubdomain ? `.${federationSubdomain}` : ''}`}
-				/>
-				<DNSRecord status={SectionStatus.UNKNOWN} title='Value' value='<my-public-key>' />
-			</Box>
-			{legacy && (
-				<>
-					<DNSText text='Protocol TXT Record' />
-					<Box style={{ marginTop: 10 }}>
-						<DNSRecord
-							status={SectionStatus.UNKNOWN}
-							title='Host'
-							value={`rocketchat-tcp-protocol${
-								federationSubdomain ? `.${federationSubdomain}` : ''
-							}`}
-						/>
-						<DNSRecord status={SectionStatus.UNKNOWN} title='Value' value='http or https' />
-					</Box>
-				</>
-			)}
-		</>
-	);
-};
+import DNSRecords, { ResolvedDNS } from './DNSRecords';
 
 const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
 	const t = useTranslation();
