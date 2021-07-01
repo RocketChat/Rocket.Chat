@@ -1,4 +1,4 @@
-import { Collection, ObjectId } from 'mongodb';
+import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import {
@@ -20,7 +20,13 @@ export interface IWorkHoursCronJobsWrapper {
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
-	findOneDefaultBusinessHour(options?: any): Promise<ILivechatBusinessHour | undefined> {
+	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
+
+	async findOneDefaultBusinessHour(options: WithoutProjection<FindOneOptions<ILivechatBusinessHour>>): Promise<ILivechatBusinessHour | null>;
+
+	async findOneDefaultBusinessHour<P>(options: FindOneOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
+
+	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null> {
 		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
