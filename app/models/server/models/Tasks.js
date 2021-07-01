@@ -18,20 +18,19 @@ export class Tasks extends Base {
 		this.tryEnsureIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ taskTitle: 'text' });
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
-		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'assignee.username': 1 }, { sparse: true });
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
+		this.tryEnsureIndex({ status: 1 }, { sparse: true });
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
-		// discussions
+		// discussion
 		this.tryEnsureIndex({ drid: 1 }, { sparse: true });
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
-		// livechat
-		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
 	setReactions(messageId, reactions) {

@@ -247,7 +247,7 @@ export class ChatMessages {
 
 	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
-
+		console.log(event);
 		MsgTyping.stop(rid);
 
 		if (!ChatSubscription.findOne({ rid })) {

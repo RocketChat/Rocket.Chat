@@ -8,12 +8,6 @@ export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
 	ts: Date;
-	mentions?: {
-		_id: string;
-		type: MentionType;
-		name?: string;
-		username?: string;
-	}[];
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 
@@ -26,7 +20,6 @@ export interface IMessage extends IRocketChatRecord {
 	};
 	starred?: {_id: string}[];
 	pinned?: boolean;
-	drid?: RoomID;
 	tlm?: Date;
 
 	dcount?: number;
@@ -34,4 +27,7 @@ export interface IMessage extends IRocketChatRecord {
 	t?: string;
 	e2e?: 'pending';
 
+	taskAssignee?: Pick<IUser, '_id' | 'username' | 'name'>;
+	taskDescription?: string;
+	taskStatus: {_id: string}[];
 }
