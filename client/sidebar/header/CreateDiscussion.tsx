@@ -52,44 +52,32 @@ const CreateDiscussion = ({ onClose, defaultParentRoom }: CreateDiscussionProps)
 		firstMessage: '',
 	});
 
-	const {
-		name,
-		parentRoom,
-		encrypted,
-		usernames,
-		firstMessage,
-	} = values as CreateDiscussionFormValues;
+	const { name, parentRoom, encrypted, usernames, firstMessage } =
+		values as CreateDiscussionFormValues;
 
-	const {
-		handleName,
-		handleParentRoom,
-		handleEncrypted,
-		handleUsernames,
-		handleFirstMessage,
-	} = handlers;
+	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } =
+		handlers;
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
 	const createDiscussion = useEndpointActionExperimental('POST', 'rooms.createDiscussion');
 
-	const create = useMutableCallback(
-		async (): Promise<void> => {
-			try {
-				const result = await createDiscussion({
-					prid: defaultParentRoom || parentRoom,
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					t_name: name,
-					users: usernames,
-					reply: encrypted ? undefined : firstMessage,
-				});
+	const create = useMutableCallback(async (): Promise<void> => {
+		try {
+			const result = await createDiscussion({
+				prid: defaultParentRoom || parentRoom,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				t_name: name,
+				users: usernames,
+				reply: encrypted ? undefined : firstMessage,
+			});
 
-				goToRoomById(result?.discussion?.rid);
-				onClose();
-			} catch (error) {
-				console.warn(error);
-			}
-		},
-	);
+			goToRoomById(result?.discussion?.rid);
+			onClose();
+		} catch (error) {
+			console.warn(error);
+		}
+	});
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {

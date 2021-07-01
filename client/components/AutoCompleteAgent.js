@@ -16,9 +16,11 @@ const AutoCompleteAgent = (props) => {
 		useMemo(() => ({ text: debouncedAgentsFilter, haveAll }), [debouncedAgentsFilter, haveAll]),
 	);
 
-	const { phase: agentsPhase, items: agentsItems, itemCount: agentsTotal } = useRecordList(
-		AgentsList,
-	);
+	const {
+		phase: agentsPhase,
+		items: agentsItems,
+		itemCount: agentsTotal,
+	} = useRecordList(AgentsList);
 
 	const sortedByName = agentsItems.sort((a, b) => {
 		if (a.value === 'all') {

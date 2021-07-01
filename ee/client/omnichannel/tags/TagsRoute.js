@@ -53,11 +53,12 @@ function TagsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		tagsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			tagsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/tags.list', query);
