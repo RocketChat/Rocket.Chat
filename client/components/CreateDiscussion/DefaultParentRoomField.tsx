@@ -5,7 +5,11 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
 
-const DefaultParentRoom = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
+const DefaultParentRoomField = ({
+	defaultParentRoom,
+}: {
+	defaultParentRoom: string;
+}): ReactElement => {
 	const t = useTranslation();
 	const { value, phase } = useEndpointData(
 		'rooms.info',
@@ -37,4 +41,4 @@ const DefaultParentRoom = ({ defaultParentRoom }: { defaultParentRoom: string })
 	);
 };
 
-export default DefaultParentRoom;
+export default DefaultParentRoomField;

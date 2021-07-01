@@ -22,7 +22,7 @@ import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
-import { RoomInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomInfo';
+import { RoomInfo as RoomInfoEndpoint } from './endpoints/v1/rooms/roomInfo';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
@@ -55,7 +55,7 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
-	'rooms.info': RoomsInfoEndpoint;
+	'rooms.info': RoomInfoEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
