@@ -2,8 +2,6 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
 
-type MentionType = 'user' | 'team';
-
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;

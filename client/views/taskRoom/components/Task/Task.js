@@ -52,7 +52,7 @@ export default memo(function Task({
 			<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 				<MessageTemplate.Header>
 					<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>
-					<MessageTemplate.Timestamp ts={formatDate(ts)} />
+					{/* {					<MessageTemplate.Timestamp ts={formatDate(ts)} />} */}
 				</MessageTemplate.Header>
 				<MessageTemplate.BodyClamp>
 					<RawText>{msg}</RawText>
