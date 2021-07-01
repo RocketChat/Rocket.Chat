@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';
-import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotp';
+import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';

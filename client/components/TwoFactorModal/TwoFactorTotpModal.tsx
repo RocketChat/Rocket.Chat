@@ -1,4 +1,4 @@
-import { Box, PasswordInput, Icon } from '@rocket.chat/fuselage';
+import { Box, TextInput, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement, useState, ChangeEvent } from 'react';
 
@@ -6,18 +6,18 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';
 
-type TwoFactorPasswordProps = {
+type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 };
 
-const TwoFactorPassword = ({ onConfirm, onClose }: TwoFactorPasswordProps): ReactElement => {
+const TwoFactorTotpModal = ({ onConfirm, onClose }: TwoFactorTotpModalProps): ReactElement => {
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus();
 
 	const onConfirmTotpCode = (): void => {
-		onConfirm(code, Method.PASSWORD);
+		onConfirm(code, Method.TOTP);
 	};
 
 	const onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
@@ -29,23 +29,23 @@ const TwoFactorPassword = ({ onConfirm, onClose }: TwoFactorPasswordProps): Reac
 			onConfirm={onConfirmTotpCode}
 			onCancel={onClose}
 			confirmText={t('Verify')}
-			title={t('Please_enter_your_password')}
+			title={t('Two Factor Authentication')}
 			onClose={onClose}
 			variant='warning'
 			icon={<Icon size='x20' name='info' color='default' />}
 			confirmDisabled={!code}
 		>
-			<Box mbe='x16'>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</Box>
+			<Box mbe='x16'>{t('Open_your_authentication_app_and_enter_the_code')}</Box>
 			<Box mbe='x16' display='flex' justifyContent='stretch'>
-				<PasswordInput
+				<TextInput
 					ref={ref}
 					value={code}
 					onChange={onChange}
-					placeholder={t('Password')}
-				></PasswordInput>
+					placeholder={t('Enter_authentication_code')}
+				></TextInput>
 			</Box>
 		</GenericModal>
 	);
 };
 
-export default TwoFactorPassword;
+export default TwoFactorTotpModal;

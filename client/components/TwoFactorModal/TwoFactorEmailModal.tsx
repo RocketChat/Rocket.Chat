@@ -8,17 +8,17 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import GenericModal from '../GenericModal';
 import { Method, OnConfirm } from './TwoFactorModal';
 
-type TwoFactorEmailProps = {
+type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	emailOrUsername: string;
 };
 
-const TwoFactorEmail = ({
+const TwoFactorEmailModal = ({
 	onConfirm,
 	onClose,
 	emailOrUsername,
-}: TwoFactorEmailProps): ReactElement => {
+}: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const [code, setCode] = useState<string>('');
@@ -73,4 +73,4 @@ const TwoFactorEmail = ({
 	);
 };
 
-export default TwoFactorEmail;
+export default TwoFactorEmailModal;

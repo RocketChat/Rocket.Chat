@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
 
-import TwoFactorEmail from './TwoFactorEmail';
-import TwoFactorPassword from './TwoFactorPassword';
-import TwoFactorTotp from './TwoFactorTotp';
+import TwoFactorEmail from './TwoFactorEmailModal';
+import TwoFactorPassword from './TwoFactorPasswordModal';
+import TwoFactorTotp from './TwoFactorTotpModal';
 
 export enum Method {
 	TOTP = 'totp',
