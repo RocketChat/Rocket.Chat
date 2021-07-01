@@ -30,12 +30,19 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 		);
 	});
 
-const logout = (user: Meteor.User): void => {
-	Meteor.logout(() => {
-		callbacks.run('afterLogoutCleanUp', user);
-		Meteor.call('logoutCleanUp', user);
+const logout = (): Promise<void> =>
+	new Promise((resolve) => {
+		const user = Meteor.user();
+
+		if (!user) {
+			return resolve();
+		}
+
+		Meteor.logout(() => {
+			callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user, resolve);
+		});
 	});
-};
 
 const UserProvider: FC = ({ children }) => {
 	const userId = useReactiveValue(getUserId);
