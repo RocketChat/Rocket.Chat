@@ -1,4 +1,27 @@
 
+# 3.16.1
+`2021-07-01  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.0`
+
+### 🐛 Bug fixes
+
+
+- Livechat apps permission error ([#22511](https://github.com/RocketChat/Rocket.Chat/pull/22511))
+
+  Updated Apps-Engine version fixes errors with apps using livechat features.
+
+- Prune messages not applying the user filter ([#22506](https://github.com/RocketChat/Rocket.Chat/pull/22506))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.16.0
 `2021-06-28  ·  5 🎉  ·  13 🚀  ·  44 🐛  ·  26 🔍  ·  23 👩‍💻👨‍💻`
 
@@ -58,7 +81,7 @@
 
 - Add debouncing to units selects filters ([#22097](https://github.com/RocketChat/Rocket.Chat/pull/22097))
 
-- Add modal to close chats when tags/comments are not required ([#22245](https://github.com/RocketChat/Rocket.Chat/pull/22245))
+- Add modal to close chats when tags/comments are not required ([#22245](https://github.com/RocketChat/Rocket.Chat/pull/22245) by [@rafaelblink](https://github.com/rafaelblink))
 
   When neither tags or comments are required to close a livechat, show this modal instead: 
   ![Screen Shot 2021-05-20 at 7 33 19 PM](https://user-images.githubusercontent.com/20868078/119057741-6af23c80-b9a3-11eb-902f-f8a7458ad11c.png)
@@ -77,7 +100,7 @@
 
   Changes the department dropdown to use the new paginated selects, allowing for searching and displaying more than 50 departments
 
-- Paginated multiselect for EE tags ([#22315](https://github.com/RocketChat/Rocket.Chat/pull/22315))
+- Paginated multiselect for EE tags ([#22315](https://github.com/RocketChat/Rocket.Chat/pull/22315) by [@rafaelblink](https://github.com/rafaelblink))
 
   This uses the paginated multiselect for the EE tags selection, allowing more than 50 tags to be shown.
 
@@ -108,7 +131,7 @@
 
 - _updatedAt attribute not being automatically updated by raw models ([#22306](https://github.com/RocketChat/Rocket.Chat/pull/22306))
 
-- **EE:** Canned responses can't be deleted ([#22095](https://github.com/RocketChat/Rocket.Chat/pull/22095))
+- **EE:** Canned responses can't be deleted ([#22095](https://github.com/RocketChat/Rocket.Chat/pull/22095) by [@rafaelblink](https://github.com/rafaelblink))
 
   Deletion button has been removed from the edition option.
 
@@ -249,7 +272,7 @@
 
 - Remove invalid check before sending notifications to Omnichannel online agents ([#22278](https://github.com/RocketChat/Rocket.Chat/pull/22278))
 
-- Remove useless message options from Omnichannel Rooms ([#21549](https://github.com/RocketChat/Rocket.Chat/pull/21549))
+- Remove useless message options from Omnichannel Rooms ([#21549](https://github.com/RocketChat/Rocket.Chat/pull/21549) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Removed follow button from message box in threads ([#21019](https://github.com/RocketChat/Rocket.Chat/pull/21019) by [@Darshilp326](https://github.com/Darshilp326))
 
@@ -271,7 +294,7 @@
 
 - Unable to change protected role's description ([#22402](https://github.com/RocketChat/Rocket.Chat/pull/22402))
 
-- Undefined error when forwarding chats to offline department ([#22154](https://github.com/RocketChat/Rocket.Chat/pull/22154))
+- Undefined error when forwarding chats to offline department ([#22154](https://github.com/RocketChat/Rocket.Chat/pull/22154) by [@rafaelblink](https://github.com/rafaelblink))
 
   ![Screen Shot 2021-05-26 at 5 29 17 PM](https://user-images.githubusercontent.com/59577424/119727520-c495b380-be48-11eb-88a2-158017c7ad0a.png)
 
@@ -376,6 +399,7 @@
 
 - [@Darshilp326](https://github.com/Darshilp326)
 - [@mrsimpson](https://github.com/mrsimpson)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@rexzing](https://github.com/rexzing)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -393,7 +417,6 @@
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -482,14 +505,14 @@
 
   Adds a new `delete` method on the rooms bridge in order to trigger the deletion of rooms via the Apps-Engine.
 
-- **ENTERPRISE:** Introduce Load Rotation routing algorithm for Omnichannel ([#22090](https://github.com/RocketChat/Rocket.Chat/pull/22090))
+- **ENTERPRISE:** Introduce Load Rotation routing algorithm for Omnichannel ([#22090](https://github.com/RocketChat/Rocket.Chat/pull/22090) by [@rafaelblink](https://github.com/rafaelblink))
 
   This PR introduces a new Auto Chat Distribution (ACD) algorithm for Omnichannel: **Load Rotation**.
   The algorithm distributes chats to agents one by one, which means that when a new chat arrives, the agent with the oldest routing assignment time will be selected to serve the chat, regardless of the number of chats in progress each agent has.
 
   ![Screen Shot 2021-05-20 at 5 17 40 PM](https://user-images.githubusercontent.com/59577424/119043752-c61a3400-b98f-11eb-8543-f3176879af1d.png)
 
-- Back button for Omnichannel ([#21647](https://github.com/RocketChat/Rocket.Chat/pull/21647))
+- Back button for Omnichannel ([#21647](https://github.com/RocketChat/Rocket.Chat/pull/21647) by [@rafaelblink](https://github.com/rafaelblink))
 
 - New Message Parser ([#21962](https://github.com/RocketChat/Rocket.Chat/pull/21962))
 
@@ -520,7 +543,7 @@
   }
   ```
 
-- Paginated and Filtered selects on new/edit unit ([#22052](https://github.com/RocketChat/Rocket.Chat/pull/22052))
+- Paginated and Filtered selects on new/edit unit ([#22052](https://github.com/RocketChat/Rocket.Chat/pull/22052) by [@rafaelblink](https://github.com/rafaelblink))
 
   REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447
 
@@ -570,7 +593,7 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/118047610-613c5980-b351-11eb-96c7-6b28ae24363e.png)
 
-- Omnichannel Room Information panel flow when user save or close on form page. ([#21688](https://github.com/RocketChat/Rocket.Chat/pull/21688))
+- Omnichannel Room Information panel flow when user save or close on form page. ([#21688](https://github.com/RocketChat/Rocket.Chat/pull/21688) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Prevent gallery to close when clicking on a non-zoomable image ([#21854](https://github.com/RocketChat/Rocket.Chat/pull/21854))
 
@@ -623,7 +646,7 @@
 
 - Close stream properly at Omnichannel room when move to queue ([#22015](https://github.com/RocketChat/Rocket.Chat/pull/22015))
 
-- Contact Bar not reactive  ([#22016](https://github.com/RocketChat/Rocket.Chat/pull/22016))
+- Contact Bar not reactive  ([#22016](https://github.com/RocketChat/Rocket.Chat/pull/22016) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Convert a channel to Team Modal Visual Issues ([#21967](https://github.com/RocketChat/Rocket.Chat/pull/21967))
 
@@ -1042,6 +1065,7 @@
 - [@bhavayAnand9](https://github.com/bhavayAnand9)
 - [@dependabot-preview[bot]](https://github.com/dependabot-preview[bot])
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@renancleyson-dev](https://github.com/renancleyson-dev)
 - [@savish28](https://github.com/savish28)
 - [@siva2204](https://github.com/siva2204)
@@ -1064,7 +1088,6 @@
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -1194,7 +1217,7 @@
 ### 🎉 New features
 
 
-- Paginated and Filtered selects on new/edit unit ([#22052](https://github.com/RocketChat/Rocket.Chat/pull/22052))
+- Paginated and Filtered selects on new/edit unit ([#22052](https://github.com/RocketChat/Rocket.Chat/pull/22052) by [@rafaelblink](https://github.com/rafaelblink))
 
   REQUIRES https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/447
 
@@ -1209,7 +1232,7 @@
 
 - Forwarding Department behaviour with Waiting queue feature ([#22043](https://github.com/RocketChat/Rocket.Chat/pull/22043))
 
-- Omnichannel Room Information panel flow when user save or close on form page. ([#21688](https://github.com/RocketChat/Rocket.Chat/pull/21688))
+- Omnichannel Room Information panel flow when user save or close on form page. ([#21688](https://github.com/RocketChat/Rocket.Chat/pull/21688) by [@rafaelblink](https://github.com/rafaelblink))
 
 ### 🐛 Bug fixes
 
@@ -1236,13 +1259,16 @@
 
 </details>
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@rafaelblink](https://github.com/rafaelblink)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@dougfabris](https://github.com/dougfabris)
 - [@ggazzo](https://github.com/ggazzo)
 - [@murtaza98](https://github.com/murtaza98)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
@@ -1288,7 +1314,7 @@
     - `import/named`, avoiding broken named imports.  
   - A bunch of components were refactored to match the new ESLint rules.
 
-- On Hold system messages ([#21360](https://github.com/RocketChat/Rocket.Chat/pull/21360))
+- On Hold system messages ([#21360](https://github.com/RocketChat/Rocket.Chat/pull/21360) by [@rafaelblink](https://github.com/rafaelblink))
 
   ![image](https://user-images.githubusercontent.com/34130764/115442079-3a49a680-a22f-11eb-9ee8-6c705097cd57.png)
 
@@ -1341,7 +1367,7 @@
 
   <img width="731" alt="Screen Shot 2021-04-16 at 7 03 30 PM" src="https://user-images.githubusercontent.com/20868078/115088417-7d7ddf80-9ee6-11eb-9e58-1eb2862aa62c.png">
 
-- Do not require pre-configured tags in Omnichannel chats ([#21488](https://github.com/RocketChat/Rocket.Chat/pull/21488))
+- Do not require pre-configured tags in Omnichannel chats ([#21488](https://github.com/RocketChat/Rocket.Chat/pull/21488) by [@rafaelblink](https://github.com/rafaelblink))
 
 - OEmbed details by requesting using the accept language header on the request ([#21686](https://github.com/RocketChat/Rocket.Chat/pull/21686))
 
@@ -1359,7 +1385,7 @@
 
   The Omnichannel Concurrent Chat Limit feature is not working properly when checking the limit per department, the reason is that the algorithm that fetches the number of ongoing chats per agent wasn't considering the department of the subscriptions, hence,  the number returned from DB was bigger than it should be.
 
-- Add tag input to Closing Chat modal ([#21462](https://github.com/RocketChat/Rocket.Chat/pull/21462))
+- Add tag input to Closing Chat modal ([#21462](https://github.com/RocketChat/Rocket.Chat/pull/21462) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Admin Users list pagination ([#21469](https://github.com/RocketChat/Rocket.Chat/pull/21469))
 
@@ -1418,7 +1444,7 @@
 
   Permissions 'start-discussion-other-user' and 'start-discussion' are checked everywhere before letting anyone start any discussions, this permission check was missing for message box actions, so added it.
 
-- Close chat button is not available for Omnichannel agents ([#21481](https://github.com/RocketChat/Rocket.Chat/pull/21481))
+- Close chat button is not available for Omnichannel agents ([#21481](https://github.com/RocketChat/Rocket.Chat/pull/21481) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Correcting the case there are no result in admin users list  ([#21556](https://github.com/RocketChat/Rocket.Chat/pull/21556) by [@Jeanstaquet](https://github.com/Jeanstaquet))
 
@@ -1438,7 +1464,7 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/116125858-5ff60600-a69c-11eb-9859-41f7393b78bf.png)
 
-- Error when editing Omnichannel rooms without custom fields ([#21450](https://github.com/RocketChat/Rocket.Chat/pull/21450))
+- Error when editing Omnichannel rooms without custom fields ([#21450](https://github.com/RocketChat/Rocket.Chat/pull/21450) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Fix the bugs opening discussions ([#21557](https://github.com/RocketChat/Rocket.Chat/pull/21557) by [@Jeanstaquet](https://github.com/Jeanstaquet))
 
@@ -1450,7 +1476,7 @@
 
 - Livechat not retrieving messages ([#21644](https://github.com/RocketChat/Rocket.Chat/pull/21644) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
-- Make Omnichannel's closing chat button the last action in the toolbox ([#21476](https://github.com/RocketChat/Rocket.Chat/pull/21476))
+- Make Omnichannel's closing chat button the last action in the toolbox ([#21476](https://github.com/RocketChat/Rocket.Chat/pull/21476) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Margins on contextual bar information ([#21457](https://github.com/RocketChat/Rocket.Chat/pull/21457))
 
@@ -1477,13 +1503,13 @@
 
   Fix `VisitorInactivityMonitor` is still monitoring rooms that returned to `Queue Chats`
 
-- Omnichannel current chats and agents grid aren't sorting by status properly ([#21616](https://github.com/RocketChat/Rocket.Chat/pull/21616))
+- Omnichannel current chats and agents grid aren't sorting by status properly ([#21616](https://github.com/RocketChat/Rocket.Chat/pull/21616) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel queue manager returning outdated room object ([#21485](https://github.com/RocketChat/Rocket.Chat/pull/21485))
 
   The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.
 
-- Omnichannel room information panel breaking due to lack of data verification ([#21608](https://github.com/RocketChat/Rocket.Chat/pull/21608))
+- Omnichannel room information panel breaking due to lack of data verification ([#21608](https://github.com/RocketChat/Rocket.Chat/pull/21608) by [@rafaelblink](https://github.com/rafaelblink))
 
 - public teams not appearing on spotlight search results ([#21495](https://github.com/RocketChat/Rocket.Chat/pull/21495))
 
@@ -1491,7 +1517,7 @@
 
 - Remove size prop from StatusBullet component ([#21428](https://github.com/RocketChat/Rocket.Chat/pull/21428))
 
-- Rename Omnichannel Rooms, Inquiries and Subscriptions when the Contact Name changes ([#21513](https://github.com/RocketChat/Rocket.Chat/pull/21513))
+- Rename Omnichannel Rooms, Inquiries and Subscriptions when the Contact Name changes ([#21513](https://github.com/RocketChat/Rocket.Chat/pull/21513) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Rename team not working properly ([#21552](https://github.com/RocketChat/Rocket.Chat/pull/21552))
 
@@ -1503,7 +1529,7 @@
 
 - Show direct rooms as readonly when one of the users is deactivated ([#21684](https://github.com/RocketChat/Rocket.Chat/pull/21684))
 
-- Tag component is no longer rendering on Chat Room Information panel ([#21429](https://github.com/RocketChat/Rocket.Chat/pull/21429))
+- Tag component is no longer rendering on Chat Room Information panel ([#21429](https://github.com/RocketChat/Rocket.Chat/pull/21429) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Team types in admin -> rooms. ([#21612](https://github.com/RocketChat/Rocket.Chat/pull/21612))
 
@@ -1534,9 +1560,9 @@
 
 - User status out of sync ([#21656](https://github.com/RocketChat/Rocket.Chat/pull/21656))
 
-- Wrong title on Omnichannel contact information panel ([#21682](https://github.com/RocketChat/Rocket.Chat/pull/21682))
+- Wrong title on Omnichannel contact information panel ([#21682](https://github.com/RocketChat/Rocket.Chat/pull/21682) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453))
+- Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Wrong user in user info ([#21451](https://github.com/RocketChat/Rocket.Chat/pull/21451))
 
@@ -1554,7 +1580,7 @@
   The link for deployment methods in readme was corrected from https://rocket.chat/docs/installation/paas-deployments/ to https://docs.rocket.chat/installation/paas-deployments
   Some more links to the documentations were giving 404 error which hence updated.
 
-- [Improve] Remove useless tabbar options from Omnichannel rooms ([#21561](https://github.com/RocketChat/Rocket.Chat/pull/21561))
+- [Improve] Remove useless tabbar options from Omnichannel rooms ([#21561](https://github.com/RocketChat/Rocket.Chat/pull/21561) by [@rafaelblink](https://github.com/rafaelblink))
 
 - A React-based replacement for BlazeLayout ([#21527](https://github.com/RocketChat/Rocket.Chat/pull/21527))
 
@@ -1671,6 +1697,7 @@
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@im-adithya](https://github.com/im-adithya)
 - [@joshi008](https://github.com/joshi008)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@sauravjoshi23](https://github.com/sauravjoshi23)
 - [@sumukhah](https://github.com/sumukhah)
 - [@wolbernd](https://github.com/wolbernd)
@@ -1692,7 +1719,6 @@
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@r0zbot](https://github.com/r0zbot)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -1785,7 +1811,7 @@
 ### 🐛 Bug fixes
 
 
-- Add tag input to Closing Chat modal ([#21462](https://github.com/RocketChat/Rocket.Chat/pull/21462))
+- Add tag input to Closing Chat modal ([#21462](https://github.com/RocketChat/Rocket.Chat/pull/21462) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Admin Users list pagination ([#21469](https://github.com/RocketChat/Rocket.Chat/pull/21469))
 
@@ -1795,27 +1821,31 @@
 
   Fixes the marketplace app installation not correctly displaying the permissions modal.
 
-- Close chat button is not available for Omnichannel agents ([#21481](https://github.com/RocketChat/Rocket.Chat/pull/21481))
+- Close chat button is not available for Omnichannel agents ([#21481](https://github.com/RocketChat/Rocket.Chat/pull/21481) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Error when editing Omnichannel rooms without custom fields ([#21450](https://github.com/RocketChat/Rocket.Chat/pull/21450))
+- Error when editing Omnichannel rooms without custom fields ([#21450](https://github.com/RocketChat/Rocket.Chat/pull/21450) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Header component breaking if user is not part of teams room. ([#21465](https://github.com/RocketChat/Rocket.Chat/pull/21465))
 
-- Make Omnichannel's closing chat button the last action in the toolbox ([#21476](https://github.com/RocketChat/Rocket.Chat/pull/21476))
+- Make Omnichannel's closing chat button the last action in the toolbox ([#21476](https://github.com/RocketChat/Rocket.Chat/pull/21476) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel queue manager returning outdated room object ([#21485](https://github.com/RocketChat/Rocket.Chat/pull/21485))
 
   The Omnichannel Queue Manager is returning outdated room object when delegating the chat to an agent, hence, our Livechat widget is affected and the agent assigned to the chat is not displayed on the widget, only after refreshing/reloading.
 
-- Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453))
+- Wrong useMemo on Priorities EE field. ([#21453](https://github.com/RocketChat/Rocket.Chat/pull/21453) by [@rafaelblink](https://github.com/rafaelblink))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
 
-- Release 3.13.1 ([#21486](https://github.com/RocketChat/Rocket.Chat/pull/21486))
+- Release 3.13.1 ([#21486](https://github.com/RocketChat/Rocket.Chat/pull/21486) by [@rafaelblink](https://github.com/rafaelblink))
 
 </details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@rafaelblink](https://github.com/rafaelblink)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -1823,7 +1853,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@graywolf336](https://github.com/graywolf336)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@thassiov](https://github.com/thassiov)
@@ -1902,7 +1931,7 @@
 
 - Add Omnichannel Livechat Trigger option for when user opens the chat window ([#20030](https://github.com/RocketChat/Rocket.Chat/pull/20030) by [@reda-alaoui](https://github.com/reda-alaoui))
 
-- Quick action buttons for Omnichannel ([#21123](https://github.com/RocketChat/Rocket.Chat/pull/21123))
+- Quick action buttons for Omnichannel ([#21123](https://github.com/RocketChat/Rocket.Chat/pull/21123) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Teams ([#20966](https://github.com/RocketChat/Rocket.Chat/pull/20966))
 
@@ -1980,7 +2009,7 @@
 
 - Make debug logs of Apps configurable via Log_Level setting in the Admin panel ([#21000](https://github.com/RocketChat/Rocket.Chat/pull/21000) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
-- Re-design Omnichannel Room Info Panel ([#21199](https://github.com/RocketChat/Rocket.Chat/pull/21199))
+- Re-design Omnichannel Room Info Panel ([#21199](https://github.com/RocketChat/Rocket.Chat/pull/21199) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Set description in create channel modal ([#21132](https://github.com/RocketChat/Rocket.Chat/pull/21132))
 
@@ -2002,7 +2031,7 @@
 
 - 'Chats in Progress' Section is not rendering when the routing algorithm is not Manual Selection ([#21324](https://github.com/RocketChat/Rocket.Chat/pull/21324))
 
-- "Taken At" and "Average of Response Time" fields not rendering properly on Room Information panel ([#21365](https://github.com/RocketChat/Rocket.Chat/pull/21365))
+- "Taken At" and "Average of Response Time" fields not rendering properly on Room Information panel ([#21365](https://github.com/RocketChat/Rocket.Chat/pull/21365) by [@rafaelblink](https://github.com/rafaelblink))
 
 - **Apps:** Fix Game Center icon disappeared after the React refactor ([#21091](https://github.com/RocketChat/Rocket.Chat/pull/21091))
 
@@ -2081,9 +2110,9 @@
 
 - Iframe flags for audio and video on the BigBlueButton integration ([#20879](https://github.com/RocketChat/Rocket.Chat/pull/20879) by [@fcecagno](https://github.com/fcecagno))
 
-- Inactivity Time field displaying wrong information ([#21363](https://github.com/RocketChat/Rocket.Chat/pull/21363))
+- Inactivity Time field displaying wrong information ([#21363](https://github.com/RocketChat/Rocket.Chat/pull/21363) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Incorrect time format of the Queue Time field on the room information page ([#21394](https://github.com/RocketChat/Rocket.Chat/pull/21394))
+- Incorrect time format of the Queue Time field on the room information page ([#21394](https://github.com/RocketChat/Rocket.Chat/pull/21394) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Make custom emoji file required ([#19583](https://github.com/RocketChat/Rocket.Chat/pull/19583) by [@m-shreyansh](https://github.com/m-shreyansh))
 
@@ -2139,7 +2168,7 @@
   ### After
   ![Screenshot from 2021-01-24 20-54-06](https://user-images.githubusercontent.com/38764067/105634940-82eb0100-5e86-11eb-8b90-e97a43c5e938.png)
 
-- Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395))
+- Replace wrong field description on Room Information panel ([#21395](https://github.com/RocketChat/Rocket.Chat/pull/21395) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Reply count of message is decreased after a message from thread is deleted ([#19977](https://github.com/RocketChat/Rocket.Chat/pull/19977) by [@yash-rajpal](https://github.com/yash-rajpal))
 
@@ -2165,7 +2194,7 @@
 
 - Use the correct icons for DMs ([#21125](https://github.com/RocketChat/Rocket.Chat/pull/21125))
 
-- Visitors.info endpoint being called multiple times ([#21350](https://github.com/RocketChat/Rocket.Chat/pull/21350))
+- Visitors.info endpoint being called multiple times ([#21350](https://github.com/RocketChat/Rocket.Chat/pull/21350) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Wrong license seats number administration info panel ([#21222](https://github.com/RocketChat/Rocket.Chat/pull/21222))
 
@@ -2219,7 +2248,7 @@
 
 - Improve: NPS survey fetch ([#21263](https://github.com/RocketChat/Rocket.Chat/pull/21263))
 
-- Regression:  New chat forwarding modal is not verifying mandatory values ([#21288](https://github.com/RocketChat/Rocket.Chat/pull/21288))
+- Regression:  New chat forwarding modal is not verifying mandatory values ([#21288](https://github.com/RocketChat/Rocket.Chat/pull/21288) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Regression: Add BreadCrumbs tag into auto-join items ([#21294](https://github.com/RocketChat/Rocket.Chat/pull/21294))
 
@@ -2292,7 +2321,7 @@
 
 - Regression: Omnichannel agents can't access new action buttons ([#21306](https://github.com/RocketChat/Rocket.Chat/pull/21306))
 
-- Regression: Permissions missing on new Room Edit and Contact Edit form ([#21315](https://github.com/RocketChat/Rocket.Chat/pull/21315))
+- Regression: Permissions missing on new Room Edit and Contact Edit form ([#21315](https://github.com/RocketChat/Rocket.Chat/pull/21315) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Regression: Quick action button missing for Omnichannel On-Hold queue ([#21285](https://github.com/RocketChat/Rocket.Chat/pull/21285))
 
@@ -2318,7 +2347,7 @@
 
   - Remove subscription when calling `teams.removeMembers`
 
-- Regression: Room Edit form not rendering priority and custom fields ([#21309](https://github.com/RocketChat/Rocket.Chat/pull/21309))
+- Regression: Room Edit form not rendering priority and custom fields ([#21309](https://github.com/RocketChat/Rocket.Chat/pull/21309) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Regression: rooms breaking after deleting a room from a team ([#21421](https://github.com/RocketChat/Rocket.Chat/pull/21421))
 
@@ -2334,7 +2363,7 @@
 
 - regression: Unable to add users while creating a team ([#21354](https://github.com/RocketChat/Rocket.Chat/pull/21354))
 
-- Regression: Unify Contact information displayed on the Room header and Room Info ([#21312](https://github.com/RocketChat/Rocket.Chat/pull/21312))
+- Regression: Unify Contact information displayed on the Room header and Room Info ([#21312](https://github.com/RocketChat/Rocket.Chat/pull/21312) by [@rafaelblink](https://github.com/rafaelblink))
 
   ![image](https://user-images.githubusercontent.com/34130764/112586659-35592900-8e22-11eb-94be-32bdff7ca883.png)
 
@@ -2378,6 +2407,7 @@
 - [@fcecagno](https://github.com/fcecagno)
 - [@im-adithya](https://github.com/im-adithya)
 - [@m-shreyansh](https://github.com/m-shreyansh)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@reda-alaoui](https://github.com/reda-alaoui)
 - [@shrinish123](https://github.com/shrinish123)
 - [@sumukhah](https://github.com/sumukhah)
@@ -2401,7 +2431,6 @@
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@r0zbot](https://github.com/r0zbot)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -2592,9 +2621,9 @@
 
   Included new variables in customizable ones
 
-- Make message field required in Omnichannel Triggers form ([#20827](https://github.com/RocketChat/Rocket.Chat/pull/20827))
+- Make message field required in Omnichannel Triggers form ([#20827](https://github.com/RocketChat/Rocket.Chat/pull/20827) by [@rafaelblink](https://github.com/rafaelblink))
 
-- New chat started system message for Omnichannel conversations ([#20814](https://github.com/RocketChat/Rocket.Chat/pull/20814))
+- New chat started system message for Omnichannel conversations ([#20814](https://github.com/RocketChat/Rocket.Chat/pull/20814) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Replace react-window for react-virtuoso package ([#20392](https://github.com/RocketChat/Rocket.Chat/pull/20392))
 
@@ -2740,7 +2769,7 @@
 
   https://user-images.githubusercontent.com/38764067/105613964-dfe5a900-5deb-11eb-80f2-21fc8dee57c0.mp4
 
-- Filters are not being applied correctly in Omnichannel Current Chats list ([#20320](https://github.com/RocketChat/Rocket.Chat/pull/20320))
+- Filters are not being applied correctly in Omnichannel Current Chats list ([#20320](https://github.com/RocketChat/Rocket.Chat/pull/20320) by [@rafaelblink](https://github.com/rafaelblink))
 
   ### Before
   ![image](https://user-images.githubusercontent.com/2493803/105537672-082cb500-5cd1-11eb-8f1b-1726ba60420a.png)
@@ -2776,7 +2805,7 @@
 
 - Links not opening in new tabs ([#20651](https://github.com/RocketChat/Rocket.Chat/pull/20651))
 
-- List of Omnichannel triggers is not listing data ([#20624](https://github.com/RocketChat/Rocket.Chat/pull/20624))
+- List of Omnichannel triggers is not listing data ([#20624](https://github.com/RocketChat/Rocket.Chat/pull/20624) by [@rafaelblink](https://github.com/rafaelblink))
 
   ### Before
   ![image](https://user-images.githubusercontent.com/2493803/107095379-7308e080-67e7-11eb-8251-7e7ff891087a.png)
@@ -2814,7 +2843,7 @@
 
 - OAuth Login not working on Firefox ([#20722](https://github.com/RocketChat/Rocket.Chat/pull/20722))
 
-- Omnichannel agents are unable to access the chat queue on the sidebar ([#20830](https://github.com/RocketChat/Rocket.Chat/pull/20830))
+- Omnichannel agents are unable to access the chat queue on the sidebar ([#20830](https://github.com/RocketChat/Rocket.Chat/pull/20830) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel Routing System not assigning chats to Bot agents ([#20662](https://github.com/RocketChat/Rocket.Chat/pull/20662))
 
@@ -3018,6 +3047,7 @@
 - [@im-adithya](https://github.com/im-adithya)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pierreozoux](https://github.com/pierreozoux)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -3035,7 +3065,6 @@
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@r0zbot](https://github.com/r0zbot)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -3043,7 +3072,7 @@
 - [@tiagoevanp](https://github.com/tiagoevanp)
 
 # 3.11.5
-`2021-06-28  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+`2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`
@@ -3166,7 +3195,7 @@
 
   More robust and scalable banner system for alerting users.
 
-- Email Inboxes for Omnichannel ([#20101](https://github.com/RocketChat/Rocket.Chat/pull/20101))
+- Email Inboxes for Omnichannel ([#20101](https://github.com/RocketChat/Rocket.Chat/pull/20101) by [@rafaelblink](https://github.com/rafaelblink))
 
   With this new feature, email accounts will receive email messages(threads) which will be transformed into Omnichannel chats. It'll be possible to set up multiple email accounts, test the connection with email server(email provider) and define the behaviour of each account.
 
@@ -3248,7 +3277,7 @@
 
 - **ENTERPRISE:** Auditing RoomAutocomplete ([#20311](https://github.com/RocketChat/Rocket.Chat/pull/20311))
 
-- **ENTERPRISE:** Omnichannel custom fields not storing additional form values  ([#19953](https://github.com/RocketChat/Rocket.Chat/pull/19953))
+- **ENTERPRISE:** Omnichannel custom fields not storing additional form values  ([#19953](https://github.com/RocketChat/Rocket.Chat/pull/19953) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Actions from User Info panel ([#20073](https://github.com/RocketChat/Rocket.Chat/pull/20073) by [@Darshilp326](https://github.com/Darshilp326))
 
@@ -3271,7 +3300,7 @@
 
 - Admin User Info email verified status ([#20110](https://github.com/RocketChat/Rocket.Chat/pull/20110) by [@bdelwood](https://github.com/bdelwood))
 
-- Agent information panel not rendering ([#19965](https://github.com/RocketChat/Rocket.Chat/pull/19965))
+- Agent information panel not rendering ([#19965](https://github.com/RocketChat/Rocket.Chat/pull/19965) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Change header's favorite icon to filled star ([#20174](https://github.com/RocketChat/Rocket.Chat/pull/20174))
 
@@ -3319,7 +3348,7 @@
 
 - Jump to message ([#20265](https://github.com/RocketChat/Rocket.Chat/pull/20265))
 
-- Livechat.RegisterGuest method removing unset fields ([#20124](https://github.com/RocketChat/Rocket.Chat/pull/20124))
+- Livechat.RegisterGuest method removing unset fields ([#20124](https://github.com/RocketChat/Rocket.Chat/pull/20124) by [@rafaelblink](https://github.com/rafaelblink))
 
   After changes made on https://github.com/RocketChat/Rocket.Chat/pull/19931, the `Livechat.RegisterGuest` method started removing properties from the visitor inappropriately. The properties that did not receive value were removed from the object.
   Those changes were made to support the new Contact Form, but now the form has its own method to deal with Contact data so those changes are no longer necessary.
@@ -3340,7 +3369,7 @@
 
 - OAuth users being asked to change password on second login ([#20003](https://github.com/RocketChat/Rocket.Chat/pull/20003))
 
-- Omnichannel - Contact Center form is not validating custom fields properly ([#20196](https://github.com/RocketChat/Rocket.Chat/pull/20196))
+- Omnichannel - Contact Center form is not validating custom fields properly ([#20196](https://github.com/RocketChat/Rocket.Chat/pull/20196) by [@rafaelblink](https://github.com/rafaelblink))
 
   The contact form is accepting undefined values in required custom fields when creating or editing contacts, and, the errror message isn't following Rocket.chat design system.
 
@@ -3356,9 +3385,9 @@
   #### Edit
   ![image](https://user-images.githubusercontent.com/2493803/104770538-7b717c80-574f-11eb-829f-1ae304103369.png)
 
-- Omnichannel Agents unable to take new chats in the queue ([#20022](https://github.com/RocketChat/Rocket.Chat/pull/20022))
+- Omnichannel Agents unable to take new chats in the queue ([#20022](https://github.com/RocketChat/Rocket.Chat/pull/20022) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Omnichannel Business Hours form is not being rendered ([#20007](https://github.com/RocketChat/Rocket.Chat/pull/20007))
+- Omnichannel Business Hours form is not being rendered ([#20007](https://github.com/RocketChat/Rocket.Chat/pull/20007) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel raw model importing meteor dependency ([#20093](https://github.com/RocketChat/Rocket.Chat/pull/20093))
 
@@ -3501,7 +3530,7 @@
   ### After
   ![image](https://user-images.githubusercontent.com/40830821/104366542-4cad9900-54f8-11eb-83ca-acb99899515a.png)
 
-- Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form ([#20393](https://github.com/RocketChat/Rocket.Chat/pull/20393))
+- Regression: Custom field labels are not displayed properly on Omnichannel Contact Profile form ([#20393](https://github.com/RocketChat/Rocket.Chat/pull/20393) by [@rafaelblink](https://github.com/rafaelblink))
 
   ### Before
   ![image](https://user-images.githubusercontent.com/2493803/105780399-20116c80-5f4f-11eb-9620-0901472e453b.png)
@@ -3602,6 +3631,7 @@
 - [@i-kychukov](https://github.com/i-kychukov)
 - [@ikyuchukov](https://github.com/ikyuchukov)
 - [@moniang](https://github.com/moniang)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@sushant52](https://github.com/sushant52)
 - [@tlskinneriv](https://github.com/tlskinneriv)
 - [@wggdeveloper](https://github.com/wggdeveloper)
@@ -3619,7 +3649,6 @@
 - [@lucassartor](https://github.com/lucassartor)
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -3722,13 +3751,13 @@
 ### 🐛 Bug fixes
 
 
-- **ENTERPRISE:** Omnichannel custom fields not storing additional form values  ([#19953](https://github.com/RocketChat/Rocket.Chat/pull/19953))
+- **ENTERPRISE:** Omnichannel custom fields not storing additional form values  ([#19953](https://github.com/RocketChat/Rocket.Chat/pull/19953) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Actions from User Info panel ([#20073](https://github.com/RocketChat/Rocket.Chat/pull/20073) by [@Darshilp326](https://github.com/Darshilp326))
 
   Users can be removed from channels without any error message.
 
-- Agent information panel not rendering ([#19965](https://github.com/RocketChat/Rocket.Chat/pull/19965))
+- Agent information panel not rendering ([#19965](https://github.com/RocketChat/Rocket.Chat/pull/19965) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Creation of Omnichannel rooms not working correctly through the Apps when the agent parameter is set ([#19997](https://github.com/RocketChat/Rocket.Chat/pull/19997))
 
@@ -3736,9 +3765,9 @@
 
 - OAuth users being asked to change password on second login ([#20003](https://github.com/RocketChat/Rocket.Chat/pull/20003))
 
-- Omnichannel Agents unable to take new chats in the queue ([#20022](https://github.com/RocketChat/Rocket.Chat/pull/20022))
+- Omnichannel Agents unable to take new chats in the queue ([#20022](https://github.com/RocketChat/Rocket.Chat/pull/20022) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Omnichannel Business Hours form is not being rendered ([#20007](https://github.com/RocketChat/Rocket.Chat/pull/20007))
+- Omnichannel Business Hours form is not being rendered ([#20007](https://github.com/RocketChat/Rocket.Chat/pull/20007) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel raw model importing meteor dependency ([#20093](https://github.com/RocketChat/Rocket.Chat/pull/20093))
 
@@ -3749,13 +3778,13 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Darshilp326](https://github.com/Darshilp326)
+- [@rafaelblink](https://github.com/rafaelblink)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@murtaza98](https://github.com/murtaza98)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
@@ -3773,7 +3802,7 @@
 
 - Custom scroll ([#19701](https://github.com/RocketChat/Rocket.Chat/pull/19701))
 
-- Omnichannel Contact Center (Directory) ([#19931](https://github.com/RocketChat/Rocket.Chat/pull/19931))
+- Omnichannel Contact Center (Directory) ([#19931](https://github.com/RocketChat/Rocket.Chat/pull/19931) by [@rafaelblink](https://github.com/rafaelblink))
 
 - REST Endpoint `instances.get` ([#19926](https://github.com/RocketChat/Rocket.Chat/pull/19926))
 
@@ -3815,7 +3844,7 @@
 
 - 'Not Allowed' in message auditing ([#19762](https://github.com/RocketChat/Rocket.Chat/pull/19762))
 
-- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793))
+- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Add fallback message when show notification content is disabled ([#19516](https://github.com/RocketChat/Rocket.Chat/pull/19516) by [@youssef-md](https://github.com/youssef-md))
 
@@ -3923,11 +3952,11 @@
 
 - Regression: Add Members showing the wrong template ([#19748](https://github.com/RocketChat/Rocket.Chat/pull/19748))
 
-- Regression: Add missing translations on the Omnichannel Contact Center(Directory) ([#19968](https://github.com/RocketChat/Rocket.Chat/pull/19968))
+- Regression: Add missing translations on the Omnichannel Contact Center(Directory) ([#19968](https://github.com/RocketChat/Rocket.Chat/pull/19968) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Regression: Admin Sidebar Scroll ([#19944](https://github.com/RocketChat/Rocket.Chat/pull/19944))
 
-- Regression: Check permissions properly when fetching rooms in Omnichannel Directory ([#19951](https://github.com/RocketChat/Rocket.Chat/pull/19951))
+- Regression: Check permissions properly when fetching rooms in Omnichannel Directory ([#19951](https://github.com/RocketChat/Rocket.Chat/pull/19951) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Regression: contextualBar folder structure ([#19761](https://github.com/RocketChat/Rocket.Chat/pull/19761))
 
@@ -3984,6 +4013,7 @@
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
 - [@andykrohg](https://github.com/andykrohg)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@youssef-md](https://github.com/youssef-md)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -3995,7 +4025,6 @@
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -4072,7 +4101,7 @@
 
 - 'Not Allowed' in message auditing ([#19762](https://github.com/RocketChat/Rocket.Chat/pull/19762))
 
-- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793))
+- **ENTERPRISE:** Omnichannel Department form is not correctly storing the list of departments allowed for forwarding ([#19793](https://github.com/RocketChat/Rocket.Chat/pull/19793) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Download my data with file uploads ([#19862](https://github.com/RocketChat/Rocket.Chat/pull/19862))
 
@@ -4080,11 +4109,14 @@
 
 - Some apps were not correctly enabled during startup in HA environments ([#19763](https://github.com/RocketChat/Rocket.Chat/pull/19763))
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@rafaelblink](https://github.com/rafaelblink)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@g-thome](https://github.com/g-thome)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@thassiov](https://github.com/thassiov)
@@ -4137,13 +4169,13 @@
 ### 🚀 Improvements
 
 
-- **ENTERPRISE:** UI/UX enhancements in Omnichannel Monitors page ([#19495](https://github.com/RocketChat/Rocket.Chat/pull/19495))
+- **ENTERPRISE:** UI/UX enhancements in Omnichannel Monitors page ([#19495](https://github.com/RocketChat/Rocket.Chat/pull/19495) by [@rafaelblink](https://github.com/rafaelblink))
 
-- **ENTERPRISE:** UI/UX enhancements in Omnichannel Priorities page ([#19512](https://github.com/RocketChat/Rocket.Chat/pull/19512))
+- **ENTERPRISE:** UI/UX enhancements in Omnichannel Priorities page ([#19512](https://github.com/RocketChat/Rocket.Chat/pull/19512) by [@rafaelblink](https://github.com/rafaelblink))
 
-- **ENTERPRISE:** UI/UX enhancements in Omnichannel Tags page ([#19510](https://github.com/RocketChat/Rocket.Chat/pull/19510))
+- **ENTERPRISE:** UI/UX enhancements in Omnichannel Tags page ([#19510](https://github.com/RocketChat/Rocket.Chat/pull/19510) by [@rafaelblink](https://github.com/rafaelblink))
 
-- **ENTERPRISE:** UI/UX enhancements in Omnichannel Units page ([#19500](https://github.com/RocketChat/Rocket.Chat/pull/19500))
+- **ENTERPRISE:** UI/UX enhancements in Omnichannel Units page ([#19500](https://github.com/RocketChat/Rocket.Chat/pull/19500) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Add support to `replace` operation when using Change Stream ([#19579](https://github.com/RocketChat/Rocket.Chat/pull/19579))
 
@@ -4167,11 +4199,11 @@
 
 - SlackBridge threads performance improvement ([#19338](https://github.com/RocketChat/Rocket.Chat/pull/19338) by [@antkaz](https://github.com/antkaz))
 
-- UI/UX enhancements in department pages following the design system ([#19421](https://github.com/RocketChat/Rocket.Chat/pull/19421))
+- UI/UX enhancements in department pages following the design system ([#19421](https://github.com/RocketChat/Rocket.Chat/pull/19421) by [@rafaelblink](https://github.com/rafaelblink))
 
-- UI/UX enhancements in Omnichannel Triggers page ([#19485](https://github.com/RocketChat/Rocket.Chat/pull/19485))
+- UI/UX enhancements in Omnichannel Triggers page ([#19485](https://github.com/RocketChat/Rocket.Chat/pull/19485) by [@rafaelblink](https://github.com/rafaelblink))
 
-- UI/UX enhancements in Omnichannnel Current Chats page ([#19397](https://github.com/RocketChat/Rocket.Chat/pull/19397))
+- UI/UX enhancements in Omnichannnel Current Chats page ([#19397](https://github.com/RocketChat/Rocket.Chat/pull/19397) by [@rafaelblink](https://github.com/rafaelblink))
 
 ### 🐛 Bug fixes
 
@@ -4184,7 +4216,7 @@
 
 - Channel actions not working when reduce motion is active ([#19638](https://github.com/RocketChat/Rocket.Chat/pull/19638))
 
-- Column width was not following the design system in Omnichannel Departments page ([#19601](https://github.com/RocketChat/Rocket.Chat/pull/19601))
+- Column width was not following the design system in Omnichannel Departments page ([#19601](https://github.com/RocketChat/Rocket.Chat/pull/19601) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Engagement dashboard on old Mongo versions ([#19616](https://github.com/RocketChat/Rocket.Chat/pull/19616))
 
@@ -4192,19 +4224,19 @@
 
 - IE11 - Update ui kit and fuselage bundle ([#19561](https://github.com/RocketChat/Rocket.Chat/pull/19561))
 
-- Input without label and email ordering missing on Omnichannel Agents page ([#19414](https://github.com/RocketChat/Rocket.Chat/pull/19414))
+- Input without label and email ordering missing on Omnichannel Agents page ([#19414](https://github.com/RocketChat/Rocket.Chat/pull/19414) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Issue with drag and drop ([#19593](https://github.com/RocketChat/Rocket.Chat/pull/19593))
 
 - LDAP Unique Identifier Field can not use operational attributes ([#19571](https://github.com/RocketChat/Rocket.Chat/pull/19571) by [@truongtx8](https://github.com/truongtx8))
 
-- Omnichannel Analytics page doesn't have field labels ([#19400](https://github.com/RocketChat/Rocket.Chat/pull/19400))
+- Omnichannel Analytics page doesn't have field labels ([#19400](https://github.com/RocketChat/Rocket.Chat/pull/19400) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Outgoing integrations without trigger words or with multiple commas ([#19488](https://github.com/RocketChat/Rocket.Chat/pull/19488))
 
 - Prevent headerRoom's click to open room/direct info ([#19596](https://github.com/RocketChat/Rocket.Chat/pull/19596))
 
-- Regex was not working properly on visitors.search endpoint ([#19577](https://github.com/RocketChat/Rocket.Chat/pull/19577))
+- Regex was not working properly on visitors.search endpoint ([#19577](https://github.com/RocketChat/Rocket.Chat/pull/19577) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Restore Message View Mode Preference ([#19458](https://github.com/RocketChat/Rocket.Chat/pull/19458))
 
@@ -4212,7 +4244,7 @@
 
 - Role description not updating ([#19236](https://github.com/RocketChat/Rocket.Chat/pull/19236))
 
-- Save button enabled by default in Omnichannel Business Hours Form ([#19493](https://github.com/RocketChat/Rocket.Chat/pull/19493))
+- Save button enabled by default in Omnichannel Business Hours Form ([#19493](https://github.com/RocketChat/Rocket.Chat/pull/19493) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Settings may not update internal cache immediately ([#19628](https://github.com/RocketChat/Rocket.Chat/pull/19628))
 
@@ -4222,9 +4254,9 @@
 
 - Size of embed Youtube on threads for small screens ([#19514](https://github.com/RocketChat/Rocket.Chat/pull/19514))
 
-- The width of list columns was not following the design system in Omnichannel Agents page ([#19625](https://github.com/RocketChat/Rocket.Chat/pull/19625))
+- The width of list columns was not following the design system in Omnichannel Agents page ([#19625](https://github.com/RocketChat/Rocket.Chat/pull/19625) by [@rafaelblink](https://github.com/rafaelblink))
 
-- The width of list columns was not following the design system in Omnichannel Managers page ([#19624](https://github.com/RocketChat/Rocket.Chat/pull/19624))
+- The width of list columns was not following the design system in Omnichannel Managers page ([#19624](https://github.com/RocketChat/Rocket.Chat/pull/19624) by [@rafaelblink](https://github.com/rafaelblink))
 
 - TOTP Being ignored when changing our own avatar ([#19475](https://github.com/RocketChat/Rocket.Chat/pull/19475))
 
@@ -4232,17 +4264,17 @@
 
 - Typo in custom oauth from environment variable ([#19570](https://github.com/RocketChat/Rocket.Chat/pull/19570))
 
-- UI/UX issues on Omnichannel Managers page ([#19410](https://github.com/RocketChat/Rocket.Chat/pull/19410))
+- UI/UX issues on Omnichannel Managers page ([#19410](https://github.com/RocketChat/Rocket.Chat/pull/19410) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Unread count for all messages when mentioning an user ([#16884](https://github.com/RocketChat/Rocket.Chat/pull/16884) by [@subham103](https://github.com/subham103))
 
-- Wrong margin of description field in Omnichannel Webhooks page ([#19487](https://github.com/RocketChat/Rocket.Chat/pull/19487))
+- Wrong margin of description field in Omnichannel Webhooks page ([#19487](https://github.com/RocketChat/Rocket.Chat/pull/19487) by [@rafaelblink](https://github.com/rafaelblink))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
 
-- [IMPROVES] Omnichannel - Custom Fields pages. ([#19473](https://github.com/RocketChat/Rocket.Chat/pull/19473))
+- [IMPROVES] Omnichannel - Custom Fields pages. ([#19473](https://github.com/RocketChat/Rocket.Chat/pull/19473) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Bump bcrypt from 4.0.1 to 5.0.0 in /ee/server/services ([#19387](https://github.com/RocketChat/Rocket.Chat/pull/19387) by [@dependabot[bot]](https://github.com/dependabot[bot]))
 
@@ -4313,6 +4345,7 @@
 - [@antkaz](https://github.com/antkaz)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@mrfigueiredo](https://github.com/mrfigueiredo)
+- [@rafaelblink](https://github.com/rafaelblink)
 - [@robertfromont](https://github.com/robertfromont)
 - [@subham103](https://github.com/subham103)
 - [@truongtx8](https://github.com/truongtx8)
@@ -4327,7 +4360,6 @@
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
@@ -4559,7 +4591,7 @@
 
 - OAuth create via environment variable ([#19472](https://github.com/RocketChat/Rocket.Chat/pull/19472))
 
-- Omnichannel - typo error label at current chats page ([#19379](https://github.com/RocketChat/Rocket.Chat/pull/19379))
+- Omnichannel - typo error label at current chats page ([#19379](https://github.com/RocketChat/Rocket.Chat/pull/19379) by [@rafaelblink](https://github.com/rafaelblink))
 
 - Omnichannel auditing required field ([#19201](https://github.com/RocketChat/Rocket.Chat/pull/19201))
 
@@ -4726,6 +4758,7 @@
 - [@galshiff](https://github.com/galshiff)
 - [@jgribonvald](https://github.com/jgribonvald)
 - [@lucas-andre](https://github.com/lucas-andre)
+- [@rafaelblink](https://github.com/rafaelblink)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -4739,7 +4772,6 @@
 - [@graywolf336](https://github.com/graywolf336)
 - [@lolimay](https://github.com/lolimay)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rafaelblink](https://github.com/rafaelblink)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
