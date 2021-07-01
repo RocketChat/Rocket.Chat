@@ -40,7 +40,7 @@ export function updateOutOfOffice({
 			'error-invalid-params',
 			'The custom message is mandatory',
 		);
-	}	
+	}
 
 	const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
 		userId,

@@ -46,13 +46,20 @@ function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
 	if (!receivedFormValues) {
 		return { ...defaultFormValues };
 	}
+	const formattedStartDate = new Date(receivedFormValues.startDate) ?? new Date();
+	formattedStartDate.setMinutes(
+		formattedStartDate.getMinutes() - formattedStartDate.getTimezoneOffset(),
+	);
+	const formattedEndDate = new Date(receivedFormValues.endDate) ?? new Date();
+	formattedEndDate.setMinutes(formattedEndDate.getMinutes() - formattedEndDate.getTimezoneOffset());
+
 	return {
 		...defaultFormValues,
 		isEnabled: !!receivedFormValues.isEnabled,
 		customMessage: receivedFormValues.customMessage,
 		roomIds: receivedFormValues.roomIds ?? [],
-		startDate: receivedFormValues.startDate ?? '',
-		endDate: receivedFormValues.endDate ?? '',
+		startDate: formattedStartDate.toISOString().slice(0, 16) ?? '',
+		endDate: formattedEndDate.toISOString().slice(0, 16) ?? '',
 	};
 }
 
@@ -70,6 +77,8 @@ function OutOfOfficeForm({
 
 	const { isEnabled, roomIds, customMessage, startDate, endDate }: IFormValues = values as any;
 
+	console.log('the --', startDate);
+
 	const {
 		handleIsEnabled,
 		handleCustomMessage,
@@ -86,8 +95,8 @@ function OutOfOfficeForm({
 				isEnabled,
 				roomIds,
 				customMessage,
-				startDate,
-				endDate,
+				startDate: new Date(startDate).toISOString(),
+				endDate: new Date(endDate).toISOString(),
 			}),
 			[roomIds, customMessage, startDate, endDate, isEnabled],
 		),
