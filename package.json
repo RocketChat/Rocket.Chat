@@ -52,7 +52,7 @@
 		"@babel/preset-env": "^7.14.7",
 		"@babel/preset-react": "^7.14.5",
 		"@babel/register": "^7.14.5",
-		"@rocket.chat/eslint-config": "^0.3.0",
+		"@rocket.chat/eslint-config": "^0.4.0",
 		"@rocket.chat/icons": "^0.27.0",
 		"@rocket.chat/livechat": "^1.9.3",
 		"@settlin/spacebars-loader": "^1.0.9",
