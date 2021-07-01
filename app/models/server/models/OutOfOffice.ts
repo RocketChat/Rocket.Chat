@@ -55,8 +55,8 @@ export interface IOutOfOffice {
 	roomIds: string[];
 	customMessage: string;
 	sentRoomIds: string[];
-	startDate: Date;
-	endDate: Date;
+	startDate: string;
+	endDate: string;
 }
 
 export default new OutOfOffice();

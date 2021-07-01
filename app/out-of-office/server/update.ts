@@ -6,8 +6,8 @@ interface IUpdateOutOfOfficeParams {
 	userId: string;
 	roomIds: string[];
 	customMessage: string;
-	startDate: Date;
-	endDate: Date;
+	startDate: string;
+	endDate: string;
 	isEnabled: boolean;
 }
 
@@ -40,7 +40,7 @@ export function updateOutOfOffice({
 			'error-invalid-params',
 			'The custom message is mandatory',
 		);
-	}
+	}	
 
 	const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
 		userId,

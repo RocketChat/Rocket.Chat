@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
-import { updateOutOfOffice } from '../../../out-of-office/server/index';
-import { OutOfOffice } from '../../../models/server';
+import { updateOutOfOffice } from '../../../out-of-office/server';
+import { OutOfOffice} from '../../../models/server';
 
 API.v1.addRoute(
 	'outOfOffice.toggle',
@@ -20,13 +20,15 @@ API.v1.addRoute(
 					endDate: String,
 				}),
 			);
+			
+			if(isNaN(Date.parse(this.bodyParams.startDate)) || isNaN(Date.parse(this.bodyParams.endDate))){
+				throw new Meteor.Error('error-invalid-date', 'The "startDate" and "endDate" must be  valid dates.');
+			}
 
-
-			const startDate = this.bodyParams.startDate ? new Date(this.bodyParams.startDate) : null;
-			const endDate = this.bodyParams.endDate ? new Date(this.bodyParams.endDate) : null;
+			const {startDate,endDate} = this.bodyParams
 
 			if (startDate && endDate && startDate > endDate) {
-				throw new Meteor.Error('invalid-date', 'Your Start data has to be before the End Date');
+				throw new Meteor.Error('error-invalid-date', 'Your Start data has to be before the End Date');
 			}
 
 			const { message } = updateOutOfOffice({
@@ -50,6 +52,7 @@ API.v1.addRoute(
 				customMessage: 1,
 			});
 
+			// need to subtract the offset here
 			if (!foundDocument) {
 				return API.v1.success({
 					error: 'error-not-found',

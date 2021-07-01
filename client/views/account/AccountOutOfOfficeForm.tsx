@@ -68,7 +68,7 @@ function OutOfOfficeForm({
 		getInitialFormValues(receivedOutOfOfficeValues) as any,
 	);
 
-	const { isEnabled, roomIds, customMessage, startDate, endDate } = values;
+	const { isEnabled, roomIds, customMessage, startDate, endDate }: IFormValues = values as any;
 
 	const {
 		handleIsEnabled,
@@ -140,10 +140,7 @@ function OutOfOfficeForm({
 						<Field>
 							<Box display='flex' justifyContent='flex-start' alignItems='center'>
 								<Field.Row>
-									<RadioButton
-										checked={isEnabled as boolean}
-										onChange={(): void => handleIsEnabled(true)}
-									/>
+									<RadioButton checked={isEnabled} onChange={(): void => handleIsEnabled(true)} />
 								</Field.Row>
 								<Field.Row>
 									<Box display='flex' flexDirection='column'>
@@ -164,7 +161,7 @@ function OutOfOfficeForm({
 											type='datetime-local'
 											flexGrow={1}
 											h='x20'
-											value={startDate as string}
+											value={startDate}
 											onChange={handleStartDate}
 										/>
 									</Field.Row>
@@ -177,7 +174,7 @@ function OutOfOfficeForm({
 											type='datetime-local'
 											flexGrow={1}
 											h='x20'
-											value={endDate as string}
+											value={endDate}
 											onChange={handleEndDate}
 										/>
 									</Field.Row>
@@ -188,11 +185,7 @@ function OutOfOfficeForm({
 								<Field>
 									<Field.Label>{t('Reply Message')}</Field.Label>
 									<Field.Row>
-										<TextAreaInput
-											value={customMessage as string}
-											onChange={handleCustomMessage}
-											rows={2}
-										/>
+										<TextAreaInput value={customMessage} onChange={handleCustomMessage} rows={2} />
 									</Field.Row>
 									<Field.Hint>
 										{t('A message which will be auto sent while you have enabled Out of Office')}
