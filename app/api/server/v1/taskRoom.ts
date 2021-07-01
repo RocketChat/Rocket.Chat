@@ -1,55 +1,25 @@
 import { FilterQuery } from 'mongodb';
+import { TimeSync } from 'meteor/mizzao:timesync';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import { Match, check, Match, check } from 'meteor/check';
+import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
 import { settings } from '../../../settings';
+
+import toastr from 'toastr';
+
 import { updateMessage } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
-import { Users, Messages } from '../../../models/server';
+import { Users, Messages, Tasks } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
 
 import Message from '/client/views/room/contextualBar/Discussions/components/Message';
-
-// API.v1.addRoute('teams.list', { authRequired: true }, {
-// 	get() {
-// 		const { offset, count } = this.getPaginationItems();
-// 		const { sort, query } = this.parseJsonQuery();
-
-// 		const { records, total } = Promise.await(TaskRoom.list(this.userId, { offset, count }, { sort, query }));
-
-// 		return API.v1.success({
-// 			teams: records,
-// 			total,
-// 			count: records.length,
-// 			offset,
-// 		});
-// 	},
-// });
-
-// API.v1.addRoute('teams.listAll', { authRequired: true }, {
-// 	get() {
-// 		if (!hasPermission(this.userId, 'view-all-teams')) {
-// 			return API.v1.unauthorized();
-// 		}
-
-// 		const { offset, count } = this.getPaginationItems();
-
-// 		const { records, total } = Promise.await(TaskRoom.listAll({ offset, count }));
-
-// 		return API.v1.success({
-// 			teams: records,
-// 			total,
-// 			count: records.length,
-// 			offset,
-// 		});
-// 	},
-// });
 
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 	post() {
@@ -135,7 +105,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			}
 		}
 
-		const user = Meteor.users.findOne(Meteor.userId());
+		const user = this.userId;
 		canSendMessage(message.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
@@ -164,5 +134,40 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		updateMessage(message, Meteor.user());
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
+	post() {
+		const task = this.bodyParams;
+		console.log(task);
+		if (!this.userId || s.trim(task.title) === '') {
+			return false;
+		}
+		const taskAlreadyExists = task._id && Tasks.findOne({ _id: task._id });
+		if (taskAlreadyExists) {
+			return toastr.error('Task_Already_Sent');
+		}
+		const user = Meteor.user();
+		// task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
+		task.ts = new Date();
+		task.u = {
+			_id: this.userId,
+			username: user?.username,
+		};
+		if (settings.get('UI_Use_Real_Name')) {
+			task.u.name = user.name;
+		}
+		task.temp = true;
+		if (settings.get('Message_Read_Receipt_Enabled')) {
+			task.unread = true;
+		}
+		Tasks.insert(task);
+		// task = callbacks.run('beforeSaveMessage', task);
+		// promises.run('onClientMessageReceived', message).then(function(task) {
+		// 	Tasks.insert(task);
+		// 	return callbacks.run('afterSaveMessage', message);
+		// });
+		return API.v1.success({ task });
 	},
 });

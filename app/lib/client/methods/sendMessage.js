@@ -11,7 +11,6 @@ import { t } from '../../../utils/client';
 
 Meteor.methods({
 	sendMessage(message) {
-		console.log(message);
 		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
 		}
@@ -33,6 +32,7 @@ Meteor.methods({
 			message.unread = true;
 		}
 		message = callbacks.run('beforeSaveMessage', message);
+		console.log(message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);

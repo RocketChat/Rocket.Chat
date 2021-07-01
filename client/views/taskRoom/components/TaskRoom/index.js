@@ -3,5 +3,5 @@ import React from 'react';
 import TaskRoom from './TaskRoom';
 
 export default function withData({ rid }) {
-	return <TaskRoom />;
+	return <TaskRoom rid={rid} />;
 }
