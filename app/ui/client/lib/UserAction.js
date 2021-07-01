@@ -43,7 +43,7 @@ const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid
 const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), true, activityType, extras);
 
 function handleStreamAction(activity, performingUsers, rid, username, extras) {
-	const id = extras && 'tmid' in extras ? extras.tmid : rid;
+	const id = extras && 'tmid' in extras && extras[tmid] ? extras.tmid : rid;
 	const users = performingUsers.get(id) || {};
 
 	if (activity === true) {
