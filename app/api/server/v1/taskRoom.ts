@@ -140,6 +140,10 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 	post() {
 		const task = this.bodyParams;
+		check(this.bodyParams, {
+			title: String,
+			rid: String,
+		});
 		console.log(task);
 		if (!this.userId || s.trim(task.title) === '') {
 			return false;
@@ -168,6 +172,15 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		// 	Tasks.insert(task);
 		// 	return callbacks.run('afterSaveMessage', message);
 		// });
+		return API.v1.success({ task });
+	},
+});
+
+
+API.v1.addRoute('taskRoom.loadHistory', { authRequired: true }, {
+	get() {
+		const { rid } = this.queryParams;
+
 		return API.v1.success({ task });
 	},
 });

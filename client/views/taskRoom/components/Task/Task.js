@@ -18,7 +18,6 @@ function isIterable(obj) {
 
 export default memo(function Task({
 	_id,
-	msg,
 	following,
 	username,
 	name = username,
@@ -29,12 +28,14 @@ export default memo(function Task({
 	unread,
 	mention,
 	all,
+	title,
 	t = (e) => e,
 	formatDate = (e) => e,
 	tlm,
 	className = [],
 	...props
 }) {
+	console.log(title);
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 
@@ -52,10 +53,10 @@ export default memo(function Task({
 			<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 				<MessageTemplate.Header>
 					<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>
-					{/* {					<MessageTemplate.Timestamp ts={formatDate(ts)} />} */}
+					{/* <MessageTemplate.Timestamp ts={formatDate(ts)} /> */}
 				</MessageTemplate.Header>
 				<MessageTemplate.BodyClamp>
-					<RawText>{msg}</RawText>
+					<RawText>{title}</RawText>
 				</MessageTemplate.BodyClamp>
 				<Metrics color='neutral-600' mi='neg-x8'>
 					<Metrics.Item>
