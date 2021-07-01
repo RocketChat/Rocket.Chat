@@ -13,7 +13,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import useLogout from '../../hooks/useLogout';
+import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const ADMIN_PERMISSIONS = [

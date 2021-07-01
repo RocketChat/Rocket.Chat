@@ -1,9 +1,11 @@
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FilterQuery } from 'mongodb';
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
 import { IRoom } from '../../definition/IRoom';
 import { ISubscription } from '../../definition/ISubscription';
+import { useRoute } from './RouterContext';
 
 type SubscriptionQuery =
 	| {
@@ -34,6 +36,7 @@ type UserContextValue = {
 	userId: string | null;
 	user: Meteor.User | null;
 	loginWithPassword: (user: string | object, password: string) => Promise<void>;
+	logout: (user: Meteor.User) => void;
 	queryPreference: <T>(
 		key: string | Mongo.ObjectID,
 		defaultValue?: T,
@@ -58,6 +61,7 @@ export const UserContext = createContext<UserContextValue>({
 	userId: null,
 	user: null,
 	loginWithPassword: async () => undefined,
+	logout: () => undefined,
 	queryPreference: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: (): Unsubscribe => (): void => undefined,
@@ -84,6 +88,18 @@ export const useLoginWithPassword = (): ((
 	user: string | object,
 	password: string,
 ) => Promise<void>) => useContext(UserContext).loginWithPassword;
+
+export const useLogout = (user: Meteor.User): (() => void) => {
+	const router = useRoute('home');
+	const { logout } = useContext(UserContext);
+
+	const handleLogout = useMutableCallback(() => {
+		logout(user);
+		router.push({});
+	});
+
+	return handleLogout;
+};
 
 export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefined => {
 	const { queryPreference } = useContext(UserContext);
