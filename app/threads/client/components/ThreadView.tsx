@@ -1,11 +1,11 @@
-import React, { useCallback, useMemo, forwardRef } from 'react';
+import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useLayoutContextualBarExpanded } from '../../../../client/providers/LayoutProvider';
 import VerticalBar from '../../../../client/components/VerticalBar';
 
-type ThreadViewProps = {
+type ThreadViewProps = ComponentProps<typeof Box> & {
 	title: string;
 	expanded: boolean;
 	following: boolean;
@@ -15,7 +15,7 @@ type ThreadViewProps = {
 	onClickBack: () => void;
 };
 
-const ThreadView = forwardRef<Element, ThreadViewProps>(({
+const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(({
 	title,
 	expanded,
 	following,
@@ -62,7 +62,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				display='flex'
 				flexDirection='column'
 				width={'full'}
-				maxWidth={hasExpand && expanded ? 855 : null}
+				maxWidth={hasExpand && expanded ? 855 : undefined}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}

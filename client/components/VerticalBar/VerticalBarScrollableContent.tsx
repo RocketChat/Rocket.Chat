@@ -3,7 +3,7 @@ import React, { forwardRef, memo } from 'react';
 
 import Page from '../Page';
 
-const VerticalBarScrollableContent = forwardRef(function VerticalBarScrollableContent(
+const VerticalBarScrollableContent = forwardRef<HTMLElement>(function VerticalBarScrollableContent(
 	{ children, ...props },
 	ref,
 ) {
