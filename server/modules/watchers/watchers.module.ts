@@ -1,3 +1,5 @@
+import mem from 'mem';
+
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
@@ -13,7 +15,7 @@ import { IBaseRaw } from '../../../app/models/server/raw/BaseRaw';
 import { LivechatInquiryRaw } from '../../../app/models/server/raw/LivechatInquiry';
 import { IBaseData } from '../../../definition/IBaseData';
 import { IPermission } from '../../../definition/IPermission';
-import { ISetting } from '../../../definition/ISetting';
+import { ISetting, SettingValue } from '../../../definition/ISetting';
 import { IInquiry } from '../../../definition/IInquiry';
 import { UsersSessionsRaw } from '../../../app/models/server/raw/UsersSessions';
 import { IUserSession } from '../../../definition/IUserSession';
@@ -64,6 +66,24 @@ type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>)
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
+const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolean =>
+	(data?: Record<string, any>): boolean => {
+		if (!data) {
+			return false;
+		}
+
+		return Object.keys(data)
+			.filter((key) => key !== '_id')
+			.map((key) => key.split('.')[0])
+			.some((key) => requiredKeys.includes(key));
+	};
+
+const hasRoomFields = hasKeys(Object.keys(roomFields));
+const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
+
+const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
+	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
+
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
@@ -83,6 +103,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		EmailInbox,
 	} = models;
 
+	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+
+	const getUserNameCached = mem(async (userId: string): Promise<string | undefined> => {
+		const user = await Users.findOne<Pick<IUser, 'name'>>(userId, { projection: { name: 1 } });
+		return user?.name;
+	}, { maxAge: 10000 });
+
 	watch<IMessage>(Messages, async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -93,18 +120,22 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = await Settings.getValueById('UI_Use_Real_Name') === true;
+					const UseRealName = await getSettingCached('UI_Use_Real_Name') === true;
 
 					if (UseRealName) {
 						if (message.u?._id) {
-							const user = await Users.findOneById(message.u._id);
-							message.u.name = user?.name;
+							const name = await getUserNameCached(message.u._id);
+							if (name) {
+								message.u.name = name;
+							}
 						}
 
 						if (message.mentions?.length) {
 							for await (const mention of message.mentions) {
-								const user = await Users.findOneById(mention._id);
-								mention.name = user?.name;
+								const name = await getUserNameCached(mention._id);
+								if (name) {
+									mention.name = name;
+								}
 							}
 						}
 					}
@@ -115,12 +146,16 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<ISubscription>(Subscriptions, async ({ clientAction, id }) => {
+	watch<ISubscription>(Subscriptions, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'inserted':
 			case 'updated': {
+				if (!hasSubscriptionFields(data || diff)) {
+					return;
+				}
+
 				// Override data cuz we do not publish all fields
-				const subscription = await Subscriptions.findOneById(id, { projection: subscriptionFields });
+				const subscription = await Subscriptions.findOneById<Pick<ISubscription, keyof typeof subscriptionFields>>(id, { projection: subscriptionFields });
 				if (!subscription) {
 					return;
 				}
@@ -129,7 +164,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, { projection: { u: 1, rid: 1 } });
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
 				break;
@@ -152,27 +187,29 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 
 		broadcast('watch.roles', {
-			clientAction: clientAction !== 'removed' ? 'changed' : clientAction,
+			clientAction: clientAction !== 'removed' ? 'changed' as const : clientAction,
 			role,
 		});
 	});
 
-	watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
-		switch (clientAction) {
-			case 'inserted':
-			case 'updated':
-				data = data ?? await UsersSessions.findOneById(id);
-				if (!data) {
-					return;
-				}
+	if (startMonitor) {
+		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
+			switch (clientAction) {
+				case 'inserted':
+				case 'updated':
+					const data = eventData ?? await UsersSessions.findOneById(id);
+					if (!data) {
+						return;
+					}
 
-				broadcast('watch.userSessions', { clientAction, userSession: data });
-				break;
-			case 'removed':
-				broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
-				break;
-		}
-	});
+					broadcast('watch.userSessions', { clientAction, userSession: data });
+					break;
+				case 'removed':
+					broadcast('watch.userSessions', { clientAction, userSession: { _id: id } });
+					break;
+			}
+		});
+	}
 
 	watch<IInquiry>(LivechatInquiry, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
@@ -193,9 +230,9 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.inquiries', { clientAction, inquiry: data, diff });
 	});
 
-	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, data, diff }) => {
+	watch<ILivechatDepartmentAgents>(LivechatDepartmentAgents, async ({ clientAction, id, diff }) => {
 		if (clientAction === 'removed') {
-			data = await LivechatDepartmentAgents.trashFindOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+			const data = await LivechatDepartmentAgents.trashFindOneById<Pick<ILivechatDepartmentAgents, 'agentId' | 'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
 			if (!data) {
 				return;
 			}
@@ -203,7 +240,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			return;
 		}
 
-		data = await LivechatDepartmentAgents.findOneById(id, { projection: { agentId: 1, departmentId: 1 } });
+		const data = await LivechatDepartmentAgents.findOneById<Pick<ILivechatDepartmentAgents, 'agentId' |'departmentId'>>(id, { projection: { agentId: 1, departmentId: 1 } });
 		if (!data) {
 			return;
 		}
@@ -211,15 +248,16 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 
-	watch<IPermission>(Permissions, async ({ clientAction, id, data, diff }) => {
+	watch<IPermission>(Permissions, async ({ clientAction, id, data: eventData, diff }) => {
 		if (diff && Object.keys(diff).length === 1 && diff._updatedAt) {
 			// avoid useless changes
 			return;
 		}
+		let data;
 		switch (clientAction) {
 			case 'updated':
 			case 'inserted':
-				data = data ?? await Permissions.findOneById(id);
+				data = eventData ?? await Permissions.findOneById(id);
 				break;
 
 			case 'removed':
@@ -271,9 +309,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.settings', { clientAction, setting });
 	});
 
-	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
+	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
+			return;
+		}
+
+		if (!hasRoomFields(data || diff)) {
 			return;
 		}
 
@@ -292,7 +334,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	watch<ILoginServiceConfiguration>(LoginServiceConfiguration, async ({ clientAction, id }) => {
-		const data = await InstanceStatus.findOneById(id, { projection: { secret: 0 } });
+		const data = await LoginServiceConfiguration.findOne<Omit<ILoginServiceConfiguration, 'secret'>>(id, { projection: { secret: 0 } });
 		if (!data) {
 			return;
 		}
@@ -307,12 +349,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	watch<IIntegrationHistory>(IntegrationHistory, async ({ clientAction, id, data, diff }) => {
 		switch (clientAction) {
 			case 'updated': {
-				const history = await IntegrationHistory.findOneById(id, { projection: { 'integration._id': 1 } });
+				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, { projection: { 'integration._id': 1 } });
 				if (!history || !history.integration) {
 					return;
 				}
-				data = history;
-				broadcast('watch.integrationHistory', { clientAction, data, diff, id });
+				broadcast('watch.integrationHistory', { clientAction, data: history, diff, id });
 				break;
 			}
 			case 'inserted': {
@@ -339,13 +380,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		broadcast('watch.integrations', { clientAction, data, id });
 	});
 
-	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data }) => {
+	watch<IEmailInbox>(EmailInbox, async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.emailInbox', { clientAction, id, data: { _id: id } });
 			return;
 		}
 
-		data = data ?? await EmailInbox.findOneById(id);
+		const data = eventData ?? await EmailInbox.findOneById(id);
 		if (!data) {
 			return;
 		}

@@ -172,29 +172,12 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomId({ rid, excludePinned, ignoreDiscussion = true, fromUsers = [], ignoreThreads = true, queryOptions = {}, oldest, latest, inclusive }) {
+	findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion = true, ts, users = [], ignoreThreads = true, options = {}) {
 		const query = {
 			rid,
+			ts,
 			'file._id': { $exists: true },
 		};
-
-		if (oldest) {
-			query.ts = query.ts || {};
-			if (inclusive) {
-				query.ts.$gte = oldest;
-			} else {
-				query.ts.$gt = oldest;
-			}
-		}
-
-		if (latest) {
-			query.ts = query.ts || {};
-			if (inclusive) {
-				query.ts.$lte = latest;
-			} else {
-				query.ts.$lt = latest;
-			}
-		}
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
@@ -209,54 +192,29 @@ export class Messages extends Base {
 			query.drid = { $exists: 0 };
 		}
 
-		if (fromUsers.length) {
-			query['u.username'] = { $in: fromUsers };
+		if (users.length) {
+			query['u.username'] = { $in: users };
 		}
 
-		return this.find(query, { fields: { 'file._id': 1 }, ...queryOptions });
+		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findDiscussionByRoomId({ rid, oldest, latest, inclusive, text, excludePinned, ignoreThreads, fromUsers = [], queryOptions = {} }) {
+	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
 		const query = {
 			rid,
+			ts,
 			drid: { $exists: 1 },
 		};
-
-		if (oldest || latest) {
-			const ts = {};
-			if (oldest) {
-				inclusive
-					? ts.$gte = oldest
-					: ts.$gt = oldest;
-			}
-
-			if (latest) {
-				inclusive
-					? ts.$lte = latest
-					: ts.$lt = latest;
-			}
-
-			query.ts = ts;
-		}
 
 		if (excludePinned) {
 			query.pinned = { $ne: true };
 		}
 
-		if (text) {
-			query.$text.$search = text;
+		if (users.length) {
+			query['u.username'] = { $in: users };
 		}
 
-		if (fromUsers.length) {
-			query['u.username'] = { $in: fromUsers };
-		}
-
-		if (ignoreThreads) {
-			query.tmid = { $exists: 0 };
-			query.tcount = { $exists: 0 };
-		}
-
-		return this.find(query, queryOptions);
+		return this.find(query, options);
 	}
 
 	findVisibleByMentionAndRoomId(username, rid, options) {
@@ -269,7 +227,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId({ rid, latest, oldest, excludeTypes, queryOptions, inclusive, mentionsUsername }) {
+	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -278,27 +236,7 @@ export class Messages extends Base {
 			rid,
 		};
 
-		if (Match.test(excludeTypes, [String]) && (excludeTypes.length > 0)) {
-			query.t = { $nin: excludeTypes };
-		}
-
-		if (mentionsUsername) {
-			query['mentions.username'] = mentionsUsername;
-		}
-
-		if (latest || oldest) {
-			query.ts = {};
-		}
-
-		if (latest) {
-			query.ts[inclusive ? '$lte' : '$lt'] = latest;
-		}
-
-		if (oldest) {
-			query.ts[inclusive ? '$gte' : '$gt'] = oldest;
-		}
-
-		return this.find(query, queryOptions);
+		return this.find(query, options);
 	}
 
 	findVisibleThreadByThreadId(tmid, options) {
@@ -313,12 +251,19 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options) {
+	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
+			...!showThreadMessages && {
+				$or: [{
+					tmid: { $exists: false },
+				}, {
+					tshow: true,
+				}],
+			},
 		};
 
 		if (Match.test(types, [String]) && (types.length > 0)) {
@@ -337,6 +282,20 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				$gt: timestamp,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findForUpdates(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
@@ -350,22 +309,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options) {
+	findVisibleByRoomIdBeforeTimestamp(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -373,6 +317,53 @@ export class Messages extends Base {
 			rid: roomId,
 			ts: {
 				$lt: timestamp,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[inclusive ? '$lte' : '$lt']: timestamp,
+			},
+			...!showThreadMessages && {
+				$or: [{
+					tmid: { $exists: false },
+				}, {
+					tshow: true,
+				}],
+			},
+		};
+
+		if (Match.test(types, [String]) && (types.length > 0)) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true, inclusive = false) {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
+			},
+			...!showThreadMessages && {
+				$or: [{
+					tmid: { $exists: false },
+				}, {
+					tshow: true,
+				}],
 			},
 		};
 
@@ -554,7 +545,9 @@ export class Messages extends Base {
 				},
 			},
 			$unset: {
+				md: 1,
 				blocks: 1,
+				tshow: 1,
 			},
 		};
 
@@ -824,6 +817,11 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
 	}
 
+	createUserJoinTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, extraData);
+	}
+
 	createUserJoinWithRoomIdAndUserDiscussion(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, extraData);
@@ -832,6 +830,11 @@ export class Messages extends Base {
 	createUserLeaveWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, extraData);
+	}
+
+	createUserLeaveTeamWithRoomIdAndUser(roomId, user, extraData) {
+		const message = user.username;
+		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, extraData);
 	}
 
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
@@ -913,45 +916,6 @@ export class Messages extends Base {
 
 	removeByRoomIds(rids) {
 		return this.remove({ rid: { $in: rids } });
-	}
-
-	findThreadsByRoomId({ rid, excludePinned, ignoreDiscussion = true, latest, oldest, inclusive, fromUsers = [], queryOptions }) {
-		const query = {
-			rid,
-			tlm: { $exists: 1 },
-			tcount: { $exists: 1 },
-		};
-
-		if (oldest || latest) {
-			const ts = {};
-			if (oldest) {
-				inclusive
-					? ts.$gte = oldest
-					: ts.$gt = oldest;
-			}
-
-			if (latest) {
-				inclusive
-					? ts.$lte = latest
-					: ts.$lt = latest;
-			}
-
-			query.ts = ts;
-		}
-
-		if (excludePinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (fromUsers.length > 0) {
-			query['u.username'] = { $in: fromUsers };
-		}
-
-		return this.find(query, queryOptions);
 	}
 
 	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
@@ -1236,6 +1200,10 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
+	findThreadsByRoomId(rid, skip, limit) {
+		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
+	}
+
 	findAgentLastMessageByVisitorLastMessageTs(roomId, visitorLastMessageTs) {
 		const query = {
 			rid: roomId,
@@ -1263,6 +1231,16 @@ export class Messages extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	decreaseReplyCountById(_id, inc = -1) {
+		const query = { _id };
+		const update = {
+			$inc: {
+				tcount: inc,
+			},
+		};
+		return this.update(query, update);
 	}
 }
 

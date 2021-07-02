@@ -10,9 +10,8 @@ import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { escapeHTML } from '../../../../lib/escapeHTML';
-
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
@@ -34,13 +33,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: escapeHTML(userData.email),
-			password: escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
@@ -199,36 +198,32 @@ function validateUserEditing(userId, userData) {
 }
 
 const handleBio = (updateUser, bio) => {
-	if (bio) {
-		if (bio.trim()) {
-			if (typeof bio !== 'string' || bio.length > 260) {
-				throw new Meteor.Error('error-invalid-field', 'bio', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.bio = bio;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.bio = 1;
+	if (bio && bio.trim()) {
+		if (typeof bio !== 'string' || bio.length > 260) {
+			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
 		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.bio = bio;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.bio = 1;
 	}
 };
 
 const handleNickname = (updateUser, nickname) => {
-	if (nickname) {
-		if (nickname.trim()) {
-			if (typeof nickname !== 'string' || nickname.length > 120) {
-				throw new Meteor.Error('error-invalid-field', 'nickname', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.nickname = nickname;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.nickname = 1;
+	if (nickname && nickname.trim()) {
+		if (typeof nickname !== 'string' || nickname.length > 120) {
+			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
 		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.nickname = nickname;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.nickname = 1;
 	}
 };
 
@@ -263,7 +258,7 @@ export const saveUser = function(userId, userData) {
 
 		const updateUser = {
 			$set: {
-				roles: userData.roles || ['user'],
+				roles: userData.roles || getNewUserRoles(),
 				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
@@ -309,7 +304,7 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		if (!saveUserIdentity(userId, {
+		if (!saveUserIdentity({
 			_id: userData._id,
 			username: userData.username,
 			name: userData.name,

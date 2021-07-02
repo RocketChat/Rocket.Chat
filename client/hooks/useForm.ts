@@ -1,6 +1,5 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { useCallback, useReducer, useMemo, ChangeEvent } from 'react';
-
-import { capitalize } from '../lib/capitalize';
 
 type Field = {
 	name: string;
@@ -27,8 +26,7 @@ type UseFormReturnType = {
 	reset: () => void;
 };
 
-const reduceForm = (state: FormState, action: FormAction): FormState =>
-	action(state);
+const reduceForm = (state: FormState, action: FormAction): FormState => action(state);
 
 const initForm = (initialValues: Record<string, unknown>): FormState => {
 	const fields = [];
@@ -49,7 +47,8 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 	};
 };
 
-const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
+const valueChanged =
+	(fieldName: string, newValue: unknown): FormAction =>
 	(state: FormState): FormState => {
 		let { fields } = state;
 		const field = fields.find(({ name }) => name === fieldName);
@@ -83,7 +82,8 @@ const valueChanged = (fieldName: string, newValue: unknown): FormAction =>
 		};
 	};
 
-const formCommitted = (): FormAction =>
+const formCommitted =
+	(): FormAction =>
 	(state: FormState): FormState => ({
 		...state,
 		fields: state.fields.map((field) => ({
@@ -94,7 +94,8 @@ const formCommitted = (): FormAction =>
 		hasUnsavedChanges: false,
 	});
 
-const formReset = (): FormAction =>
+const formReset =
+	(): FormAction =>
 	(state: FormState): FormState => ({
 		...state,
 		fields: state.fields.map((field) => ({
@@ -102,10 +103,13 @@ const formReset = (): FormAction =>
 			currentValue: field.initialValue,
 			changed: false,
 		})),
-		values: state.fields.reduce((values, field) => ({
-			...values,
-			[field.name]: field.initialValue,
-		}), {}),
+		values: state.fields.reduce(
+			(values, field) => ({
+				...values,
+				[field.name]: field.initialValue,
+			}),
+			{},
+		),
 		hasUnsavedChanges: false,
 	});
 
@@ -140,7 +144,7 @@ const getValue = (eventOrValue: ChangeEvent | unknown): unknown => {
 
 export const useForm = (
 	initialValues: Record<string, unknown>,
-	onChange: ((...args: unknown[]) => void) = (): void => undefined,
+	onChange: (...args: unknown[]) => void = (): void => undefined,
 ): UseFormReturnType => {
 	const [state, dispatch] = useReducer(reduceForm, initialValues, initForm);
 
@@ -153,18 +157,24 @@ export const useForm = (
 	}, []);
 
 	const handlers = useMemo<Record<string, (eventOrValue: ChangeEvent | unknown) => void>>(
-		() => state.fields.reduce((handlers, { name, initialValue }) => ({
-			...handlers,
-			[`handle${ capitalize(name) }`]: (eventOrValue: ChangeEvent | unknown): void => {
-				const newValue = getValue(eventOrValue);
-				dispatch(valueChanged(name, newValue));
-				onChange({
-					initialValue,
-					value: newValue,
-					key: name,
-				});
-			},
-		}), {}), [onChange, state.fields]);
+		() =>
+			state.fields.reduce(
+				(handlers, { name, initialValue }) => ({
+					...handlers,
+					[`handle${capitalize(name)}`]: (eventOrValue: ChangeEvent | unknown): void => {
+						const newValue = getValue(eventOrValue);
+						dispatch(valueChanged(name, newValue));
+						onChange({
+							initialValue,
+							value: newValue,
+							key: name,
+						});
+					},
+				}),
+				{},
+			),
+		[onChange, state.fields],
+	);
 
 	return {
 		handlers,

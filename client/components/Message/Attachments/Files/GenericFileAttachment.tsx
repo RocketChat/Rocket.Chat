@@ -1,12 +1,14 @@
 import React, { FC } from 'react';
 
-import { Attachment, AttachmentPropsBase } from '../Attachment';
+import { FileProp } from '../../../../../definition/IMessage/MessageAttachment/Files/FileProp';
+import { MessageAttachmentBase } from '../../../../../definition/IMessage/MessageAttachment/MessageAttachmentBase';
 import MarkdownText from '../../../MarkdownText';
-import { FileProp } from '..';
+import Attachment from '../Attachment';
+import { useMediaUrl } from '../context/AttachmentContext';
 
 export type GenericFileAttachmentProps = {
-	file: FileProp;
-} & AttachmentPropsBase;
+	file?: FileProp;
+} & MessageAttachmentBase;
 
 export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 	title,
@@ -18,22 +20,30 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 		size,
 		// format,
 		// name,
-	},
-}) =>
+	} = {},
+}) => {
 	// const [collapsed, collapse] = useCollapse(collapsedDefault);
-	<Attachment>
-		{ description && <MarkdownText withRichContent={undefined} content={description} /> }
-		<Attachment.Row>
-			<Attachment.Title { ...hasDownload && link && { is: 'a', href: link, color: undefined } } >{title}</Attachment.Title>
-			{size && <Attachment.Size size={size}/>}
-			{/* {collapse} */}
-			{hasDownload && link && <Attachment.Download href={link}/>}
-		</Attachment.Row>
-		{/* { !collapsed && <Attachment.Content>
+	const getURL = useMediaUrl();
+	return (
+		<Attachment>
+			{description && <MarkdownText content={description} />}
+			<Attachment.Row>
+				{hasDownload && link ? (
+					<Attachment.TitleLink link={getURL(link)} title={title} />
+				) : (
+					<Attachment.Title>{title}</Attachment.Title>
+				)}
+				{size && <Attachment.Size size={size} />}
+				{/* {collapse} */}
+				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
+			</Attachment.Row>
+			{/* { !collapsed && <Attachment.Content>
 			<Attachment.Details>
 				{hasDownload && link && <Attachment.Download href={link}/>}
 				<Attachment.Row><Attachment.Title { ...hasDownload && link && { is: 'a', href: link } } >{name}</Attachment.Title></Attachment.Row>
 				<Attachment.Row>{size && <Attachment.Size size={size}/>}<Attachment.Title>{format && size && ' | '}{format}</Attachment.Title></Attachment.Row>
 			</Attachment.Details>
 		</Attachment.Content> } */}
-	</Attachment>;
+		</Attachment>
+	);
+};

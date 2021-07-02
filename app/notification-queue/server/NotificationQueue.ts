@@ -41,7 +41,14 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(this.worker.bind(this), this.cyclePause);
+		setTimeout(() => {
+			try {
+				this.worker();
+			} catch (e) {
+				console.error('Error sending notification', e);
+				this.executeWorkerLater();
+			}
+		}, this.cyclePause);
 	}
 
 	async worker(counter = 0): Promise<void> {
@@ -105,7 +112,7 @@ class NotificationClass {
 	}
 
 	async scheduleItem({ uid, rid, mid, items, user }: { uid: string; rid: string; mid: string; items: NotificationItem[]; user?: Partial<IUser> }): Promise<void> {
-		const receiver = user || await Users.findOneById(uid, {
+		const receiver = user || await Users.findOneById<Pick<IUser, 'statusConnection'>>(uid, {
 			projection: {
 				statusConnection: 1,
 			},
@@ -115,7 +122,7 @@ class NotificationClass {
 			return;
 		}
 
-		const { statusConnection } = receiver;
+		const { statusConnection = 'offline' } = receiver;
 
 		let schedule: Date | undefined;
 

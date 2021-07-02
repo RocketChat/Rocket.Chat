@@ -18,7 +18,7 @@ function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
-class AppServerOrchestrator {
+export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
 	}
@@ -115,8 +115,7 @@ class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			// eslint-disable-next-line
-			console.log(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 
@@ -190,17 +189,6 @@ settings.addGroup('General', function() {
 			},
 			public: true,
 			hidden: false,
-		});
-
-		this.add('Apps_Game_Center_enabled', false, {
-			type: 'boolean',
-			enableQuery: {
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			hidden: false,
-			public: true,
-			alert: 'Experimental_Feature_Alert',
 		});
 	});
 });

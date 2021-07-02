@@ -1,29 +1,21 @@
-import React from 'react';
-import { Box, Field, FieldGroup, Button, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React from 'react';
 
-import RoleForm from './RoleForm';
+import GenericModal from '../../../components/GenericModal';
+import VerticalBar from '../../../components/VerticalBar';
+import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useForm } from '../../../hooks/useForm';
-import { useTranslation } from '../../../contexts/TranslationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useRole } from './useRole';
-
-const EditRolePageContainer = ({ _id }) => {
-	const t = useTranslation();
-	const role = useRole(_id);
-
-	if (!role) {
-		return <Callout type='danger'>{t('error-invalid-role')}</Callout>;
-	}
-
-	return <EditRolePage key={_id} data={role} />;
-};
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
+import RoleForm from './RoleForm';
 
 const EditRolePage = ({ data }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 	const usersInRoleRouter = useRoute('admin-permissions');
 	const router = useRoute('admin-permissions');
 
@@ -48,43 +40,62 @@ const EditRolePage = ({ data }) => {
 		try {
 			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const handleDelete = useMutableCallback(async () => {
-		try {
-			await deleteRole(data.name);
-			dispatchToastMessage({ type: 'success', message: t('Role_removed') });
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	return <Box w='full' alignSelf='center' mb='neg-x8'>
-		<Margins block='x8'>
-			<FieldGroup>
-				<RoleForm values={values} handlers={handlers} editing isProtected={data.protected}/>
-				<Field>
-					<Field.Row>
-						<Button primary w='full' disabled={!hasUnsavedChanges} onClick={handleSave}>{t('Save')}</Button>
-					</Field.Row>
-				</Field>
-				{!data.protected && <Field>
-					<Field.Row>
-						<Button danger w='full' onClick={handleDelete}>{t('Delete')}</Button>
-					</Field.Row>
-				</Field>}
-				<Field>
-					<Field.Row>
-						<Button w='full' onClick={handleManageUsers}>{t('Users_in_role')}</Button>
-					</Field.Row>
-				</Field>
-			</FieldGroup>
-		</Margins>
-	</Box>;
+	const handleDelete = useMutableCallback(async () => {
+		const deleteRoleAction = async () => {
+			try {
+				await deleteRole(data.name);
+				dispatchToastMessage({ type: 'success', message: t('Role_removed') });
+				setModal();
+				router.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				setModal();
+			}
+		};
+
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={deleteRoleAction}
+				onClose={() => setModal()}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			>
+				{t('Delete_Role_Warning')}
+			</GenericModal>,
+		);
+	});
+
+	return (
+		<>
+			<VerticalBar.ScrollableContent>
+				<Box w='full' alignSelf='center' mb='neg-x8'>
+					<Margins block='x8'>
+						<RoleForm values={values} handlers={handlers} editing isProtected={data.protected} />
+					</Margins>
+				</Box>
+			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
+				<ButtonGroup vertical stretch>
+					<Button primary disabled={!hasUnsavedChanges} onClick={handleSave}>
+						{t('Save')}
+					</Button>
+					{!data.protected && (
+						<Button danger onClick={handleDelete}>
+							{t('Delete')}
+						</Button>
+					)}
+					<Button onClick={handleManageUsers}>{t('Users_in_role')}</Button>
+				</ButtonGroup>
+			</VerticalBar.Footer>
+		</>
+	);
 };
 
-export default EditRolePageContainer;
+export default EditRolePage;

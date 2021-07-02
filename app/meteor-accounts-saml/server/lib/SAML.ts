@@ -5,19 +5,18 @@ import { Random } from 'meteor/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
-import { _setUsername, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
+import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
-import { escapeHTML } from '../../../../lib/escapeHTML';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -197,7 +196,7 @@ export class SAML {
 		});
 
 		if (username && username !== user.username) {
-			_setUsername(user._id, username);
+			saveUserIdentity({ _id: user._id, username });
 		}
 
 		// sending token along with the userId
@@ -376,7 +375,7 @@ export class SAML {
 		});
 	}
 
-	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, samlObject: ISAMLAction): void {
+	private static processValidateAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions, _samlObject: ISAMLAction): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
 		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile/* , loggedOut*/) => {
@@ -390,20 +389,14 @@ export class SAML {
 					throw new Error('No user data collected from IdP response.');
 				}
 
-				let credentialToken = (profile.inResponseToId && profile.inResponseToId.value) || profile.inResponseToId || profile.InResponseTo || samlObject.credentialToken;
+				// create a random token to store the login result
+				// to test an IdP initiated login on localhost, use the following URL (assuming SimpleSAMLPHP on localhost:8080):
+				// http://localhost:8080/simplesaml/saml2/idp/SSOService.php?spentityid=http://localhost:3000/_saml/metadata/test-sp
+				const credentialToken = Random.id();
+
 				const loginResult = {
 					profile,
 				};
-
-				if (!credentialToken) {
-					// If the login was initiated by the IDP, then we don't have a credentialToken as there was no AuthorizeRequest on our side
-					// so we create a random token now to use the same url to end the login
-					//
-					// to test an IdP initiated login on localhost, use the following URL (assuming SimpleSAMLPHP on localhost:8080):
-					// http://localhost:8080/simplesaml/saml2/idp/SSOService.php?spentityid=http://localhost:3000/_saml/metadata/test-sp
-					credentialToken = Random.id();
-					SAMLUtils.log('[SAML] Using random credentialToken: ', credentialToken);
-				}
 
 				this.storeCredential(credentialToken, loginResult);
 				const url = `${ Meteor.absoluteUrl('home') }?saml_idp_credentialToken=${ credentialToken }`;

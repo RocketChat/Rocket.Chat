@@ -73,6 +73,7 @@ export class CustomOAuth {
 		this.identityPath = options.identityPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
+		this.keyField = options.keyField;
 		this.usernameField = (options.usernameField || '').trim();
 		this.emailField = (options.emailField || '').trim();
 		this.nameField = (options.nameField || '').trim();
@@ -334,7 +335,14 @@ export class CustomOAuth {
 			}
 
 			if (serviceData.username) {
-				const user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+				let user = undefined;
+
+				if (this.keyField === 'username') {
+					user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+				} else if (this.keyField === 'email') {
+					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
+				}
+
 				if (!user) {
 					return;
 				}

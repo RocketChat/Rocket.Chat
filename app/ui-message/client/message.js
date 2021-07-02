@@ -1,8 +1,10 @@
 import _ from 'underscore';
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
@@ -13,14 +15,10 @@ import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { renderMentions } from '../../mentions/client/client';
 import { renderMessageBody } from '../../../client/lib/renderMessageBody';
-import { createTemplateForComponent } from '../../../client/reactAdapters';
-
+import { settings } from '../../settings/client';
 import './message.html';
-
-createTemplateForComponent('messageLocation', () => import('../../../client/views/location/MessageLocation'));
 
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
@@ -54,18 +52,22 @@ const renderBody = (msg, settings) => {
 };
 
 Template.message.helpers({
+	enableMessageParserEarlyAdoption() {
+		const { settings: { enableMessageParserEarlyAdoption }, msg } = this;
+		return enableMessageParserEarlyAdoption && msg.md;
+	},
 	unread() {
 		const { msg, subscription } = this;
 		return subscription?.tunread?.includes(msg._id);
 	},
 	mention() {
 		const { msg, subscription } = this;
-		return subscription.tunreadUser?.includes(msg._id);
+		return subscription?.tunreadUser?.includes(msg._id);
 	},
 
 	all() {
 		const { msg, subscription } = this;
-		return subscription.tunreadGroup?.includes(msg._id);
+		return subscription?.tunreadGroup?.includes(msg._id);
 	},
 	following() {
 		const { msg, u } = this;
@@ -451,7 +453,16 @@ Template.message.helpers({
 	},
 	showStar() {
 		const { msg } = this;
-		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
+		return msg.starred && msg.starred.length > 0 && msg.starred.find((star) => star._id === Meteor.userId()) && !(msg.actionContext === 'starred' || this.context === 'starred');
+	},
+	readReceipt() {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		return {
+			readByEveryone: (!this.msg.unread && 'read') || 'color-component-color',
+		};
 	},
 });
 
@@ -544,6 +555,11 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	const previousNode = (index === undefined || index > 0) && getPreviousSentMessage(currentNode);
 	const nextNode = currentNode.nextElementSibling;
 
+	if (!previousNode) {
+		setTimeout(() => {
+			currentNode.dispatchEvent(new CustomEvent('MessageGroup', { bubbles: true }));
+		}, 100);
+	}
 	if (isSequential(currentNode, previousNode, forceDate, settings.Message_GroupingPeriod, showDateSeparator, shouldCollapseReplies)) {
 		currentNode.classList.add('sequential');
 	} else {

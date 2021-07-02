@@ -10,7 +10,7 @@ import { StatusCode } from './constants';
 
 // @ToDo remove this ts-ignore someday
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
-type NullableLogger = Logger | Null;
+type NullableLogger = Logger | null;
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
@@ -152,7 +152,7 @@ export class SAMLUtils {
 	}
 
 	public static inflateXml(base64Data: string, successCallback: (xml: string) => void, errorCallback: (err: string | object | null) => void): void {
-		const buffer = new Buffer(base64Data, 'base64');
+		const buffer = Buffer.from(base64Data, 'base64');
 		zlib.inflateRaw(buffer, (err, decoded) => {
 			if (err) {
 				this.log(`Error while inflating. ${ err }`);
