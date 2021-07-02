@@ -28,6 +28,7 @@ import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } fr
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
+import { SendEmailCodeEndpoint } from './endpoints/v1/users/twoFactorAuth/sendEmailCode';
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -57,6 +58,7 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
