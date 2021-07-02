@@ -21,7 +21,7 @@ import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
-import DefaultParentRoom from './DefaultParentRoom';
+import DefaultParentRoomField from './DefaultParentRoomField';
 
 type CreateDiscussionFormValues = {
 	name: string;
@@ -106,7 +106,9 @@ const CreateDiscussion = ({
 					<Field>
 						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
 						<Field.Row>
-							{defaultParentRoom && <DefaultParentRoom defaultParentRoom={defaultParentRoom} />}
+							{defaultParentRoom && (
+								<DefaultParentRoomField defaultParentRoom={defaultParentRoom} />
+							)}
 
 							{!defaultParentRoom && (
 								<RoomAutoComplete
