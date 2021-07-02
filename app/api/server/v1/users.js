@@ -456,12 +456,20 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+							method: 'users.setStatus',
+						});
+					}
+
 					Meteor.users.update(user._id, {
 						$set: {
 							status,
 							statusDefault: status,
 						},
 					});
+
 					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -608,7 +616,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				showMessageInMainThread: Match.Maybe(Boolean),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
-				hideAvatars: Match.Maybe(Boolean),
+				displayAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
 				language: Match.Maybe(String),
@@ -616,9 +624,8 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarShowUnread: Match.Optional(Boolean),
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
-				sidebarHideAvatar: Match.Optional(Boolean),
+				sidebarDisplayAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
-				sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});

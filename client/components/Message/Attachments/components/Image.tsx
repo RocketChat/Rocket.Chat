@@ -1,7 +1,7 @@
 import React, { memo, FC, useState, useMemo } from 'react';
 
+import { Dimensions } from '../../../../../definition/IMessage/MessageAttachment/Files/Dimensions';
 import { useAttachmentDimensions } from '../context/AttachmentContext';
-import { Dimensions } from './Dimensions';
 import ImageBox from './ImageBox';
 import Load from './Load';
 import Retry from './Retry';
@@ -59,7 +59,6 @@ const Image: FC<ImageProps> = ({ previewUrl, loadImage = true, setLoadImage, src
 	return (
 		<ImageBox
 			onError={setHasError}
-			box
 			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
 			{...dimensions}
 			is='picture'

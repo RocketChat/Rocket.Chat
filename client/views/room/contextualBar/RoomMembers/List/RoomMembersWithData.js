@@ -20,6 +20,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
+
 	room.type = room.t;
 	room.rid = rid;
 
@@ -29,11 +30,10 @@ const RoomMembersWithData = ({ rid }) => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { membersList, loadMoreItems, reload } = useMembersList(
-		useMemo(() => ({ rid, type: type === 'all', limit: 50, debouncedText }), [
-			rid,
-			type,
-			debouncedText,
-		]),
+		useMemo(
+			() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }),
+			[rid, type, debouncedText, room.t],
+		),
 	);
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
@@ -69,7 +69,10 @@ const RoomMembersWithData = ({ rid }) => {
 		setState({ tab: 'AddUsers' });
 	});
 
-	const handleBack = useCallback(() => setState({}), [setState]);
+	const handleBack = useCallback(() => {
+		setState({});
+		reload();
+	}, [setState, reload]);
 
 	if (state.tab === 'UserInfo') {
 		return (

@@ -10,7 +10,7 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
-const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
+const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }) => {
 	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
 	const t = useTranslation();
 	const forms = useSubscription(formsSubscription);
@@ -21,6 +21,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
+	const [paginatedTagValue, handlePaginatedTagValue] = useState([]);
 
 	const removeTag = (tag) => {
 		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
@@ -49,10 +50,18 @@ const Tags = ({ tags = [], handler = () => {}, error = '' }) => {
 
 	return (
 		<>
-			<Field.Label mb='x4'>{t('Tags')}</Field.Label>
+			<Field.Label required={tagRequired} mb='x4'>
+				{t('Tags')}
+			</Field.Label>
 			{Tags && tagsList && tagsList.length > 0 ? (
 				<Field.Row>
-					<Tags value={tags} handler={handler} />
+					<Tags
+						value={paginatedTagValue}
+						handler={(tags) => {
+							handler(tags.map((tag) => tag.label));
+							handlePaginatedTagValue(tags);
+						}}
+					/>
 				</Field.Row>
 			) : (
 				<>

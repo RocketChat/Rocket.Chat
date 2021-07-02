@@ -62,6 +62,7 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 
 		await Banner.create(banner);
 	} catch (e) {
-		throw new Error(e);
+		console.error(e);
+		return false;
 	}
 });

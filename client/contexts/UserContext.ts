@@ -87,21 +87,19 @@ export const useLoginWithPassword = (): ((
 
 export const useUserPreference = <T>(key: string, defaultValue?: T): T | undefined => {
 	const { queryPreference } = useContext(UserContext);
-	const subscription = useMemo(() => queryPreference(key, defaultValue), [
-		queryPreference,
-		key,
-		defaultValue,
-	]);
+	const subscription = useMemo(
+		() => queryPreference(key, defaultValue),
+		[queryPreference, key, defaultValue],
+	);
 	return useSubscription(subscription);
 };
 
 export const useUserSubscription = (rid: string, fields: Fields): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscription({ rid }, fields), [
-		querySubscription,
-		rid,
-		fields,
-	]);
+	const subscription = useMemo(
+		() => querySubscription({ rid }, fields),
+		[querySubscription, rid, fields],
+	);
 	return useSubscription(subscription);
 };
 
@@ -116,11 +114,10 @@ export const useUserSubscriptions = (
 	options?: FindOptions,
 ): Array<ISubscription> | [] => {
 	const { querySubscriptions } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscriptions(query, options), [
-		querySubscriptions,
-		query,
-		options,
-	]);
+	const subscription = useMemo(
+		() => querySubscriptions(query, options),
+		[querySubscriptions, query, options],
+	);
 	return useSubscription(subscription);
 };
 
@@ -130,11 +127,9 @@ export const useUserSubscriptionByName = (
 	sort?: Sort,
 ): ISubscription | undefined => {
 	const { querySubscription } = useContext(UserContext);
-	const subscription = useMemo(() => querySubscription({ name }, fields, sort), [
-		querySubscription,
-		name,
-		fields,
-		sort,
-	]);
+	const subscription = useMemo(
+		() => querySubscription({ name }, fields, sort),
+		[querySubscription, name, fields, sort],
+	);
 	return useSubscription(subscription);
 };

@@ -5,7 +5,6 @@ import {
 	api,
 	request,
 	credentials,
-	group,
 	login,
 	apiRoleNameUsers,
 	apiRoleNameSubscriptions,
@@ -16,6 +15,41 @@ import {
 import { password } from '../../data/user';
 import { updatePermission } from '../../data/permissions.helper';
 import { createUser, login as doLogin } from '../../data/users.helper';
+
+function createRole(name, scope, description) {
+	return new Promise((resolve) => {
+		request.post(api('roles.create'))
+			.set(credentials)
+			.send({
+				name,
+				scope,
+				description,
+			})
+			.end((err, req) => {
+				resolve(req.body.role);
+			});
+	});
+}
+
+function addUserToRole(roleId, username) {
+	return new Promise((resolve) => {
+		request.post(api('roles.addUserToRole'))
+			.set(credentials)
+			.send({
+				roleName: roleId,
+				username,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('role._id', roleId);
+			})
+			.end((err, req) => {
+				resolve(req.body.role);
+			});
+	});
+}
 
 describe('[Roles]', function() {
 	this.retries(0);
@@ -74,7 +108,7 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameUsers);
+					expect(res.body).to.have.nested.property('role._id');
 					expect(res.body).to.have.nested.property('role.name', apiRoleNameUsers);
 					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeUsers);
 					expect(res.body).to.have.nested.property('role.description', apiRoleDescription);
@@ -94,10 +128,26 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameSubscriptions);
+					expect(res.body).to.have.nested.property('role._id');
 					expect(res.body).to.have.nested.property('role.name', apiRoleNameSubscriptions);
 					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeSubscriptions);
 					expect(res.body).to.have.nested.property('role.description', apiRoleDescription);
+				})
+				.end(done);
+		});
+
+		it('should NOT create a new role with an existing role name', (done) => {
+			request.post(api('roles.create'))
+				.set(credentials)
+				.send({
+					name: apiRoleNameUsers,
+					description: apiRoleDescription,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Role name already exists [error-duplicate-role-names-not-allowed]');
 				})
 				.end(done);
 		});
@@ -115,7 +165,7 @@ describe('[Roles]', function() {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameUsers);
+					expect(res.body).to.have.nested.property('role._id');
 					expect(res.body).to.have.nested.property('role.name', apiRoleNameUsers);
 					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeUsers);
 				})
@@ -128,13 +178,12 @@ describe('[Roles]', function() {
 				.send({
 					roleName: apiRoleNameSubscriptions,
 					username: login.user,
-					roomId: group._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('role._id', apiRoleNameSubscriptions);
+					expect(res.body).to.have.nested.property('role._id');
 					expect(res.body).to.have.nested.property('role.name', apiRoleNameSubscriptions);
 					expect(res.body).to.have.nested.property('role.scope', apiRoleScopeSubscriptions);
 				})
@@ -230,6 +279,108 @@ describe('[Roles]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.users).to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
+	describe('POST [/roles.update]', () => {
+		const roleName = `role-${ Date.now() }`;
+		let newRole;
+		before(async () => {
+			newRole = await createRole(roleName, 'Users', 'Role description test');
+		});
+
+		it('should update an existing role', (done) => {
+			const newRoleName = `${ roleName }Updated`;
+			const newRoleDescription = 'New role description';
+
+			request.post(api('roles.update'))
+				.set(credentials)
+				.send({
+					roleId: newRole._id,
+					name: newRoleName,
+					description: newRoleDescription,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('role._id', newRole._id);
+					expect(res.body).to.have.nested.property('role.name', newRoleName);
+					expect(res.body).to.have.nested.property('role.scope', newRole.scope);
+					expect(res.body).to.have.nested.property('role.description', newRoleDescription);
+				})
+				.end(done);
+		});
+
+		it('should NOT update a role with an existing role name', (done) => {
+			request.post(api('roles.update'))
+				.set(credentials)
+				.send({
+					roleId: newRole._id,
+					name: apiRoleNameUsers,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Role name already exists [error-duplicate-role-names-not-allowed]');
+				})
+				.end(done);
+		});
+	});
+
+	describe('POST [/roles.delete]', () => {
+		let roleWithUser;
+		let roleWithoutUser;
+		before(async () => {
+			roleWithUser = await createRole(`roleWithUser-${ Date.now() }`, 'Users');
+			roleWithoutUser = await createRole(`roleWithoutUser-${ Date.now() }`, 'Users');
+
+			await addUserToRole(roleWithUser._id, login.user);
+		});
+
+		it('should delete a role that it is not being used', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: roleWithoutUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should NOT delete a role that it is protected', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: 'admin',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Cannot delete a protected role [error-role-protected]');
+				})
+				.end(done);
+		});
+
+		it('should NOT delete a role that it is being used', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: roleWithUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Cannot delete role because it\'s in use [error-role-in-use]');
 				})
 				.end(done);
 		});

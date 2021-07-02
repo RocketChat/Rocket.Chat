@@ -206,7 +206,8 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = Object.fromEntries(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
@@ -282,7 +283,8 @@ export class CachedCollection extends Emitter {
 					});
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					room.name && RoomManager.close(room.t + room.name);
+					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {

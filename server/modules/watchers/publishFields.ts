@@ -36,9 +36,12 @@ export const subscriptionFields = {
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
+
+	// Omnichannel fields
+	department: 1,
 	v: 1,
 	onHold: 1,
-};
+} as const;
 
 export const roomFields = {
 	_id: 1,
@@ -69,14 +72,12 @@ export const roomFields = {
 	usersCount: 1,
 
 	// @TODO create an API to register this fields based on room type
-	livechatData: 1,
 	tags: 1,
 	sms: 1,
 	facebook: 1,
 	code: 1,
 	joinCodeRequired: 1,
 	open: 1,
-	v: 1,
 	label: 1,
 	ro: 1,
 	reactWhenReadOnly: 1,
@@ -87,10 +88,18 @@ export const roomFields = {
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
+
+	// Omnichannel fields
+	livechatData: 1,
+	priorityId: 1,
+	v: 1,
 	departmentId: 1,
 	servedBy: 1,
-	priorityId: 1,
 	transcriptRequest: 1,
+	onHold: 1,
+	metrics: 1,
+	ts: 1,
+	waitingResponse: 1,
 
 	// fields used by DMs
 	usernames: 1,

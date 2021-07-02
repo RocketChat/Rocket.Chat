@@ -8,10 +8,11 @@ const defaultValue = { title: '', value: '00:00:00' };
 const initialData = [defaultValue, defaultValue, defaultValue, defaultValue];
 
 const ProductivityOverview = ({ params, reloadRef, ...props }) => {
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/productivity-totalizers',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/productivity-totalizers', params);
 
 	reloadRef.current.productivityOverview = reload;
 

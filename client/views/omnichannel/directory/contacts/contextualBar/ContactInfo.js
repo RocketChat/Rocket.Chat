@@ -24,9 +24,8 @@ const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } =
+		useEndpointData('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -49,9 +48,9 @@ const ContactInfo = ({ id, rid, route }) => {
 						id: rid,
 				  }
 				: {
-						tab: 'contacts',
-						context: 'edit',
+						page: 'contacts',
 						id,
+						bar: 'edit',
 				  },
 		);
 	});
@@ -63,16 +62,15 @@ const ContactInfo = ({ id, rid, route }) => {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(
-		`omnichannel/contact?contactId=${id}`,
-	);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(`omnichannel/contact?contactId=${id}`);
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
 
-	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
-	} = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
 		return (
 			<Box pi='x24'>
@@ -84,6 +82,10 @@ const ContactInfo = ({ id, rid, route }) => {
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
+
+	const {
+		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);

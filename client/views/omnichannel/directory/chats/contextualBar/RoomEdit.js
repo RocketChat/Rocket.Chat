@@ -38,7 +38,7 @@ const getInitialValuesRoom = (room) => {
 	};
 };
 
-function RoomEdit({ room, visitor, reload, close }) {
+function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 	const t = useTranslation();
 
 	const {
@@ -71,9 +71,8 @@ function RoomEdit({ room, visitor, reload, close }) {
 
 	const [customFieldsError, setCustomFieldsError] = useState([]);
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } =
+		useEndpointData('livechat/custom-fields');
 	const { value: prioritiesResult = {}, phase: statePriorities } = useEndpointData(
 		'livechat/priorities.list',
 	);
@@ -123,6 +122,7 @@ function RoomEdit({ room, visitor, reload, close }) {
 			saveRoom(userData, roomData);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload && reload();
+			reloadInfo && reloadInfo();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

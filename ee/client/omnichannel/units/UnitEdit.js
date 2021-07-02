@@ -1,47 +1,82 @@
-import { Field, TextInput, Button, Box, MultiSelect, Select, Margins } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import {
+	Field,
+	TextInput,
+	Button,
+	PaginatedMultiSelectFiltered,
+	Select,
+	ButtonGroup,
+	Icon,
+	FieldGroup,
+} from '@rocket.chat/fuselage';
+import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useState } from 'react';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
+import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useForm } from '../../../../client/hooks/useForm';
+import { useDepartmentsByUnitsList } from '../../../../client/views/hooks/useDepartmentsByUnitsList';
+import { useMonitorsList } from '../../../../client/views/hooks/useMonitorsList';
 
-function UnitEdit({
-	data,
-	unitId,
-	isNew,
-	availableDepartments,
-	availableMonitors,
-	unitMonitors,
-	reload,
-	...props
-}) {
+function UnitEdit({ title, data, unitId, isNew, unitMonitors, unitDepartments, reload, ...props }) {
 	const t = useTranslation();
 	const unitsRoute = useRoute('omnichannel-units');
+	const [monitorsFilter, setMonitorsFilter] = useState('');
+
+	const debouncedMonitorsFilter = useDebouncedValue(monitorsFilter, 500);
+
+	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
+	const { itemsList: monitorsList, loadMoreItems: loadMoreMonitors } = useMonitorsList(
+		useMemo(() => ({ filter: debouncedMonitorsFilter }), [debouncedMonitorsFilter]),
+	);
+
+	const {
+		phase: monitorsPhase,
+		items: monitorsItems,
+		itemCount: monitorsTotal,
+	} = useRecordList(monitorsList);
+
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } =
+		useDepartmentsByUnitsList(
+			useMemo(
+				() => ({ filter: debouncedDepartmentsFilter, unitId }),
+				[debouncedDepartmentsFilter, unitId],
+			),
+		);
+
+	const {
+		phase: departmentsPhase,
+		items: departmentsItems,
+		itemCount: departmentsTotal,
+	} = useRecordList(departmentsList);
+
+	const departmentsSortedByName = departmentsItems.sort((a, b) => {
+		if (a.name > b.name) {
+			return 1;
+		}
+		if (a.name < b.name) {
+			return -1;
+		}
+
+		return 0;
+	});
 
 	const unit = data || {};
 
-	const depOptions = useMemo(
-		() =>
-			availableDepartments && availableDepartments.departments
-				? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableDepartments],
-	);
-	const monOptions = useMemo(
-		() =>
-			availableMonitors && availableMonitors.monitors
-				? availableMonitors.monitors.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableMonitors],
-	);
 	const currUnitMonitors = useMemo(
 		() =>
 			unitMonitors && unitMonitors.monitors
-				? unitMonitors.monitors.map(({ monitorId }) => monitorId)
+				? unitMonitors.monitors.map(({ monitorId, username }) => ({
+						value: monitorId,
+						label: username,
+				  }))
 				: [],
 		[unitMonitors],
 	);
@@ -49,26 +84,22 @@ function UnitEdit({
 		['public', t('Public')],
 		['private', t('Private')],
 	];
-	const unitDepartments = useMemo(
+
+	const currUnitDepartments = useMemo(
 		() =>
-			availableDepartments && availableDepartments.departments && unitId
-				? availableDepartments.departments
-						.map((department) => {
-							let result;
-							if (department.parentId === unitId) {
-								result = department._id;
-							}
-							return result;
-						})
-						.filter((department) => !!department)
+			unitDepartments && unitDepartments.departments && unitId
+				? unitDepartments.departments.map(({ _id, name }) => ({
+						value: _id,
+						label: name,
+				  }))
 				: [],
-		[availableDepartments, unitId],
+		[unitDepartments, unitId],
 	);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: unit.name,
 		visibility: unit.visibility,
-		departments: unitDepartments,
+		departments: currUnitDepartments,
 		monitors: currUnitMonitors,
 	});
 
@@ -103,8 +134,8 @@ function UnitEdit({
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleReset = useMutableCallback(() => {
-		reload();
+	const handleReturn = useMutableCallback(() => {
+		unitsRoute.push({});
 	});
 
 	const canSave = useMemo(
@@ -114,11 +145,11 @@ function UnitEdit({
 
 	const handleSave = useMutableCallback(async () => {
 		const unitData = { name, visibility };
-		const departmentsData = departments.map((department) => ({ departmentId: department }));
-		const monitorsData = monitors.map((monitor) => {
-			const monitorInfo = monOptions.find((el) => el[0] === monitor);
-			return { monitorId: monitorInfo[0], username: monitorInfo[1] };
-		});
+		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
+		const monitorsData = monitors.map((monitor) => ({
+			monitorId: monitor.value,
+			username: monitor.label,
+		}));
 
 		if (!canSave) {
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
@@ -135,69 +166,13 @@ function UnitEdit({
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
-					<TextInput
-						placeholder={t('Name')}
-						flexGrow={1}
-						value={name}
-						onChange={handleName}
-						error={hasUnsavedChanges && nameError}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Visibility')}*</Field.Label>
-				<Field.Row>
-					<Select
-						options={visibilityOpts}
-						value={visibility}
-						error={hasUnsavedChanges && visibilityError}
-						placeholder={t('Select_an_option')}
-						onChange={handleVisibility}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Departments')}*</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						options={depOptions}
-						value={departments}
-						error={hasUnsavedChanges && departmentError}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={handleDepartments}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Monitors')}*</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						options={monOptions}
-						value={monitors}
-						error={hasUnsavedChanges && unitMonitorsError}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={handleMonitors}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						{!isNew && (
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>
-								{t('Reset')}
-							</Button>
-						)}
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={title}>
+					<ButtonGroup>
+						<Button onClick={handleReturn}>
+							<Icon name='back' /> {t('Back')}
+						</Button>
 						<Button
 							primary
 							mie='none'
@@ -207,10 +182,90 @@ function UnitEdit({
 						>
 							{t('Save')}
 						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</VerticalBar.ScrollableContent>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<FieldGroup
+						w='full'
+						alignSelf='center'
+						maxWidth='x600'
+						is='form'
+						autoComplete='off'
+						{...props}
+					>
+						<Field>
+							<Field.Label>{t('Name')}*</Field.Label>
+							<Field.Row>
+								<TextInput
+									placeholder={t('Name')}
+									flexGrow={1}
+									value={name}
+									onChange={handleName}
+									error={hasUnsavedChanges && nameError}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Visibility')}*</Field.Label>
+							<Field.Row>
+								<Select
+									options={visibilityOpts}
+									value={visibility}
+									error={hasUnsavedChanges && visibilityError}
+									placeholder={t('Select_an_option')}
+									onChange={handleVisibility}
+									flexGrow={1}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Departments')}*</Field.Label>
+							<Field.Row>
+								<PaginatedMultiSelectFiltered
+									withTitle
+									filter={departmentsFilter}
+									setFilter={setDepartmentsFilter}
+									options={departmentsSortedByName}
+									value={departments}
+									error={hasUnsavedChanges && departmentError}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleDepartments}
+									flexGrow={1}
+									endReached={
+										departmentsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+									}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Monitors')}*</Field.Label>
+							<Field.Row>
+								<PaginatedMultiSelectFiltered
+									withTitle
+									filter={monitorsFilter}
+									setFilter={setMonitorsFilter}
+									options={monitorsItems}
+									value={monitors}
+									error={hasUnsavedChanges && unitMonitorsError}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleMonitors}
+									flexGrow={1}
+									endReached={
+										monitorsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreMonitors(start, Math.min(50, monitorsTotal))
+									}
+								/>
+							</Field.Row>
+						</Field>
+					</FieldGroup>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		</Page>
 	);
 }
 

@@ -57,12 +57,13 @@ jobs:
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
-      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -127,8 +128,6 @@ jobs:
 
     - name: Build Storybook to sanity check components
       run: npm run build-storybook ; rm -rf ./storybook-static
-      env:
-        NODE_OPTIONS: --max_old_space_size=8192
 
 
     # To reduce memory need during actual build, build the packages solely first
@@ -149,7 +148,6 @@ jobs:
     - name: Try building micro services
       run: |
         cd ./ee/server/services
-        npm i
         npm run build
         rm -rf dist/
 
@@ -194,13 +192,13 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0"]
+        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
 
     steps:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --noprealloc --smallfiles --replSet=rs0
+        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
 
     - name: Restore build for tests
       uses: actions/download-artifact@v2
@@ -238,12 +236,13 @@ jobs:
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache node modules
-      if: steps.cache-cypress.outputs.cache-hit == 'true'
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
       if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
@@ -304,8 +303,10 @@ jobs:
       id: cache-nodemodules
       uses: actions/cache@v2
       with:
-        path: node_modules
-        key: ${{ runner.OS }}-node_modules-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+        path: |
+          ./node_modules
+          ./ee/server/services/node_modules
+        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2

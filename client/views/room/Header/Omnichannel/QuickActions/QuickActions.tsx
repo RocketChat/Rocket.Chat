@@ -13,8 +13,9 @@ import React, {
 } from 'react';
 import toastr from 'toastr';
 
+import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { handleError } from '../../../../../../app/utils/client';
-import { IRoom } from '../../../../../../definition/IRoom';
+import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import Header from '../../../../../components/Header';
 import CloseChatModal from '../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -34,8 +35,8 @@ import { QuickActionsActionConfig, QuickActionsEnum } from '../../../lib/QuickAc
 import { QuickActionsContext } from '../../../lib/QuickActions/QuickActionsContext';
 
 type QuickActionsProps = {
-	room: IRoom;
-	className: ComponentProps<typeof Box>['className'];
+	room: IOmnichannelRoom;
+	className?: ComponentProps<typeof Box>['className'];
 };
 
 const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
@@ -48,7 +49,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	);
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 	const [email, setEmail] = useState('');
-	const visitorRoomId = room.v?._id;
+	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
 
@@ -68,7 +69,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 
 	useEffect(() => {
 		getVisitorEmail();
-	}, [room, getVisitorEmail]);
+	}, [visitorRoomId, getVisitorEmail]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
@@ -92,8 +93,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			try {
 				await requestTranscript(rid, email, subject);
 				closeModal();
-				Session.set('openedRoom', null);
-				FlowRouter.go('/home');
+				RoomManager.close(`l${rid}`);
 				toastr.success(t('Livechat_transcript_has_been_requested'));
 			} catch (error) {
 				handleError(error);
@@ -137,12 +137,14 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 			const transferData: {
 				roomId: string;
+				clientAction: boolean;
 				comment?: string;
 				departmentId?: string;
 				userId?: string;
 			} = {
 				roomId: rid,
 				comment,
+				clientAction: true,
 			};
 
 			if (departmentId) {
@@ -153,10 +155,15 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 			}
 
 			try {
-				await forwardChat(transferData);
-				closeModal();
+				const result = await forwardChat(transferData);
+				if (!result) {
+					throw new Error(
+						departmentId ? t('error-no-agents-online-in-department') : t('error-forwarding-chat'),
+					);
+				}
 				toastr.success(t('Transferred'));
 				FlowRouter.go('/');
+				closeModal();
 			} catch (error) {
 				handleError(error);
 			}
@@ -215,9 +222,9 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 				break;
 			case QuickActionsEnum.CloseChat:
 				setModal(
-					room?.departmentId ? (
+					room.departmentId ? (
 						<CloseChatModalData
-							departmentId={room?.departmentId}
+							departmentId={room.departmentId}
 							onConfirm={handleClose}
 							onCancel={closeModal}
 						/>
@@ -293,7 +300,6 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 					color,
 					'title': t(title as any),
 					className,
-					'tabId': id,
 					index,
 					'primary': false,
 					'data-quick-actions': index,

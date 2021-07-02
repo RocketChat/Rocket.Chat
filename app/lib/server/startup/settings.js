@@ -118,6 +118,12 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_AllowInvisibleStatusOption', true, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+	});
+
 	this.section('Registration', function() {
 		this.add('Accounts_Send_Email_When_Activating', true, {
 			type: 'boolean',
@@ -221,6 +227,9 @@ settings.addGroup('Accounts', function() {
 				_id: 'Accounts_Registration_AuthenticationServices_Enabled',
 				value: true,
 			},
+		});
+		this.add('Accounts_Registration_Users_Default_Roles', 'user', {
+			type: 'string',
 		});
 		this.add('Accounts_PasswordReset', true, {
 			type: 'boolean',
@@ -349,10 +358,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Hide_flextab',
 		});
-		this.add('Accounts_Default_User_Preferences_hideAvatars', false, {
+		this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars',
+			i18nLabel: 'Display_avatars',
 		});
 		this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 			type: 'boolean',
@@ -378,10 +387,10 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'Sidebar_list_mode',
 		});
-		this.add('Accounts_Default_User_Preferences_sidebarHideAvatar', false, {
+		this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Hide_Avatars_Sidebar',
+			i18nLabel: 'Display_Avatars_Sidebar',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
@@ -501,15 +510,24 @@ settings.addGroup('Accounts', function() {
 			public: true,
 			i18nLabel: 'New_Message_Notification',
 		});
+
 		this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Mute_Focused_Conversations',
 		});
+
 		this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
+		this.add('Accounts_Default_User_Preferences_enableMessageParserEarlyAdoption', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Enable_message_parser_early_adoption',
+			alert: 'Enable_message_parser_early_adoption_alert',
 		});
 	});
 
@@ -832,6 +850,11 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+
+	this.add('Enable_CSP', true, {
+		type: 'boolean',
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
@@ -941,6 +964,41 @@ settings.addGroup('General', function() {
 		public: true,
 		multiline: true,
 	});
+	this.add('Default_Referrer_Policy', 'same-origin', {
+		type: 'select',
+		values: [
+			{
+				key: 'no-referrer',
+				i18nLabel: 'No_Referrer',
+			}, {
+				key: 'no-referrer-when-downgrade',
+				i18nLabel: 'No_Referrer_When_Downgrade',
+			}, {
+				key: 'origin',
+				i18nLabel: 'Origin',
+			}, {
+				key: 'origin-when-cross-origin',
+				i18nLabel: 'Origin_When_Cross_Origin',
+			}, {
+				key: 'same-origin',
+				i18nLabel: 'Same_Origin',
+			}, {
+				key: 'strict-origin',
+				i18nLabel: 'Strict_Origin',
+			}, {
+				key: 'strict-origin-when-cross-origin',
+				i18nLabel: 'Strict_Origin_When_Cross_Origin',
+			}, {
+				key: 'unsafe-url',
+				i18nLabel: 'Unsafe_Url',
+			},
+		],
+		public: true,
+	});
+	this.add('ECDH_Enabled', false, {
+		type: 'boolean',
+		alert: 'This_feature_is_currently_in_alpha',
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
@@ -1021,6 +1079,11 @@ settings.addGroup('Message', function() {
 			type: 'boolean',
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
+		});
+		this.add('Message_Attachments_Strip_Exif', false, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Strip_ExifDescription',
 		});
 	});
 	this.section('Message_Audio', function() {
@@ -1291,47 +1354,47 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 	});

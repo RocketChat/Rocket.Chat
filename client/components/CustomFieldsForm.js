@@ -1,11 +1,11 @@
 import { TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { capitalize } from '@rocket.chat/string-helpers';
 import React, { useMemo, useEffect, useState } from 'react';
 
 import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../hooks/useComponentDidUpdate';
 import { useForm } from '../hooks/useForm';
-import { capitalize } from '../lib/capitalize';
 
 const CustomTextInput = ({
 	label,
@@ -82,9 +82,10 @@ const CustomSelect = ({
 	const t = useTranslation();
 	const [selectError, setSelectError] = useState('');
 
-	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [
-		options,
-	]);
+	const mappedOptions = useMemo(
+		() => Object.values(options).map((value) => [value, value]),
+		[options],
+	);
 	const verify = useMemo(
 		() => (!state.length && required ? t('The_field_is_required', label || name) : ''),
 		[name, label, required, state.length, t],
