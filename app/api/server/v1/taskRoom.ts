@@ -11,6 +11,8 @@ import { Rooms } from '../../../models';
 import moment from 'moment';
 
 import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks/server';
+import { promises } from '../../../promises/server';
 
 import toastr from 'toastr';
 
@@ -151,6 +153,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		if (!this.userId || s.trim(task.title) === '') {
 			return false;
 		}
+
 		const taskAlreadyExists = task._id && Tasks.findOne({ _id: task._id });
 		if (taskAlreadyExists) {
 			return toastr.error('Task_Already_Sent');
@@ -162,6 +165,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			_id: this.userId,
 			username: user?.username,
 		};
+
 		if (settings.get('UI_Use_Real_Name')) {
 			task.u.name = user.name;
 		}
@@ -171,9 +175,11 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		}
 		Tasks.insert(task);
 		// task = callbacks.run('beforeSaveMessage', task);
-		// promises.run('onClientMessageReceived', message).then(function(task) {
-		// 	Tasks.insert(task);
-		// 	return callbacks.run('afterSaveMessage', message);
+		// Tasks.insert(task);
+		// promises.run('onClientMessageReceived', task).then(function(task: any) {
+		// 	console.log('4', task);
+		// 	console.log('5');
+		// 	return callbacks.run('afterSaveMessage', task);
 		// });
 		return API.v1.success({ task });
 	},

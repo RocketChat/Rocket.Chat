@@ -13,8 +13,6 @@ export default function TaskRoom({ rid, tasks }) {
 		setTaskTitle(e.target.value);
 	};
 
-	const loadHistory = () => {};
-
 	const handleSave = useMutableCallback(async (e) => {
 		e.preventDefault();
 		const task = {};
@@ -28,19 +26,29 @@ export default function TaskRoom({ rid, tasks }) {
 	return (
 		<>
 			<h1 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '3rem' }}>Tasks List</h1>
-			{tasks !== undefined &&
-				tasks.length &&
-				tasks.map((task, index) => (
-					<Task title={task.title} username={task.u.username} ts={task.ts} key={index} />
-				))}
+			<div style={{ overflowY: 'scroll' }}>
+				{tasks !== undefined &&
+					tasks.length &&
+					tasks.map((task, index) => (
+						<Task title={task.title} username={task.u.username} ts={task.ts} key={index} />
+					))}
+			</div>
 			<form>
 				<textarea
 					placeholder='Create a new task'
 					value={taskTitle}
-					style={{ width: '100%' }}
+					style={{
+						width: '100%',
+						position: 'absolute',
+						bottom: '0',
+						zIndex: '9999',
+						backgroundColor: 'white',
+					}}
 					onChange={(e) => handleTask(e)}
 				></textarea>
-				<button onClick={(e) => handleSave(e)}>Submit</button>
+				<button type='submit' onClick={(e) => handleSave(e)}>
+					Submit
+				</button>
 			</form>
 		</>
 	);

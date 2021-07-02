@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import TaskRoom from './TaskRoom';
 
-export default function WithData({ rid, _id, ...props }) {
-	console.log(props);
+export default function WithData({ rid }) {
 	const [tasks, setTasks] = useState([]);
 	const getHistory = useEndpoint('GET', `taskRoom.taskHistory?rid=${rid}`);
 
@@ -13,8 +12,8 @@ export default function WithData({ rid, _id, ...props }) {
 			const tasks = await getHistory();
 			setTasks(tasks);
 		};
-		return () => fetchData();
-	}, [tasks._id, _id, getHistory]);
-	console.log(tasks);
+		fetchData();
+	}, [tasks._id, rid, getHistory]);
+
 	return <TaskRoom rid={rid} tasks={tasks} />;
 }
