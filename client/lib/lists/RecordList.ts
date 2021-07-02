@@ -13,10 +13,8 @@ export class RecordList<T extends IRocketChatRecord> extends Emitter {
 
 	#index = new Map<T['_id'], T>();
 
-	#phase:
-		| AsyncStatePhase.LOADING
-		| AsyncStatePhase.UPDATING
-		| AsyncStatePhase.RESOLVED = AsyncStatePhase.LOADING;
+	#phase: AsyncStatePhase.LOADING | AsyncStatePhase.UPDATING | AsyncStatePhase.RESOLVED =
+		AsyncStatePhase.LOADING;
 
 	#items: T[] | undefined = undefined;
 
