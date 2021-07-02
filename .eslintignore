@@ -14,7 +14,7 @@ public/livechat/
 !.scripts
 public/pdf.worker.min.js
 public/workers/**/*
-imports/client/
+imports/client/**/*
 !/.storybook/
 ee/server/services/dist/**
 !/.mocharc.js

@@ -175,7 +175,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+						expect(res.body).to.have.property('error', `${ name } is blocked and can't be used! [error-blocked-username]`);
 					})
 					.end(done);
 			});
