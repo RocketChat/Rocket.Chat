@@ -476,7 +476,7 @@ export class ChatMessages {
 			done();
 
 			imperativeModal.close();
-			toastr.success(t('Deleted'));
+			toastr.success(t('Your_entry_has_been_deleted'));
 		};
 
 		const onCloseModal = () => {
