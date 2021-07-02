@@ -50,7 +50,7 @@ function addUserToRole(roleName, username) {
 	});
 }
 
-describe.only('[Roles]', function() {
+describe('[Roles]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
