@@ -247,15 +247,21 @@ OTR.Room = class {
 				break;
 
 			case 'deny':
-				if (this.establishing.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
-						html: true,
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+					if (this.establishing.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_denied_the_OTR_session', { username }),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 
 			case 'end':
