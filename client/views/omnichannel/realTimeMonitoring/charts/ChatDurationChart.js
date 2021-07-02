@@ -17,7 +17,7 @@ const init = (canvas, context, t) =>
 		context,
 		[t('Avg_chat_duration'), t('Longest_chat_duration')],
 		labels,
-		[initialData, initialData],
+		[initialData, initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true },
 	);
 
@@ -34,10 +34,11 @@ const ChatDurationChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/timings',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.chatDurationChart = reload;
 

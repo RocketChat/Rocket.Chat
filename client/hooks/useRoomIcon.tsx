@@ -27,10 +27,10 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		case 'l':
 			return {
 				name: 'headset',
-				color: colors[((room as unknown) as IOmnichannelRoom)?.v.status || 'offline'],
+				color: colors[(room as unknown as IOmnichannelRoom)?.v.status || 'offline'],
 			};
 		case 'd':
-			const direct = (room as unknown) as IDirectMessageRoom;
+			const direct = room as unknown as IDirectMessageRoom;
 			if (direct.uids && direct.uids.length > 2) {
 				return { name: 'balloon' };
 			}
