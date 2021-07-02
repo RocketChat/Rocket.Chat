@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Roles } from '../../../models';
+import { Roles, Users } from '../../../models';
 import { API } from '../api';
 import { getUsersInRole, hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
@@ -64,7 +64,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
-				type: 'changed',
+				type: 'created',
 				_id: roleId,
 			});
 		}
@@ -92,24 +92,6 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 		return API.v1.success({
 			role: Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: API.v1.defaultFieldsToExclude }),
 		});
-	},
-});
-
-API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
-	post() {
-		check(this.bodyParams, {
-			roleName: String,
-			username: String,
-			roomId: Match.Maybe(String),
-		});
-
-		const user = this.getUserFromParams();
-
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('authorization:removeUserFromRole', this.bodyParams.roleName, user.username, this.bodyParams.roomId);
-		});
-
-		return API.v1.success();
 	},
 });
 
@@ -174,7 +156,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 
 		if (roleData.name) {
 			const otherRole = Roles.findOneByIdOrName(roleData.name);
-			if (otherRole && otherRole._id !== role.roleId) {
+			if (otherRole && otherRole._id !== role._id) {
 				throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 			}
 		}
@@ -229,5 +211,64 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 		Roles.remove(role._id);
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			roleId: String,
+			username: String,
+		});
+
+		const data = {
+			roleId: this.bodyParams.roleId,
+			username: this.bodyParams.username,
+		};
+
+		if (!hasPermission(this.userId, 'access-permissions')) {
+			throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
+		}
+
+		const user = Users.findOneByUsername(data.username);
+
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
+		}
+
+		const role = Roles.findOneByIdOrName(data.roleId);
+
+		if (!role) {
+			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+		}
+
+		if (user.roles.indexOf(role._id) === -1) {
+			throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
+		}
+
+		if (role._id === 'admin') {
+			const adminCount = Roles.findUsersInRole('admin', role.scope).count();
+			if (adminCount === 1) {
+				throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
+			}
+		}
+
+		Roles.removeUserRoles(user._id, role._id, role.scope);
+
+		if (settings.get('UI_DisplayRoles')) {
+			api.broadcast('user.roleUpdate', {
+				type: 'removed',
+				_id: role._id,
+				u: {
+					_id: user._id,
+					username: user.username,
+				},
+				scope: role.scope,
+			});
+		}
+
+		return API.v1.success({
+			role,
+		});
 	},
 });
