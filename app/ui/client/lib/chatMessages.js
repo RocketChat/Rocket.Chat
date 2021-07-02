@@ -475,18 +475,8 @@ export class ChatMessages {
 			this.$input.focus();
 			done();
 
-			imperativeModal.open({
-				component: GenericModal,
-				props: {
-					title: t('Deleted'),
-					children: t('Your_entry_has_been_deleted'),
-					variant: 'success',
-					onConfirm: imperativeModal.close,
-					onClose: imperativeModal.close,
-				},
-			});
-
-			setTimeout(imperativeModal.close, 1000);
+			imperativeModal.close();
+			toastr.success(t('Your_entry_has_been_deleted'));
 		};
 
 		const onCloseModal = () => {
