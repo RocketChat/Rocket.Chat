@@ -33,9 +33,12 @@ export function withData(Component) {
 			options,
 			userId,
 		);
-		const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList(
-			discussionsList,
-		);
+		const {
+			phase,
+			error,
+			items: discussions,
+			itemCount: totalItemCount,
+		} = useRecordList(discussionsList);
 
 		const handleTextChange = useCallback((e) => {
 			setText(e.currentTarget.value);

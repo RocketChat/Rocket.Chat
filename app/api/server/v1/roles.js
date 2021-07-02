@@ -150,7 +150,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (role.protected) {
+		if (role.protected && ((roleData.name && roleData.name !== role.name) || (roleData.scope && roleData.scope !== role.scope))) {
 			throw new Meteor.Error('error-role-protected', 'Role is protected');
 		}
 
@@ -179,5 +179,37 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 		return API.v1.success({
 			role: Roles.findOneByIdOrName(roleData.roleId, { fields: API.v1.defaultFieldsToExclude }),
 		});
+	},
+});
+
+API.v1.addRoute('roles.delete', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, {
+			roleId: String,
+		});
+
+		if (!hasPermission(this.userId, 'access-permissions')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
+		}
+
+		const role = Roles.findOneByIdOrName(this.bodyParams.roleId);
+
+		if (!role) {
+			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+		}
+
+		if (role.protected) {
+			throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
+		}
+
+		const existingUsers = Roles.findUsersInRole(role._id, role.scope);
+
+		if (existingUsers && existingUsers.count() > 0) {
+			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
+		}
+
+		Roles.remove(role._id);
+
+		return API.v1.success();
 	},
 });

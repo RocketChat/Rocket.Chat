@@ -31,12 +31,10 @@ const RoomMembersWithData = ({ rid }) => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { membersList, loadMoreItems, reload } = useMembersList(
-		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }), [
-			rid,
-			type,
-			debouncedText,
-			room.t,
-		]),
+		useMemo(
+			() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }),
+			[rid, type, debouncedText, room.t],
+		),
 	);
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);

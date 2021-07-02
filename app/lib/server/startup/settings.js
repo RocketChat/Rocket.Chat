@@ -850,6 +850,11 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		secret: true,
 	});
+
+	this.add('Enable_CSP', true, {
+		type: 'boolean',
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
@@ -989,6 +994,10 @@ settings.addGroup('General', function() {
 			},
 		],
 		public: true,
+	});
+	this.add('ECDH_Enabled', false, {
+		type: 'boolean',
+		alert: 'This_feature_is_currently_in_alpha',
 	});
 	this.section('UTF8', function() {
 		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
@@ -1345,47 +1354,47 @@ settings.addGroup('Push', function() {
 	this.section('Certificates_and_Keys', function() {
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_passphrase', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_key', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_apn_dev_cert', '', {
 			type: 'string',
 			multiline: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
-			enableQuery: pushEnabledWithoutGateway,
+			enableQuery: [],
 			secret: true,
 		});
 	});
