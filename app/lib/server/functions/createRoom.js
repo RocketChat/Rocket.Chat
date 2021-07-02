@@ -36,8 +36,14 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	if (extraData.ephemeralTime) {
 		console.log(extraData.ephemeralTime);
 		switch (extraData.ephemeralTime) {
-			case '1hr':
+			case '5mins':
 				extraData.ephemeralTime = moment().add(5, 'minutes').toDate();
+				break;
+			case '15mins':
+				extraData.ephemeralTime = moment().add(15, 'minutes').toDate();
+				break;
+			case '1hr':
+				extraData.ephemeralTime = moment().add(1, 'hour').toDate();
 				break;
 			case '6hr':
 				extraData.ephemeralTime = moment().add(6, 'hour').toDate();

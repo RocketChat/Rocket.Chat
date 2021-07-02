@@ -62,6 +62,8 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	} = handlers;
 
 	const defaultOption = [
+		['5mins', t('5_mins')],
+		['15mins', t('15_mins')],
 		['1hr', t('1_hour')],
 		['6hr', t('6_hours')],
 		['12hr', t('12_hours')],

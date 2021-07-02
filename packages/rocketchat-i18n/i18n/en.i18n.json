@@ -1,6 +1,8 @@
 {
   "403": "Forbidden",
   "500": "Internal Server Error",
+  "5_mins":"5 minutes",
+  "15_mins":"15 minutes",
   "1_hour":"One hour",
   "6_hours":"Six hours",
   "12_hours":"Twelve hours",
@@ -4175,6 +4177,7 @@
   "Update_to_version": "Update to __version__",
   "Update_your_RocketChat": "Update your Rocket.Chat",
   "Updated_at": "Updated at",
+  "update_ephemeral_time": "Room ephemeral time changed by: <em>__user_by__</em>",
   "Upload": "Upload",
   "Upload_app": "Upload App",
   "Upload_file_description": "File description",

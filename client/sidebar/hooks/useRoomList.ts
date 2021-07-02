@@ -65,6 +65,8 @@ export const useRoomList = (): Array<ISubscription> => {
 				if (
 					room.t === 'e' &&
 					room.ephemeralTime &&
+					// Need to be removed after scheduler is developed.
+					room.ephemeralTime !== '15mins' &&
 					room.ephemeralTime.getTime() >= date.getTime()
 				) {
 					return ephemeral.add(room);
