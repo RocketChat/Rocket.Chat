@@ -475,6 +475,7 @@ export class ChatMessages {
 			this.$input.focus();
 			done();
 
+			imperativeModal.close();
 			toastr.success(t('Deleted'));
 		};
 
