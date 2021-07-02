@@ -5,6 +5,9 @@ import { Promise } from 'meteor/promise';
 import { Match, check, Match, check } from 'meteor/check';
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
+import { Rooms } from '../../../models';
+
 import moment from 'moment';
 
 import { settings } from '../../../settings';
@@ -57,7 +60,7 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 		// permission
 
-		const messageDetails = Promise.await(Messages.findOne({ _id: taskId }));
+		const messageDetails = Promise.await(Tasks.findOne({ _id: taskId }));
 
 		return API.v1.success({ message: messageDetails });
 	},
@@ -177,10 +180,28 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 });
 
 
-API.v1.addRoute('taskRoom.loadHistory', { authRequired: true }, {
+API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
+		// const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+		// const hideSettings = {};
+		// const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
+		// const hideMessagesOfType = new Set(settingValues.reduce((array: any, value: string) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
+		const query = {
+			rid,
+			_hidden: { $ne: true },
+		};
 
-		return API.v1.success({ task });
+		// if (hideMessagesOfType.size) {
+		//	query.t = { $nin: Array.from(hideMessagesOfType.values()) };
+		// }
+
+		const options = {
+			sort: {
+				ts: 1,
+			},
+		};
+		const tasks = Tasks.find(query, options);
+		return API.v1.success(tasks);
 	},
 });

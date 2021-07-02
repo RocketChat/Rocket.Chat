@@ -1,5 +1,4 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { map } from 'jquery';
 import React, { useState } from 'react';
 
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';

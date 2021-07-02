@@ -7,16 +7,16 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction'
 import { useForm } from '../../../hooks/useForm';
 import TaskDetailsModal from './taskDetailsModal';
 
-const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props }) => {
+const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props }) => {
 	const t = useTranslation();
 
 	const updateTask = useEndpointActionExperimental('POST', 'taskRoom.taskUpdate');
 
 	const initialValues = {
-		taskTitle: message.msg ? message.msg : '',
-		taskDescription: message.taskDescription ? message.taskDescription : '',
-		taskAssignee: message.taskAssignee ? message.taskAssignee : '',
-		taskStatut: message.taskStatut ? message.taskStatut : '',
+		taskTitle: task.msg ? task.msg : '',
+		taskDescription: task.taskDescription ? task.taskDescription : '',
+		taskAssignee: task.taskAssignee ? task.taskAssignee : '',
+		taskStatut: task.taskStatut ? task.taskStatut : '',
 	};
 
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
@@ -35,7 +35,7 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 
 	const onUpdate = useCallback(async () => {
 		const params = {
-			id: message._id,
+			id: task._id,
 			taskTitle,
 			taskDescription,
 			taskAssignee,
@@ -50,14 +50,14 @@ const TaskDetailsModalWithInfo = ({ taskId, message, onCreate, onClose, ...props
 		}
 
 		onClose();
-	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, message._id, t]);
+	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, task._id, t]);
 
 	return (
 		<TaskDetailsModal
-			taskTitle={message.msg}
-			taskDescription={message.taskDescription}
-			taskAssignee={message.taskAssignee}
-			taskStatut={message.taskStatut}
+			taskTitle={task.msg}
+			taskDescription={task.taskDescription}
+			taskAssignee={task.taskAssignee}
+			taskStatut={task.taskStatut}
 			values={values}
 			handlers={handlers}
 			hasUnsavedChanges={hasUnsavedChanges}
