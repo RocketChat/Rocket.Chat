@@ -201,7 +201,8 @@ API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 				ts: 1,
 			},
 		};
-		const tasks = Tasks.find(query, options);
+
+		const tasks = Promise.await(Tasks.find(query, options).fetch());
 		return API.v1.success(tasks);
 	},
 });

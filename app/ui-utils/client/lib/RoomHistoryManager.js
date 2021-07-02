@@ -191,7 +191,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
-
+		console.log(result, this.histories);
 		this.unqueue();
 
 		let previousHeight;

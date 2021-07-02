@@ -94,6 +94,7 @@ export const RoomManager = new function() {
 
 					if (room != null) {
 						record.rid = room._id;
+						console.log('here3');
 						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 						if (record.streamActive !== true) {
 							record.streamActive = true;
