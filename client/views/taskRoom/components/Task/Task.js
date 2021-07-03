@@ -1,4 +1,5 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { memo } from 'react';
 
 import Metrics from '../../../../components/Message/Metrics';
@@ -35,9 +36,15 @@ export default memo(function Task({
 	className = [],
 	...props
 }) {
-	console.log(title);
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
+	const thred = (e) => {
+		e.stopPropagation();
+		FlowRouter.setParams({
+			tab: 'thread',
+			context: _id,
+		});
+	};
 
 	return (
 		<MessageTemplate.Message
@@ -50,6 +57,7 @@ export default memo(function Task({
 			<MessageTemplate.Container mb='neg-x2'>
 				<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 			</MessageTemplate.Container>
+			<button onClick={(e) => thred(e)}>Test</button>
 			<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 				<MessageTemplate.Header>
 					<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>

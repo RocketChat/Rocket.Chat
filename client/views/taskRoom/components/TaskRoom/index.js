@@ -1,3 +1,4 @@
+import { Tracker } from 'meteor/tracker';
 import React, { useEffect, useState } from 'react';
 
 import { useEndpoint } from '../../../../contexts/ServerContext';
@@ -8,11 +9,24 @@ export default function WithData({ rid }) {
 	const getHistory = useEndpoint('GET', `taskRoom.taskHistory?rid=${rid}`);
 
 	useEffect(() => {
-		const fetchData = async () => {
+		const computation = Tracker.autorun(async (computation) => {
 			const tasks = await getHistory();
+
+			if (!tasks || computation.stopped) {
+				return;
+			}
+
 			setTasks(tasks);
+		});
+
+		return () => {
+			computation.stop();
 		};
-		fetchData();
+		// const fetchData = async () => {
+		// 	const tasks = await getHistory();
+		// 	setTasks(tasks);
+		// };
+		// fetchData();
 	}, [tasks._id, rid, getHistory]);
 
 	return <TaskRoom rid={rid} tasks={tasks} />;

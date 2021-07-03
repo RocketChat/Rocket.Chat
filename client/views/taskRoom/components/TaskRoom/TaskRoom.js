@@ -29,8 +29,14 @@ export default function TaskRoom({ rid, tasks }) {
 			<div style={{ overflowY: 'scroll' }}>
 				{tasks !== undefined &&
 					tasks.length &&
-					tasks.map((task, index) => (
-						<Task title={task.title} username={task.u.username} ts={task.ts} key={index} />
+					tasks.map((task) => (
+						<Task
+							title={task.title}
+							username={task.u.username}
+							_id={task._id}
+							ts={task.ts}
+							key={task._id}
+						/>
 					))}
 			</div>
 			<form>
