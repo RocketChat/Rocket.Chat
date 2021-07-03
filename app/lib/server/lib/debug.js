@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { Logger } from '../../../logger';
+import { asyncMethodCallContextStore } from '../../../models/server/asyncMethodCallContext';
 
 const logger = new Logger('Meteor', {
 	methods: {
@@ -73,6 +74,9 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
+
+		const store = new Set([{ type: 'ddp', method: name, userId: this.userId }]);
+		asyncMethodCallContextStore.enterWith(store);
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;

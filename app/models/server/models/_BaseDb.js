@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
+import { asyncMethodCallContextStore } from '../asyncMethodCallContext';
 
 const baseName = 'rocketchat_';
 
@@ -46,6 +47,10 @@ const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const DurationStart = new Map();
 client.on('commandStarted', (event) => {
 	DurationStart.set(event.requestId, event);
+	if (asyncMethodCallContextStore.getStore()) {
+		console.log(1, asyncMethodCallContextStore.getStore());
+		console.log(event);
+	}
 });
 client.on('commandSucceeded', (event) => {
 	if (!DurationStart.has(event.requestId)) {

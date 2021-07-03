@@ -18,6 +18,8 @@ import {
 	WriteOpResult,
 } from 'mongodb';
 
+import { traceInstanceMethods } from '../asyncMethodCallContext';
+
 // [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
 type EnhancedOmit<T, K> = string | number extends keyof T
 	? T // T has indexed type e.g. { _id: string; [k: string]: any; } or it is "any"
@@ -56,6 +58,8 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		public readonly trash?: Collection<T>,
 	) {
 		this.name = this.col.collectionName.replace(baseName, '');
+
+		return traceInstanceMethods(this, ['_ensureDefaultFields']);
 	}
 
 	_ensureDefaultFields<T>(options: FindOneOptions<T>): FindOneOptions<T> {

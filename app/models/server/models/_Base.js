@@ -4,6 +4,7 @@ import objectPath from 'object-path';
 import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
+import { traceInstanceMethods } from '../asyncMethodCallContext';
 
 export class Base {
 	constructor(nameOrModel, options) {
@@ -17,6 +18,8 @@ export class Base {
 		this.emit = this._db.emit.bind(this._db);
 
 		this.db = this;
+
+		return traceInstanceMethods(this);
 	}
 
 	get origin() {

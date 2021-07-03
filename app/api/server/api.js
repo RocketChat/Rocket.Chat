@@ -13,6 +13,7 @@ import { metrics } from '../../metrics';
 import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
+import { asyncMethodCallContextStore } from '../../models/server/asyncMethodCallContext';
 
 
 const logger = new Logger('API', {});
@@ -391,6 +392,8 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
+						const store = new Set([{ type: 'rest', route: this.request.route, method: this.request.method, userId: this.userId }]);
+						asyncMethodCallContextStore.enterWith(store);
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
 						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
