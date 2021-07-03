@@ -329,16 +329,6 @@ Meteor.startup(function() {
 		i18nLabel: 'Continuous_sound_notifications_for_new_livechat_room',
 	});
 
-	settings.add('Livechat_videocall_enabled', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Livechat',
-		public: true,
-		i18nLabel: 'Videocall_enabled',
-		i18nDescription: 'Beta_feature_Depends_on_Video_Conference_to_be_enabled',
-		enableQuery: { _id: 'Jitsi_Enabled', value: true },
-	});
-
 	settings.add('Livechat_fileupload_enabled', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
@@ -554,5 +544,19 @@ Meteor.startup(function() {
 		section: 'Sessions',
 		i18nLabel: 'How_long_to_wait_to_consider_visitor_abandonment',
 		i18nDescription: 'Time_in_seconds',
+	});
+
+	settings.add('Livechat_call_provider', 'none', {
+		type: 'select',
+		public: true,
+		group: 'Omnichannel',
+		section: 'Livechat Call',
+		values: [
+			{ key: 'none', i18nLabel: 'None' },
+			{ key: 'Jitsi', i18nLabel: 'Jitsi' },
+			{ key: 'WebRTC', i18nLabel: 'WebRTC' },
+		],
+		alert: 'Selected_call_provider_must_be_enabled_from_admin_settings',
+		i18nLabel: 'Call_provider',
 	});
 });

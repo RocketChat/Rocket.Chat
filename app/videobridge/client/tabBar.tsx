@@ -49,11 +49,12 @@ addAction('video', ({ room }) => {
 
 	const enabledChannel = useSetting('Jitsi_Enable_Channels');
 	const enabledTeams = useSetting('Jitsi_Enable_Teams');
+	const enabledLiveChat = useSetting('Livechat_call_provider') === t('Jitsi');
 
 	const groups = useStableArray([
 		'direct',
 		'group',
-		'live',
+		enabledLiveChat && 'live',
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
 	].filter(Boolean) as ToolboxActionConfig['groups']);
