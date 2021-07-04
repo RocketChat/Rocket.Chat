@@ -363,8 +363,17 @@ Accounts.validateNewUser(function(user) {
 		return true;
 	}
 
-	if (settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false && settings.get('LDAP_Enable') === false && !(user.services && user.services.password)) {
-		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
+	if (settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false) {
+		if (settings.get('LDAP_Enable') === false && !(user.services && user.services.password)) {
+			throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
+		} else if (settings.get(/^Accounts_OAuth_Custom-[a-z0-9_]+$/i).length > 0) {
+			const customOAuthServicesInUse = settings.get(/^Accounts_OAuth_Custom-[a-z0-9_]+$/i)
+				.map(({ key: serviceName }) => serviceName.replace(/^Accounts_OAuth_Custom-/, '').toLowerCase())
+				.filter((serviceName) => user.services && user.services[serviceName]);
+			if (customOAuthServicesInUse.length > 0) {
+				throw new Meteor.Error('registration-disabled-authentication-services', `User registration is disabled for custom OAuth services '${ customOAuthServicesInUse }'`);
+			}
+		}
 	}
 
 	return true;
