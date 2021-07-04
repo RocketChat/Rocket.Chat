@@ -13,6 +13,7 @@ server {
     server_name demo.rocket.chat;
     return 301 https://demo.rocket.chat$request_uri;
 }
+shviudavanvziviznkkvzokvzivi
 
 server {
     listen 443 default_server;
