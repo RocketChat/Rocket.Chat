@@ -2,13 +2,11 @@ import { useMemo } from 'react';
 
 import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
 
 addAction('webRTCVideo', () => {
-	const t = useTranslation();
-	const enabled = useSetting('WebRTC_Enabled') && (useSetting('Livechat_call_provider') === t('WebRTC'));
+	const enabled = useSetting('WebRTC_Enabled') && (useSetting('Omnichannel_call_provider') === 'WebRTC');
 
-	const handleClick = () => { window.open('/', '_blank'); };
+	const handleClick = (): void => { window.open('/', '_blank'); };
 
 	return useMemo(() => (enabled ? {
 		groups: ['live'],
@@ -18,5 +16,5 @@ addAction('webRTCVideo', () => {
 		action: handleClick,
 		full: true,
 		order: 4,
-	} : null), [enabled, t]);
+	} : null), [enabled]);
 });

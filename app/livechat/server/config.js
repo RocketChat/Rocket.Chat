@@ -546,17 +546,17 @@ Meteor.startup(function() {
 		i18nDescription: 'Time_in_seconds',
 	});
 
-	settings.add('Livechat_call_provider', 'none', {
+	settings.add('Omnichannel_call_provider', 'none', {
 		type: 'select',
 		public: true,
 		group: 'Omnichannel',
-		section: 'Livechat Call',
+		section: 'Video_and_Audio_Call',
 		values: [
 			{ key: 'none', i18nLabel: 'None' },
 			{ key: 'Jitsi', i18nLabel: 'Jitsi' },
 			{ key: 'WebRTC', i18nLabel: 'WebRTC' },
 		],
-		alert: 'Selected_call_provider_must_be_enabled_from_admin_settings',
+		i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 		i18nLabel: 'Call_provider',
 	});
 });

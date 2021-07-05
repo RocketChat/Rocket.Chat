@@ -932,6 +932,7 @@ const WebRTC = new class {
 			case 'c':
 				enabled = settings.get('WebRTC_Enable_Channel');
 		}
+		enabled &&= settings.get('WebRTC_Enabled');
 		if (enabled === false) {
 			return;
 		}
