@@ -12,7 +12,11 @@ const TriggersTableContainer = ({ reloadRef }) => {
 
 	const { current, itemsPerPage } = params;
 
-	const { value: data, phase: state, reload } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData(
 		'livechat/triggers',
 		useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]),
 	);
