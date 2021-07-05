@@ -10,7 +10,6 @@ import toastr from 'toastr';
 
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
-import { modal } from '../../ui-utils';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
 import { goToRoomById } from '../../../client/lib/goToRoomById';
