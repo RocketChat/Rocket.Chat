@@ -17,31 +17,15 @@ class OutOfOffice extends Base {
 		return this.findOne({ userId }, options);
 	}
 
-	// update
-	setDataWhenEnabled(
-		docId: string,
-		{
-			roomIds,
-			customMessage,
-			startDate,
-			endDate,
-		}: Pick<IOutOfOffice, 'roomIds' | 'customMessage' | 'startDate' | 'endDate'>,
-	): string {
-		return this.update(
-			{
-				_id: docId,
-			},
-			{
-				$set: {
-					roomIds,
-					customMessage,
-					startDate,
-					endDate,
-					isEnabled: true,
-				},
-			},
-		);
+	findAllFromRoomId(roomId:string):IOutOfOffice[]{
+		return this.find({roomIds:{$in:[roomId]},sentRoomIds:{$nin:[roomId]}});
 	}
+
+	// update
+
+	updateSentRoomIds(docId: IOutOfOffice["_id"], roomId: string) {
+		return this.update({ _id: docId }, { $push: { sentRoomIds: roomId } });
+	  }
 
 	setDisabled(userId: string): number {
 		return this.update({ userId }, { $set: { isEnabled: false } });

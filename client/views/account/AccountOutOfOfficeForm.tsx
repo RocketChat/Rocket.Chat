@@ -46,11 +46,15 @@ function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
 	if (!receivedFormValues) {
 		return { ...defaultFormValues };
 	}
-	const formattedStartDate = new Date(receivedFormValues.startDate) ?? new Date();
+	const formattedStartDate = receivedFormValues.startDate
+		? new Date(receivedFormValues.startDate)
+		: new Date();
 	formattedStartDate.setMinutes(
 		formattedStartDate.getMinutes() - formattedStartDate.getTimezoneOffset(),
 	);
-	const formattedEndDate = new Date(receivedFormValues.endDate) ?? new Date();
+	const formattedEndDate = receivedFormValues.endDate
+		? new Date(receivedFormValues.endDate)
+		: new Date();
 	formattedEndDate.setMinutes(formattedEndDate.getMinutes() - formattedEndDate.getTimezoneOffset());
 
 	return {
@@ -79,13 +83,8 @@ function OutOfOfficeForm({
 
 	console.log('the --', startDate);
 
-	const {
-		handleIsEnabled,
-		handleCustomMessage,
-		handleStartDate,
-		handleEndDate,
-		handleRoomIds,
-	} = handlers;
+	const { handleIsEnabled, handleCustomMessage, handleStartDate, handleEndDate, handleRoomIds } =
+		handlers;
 
 	const toggleOutOfOffice = useEndpointAction(
 		'POST',
@@ -110,9 +109,8 @@ function OutOfOfficeForm({
 		}
 	}, [commit, dispatchToastMessage, toggleOutOfOffice]);
 
-	const {
-		value: { update: subscribedRooms = [] } = { update: [] },
-	}: IEndpointSubscriptionsGet = useEndpointData('subscriptions.get' as any);
+	const { value: { update: subscribedRooms = [] } = { update: [] } }: IEndpointSubscriptionsGet =
+		useEndpointData('subscriptions.get' as any);
 
 	const roomOptions: Array<[string, string]> = useMemo(
 		() => subscribedRooms.filter((s) => s.t !== 'd').map((s) => [s.rid, s.name]),
