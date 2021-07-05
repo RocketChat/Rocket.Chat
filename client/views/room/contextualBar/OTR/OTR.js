@@ -18,7 +18,7 @@ const OTR = ({
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Icon name='key' />
+				<VerticalBar.Icon name='shredder' />
 				<VerticalBar.Text>{t('OTR')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>

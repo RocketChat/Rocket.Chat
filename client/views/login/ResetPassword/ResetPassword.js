@@ -44,9 +44,10 @@ const ResetPassword = () => {
 	const [isLoading, setIsLoading] = useSafely(useState(false));
 	const [error, setError] = useSafely(useState());
 
-	const handleOnChange = useCallback((event) => setNewPassword(event.currentTarget.value), [
-		setNewPassword,
-	]);
+	const handleOnChange = useCallback(
+		(event) => setNewPassword(event.currentTarget.value),
+		[setNewPassword],
+	);
 
 	const isSubmitDisabled = !newPassword.trim() || isLoading;
 

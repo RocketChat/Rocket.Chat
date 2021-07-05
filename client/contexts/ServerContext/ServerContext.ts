@@ -69,7 +69,7 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 
 export const useEndpoint = <
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 >(
 	httpMethod: Method,
 	endpoint: Path,
@@ -95,10 +95,10 @@ export const useEndpoint = <
 
 export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {
 	const { uploadToEndpoint } = useContext(ServerContext);
-	return useCallback((params, formData: any) => uploadToEndpoint(endpoint, params, formData), [
-		endpoint,
-		uploadToEndpoint,
-	]);
+	return useCallback(
+		(params, formData: any) => uploadToEndpoint(endpoint, params, formData),
+		[endpoint, uploadToEndpoint],
+	);
 };
 
 export const useStream = (
