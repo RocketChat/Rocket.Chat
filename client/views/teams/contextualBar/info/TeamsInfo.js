@@ -30,12 +30,8 @@ const TeamsInfo = ({
 }) => {
 	const t = useTranslation();
 
-	const {
-		retentionPolicyEnabled,
-		filesOnlyDefault,
-		excludePinnedDefault,
-		maxAgeDefault,
-	} = retentionPolicy;
+	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } =
+		retentionPolicy;
 
 	const memoizedActions = useMemo(
 		() => ({

@@ -47,67 +47,71 @@ const initForm = (initialValues: Record<string, unknown>): FormState => {
 	};
 };
 
-const valueChanged = (fieldName: string, newValue: unknown): FormAction => (
-	state: FormState,
-): FormState => {
-	let { fields } = state;
-	const field = fields.find(({ name }) => name === fieldName);
+const valueChanged =
+	(fieldName: string, newValue: unknown): FormAction =>
+	(state: FormState): FormState => {
+		let { fields } = state;
+		const field = fields.find(({ name }) => name === fieldName);
 
-	if (!field || field.currentValue === newValue) {
-		return state;
-	}
-
-	const newField = {
-		...field,
-		currentValue: newValue,
-		changed: JSON.stringify(newValue) !== JSON.stringify(field.initialValue),
-	};
-
-	fields = state.fields.map((field) => {
-		if (field.name === fieldName) {
-			return newField;
+		if (!field || field.currentValue === newValue) {
+			return state;
 		}
 
-		return field;
+		const newField = {
+			...field,
+			currentValue: newValue,
+			changed: JSON.stringify(newValue) !== JSON.stringify(field.initialValue),
+		};
+
+		fields = state.fields.map((field) => {
+			if (field.name === fieldName) {
+				return newField;
+			}
+
+			return field;
+		});
+
+		return {
+			...state,
+			fields,
+			values: {
+				...state.values,
+				[newField.name]: newField.currentValue,
+			},
+			hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
+		};
+	};
+
+const formCommitted =
+	(): FormAction =>
+	(state: FormState): FormState => ({
+		...state,
+		fields: state.fields.map((field) => ({
+			...field,
+			initialValue: field.currentValue,
+			changed: false,
+		})),
+		hasUnsavedChanges: false,
 	});
 
-	return {
+const formReset =
+	(): FormAction =>
+	(state: FormState): FormState => ({
 		...state,
-		fields,
-		values: {
-			...state.values,
-			[newField.name]: newField.currentValue,
-		},
-		hasUnsavedChanges: newField.changed || fields.some((field) => field.changed),
-	};
-};
-
-const formCommitted = (): FormAction => (state: FormState): FormState => ({
-	...state,
-	fields: state.fields.map((field) => ({
-		...field,
-		initialValue: field.currentValue,
-		changed: false,
-	})),
-	hasUnsavedChanges: false,
-});
-
-const formReset = (): FormAction => (state: FormState): FormState => ({
-	...state,
-	fields: state.fields.map((field) => ({
-		...field,
-		currentValue: field.initialValue,
-		changed: false,
-	})),
-	values: state.fields.reduce(
-		(values, field) => ({
-			...values,
-			[field.name]: field.initialValue,
-		}),
-		{},
-	),
-	hasUnsavedChanges: false,
-});
+		fields: state.fields.map((field) => ({
+			...field,
+			currentValue: field.initialValue,
+			changed: false,
+		})),
+		values: state.fields.reduce(
+			(values, field) => ({
+				...values,
+				[field.name]: field.initialValue,
+			}),
+			{},
+		),
+		hasUnsavedChanges: false,
+	});
 
 const isChangeEvent = (x: any): x is ChangeEvent =>
 	(typeof x === 'object' || typeof x === 'function') && typeof x?.currentTarget !== 'undefined';
