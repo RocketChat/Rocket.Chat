@@ -59,12 +59,12 @@ export class BusinessHourManager {
 		this.behavior = behavior;
 	}
 
-	async getBusinessHour(id?: string, type?: string): Promise<ILivechatBusinessHour | undefined> {
+	async getBusinessHour(id?: string, type?: string): Promise<ILivechatBusinessHour | null> {
 		const businessHourType = this.getBusinessHourType(type as string || LivechatBusinessHourTypes.DEFAULT);
 		if (!businessHourType) {
-			return;
+			return null;
 		}
-		return businessHourType.getBusinessHour(id as string);
+		return businessHourType.getBusinessHour(id);
 	}
 
 	async saveBusinessHour(businessHourData: ILivechatBusinessHour): Promise<void> {
