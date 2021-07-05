@@ -28,6 +28,7 @@ import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } fr
 import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
+import { ListRoomsOfUserEndpoint } from './endpoints/v1/teams/listRoomsOfUser';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
 import { SendEmailCodeEndpoint } from './endpoints/v1/users/twoFactorAuth/sendEmailCode';
 
@@ -52,6 +53,7 @@ export type ServerEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
 	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
 	'teams.listRooms': ListRoomsEndpoint;
+	'teams.listRoomsOfUser': ListRoomsOfUserEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;

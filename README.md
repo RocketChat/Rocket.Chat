@@ -9,38 +9,18 @@ Every day, tens of millions of users in over 150 countries and in organizations 
  * [Review product documentation](https://docs.rocket.chat/)
  * [Review developer documentation](https://developer.rocket.chat/)
  
+Using our self-managed offerings you can deploy Rocket.Chat on your own server, or you can use SaaS Rocket.Chat. We offer support for both community as well as commercial plans.
+ 
 <img src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" width="919" height="511" />
 
-Table of Contents
-=================
-* [Editions](#editions)
-* [Installation](#installation)
-* [Feature Request](#feature-request)
-* [Community](#community)
-* [Contributions](#contributions)
-* [Credits](#credits)
-* [Mobile Apps](#mobile-apps)
-* [Learn More](#learn-more)
-* [Become a Rocketeer](#become-a-rocketeer)
-* [Get the Latest News](#get-the-latest-news)
 
+## Cloud Hosted Rocket.Chat
 
-## Editions
+https://cloud.rocket.chat/trial
 
-Rocket.Chat offers endless [possibilities](https://rocket.chat/pricing/):
-
-### Self-Managed ###
-Host your own workplace on-premises or in your own cloud.
-
-**Plans:** Community, Pro, Enterprise  
-
-### SAAS ###
-Free trial on our website. 
-
-**Plans:** Bronze, Silver, Gold 
 
 ## Installation
-Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about the supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install/) to install your Rocket.Chat instance.
 
 
@@ -87,6 +67,6 @@ We're hiring developers, support people, and product managers all the time. Plea
 * [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
 * [Email Newsletter](https://rocket.chat/newsletter/)
 
-Any other questions, mail us at [info@rocket.chat](info@rocket.chat). We’d love to meet you!
+Any other questions, reach out to us at [contact@rocket.chat](contact@rocket.chat). We’d happy to help!
 
 

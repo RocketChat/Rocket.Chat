@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useMemo, FC } from 'react';
 
+import { callbacks } from '../../app/callbacks/client';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';
@@ -29,6 +30,20 @@ const loginWithPassword = (user: string | object, password: string): Promise<voi
 		);
 	});
 
+const logout = (): Promise<void> =>
+	new Promise((resolve) => {
+		const user = Meteor.user();
+
+		if (!user) {
+			return resolve();
+		}
+
+		Meteor.logout(() => {
+			callbacks.run('afterLogoutCleanUp', user);
+			Meteor.call('logoutCleanUp', user, resolve);
+		});
+	});
+
 const UserProvider: FC = ({ children }) => {
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
@@ -37,6 +52,7 @@ const UserProvider: FC = ({ children }) => {
 			userId,
 			user,
 			loginWithPassword,
+			logout,
 			queryPreference: createReactiveSubscriptionFactory((key, defaultValue) =>
 				getUserPreference(userId, key, defaultValue),
 			),

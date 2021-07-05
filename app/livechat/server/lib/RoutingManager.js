@@ -45,7 +45,7 @@ export const RoutingManager = {
 
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 

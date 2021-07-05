@@ -13,9 +13,10 @@ Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
 		const { roles } = await APIClient.v1.get('roles.list');
 		// if a role is checked before this collection is populated, it will return undefined
-		for await (const role of roles) {
-			await Roles.upsert({ _id: role._id }, role);
-		}
+		Roles._collection._docs._map = new Map(roles.map((record) => [record._id, record]));
+		Object.values(Roles._collection.queries).forEach((query) => Roles._collection._recomputeResults(query));
+
+		Roles.ready.set(true);
 	});
 
 	registerAdminSidebarItem({

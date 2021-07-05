@@ -1,17 +1,26 @@
-import { Box, Button, ButtonGroup, Icon, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
+import GenericModal from './GenericModal';
 import RawText from './RawText';
 
-const ConfirmOwnerChangeWarningModal = ({
+type ConfirmOwnerChangeWarningModalProps = {
+	onConfirm: () => void;
+	onCancel: () => void;
+	shouldChangeOwner: Array<string>;
+	shouldBeRemoved: Array<string>;
+	contentTitle: string;
+	confirmLabel: string;
+};
+
+const ConfirmOwnerChangeWarningModal: FC<ConfirmOwnerChangeWarningModalProps> = ({
 	onConfirm,
 	onCancel,
 	contentTitle = '',
 	confirmLabel = '',
 	shouldChangeOwner,
 	shouldBeRemoved,
-	...props
 }) => {
 	const t = useTranslation();
 
@@ -52,37 +61,26 @@ const ConfirmOwnerChangeWarningModal = ({
 	}
 
 	return (
-		<Modal {...props}>
-			<Modal.Header>
-				<Icon color='danger' name='modal-warning' size={20} />
-				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p1'>
-				{contentTitle}
+		<GenericModal
+			variant='danger'
+			onClose={onCancel}
+			onCancel={onCancel}
+			confirmText={confirmLabel}
+			onConfirm={onConfirm}
+		>
+			{contentTitle}
 
-				{changeOwnerRooms && (
-					<Box marginBlock='x16'>
-						<RawText>{changeOwnerRooms}</RawText>
-					</Box>
-				)}
-				{removedRooms && (
-					<Box marginBlock='x16'>
-						<RawText>{removedRooms}</RawText>
-					</Box>
-				)}
-			</Modal.Content>
-			<Modal.Footer>
-				<ButtonGroup align='end'>
-					<Button ghost onClick={onCancel}>
-						{t('Cancel')}
-					</Button>
-					<Button primary danger onClick={onConfirm}>
-						{confirmLabel}
-					</Button>
-				</ButtonGroup>
-			</Modal.Footer>
-		</Modal>
+			{changeOwnerRooms && (
+				<Box marginBlock='x16'>
+					<RawText>{changeOwnerRooms}</RawText>
+				</Box>
+			)}
+			{removedRooms && (
+				<Box marginBlock='x16'>
+					<RawText>{removedRooms}</RawText>
+				</Box>
+			)}
+		</GenericModal>
 	);
 };
 

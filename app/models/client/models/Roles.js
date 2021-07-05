@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import * as Models from '..';
 
@@ -21,6 +22,8 @@ Object.assign(Roles, {
 			return model && model.isUserInRole && model.isUserInRole(userId, roleName, scope);
 		});
 	},
+
+	ready: new ReactiveVar(false),
 });
 
 export { Roles };
