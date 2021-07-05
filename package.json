@@ -214,7 +214,6 @@
 		"googleapis": "^25.0.0",
 		"grapheme-splitter": "^1.0.4",
 		"gridfs-stream": "^1.1.1",
-		"hark": "^1.2.3",
 		"he": "^1.2.0",
 		"highlight.js": "^9.18.3",
 		"iconv-lite": "^0.4.24",

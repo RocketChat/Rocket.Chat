@@ -1,9 +1,9 @@
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import hark from 'hark';
 import React, { FC, ReactElement, useRef, useEffect, useState } from 'react';
 
 import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
 import UserAvatar from '../../../components/avatar/UserAvatar';
+import { analyseAudio } from './util';
 
 const VoicePeer: FC<IVoiceRoomPeer> = ({
 	id,
@@ -17,7 +17,7 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 	const [speaking, setSpeaking] = useState<boolean>(false);
 
 	const runHark = (s: MediaStream): void => {
-		const speechEvents = hark(s);
+		const speechEvents = analyseAudio(s);
 		speechEvents.on('speaking', () => {
 			setSpeaking(true);
 		});
