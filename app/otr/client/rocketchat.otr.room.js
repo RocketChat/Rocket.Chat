@@ -14,6 +14,8 @@ import { modal } from '../../ui-utils';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
 import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -208,27 +210,30 @@ OTR.Room = class {
 							this.reset();
 						}
 
-						modal.open({
-							title: TAPi18n.__('OTR'),
-							text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
-							html: true,
-							showCancelButton: true,
-							allowOutsideClick: false,
-							confirmButtonText: TAPi18n.__('Yes'),
-							cancelButtonText: TAPi18n.__('No'),
-						}, (isConfirm) => {
-							if (isConfirm) {
-								establishConnection();
-							} else {
-								Meteor.clearTimeout(timeout);
-								this.deny();
-							}
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
+								confirmText: TAPi18n.__('Yes'),
+								cancelText: TAPi18n.__('No'),
+								onClose: () => imperativeModal.close,
+								onCancel: () => {
+									Meteor.clearTimeout(timeout);
+									this.deny();
+									imperativeModal.close();
+								},
+								onConfirm: () => {
+									establishConnection();
+									imperativeModal.close();
+								},
+							},
 						});
 					}
 
 					timeout = Meteor.setTimeout(() => {
 						this.establishing.set(false);
-						modal.close();
+						imperativeModal.close();
 					}, 10000);
 				})();
 
