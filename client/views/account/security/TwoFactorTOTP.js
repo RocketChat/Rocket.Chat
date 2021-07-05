@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import qrcode from 'yaqrcode';
 
 import TextCopy from '../../../components/TextCopy';
+import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -11,7 +12,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import { useForm } from '../../../hooks/useForm';
 import BackupCodesModal from './BackupCodesModal';
-import VerifyCodeModal from './VerifyCodeModal';
 
 const TwoFactorTOTP = (props) => {
 	const t = useTranslation();
@@ -79,7 +79,7 @@ const TwoFactorTOTP = (props) => {
 			closeModal();
 		};
 
-		setModal(<VerifyCodeModal onVerify={onDisable} onCancel={closeModal} />);
+		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
 	}, [closeModal, disableTotpFn, dispatchToastMessage, setModal, t]);
 
 	const handleVerifyCode = useCallback(async () => {
@@ -109,7 +109,7 @@ const TwoFactorTOTP = (props) => {
 			}
 		};
 
-		setModal(<VerifyCodeModal onVerify={onRegenerate} onCancel={closeModal} />);
+		setModal(<TwoFactorTotpModal onConfirm={onRegenerate} onClose={closeModal} />);
 	}, [closeModal, dispatchToastMessage, regenerateCodesFn, setModal, t]);
 
 	return (

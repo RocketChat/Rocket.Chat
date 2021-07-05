@@ -22,10 +22,8 @@ const InformationPage = memo(function InformationPage({
 }) {
 	const t = useTranslation();
 
-	const {
-		ref,
-		contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {},
-	} = useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } =
+		useResizeObserver();
 
 	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 

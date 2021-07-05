@@ -22,10 +22,10 @@ const useQuery = ({ text, type, itemsPerPage, current }, [column, direction]) =>
 const useResizeInlineBreakpoint = (sizes = [], debounceDelay = 0) => {
 	const { ref, borderBoxSize } = useResizeObserver({ debounceDelay });
 	const inlineSize = borderBoxSize ? borderBoxSize.inlineSize : 0;
-	sizes = useMemo(() => sizes.map((current) => (inlineSize ? inlineSize > current : true)), [
-		inlineSize,
-		sizes,
-	]);
+	sizes = useMemo(
+		() => sizes.map((current) => (inlineSize ? inlineSize > current : true)),
+		[inlineSize, sizes],
+	);
 	return [ref, ...sizes];
 };
 
