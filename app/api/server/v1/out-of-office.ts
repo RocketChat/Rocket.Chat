@@ -1,9 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
 import { updateOutOfOffice } from '../../../out-of-office/server';
-import { OutOfOffice } from '../../../models/server';
+import { OutOfOfficeUsers, OutOfOfficeRooms } from '../../../models/server';
 
 API.v1.addRoute(
 	'outOfOffice.toggle',
@@ -21,16 +20,6 @@ API.v1.addRoute(
 				}),
 			);
 
-			if (isNaN(Date.parse(this.bodyParams.startDate)) || isNaN(Date.parse(this.bodyParams.endDate))) {
-				throw new Meteor.Error('error-invalid-date', 'The "startDate" and "endDate" must be  valid dates.');
-			}
-
-			const { startDate, endDate } = this.bodyParams;
-
-			if (startDate && endDate && startDate > endDate) {
-				throw new Meteor.Error('error-invalid-date', 'Your Start data has to be before the End Date');
-			}
-
 			const { message } = updateOutOfOffice({
 				userId: this.userId,
 				...this.bodyParams,
@@ -46,10 +35,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			const foundDocument = OutOfOffice.findOneByUserId(this.userId, {
-				isEnabled: 1,
-				roomIds: 1,
-				customMessage: 1,
+			const foundDocument = OutOfOfficeUsers.findOneByUserId(this.userId, {
+				fields: {
+					isEnabled: 1,
+					roomIds: 1,
+					customMessage: 1,
+					startDate: 1,
+					endDate: 1,
+				},
 			});
 
 			// need to subtract the offset here
@@ -70,7 +63,7 @@ API.v1.addRoute(
 
 API.v1.addRoute('outOfOffice.getAll', {
 	get() {
-		const allDocuments = OutOfOffice.find({}).fetch();
+		const allDocuments = OutOfOfficeUsers.find({}).fetch();
 
 		return API.v1.success({
 			'all-docs': allDocuments,
@@ -78,21 +71,22 @@ API.v1.addRoute('outOfOffice.getAll', {
 	},
 });
 
-API.v1.addRoute('outOfOffice.getById', {
+API.v1.addRoute('outOfOffice.removeAll', {
 	get() {
-		const { docId } = this.bodyParams;
-		if (!docId) {
-			return API.v1.failure('doc id not provided');
-		}
-		const doc = OutOfOffice.findOneById(docId);
-
-		return API.v1.success({ 'the-found': doc });
+		OutOfOfficeUsers.remove({});
+		return API.v1.success({ result: 'deleted all user documents' });
 	},
 });
 
-API.v1.addRoute('outOfOffice.removeAll', {
+API.v1.addRoute('outOfOffice.getAllRooms', {
 	get() {
-		OutOfOffice.remove({});
-		return API.v1.success({ result: 'deleted all documents' });
+		return API.v1.success(OutOfOfficeRooms.find({}).fetch());
+	},
+});
+
+API.v1.addRoute('outOfOffice.removeAllRooms', {
+	get() {
+		OutOfOfficeRooms.remove({});
+		return API.v1.success({ result: 'deleted all room documents' });
 	},
 });

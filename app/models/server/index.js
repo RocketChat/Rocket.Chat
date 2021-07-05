@@ -40,7 +40,8 @@ import LivechatExternalMessage from './models/LivechatExternalMessages';
 import OmnichannelQueue from './models/OmnichannelQueue';
 import Analytics from './models/Analytics';
 import EmailInbox from './models/EmailInbox';
-import OutOfOffice from './models/OutOfOffice';
+import OutOfOfficeUsers from './models/OutOfOfficeUsers';
+import OutOfOfficeRooms from './models/OutOfOfficeRooms';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -93,5 +94,6 @@ export {
 	Analytics,
 	OmnichannelQueue,
 	EmailInbox,
-	OutOfOffice,
+	OutOfOfficeUsers,
+	OutOfOfficeRooms,
 };
