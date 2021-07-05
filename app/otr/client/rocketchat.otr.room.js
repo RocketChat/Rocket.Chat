@@ -236,8 +236,6 @@ OTR.Room = class {
 						imperativeModal.close();
 					}, 10000);
 				})();
-
-
 				break;
 
 			case 'acknowledge':
@@ -259,16 +257,23 @@ OTR.Room = class {
 				break;
 
 			case 'end':
-				if (this.established.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
-						html: true,
-						confirmButtonText: TAPi18n.__('Ok'),
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+
+					if (this.established.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_ended_the_OTR_session', { username }),
+								confirmText: TAPi18n.__('Ok'),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 		}
 	}
