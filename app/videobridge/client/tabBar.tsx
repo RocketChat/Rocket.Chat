@@ -42,7 +42,7 @@ addAction('bbb_video', ({ room }) => {
 			{live ? <Header.Badge title={t('Started_a_video_call')} variant='primary'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
 		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}><Badge title={t('Started_a_video_call')} variant='primary'>!</Badge></Option>,
-	} : null), [enabled, groups, live, t]);
+	} : null), [enableOption, groups, live, t]);
 });
 
 const templateJitsi = lazy(() => import('../../../client/views/room/contextualBar/Call/Jitsi'));
@@ -83,5 +83,5 @@ addAction('video', ({ room }) => {
 		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{ live && <Badge title={t('Started_a_video_call')} variant='primary'>!</Badge> }
 		</Option>,
-	} : null), [enabled, groups, live, t]);
+	} : null), [enableOption, groups, live, t]);
 });

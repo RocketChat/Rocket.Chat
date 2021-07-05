@@ -130,8 +130,7 @@ const CallJitsWithData = ({ rid }) => {
 				return jitsi.dispose();
 			}
 			try {
-				const timeout = await updateTimeout(rid, false);
-				return timeout;
+				await updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -145,8 +144,7 @@ const CallJitsWithData = ({ rid }) => {
 
 		if (new Date() - new Date(room.jitsiTimeout) + TIMEOUT > DEBOUNCE) {
 			try {
-				const timeout = await updateTimeout(rid, false);
-				return timeout;
+				await updateTimeout(rid, false);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -174,7 +172,7 @@ const CallJitsWithData = ({ rid }) => {
 					await updateTimeout(rid, true);
 				} else {
 					await updateTimeout(rid, false);
-				}				
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
