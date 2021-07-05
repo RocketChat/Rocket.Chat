@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
@@ -26,8 +27,11 @@ addAction('bbb_video', ({ room }) => {
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
 	].filter(Boolean) as ToolboxActionConfig['groups']);
+	const user = Meteor.user();
+	const username = user ? user.username : '';
+	const enableOption = enabled && (!username || !room.muted?.includes(username));
 
-	return useMemo(() => (enabled ? {
+	return useMemo(() => (enableOption ? {
 		groups,
 		id: 'bbb_video',
 		title: 'BBB_Video_Call',
@@ -61,8 +65,11 @@ addAction('video', ({ room }) => {
 	const currentTime = new Date().getTime();
 	const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 	const live = jitsiTimeout > currentTime || null;
+	const user = Meteor.user();
+	const username = user ? user.username : '';
+	const enableOption = enabled && (!username || !room.muted?.includes(username));
 
-	return useMemo(() => (enabled ? {
+	return useMemo(() => (enableOption ? {
 		groups,
 		id: 'video',
 		title: 'Call',

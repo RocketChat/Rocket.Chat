@@ -168,11 +168,13 @@ const CallJitsWithData = ({ rid }) => {
 				jitsi.dispose();
 			};
 
-			if (jitsi.needsStart) {
-				jitsi.start(ref.current);
-			}
 			try {
-				await updateTimeout(rid, jitsi.needsStart);
+				if (jitsi.needsStart) {
+					jitsi.start(ref.current);
+					await updateTimeout(rid, true);
+				} else {
+					await updateTimeout(rid, false);
+				}				
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t(error.reason) });
 				clear();
@@ -183,7 +185,7 @@ const CallJitsWithData = ({ rid }) => {
 
 			return jitsi.openNewWindow ? none : clear;
 		}
-		fetchData();
+		return fetchData();
 	}, [
 		accepted,
 		jitsi,
