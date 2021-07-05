@@ -45,6 +45,10 @@ export const useRoomList = (): Array<ISubscription> => {
 			const onHold = new Set();
 
 			rooms.forEach((room) => {
+				if (room.archived) {
+					return;
+				}
+
 				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
 					return unread.add(room);
 				}
