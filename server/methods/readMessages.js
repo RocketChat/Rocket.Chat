@@ -22,6 +22,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 
-		markRoomAsRead(rid, userId);
+		Promise.await(markRoomAsRead(rid, userId));
 	},
 });
