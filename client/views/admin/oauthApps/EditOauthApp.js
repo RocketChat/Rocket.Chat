@@ -81,8 +81,10 @@ function EditOauthApp({ onChange, data, ...props }) {
 			</GenericModal>
 		));
 
-	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) =>
-		setNewData({ ...newData, [field]: getValue(e) });
+	const handleChange =
+		(field, getValue = (e) => e.currentTarget.value) =>
+		(e) =>
+			setNewData({ ...newData, [field]: getValue(e) });
 
 	const { active, name, redirectUri } = newData;
 
