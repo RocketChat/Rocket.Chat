@@ -28,8 +28,11 @@ const getFname = (members) => members.map(({ name, username }) => name || userna
 const getName = (members) => members.map(({ username }) => username).join(', ');
 
 export const createDirectRoom = function(members, roomExtraData = {}, options = {}) {
-	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
-		throw new Error('error-direct-message-max-user-exceeded');
+	const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
+	if (members.length > maxUsers) {
+		throw new Meteor.Error('error-direct-message-max-user-exceeded', `You cannot add more than ${ maxUsers } users including yourself to a direct message`, {
+			method: 'createDirectRoom',
+		});
 	}
 
 	const sortedMembers = members.sort((u1, u2) => (u1.name || u1.username).localeCompare(u2.name || u2.username));
