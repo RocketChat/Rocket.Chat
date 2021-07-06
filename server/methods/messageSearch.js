@@ -8,11 +8,12 @@ import { settings } from '../../app/settings';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
-	messageSearch(text, rid, limit) {
+	messageSearch(text, rid, offset, limit) {
 		check(text, String);
 		check(rid, Match.Maybe(String));
+		check(offset, Match.Optional(Number));
 		check(limit, Match.Optional(Number));
-
+		
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
@@ -46,6 +47,7 @@ Meteor.methods({
 			sort: {
 				ts: -1,
 			},
+			skip: offset || 0,
 			limit: limit || 20,
 		};
 
