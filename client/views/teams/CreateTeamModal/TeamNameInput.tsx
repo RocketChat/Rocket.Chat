@@ -9,9 +9,10 @@ const TeamNameInput = forwardRef<HTMLElement, TeamNameInputProps>(function TeamN
 	{ private: _private = true, ...props },
 	ref,
 ) {
-	const addon = useMemo(() => <Icon name={_private ? 'team-lock' : 'team'} size='x20' />, [
-		_private,
-	]);
+	const addon = useMemo(
+		() => <Icon name={_private ? 'team-lock' : 'team'} size='x20' />,
+		[_private],
+	);
 
 	return <TextInput ref={ref} {...props} addon={addon} />;
 });
