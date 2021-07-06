@@ -1,53 +1,53 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { Skeleton } from '@rocket.chat/fuselage';
+import React, { useEffect, useCallback } from 'react';
 
+import GenericModal from '../../../../../components/GenericModal';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
-import { UserContext } from '../../../../../contexts/UserContext';
+import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUserId } from '../../../../../contexts/UserContext';
+import { useAsyncState } from '../../../../../hooks/useAsyncState';
+import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import LeaveTeamModal from './LeaveTeamModal';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 
-const useJoinedRoomsWithLastOwner = (teamId) => {
-	const [roomList, setRoomList] = useState([]);
-	const { querySubscriptions } = useContext(UserContext);
-	const listRooms = useEndpoint('GET', 'teams.listRooms');
-	const getUsersInRole = useEndpoint('GET', 'roles.getUsersInRole');
+const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
+	const t = useTranslation();
+
+	const userId = useUserId();
+
+	const listRooms = useEndpoint('GET', 'teams.listRoomsOfUser');
+	const { resolve, reject, reset, phase, value } = useAsyncState([]);
+
+	const fetchData = useCallback(() => {
+		reset();
+		listRooms({ teamId, userId })
+			.then(resolve)
+			.catch((error) => {
+				console.error(error);
+				reject(error);
+			});
+	}, [reset, listRooms, teamId, userId, resolve, reject]);
 
 	useEffect(() => {
-		const getFinalRoomList = async () => {
-			const { rooms } = await listRooms({ teamId });
+		fetchData();
+	}, [fetchData]);
 
-			const rids = rooms.map(({ _id }) => _id);
-			const query = {
-				rid: {
-					$in: rids,
-				},
-			};
+	if (phase === AsyncStatePhase.LOADING) {
+		return (
+			<GenericModal
+				variant='warning'
+				onClose={onCancel}
+				onConfirm={onCancel}
+				title={<Skeleton width='50%' />}
+				confirmText={t('Cancel')}
+			>
+				<Skeleton width='full' />
+			</GenericModal>
+		);
+	}
 
-			const subs = querySubscriptions(query, {}).getCurrentValue();
-
-			const finalRooms = await Promise.all(
-				subs.map(async (subscription) => {
-					const { users, total } = await getUsersInRole({
-						role: 'owner',
-						roomId: subscription.rid,
-					});
-					const isLastOwner = total === 1 && users[0]._id === subscription.u._id;
-					return { ...subscription, isLastOwner };
-				}),
-			);
-
-			setRoomList(finalRooms);
-		};
-		getFinalRoomList();
-	}, [getUsersInRole, listRooms, querySubscriptions, teamId]);
-
-	return roomList;
-};
-
-const LeaveTeamModalWithRooms = ({ teamId, onCancel, onConfirm }) => {
-	const rooms = useJoinedRoomsWithLastOwner(teamId);
-
-	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={rooms} />;
+	return <LeaveTeamModal onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms || []} />;
 };
 
 export { StepOne, StepTwo };

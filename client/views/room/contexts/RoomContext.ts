@@ -5,7 +5,6 @@ import { IRoom, IOmnichannelRoom, isOmnichannelRoom } from '../../../../definiti
 export type RoomContextValue = {
 	rid: IRoom['_id'];
 	room: IRoom;
-	// tabBar: TabBar;
 };
 
 export const RoomContext = createContext<RoomContextValue | null>(null);
@@ -20,11 +19,13 @@ export const useRoom = (): IRoom => {
 
 export const useOmnichannelRoom = (): IOmnichannelRoom => {
 	const { room } = useContext(RoomContext) || {};
+
 	if (!room) {
 		throw new Error('use useRoom only inside opened rooms');
 	}
 	if (!isOmnichannelRoom(room)) {
 		throw new Error('invalid room type');
 	}
+
 	return room;
 };

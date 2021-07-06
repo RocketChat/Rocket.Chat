@@ -1,13 +1,9 @@
-import { ILivechatMonitor } from '../../../../../../definition/ILivechatMonitor';
+import { ILivechatTag } from '../../../../../../definition/ILivechatTag';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
-export type LivechatMonitorsList = {
-	GET: (params: {
-		text: string;
-		offset: number;
-		count: number;
-	}) => {
-		monitors: ObjectFromApi<ILivechatMonitor>[];
+export type LivechatTagsList = {
+	GET: (params: { text: string; offset: number; count: number }) => {
+		tags: ObjectFromApi<ILivechatTag>[];
 		total: number;
 	};
 };

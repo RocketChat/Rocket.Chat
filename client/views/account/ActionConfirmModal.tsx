@@ -6,6 +6,8 @@ import {
 	PasswordInput,
 	TextInput,
 	Modal,
+	FieldGroup,
+	Field,
 } from '@rocket.chat/fuselage';
 import React, { useState, useCallback, FC } from 'react';
 
@@ -45,8 +47,14 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({
 			</Modal.Header>
 			<Modal.Content fontScale='p1'>
 				<Box mb='x8'>{text}</Box>
-				{isPassword && <PasswordInput w='full' value={inputText} onChange={handleChange} />}
-				{!isPassword && <TextInput w='full' value={inputText} onChange={handleChange} />}
+				<FieldGroup w='full'>
+					<Field>
+						<Field.Row>
+							{isPassword && <PasswordInput value={inputText} onChange={handleChange} />}
+							{!isPassword && <TextInput value={inputText} onChange={handleChange} />}
+						</Field.Row>
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
@@ -54,7 +62,7 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({
 						{t('Cancel')}
 					</Button>
 					<Button primary danger onClick={handleSave}>
-						{t('Continue')}
+						{t('Delete')}
 					</Button>
 				</ButtonGroup>
 			</Modal.Footer>

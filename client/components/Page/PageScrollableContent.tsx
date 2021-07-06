@@ -5,8 +5,7 @@ import ScrollableContentWrapper, { CustomScrollbarsProps } from '../ScrollableCo
 
 type PageScrollableContentProps = {
 	onScrollContent?: ComponentProps<typeof Scrollable>['onScrollContent'];
-	children: ReactNode;
-};
+} & ComponentProps<typeof Box>;
 
 const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps>(
 	function PageScrollableContent({ onScrollContent, ...props }, ref) {

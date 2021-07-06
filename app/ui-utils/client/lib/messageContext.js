@@ -85,7 +85,11 @@ export function messageContext({ rid } = Template.instance()) {
 				return openThread;
 			},
 			runAction(msg) {
-				return () => (e) => runAction(msg, e);
+				return () => (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					runAction(msg, e);
+				};
 			},
 			openDiscussion() {
 				return openDiscussion;
