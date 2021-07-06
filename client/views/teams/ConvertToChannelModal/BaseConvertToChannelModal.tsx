@@ -16,7 +16,6 @@ type BaseConvertToChannelModalProps = {
 	onConfirm: () => Array<IRoom>;
 	currentStep?: string;
 	rooms?: Array<IRoom & { isLastOwner?: string }>;
-	selectedRooms: { [key: string]: IRoom };
 };
 
 const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
@@ -27,9 +26,7 @@ const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_CONVERT : STEPS.LIST_ROOMS,
 }) => {
 	const [step, setStep] = useState(currentStep);
-	const [selectedRooms, setSelectedRooms] = useState<
-		BaseConvertToChannelModalProps['selectedRooms']
-	>({});
+	const [selectedRooms, setSelectedRooms] = useState<{ [key: string]: IRoom }>({});
 
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_CONVERT));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));

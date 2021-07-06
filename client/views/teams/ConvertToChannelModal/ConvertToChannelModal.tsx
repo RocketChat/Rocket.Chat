@@ -24,7 +24,6 @@ const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({
 	userId,
 }) => {
 	const t = useTranslation();
-	const selectedRooms = {};
 
 	const { value, phase } = useEndpointData(
 		'teams.listRoomsOfUser',
@@ -51,7 +50,6 @@ const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 			rooms={value?.rooms}
-			selectedRooms={selectedRooms}
 		/>
 	);
 };
