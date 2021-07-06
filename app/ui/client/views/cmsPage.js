@@ -27,7 +27,3 @@ Template.cmsPage.events({
 		return FlowRouter.go('/');
 	},
 });
-
-Template.cmsPage.onRendered(function() {
-	return $('#initial-page-loading').remove();
-});

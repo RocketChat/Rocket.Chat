@@ -1,9 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
+import { appLayout } from '../../../client/lib/appLayout';
 
 FlowRouter.route('/reset-password/:token', {
 	name: 'resetPassword',
 	action() {
-		BlazeLayout.render('loginLayout', { center: 'resetPassword' });
+		appLayout.render('loginLayout', { center: 'resetPassword' });
 	},
 });

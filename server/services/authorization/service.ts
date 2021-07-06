@@ -9,6 +9,12 @@ import { canAccessRoom } from './canAccessRoom';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
+import { TeamMemberRaw } from '../../../app/models/server/raw/TeamMember';
+import { TeamRaw } from '../../../app/models/server/raw/Team';
+import { RolesRaw } from '../../../app/models/server/raw/Roles';
+import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { IRole } from '../../../definition/IRole';
+import { ISubscription } from '../../../definition/ISubscription';
 
 import './canAccessRoomLivechat';
 import './canAccessRoomTokenpass';
@@ -16,6 +22,8 @@ import './canAccessRoomTokenpass';
 export let Subscriptions: SubscriptionsRaw;
 export let Settings: SettingsRaw;
 export let Rooms: RoomsRaw;
+export let TeamMembers: TeamMemberRaw;
+export let Team: TeamRaw;
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -23,7 +31,9 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private Permissions: Collection;
 
-	private Users: Collection;
+	private Users: UsersRaw;
+
+	private Roles: RolesRaw;
 
 	private getRolesCached = mem(this.getRoles.bind(this), { maxAge: 1000, cacheKey: JSON.stringify })
 
@@ -33,11 +43,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		super();
 
 		this.Permissions = db.collection('rocketchat_permissions');
-		this.Users = db.collection('users');
+
+		this.Users = new UsersRaw(db.collection('users'));
+		this.Roles = new RolesRaw(db.collection('rocketchat_roles'));
 
 		Subscriptions = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		Settings = new SettingsRaw(db.collection('rocketchat_settings'));
 		Rooms = new RoomsRaw(db.collection('rocketchat_room'));
+		TeamMembers = new TeamMemberRaw(db.collection('rocketchat_team_member'));
+		Team = new TeamRaw(db.collection('rocketchat_team'));
 
 		const clearCache = (): void => {
 			mem.clear(this.getRolesCached);
@@ -77,6 +91,38 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
+	async getUsersFromPublicRoles(): Promise<Pick<IUser, '_id' | 'username' | 'roles'>[]> {
+		const roleIds = await this.getPublicRoles();
+
+		return this.getUserFromRoles(roleIds);
+	}
+
+	private getPublicRoles = mem(async (): Promise<string[]> => {
+		const roles = await this.Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: 1, $ne: '' } }, { projection: { _id: 1 } }).toArray();
+
+		return roles.map(({ _id }) => _id);
+	}, { maxAge: 10000 });
+
+	private getUserFromRoles = mem(async (roleIds: string[]) => {
+		const options = {
+			sort: {
+				username: 1,
+			},
+			projection: {
+				username: 1,
+				roles: 1,
+			},
+		};
+
+		const users = await this.Users.findUsersInRoles(roleIds, null, options).toArray();
+
+		return users
+			.map((user) => ({
+				...user,
+				roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
+			}));
+	}, { maxAge: 10000 });
+
 	private async rolesHasPermission(permission: string, roles: string[]): Promise<boolean> {
 		if (AuthorizationUtils.isPermissionRestrictedForRoleList(permission, roles)) {
 			return false;
@@ -87,8 +133,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private async getRoles(uid: string, scope?: string): Promise<string[]> {
-		const { roles: userRoles = [] } = await this.Users.findOne<IUser>({ _id: uid }, { projection: { roles: 1 } }) || {};
-		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
+		const { roles: userRoles = [] } = await this.Users.findOneById(uid, { projection: { roles: 1 } }) || {};
+		const { roles: subscriptionsRoles = [] } = (scope && await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ rid: scope, 'u._id': uid }, { projection: { roles: 1 } })) || {};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 

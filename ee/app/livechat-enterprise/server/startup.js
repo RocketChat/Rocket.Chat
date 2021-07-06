@@ -16,9 +16,9 @@ const businessHours = {
 };
 
 Meteor.startup(async function() {
-	settings.onload('Livechat_auto_close_abandoned_rooms', function(_, value) {
+	settings.onload('Livechat_abandoned_rooms_action', function(_, value) {
 		updatePredictedVisitorAbandonment();
-		if (!value) {
+		if (!value || value === 'none') {
 			return visitorActivityMonitor.stop();
 		}
 		visitorActivityMonitor.start();

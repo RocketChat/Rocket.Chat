@@ -48,9 +48,29 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'ult',
+		system: true,
+		message: 'User_left_team',
+		data(message) {
+			return {
+				user_left: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',
+		data(message) {
+			return {
+				user: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'ujt',
+		system: true,
+		message: 'User_joined_team',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -229,6 +249,10 @@ export const MessageTypesValues = [
 	{
 		key: 'room_changed_avatar',
 		i18nLabel: 'Message_HideType_room_changed_avatar',
+	},
+	{
+		key: 'room_changed_topic',
+		i18nLabel: 'Message_HideType_room_changed_topic',
 	},
 	{
 		key: 'room_e2e_enabled',

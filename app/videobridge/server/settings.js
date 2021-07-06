@@ -71,6 +71,16 @@ Meteor.startup(function() {
 				},
 				public: true,
 			});
+
+			this.add('bigbluebutton_enable_teams', false, {
+				type: 'boolean',
+				i18nLabel: 'BBB_Enable_Teams',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+				public: true,
+			});
 		});
 
 		this.section('Jitsi', function() {
@@ -149,6 +159,16 @@ Meteor.startup(function() {
 					value: true,
 				},
 				i18nLabel: 'Jitsi_Enable_Channels',
+				public: true,
+			});
+
+			this.add('Jitsi_Enable_Teams', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Jitsi_Enable_Teams',
 				public: true,
 			});
 

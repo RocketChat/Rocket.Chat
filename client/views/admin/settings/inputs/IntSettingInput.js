@@ -1,9 +1,9 @@
 import { Box, Field, Flex, InputBox } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function IntSettingInput({
+function IntSettingInput({
 	_id,
 	label,
 	value,
@@ -19,25 +19,33 @@ export function IntSettingInput({
 		onChangeValue && onChangeValue(parseInt(event.currentTarget.value, 10));
 	};
 
-	return <>
-		<Flex.Container>
-			<Box>
-				<Field.Label htmlFor={_id} title={_id}>{label}</Field.Label>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-			</Box>
-		</Flex.Container>
-		<Field.Row>
-			<InputBox
-				data-qa-setting-id={_id}
-				id={_id}
-				type='number'
-				value={value}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-			/>
-		</Field.Row>
-	</>;
+	return (
+		<>
+			<Flex.Container>
+				<Box>
+					<Field.Label htmlFor={_id} title={_id}>
+						{label}
+					</Field.Label>
+					{hasResetButton && (
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
+					)}
+				</Box>
+			</Flex.Container>
+			<Field.Row>
+				<InputBox
+					data-qa-setting-id={_id}
+					id={_id}
+					type='number'
+					value={value}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+				/>
+			</Field.Row>
+		</>
+	);
 }
+
+export default IntSettingInput;

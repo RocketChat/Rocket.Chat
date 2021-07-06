@@ -17,6 +17,7 @@ Meteor.methods({
 			userId: Match.Optional(String),
 			departmentId: Match.Optional(String),
 			comment: Match.Optional(String),
+			clientAction: Match.Optional(Boolean),
 		});
 
 		const room = LivechatRooms.findOneById(transferData.roomId);

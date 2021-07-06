@@ -2,8 +2,8 @@
 
 <!-- Your Pull Request name should start with one of the following tags
   [NEW] For new features
-  [IMPROVE] For a improvement (performance or little improvements) in existent features
-  [FIX] For bug fixes that affects the end user
+  [IMPROVE] For an improvement (performance or little improvements) in existing features
+  [FIX] For bug fixes that affect the end-user
   [BREAK] For pull requests including breaking changes
   Chore: For small tasks
   Doc: For documentation

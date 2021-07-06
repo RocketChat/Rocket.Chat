@@ -1,30 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import {
-	ThreadsList,
-	ThreadsListOptions,
-} from '../../../../lib/lists/ThreadsList';
+import { getConfig } from '../../../../../app/ui-utils/client/config';
+import { IUser } from '../../../../../definition/IUser';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { IUser } from '../../../../../definition/IUser';
-import { getConfig } from '../../../../../app/ui-utils/client/config';
+import { ThreadsList, ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 
 export const useThreadsList = (
 	options: ThreadsListOptions,
 	uid: IUser['_id'],
 ): {
-		threadsList: ThreadsList;
-		initialItemCount: number;
-		loadMoreItems: (start: number, end: number) => void;
-	} => {
-	const [threadsList] = useState(() => new ThreadsList(options));
-
-	useEffect(() => {
-		if (threadsList.options !== options) {
-			threadsList.updateFilters(options);
-		}
-	}, [threadsList, options]);
+	threadsList: ThreadsList;
+	initialItemCount: number;
+	loadMoreItems: (start: number, end: number) => void;
+} => {
+	const threadsList = useMemo(() => new ThreadsList(options), [options]);
 
 	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
 
@@ -35,7 +26,7 @@ export const useThreadsList = (
 				type: options.type,
 				text: options.text,
 				offset: start,
-				count: end - start,
+				count: end,
 			});
 
 			return {

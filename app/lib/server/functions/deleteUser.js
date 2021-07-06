@@ -54,7 +54,7 @@ export const deleteUser = function(userId, confirmRelinquish = false) {
 				break;
 		}
 
-		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username); // Remove direct rooms with the user
+		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions

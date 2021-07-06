@@ -2,16 +2,13 @@ import { Box, Button, ButtonGroup, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import Subtitle from '../../../components/Subtitle';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { statusPageUrl } from './constants';
 
-function TroubleshootingSection({
-	onRegisterStatusChange,
-	...props
-}) {
+function TroubleshootingSection({ onRegisterStatusChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -38,26 +35,30 @@ function TroubleshootingSection({
 		}
 	};
 
-	return <Box is='section' {...props}>
-		<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
+	return (
+		<Box is='section' {...props}>
+			<Subtitle>{t('Cloud_troubleshooting')}</Subtitle>
 
-		<Box withRichContent color='neutral-800'>
-			<p>{t('Cloud_workspace_support')}</p>
+			<Box withRichContent color='neutral-800'>
+				<p>{t('Cloud_workspace_support')}</p>
+			</Box>
+
+			<ButtonGroup>
+				<Button disabled={isSyncing} minHeight='x40' onClick={handleSyncButtonClick}>
+					{isSyncing ? <Throbber is='span' inheritColor /> : t('Sync')}
+				</Button>
+			</ButtonGroup>
+
+			<Box withRichContent color='neutral-800'>
+				<p>
+					{t('Cloud_status_page_description')}:{' '}
+					<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>
+						{statusPageUrl}
+					</a>
+				</p>
+			</Box>
 		</Box>
-
-		<ButtonGroup>
-			<Button disabled={isSyncing} minHeight='x40' onClick={handleSyncButtonClick}>
-				{isSyncing ? <Throbber is='span' inheritColor /> : t('Sync')}
-			</Button>
-		</ButtonGroup>
-
-		<Box withRichContent color='neutral-800'>
-			<p>
-				{t('Cloud_status_page_description')}:{' '}
-				<a href={statusPageUrl} target='_blank' rel='noopener noreferrer'>{statusPageUrl}</a>
-			</p>
-		</Box>
-	</Box>;
+	);
 }
 
 export default TroubleshootingSection;

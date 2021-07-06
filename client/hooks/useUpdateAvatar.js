@@ -1,10 +1,10 @@
 import { useMemo, useCallback } from 'react';
 
 import { useMethod } from '../contexts/ServerContext';
-import { useEndpointAction } from './useEndpointAction';
-import { useTranslation } from '../contexts/TranslationContext';
-import { useEndpointUpload } from './useEndpointUpload';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
+import { useTranslation } from '../contexts/TranslationContext';
+import { useEndpointAction } from './useEndpointAction';
+import { useEndpointUpload } from './useEndpointUpload';
 
 export const useUpdateAvatar = (avatarObj, userId) => {
 	const t = useTranslation();
@@ -15,18 +15,34 @@ export const useUpdateAvatar = (avatarObj, userId) => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveAvatarQuery = useMemo(() => ({
-		userId,
-		...avatarUrl && { avatarUrl },
-	}), [avatarUrl, userId]);
+	const saveAvatarQuery = useMemo(
+		() => ({
+			userId,
+			...(avatarUrl && { avatarUrl }),
+		}),
+		[avatarUrl, userId],
+	);
 
-	const resetAvatarQuery = useMemo(() => ({
-		userId,
-	}), [userId]);
+	const resetAvatarQuery = useMemo(
+		() => ({
+			userId,
+		}),
+		[userId],
+	);
 
 	const saveAvatarAction = useEndpointUpload('users.setAvatar', saveAvatarQuery, successText);
-	const saveAvatarUrlAction = useEndpointAction('POST', 'users.setAvatar', saveAvatarQuery, successText);
-	const resetAvatarAction = useEndpointAction('POST', 'users.resetAvatar', resetAvatarQuery, successText);
+	const saveAvatarUrlAction = useEndpointAction(
+		'POST',
+		'users.setAvatar',
+		saveAvatarQuery,
+		successText,
+	);
+	const resetAvatarAction = useEndpointAction(
+		'POST',
+		'users.resetAvatar',
+		resetAvatarQuery,
+		successText,
+	);
 
 	const updateAvatar = useCallback(async () => {
 		if (avatarObj === 'reset') {
@@ -49,7 +65,16 @@ export const useUpdateAvatar = (avatarObj, userId) => {
 			avatarObj.set('userId', userId);
 			return saveAvatarAction(avatarObj);
 		}
-	}, [avatarObj, dispatchToastMessage, resetAvatarAction, saveAvatarAction, saveAvatarUrlAction, setAvatarFromService, successText, userId]);
+	}, [
+		avatarObj,
+		dispatchToastMessage,
+		resetAvatarAction,
+		saveAvatarAction,
+		saveAvatarUrlAction,
+		setAvatarFromService,
+		successText,
+		userId,
+	]);
 
 	return updateAvatar;
 };

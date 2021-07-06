@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export class AppServerOrchestratorMock {
 	constructor() {
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';

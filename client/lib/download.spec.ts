@@ -19,7 +19,7 @@ const withURL = (): void => {
 
 		window.URL.createObjectURL = (blob: Blob): string => {
 			const uuid = Math.random().toString(36).slice(2);
-			const url = `blob://${ uuid }`;
+			const url = `blob://${uuid}`;
 			blobs.set(url, blob);
 			return url;
 		};
@@ -82,7 +82,13 @@ describe('downloadCsvAs', () => {
 		const listener = chai.spy();
 		document.addEventListener('click', listener, false);
 
-		downloadCsvAs([[1, 2, 3], [4, 5, 6]], 'blank');
+		downloadCsvAs(
+			[
+				[1, 2, 3],
+				[4, 5, 6],
+			],
+			'blank',
+		);
 
 		document.removeEventListener('click', listener, false);
 		chai.expect(listener).to.have.been.called();

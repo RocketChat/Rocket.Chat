@@ -11,6 +11,9 @@ import { IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import { IBannerService } from './types/IBannerService';
 import { INPSService } from './types/INPSService';
+import { ITeamService } from './types/ITeamService';
+import { IRoomService } from './types/IRoomService';
+import { IMediaService } from './types/IMediaService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -21,6 +24,9 @@ export const MeteorService = proxifyWithWait<IMeteor>('meteor');
 export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
+export const Team = proxifyWithWait<ITeamService>('team');
+export const Room = proxifyWithWait<IRoomService>('room');
+export const Media = proxifyWithWait<IMediaService>('media');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

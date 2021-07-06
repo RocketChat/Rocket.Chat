@@ -1,3 +1,4 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Facebook } from 'meteor/facebook-oauth';
@@ -6,7 +7,6 @@ import { Twitter } from 'meteor/twitter-oauth';
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
-import s from 'underscore.string';
 
 import { Utils2fa } from './lib/2fa';
 import { process2faReturn } from './callWithTwoFactorRequired';
@@ -126,7 +126,7 @@ Accounts.onPageLoadLogin((loginAttempt) => {
 
 const oldConfigureLogin = CustomOAuth.prototype.configureLogin;
 CustomOAuth.prototype.configureLogin = function(...args) {
-	const loginWithService = `loginWith${ s.capitalize(this.name) }`;
+	const loginWithService = `loginWith${ capitalize(String(this.name || '')) }`;
 
 	oldConfigureLogin.apply(this, args);
 

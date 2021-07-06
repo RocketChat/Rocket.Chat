@@ -17,9 +17,10 @@ const roomMap = (record) => {
 Meteor.methods({
 	'rooms/get'(updatedAt) {
 		const options = { fields: roomFields };
+		const user = Meteor.userId();
 
-		if (!Meteor.userId()) {
-			if (settings.get('Accounts_AllowAnonymousRead') === true) {
+		if (!user) {
+			if (settings.get('Accounts_AllowAnonymousRead')) {
 				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
 			}
 			return [];
@@ -27,12 +28,12 @@ Meteor.methods({
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: Rooms.findBySubscriptionUserIdUpdatedAfter(Meteor.userId(), updatedAt, options).fetch(),
+				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
 				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
-		return Rooms.findBySubscriptionUserId(Meteor.userId(), options).fetch();
+		return Rooms.findBySubscriptionUserId(user, options).fetch();
 	},
 
 	getRoomByTypeAndName(type, name) {

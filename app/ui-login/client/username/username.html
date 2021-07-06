@@ -6,7 +6,12 @@
 					<h2>{{_ "Username_title"}}</h2>
 					<p>{{_ "Username_description"}}</p>
 				</header>
-				{{#if username.error}}
+				{{#if username.blocked}}
+					<div class="alert error-color error-background error-border">
+						{{{_ "error-blocked-username" field=username.escaped}}}
+					</div>
+				{{/if}}
+				{{#if username.unavailable}}
 					<div class="alert error-color error-background error-border">
 						{{{_ "error-field-unavailable" field=username.escaped}}}
 					</div>

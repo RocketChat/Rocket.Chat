@@ -6,7 +6,7 @@ import { RoutingManager } from '../lib/RoutingManager';
 import { userCanTakeInquiry } from '../lib/Helper';
 
 Meteor.methods({
-	'livechat:takeInquiry'(inquiryId) {
+	'livechat:takeInquiry'(inquiryId, options) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:takeInquiry' });
 		}
@@ -27,6 +27,6 @@ Meteor.methods({
 			username: user.username,
 		};
 
-		return RoutingManager.takeInquiry(inquiry, agent);
+		return RoutingManager.takeInquiry(inquiry, agent, options);
 	},
 });

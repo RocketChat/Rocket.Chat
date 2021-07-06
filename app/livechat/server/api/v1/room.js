@@ -36,7 +36,7 @@ API.v1.addRoute('livechat/room', {
 			const agentObj = agentId && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
-				agent = Object.assign({}, { agentId, username });
+				agent = { agentId, username };
 			}
 
 			const rid = roomId || Random.id();
@@ -199,12 +199,12 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-visitor');
 			}
 
-			let room = LivechatRooms.findOneById(rid, { _id: 1 });
+			let room = LivechatRooms.findOneById(rid, { _id: 1 }); // TODO: check _id
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const { v: { _id: roomVisitorId } = {} } = room;
+			const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
 			if (roomVisitorId !== oldVisitorId) {
 				throw new Meteor.Error('invalid-room-visitor');
 			}

@@ -68,7 +68,7 @@ export class AppServerListener {
 
 		const storageItem = await this.orch.getStorage().retrieveOne(appId);
 
-		await this.orch.getManager().update(storageItem.zip);
+		await this.orch.getManager().update(Buffer.from(storageItem.zip, 'base64'));
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
 
@@ -79,7 +79,7 @@ export class AppServerListener {
 			return;
 		}
 
-		await this.orch.getManager().remove(appId);
+		await this.orch.getManager().removeLocal(appId);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
 	}
 

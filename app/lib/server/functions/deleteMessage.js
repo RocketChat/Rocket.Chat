@@ -20,6 +20,10 @@ export const deleteMessage = function(message, user) {
 		}
 	}
 
+	if (deletedMsg.tmid) {
+		Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
+	}
+
 	if (keepHistory) {
 		if (showDeletedStatus) {
 			Messages.cloneAndSaveAsHistoryById(message._id, user);

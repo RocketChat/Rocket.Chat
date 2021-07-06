@@ -1,7 +1,6 @@
 import s from 'underscore.string';
 
 import { settings } from '../../../settings';
-
 import { validateCustomFields, saveCustomFieldsWithoutValidation } from '.';
 
 export const saveCustomFields = function(userId, formData) {

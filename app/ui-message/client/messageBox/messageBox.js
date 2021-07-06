@@ -120,7 +120,6 @@ Template.messageBox.onRendered(function() {
 			}
 			$input.on('dataChange', () => {
 				const messages = $input.data('reply') || [];
-				console.log('dataChange', messages);
 				this.replyMessageData.set(messages);
 			});
 		}
@@ -214,6 +213,10 @@ Template.messageBox.helpers({
 			return false;
 		}
 
+		if (subscription?.onHold) {
+			return false;
+		}
+
 		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
@@ -255,6 +258,10 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
+	},
+	onHold() {
+		const { rid, subscription } = Template.currentData();
+		return rid && !!subscription?.onHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();

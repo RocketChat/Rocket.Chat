@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import React, { FC } from 'react';
 
-import { ConnectionStatusContext, ConnectionStatusContextValue } from '../contexts/ConnectionStatusContext';
+import {
+	ConnectionStatusContext,
+	ConnectionStatusContextValue,
+} from '../contexts/ConnectionStatusContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const getValue = (): ConnectionStatusContextValue => ({

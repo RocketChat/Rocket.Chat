@@ -8,7 +8,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function UsersByTimeOfTheDaySection() {
+const UsersByTimeOfTheDaySection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -101,7 +101,11 @@ export function UsersByTimeOfTheDaySection() {
 			? <Box display='flex' style={{ height: 696 }}>
 				<Flex.Item align='stretch' grow={1} shrink={0}>
 					<Box style={{ position: 'relative' }}>
-						<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+						<Box style={{
+							position: 'absolute',
+							width: '100%',
+							height: '100%',
+						}}>
 							<ResponsiveHeatMap
 								data={values}
 								indexBy='hour'
@@ -177,4 +181,6 @@ export function UsersByTimeOfTheDaySection() {
 			</Box>
 			: <Skeleton variant='rect' height={696} />}
 	</Section>;
-}
+};
+
+export default UsersByTimeOfTheDaySection;

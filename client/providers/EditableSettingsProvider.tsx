@@ -4,7 +4,11 @@ import { Tracker } from 'meteor/tracker';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
 import { SettingId, GroupId } from '../../definition/ISetting';
-import { EditableSettingsContext, IEditableSetting, EditableSettingsContextValue } from '../contexts/EditableSettingsContext';
+import {
+	EditableSettingsContext,
+	IEditableSetting,
+	EditableSettingsContextValue,
+} from '../contexts/EditableSettingsContext';
 import { useSettings, SettingsContextQuery } from '../contexts/SettingsContext';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';
 
@@ -18,7 +22,9 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 	children,
 	query = defaultQuery,
 }) => {
-	const settingsCollectionRef = useRef<Mongo.Collection<IEditableSetting>>(null) as MutableRefObject<Mongo.Collection<IEditableSetting>>;
+	const settingsCollectionRef = useRef<Mongo.Collection<IEditableSetting>>(
+		null,
+	) as MutableRefObject<Mongo.Collection<IEditableSetting>>;
 	const persistedSettings = useSettings(query);
 
 	const getSettingsCollection = useMutableCallback(() => {
@@ -39,8 +45,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 	}, [getSettingsCollection, persistedSettings]);
 
 	const queryEditableSetting = useMemo(
-		() => createReactiveSubscriptionFactory(
-			(_id: SettingId): IEditableSetting | undefined => {
+		() =>
+			createReactiveSubscriptionFactory((_id: SettingId): IEditableSetting | undefined => {
 				const settingsCollection = getSettingsCollection();
 
 				const editableSetting = settingsCollection.findOne(_id);
@@ -57,62 +63,74 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 					return { ...editableSetting, disabled: false };
 				}
 
-				const queries = [].concat(typeof editableSetting.enableQuery === 'string'
-					? JSON.parse(editableSetting.enableQuery)
-					: editableSetting.enableQuery);
+				const queries = [].concat(
+					typeof editableSetting.enableQuery === 'string'
+						? JSON.parse(editableSetting.enableQuery)
+						: editableSetting.enableQuery,
+				);
 				return {
 					...editableSetting,
 					disabled: !queries.every((query) => settingsCollection.find(query).count() > 0),
 				};
-			},
-		),
+			}),
 		[getSettingsCollection],
 	);
 
 	const queryEditableSettings = useMemo(
-		() => createReactiveSubscriptionFactory(
-			(query = {}) => getSettingsCollection().find({
-				...('_id' in query) && { _id: { $in: query._id } },
-				...('group' in query) && { group: query.group },
-				...('section' in query) && (
-					query.section
-						? { section: query.section }
-						: {
-							$or: [
-								{ section: { $exists: false } },
-								{ section: '' },
-							],
-						}
-				),
-				...('changed' in query) && { changed: query.changed },
-			}, {
-				sort: {
-					section: 1,
-					sorter: 1,
-					i18nLabel: 1,
-				},
-			}).fetch(),
-		),
+		() =>
+			createReactiveSubscriptionFactory((query = {}) =>
+				getSettingsCollection()
+					.find(
+						{
+							...('_id' in query && { _id: { $in: query._id } }),
+							...('group' in query && { group: query.group }),
+							...('section' in query &&
+								(query.section
+									? { section: query.section }
+									: {
+											$or: [{ section: { $exists: false } }, { section: '' }],
+									  })),
+							...('changed' in query && { changed: query.changed }),
+						},
+						{
+							sort: {
+								section: 1,
+								sorter: 1,
+								i18nLabel: 1,
+							},
+						},
+					)
+					.fetch(),
+			),
 		[getSettingsCollection],
 	);
 
 	const queryGroupSections = useMemo(
-		() => createReactiveSubscriptionFactory(
-			(_id: GroupId) => Array.from(new Set(
-				getSettingsCollection().find({
-					group: _id,
-				}, {
-					fields: {
-						section: 1,
-					},
-					sort: {
-						section: 1,
-						sorter: 1,
-						i18nLabel: 1,
-					},
-				}).fetch().map(({ section }) => section || ''),
-			)),
-		),
+		() =>
+			createReactiveSubscriptionFactory((_id: GroupId) =>
+				Array.from(
+					new Set(
+						getSettingsCollection()
+							.find(
+								{
+									group: _id,
+								},
+								{
+									fields: {
+										section: 1,
+									},
+									sort: {
+										section: 1,
+										sorter: 1,
+										i18nLabel: 1,
+									},
+								},
+							)
+							.fetch()
+							.map(({ section }) => section || ''),
+					),
+				),
+			),
 		[getSettingsCollection],
 	);
 
@@ -127,17 +145,15 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		Tracker.flush();
 	});
 
-	const contextValue = useMemo<EditableSettingsContextValue>(() => ({
-		queryEditableSetting,
-		queryEditableSettings,
-		queryGroupSections,
-		dispatch,
-	}), [
-		queryEditableSetting,
-		queryEditableSettings,
-		queryGroupSections,
-		dispatch,
-	]);
+	const contextValue = useMemo<EditableSettingsContextValue>(
+		() => ({
+			queryEditableSetting,
+			queryEditableSettings,
+			queryGroupSections,
+			dispatch,
+		}),
+		[queryEditableSetting, queryEditableSettings, queryGroupSections, dispatch],
+	);
 
 	return <EditableSettingsContext.Provider children={children} value={contextValue} />;
 };

@@ -10,17 +10,12 @@ import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 export function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
+		syncWorkspace(true);
+
 		return true;
 	}
 
 	settings.updateById('Register_Server', true);
-
-	// If we still have client id lets see if they are still good before trying to register
-	if (workspaceRegistered) {
-		if (syncWorkspace(true)) {
-			return true;
-		}
-	}
 
 	const regInfo = buildWorkspaceRegistrationData();
 

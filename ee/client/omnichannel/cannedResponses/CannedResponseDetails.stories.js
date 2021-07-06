@@ -1,10 +1,10 @@
-import React from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import { CannedResponseDetails } from './CannedResponseDetails';
 
 export default {
-	title: 'omnichannel/CannedResponseDetails',
+	title: 'omnichannel/CannedResponse/CannedResponseDetails',
 	component: CannedResponseDetails,
 };
 
@@ -14,6 +14,8 @@ const cannedResponse = {
 	scope: 'department',
 };
 
-export const Default = () => <Box maxWidth='x300' alignSelf='center' w='full'>
-	<CannedResponseDetails {...cannedResponse}/>
-</Box>;
+export const Default = () => (
+	<Box maxWidth='x300' alignSelf='center' w='full'>
+		<CannedResponseDetails response={cannedResponse} />
+	</Box>
+);

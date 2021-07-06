@@ -8,21 +8,18 @@ const overviewInitalValue = {
 	value: '-',
 };
 
-const initialData = [
-	overviewInitalValue,
-	overviewInitalValue,
-	overviewInitalValue,
-];
+const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
 const AgentsOverview = ({ params, reloadRef, ...props }) => {
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/agents-productivity-totalizers',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/agents-productivity-totalizers', params);
 
 	reloadRef.current.agentsOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props}/>;
+	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
 };
 
 export default AgentsOverview;

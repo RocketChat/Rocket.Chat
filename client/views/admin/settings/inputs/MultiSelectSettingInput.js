@@ -2,9 +2,9 @@ import { Field, Flex, Box, MultiSelectFiltered, MultiSelect } from '@rocket.chat
 import React from 'react';
 
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { ResetSettingButton } from '../ResetSettingButton';
+import ResetSettingButton from '../ResetSettingButton';
 
-export function MultiSelectSettingInput({
+function MultiSelectSettingInput({
 	_id,
 	label,
 	value = [],
@@ -32,10 +32,7 @@ export function MultiSelectSettingInput({
 						{label}
 					</Field.Label>
 					{hasResetButton && (
-						<ResetSettingButton
-							data-qa-reset-setting-id={_id}
-							onClick={onResetButtonClick}
-						/>
+						<ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />
 					)}
 				</Box>
 			</Flex.Container>
@@ -48,10 +45,7 @@ export function MultiSelectSettingInput({
 				readOnly={readonly}
 				// autoComplete={autocomplete === false ? 'off' : undefined}
 				onChange={handleChange}
-				options={values.map(({ key, i18nLabel }) => [
-					key,
-					t(i18nLabel),
-				])}
+				options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 			/>
 		</>
 	);

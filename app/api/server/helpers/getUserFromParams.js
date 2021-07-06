@@ -25,3 +25,28 @@ API.helperMethods.set('getUserFromParams', function _getUserFromParams() {
 
 	return user;
 });
+
+API.helperMethods.set('getUserListFromParams', function _getUserListFromParams() {
+	let users;
+	const params = this.requestParams();
+	// if params.userId is provided, include it as well
+	const soleUser = params.userId || params.username || params.user;
+	let userListParam = params.userIds || params.usernames || [];
+	userListParam.push(soleUser);
+	userListParam = userListParam.filter(Boolean);
+
+	// deduplicate to avoid errors
+	userListParam = [...new Set(userListParam)];
+
+	if (!userListParam.length) {
+		throw new Meteor.Error('error-users-params-not-provided', 'Please provide "userId" or "username" or "userIds" or "usernames" as param');
+	}
+
+	if (params.userIds || params.userId) {
+		users = Users.findByIds(userListParam);
+	} else {
+		users = Users.findByUsernamesIgnoringCase(userListParam);
+	}
+
+	return users.fetch();
+});

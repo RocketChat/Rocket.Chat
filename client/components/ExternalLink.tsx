@@ -5,9 +5,10 @@ type ExternalLinkProps = {
 	to: string;
 };
 
-const ExternalLink: FC<ExternalLinkProps> = ({ children, to, ...props }) =>
+const ExternalLink: FC<ExternalLinkProps> = ({ children, to, ...props }) => (
 	<Box is='a' href={to} target='_blank' rel='noopener noreferrer' {...props}>
 		{children || to}
-	</Box>;
+	</Box>
+);
 
 export default ExternalLink;

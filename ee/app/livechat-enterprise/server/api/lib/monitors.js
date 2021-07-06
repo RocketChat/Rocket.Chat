@@ -1,6 +1,7 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../../app/models/server/raw';
-import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 
 export async function findMonitors({ userId, text, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-monitors')) {

@@ -1,12 +1,7 @@
+import { Button, PositionAnimated, Options, useCursor, Box } from '@rocket.chat/fuselage';
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import {
-	Button,
-	PositionAnimated,
-	Options,
-	useCursor,
-	Box,
-} from '@rocket.chat/fuselage';
 
+import { useSetting } from '../contexts/SettingsContext';
 import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
@@ -21,27 +16,40 @@ const UserStatusMenu = ({
 
 	const [status, setStatus] = useState(initialStatus);
 
-	const options = useMemo(() => {
-		const renderOption = (status, label) => <Box display='flex' flexDirection='row' alignItems='center'>
-			<Box marginInlineEnd='x8'>
-				<UserStatus status={status} />
-			</Box>
-			{label}
-		</Box>;
+	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption');
 
-		return [
+	const options = useMemo(() => {
+		const renderOption = (status, label) => (
+			<Box display='flex' flexDirection='row' alignItems='center'>
+				<Box marginInlineEnd='x8'>
+					<UserStatus status={status} />
+				</Box>
+				{label}
+			</Box>
+		);
+
+		const statuses = [
 			['online', renderOption('online', t('Online'))],
 			['busy', renderOption('busy', t('Busy'))],
 			['away', renderOption('away', t('Away'))],
-			['offline', renderOption('offline', t('Invisible'))],
 		];
-	}, [t]);
 
-	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
-		setStatus(selected);
-		reset();
-		hide();
-	});
+		if (allowInvisibleStatus) {
+			statuses.push(['offline', renderOption('offline', t('Invisible'))]);
+		}
+
+		return statuses;
+	}, [t, allowInvisibleStatus]);
+
+	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(
+		-1,
+		options,
+		([selected], [, hide]) => {
+			setStatus(selected);
+			reset();
+			hide();
+		},
+	);
 
 	const ref = useRef();
 	const onClick = useCallback(() => {
@@ -49,11 +57,14 @@ const UserStatusMenu = ({
 		ref.current.classList.add('focus-visible');
 	}, [show]);
 
-	const handleSelection = useCallback(([selected]) => {
-		setStatus(selected);
-		reset();
-		hide();
-	}, [hide, reset]);
+	const handleSelection = useCallback(
+		([selected]) => {
+			setStatus(selected);
+			reset();
+			hide();
+		},
+		[hide, reset],
+	);
 
 	useEffect(() => onChange(status), [status, onChange]);
 
@@ -70,20 +81,10 @@ const UserStatusMenu = ({
 				onKeyDown={handleKeyDown}
 				{...props}
 			>
-				<UserStatus status={status}/>
+				<UserStatus status={status} />
 			</Button>
-			<PositionAnimated
-				width='auto'
-				visible={visible}
-				anchor={ref}
-				placement={placement}
-			>
-				<Options
-					width={optionWidth}
-					onSelect={handleSelection}
-					options={options}
-					cursor={cursor}
-				/>
+			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>
+				<Options width={optionWidth} onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>
 	);

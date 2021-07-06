@@ -5,13 +5,24 @@ import { ISubscription } from '../../../../definition/ISubscription';
 
 type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
-	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
+	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOneOptions<T> = {}): Promise<T | null> {
 		const query = {
 			rid,
 			'u._id': uid,
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
+		const query = {
+			'u._id': userId,
+			rid: {
+				$in: roomIds,
+			},
+		};
+
+		return this.find(query, options);
 	}
 
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
@@ -36,9 +47,9 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return cursor.count();
 	}
 
-	async isUserInRole(uid: string, roleName: string, rid: string): Promise<T | undefined> {
+	async isUserInRole(uid: string, roleName: string, rid: string): Promise<T | null> {
 		if (rid == null) {
-			return;
+			return null;
 		}
 
 		const query = {

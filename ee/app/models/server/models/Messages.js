@@ -24,4 +24,41 @@ Messages.prototype.createPriorityHistoryWithRoomIdMessageAndUser = function(room
 	return record;
 };
 
+
+Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function(roomId, comment, user) {
+	const type = 'omnichannel_placed_chat_on_hold';
+	const record = {
+		t: type,
+		rid: roomId,
+		ts: new Date(),
+		comment,
+		u: {
+			_id: user._id,
+			username: user.username,
+		},
+		groupable: false,
+	};
+
+	record._id = this.insertOrUpsert(record);
+	return record;
+};
+
+Messages.prototype.createOnHoldResumedHistoryWithRoomIdMessageAndUser = function(roomId, comment, user) {
+	const type = 'omnichannel_on_hold_chat_resumed';
+	const record = {
+		t: type,
+		rid: roomId,
+		ts: new Date(),
+		comment,
+		u: {
+			_id: user._id,
+			username: user.username,
+		},
+		groupable: false,
+	};
+
+	record._id = this.insertOrUpsert(record);
+	return record;
+};
+
 export default Messages;

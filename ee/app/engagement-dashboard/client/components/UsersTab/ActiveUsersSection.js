@@ -10,7 +10,7 @@ import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function ActiveUsersSection() {
+const ActiveUsersSection = () => {
 	const t = useTranslation();
 
 	const period = useMemo(() => ({
@@ -133,7 +133,11 @@ export function ActiveUsersSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveLine
 									data={[
 										{
@@ -237,4 +241,6 @@ export function ActiveUsersSection() {
 				: <Skeleton variant='rect' height={240} />}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default ActiveUsersSection;

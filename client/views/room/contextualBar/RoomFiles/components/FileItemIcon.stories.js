@@ -3,7 +3,7 @@ import React from 'react';
 import FileItemIcon from './FileItemIcon';
 
 export default {
-	title: 'components/RoomFiles/FileItemIcon',
+	title: 'room/contextualBar/RoomFiles/FileItemIcon',
 	component: FileItemIcon,
 };
 

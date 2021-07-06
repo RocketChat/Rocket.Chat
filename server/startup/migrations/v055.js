@@ -1,6 +1,7 @@
+import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import { Migrations } from '../../../app/migrations';
 import { Rooms, Messages } from '../../../app/models';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 Migrations.add({
 	version: 55,

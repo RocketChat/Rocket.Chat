@@ -3,7 +3,7 @@ import { settings } from '../../../../../app/settings/server';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add('afterSaveMessage', function(message, room) {
-	if (!settings.get('Livechat_auto_close_abandoned_rooms') || settings.get('Livechat_visitor_inactivity_timeout') <= 0) {
+	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none' || settings.get('Livechat_visitor_inactivity_timeout') <= 0) {
 		return message;
 	}
 	// skips this callback if the message was edited
@@ -23,4 +23,4 @@ callbacks.add('afterSaveMessage', function(message, room) {
 		setPredictedVisitorAbandonmentTime(room);
 	}
 	return message;
-}, callbacks.priority.HIGH, 'save-visitor-inactivity');
+}, callbacks.priority.MEDIUM, 'save-visitor-inactivity'); // This hook priority should always be less than the priority of hook "save-last-visitor-message-timestamp" bcs, the room.v.lastMessage property set there is being used here for determinting visitor abandonment

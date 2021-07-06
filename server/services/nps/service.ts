@@ -5,11 +5,11 @@ import { Db } from 'mongodb';
 import { NpsRaw } from '../../../app/models/server/raw/Nps';
 import { NpsVoteRaw } from '../../../app/models/server/raw/NpsVote';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
-import { NPSStatus, INpsVoteStatus, INpsVote } from '../../../definition/INps';
+import { NPSStatus, INpsVoteStatus, INpsVote, INps } from '../../../definition/INps';
 import { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { Banner, NPS } from '../../sdk';
-import { sendToCloud } from './sendToCloud';
+import { sendNpsResults } from './sendNpsResults';
 import { getBannerForAdmins, notifyAdmins } from './notification';
 
 export class NPSService extends ServiceClass implements INPSService {
@@ -128,7 +128,7 @@ export class NPSService extends ServiceClass implements INPSService {
 				total,
 				votes,
 			};
-			sendToCloud(nps._id, payload);
+			sendNpsResults(nps._id, payload);
 
 			this.NpsVote.updateVotesToSent(voteIds);
 		}
@@ -159,7 +159,7 @@ export class NPSService extends ServiceClass implements INPSService {
 			throw new Error('Invalid NPS id');
 		}
 
-		const nps = await this.Nps.findOneById(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
+		const nps = await this.Nps.findOneById<Pick<INps, 'status' | 'startAt' | 'expireAt'>>(npsId, { projection: { status: 1, startAt: 1, expireAt: 1 } });
 		if (!nps) {
 			return;
 		}

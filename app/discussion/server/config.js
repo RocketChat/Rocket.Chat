@@ -14,14 +14,6 @@ Meteor.startup(() => {
 		});
 	});
 
-	settings.add('Accounts_Default_User_Preferences_sidebarShowDiscussion', true, {
-		group: 'Accounts',
-		section: 'Accounts_Default_User_Preferences',
-		type: 'boolean',
-		public: true,
-		i18nLabel: 'Group_discussions',
-	});
-
 	const globalQuery = {
 		_id: 'RetentionPolicy_Enabled',
 		value: true,

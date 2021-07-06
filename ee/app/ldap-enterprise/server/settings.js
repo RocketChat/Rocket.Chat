@@ -52,6 +52,45 @@ export const createSettings = () => {
 			});
 		});
 
+		this.section('Team_Mapping', function() {
+			this.add('LDAP_Enable_LDAP_Groups_To_RC_Teams', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'LDAP_Enable', value: true },
+				enterprise: true,
+				invalidValue: false,
+				modules: [
+					'ldap-enterprise',
+				],
+			});
+			this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
+				type: 'code',
+				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
+				enterprise: true,
+				invalidValue: '{}',
+				modules: [
+					'ldap-enterprise',
+				],
+			});
+			this.add('LDAP_Validate_Teams_For_Each_Login', false, {
+				type: 'boolean',
+				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
+				enterprise: true,
+				invalidValue: false,
+				modules: [
+					'ldap-enterprise',
+				],
+			});
+			this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))', {
+				type: 'string',
+				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
+				enterprise: true,
+				invalidValue: '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))',
+				modules: [
+					'ldap-enterprise',
+				],
+			});
+		});
+
 		this.section('LDAP_Advanced_Sync', function() {
 			this.add('LDAP_Sync_User_Active_State', 'disable', {
 				type: 'select',

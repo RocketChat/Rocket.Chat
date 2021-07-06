@@ -8,7 +8,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
 
-function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick }) {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
 	const t = useTranslation();
 	const isLgScreen = useBreakpoints().includes('lg');
 
@@ -115,9 +115,9 @@ function ContentForHours({ displacement, onPreviousDateClick, onNextDateClick })
 			</Box>
 			: <Skeleton variant='rect' height={196} />}
 	</>;
-}
+};
 
-function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) {
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
 	const currentDate = useMemo(() => moment.utc().subtract(displacement, 'weeks'), [displacement]);
 	const formattedCurrentDate = useMemo(() => {
 		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
@@ -153,7 +153,11 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 				? <Box style={{ height: 196 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='day'
@@ -208,9 +212,9 @@ function ContentForDays({ displacement, onPreviousDateClick, onNextDateClick }) 
 				: <Skeleton variant='rect' height={196} />}
 		</Flex.Container>
 	</>;
-}
+};
 
-export function BusiestChatTimesSection() {
+const BusiestChatTimesSection = () => {
 	const t = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState('hours');
@@ -241,4 +245,6 @@ export function BusiestChatTimesSection() {
 			onNextDateClick={handleNextDateClick}
 		/>
 	</Section>;
-}
+};
+
+export default BusiestChatTimesSection;

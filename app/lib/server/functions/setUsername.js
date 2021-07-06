@@ -8,7 +8,6 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
-
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
 
 export const _setUsername = function(userId, u, fullUser) {

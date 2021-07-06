@@ -1,21 +1,12 @@
 import React, { FC } from 'react';
 
-import { useCollapse } from '../hooks/useCollapse';
-import { Attachment, AttachmentPropsBase } from '../Attachment';
-import Image, { Dimensions } from '../components/Image';
+import { ImageAttachmentProps } from '../../../../../definition/IMessage/MessageAttachment/Files/ImageAttachmentProps';
 import MarkdownText from '../../../MarkdownText';
-import { FileProp } from '..';
+import Attachment from '../Attachment';
+import Image from '../components/Image';
 import { useMediaUrl } from '../context/AttachmentContext';
+import { useCollapse } from '../hooks/useCollapse';
 import { useLoadImage } from '../hooks/useLoadImage';
-
-export type ImageAttachmentProps = {
-	image_dimensions: Dimensions;
-	image_preview?: string;
-	image_url: string;
-	image_type: string;
-	image_size?: number;
-	file?: FileProp;
-} & AttachmentPropsBase;
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	title,
@@ -34,16 +25,26 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	const [loadImage, setLoadImage] = useLoadImage();
 	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
-	return <Attachment>
-		<MarkdownText variant='inline' content={description} />
-		<Attachment.Row>
-			<Attachment.Title>{title}</Attachment.Title>
-			{size && <Attachment.Size size={size}/>}
-			{collapse}
-			{hasDownload && link && <Attachment.Download title={title} href={getURL(link)}/>}
-		</Attachment.Row>
-		{ !collapsed && <Attachment.Content>
-			<Image {...imageDimensions } loadImage={loadImage} setLoadImage={setLoadImage} src={ url} previewUrl={`data:image/png;base64,${ imagePreview }`} />
-		</Attachment.Content> }
-	</Attachment>;
+	return (
+		<Attachment>
+			{description && <MarkdownText variant='inline' content={description} />}
+			<Attachment.Row>
+				<Attachment.Title>{title}</Attachment.Title>
+				{size && <Attachment.Size size={size} />}
+				{collapse}
+				{hasDownload && link && <Attachment.Download title={title} href={getURL(link)} />}
+			</Attachment.Row>
+			{!collapsed && (
+				<Attachment.Content>
+					<Image
+						{...imageDimensions}
+						loadImage={loadImage}
+						setLoadImage={setLoadImage}
+						src={getURL(url)}
+						previewUrl={`data:image/png;base64,${imagePreview}`}
+					/>
+				</Attachment.Content>
+			)}
+		</Attachment>
+	);
 };

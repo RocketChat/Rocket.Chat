@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, useMemo } from 'react';
-import marked from 'marked';
 import dompurify from 'dompurify';
+import marked from 'marked';
+import React, { FC, useMemo } from 'react';
 
 type MarkdownTextParams = {
 	content: string;
@@ -21,12 +21,12 @@ marked.InlineLexer.rules.gfm = {
 };
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
-	`<a href="${ href }" target="_blank" rel="nofollow">${ text }</a> `;
+	`<a href="${href}" target="_blank" rel="nofollow">${text}</a> `;
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
-	const cleanText = text.replace(/<p.*?>|<\/p>/ig, '');
-	return `<li>${ cleanText }</li>`;
+	const cleanText = text.replace(/<p.*?>|<\/p>/gi, '');
+	return `<li>${cleanText}</li>`;
 };
 
 documentRenderer.link = linkMarked;
@@ -90,7 +90,14 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions]);
 
-	return __html ? <Box dangerouslySetInnerHTML={{ __html }} withTruncatedText={withTruncatedText} withRichContent={withRichContent} {...props} /> : null;
+	return __html ? (
+		<Box
+			dangerouslySetInnerHTML={{ __html }}
+			withTruncatedText={withTruncatedText}
+			withRichContent={withRichContent}
+			{...props}
+		/>
+	) : null;
 };
 
 export default MarkdownText;

@@ -10,9 +10,8 @@ import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { escapeHTML } from '../../../../lib/escapeHTML';
-
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
@@ -34,13 +33,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: escapeHTML(userData.email),
-			password: escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
@@ -259,7 +258,7 @@ export const saveUser = function(userId, userData) {
 
 		const updateUser = {
 			$set: {
-				roles: userData.roles || ['user'],
+				roles: userData.roles || getNewUserRoles(),
 				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
@@ -305,7 +304,7 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		if (!saveUserIdentity(userId, {
+		if (!saveUserIdentity({
 			_id: userData._id,
 			username: userData.username,
 			name: userData.name,

@@ -27,7 +27,7 @@ export const preferences = {
 		messageViewMode: 0,
 		hideUsernames: false,
 		hideRoles: false,
-		hideAvatars: false,
+		displayAvatars: true,
 		hideFlexTab: false,
 		sendOnEnter: 'normal',
 	},

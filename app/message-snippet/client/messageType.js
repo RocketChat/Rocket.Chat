@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { MessageTypes } from '../../ui-utils';
 
 Meteor.startup(function() {

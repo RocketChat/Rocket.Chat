@@ -1,21 +1,10 @@
 import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
-import { logger } from '../../../livechat-enterprise/server/lib/logger';
-import { addQueryRestrictionsToDepartmentsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;
 
-const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
-	const query = addQueryRestrictionsToDepartmentsModel(originalQuery);
-	logger.queries.debug(() => `LivechatDepartment.${ method } - ${ JSON.stringify(query) }`);
-	return originalFn.call(this, query, ...args);
-};
 
 overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
-	find: applyRestrictions('find'),
-	findOne: applyRestrictions('findOne'),
-	update: applyRestrictions('update'),
-	remove: applyRestrictions('remove'),
 	unfilteredFind(originalFn, ...args) {
 		return find.apply(this, args);
 	},

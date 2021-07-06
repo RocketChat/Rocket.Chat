@@ -3,7 +3,6 @@ import { UserPresence } from 'meteor/konecty:user-presence';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
-import { DDPCommon } from 'meteor/ddp-common';
 
 import { Logger, LoggerManager } from '../../app/logger';
 import { hasPermission } from '../../app/authorization';
@@ -172,31 +171,28 @@ function startStreamCastBroadcast(value) {
 		return authorizeConnection(instance);
 	};
 
-	connection._stream.on('message', function(raw_msg) {
-		const msg = DDPCommon.parseDDP(raw_msg);
-		if (!msg || msg.msg !== 'changed' || !msg.collection || !msg.fields) {
-			return;
-		}
+	connection.registerStore('broadcast-stream', {
+		update({ fields }) {
+			const { streamName, eventName, args } = fields;
 
-		const { streamName, eventName, args } = msg.fields;
+			if (!streamName || !eventName || !args) {
+				return;
+			}
 
-		if (!streamName || !eventName || !args) {
-			return;
-		}
+			if (connection.broadcastAuth !== true) {
+				return 'not-authorized';
+			}
 
-		if (connection.broadcastAuth !== true) {
-			return 'not-authorized';
-		}
+			const instance = StreamerCentral.instances[streamName];
+			if (!instance) {
+				return 'stream-not-exists';
+			}
 
-		const instance = StreamerCentral.instances[streamName];
-		if (!instance) {
-			return 'stream-not-exists';
-		}
-
-		if (instance.serverOnly) {
-			return instance.__emit(eventName, ...args);
-		}
-		return instance._emit(eventName, args);
+			if (instance.serverOnly) {
+				return instance.__emit(eventName, ...args);
+			}
+			return instance._emit(eventName, args);
+		},
 	});
 
 	return connection.subscribe('stream');

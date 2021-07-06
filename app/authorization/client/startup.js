@@ -12,7 +12,10 @@ import { registerAdminSidebarItem } from '../../../client/views/admin';
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(async () => {
 		const { roles } = await APIClient.v1.get('roles.list');
-		roles.forEach((role) => Roles.insert(role));
+		// if a role is checked before this collection is populated, it will return undefined
+		for await (const role of roles) {
+			await Roles.upsert({ _id: role._id }, role);
+		}
 	});
 
 	registerAdminSidebarItem({

@@ -58,7 +58,8 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload({ file, content }) {
+	validateFileUpload(fileData) {
+		const { file = fileData, content = Buffer.from([]) } = fileData;
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}

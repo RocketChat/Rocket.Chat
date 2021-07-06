@@ -12,6 +12,7 @@ import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobi
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { getMentions } from './notifyUsersOnMessage';
 
 let TroubleshootDisableNotifications;
 
@@ -233,10 +234,24 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return message;
 	}
 
-	const mentionIds = (message.mentions || []).map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
-	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
-	const hasMentionToAll = mentionIds.includes('all');
-	const hasMentionToHere = mentionIds.includes('here');
+	const {
+		toAll: hasMentionToAll,
+		toHere: hasMentionToHere,
+		mentionIds,
+	} = getMentions(message);
+
+	const mentionIdsWithoutGroups = [...mentionIds];
+
+	// getMentions removes `all` and `here` from mentionIds so we need to add them back for compatibility
+	if (hasMentionToAll) {
+		mentionIds.push('all');
+	}
+	if (hasMentionToHere) {
+		mentionIds.push('here');
+	}
+
+	// add users in thread to mentions array because they follow the same rules
+	mentionIds.push(...usersInThread);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {

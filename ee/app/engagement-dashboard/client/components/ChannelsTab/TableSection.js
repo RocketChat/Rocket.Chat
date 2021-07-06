@@ -8,7 +8,7 @@ import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function TableSection() {
+const TableSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -155,4 +155,6 @@ export function TableSection() {
 			/>
 		</Box>
 	</Section>;
-}
+};
+
+export default TableSection;

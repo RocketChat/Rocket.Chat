@@ -1,8 +1,7 @@
 import { Random } from 'meteor/random';
 import katex from 'katex';
+import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
-import { escapeHTML } from '../../../lib/escapeHTML';
-import { unescapeHTML } from '../../../lib/unescapeHTML';
 
 import 'katex/dist/katex.min.css';
 import './style.css';

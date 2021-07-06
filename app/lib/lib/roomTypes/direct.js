@@ -40,7 +40,7 @@ export class DirectMessageRoomType extends RoomTypeConfig {
 
 	getIcon(roomData) {
 		if (this.isGroupChat(roomData)) {
-			return 'team';
+			return 'balloon';
 		}
 		return this.icon;
 	}

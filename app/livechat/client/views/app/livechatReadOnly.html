@@ -1,8 +1,13 @@
 <template name="livechatReadOnly">
 	{{#if roomOpen}}
-		{{#if showPreview}}
-			{{#if isPreparing}}
-				{{> loading}}
+		{{#if isPreparing}}
+			{{> loading}}
+		{{else}}
+			{{#if isOnHold}}
+				<div class="rc-message-box__join">
+					{{{_ "chat_on_hold_due_to_inactivity"}}}
+					<button class="rc-button rc-button--primary rc-button--small rc-message-box__resume-it-button js-resume-it">{{_ "Resume"}}</button>
+				</div>
 			{{else}}
 				{{#if inquiryOpen}}
 					<div class="rc-message-box__join">

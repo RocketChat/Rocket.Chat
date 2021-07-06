@@ -101,22 +101,28 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			const uploadedFile = getUploadFile(details, smsUrl);
 			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
 
-			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+			const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
 			const attachment = {
-				message_link: url,
+				title: file.name,
+				type: 'file',
+				description: file.description,
+				title_link: fileUrl,
 			};
 
-			switch (contentType.substr(0, contentType.indexOf('/'))) {
-				case 'image':
-					attachment.image_url = url;
-					break;
-				case 'video':
-					attachment.video_url = url;
-					break;
-				case 'audio':
-					attachment.audio_url = url;
-					break;
+			if (/^image\/.+/.test(file.type)) {
+				attachment.image_url = fileUrl;
+				attachment.image_type = file.type;
+				attachment.image_size = file.size;
+				attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+			} else if (/^audio\/.+/.test(file.type)) {
+				attachment.audio_url = fileUrl;
+				attachment.audio_type = file.type;
+				attachment.audio_size = file.size;
+			} else if (/^video\/.+/.test(file.type)) {
+				attachment.video_url = fileUrl;
+				attachment.video_type = file.type;
+				attachment.video_size = file.size;
 			}
 
 			attachments = [attachment];

@@ -11,6 +11,7 @@ export class LivechatDepartment extends Base {
 
 		this.tryEnsureIndex({ name: 1 });
 		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ type: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,
@@ -91,12 +92,12 @@ export class LivechatDepartment extends Base {
 		return this.remove(query);
 	}
 
-	findEnabledWithAgents() {
+	findEnabledWithAgents(fields = undefined) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
 		};
-		return this.find(query);
+		return this.find(query, fields && { fields });
 	}
 
 	findOneByIdOrName(_idOrName, options) {

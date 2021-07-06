@@ -19,14 +19,16 @@
                 -> footer
                     ...
 ```
-each folder is composed by:
-    index.jsx
-    ContainerComponent.jsx
-    contexts    (optional)
-    providers   (optional)
-    components  (optional)
-    hooks       (optional)
-    libs        (optional)
+Each folder is composed by:
+| File ||
+| -- | -- |
+| index.jsx               |   |
+| ContainerComponent.jsx  |
+| contexts                |  (optional)  |
+| providers               |  (optional)  |
+| components              |  (optional)  |
+| hooks                   |  (optional)  |
+| libs                    |  (optional)  |
 
 We strongly suggest that you start developing your components/hooks/libs inside the folder where they will be directly used. If you ever find that you will use them in more than one place, then you should "promote" the code to an upper level, where it can be commonly accessed by all others
 

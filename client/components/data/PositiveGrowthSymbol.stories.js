@@ -6,17 +6,11 @@ import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 export default {
 	title: 'components/data/PositiveGrowthSymbol',
 	component: PositiveGrowthSymbol,
-	decorators: [
-		(fn) => <Box children={fn()} margin='x16' />,
-	],
+	decorators: [(fn) => <Box children={fn()} margin='x16' />],
 };
 
-export const Default = () =>
-	<PositiveGrowthSymbol />;
+export const Default = () => <PositiveGrowthSymbol />;
 
-export const WithColor = () =>
-	<PositiveGrowthSymbol />;
+export const WithColor = () => <PositiveGrowthSymbol />;
 
-WithColor.decorators = [
-	(storyFn) => <Box color='success'>{storyFn()}</Box>,
-];
+WithColor.decorators = [(storyFn) => <Box color='success'>{storyFn()}</Box>];

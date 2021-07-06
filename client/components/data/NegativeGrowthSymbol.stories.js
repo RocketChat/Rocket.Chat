@@ -6,15 +6,11 @@ import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 export default {
 	title: 'components/data/NegativeGrowthSymbol',
 	component: NegativeGrowthSymbol,
-	decorators: [
-		(fn) => <Box children={fn()} margin='x16' />,
-	],
+	decorators: [(fn) => <Box children={fn()} margin='x16' />],
 };
 
 export const Default = () => <NegativeGrowthSymbol />;
 
 export const WithColor = () => <NegativeGrowthSymbol />;
 
-WithColor.decorators = [
-	(storyFn) => <Box color='danger'>{storyFn()}</Box>,
-];
+WithColor.decorators = [(storyFn) => <Box color='danger'>{storyFn()}</Box>];

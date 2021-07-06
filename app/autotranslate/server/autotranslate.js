@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');

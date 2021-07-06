@@ -5,7 +5,9 @@ import { App } from '../types';
 
 export const useFilteredApps = ({
 	filterFunction = (text: string): ((app: App) => boolean) => {
-		if (!text) { return (): boolean => true; }
+		if (!text) {
+			return (): boolean => true;
+		}
 		return (app: App): boolean => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
 	},
 	text,

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ResetSettingButton } from './ResetSettingButton';
+import ResetSettingButton from './ResetSettingButton';
 
 export default {
 	title: 'admin/settings/ResetSettingsButton',

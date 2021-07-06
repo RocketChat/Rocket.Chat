@@ -1,13 +1,13 @@
-import { Divider } from '@rocket.chat/fuselage';
 import React from 'react';
+import { Divider } from '@rocket.chat/fuselage';
 
-import { MessagesSentSection } from './MessagesSentSection';
-import { MessagesPerChannelSection } from './MessagesPerChannelSection';
+import MessagesSentSection from './MessagesSentSection';
+import MessagesPerChannelSection from './MessagesPerChannelSection';
 
-export function MessagesTab() {
-	return <>
-		<MessagesSentSection />
-		<Divider />
-		<MessagesPerChannelSection />
-	</>;
-}
+const MessagesTab = () => <>
+	<MessagesSentSection />
+	<Divider />
+	<MessagesPerChannelSection />
+</>;
+
+export default MessagesTab;

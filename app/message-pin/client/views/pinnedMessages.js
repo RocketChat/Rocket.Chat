@@ -39,7 +39,7 @@ Template.pinnedMessages.onCreated(function() {
 			pinned: true,
 			rid: this.data.rid,
 			_updatedAt: {
-				$gt: new Date(),
+				$gte: new Date(),
 			},
 		};
 

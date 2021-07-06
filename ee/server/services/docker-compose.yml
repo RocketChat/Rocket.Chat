@@ -50,6 +50,45 @@ services:
       traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
       traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
 
+  ecdh-proxy-socket-service:
+    container_name: ecdh-proxy-socket-service
+    build:
+      context: .
+      args:
+        SERVICE: ecdh-proxy
+    image: rocketchat/ecdh-proxy-service:latest
+    env_file: .config/services/service.env
+    environment:
+      PROXY_HOST: ddp-streamer-service
+      STATIC_SEED: my seed
+    depends_on:
+      - nats
+      - traefik
+      - ddp-streamer-service
+    labels:
+      traefik.enable: true
+      traefik.http.services.ecdh-proxy-socket-service.loadbalancer.server.port: 3000
+      traefik.http.routers.ecdh-proxy-socket-service.service: ecdh-proxy-socket-service
+
+  ecdh-proxy-http-service:
+    container_name: ecdh-proxy-http-service
+    build:
+      context: .
+      args:
+        SERVICE: ecdh-proxy
+    image: rocketchat/ecdh-proxy-service:latest
+    env_file: .config/services/service.env
+    environment:
+      PROXY_HOST: host.docker.internal
+      STATIC_SEED: my seed
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.ecdh-proxy-http-service.loadbalancer.server.port: 3000
+      traefik.http.routers.ecdh-proxy-http-service.service: ecdh-proxy-http-service
+
   stream-hub-service:
     container_name: stream-hub-service
     build:

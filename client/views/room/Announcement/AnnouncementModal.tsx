@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
 import { Button, ButtonGroup, Box, Modal } from '@rocket.chat/fuselage';
+import React, { FC } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
 import MarkdownText from '../../../components/MarkdownText';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 type AnnouncementModalParams = {
 	onClose: () => void;
 	confirmLabel?: string;
 	children?: string;
-}
+};
 
 const AnnouncementModal: FC<AnnouncementModalParams> = ({
 	onClose,
@@ -22,10 +22,12 @@ const AnnouncementModal: FC<AnnouncementModalParams> = ({
 		<Modal {...props}>
 			<Modal.Header>
 				<Modal.Title>{t('Announcement')}</Modal.Title>
-				<Modal.Close onClick={onClose}/>
+				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<Box><MarkdownText content={children} /></Box>
+				<Box>
+					<MarkdownText content={children} />
+				</Box>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>

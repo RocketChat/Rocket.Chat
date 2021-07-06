@@ -15,7 +15,7 @@ import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
 
-integrations.triggerHandler = new class RocketChatIntegrationHandler {
+export class RocketChatIntegrationHandler {
 	constructor() {
 		this.vm = vm;
 		this.successResults = [200, 201, 202];
@@ -805,6 +805,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
-}();
-
-export { integrations };
+}
+const triggerHandler = new RocketChatIntegrationHandler();
+export { integrations, triggerHandler };

@@ -1,14 +1,10 @@
 import { Box, Button, ButtonGroup, Flex, Margins } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import ConnectionStatusAlert from '../../components/connectionStatus/ConnectionStatusAlert';
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 
 function NotFoundPage() {
-	useWipeInitialPageLoading();
-
 	const t = useTranslation();
 	const homeRoute = useRoute('home');
 
@@ -20,19 +16,27 @@ function NotFoundPage() {
 		homeRoute.push();
 	};
 
-	return <>
-		<ConnectionStatusAlert />
+	return (
 		<Flex.Container direction='column' justifyContent='center' alignItems='center'>
-			<Box is='section' width='full' minHeight='sh' textAlign='center' backgroundColor='neutral-800' style={{
-				backgroundImage: 'url(\'/images/404.svg\')',
-				backgroundRepeat: 'no-repeat',
-				backgroundPosition: 'center',
-				backgroundSize: 'cover',
-			}}>
+			<Box
+				is='section'
+				width='full'
+				minHeight='sh'
+				textAlign='center'
+				backgroundColor='neutral-800'
+				style={{
+					backgroundImage: "url('/images/404.svg')",
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center',
+					backgroundSize: 'cover',
+				}}
+			>
 				<Flex.Item>
 					<Box>
 						<Margins all='x12'>
-							<Box fontWeight='p2' fontSize='x64' color='alternative'>404</Box>
+							<Box fontWeight='p2' fontSize='x64' color='alternative'>
+								404
+							</Box>
 
 							<Box fontScale='h1' color='alternative'>
 								{t('Oops_page_not_found')}
@@ -44,14 +48,18 @@ function NotFoundPage() {
 						</Margins>
 
 						<ButtonGroup align='center' margin='x64'>
-							<Button type='button' primary onClick={handleGoToPreviousPageClick}>{t('Return_to_previous_page')}</Button>
-							<Button type='button' primary onClick={handleGoHomeClick}>{t('Return_to_home')}</Button>
+							<Button type='button' primary onClick={handleGoToPreviousPageClick}>
+								{t('Return_to_previous_page')}
+							</Button>
+							<Button type='button' primary onClick={handleGoHomeClick}>
+								{t('Return_to_home')}
+							</Button>
 						</ButtonGroup>
 					</Box>
 				</Flex.Item>
 			</Box>
 		</Flex.Container>
-	</>;
+	);
 }
 
 export default NotFoundPage;

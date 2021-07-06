@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../settings';
 
-Template.body.onRendered(() => {
-	Tracker.autorun((c) => {
+Template.body.onRendered(function() {
+	this.autorun((c) => {
 		const piwikUrl = settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url');
 		const piwikSiteId = piwikUrl && settings.get('PiwikAnalytics_siteId');
 		const piwikPrependDomain = piwikUrl && settings.get('PiwikAnalytics_prependDomain');

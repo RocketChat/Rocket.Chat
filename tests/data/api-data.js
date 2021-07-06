@@ -21,6 +21,12 @@ export const apiRoleNameSubscriptions = `api${ roleNameSubscriptions }`;
 export const apiRoleScopeUsers = `${ roleScopeUsers }`;
 export const apiRoleScopeSubscriptions = `${ roleScopeSubscriptions }`;
 export const apiRoleDescription = `api${ roleDescription }`;
+export const reservedWords = [
+	'admin',
+	'administrator',
+	'system',
+	'user',
+];
 
 export const targetUser = {};
 export const channel = {};

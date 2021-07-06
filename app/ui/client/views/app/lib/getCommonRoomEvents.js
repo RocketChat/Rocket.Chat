@@ -21,6 +21,7 @@ import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
+import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -313,7 +314,7 @@ export const getCommonRoomEvents = () => ({
 			if (Layout.isEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
-			FlowRouter.goToRoomById(channel);
+			goToRoomById(channel);
 			return;
 		}
 

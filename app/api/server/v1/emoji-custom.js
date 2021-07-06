@@ -4,6 +4,7 @@ import Busboy from 'busboy';
 import { EmojiCustom } from '../../../models';
 import { API } from '../api';
 import { findEmojisCustom } from '../lib/emoji-custom';
+import { Media } from '../../../../server/sdk';
 
 // DEPRECATED
 // Will be removed after v3.0.0
@@ -97,8 +98,14 @@ API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 					fields.newFile = true;
 					fields.aliases = fields.aliases || '';
 					try {
+						const emojiBuffer = Buffer.concat(emojiData);
+						const isUploadable = Promise.await(Media.isImage(emojiBuffer));
+						if (!isUploadable) {
+							throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
+						}
+
 						Meteor.call('insertOrUpdateEmoji', fields);
-						Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), emojiMimetype, fields);
+						Meteor.call('uploadEmojiCustom', emojiBuffer, emojiMimetype, fields);
 						callback();
 					} catch (error) {
 						return callback(error);
@@ -147,9 +154,15 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 						fields.previousExtension = emojiToUpdate.extension;
 						fields.aliases = fields.aliases || '';
 						fields.newFile = Boolean(emojiData.length);
+						const emojiBuffer = Buffer.concat(emojiData);
+						const isUploadable = Promise.await(Media.isImage(emojiBuffer));
+						if (!isUploadable) {
+							throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
+						}
+
 						Meteor.call('insertOrUpdateEmoji', fields);
 						if (emojiData.length) {
-							Meteor.call('uploadEmojiCustom', Buffer.concat(emojiData), emojiMimetype, fields);
+							Meteor.call('uploadEmojiCustom', emojiBuffer, emojiMimetype, fields);
 						}
 						callback();
 					} catch (error) {

@@ -7,7 +7,7 @@ import { Users } from '../../../models/server/raw/index';
 import { IUser } from '../../../../definition/IUser';
 
 const sendResetNotification = async function(uid: string): Promise<void> {
-	const user: IUser = await Users.findOneById(uid, { projection: { language: 1, emails: 1 } });
+	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, { projection: { language: 1, emails: 1 } });
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
 	}
