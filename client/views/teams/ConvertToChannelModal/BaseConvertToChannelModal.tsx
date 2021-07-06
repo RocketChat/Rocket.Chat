@@ -15,7 +15,7 @@ type BaseConvertToChannelModalProps = {
 	onCancel: () => void;
 	onConfirm: () => Array<IRoom>;
 	currentStep?: string;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms?: Array<IRoom & { isLastOwner?: string }>;
 	selectedRooms: { [key: string]: IRoom };
 };
 

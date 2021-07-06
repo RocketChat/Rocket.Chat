@@ -140,7 +140,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
 
-	const onClickConvertToChannel = useMutableCallback(async () => {
+	const onClickConvertToChannel = useMutableCallback(() => {
 		const onConfirm = async (roomsToRemove) => {
 			try {
 				await convertTeamToChannel({
