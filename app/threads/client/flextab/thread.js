@@ -54,7 +54,7 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-
+		console.log(tmid, Threads, Template.instance());
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
@@ -239,20 +239,20 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
-
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
 
 	this.loadMore = async () => {
-		const { tmid } = Tracker.nonreactive(() => this.state.all());
+		const { tmid, rid } = Tracker.nonreactive(() => this.state.all());
+
 		if (!tmid) {
 			return;
 		}
 
 		this.state.set('loading', true);
 
-		const messages = await call('getThreadMessages', { tmid });
+		const messages = await call('getThreadMessages', { tmid, rid });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 

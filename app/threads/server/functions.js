@@ -8,7 +8,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	}
 	console.log(tmid);
 	const { toAll, toHere, mentionIds } = getMentions(message);
-	console.log('eeeee');
+
 	const addToReplies = [
 		...new Set([
 			...followers,

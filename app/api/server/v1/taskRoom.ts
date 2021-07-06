@@ -149,7 +149,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			title: String,
 			rid: String,
 		});
-		console.log(task);
+
 		if (!this.userId || s.trim(task.title) === '') {
 			return false;
 		}
