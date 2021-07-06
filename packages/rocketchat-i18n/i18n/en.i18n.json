@@ -1589,7 +1589,7 @@
   "Enter_authentication_code": "Enter authentication code",
   "Enter_Behaviour": "Enter key Behaviour",
   "Enter_Behaviour_Description": "This changes if the enter key will send a message or do a line break",
-  "Enter_E2E_password_to_decode_your_key": "Enter E2E password to decode your key",
+  "Enter_E2E_password": "Enter E2E password",
   "Enter_name_here": "Enter name here",
   "Enter_Normal": "Normal mode (send with Enter)",
   "Enter_to": "Enter to",
