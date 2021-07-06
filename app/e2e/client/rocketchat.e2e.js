@@ -26,6 +26,8 @@ import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from './waitUntilFind';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import EnterE2EPasswordModal from './EnterE2EPasswordModal';
 
 let failedToDecodeKey = false;
 
@@ -295,24 +297,20 @@ class E2E extends Emitter {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			const showModal = () => {
-				modal.open({
-					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
-					type: 'input',
-					inputType: 'password',
-					html: true,
-					text: `<div>${ TAPi18n.__('E2E_password_request_text') }</div>`,
-					showConfirmButton: true,
-					showCancelButton: true,
-					confirmButtonText: TAPi18n.__('Decode_Key'),
-					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
-				}, (password) => {
-					if (password) {
-						this.closeAlert();
-						resolve(password);
-					}
-				}, () => {
-					failedToDecodeKey = false;
-					this.closeAlert();
+				imperativeModal.open({ component: EnterE2EPasswordModal,
+					props: {
+						onClose: imperativeModal.close,
+						onCancel: () => {
+							failedToDecodeKey = false;
+							this.closeAlert();
+							imperativeModal.close();
+						},
+						onConfirm: (password) => {
+							resolve(password);
+							this.closeAlert();
+							imperativeModal.close();
+						},
+					},
 				});
 			};
 
