@@ -13,7 +13,7 @@ Meteor.methods({
 		check(rid, Match.Maybe(String));
 		check(offset, Match.Optional(Number));
 		check(limit, Match.Optional(Number));
-		
+
 		// TODO: Evaluate why we are returning `users` and `channels`, as the only thing that gets set is the `messages`.
 		const result = {
 			message: {
