@@ -136,7 +136,7 @@ export class Users extends Base {
 	}
 
 	findOneOnlineAgentByUsername(username, options) { // TODO:: Create class Agent
-		const query = queryStatusAgentOnline({ username });
+		const query = queryStatusAgentOnline({ username: { $in: username } });
 
 		return this.findOne(query, options);
 	}
