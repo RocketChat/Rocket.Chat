@@ -50,10 +50,6 @@ export const MsgTyping = new class {
 			return;
 		}
 		rooms[rid] = function(username, typing) {
-			const user = Meteor.users.findOne(Meteor.userId(), { fields: { name: 1, username: 1 } });
-			if (username === shownName(user)) {
-				return;
-			}
 			const users = usersTyping.get(rid) || {};
 			if (typing === true) {
 				clearTimeout(users[username]);
