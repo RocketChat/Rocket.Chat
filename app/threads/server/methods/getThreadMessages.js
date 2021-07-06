@@ -39,7 +39,7 @@ Meteor.methods({
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, { ...skip && { skip }, ...limit && { limit }, sort: { ts: -1 } }).fetch();
-		console.log(thread, result);
+
 		return [thread, ...result];
 	},
 });

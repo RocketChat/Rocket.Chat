@@ -20,13 +20,13 @@ export function executeSendMessage(uid, message) {
 			method: 'sendMessage',
 		});
 	}
-
+	console.log(message);
 	if (message.tmid && !settings.get('Threads_enabled')) {
 		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',
 		});
 	}
-
+	console.log('10');
 	if (message.ts) {
 		const tsDiff = Math.abs(moment(message.ts).diff());
 		if (tsDiff > 60000) {
@@ -59,14 +59,15 @@ export function executeSendMessage(uid, message) {
 		},
 	});
 	let { rid } = message;
-
+	console.log('11');
 	// do not allow nested threads
 	if (message.tmid) {
 		const parentMessage = Messages.findOneById(message.tmid);
-		message.tmid = parentMessage.tmid || message.tmid;
-		rid = parentMessage.rid;
+		// TODO: correcting the parentMEssage rId
+		message.tmid = (parentMessage && parentMessage.tmid) || message.tmid;
+		rid = (parentMessage && parentMessage.rid) || message.rid;
 	}
-
+	console.log('13');
 	if (!rid) {
 		throw new Error('The \'rid\' property on the message object is missing.');
 	}
@@ -75,7 +76,7 @@ export function executeSendMessage(uid, message) {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		console.log(message);
+		console.log('sendMsg', message);
 		return sendMessage(user, message, room, false);
 	} catch (error) {
 		SystemLogger.error('Error sending message:', error);

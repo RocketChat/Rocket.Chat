@@ -11,7 +11,7 @@ const findParentMessage = (() => {
 	const waiting = [];
 	let resolve;
 	let pending = new Promise((r) => { resolve = r; });
-
+	console.log('1222222');
 	const getMessages = _.debounce(async function() {
 		const _tmp = [...waiting];
 		waiting.length = 0;
@@ -43,6 +43,7 @@ const findParentMessage = (() => {
 Template.messageThread.helpers({
 	parentMessage() {
 		const { parentMessage } = Template.instance();
+		console.log('parent', parentMessage);
 		if (parentMessage) {
 			return normalizeThreadTitle(parentMessage.get());
 		}
