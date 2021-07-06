@@ -32,6 +32,6 @@ Meteor.startup(function() {
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		order: 100,
-		group: ['message', 'menu'],
+		group: ['menu'],
 	});
 });
