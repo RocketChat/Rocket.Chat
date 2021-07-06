@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import GenericModal from '../../../../client/components/GenericModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -27,12 +27,11 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id }
 			console.log(error);
 		}
 		unitsRoute.push({});
-		reload();
 	});
 
 	const handleDelete = useMutableCallback((e) => {
 		e.stopPropagation();
-		const onDeleteAgent: () => Promise<void> = async () => {
+		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Unit_removed') });
@@ -41,8 +40,15 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id }
 			}
 			setModal(null);
 		};
-
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal(null)} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteCannedResponse}
+				onCancel={(): void => setModal(null)}
+				onClose={(): void => setModal(null)}
+				confirmText={t('Delete')}
+			></GenericModal>,
+		);
 	});
 
 	return (
