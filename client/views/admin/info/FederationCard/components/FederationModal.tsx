@@ -202,34 +202,29 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 					</Modal.Header>
 					<Modal.Content>
 						<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-							<Box style={{ fontWeight: 600 }}>Inviting users from a different server</Box>
+							<Box style={{ fontWeight: 600 }}>
+								{t('Federation_Inviting_users_from_another_server')}
+							</Box>
 							<Box style={{ marginTop: 20 }}>
-								Search for the user you want to connect using a combination of a username and a
-								domain or an e-mail address, like:
+								{t('Federation_Search_users_you_want_to_connect')}
 							</Box>
 							<Box style={{ marginTop: 20, paddingLeft: '1em' }}>
 								<ul style={{ listStyle: 'disc', listStylePosition: 'inside' }}>
-									<li>Username: myfriendsusername@anotherdomain.com</li>
-									<li>E-mail address: joseph@remotedomain.com</li>
+									<li>{t('Federation_Username')}</li>
+									<li>{t('Federation_Email')}</li>
 								</ul>
 							</Box>
 							<Box style={{ marginTop: 20 }}>
-								You will invite them to your server without login access. Also, you and everyone
-								else on your server will be able to chat with them.
+								{t('Federation_You_will_invite_users_without_login_access')}
 							</Box>
 							<ButtonGroup align='start' style={{ marginTop: 20 }}>
 								<Button primary small>
-									Invite User
+									{t('Federation_Invite_User')}
 								</Button>
 							</ButtonGroup>
 							<Banner style={{ marginTop: 20 }}>
-								<h2 style={{ fontWeight: 600 }}>
-									From now on, you can invite federated users only to private rooms or discussions.
-								</h2>
-								<p>
-									Those channels are going to be replicated to the remote server, without the
-									message history.
-								</p>
+								<h2 style={{ fontWeight: 600 }}>{t('Federation_Invite_Users_To_Private_Rooms')}</h2>
+								<p>{t('Federation_Channels_Will_Be_Replicated')}</p>
 							</Banner>
 						</Box>
 					</Modal.Content>
