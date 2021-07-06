@@ -614,6 +614,17 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
+	setEphemeralTime(rid, time) {
+		console.log('inside message model');
+		const query = { rid };
+		const update = {
+			$set: {
+				expireAt: time,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		if (snippeted == null) { snippeted = true; }
 		if (snippetedAt == null) { snippetedAt = 0; }

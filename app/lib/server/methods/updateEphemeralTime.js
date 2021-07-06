@@ -9,6 +9,7 @@ Meteor.methods({
 		check(rid, String);
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
+
 		console.log(room);
 		switch (newEphemeralTime) {
 			case '5mins':
@@ -31,7 +32,8 @@ Meteor.methods({
 				break;
 		}
 		const updated = Rooms.setEphemeralTime(rid, newEphemeralTime);
-		if (updated) {
+		const messages = Messages.setEphemeralTime(rid, newEphemeralTime);
+		if (updated && messages) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_ephemeral_time', rid, newEphemeralTime, user);
 		}
 

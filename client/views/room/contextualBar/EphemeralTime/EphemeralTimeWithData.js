@@ -34,7 +34,6 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 	);
 	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room));
 	const { updateRoomEphemeral, newEphemeralTime } = values;
-	console.log(formatDateAndTime(room.ephemeralTime));
 	const { handleUpdateRoomEphemeral, handleNewEphemeralTime } = handlers;
 	const timeOptions = [
 		['5mins', t('5_mins')],
