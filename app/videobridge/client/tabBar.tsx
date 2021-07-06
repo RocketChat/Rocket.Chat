@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import React, { useMemo, lazy, ReactNode } from 'react';
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { Option, Badge } from '@rocket.chat/fuselage';
@@ -6,6 +5,7 @@ import { Option, Badge } from '@rocket.chat/fuselage';
 import { useSetting } from '../../../client/contexts/SettingsContext';
 import { addAction, ToolboxActionConfig } from '../../../client/views/room/lib/Toolbox';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
+import { useUser } from '../../../client/contexts/UserContext';
 import Header from '../../../client/components/Header';
 
 const templateBBB = lazy(() => import('../../../client/views/room/contextualBar/Call/BBB'));
@@ -27,7 +27,7 @@ addAction('bbb_video', ({ room }) => {
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
 	].filter(Boolean) as ToolboxActionConfig['groups']);
-	const user = Meteor.user();
+	const user = useUser();
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
 
@@ -65,7 +65,7 @@ addAction('video', ({ room }) => {
 	const currentTime = new Date().getTime();
 	const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 	const live = jitsiTimeout > currentTime || null;
-	const user = Meteor.user();
+	const user = useUser();
 	const username = user ? user.username : '';
 	const enableOption = enabled && (!username || !room.muted?.includes(username));
 
