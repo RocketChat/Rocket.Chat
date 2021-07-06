@@ -19,21 +19,27 @@ export declare interface IMAPInterceptor {
 export class IMAPInterceptor extends EventEmitter {
 	private imap: IMAP;
 
+	private options: IMAPOptions;
+
 	constructor(
 		imapConfig: IMAP.Config,
-		private options: IMAPOptions = {
-			deleteAfterRead: false,
-			filter: ['UNSEEN'],
-			markSeen: true,
-		},
+		options?: Partial<IMAPOptions>,
 	) {
 		super();
 
 		this.imap = new IMAP({
 			connTimeout: 30000,
 			keepalive: true,
+			...imapConfig.tls && { tlsOptions: { servername: imapConfig.host } },
 			...imapConfig,
 		});
+
+		this.options = {
+			deleteAfterRead: false,
+			filter: ['UNSEEN'],
+			markSeen: true,
+			...options,
+		};
 
 		// On successfully connected.
 		this.imap.on('ready', () => {
@@ -83,8 +89,13 @@ export class IMAPInterceptor extends EventEmitter {
 	}
 
 	stop(callback = new Function()): void {
+		this.log('IMAP stop called');
 		this.imap.end();
-		this.imap.once('end', callback);
+		this.imap.once('end', () => {
+			this.log('IMAP stopped');
+			callback && callback();
+		});
+		callback && callback();
 	}
 
 	restart(): void {
