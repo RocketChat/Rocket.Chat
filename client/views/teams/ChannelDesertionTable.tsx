@@ -1,12 +1,24 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC, ReactElement } from 'react';
 
+import { IRoom } from '../../../definition/IRoom';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
 import ChannelRow from './contextualBar/ChannelRow';
 
-const ChannelDesertionTable = ({
+type ChannelDesertionTableProps = {
+	lastOwnerWarning: boolean | undefined;
+	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	eligibleRoomsLength: number | undefined;
+	params?: {};
+	onChangeParams?: () => void;
+	onChangeRoomSelection: (room: IRoom) => void;
+	selectedRooms: { [key: string]: IRoom };
+	onToggleAllRooms: () => void;
+};
+
+const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 	rooms,
 	eligibleRoomsLength,
 	params,
@@ -21,7 +33,10 @@ const ChannelDesertionTable = ({
 	const selectedRoomsLength = Object.values(selectedRooms).filter(Boolean).length;
 
 	const checked = eligibleRoomsLength === selectedRoomsLength;
-	const indeterminate = eligibleRoomsLength > selectedRoomsLength && selectedRoomsLength > 0;
+	const indeterminate =
+		eligibleRoomsLength && eligibleRoomsLength > selectedRoomsLength
+			? selectedRoomsLength > 0
+			: false;
 
 	const formatDate = useFormatDateAndTime();
 
@@ -51,7 +66,7 @@ const ChannelDesertionTable = ({
 				fixed={false}
 				pagination={false}
 			>
-				{(room, key) => (
+				{(room: IRoom, key: string): ReactElement => (
 					<ChannelRow
 						formatDate={formatDate}
 						room={room}

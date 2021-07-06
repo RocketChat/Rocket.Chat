@@ -54,8 +54,6 @@ const FirstStep: FC<FirstStepProps> = ({
 				lastOwnerWarning={undefined}
 				onToggleAllRooms={onToggleAllRooms}
 				rooms={rooms}
-				params={{}}
-				onChangeParams={(): void => undefined}
 				onChangeRoomSelection={onChangeRoomSelection}
 				selectedRooms={selectedRooms}
 				eligibleRoomsLength={eligibleRoomsLength}
