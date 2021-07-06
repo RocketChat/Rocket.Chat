@@ -10,8 +10,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useState, useMemo } from 'react';
 
-import DeleteSuccessModal from '../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -54,14 +53,16 @@ function EditOauthApp({ onChange, data, ...props }) {
 	const onDeleteConfirm = useCallback(async () => {
 		try {
 			await deleteApp(data._id);
+
+			const handleClose = () => {
+				setModal();
+				close();
+			};
+
 			setModal(() => (
-				<DeleteSuccessModal
-					children={t('Your_entry_has_been_deleted')}
-					onClose={() => {
-						setModal();
-						close();
-					}}
-				/>
+				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					{t('Your_entry_has_been_deleted')}
+				</GenericModal>
 			));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -70,15 +71,20 @@ function EditOauthApp({ onChange, data, ...props }) {
 
 	const openConfirmDelete = () =>
 		setModal(() => (
-			<DeleteWarningModal
-				children={t('Application_delete_warning')}
-				onDelete={onDeleteConfirm}
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteConfirm}
 				onCancel={() => setModal(undefined)}
-			/>
+				confirmText={t('Delete')}
+			>
+				{t('Application_delete_warning')}
+			</GenericModal>
 		));
 
-	const handleChange = (field, getValue = (e) => e.currentTarget.value) => (e) =>
-		setNewData({ ...newData, [field]: getValue(e) });
+	const handleChange =
+		(field, getValue = (e) => e.currentTarget.value) =>
+		(e) =>
+			setNewData({ ...newData, [field]: getValue(e) });
 
 	const { active, name, redirectUri } = newData;
 

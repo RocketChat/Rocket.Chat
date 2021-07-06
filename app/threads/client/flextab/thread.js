@@ -119,7 +119,7 @@ Template.thread.onRendered(function() {
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
 
-	this.chatMessages = new ChatMessages();
+	this.chatMessages = new ChatMessages(this.Threads);
 	this.chatMessages.initializeWrapper(this.find('.js-scroll-thread'));
 	this.chatMessages.initializeInput(this.find('.js-input-message'), { rid, tmid });
 

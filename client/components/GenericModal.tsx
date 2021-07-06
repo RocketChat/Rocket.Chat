@@ -12,6 +12,7 @@ type GenericModalProps = RequiredModalProps & {
 	confirmText?: string;
 	title?: string | ReactElement;
 	icon?: string | ReactElement | null;
+	confirmDisabled?: boolean;
 	onCancel?: () => void;
 	onClose: () => void;
 	onConfirm: () => void;
@@ -59,9 +60,10 @@ const GenericModal: FC<GenericModalProps> = ({
 	title,
 	icon,
 	onCancel,
-	onClose,
+	onClose = onCancel,
 	onConfirm,
 	dontAskAgain,
+	confirmDisabled,
 	...props
 }) => {
 	const t = useTranslation();
@@ -83,7 +85,7 @@ const GenericModal: FC<GenericModalProps> = ({
 								{cancelText ?? t('Cancel')}
 							</Button>
 						)}
-						<Button {...getButtonProps(variant)} onClick={onConfirm}>
+						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					</ButtonGroup>
