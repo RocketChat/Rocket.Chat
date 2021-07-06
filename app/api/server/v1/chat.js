@@ -86,6 +86,25 @@ API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 			return API.v1.failure('The "msgId" query parameter must be provided.');
 		}
 
+		if (this.queryParams.msgId.includes('taskId:')) {
+			let task;
+			const taskId = this.queryParams.msgId.split(':')[1];
+
+			Meteor.runAsUser(this.userId, () => {
+				task = Meteor.call('getSingleTask', taskId);
+			});
+
+			if (!task) {
+				return API.v1.failure();
+			}
+
+			const [taskNormalized] = normalizeMessagesForUser([task], this.userId);
+
+			return API.v1.success({
+				message: taskNormalized,
+			});
+		}
+
 		let msg;
 		Meteor.runAsUser(this.userId, () => {
 			msg = Meteor.call('getSingleMessage', this.queryParams.msgId);

@@ -18,7 +18,7 @@ function isIterable(obj) {
 }
 
 export default memo(function Task({
-	_id,
+	taskId,
 	following,
 	username,
 	name = username,
@@ -42,7 +42,7 @@ export default memo(function Task({
 		e.stopPropagation();
 		FlowRouter.setParams({
 			tab: 'thread',
-			context: _id,
+			context: `taskId:${taskId}`,
 		});
 	};
 
@@ -89,7 +89,7 @@ export default memo(function Task({
 					flexShrink={0}
 					ghost
 					data-following={following}
-					data-id={_id}
+					data-id={taskId}
 					onClick={handleFollowButton}
 					title={actionLabel}
 					aria-label={actionLabel}

@@ -64,7 +64,7 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 		if (body.params && typeof body.params !== 'string') {
 			return API.v1.failure('The parameters for the command must be a single string.');
 		}
-
+		console.log('run');
 		if (typeof body.roomId !== 'string') {
 			return API.v1.failure('The room\'s id where to execute this command must be provided and be a string.');
 		}

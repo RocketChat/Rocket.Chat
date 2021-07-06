@@ -1,4 +1,4 @@
-import { Messages, Subscriptions } from '../../models/server';
+import { Messages, Subscriptions, Tasks } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
@@ -6,9 +6,9 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	if (!tmid || editedAt) {
 		return false;
 	}
-
+	console.log(tmid);
 	const { toAll, toHere, mentionIds } = getMentions(message);
-
+	console.log('eeeee');
 	const addToReplies = [
 		...new Set([
 			...followers,
@@ -49,11 +49,13 @@ export const undoReply = ({ tmid }) => {
 	return Messages.updateThreadLastMessageAndCountByThreadId(tmid, ts, -1);
 };
 
-export const follow = ({ tmid, uid }) => {
+export const follow = ({ tmid, uid, task = false }) => {
 	if (!tmid || !uid) {
 		return false;
 	}
-
+	if (task) {
+		Tasks.addThreadFollowerByThreadId(tmid, uid);
+	}
 	Messages.addThreadFollowerByThreadId(tmid, uid);
 };
 

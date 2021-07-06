@@ -33,7 +33,7 @@ export default function TaskRoom({ rid, tasks }) {
 						<Task
 							title={task.title}
 							username={task.u.username}
-							_id={task._id}
+							taskId={task._id}
 							ts={task.ts}
 							key={task._id}
 						/>

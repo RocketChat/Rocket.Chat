@@ -41,6 +41,7 @@ import './methods/getRoomJoinCode';
 import './methods/getRoomRoles';
 import './methods/getServerInfo';
 import './methods/getSingleMessage';
+import './methods/getSingleTask';
 import './methods/getMessages';
 import './methods/getSlashCommandPreviews';
 import './methods/getUsernameSuggestion';

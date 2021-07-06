@@ -16,7 +16,7 @@ export const createSpotifyBeforeSaveMessageHandler = () => (message) => {
 	const urls = Array.isArray(message.urls) ? message.urls : [];
 
 	let changed = false;
-	console.log('ed');
+
 	process(message, message.msg, (message, msgParts, index, part) => {
 		const re = /(?:^|\s)spotify:([^:\s]+):([^:\s]+)(?::([^:\s]+))?(?::(\S+))?(?:\s|$)/g;
 
