@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import moment from 'moment';
 
-import { Rooms, Messages } from '../../../models';
+import { Rooms, Messages, Subscriptions } from '../../../models';
 
 Meteor.methods({
 	updateEphemeralRoom(rid, newEphemeralTime) {
@@ -33,7 +33,8 @@ Meteor.methods({
 		}
 		const updated = Rooms.setEphemeralTime(rid, newEphemeralTime);
 		const messages = Messages.setEphemeralTime(rid, newEphemeralTime);
-		if (updated && messages) {
+		const subscriptions = Subscriptions.setEphemeralTime(rid, newEphemeralTime);
+		if (updated && messages && subscriptions) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_ephemeral_time', rid, newEphemeralTime, user);
 		}
 

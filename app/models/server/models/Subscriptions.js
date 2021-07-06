@@ -224,6 +224,16 @@ export class Subscriptions extends Base {
 		return this.update(query, update);
 	}
 
+	setEphemeralTime(rid, time) {
+		const query = { rid };
+		const update = {
+			$set: {
+				ephemeralTime: time,
+			},
+		};
+		return this.update(query, update, { multi: true });
+	}
+
 	changeDepartmentByRoomId(rid, department) {
 		const query = {
 			rid,
