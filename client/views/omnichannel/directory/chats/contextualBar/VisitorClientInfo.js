@@ -11,22 +11,20 @@ import { FormSkeleton } from '../../Skeleton';
 
 const VisitorClientInfo = ({ uid }) => {
 	const t = useTranslation();
-	const {
-		value: userData,
-		phase: state,
-		error,
-	} = useEndpointData(`livechat/visitors.info?visitorId=${uid}`);
+	const { value: userData, phase: state, error } = useEndpointData(
+		`livechat/visitors.info?visitorId=${uid}`,
+	);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
 
-	if (error || !userData || !userData.userAgent) {
+	if (error || !userData || !userData.visitor.userAgent) {
 		return null;
 	}
 
 	const clientData = {};
 	const ua = new UAParser();
-	ua.setUA(userData.userAgent);
+	ua.setUA(userData.visitor.userAgent);
 	clientData.os = `${ua.getOS().name} ${ua.getOS().version}`;
 	clientData.browser = `${ua.getBrowser().name} ${ua.getBrowser().version}`;
 
