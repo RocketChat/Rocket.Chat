@@ -11,9 +11,11 @@ import { useMethod } from '../../../../contexts/ServerContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
+import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
 import LeaveTeamModal from './Leave';
 import TeamsInfo from './TeamsInfo';
@@ -34,6 +36,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 	const onClickClose = useTabBarClose();
 	const openTabbar = useTabBarOpen();
 	const t = useTranslation();
+	const userId = useUserId();
 
 	room.type = room.t;
 	room.rid = room._id;
@@ -56,6 +59,8 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const deleteTeam = useEndpointActionExperimental('POST', 'teams.delete');
 	const leaveTeam = useEndpointActionExperimental('POST', 'teams.leave');
+	const convertTeamToChannel = useEndpointActionExperimental('POST', 'teams.convertToChannel');
+
 	const hideTeam = useMethod('hideRoom');
 
 	const router = useRoute('home');
@@ -135,8 +140,36 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 
 	const onClickViewChannels = useCallback(() => openTabbar('team-channels'), [openTabbar]);
 
+	const onClickConvertToChannel = useMutableCallback(() => {
+		const onConfirm = async (roomsToRemove) => {
+			try {
+				await convertTeamToChannel({
+					teamId: room.teamId,
+					roomsToRemove: Object.keys(roomsToRemove),
+				});
+
+				dispatchToastMessage({ type: 'success', message: t('Success') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				closeModal();
+			}
+		};
+
+		setModal(
+			<ConvertToChannelModal
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={onConfirm}
+				teamId={room.teamId}
+				userId={userId}
+			/>,
+		);
+	});
+
 	return (
 		<TeamsInfo
+			{...room}
 			archived={archived}
 			broadcast={broadcast}
 			icon={'team'}
@@ -147,7 +180,7 @@ function TeamsInfoWithLogic({ room, openEditing }) {
 			onClickLeave={/* canLeave && */ onClickLeave}
 			onClickHide={/* joined && */ handleHide}
 			onClickViewChannels={onClickViewChannels}
-			{...room}
+			onClickConvertToChannel={canEdit && onClickConvertToChannel}
 			announcement={
 				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
 			}

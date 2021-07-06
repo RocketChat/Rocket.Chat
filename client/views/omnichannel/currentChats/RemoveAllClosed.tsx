@@ -1,10 +1,13 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, ...props }) => {
+const RemoveAllClosed: FC<{
+	handleClearFilters: any;
+	handleRemoveClosed: any;
+}> = ({ handleClearFilters, handleRemoveClosed, ...props }) => {
 	const t = useTranslation();
 	const canRemove = usePermission('remove-closed-livechat-rooms');
 

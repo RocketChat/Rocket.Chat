@@ -12,14 +12,16 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
+import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
-import RoomAutoComplete from '../../components/RoomAutoComplete';
-import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
+import RoomAutoComplete from '../RoomAutoComplete';
+import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
+import DefaultParentRoomField from './DefaultParentRoomField';
 
 type CreateDiscussionFormValues = {
 	name: string;
@@ -30,66 +32,55 @@ type CreateDiscussionFormValues = {
 };
 
 type CreateDiscussionProps = {
+	parentMessageId: IMessage['_id'];
 	onClose: () => void;
 	defaultParentRoom?: IRoom['_id'];
-	defaultParentRoomName?: string;
+	nameSuggestion?: string;
 };
 
-/*
- ** TO-DO: For other discussion creation locations, some default props should be provided
- ** such as the parent room or parent message. This component does not support this
- ** behavior at this time, but should be implemented when needed.
- */
-
-const CreateDiscussion = ({ onClose, defaultParentRoom }: CreateDiscussionProps): ReactElement => {
+const CreateDiscussion = ({
+	onClose,
+	defaultParentRoom,
+	parentMessageId,
+	nameSuggestion,
+}: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
 	const { values, handlers } = useForm({
-		name: '',
+		name: nameSuggestion || '',
 		parentRoom: '',
 		encrypted: false,
 		usernames: [],
 		firstMessage: '',
 	});
 
-	const {
-		name,
-		parentRoom,
-		encrypted,
-		usernames,
-		firstMessage,
-	} = values as CreateDiscussionFormValues;
+	const { name, parentRoom, encrypted, usernames, firstMessage } =
+		values as CreateDiscussionFormValues;
 
-	const {
-		handleName,
-		handleParentRoom,
-		handleEncrypted,
-		handleUsernames,
-		handleFirstMessage,
-	} = handlers;
+	const { handleName, handleParentRoom, handleEncrypted, handleUsernames, handleFirstMessage } =
+		handlers;
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
 	const createDiscussion = useEndpointActionExperimental('POST', 'rooms.createDiscussion');
 
-	const create = useMutableCallback(
-		async (): Promise<void> => {
-			try {
-				const result = await createDiscussion({
-					prid: defaultParentRoom || parentRoom,
-					// eslint-disable-next-line @typescript-eslint/camelcase
-					t_name: name,
-					users: usernames,
-					reply: encrypted ? undefined : firstMessage,
-				});
+	const create = useMutableCallback(async (): Promise<void> => {
+		try {
+			const result = await createDiscussion({
+				prid: defaultParentRoom || parentRoom,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				t_name: name,
+				users: usernames,
+				reply: encrypted ? undefined : firstMessage,
+				...(parentMessageId && { pmid: parentMessageId }),
+			});
 
-				goToRoomById(result?.discussion?.rid);
-				onClose();
-			} catch (error) {
-				console.warn(error);
-			}
-		},
-	);
+			goToRoomById(result?.discussion?.rid);
+			onClose();
+		} catch (error) {
+			console.warn(error);
+		}
+	});
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
@@ -115,12 +106,18 @@ const CreateDiscussion = ({ onClose, defaultParentRoom }: CreateDiscussionProps)
 					<Field>
 						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
 						<Field.Row>
-							<RoomAutoComplete
-								value={parentRoom}
-								onChange={handleParentRoom}
-								placeholder={t('Discussion_target_channel_description')}
-								disabled={defaultParentRoom}
-							/>
+							{defaultParentRoom && (
+								<DefaultParentRoomField defaultParentRoom={defaultParentRoom} />
+							)}
+
+							{!defaultParentRoom && (
+								<RoomAutoComplete
+									value={parentRoom}
+									onChange={handleParentRoom}
+									placeholder={t('Discussion_target_channel_description')}
+									disabled={defaultParentRoom}
+								/>
+							)}
 						</Field.Row>
 					</Field>
 					<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
