@@ -63,7 +63,6 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 				fileStore.model.updateFileNameById(file._id, username);
 			}
 		}
-
 		// update other references if either the name or username has changed
 		if (usernameChanged || nameChanged) {
 			// update name and fname of 1-on-1 direct messages
