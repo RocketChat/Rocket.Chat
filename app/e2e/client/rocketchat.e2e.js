@@ -1,4 +1,3 @@
-import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -28,7 +27,7 @@ import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from './waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import GenericModal from '../../../client/components/GenericModal';
+import SaveE2EPasswordModal from './SaveE2EPasswordModal';
 
 let failedToDecodeKey = false;
 
@@ -154,13 +153,9 @@ class E2E extends Emitter {
 				closable: false,
 				icon: 'key',
 				action: () => {
-					imperativeModal.open({ component: GenericModal,
+					imperativeModal.open({ component: SaveE2EPasswordModal,
 						props: {
-							variant: 'warning',
-							title: TAPi18n.__('Save_Your_Encryption_Password'),
-							children: <div dangerouslySetInnerHTML={{ __html: passwordRevealText }} />,
-							cancelText: TAPi18n.__('Do_It_Later'),
-							confirmText: TAPi18n.__('I_Saved_My_Password'),
+							passwordRevealText,
 							onClose: imperativeModal.close,
 							onCancel: () => {
 								this.closeAlert();
