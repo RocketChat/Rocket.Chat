@@ -42,19 +42,23 @@ export function updateOutOfOffice({
 		);
 	}
 
-	const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
-		userId,
-		startDate,
-		endDate,
-		customMessage,
-		isEnabled,
-		roomIds,
-		sentRoomIds: [],
-	});
+	(Promise as any).await( Promise.all(roomIds.map(async roomId=>{
+		const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
+			userId,
+			startDate,
+			endDate,
+			customMessage,
+			isEnabled,
+			roomId,
+		});
+		
+		if (!upsertResult || upsertResult.numberAffected !== 1) {
+			throw new Meteor.Error('error-database-error');
+		}
 
-	if (!upsertResult || upsertResult.numberAffected !== 1) {
-		throw new Meteor.Error('error-database-error');
-	}
-
+	})).catch(e=>{
+		console.log('error in promise all ',e);
+	}));
+	
 	return { message: 'Successfully Enabled Out Of Office' };
 }

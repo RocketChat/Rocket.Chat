@@ -9,7 +9,7 @@ class OutOfOffice extends Base {
 	createWithFullOutOfOfficeData(
 		data: Omit<IOutOfOffice, '_id'>,
 	): Record<string, unknown> {
-		return this.upsert({ userId: data.userId }, { ...data });
+		return this.upsert({ userId: data.userId, roomId:data.roomId }, { ...data });
 	}
 
 	// find
@@ -27,8 +27,9 @@ class OutOfOffice extends Base {
 		return this.update({ _id: docId }, { $push: { sentRoomIds: roomId } });
 	  }
 
+	  /**set all documents matching this **userId** to `isEnabled: false` */
 	setDisabled(userId: string): number {
-		return this.update({ userId }, { $set: { isEnabled: false } });
+		return this.update({ userId }, { $set: { isEnabled: false } }, {multi:true});
 	}
 }
 
@@ -36,9 +37,8 @@ export interface IOutOfOffice {
 	_id: string;
 	isEnabled: boolean;
 	userId: string;
-	roomIds: string[];
+	roomId: string;
 	customMessage: string;
-	sentRoomIds: string[];
 	startDate: string;
 	endDate: string;
 }
