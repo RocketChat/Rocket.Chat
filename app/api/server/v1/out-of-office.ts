@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
@@ -21,16 +20,6 @@ API.v1.addRoute(
 				}),
 			);
 
-			if (isNaN(Date.parse(this.bodyParams.startDate)) || isNaN(Date.parse(this.bodyParams.endDate))) {
-				throw new Meteor.Error('error-invalid-date', 'The "startDate" and "endDate" must be  valid dates.');
-			}
-
-			const { startDate, endDate } = this.bodyParams;
-
-			if (startDate && endDate && startDate > endDate) {
-				throw new Meteor.Error('error-invalid-date', 'Your Start data has to be before the End Date');
-			}
-
 			const { message } = updateOutOfOffice({
 				userId: this.userId,
 				...this.bodyParams,
@@ -46,14 +35,16 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
-			const foundDocument = OutOfOffice.findOneByUserId(this.userId, {
+			const foundDocuments = OutOfOffice.findAllByUserId(this.userId, {
 				isEnabled: 1,
-				roomIds: 1,
+				roomId: 1,
 				customMessage: 1,
+				startDate: 1,
+				endDate: 1,
 			});
 
 			// need to subtract the offset here
-			if (!foundDocument) {
+			if (!foundDocuments || !Array.isArray(foundDocuments) || foundDocuments.length === 0) {
 				return API.v1.success({
 					error: 'error-not-found',
 					details:
@@ -61,7 +52,10 @@ API.v1.addRoute(
 				});
 			}
 
-			return API.v1.success(foundDocument);
+			const roomIds = foundDocuments.filter(foundDocument=>foundDocument.roomId!==null).map(foundDocument=>foundDocument.roomId);
+			const statusDocument = foundDocuments.find(foundDocument=>foundDocument.roomId===null);
+
+			return API.v1.success({roomIds,isEnabled:statusDocument?.isEnabled,startDate:statusDocument?.startDate,endDate:statusDocument?.endDate,customMessage:statusDocument?.customMessage});
 		},
 	},
 );

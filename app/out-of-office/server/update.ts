@@ -42,8 +42,16 @@ export function updateOutOfOffice({
 		);
 	}
 
+	if (isNaN(Date.parse(startDate)) || isNaN(Date.parse(endDate))) {
+		throw new Meteor.Error('error-invalid-date', 'The "startDate" and "endDate" must be  valid dates.');
+	}
+
+	if (startDate && endDate && startDate > endDate) {
+		throw new Meteor.Error('error-invalid-date', 'Your Start data has to be before the End Date');
+	}
+
 	(Promise as any).await( Promise.all(roomIds.map(async roomId=>{
-		const upsertResult = OutOfOffice.createWithFullOutOfOfficeData({
+		 OutOfOffice.createWithFullOutOfOfficeData({
 			userId,
 			startDate,
 			endDate,
@@ -52,13 +60,13 @@ export function updateOutOfOffice({
 			roomId,
 		});
 		
-		if (!upsertResult || upsertResult.numberAffected !== 1) {
-			throw new Meteor.Error('error-database-error');
-		}
-
 	})).catch(e=>{
-		console.log('error in promise all ',e);
+		throw new Meteor.Error('error-database-error',JSON.stringify(e));
 	}));
+
+	// the dummy data
+
+	OutOfOffice.createWithFullOutOfOfficeData({userId,startDate,endDate,customMessage,isEnabled,roomId:null} as any)
 	
 	return { message: 'Successfully Enabled Out Of Office' };
 }
