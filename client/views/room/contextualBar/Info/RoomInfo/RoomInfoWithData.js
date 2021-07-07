@@ -17,7 +17,6 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import WarningModal from '../../../../admin/apps/WarningModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../ConvertToTeamModal';
 import RoomInfo from './RoomInfo';
 
 const retentionPolicyMaxAge = {
@@ -180,7 +179,18 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 		};
 
-		setModal(<ConvertToTeamModal onClose={closeModal} onConfirm={onConfirm} />);
+		setModal(
+			<GenericModal
+				title={t('Confirmation')}
+				variant='warning'
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={onConfirm}
+				confirmText={t('Convert')}
+			>
+				{t('Converting_channel_to_a_team')}
+			</GenericModal>,
+		);
 	});
 
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
