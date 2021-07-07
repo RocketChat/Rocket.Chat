@@ -19,7 +19,7 @@ class OutOfOffice extends Base {
 	}
 
 	findAllFromRoomId(roomId:string):Pick<IOutOfOffice,'customMessage'|'userId'|'_id'>[]{
-		return this.find({isEnabled:true, roomId},{customMessage:1,userId:1});
+		return this.find({isEnabled:true, roomId},{fields:{customMessage:1,userId:1}}).fetch();
 	}
 
 	// update
