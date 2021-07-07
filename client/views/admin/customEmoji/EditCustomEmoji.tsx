@@ -62,12 +62,20 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 	);
 
 	const handleSave = useCallback(async () => {
+		const formData = new FormData();
 		if (!emojiFile) {
-			return;
+			const loc = newEmojiPreview || '';
+			const res = await fetch(loc);
+			const data = await res.blob();
+			const file = new File([data], `${name}.JPG`, {
+				type: 'image/jpeg',
+				lastModified: Date.now(),
+			});
+			formData.append('emoji', file);
+		} else {
+			formData.append('emoji', emojiFile);
 		}
 
-		const formData = new FormData();
-		formData.append('emoji', emojiFile);
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
