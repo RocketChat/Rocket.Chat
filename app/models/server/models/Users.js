@@ -174,10 +174,16 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId) { // TODO: Create class Agent
+	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
+		// fetch all available agents (available = haven't reached max active chats)
+		const availableAgents = Promise.await(this.getAgentLoadByUsernames(null, extraQuery));
+		const availableUsernames = availableAgents.map((u) => u.username);
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+			// limit query to consider only those agents
+			username: { $in: availableUsernames },
 		};
+
 		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
@@ -203,6 +209,20 @@ export class Users extends Base {
 		}
 		return null;
 	}
+
+	// get next agent ignoring the ones reached the max amount of active chats
+	getAgentLoadByUsernames(usernames, customFilter) {
+		const usernameFilter = Array.isArray(usernames) ? { username: { $in: usernames } } : {};
+		const col = this.model.rawCollection();
+		return col.aggregate([
+			{ $match: { ...usernameFilter, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
+			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
+			{ $project: { agentId: '$_id', 'livechat.maxNumberSimultaneousChat': 1, username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
+			...customFilter ? [customFilter] : [],
+			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
+		]).toArray();
+	}
+
 
 	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {

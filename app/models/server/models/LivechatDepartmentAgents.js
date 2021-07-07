@@ -54,7 +54,7 @@ export class LivechatDepartmentAgents extends Base {
 		this.remove({ departmentId });
 	}
 
-	getNextAgentForDepartment(departmentId, ignoreAgentId) {
+	getNextAgentForDepartment(departmentId, ignoreAgentId, extraQuery) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 
 		if (agents.length === 0) {
@@ -65,10 +65,13 @@ export class LivechatDepartmentAgents extends Base {
 
 		const onlineUsernames = _.pluck(onlineUsers.fetch(), 'username');
 
+		// get the current agent load, sorted by the username & current chat count
+		const currentAvailableAgents = Promise.await(Users.getAgentLoadByUsernames(onlineUsernames, extraQuery));
+
 		const query = {
 			departmentId,
 			username: {
-				$in: onlineUsernames,
+				$in: currentAvailableAgents.map((u) => u.username),
 			},
 			...ignoreAgentId && { agentId: { $ne: ignoreAgentId } },
 		};
