@@ -66,13 +66,14 @@ export const useStreamUpdatesForMessageList = (
 			},
 		);
 
-		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
-			`${rid}/deleteMessageBulk`,
-			(params) => {
-				const matchDeleteCriteria = createDeleteCriteria(params);
-				messageList.prune(matchDeleteCriteria);
-			},
-		);
+		const unsubscribeFromDeleteMessageBulk =
+			subscribeToNotifyRoom<NotifyRoomRidDeleteMessageBulkEvent>(
+				`${rid}/deleteMessageBulk`,
+				(params) => {
+					const matchDeleteCriteria = createDeleteCriteria(params);
+					messageList.prune(matchDeleteCriteria);
+				},
+			);
 
 		return (): void => {
 			unsubscribeFromRoomMessages();

@@ -10,7 +10,7 @@ import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useUser } from '../../contexts/UserContext';
+import { useUser, useLogout } from '../../contexts/UserContext';
 import { useForm } from '../../hooks/useForm';
 import { useUpdateAvatar } from '../../hooks/useUpdateAvatar';
 import AccountProfileForm from './AccountProfileForm';
@@ -37,9 +37,10 @@ const AccountProfilePage = () => {
 
 	const user = useUser();
 
-	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user));
+	const { values, handlers, hasUnsavedChanges, commit } = useForm(getInitialValues(user ?? {}));
 	const [canSave, setCanSave] = useState(true);
 	const setModal = useSetModal();
+	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
 	const logoutOtherClients = useMethod('logoutOtherClients');
@@ -114,7 +115,7 @@ const AccountProfilePage = () => {
 
 	const { handleAvatar, handlePassword, handleConfirmationPassword } = handlers;
 
-	const updateAvatar = useUpdateAvatar(avatar, user._id);
+	const updateAvatar = useUpdateAvatar(avatar, user?._id);
 
 	const onSave = useCallback(async () => {
 		const save = async (typedPassword) => {
@@ -192,6 +193,7 @@ const AccountProfilePage = () => {
 			try {
 				await deleteOwnAccount(SHA256(passwordOrUsername));
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+				logout();
 			} catch (error) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
@@ -233,7 +235,16 @@ const AccountProfilePage = () => {
 				text={t('If_you_are_sure_type_in_your_username')}
 			/>
 		));
-	}, [closeModal, deleteOwnAccount, dispatchToastMessage, erasureType, localPassword, t, setModal]);
+	}, [
+		closeModal,
+		deleteOwnAccount,
+		dispatchToastMessage,
+		erasureType,
+		localPassword,
+		t,
+		logout,
+		setModal,
+	]);
 
 	return (
 		<Page>
@@ -249,7 +260,7 @@ const AccountProfilePage = () => {
 					<AccountProfileForm
 						values={values}
 						handlers={handlers}
-						user={user}
+						user={user ?? { emails: [] }}
 						settings={settings}
 						onSaveStateChange={setCanSave}
 					/>

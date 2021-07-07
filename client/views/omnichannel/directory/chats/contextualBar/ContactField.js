@@ -18,9 +18,11 @@ const ContactField = ({ contact, room }) => {
 	const { fname, t: type } = room;
 	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
 
-	const { value: data, phase: state, error } = useEndpointData(
-		`livechat/visitors.info?visitorId=${contact._id}`,
-	);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(`livechat/visitors.info?visitorId=${contact._id}`);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
