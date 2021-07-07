@@ -11,9 +11,11 @@ import { FormSkeleton } from '../../Skeleton';
 
 const VisitorClientInfo = ({ uid }) => {
 	const t = useTranslation();
-	const { value: userData, phase: state, error } = useEndpointData(
-		`livechat/visitors.info?visitorId=${uid}`,
-	);
+	const {
+		value: userData,
+		phase: state,
+		error,
+	} = useEndpointData(`livechat/visitors.info?visitorId=${uid}`);
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
