@@ -21,6 +21,7 @@ Meteor.methods({
 
 		if (room.taskRoomId) {
 			thread = Tasks.findOneById(tmid);
+			thread.msg = thread.title;
 		} else {
 			thread = Messages.findOneById(tmid);
 		}

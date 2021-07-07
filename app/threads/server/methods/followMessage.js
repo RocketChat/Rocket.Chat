@@ -7,8 +7,9 @@ import { settings } from '../../../settings/server';
 import { follow } from '../functions';
 
 Meteor.methods({
-	'followMessage'({ mid }) {
+	'followMessage'({ mid, taskRoom }) {
 		check(mid, String);
+
 
 		const uid = Meteor.userId();
 		if (!uid) {

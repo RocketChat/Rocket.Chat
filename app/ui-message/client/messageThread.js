@@ -43,7 +43,7 @@ const findParentMessage = (() => {
 Template.messageThread.helpers({
 	parentMessage() {
 		const { parentMessage } = Template.instance();
-		console.log('parent', parentMessage);
+
 		if (parentMessage) {
 			return normalizeThreadTitle(parentMessage.get());
 		}

@@ -46,6 +46,7 @@ Template.thread.helpers({
 	mainMessage() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
+
 		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
@@ -83,7 +84,7 @@ Template.thread.helpers({
 			...!following && {
 				customAction: {
 					template: 'messageBoxFollow',
-					data: { tmid },
+					data: { tmid, taskRoomId: subscription.taskRoomId },
 				},
 			},
 			rid,

@@ -193,7 +193,7 @@ API.v1.addRoute('chat.sendMessage', { authRequired: true }, {
 		if (!this.bodyParams.message) {
 			throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 		}
-		console.log('chat.sendMessage');
+
 		const sent = executeSendMessage(this.userId, this.bodyParams.message);
 		const [message] = normalizeMessagesForUser([sent], this.userId);
 

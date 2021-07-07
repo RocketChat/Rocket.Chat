@@ -9,7 +9,7 @@ import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { useThreadsList } from './useThreadsList';
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
-const roomFields = { t: 1, name: 1 };
+const roomFields = { t: 1, name: 1, taskRoomId: 1 };
 
 export function withData(Component) {
 	const WrappedComponent = ({ rid, ...props }) => {

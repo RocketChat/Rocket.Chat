@@ -6,7 +6,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	if (!tmid || editedAt) {
 		return false;
 	}
-	console.log(tmid);
+
 	const { toAll, toHere, mentionIds } = getMentions(message);
 
 	const addToReplies = [
