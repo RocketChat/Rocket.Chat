@@ -121,6 +121,10 @@ Template.DefaultSearchResultTemplate.helpers({
 	},
 	messageContext() {
 		const result = messageContext.call(this, { rid: Session.get('openedRoom') });
+		const toReturn = result;
+		if (toReturn.room.fname) {
+			toReturn.subscription.name = toReturn.room.fname;
+		}
 		return {
 			...result,
 			settings: {
