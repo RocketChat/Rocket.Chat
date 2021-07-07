@@ -587,6 +587,16 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 	}
 };
 
+export const handleSequential = (message) => {
+	const currentNode = $(`#${ message._id }`);
+	const nextNode = currentNode.next();
+	if (!currentNode.hasClass('sequential')) {
+		if (nextNode !== undefined && nextNode !== null && nextNode.hasClass('sequential')) {
+			nextNode.removeClass('sequential');
+		}
+	}
+};
+
 Template.message.onRendered(function() {
 	const currentNode = this.firstNode;
 	this.autorun(() => processSequentials({ currentNode, ...Template.currentData() }));

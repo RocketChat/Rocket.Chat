@@ -27,10 +27,10 @@ import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
+import { handleSequential } from '../../../ui-message/client/message';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
-
 
 const messageBoxState = {
 	saveValue: _.debounce(({ rid, tmid }, value) => {
@@ -469,6 +469,8 @@ export class ChatMessages {
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
+
+			handleSequential(message);
 
 			this.deleteMsg(message);
 
