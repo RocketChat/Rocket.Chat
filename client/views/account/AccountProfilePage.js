@@ -224,7 +224,7 @@ const AccountProfilePage = () => {
 			} catch (error) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
-					handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
+					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
