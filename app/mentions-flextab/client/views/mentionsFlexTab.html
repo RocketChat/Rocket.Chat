@@ -1,9 +1,11 @@
 <template name="mentionsFlexTab">
 	{{#if Template.subscriptionsReady}}
-		{{#unless hasMessages}}
-			<div class="list-view mentioned-messages-list flex-tab__header">
-				<h2>{{_ "No_mentions_found"}}</h2>
-			</div>
+		{{#unless hasMore}}
+			{{#unless hasMessages}}
+				<div class="list-view mentioned-messages-list flex-tab__header">
+					<h2>{{_ "No_mentions_found"}}</h2>
+				</div>
+			{{/unless}}
 		{{/unless}}
 	{{/if}}
 	<div class="flex-tab__result js-list">

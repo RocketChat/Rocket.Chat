@@ -1,9 +1,11 @@
 <template name="pinnedMessages">
 	{{#if Template.subscriptionsReady}}
-		{{#unless hasMessages}}
-			<div class="list-view pinned-messages-list flex-tab__header">
-					<h2>{{_ "No_pinned_messages"}}</h2>
-			</div>
+		{{#unless hasMore}}
+			{{#unless hasMessages}}
+				<div class="list-view pinned-messages-list flex-tab__header">
+						<h2>{{_ "No_pinned_messages"}}</h2>
+				</div>
+			{{/unless}}
 		{{/unless}}
 	{{/if}}
 	<div class="flex-tab__result pinned-messages-list js-list">
