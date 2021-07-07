@@ -16,11 +16,9 @@ import CannedResponseFilter from './CannedResponseFilter';
 import CannedResponsesPage from './CannedResponsesPage';
 import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 
-
 const CannedResponsesRoute = (): FC => {
 	const t = useTranslation();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
-
 
 	const { values, handlers } = useForm({
 		sharing: '',
@@ -38,17 +36,7 @@ const CannedResponsesRoute = (): FC => {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const debouncedText = useDebouncedValue(text, 500);
-	// () => ({
-	// 	fields: JSON.stringify({ name: 1 }),
-	// 	text,
-	// 	sort: JSON.stringify({
-	// 		[column]: sortDir(direction),
-	// 		usernames: column === 'name' ? sortDir(direction) : undefined,
-	// 	}),
-	// 	...(itemsPerPage && { count: itemsPerPage }),
-	// 	...(current && { offset: current }),
-	// }),
-	// [text, itemsPerPage, current, column, direction],
+
 	const query = useMemo(
 		() => ({
 			text: debouncedText,
@@ -76,14 +64,15 @@ const CannedResponsesRoute = (): FC => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => (): void =>
-		cannedResponsesRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => (): void =>
+			cannedResponsesRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
-	const { value: data, phase: state, error } = useEndpointData('canned-responses', query);
+	const { value: data } = useEndpointData('canned-responses', query);
 
 	console.log(data);
 
@@ -204,16 +193,18 @@ const CannedResponsesRoute = (): FC => {
 	return (
 		<CannedResponsesPage
 			setParams={setParams}
-			renderFilter={() => (<CannedResponseFilter
-				sharingValue={sharing}
-				createdByValue={createdBy}
-				tagsValue={tags}
-				shortcutValue={text}
-				setSharing={handleSharing}
-				setCreatedBy={handleCreatedBy}
-				setTags={handleTags}
-				setShortcut={handleText}
-			/>)}
+			renderFilter={() => (
+				<CannedResponseFilter
+					sharingValue={sharing}
+					createdByValue={createdBy}
+					tagsValue={tags}
+					shortcutValue={text}
+					setSharing={handleSharing}
+					setCreatedBy={handleCreatedBy}
+					setTags={handleTags}
+					setShortcut={handleText}
+				/>
+			)}
 			params={params}
 			onHeaderClick={onHeaderClick}
 			data={data}
