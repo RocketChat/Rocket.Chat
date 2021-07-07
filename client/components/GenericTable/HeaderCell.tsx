@@ -1,5 +1,5 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { FC, useCallback } from 'react';
+import React, { ComponentProps, FC, useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
@@ -8,7 +8,7 @@ type HeaderCellProps = {
 	direction?: 'asc' | 'desc';
 	sort?: string;
 	onClick?: (sort: string) => void;
-};
+} & ComponentProps<typeof Box>;
 
 const HeaderCell: FC<HeaderCellProps> = ({
 	children,

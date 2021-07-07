@@ -47,10 +47,10 @@ export const useEditableSetting = (_id: SettingId): IEditableSetting | undefined
 
 export const useEditableSettings = (query?: EditableSettingsContextQuery): IEditableSetting[] => {
 	const { queryEditableSettings } = useContext(EditableSettingsContext);
-	const subscription = useMemo(() => queryEditableSettings(query ?? {}), [
-		queryEditableSettings,
-		query,
-	]);
+	const subscription = useMemo(
+		() => queryEditableSettings(query ?? {}),
+		[queryEditableSettings, query],
+	);
 	return useSubscription(subscription);
 };
 

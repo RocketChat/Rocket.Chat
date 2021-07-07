@@ -9,8 +9,10 @@ import { AppsContext } from './AppsContext';
 import MarketplaceRow from './MarketplaceRow';
 import { useFilteredApps } from './hooks/useFilteredApps';
 
-const filterFunction = (text) => ({ name, marketplace }) =>
-	marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+const filterFunction =
+	(text) =>
+	({ name, marketplace }) =>
+		marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
 
 function MarketplaceTable() {
 	const t = useTranslation();

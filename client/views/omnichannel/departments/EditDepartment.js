@@ -32,7 +32,7 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
-function EditDepartment({ data, id, title, reload }) {
+function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
@@ -76,7 +76,11 @@ function EditDepartment({ data, id, title, reload }) {
 		visitorInactivityTimeoutInSeconds:
 			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
-		departmentsAllowedToForward: (department && department.departmentsAllowedToForward) || [],
+		departmentsAllowedToForward:
+			(allowedToForwardData &&
+				allowedToForwardData.departments &&
+				allowedToForwardData.departments.map((dep) => ({ label: dep.name, value: dep._id }))) ||
+			[],
 	});
 	const {
 		handleName,
@@ -207,7 +211,7 @@ function EditDepartment({ data, id, title, reload }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.join(),
+				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.value).join(),
 		};
 
 		const agentListPayload = {
