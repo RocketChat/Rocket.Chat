@@ -55,7 +55,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 
 		const mappedForm = mapBusinessHoursForm(form, data.businessHour);
 
-		const departmentsToApplyBusinessHour = departments?.join(',') || '';
+		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
 			const payload = {

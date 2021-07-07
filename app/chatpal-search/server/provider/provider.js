@@ -4,7 +4,6 @@ import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions, Rooms } from '../../../models';
 import { baseUrl } from '../utils/settings';
-
 import Index from './index';
 
 /**
