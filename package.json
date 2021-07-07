@@ -148,7 +148,7 @@
 		"@babel/runtime": "^7.14.6",
 		"@google-cloud/language": "^3.8.0",
 		"@google-cloud/storage": "^2.5.0",
-		"@google-cloud/vision": "^1.11.0",
+		"@google-cloud/vision": "^2.3.5",
 		"@nivo/bar": "^0.70.1",
 		"@nivo/core": "^0.70.1",
 		"@nivo/heatmap": "^0.70.1",
