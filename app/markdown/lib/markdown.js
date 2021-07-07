@@ -26,6 +26,7 @@ class MarkdownClass {
 	}
 
 	parseNotEscaped(text) {
+		if (!text) { return ''; }
 		const message = {
 			html: text,
 		};
