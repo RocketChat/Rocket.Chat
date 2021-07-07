@@ -21,7 +21,7 @@ class AutoSelection {
 	}
 
 	getNextAgent(department, ignoreAgentId) {
-		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', { departmentId: department });
+		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', { ...department ? { departmentId: department } : {} });
 		if (department) {
 			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery); // this is the place where the alg selects an agent
 		}
