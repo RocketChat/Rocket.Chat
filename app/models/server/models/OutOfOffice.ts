@@ -18,18 +18,17 @@ class OutOfOffice extends Base {
 		return this.find({userId}, options).fetch();
 	}
 
-	findAllFromRoomId(roomId:string):IOutOfOffice[]{
-		return this.find({roomIds:{$in:[roomId]},sentRoomIds:{$nin:[roomId]}});
+	findAllFromRoomId(roomId:string):Pick<IOutOfOffice,'customMessage'|'userId'|'_id'>[]{
+		return this.find({isEnabled:true, roomId},{customMessage:1,userId:1});
 	}
 
 	// update
-
-	updateSentRoomIds(docId: IOutOfOffice["_id"], roomId: string) {
-		return this.update({ _id: docId }, { $push: { sentRoomIds: roomId } });
-	  }
+	updateRoomAsDisabled(_id:string):number{
+		return this.update({_id},{$set:{isEnabled:false}});
+	}
 
 	  /**set all documents matching this **userId** to `isEnabled: false` */
-	setDisabled(userId: string): number {
+	updateAllAsDisabled(userId: string): number {
 		return this.update({ userId }, { $set: { isEnabled: false } }, {multi:true});
 	}
 }

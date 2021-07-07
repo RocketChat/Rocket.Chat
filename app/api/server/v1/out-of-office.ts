@@ -72,18 +72,6 @@ API.v1.addRoute('outOfOffice.getAll', {
 	},
 });
 
-API.v1.addRoute('outOfOffice.getById', {
-	get() {
-		const { docId } = this.bodyParams;
-		if (!docId) {
-			return API.v1.failure('doc id not provided');
-		}
-		const doc = OutOfOffice.findOneById(docId);
-
-		return API.v1.success({ 'the-found': doc });
-	},
-});
-
 API.v1.addRoute('outOfOffice.removeAll', {
 	get() {
 		OutOfOffice.remove({});

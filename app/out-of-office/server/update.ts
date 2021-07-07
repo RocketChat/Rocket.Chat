@@ -24,7 +24,7 @@ export function updateOutOfOffice({
 	isEnabled,
 }: IUpdateOutOfOfficeParams): IUpdateOutOfOffice {
 	if (!isEnabled) {
-		const affected = OutOfOffice.setDisabled(userId);
+		const affected = OutOfOffice.updateAllAsDisabled(userId);
 		if (affected === 0) {
 			// this will if the user had not enabled out-of-office before
 			throw new Meteor.Error(
