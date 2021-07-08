@@ -1,5 +1,4 @@
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import CannedResponse from '../../../models/server/raw/CannedResponse';
 import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 
@@ -9,7 +8,7 @@ export async function findAllCannedResponses({ userId }) {
 	}
 
 	// If the user is an admin or livechat manager, get his own responses and all responses from all departments
-	if (await hasRoleAsync(userId, ['admin', 'livechat-manager'])) {
+	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		return CannedResponse.find({
 			$or: [
 				{
@@ -24,7 +23,7 @@ export async function findAllCannedResponses({ userId }) {
 	}
 
 	// If the user it not any of the previous roles nor an agent, then get only his own responses
-	if (!await hasRoleAsync(userId, 'livechat-agent')) {
+	if (!await hasPermissionAsync(userId, 'view-agent-canned-responses')) {
 		return CannedResponse.find({
 			scope: 'user',
 			userId,
