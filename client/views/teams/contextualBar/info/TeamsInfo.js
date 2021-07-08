@@ -49,6 +49,13 @@ const TeamsInfo = ({
 					action: onClickDelete,
 				},
 			}),
+			...(onClickConvertToChannel && {
+				convertToChannel: {
+					label: t('Convert_to_channel'),
+					action: onClickConvertToChannel,
+					icon: 'hash',
+				},
+			}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
@@ -61,13 +68,6 @@ const TeamsInfo = ({
 					label: t('Leave'),
 					action: onClickLeave,
 					icon: 'sign-out',
-				},
-			}),
-			...(onClickConvertToChannel && {
-				convertToChannel: {
-					label: t('Convert_to_channel'),
-					action: onClickConvertToChannel,
-					icon: 'hash',
 				},
 			}),
 		}),
