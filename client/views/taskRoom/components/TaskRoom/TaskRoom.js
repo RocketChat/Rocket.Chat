@@ -51,6 +51,7 @@ export default function TaskRoom({ rid, tasks }) {
 							status={task.taskStatus}
 							taskAssignee={task.taskAssignee}
 							key={task._id}
+							tcount={task.tcount}
 						/>
 					))}
 			</div>

@@ -14,7 +14,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 	if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
 		return message;
 	}
-
+	console.log('filterATHereTag');
 	// Test if the message mentions include @here.
 	if (message.mentions != null && _.pluck(message.mentions, '_id').some((item) => item === 'here')) {
 		// Check if the user has permissions to use @here in both global and room scopes.

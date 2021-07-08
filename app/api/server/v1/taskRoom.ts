@@ -139,7 +139,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 
 API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 	post() {
-		const task = this.bodyParams;
+		let task = this.bodyParams;
 		check(this.bodyParams, {
 			title: String,
 			rid: String,
@@ -168,13 +168,13 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		if (settings.get('Message_Read_Receipt_Enabled')) {
 			task.unread = true;
 		}
-		Tasks.insert(task);
 		// TODO: add callbacks for the tasks
-		// task = callbacks.run('beforeSaveMessage', task);
+		task = callbacks.run('beforeSaveMessage', task);
+		Tasks.insert(task);
+		promises.run('onClientMessageReceived', task).then(function(task: any) {
 		// Tasks.insert(task);
-		// promises.run('onClientMessageReceived', task).then(function(task: any) {
-		// 	return callbacks.run('afterSaveMessage', task);
-		// });
+			return callbacks.run('afterSaveMessage', task);
+		});
 		return API.v1.success({ task });
 	},
 });

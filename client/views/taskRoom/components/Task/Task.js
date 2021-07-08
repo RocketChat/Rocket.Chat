@@ -30,6 +30,7 @@ export default memo(function Task({
 	unread,
 	mention,
 	all,
+	tcount,
 	rid,
 	title,
 	status,
@@ -103,7 +104,14 @@ export default memo(function Task({
 					</Metrics.Item>
 				</MessageTemplate.Container>
 			) : null}
-
+			{tcount && (
+				<MessageTemplate.Container alignItems='center'>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='thread' />
+						<Metrics.Item.Label>{tcount}</Metrics.Item.Label>
+					</Metrics.Item>
+				</MessageTemplate.Container>
+			)}
 			{status && (
 				<MessageTemplate.Container alignItems='center'>
 					<Metrics.Item>

@@ -140,7 +140,7 @@ callbacks.add('beforeSaveMessage', function(message: any, room: any) {
 
 		return message;
 	}
-
+	console.log('run');
 	const { msg } = message;
 
 	// Try to identify a quote in a livechat room
