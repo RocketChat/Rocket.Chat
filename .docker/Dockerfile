@@ -29,7 +29,7 @@ RUN aptMark="$(apt-mark showmanual)" \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && npm cache clear --force
 
-USER rocketchat
+USER 65533
 
 VOLUME /app/uploads
 
