@@ -3,6 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { memo } from 'react';
 
 import Metrics from '../../../../components/Message/Metrics';
+import Reply from '../../../../components/Message/Metrics/Reply';
 import * as NotificationStatus from '../../../../components/Message/NotificationStatus';
 import { followStyle, anchor } from '../../../../components/Message/helpers/followSyle';
 import RawText from '../../../../components/RawText';
@@ -29,10 +30,11 @@ export default memo(function Task({
 	unread,
 	mention,
 	all,
+	rid,
 	title,
 	status,
 	handleTaskDetails,
-	taskAssignee,
+	taskAssignee = [],
 	t = (e) => e,
 	formatDate = (e) => e,
 	tlm,
@@ -41,7 +43,7 @@ export default memo(function Task({
 }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
-	console.log(taskAssignee, status);
+
 	const thread = (e) => {
 		e.stopPropagation();
 		FlowRouter.setParams({
@@ -90,18 +92,26 @@ export default memo(function Task({
 					(all && <NotificationStatus.All t={t} mb='x24' />) ||
 					(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
 			</MessageTemplate.Container>
-			<MessageTemplate.Container alignItems='center'>
-				<Metrics.Item>
-					<Metrics.Item.Icon name='user' />
-					<Metrics.Item.Label>{'@Jean.Staquet, @Rocket.ChatBot and 3 more'}</Metrics.Item.Label>
-				</Metrics.Item>
-			</MessageTemplate.Container>
-			<MessageTemplate.Container alignItems='center'>
-				<Metrics.Item>
-					<Metrics.Item.Icon name='warning' />
-					<Metrics.Item.Label>{'Urgent, ToDo, Team Front End'}</Metrics.Item.Label>
-				</Metrics.Item>
-			</MessageTemplate.Container>
+			<Reply data-rid={rid} data-mid={taskId} onClick={thread}>
+				{t('Reply')}
+			</Reply>
+			{taskAssignee ? (
+				<MessageTemplate.Container alignItems='center'>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='user' />
+						<Metrics.Item.Label>{taskAssignee.join(', ')}</Metrics.Item.Label>
+					</Metrics.Item>
+				</MessageTemplate.Container>
+			) : null}
+
+			{status && (
+				<MessageTemplate.Container alignItems='center'>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='warning' />
+						<Metrics.Item.Label>{status}</Metrics.Item.Label>
+					</Metrics.Item>
+				</MessageTemplate.Container>
+			)}
 		</MessageTemplate.Message>
 	);
 });

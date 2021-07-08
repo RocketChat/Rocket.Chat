@@ -33,7 +33,7 @@ export default function TaskRoom({ rid, tasks }) {
 			></TaskDetailsModal>,
 		);
 	};
-	console.log(tasks);
+
 	return (
 		<>
 			<h1 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '3rem' }}>Tasks List</h1>
@@ -43,6 +43,7 @@ export default function TaskRoom({ rid, tasks }) {
 					tasks.map((task) => (
 						<Task
 							handleTaskDetails={() => handleTaskDetails(task)}
+							rid={rid}
 							title={task.title}
 							username={task.u.username}
 							taskId={task._id}

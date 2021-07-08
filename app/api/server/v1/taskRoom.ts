@@ -255,7 +255,7 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 		if (!task) {
 			API.v1.failure('Invalid task');
 		}
-
+		console.log(task);
 		const room = Meteor.call('canAccessRoom', task.rid, uid);
 		if (!room) {
 			API.v1.failure('Not allowed to follow in this room');
