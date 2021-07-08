@@ -2216,6 +2216,7 @@
   "Invalid_Department": "Invalid Department",
   "Invalid_email": "The email entered is invalid",
   "Invalid_Export_File": "The file uploaded isn't a valid %s export file.",
+  "Invalid_field": "The field must not be empty",
   "Invalid_Import_File_Type": "Invalid Import file type.",
   "Invalid_name": "The name must not be empty",
   "Invalid_notification_setting_s": "Invalid notification setting: %s",
