@@ -8,7 +8,7 @@ import { settings } from '../../app/settings';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
-	messageSearch(text, rid, offset, limit) {
+	messageSearch(text, rid, limit, offset) {
 		check(text, String);
 		check(rid, Match.Maybe(String));
 		check(offset, Match.Optional(Number));
