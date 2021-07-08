@@ -1,4 +1,4 @@
-import { Box, Icon, TextInput, Label, Select } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, SelectOptions } from '@rocket.chat/fuselage';
 import React, { FC, FormEvent, memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
@@ -7,13 +7,13 @@ import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 type CannedResponsesFilterProps = {
 	sharingValue: string;
-	createdByValue: string;
+	createdByValue: { value: string; label: string };
 	tagsValue: string;
 	shortcutValue: string;
-	setSharing: () => void;
-	setCreatedBy: () => void;
-	setTags: () => void;
-	setShortcut: () => void;
+	setSharing: (eventOrValue: unknown) => void;
+	setCreatedBy: (eventOrValue: unknown) => void;
+	setTags: (eventOrValue: unknown) => void;
+	setShortcut: (eventOrValue: unknown) => void;
 };
 
 const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
@@ -28,7 +28,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	...props
 }) => {
 	const t = useTranslation();
-	const sharingList = [
+	const sharingList: SelectOptions = [
 		['', t('All')],
 		['private', t('Private')],
 		['public', t('Public')],
@@ -49,7 +49,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 			{...props}
 		>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Search')}</Label>
+				<Box mb='x4'>{t('Search')}</Box>
 				<TextInput
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={setShortcut}
@@ -58,15 +58,15 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 			</Box>
 
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Sharing')}</Label>
+				<Box mb='x4'>{t('Sharing')}</Box>
 				<Select onChange={setSharing} options={sharingList} value={sharingValue} />
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Created_by')}</Label>
+				<Box mb='x4'>{t('Created_by')}</Box>
 				<AutoCompleteAgent onChange={setCreatedBy} value={createdByValue} haveAll />
 			</Box>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Label mb='x4'>{t('Tags')}</Label>
+				<Box mb='x4'>{t('Tags')}</Box>
 				<AutoCompleteTagsMultiple onChange={setTags} value={tagsValue} />
 			</Box>
 		</Box>

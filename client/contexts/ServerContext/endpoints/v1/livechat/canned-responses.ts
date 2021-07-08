@@ -2,7 +2,7 @@ import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnich
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
 export type CannedResponses = {
-	GET: (params: { text: string; offset: number; count: number }) => {
+	GET: (params: { text: string; offset?: number | undefined; count?: number | undefined }) => {
 		cannedResponses: ObjectFromApi<IOmnichannelCannedResponse>[];
 		total: number;
 	};

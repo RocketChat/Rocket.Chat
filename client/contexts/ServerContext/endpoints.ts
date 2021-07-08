@@ -59,7 +59,6 @@ export type ServerEndpoints = {
 	'livechat/monitors.list': LivechatMonitorsList;
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
-	'livechat/users/agent': LivechatAgents;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 	'canned-responses': CannedResponses;
 	'rooms.info': RoomsInfoEndpoint;

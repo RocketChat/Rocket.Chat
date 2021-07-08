@@ -2,9 +2,9 @@ import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useTagsList } from '../../hooks/useTagsList';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useTagsList } from '../../hooks/useTagsList';
 
 const AutoCompleteTag = (props) => {
 	const { value, onChange = () => {}, haveAll = false } = props;

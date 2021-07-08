@@ -1,6 +1,6 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, FC } from 'react';
+import React, { useMemo, useCallback, useState, FC, ReactNode, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
@@ -16,9 +16,17 @@ import CannedResponseFilter from './CannedResponseFilter';
 import CannedResponsesPage from './CannedResponsesPage';
 import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 
-const CannedResponsesRoute = (): FC => {
+const CannedResponsesRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
+
+	type CannedResponseFilterValues = {
+		sharing: string;
+		createdBy: { value: string; label: string };
+		tags: string;
+		text: string;
+		firstMessage: string;
+	};
 
 	const { values, handlers } = useForm({
 		sharing: '',
@@ -27,11 +35,11 @@ const CannedResponsesRoute = (): FC => {
 		text: '',
 	});
 
-	const { sharing, createdBy, tags, text } = values;
+	const { sharing, createdBy, tags, text } = values as CannedResponseFilterValues;
 	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
 
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['shortcut', 'asc']);
+	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['shortcut', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
@@ -52,7 +60,6 @@ const CannedResponsesRoute = (): FC => {
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 	const context = useRouteParameter('context');
-	// const id = useRouteParameter('id');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -73,8 +80,6 @@ const CannedResponsesRoute = (): FC => {
 	);
 
 	const { value: data } = useEndpointData('canned-responses', query);
-
-	console.log(data);
 
 	const getTime = useFormatDateAndTime();
 
@@ -134,7 +139,7 @@ const CannedResponsesRoute = (): FC => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, shortcut, scope, createdBy, createdAt, tags = ['teste 1'] }) => (
+		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactNode => (
 			<Table.Row
 				key={_id}
 				tabIndex={0}
@@ -167,7 +172,7 @@ const CannedResponsesRoute = (): FC => {
 
 	const EditCannedResponsesTab = useCallback(() => {
 		if (!context) {
-			return '';
+			return null;
 		}
 		const handleVerticalBarCloseButtonClick = (): void => {
 			cannedResponsesRoute.push({});
@@ -181,8 +186,6 @@ const CannedResponsesRoute = (): FC => {
 					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 				</VerticalBar.Header>
 			</VerticalBar>
-			// {context === 'edit' && <CannedResponsesEditWithData cannedResponseId={id} reload={reload} />}
-			// {context === 'new' && <CannedResponsesNew reload={reload} />}
 		);
 	}, [t, context, cannedResponsesRoute]);
 
@@ -193,7 +196,7 @@ const CannedResponsesRoute = (): FC => {
 	return (
 		<CannedResponsesPage
 			setParams={setParams}
-			renderFilter={() => (
+			renderFilter={(): ReactElement => (
 				<CannedResponseFilter
 					sharingValue={sharing}
 					createdByValue={createdBy}
@@ -206,7 +209,6 @@ const CannedResponsesRoute = (): FC => {
 				/>
 			)}
 			params={params}
-			onHeaderClick={onHeaderClick}
 			data={data}
 			header={header}
 			renderRow={renderRow}

@@ -1,5 +1,5 @@
 import { Box, Scrollable } from '@rocket.chat/fuselage';
-import React, { forwardRef, ComponentProps, ReactNode } from 'react';
+import React, { forwardRef, ComponentProps } from 'react';
 
 import ScrollableContentWrapper, { CustomScrollbarsProps } from '../ScrollableContentWrapper';
 
