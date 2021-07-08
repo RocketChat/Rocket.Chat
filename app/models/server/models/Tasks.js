@@ -1174,8 +1174,8 @@ export class Tasks extends Base {
 	}
 
 	getThreadFollowsByThreadId(tmid) {
-		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
-		return msg && msg.replies;
+		const task = this.findOneById(tmid, { fields: { replies: 1 } });
+		return task && task.replies;
 	}
 
 	getFirstReplyTsByThreadId(tmid) {

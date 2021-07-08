@@ -17,9 +17,15 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		]),
 	];
 
-	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
-
-	const replies = Messages.getThreadFollowsByThreadId(tmid);
+	let replies;
+	if (!parentMessage.title) {
+		Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+		replies = Messages.getThreadFollowsByThreadId(tmid);
+	} else {
+		Tasks.updateRepliesByThreadId(tmid, addToReplies, ts);
+		console.log('update');
+		replies = Tasks.getThreadFollowsByThreadId(tmid);
+	}
 
 	const repliesFiltered = replies
 		.filter((userId) => userId !== u._id)

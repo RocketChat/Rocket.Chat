@@ -14,7 +14,7 @@ callbacks.add('beforeSaveMessage', function(message) {
 	if (message.editedAt || (message.ts && Math.abs(moment(message.ts).diff()) > 60000)) {
 		return message;
 	}
-
+	console.log('ed1');
 	// Test if the message mentions include @all.
 	if (message.mentions != null
 		&& _.pluck(message.mentions, '_id').some((item) => item === 'all')) {

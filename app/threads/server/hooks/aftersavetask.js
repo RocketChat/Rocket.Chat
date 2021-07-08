@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, Tasks } from '../../../models/server';
+import { Tasks } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
@@ -41,9 +41,8 @@ export const processThreads = (message, room) => {
 		return message;
 	}
 
-	let parentMessage;
-	room.taskRoomId ? parentMessage = Tasks.findOneById(message.tmid) : parentMessage = Messages.findOneById(message.tmid);
-
+	const parenTask = Task.findOneById(message.tmid);
+	console.log('processThreads');
 	if (!parentMessage) {
 		return message;
 	}
