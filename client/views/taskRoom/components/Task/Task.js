@@ -30,6 +30,9 @@ export default memo(function Task({
 	mention,
 	all,
 	title,
+	status,
+	handleTaskDetails,
+	taskAssignee,
 	t = (e) => e,
 	formatDate = (e) => e,
 	tlm,
@@ -38,7 +41,8 @@ export default memo(function Task({
 }) {
 	const button = !following ? 'bell-off' : 'bell';
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
-	const thred = (e) => {
+	console.log(taskAssignee, status);
+	const thread = (e) => {
 		e.stopPropagation();
 		FlowRouter.setParams({
 			tab: 'thread',
@@ -55,31 +59,17 @@ export default memo(function Task({
 			].filter(Boolean)}
 		>
 			<MessageTemplate.Container mb='neg-x2'>
-				<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
+				<UserAvatar username={username} className='rcx-message__avatar' size='x28' />
 			</MessageTemplate.Container>
-			<button onClick={(e) => thred(e)}>Test</button>
+			{/* <button onClick={(e) => thred(e)}>Test</button> */}
 			<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 				<MessageTemplate.Header>
 					<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>
-					{/* <MessageTemplate.Timestamp ts={formatDate(ts)} /> */}
+					<MessageTemplate.Timestamp ts={formatDate(ts)} />
 				</MessageTemplate.Header>
 				<MessageTemplate.BodyClamp>
 					<RawText>{title}</RawText>
 				</MessageTemplate.BodyClamp>
-				<Metrics color='neutral-600' mi='neg-x8'>
-					<Metrics.Item>
-						<Metrics.Item.Icon name='thread' />
-						<Metrics.Item.Label>{replies}</Metrics.Item.Label>
-					</Metrics.Item>
-					<Metrics.Item>
-						<Metrics.Item.Icon name='user' />
-						<Metrics.Item.Label>{participants}</Metrics.Item.Label>
-					</Metrics.Item>
-					<Metrics.Item>
-						<Metrics.Item.Icon name='clock' />
-						<Metrics.Item.Label>{formatDate(tlm)}</Metrics.Item.Label>
-					</Metrics.Item>
-				</Metrics>
 			</MessageTemplate.Container>
 			<MessageTemplate.Container alignItems='center'>
 				<Button
@@ -90,7 +80,7 @@ export default memo(function Task({
 					ghost
 					data-following={following}
 					data-id={taskId}
-					onClick={handleFollowButton}
+					onClick={handleTaskDetails}
 					title={actionLabel}
 					aria-label={actionLabel}
 				>
@@ -99,6 +89,18 @@ export default memo(function Task({
 				{(mention && <NotificationStatus.Me t={t} mb='x24' />) ||
 					(all && <NotificationStatus.All t={t} mb='x24' />) ||
 					(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
+			</MessageTemplate.Container>
+			<MessageTemplate.Container alignItems='center'>
+				<Metrics.Item>
+					<Metrics.Item.Icon name='user' />
+					<Metrics.Item.Label>{'@Jean.Staquet, @Rocket.ChatBot and 3 more'}</Metrics.Item.Label>
+				</Metrics.Item>
+			</MessageTemplate.Container>
+			<MessageTemplate.Container alignItems='center'>
+				<Metrics.Item>
+					<Metrics.Item.Icon name='warning' />
+					<Metrics.Item.Label>{'Urgent, ToDo, Team Front End'}</Metrics.Item.Label>
+				</Metrics.Item>
 			</MessageTemplate.Container>
 		</MessageTemplate.Message>
 	);

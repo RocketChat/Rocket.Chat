@@ -15,7 +15,11 @@ const TaskDetailsModal = ({
 	const canSave = useMemo(() => hasUnsavedChanges, [hasUnsavedChanges]);
 	const t = useTranslation();
 	return (
-		<>
+		<Modal style={{ marginTop: '150px' }}>
+			<Modal.Header>
+				<Modal.Title>{t('Task Details')}</Modal.Title>
+				<Modal.Close onClick={onClose} />
+			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='x24'>
 					<Field.Label>{t('Task_Title')}</Field.Label>
@@ -39,9 +43,9 @@ const TaskDetailsModal = ({
 					<UserAutoCompleteMultiple value={values.taskAssignee} onChange={onChangeAssignee} />
 				</Field>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Statut')}</Field.Label>
+					<Field.Label>{t('Task_Status')}</Field.Label>
 					<Field.Row>
-						<TextInput value={values.taskStatut} onChange={handlers.handleTaskStatut} />
+						<TextInput value={values.taskStatus} onChange={handlers.handleTaskStatus} />
 					</Field.Row>
 				</Field>
 			</Modal.Content>
@@ -53,7 +57,7 @@ const TaskDetailsModal = ({
 					</Button>
 				</ButtonGroup>
 			</Modal.Footer>
-		</>
+		</Modal>
 	);
 };
 

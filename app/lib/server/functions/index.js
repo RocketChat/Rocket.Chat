@@ -32,6 +32,7 @@ export { setUserAvatar } from './setUserAvatar';
 export { _setUsername, setUsername } from './setUsername';
 export { unarchiveRoom } from './unarchiveRoom';
 export { updateMessage } from './updateMessage';
+export { updateTask } from './updateTask';
 export { validateCustomFields } from './validateCustomFields';
 export { validateName } from './validateName';
 export { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';

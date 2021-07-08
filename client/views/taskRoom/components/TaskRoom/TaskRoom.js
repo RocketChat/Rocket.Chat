@@ -1,12 +1,14 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
+import { useSetModal } from '../../../../contexts/ModalContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import TaskDetailsModal from '../../taskDetailsModal';
 import Task from '../Task/Task';
 
 export default function TaskRoom({ rid, tasks }) {
 	const [taskTitle, setTaskTitle] = useState('');
-
+	const setModal = useSetModal();
 	const createTask = useEndpointActionExperimental('POST', 'taskRoom.createTask');
 
 	const handleTask = (e) => {
@@ -19,10 +21,19 @@ export default function TaskRoom({ rid, tasks }) {
 		task.title = taskTitle;
 		task.rid = rid;
 		await createTask(task);
-		// onChange();
 		setTaskTitle('');
 	});
 
+	const handleTaskDetails = (task) => {
+		setModal(
+			<TaskDetailsModal
+				task={task}
+				onCreate={() => setModal()}
+				onClose={() => setModal()}
+			></TaskDetailsModal>,
+		);
+	};
+	console.log(tasks);
 	return (
 		<>
 			<h1 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '3rem' }}>Tasks List</h1>
@@ -31,10 +42,13 @@ export default function TaskRoom({ rid, tasks }) {
 					tasks.length &&
 					tasks.map((task) => (
 						<Task
+							handleTaskDetails={() => handleTaskDetails(task)}
 							title={task.title}
 							username={task.u.username}
 							taskId={task._id}
 							ts={task.ts}
+							status={task.taskStatus}
+							taskAssignee={task.taskAssignee}
 							key={task._id}
 						/>
 					))}

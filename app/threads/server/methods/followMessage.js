@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { follow } from '../functions';
 
 Meteor.methods({
-	'followMessage'({ mid, taskRoom }) {
+	'followMessage'({ mid }) {
 		check(mid, String);
 
 

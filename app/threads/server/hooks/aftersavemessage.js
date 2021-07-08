@@ -42,7 +42,7 @@ export const processThreads = (message, room) => {
 	}
 
 	const parentMessage = Messages.findOneById(message.tmid);
-	console.log(parentMessage);
+	console.log('processThreads');
 	if (!parentMessage) {
 		return message;
 	}

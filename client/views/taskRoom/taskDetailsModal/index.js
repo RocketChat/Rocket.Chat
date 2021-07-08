@@ -13,15 +13,15 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 	const updateTask = useEndpointActionExperimental('POST', 'taskRoom.taskUpdate');
 
 	const initialValues = {
-		taskTitle: task.msg ? task.msg : '',
+		taskTitle: task.title ? task.title : '',
 		taskDescription: task.taskDescription ? task.taskDescription : '',
 		taskAssignee: task.taskAssignee ? task.taskAssignee : '',
-		taskStatut: task.taskStatut ? task.taskStatut : '',
+		taskStatus: task.taskStatus ? task.taskStatus : '',
 	};
 
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { taskTitle, taskDescription, taskAssignee, taskStatut } = values;
+	const { taskTitle, taskDescription, taskAssignee, taskStatus } = values;
 
 	const onChangeAssignee = useMutableCallback((value, action) => {
 		if (!action) {
@@ -39,7 +39,7 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 			taskTitle,
 			taskDescription,
 			taskAssignee,
-			taskStatut,
+			taskStatus,
 		};
 
 		const data = await updateTask(params);
@@ -50,11 +50,11 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 		}
 
 		onClose();
-	}, [taskTitle, taskDescription, taskAssignee, taskStatut, onClose, updateTask, task._id, t]);
+	}, [taskTitle, taskDescription, taskAssignee, taskStatus, onClose, updateTask, task._id, t]);
 
 	return (
 		<TaskDetailsModal
-			taskTitle={task.msg}
+			taskTitle={task.title}
 			taskDescription={task.taskDescription}
 			taskAssignee={task.taskAssignee}
 			taskStatut={task.taskStatut}

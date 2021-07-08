@@ -12,7 +12,7 @@ import { Rooms, Subscriptions, Tasks } from '../../../models/server';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
 import { promises } from '../../../promises/server';
-import { updateMessage } from '../../../lib/server/functions';
+import { updateTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
@@ -66,7 +66,7 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 	post() {
-		const { id, taskTitle, taskAssignee, taskDescription, taskStatut } = this.bodyParams;
+		const { id, taskTitle, taskAssignee, taskDescription, taskStatus } = this.bodyParams;
 
 		if (!id) {
 			return API.v1.failure('task-does-not-exist');
@@ -74,16 +74,16 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 
 		// TO DO: permissions
 
-		const message = Messages.findOneById(id);
+		const task = Tasks.findOneById(id);
 
-		if (!message || !message._id) {
+		if (!task || !task._id) {
 			return;
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
+		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', task.rid);
 
 		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = message.u && message.u._id === Meteor.userId();
+		const editOwn = task.u && task.u._id === Meteor.userId();
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
@@ -92,13 +92,13 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff;
-			let msgTs;
+			let taskTs;
 
-			if (Match.test(message.ts, Number)) {
-				msgTs = moment(message.ts);
+			if (Match.test(task.ts, Number)) {
+				taskTs = moment(task.ts);
 			}
-			if (msgTs) {
-				currentTsDiff = moment().diff(msgTs, 'minutes');
+			if (taskTs) {
+				currentTsDiff = moment().diff(taskTs, 'minutes');
 			}
 
 			if (currentTsDiff > blockEditInMinutes) {
@@ -107,32 +107,31 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		}
 
 		const user = this.userId;
-		canSendMessage(message.rid, { uid: user._id, ...user });
+		// canSendMessage(task.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
-		if (message.attachments && message.attachments.length > 0 && message.attachments[0].description !== undefined) {
-			message.attachments = message.attachments;
-			message.attachments[0].description = message.msg;
-			message.msg = message.msg;
+		if (task.attachments && task.attachments.length > 0 && task.attachments[0].description !== undefined) {
+			task.attachments = task.attachments;
+			task.attachments[0].description = task.title;
 		}
 
-		if (taskStatut) {
-			message.taskStatut = taskStatut;
+		if (taskStatus) {
+			task.taskStatus = taskStatus;
 		}
 
 		if (taskDescription) {
-			message.taskDescription = taskDescription;
+			task.taskDescription = taskDescription;
 		}
 
 		if (taskTitle) {
-			message.msg = taskTitle;
+			task.title = taskTitle;
 		}
 
 		if (taskAssignee) {
-			message.taskAssignee = taskAssignee;
+			task.taskAssignee = taskAssignee;
 		}
 
-		updateMessage(message, Meteor.user());
+		updateTask(task, Meteor.user());
 
 		return API.v1.success();
 	},
@@ -170,11 +169,10 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			task.unread = true;
 		}
 		Tasks.insert(task);
+		// TODO: add callbacks for the tasks
 		// task = callbacks.run('beforeSaveMessage', task);
 		// Tasks.insert(task);
 		// promises.run('onClientMessageReceived', task).then(function(task: any) {
-		// 	console.log('4', task);
-		// 	console.log('5');
 		// 	return callbacks.run('afterSaveMessage', task);
 		// });
 		return API.v1.success({ task });
