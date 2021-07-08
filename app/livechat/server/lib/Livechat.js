@@ -675,7 +675,7 @@ export const Livechat = {
 			return;
 		}
 		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { headers: { 'X-RocketChat-Livechat-Token': secretToken } };
+		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options = { data: postData, ...secretToken !== '' && secretToken !== undefined && { headers } };
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
