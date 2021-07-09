@@ -1054,7 +1054,7 @@ describe('[Chat]', function() {
 		});
 	});
 
-	describe.only('/chat.search', () => {
+	describe('/chat.search', () => {
 		beforeEach((done) => {
 			const sendMessage = (text) => {
 				request.post(api('chat.sendMessage'))
