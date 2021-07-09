@@ -4,6 +4,7 @@ import { Messages, Rooms } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
+import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 
 const MAX_LIMIT = 100;
 
@@ -32,7 +33,8 @@ Meteor.methods({
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, { ...skip && { skip }, ...limit && { limit }, sort: { ts: -1 } }).fetch();
+		const messages = normalizeMessagesForUser([thread, ...result], user._id);
 
-		return [thread, ...result];
+		return messages;
 	},
 });
