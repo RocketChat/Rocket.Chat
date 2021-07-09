@@ -157,7 +157,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, offset, count).message.docs; });
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs; });
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(result, this.userId),
