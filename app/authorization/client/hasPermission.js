@@ -7,7 +7,7 @@ import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
-	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+	const user = Models.Users.findOneById(userId, { projection: { roles: 1 } });
 
 	return permissions.some((permissionId) => {
 		if (user && user.roles) {
@@ -16,7 +16,7 @@ function atLeastOne(permissions = [], scope, userId) {
 			}
 		}
 
-		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
+		const permission = ChatPermissions.findOne(permissionId, { projection: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {
@@ -31,7 +31,7 @@ function atLeastOne(permissions = [], scope, userId) {
 
 function all(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
-	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+	const user = Models.Users.findOneById(userId, { projection: { roles: 1 } });
 
 	return permissions.every((permissionId) => {
 		if (user && user.roles) {
@@ -40,7 +40,7 @@ function all(permissions = [], scope, userId) {
 			}
 		}
 
-		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
+		const permission = ChatPermissions.findOne(permissionId, { projection: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
 		return roles.some((roleName) => {

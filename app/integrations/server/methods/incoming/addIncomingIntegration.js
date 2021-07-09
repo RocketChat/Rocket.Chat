@@ -93,7 +93,7 @@ Meteor.methods({
 		integration.channel = channels;
 		integration.userId = user._id;
 		integration._createdAt = new Date();
-		integration._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
+		integration._createdBy = Users.findOne(this.userId, { projection: { username: 1 } });
 
 		Roles.addUserRoles(user._id, 'bot');
 

@@ -51,7 +51,7 @@ export function findRoom(token, rid) {
 
 export function findOpenRoom(token, departmentId) {
 	const options = {
-		fields: {
+		projection: {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,

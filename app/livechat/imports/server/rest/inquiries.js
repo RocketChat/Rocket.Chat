@@ -25,7 +25,7 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields: {
+			projection: {
 				rid: 1,
 				name: 1,
 				ts: 1,

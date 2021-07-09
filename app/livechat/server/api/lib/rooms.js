@@ -12,7 +12,7 @@ export async function findRooms({
 	options: {
 		offset,
 		count,
-		fields,
+		fields: projection,
 		sort,
 	},
 }) {
@@ -29,7 +29,7 @@ export async function findRooms({
 			sort: sort || { ts: -1 },
 			offset,
 			count,
-			fields,
+			projection,
 		},
 	});
 

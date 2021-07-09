@@ -29,7 +29,7 @@ export class Base {
 
 	findRolesByUserId(userId) {
 		const query = this.roleBaseQuery(userId);
-		return this.find(query, { fields: { roles: 1 } });
+		return this.find(query, { projection: { roles: 1 } });
 	}
 
 	isUserInRole(userId, roleName, scope) {

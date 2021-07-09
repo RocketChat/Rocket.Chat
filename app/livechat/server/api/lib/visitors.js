@@ -137,7 +137,7 @@ export async function findVisitorsByEmailOrPhoneOrNameOrUsername({ userId, term,
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			_id: 1,
 			username: 1,
 			name: 1,

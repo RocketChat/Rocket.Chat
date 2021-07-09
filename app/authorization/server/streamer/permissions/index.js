@@ -15,7 +15,7 @@ Meteor.methods({
 				remove: Permissions.trashFindDeletedAfter(
 					updatedAt,
 					{},
-					{ fields: { _id: 1, _deletedAt: 1 } },
+					{ projection: { _id: 1, _deletedAt: 1 } },
 				).fetch(),
 			};
 		}

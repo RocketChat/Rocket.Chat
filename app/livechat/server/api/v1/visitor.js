@@ -115,7 +115,7 @@ API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 		}
 
 		const rooms = LivechatRooms.findOpenByVisitorToken(this.urlParams.token, {
-			fields: {
+			projection: {
 				name: 1,
 				t: 1,
 				cl: 1,

@@ -302,9 +302,9 @@ API.v1.addRoute('users.register', { authRequired: false }, {
 
 		// Now set their username
 		Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
-		const { fields } = this.parseJsonQuery();
+		const { fields: projection } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(userId, { fields }) });
+		return API.v1.success({ user: Users.findOneById(userId, { projection }) });
 	},
 });
 
@@ -520,9 +520,9 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				Meteor.call('setUserActiveStatus', userId, active, confirmRelinquish);
 			});
 		}
-		const { fields } = this.parseJsonQuery();
+		const { fields: projection } = this.parseJsonQuery();
 
-		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
+		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { projection }) });
 	},
 });
 
@@ -560,8 +560,7 @@ API.v1.addRoute('users.updateOwnBasicInfo', { authRequired: true }, {
 			};
 
 		Meteor.runAsUser(this.userId, () => Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions));
-
-		return API.v1.success({ user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }) });
+		return API.v1.success({ user: Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }) });
 	},
 });
 
@@ -639,7 +638,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 
 		Meteor.runAsUser(userId, () => Meteor.call('saveUserPreferences', this.bodyParams.data));
 		const user = Users.findOneById(userId, {
-			fields: {
+			projection: {
 				'settings.preferences': 1,
 				language: 1,
 			},
@@ -780,7 +779,7 @@ API.v1.addRoute('users.presence', { authRequired: true }, {
 		const { from, ids } = this.queryParams;
 
 		const options = {
-			fields: {
+			projection: {
 				username: 1,
 				name: 1,
 				status: 1,

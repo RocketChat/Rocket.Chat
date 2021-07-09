@@ -113,7 +113,7 @@ Meteor.methods({
 				script: integration.script,
 				scriptEnabled: integration.scriptEnabled,
 				_updatedAt: new Date(),
-				_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
+				_updatedBy: Users.findOne(this.userId, { projection: { username: 1 } }),
 			},
 		});
 
