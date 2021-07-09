@@ -63,7 +63,6 @@ export function executeSendMessage(uid, message) {
 	// do not allow nested threads
 	if (message.tmid) {
 		const parentMessage = Messages.findOneById(message.tmid);
-		// TODO:
 		message.tmid = (parentMessage && parentMessage.tmid) || message.tmid;
 		rid = (parentMessage && parentMessage.rid) || message.rid;
 	}

@@ -8,11 +8,11 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 import toastr from 'toastr';
 
-import { Rooms, Subscriptions, Tasks } from '../../../models/server';
+import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
 import { promises } from '../../../promises/server';
-import { updateTask } from '../../../lib/server/functions';
+import { updateTask, sendTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
@@ -139,42 +139,92 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 
 API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 	post() {
-		let task = this.bodyParams;
+		const task = this.bodyParams;
 		check(this.bodyParams, {
 			title: String,
 			rid: String,
 		});
-
-		if (!this.userId || s.trim(task.title) === '') {
+		const uid = this.userId;
+		console.log('1');
+		if (!uid || s.trim(task.title) === '') {
 			return false;
 		}
+		if (task.tshow && !task.tmid) {
+			return API.v1.failure('tshow provided but missing tmid');
+		}
 
-		const taskAlreadyExists = task._id && Tasks.findOne({ _id: task._id });
-		if (taskAlreadyExists) {
-			return toastr.error('Task_Already_Sent');
+		if (task.tmid && !settings.get('Threads_enabled')) {
+			return API.v1.failure('not-allowed');
 		}
-		const user = Meteor.user();
-		// task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
-		task.ts = new Date();
-		task.u = {
-			_id: this.userId,
-			username: user?.username,
-		};
 
-		if (settings.get('UI_Use_Real_Name')) {
-			task.u.name = user.name;
+		if (task.ts) {
+			const tsDiff = Math.abs(moment(task.ts).diff());
+			if (tsDiff > 60000) {
+				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+					method: 'sendMessage',
+					taskTs: task.ts,
+					serverTs: new Date().getTime(),
+				});
+			} else if (tsDiff > 10000) {
+				task.ts = new Date();
+			}
+		} else {
+			task.ts = new Date();
 		}
-		task.temp = true;
-		if (settings.get('Message_Read_Receipt_Enabled')) {
-			task.unread = true;
-		}
-		// TODO: add callbacks for the tasks
-		task = callbacks.run('beforeSaveMessage', task);
-		Tasks.insert(task);
-		promises.run('onClientMessageReceived', task).then(function(task: any) {
-		// Tasks.insert(task);
-			// return callbacks.run('afterSaveMessage', task);
+
+		// if (task.title) {
+		// 	const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(task.title);
+
+		// 	if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
+		// 		throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+		// 			method: 'sendMessage',
+		// 		});
+		// 	}
+		// }
+
+		const user = Users.findOneById(uid, {
+			fields: {
+				username: 1,
+				type: 1,
+			},
 		});
+		const { rid } = task;
+
+		if (!rid) {
+			return API.v1.failure('the rid property is missing');
+		}
+
+		try {
+			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+			sendTask(user, task, room, false);
+		} catch (error) {
+			return API.v1.failure('tshow provided but missing tmid');
+		}
+		// const taskAlreadyExists = task._id && Tasks.findOne({ _id: task._id });
+		// if (taskAlreadyExists) {
+		// 	return toastr.error('Task_Already_Sent');
+		// }
+		// const user = Meteor.user();
+		// // task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
+		// task.ts = new Date();
+		// task.u = {
+		// 	_id: this.userId,
+		// 	username: user?.username,
+		// };
+
+		// if (settings.get('UI_Use_Real_Name')) {
+		// 	task.u.name = user.name;
+		// }
+		// task.temp = true;
+		// if (settings.get('Message_Read_Receipt_Enabled')) {
+		// 	task.unread = true;
+		// }
+		// // TODO: add callbacks for the tasks
+		// task = callbacks.run('beforeSaveMessage', task);
+		// Tasks.insert(task);
+		// promises.run('onClientMessageReceived', task).then(function(task: any) {
+		// 	return callbacks.run('afterSaveTask', task);
+		// });
 		return API.v1.success({ task });
 	},
 });
