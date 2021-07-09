@@ -29,5 +29,5 @@ export default function WithData({ rid }) {
 		// fetchData();
 	}, [tasks._id, rid, getHistory]);
 
-	return <TaskRoom rid={rid} tasks={tasks} />;
+	return <TaskRoom rid={rid} tasks={tasks} setTasks={setTasks} />;
 }

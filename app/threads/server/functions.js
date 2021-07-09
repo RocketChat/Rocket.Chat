@@ -23,7 +23,6 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		replies = Messages.getThreadFollowsByThreadId(tmid);
 	} else {
 		Tasks.updateRepliesByThreadId(tmid, addToReplies, ts);
-		console.log('update');
 		replies = Tasks.getThreadFollowsByThreadId(tmid);
 	}
 

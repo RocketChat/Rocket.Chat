@@ -6,8 +6,11 @@ import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActi
 import TaskDetailsModal from '../../taskDetailsModal';
 import Task from '../Task/Task';
 
-export default function TaskRoom({ rid, tasks }) {
+export default function TaskRoom({ rid, tasks, setTasks }) {
 	const [taskTitle, setTaskTitle] = useState('');
+	const [sortType, setSortType] = useState('');
+	const [sort, setSort] = useState('asc');
+
 	const setModal = useSetModal();
 	const createTask = useEndpointActionExperimental('POST', 'taskRoom.createTask');
 
@@ -37,6 +40,18 @@ export default function TaskRoom({ rid, tasks }) {
 	return (
 		<>
 			<h1 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '3rem' }}>Tasks List</h1>
+			<div>
+				<button>Sort by Date</button>
+			</div>
+			<div>
+				<button>Sort by Creator</button>
+			</div>
+			<div>
+				<button>Sort by status</button>
+			</div>
+			<div>
+				<button>Sort by Assignee</button>
+			</div>
 			<div style={{ overflowY: 'scroll' }}>
 				{tasks !== undefined &&
 					tasks.length &&

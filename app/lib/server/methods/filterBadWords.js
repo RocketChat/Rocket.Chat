@@ -4,7 +4,6 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 
 callbacks.add('beforeSaveMessage', function(message) {
-	console.log('filterBad Word');
 	if (settings.get('Message_AllowBadWordsFilter')) {
 		const badWordsList = settings.get('Message_BadWordsFilterList');
 		let whiteList = settings.get('Message_BadWordsWhitelist');

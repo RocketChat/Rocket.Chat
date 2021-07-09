@@ -166,5 +166,5 @@ export function notifyUsersOnMessage(message, room) {
 
 	return message;
 }
-
+callbacks.add('afterSaveTask', notifyUsersOnMessage, callbacks.priority.LOW, 'notifyUsersOnMessage');
 callbacks.add('afterSaveMessage', notifyUsersOnMessage, callbacks.priority.LOW, 'notifyUsersOnMessage');

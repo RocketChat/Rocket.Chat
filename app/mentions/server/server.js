@@ -9,7 +9,6 @@ import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
-		console.log('1');
 		const users = Meteor.users.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } }).fetch();
 
 		return users.map((user) => ({
@@ -19,17 +18,14 @@ export class MentionQueries {
 	}
 
 	getUser(userId) {
-		console.log('2');
 		return Users.findOneById(userId);
 	}
 
 	getTotalChannelMembers(rid) {
-		console.log('3');
 		return Subscriptions.findByRoomId(rid).count();
 	}
 
 	getChannels(channels) {
-		console.log('4');
 		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
 	}
 }
@@ -59,7 +55,4 @@ const mention = new MentionsServer({
 		});
 	},
 });
-callbacks.add('beforeSaveMessage', (message) => {
-	console.log(message);
-	mention.execute(message);
-}, callbacks.priority.HIGH, 'mentions');
+callbacks.add('beforeSaveMessage', (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');

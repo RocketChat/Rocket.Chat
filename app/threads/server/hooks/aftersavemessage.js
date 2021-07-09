@@ -71,6 +71,7 @@ Meteor.startup(function() {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
+		callbacks.add('afterSaveTask', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 		callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 	});
 });
