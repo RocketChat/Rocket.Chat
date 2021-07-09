@@ -1,9 +1,6 @@
 import { Markdown } from '../../../markdown/server';
 
 export const parseUrlsInMessage = (message) => {
-	if (message.title) {
-		message.msg = message.title;
-	}
 	if (message.parseUrls === false) {
 		return message;
 	}

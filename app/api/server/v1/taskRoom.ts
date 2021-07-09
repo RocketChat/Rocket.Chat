@@ -200,31 +200,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		} catch (error) {
 			return API.v1.failure('tshow provided but missing tmid');
 		}
-		// const taskAlreadyExists = task._id && Tasks.findOne({ _id: task._id });
-		// if (taskAlreadyExists) {
-		// 	return toastr.error('Task_Already_Sent');
-		// }
-		// const user = Meteor.user();
-		// // task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
-		// task.ts = new Date();
-		// task.u = {
-		// 	_id: this.userId,
-		// 	username: user?.username,
-		// };
 
-		// if (settings.get('UI_Use_Real_Name')) {
-		// 	task.u.name = user.name;
-		// }
-		// task.temp = true;
-		// if (settings.get('Message_Read_Receipt_Enabled')) {
-		// 	task.unread = true;
-		// }
-		// // TODO: add callbacks for the tasks
-		// task = callbacks.run('beforeSaveMessage', task);
-		// Tasks.insert(task);
-		// promises.run('onClientMessageReceived', task).then(function(task: any) {
-		// 	return callbacks.run('afterSaveTask', task);
-		// });
 		return API.v1.success({ task });
 	},
 });

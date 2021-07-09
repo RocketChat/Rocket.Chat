@@ -8,7 +8,7 @@ import { Tasks } from '../../../models';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { parseUrlsInTask } from './parseUrlsInTask';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
@@ -217,7 +217,7 @@ export const sendTask = function(user, task, room, upsert = false) {
 	// 	}
 	// }
 
-	parseUrlsInMessage(task);
+	parseUrlsInTask(task);
 
 	task = callbacks.run('beforeSaveMessage', task, room);
 	try {

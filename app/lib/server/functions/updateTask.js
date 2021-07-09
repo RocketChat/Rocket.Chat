@@ -4,7 +4,7 @@ import { parser } from '@rocket.chat/message-parser';
 import { Tasks, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { parseUrlsInTask } from './parseUrlsInTask';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
@@ -24,7 +24,7 @@ export const updateTask = function(task, user, originalTask) {
 		username: user.username,
 	};
 
-	parseUrlsInMessage(task);
+	parseUrlsInTask(task);
 
 	task = callbacks.run('beforeSaveMessage', task);
 
