@@ -10,7 +10,7 @@ export async function findTags({ userId, text, departmentId, pagination: { offse
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 	const query = {
 		...text && { $or: [{ name: filterReg }, { description: filterReg }] },
-		...departmentId ? { departments: departmentId } : {},
+		...departmentId ? { $or: [{ departments: departmentId }, { numDepartments: 0 }] } : {},
 	};
 
 	const cursor = LivechatTag.find(query, {

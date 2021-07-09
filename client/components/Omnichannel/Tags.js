@@ -10,8 +10,8 @@ import { useEndpointData } from '../../hooks/useEndpointData';
 import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
-const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }) => {
-	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list');
+const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false, department }) => {
+	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list', { departmentId: department._id });
 	const t = useTranslation();
 	const forms = useSubscription(formsSubscription);
 
@@ -57,6 +57,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 				<Field.Row>
 					<Tags
 						value={paginatedTagValue}
+						department={department}
 						handler={(tags) => {
 							handler(tags.map((tag) => tag.label));
 							handlePaginatedTagValue(tags);

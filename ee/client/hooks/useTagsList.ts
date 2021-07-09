@@ -8,6 +8,7 @@ import { ILivechatTagRecord } from '../../../definition/ILivechatTagRecord';
 
 type TagsListOptions = {
 	filter: string;
+	departmentId: string;
 };
 
 export const useTagsList = (
@@ -31,6 +32,7 @@ export const useTagsList = (
 		async (start, end) => {
 			const { tags, total } = await getTags({
 				text: options.filter,
+				departmentId: options.departmentId,
 				offset: start,
 				count: end + start,
 			});
@@ -44,7 +46,7 @@ export const useTagsList = (
 				itemCount: total,
 			};
 		},
-		[getTags, options.filter],
+		[getTags, options.filter, options.departmentId],
 	);
 
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
