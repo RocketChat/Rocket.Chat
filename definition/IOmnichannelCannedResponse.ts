@@ -15,7 +15,7 @@ export type IOmnichannelCannedResponse = {
 
 export type EndpointResponse = {
 	cannedResponses: ObjectFromApi<IOmnichannelCannedResponse>[];
-	count: number;
-	offset: number;
+	count?: number;
+	offset?: number;
 	total: number;
 };
