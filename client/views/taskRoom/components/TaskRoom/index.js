@@ -22,11 +22,6 @@ export default function WithData({ rid }) {
 		return () => {
 			computation.stop();
 		};
-		// const fetchData = async () => {
-		// 	const tasks = await getHistory();
-		// 	setTasks(tasks);
-		// };
-		// fetchData();
 	}, [tasks._id, rid, getHistory]);
 
 	return <TaskRoom rid={rid} tasks={tasks} setTasks={setTasks} />;

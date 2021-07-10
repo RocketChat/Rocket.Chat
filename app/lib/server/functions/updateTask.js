@@ -44,6 +44,6 @@ export const updateTask = function(task, user, originalTask) {
 	const room = Rooms.findOneById(task.rid);
 
 	Meteor.defer(function() {
-		callbacks.run('afterSaveMessage', Tasks.findOneById(tempid), room, user._id);
+		callbacks.run('afterSaveTask', Tasks.findOneById(tempid), room, user._id);
 	});
 };

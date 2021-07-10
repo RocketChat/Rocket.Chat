@@ -1,3 +1,4 @@
+import { Icon, Box, Flex, Margins, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
@@ -8,8 +9,7 @@ import Task from '../Task/Task';
 
 export default function TaskRoom({ rid, tasks, setTasks }) {
 	const [taskTitle, setTaskTitle] = useState('');
-	const [sortType, setSortType] = useState('');
-	const [sort, setSort] = useState('asc');
+	const [sort, setSort] = useState(['', 'asc']);
 
 	const setModal = useSetModal();
 	const createTask = useEndpointActionExperimental('POST', 'taskRoom.createTask');
@@ -39,19 +39,22 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 
 	return (
 		<>
-			<h1 style={{ textAlign: 'center', marginBottom: '50px', fontSize: '3rem' }}>Tasks List</h1>
-			<div>
-				<button>Sort by Date</button>
-			</div>
-			<div>
-				<button>Sort by Creator</button>
-			</div>
-			<div>
-				<button>Sort by status</button>
-			</div>
-			<div>
-				<button>Sort by Assignee</button>
-			</div>
+			<Flex.Container alignItems='center'>
+				<ButtonGroup align='center'>
+					<Button ghost info onClick={'onCancel'}>
+						{'Sort by Creator'}
+					</Button>
+					<Button info onClick={'confirm'}>
+						{'Sort by Date'}
+					</Button>
+					<Button small onClick={'confirm'}>
+						{'Sort by Status'}
+					</Button>
+					<Button primary onClick={'confirm'}>
+						{'Create a task'}
+					</Button>
+				</ButtonGroup>
+			</Flex.Container>
 			<div style={{ overflowY: 'scroll' }}>
 				{tasks !== undefined &&
 					tasks.length &&
@@ -70,7 +73,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 						/>
 					))}
 			</div>
-			<form>
+			{/* <form>
 				<textarea
 					placeholder='Create a new task'
 					value={taskTitle}
@@ -86,7 +89,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 				<button type='submit' onClick={(e) => handleSave(e)}>
 					Submit
 				</button>
-			</form>
+			</form> */}
 		</>
 	);
 }

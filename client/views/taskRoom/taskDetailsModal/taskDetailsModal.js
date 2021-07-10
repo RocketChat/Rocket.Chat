@@ -51,6 +51,9 @@ const TaskDetailsModal = ({
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
+					<Button onClick={onUpdate} primary danger>
+						{t('Delete')}
+					</Button>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canSave} onClick={onUpdate} primary>
 						{t('Save')}

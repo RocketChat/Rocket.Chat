@@ -60,6 +60,7 @@ export default memo(function Task({
 				...(isIterable(className) ? className : [className]),
 				!following && followStyle,
 			].filter(Boolean)}
+			style={{ heigth: '75px !important' }}
 		>
 			<MessageTemplate.Container mb='neg-x2'>
 				<UserAvatar username={username} className='rcx-message__avatar' size='x28' />
@@ -75,7 +76,7 @@ export default memo(function Task({
 				</MessageTemplate.BodyClamp>
 			</MessageTemplate.Container>
 			<MessageTemplate.Container alignItems='center'>
-				<Button
+				{/* <Button
 					className={anchor}
 					small
 					square
@@ -88,22 +89,35 @@ export default memo(function Task({
 					aria-label={actionLabel}
 				>
 					<Icon name={button} size='x20' />
+				</Button> */}
+				<Button
+					className={anchor}
+					small
+					// flexShrink={0}
+					ghost
+					data-following={following}
+					data-id={taskId}
+					onClick={handleTaskDetails}
+					title={actionLabel}
+					aria-label={actionLabel}
+				>
+					Details
 				</Button>
 				{(mention && <NotificationStatus.Me t={t} mb='x24' />) ||
 					(all && <NotificationStatus.All t={t} mb='x24' />) ||
 					(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
 			</MessageTemplate.Container>
-			<Reply data-rid={rid} data-mid={taskId} onClick={thread}>
+			<Reply small ghost className={anchor} data-rid={rid} data-mid={taskId} onClick={thread}>
 				{t('Reply')}
 			</Reply>
-			{taskAssignee ? (
+			{taskAssignee && (
 				<MessageTemplate.Container alignItems='center'>
 					<Metrics.Item>
 						<Metrics.Item.Icon name='user' />
-						<Metrics.Item.Label>{taskAssignee.join(', ')}</Metrics.Item.Label>
+						<Metrics.Item.Label>{`@${taskAssignee.join(', ')}`}</Metrics.Item.Label>
 					</Metrics.Item>
 				</MessageTemplate.Container>
-			) : null}
+			)}
 			{tcount && (
 				<MessageTemplate.Container alignItems='center'>
 					<Metrics.Item>
