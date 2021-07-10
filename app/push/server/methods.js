@@ -12,6 +12,7 @@ Meteor.methods({
 		check(options, {
 			id: Match.Optional(String),
 			token: _matchToken,
+			authToken: String,
 			appName: String,
 			userId: Match.OneOf(String, null),
 			metadata: Match.Optional(Object),
@@ -48,6 +49,7 @@ Meteor.methods({
 			// Rig default doc
 			doc = {
 				token: options.token,
+				authToken: options.authToken,
 				appName: options.appName,
 				userId: options.userId,
 				enabled: true,
@@ -69,6 +71,7 @@ Meteor.methods({
 				$set: {
 					updatedAt: new Date(),
 					token: options.token,
+					authToken: options.authToken,
 				},
 			});
 		}

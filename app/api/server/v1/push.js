@@ -33,10 +33,12 @@ API.v1.addRoute('push.token', { authRequired: true }, {
 
 
 		let result;
+
 		Meteor.runAsUser(this.userId, () => {
 			result = Meteor.call('raix:push-update', {
 				id,
 				token: { [type]: value },
+				authToken: this.request.headers['x-auth-token'],
 				appName,
 				userId: this.userId,
 			});
