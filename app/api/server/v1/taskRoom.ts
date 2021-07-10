@@ -140,10 +140,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 	post() {
 		const task = this.bodyParams;
-		check(this.bodyParams, {
-			title: String,
-			rid: String,
-		});
+
 		const uid = this.userId;
 
 		if (!uid || s.trim(task.title) === '') {
@@ -198,7 +195,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
 			sendTask(user, task, room, false);
 		} catch (error) {
-			return API.v1.failure('tshow provided but missing tmid');
+			return API.v1.failure('An error occured while creating a task');
 		}
 
 		return API.v1.success({ task });

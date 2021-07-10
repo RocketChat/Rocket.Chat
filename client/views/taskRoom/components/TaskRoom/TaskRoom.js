@@ -1,31 +1,41 @@
-import { Icon, Box, Flex, Margins, Tag, Modal, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Flex, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import React, { useState } from 'react';
 
 import { useSetModal } from '../../../../contexts/ModalContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import TaskDetailsModal from '../../taskDetailsModal';
+import CreateTaskModal from '../CreateTaskModal';
 import Task from '../Task/Task';
 
 export default function TaskRoom({ rid, tasks, setTasks }) {
-	const [taskTitle, setTaskTitle] = useState('');
 	const [sort, setSort] = useState(['', 'asc']);
 
 	const setModal = useSetModal();
-	const createTask = useEndpointActionExperimental('POST', 'taskRoom.createTask');
 
-	const handleTask = (e) => {
-		setTaskTitle(e.target.value);
+	const handleCreate = () => {
+		setModal(
+			<CreateTaskModal
+				rid={rid}
+				onCreate={() => setModal()}
+				onClose={() => setModal()}
+			></CreateTaskModal>,
+		);
 	};
 
-	const handleSave = useMutableCallback(async (e) => {
-		e.preventDefault();
-		const task = {};
-		task.title = taskTitle;
-		task.rid = rid;
-		await createTask(task);
-		setTaskTitle('');
-	});
+	const sortTasks = (id) => {
+		const sortedTasks = [...tasks];
+		(id === 'Date' && sort[0] === id && sortedTasks.sort((a, b) => a.ts > b.ts)) ||
+			(sort[0] !== id && sortedTasks.sort((a, b) => a.ts < b.ts));
+		(id === 'Creator' &&
+			sort[0] === id &&
+			sortedTasks.sort((a, b) => a.u.username > b.u.username)) ||
+			(sort[0] !== id && sortedTasks.sort((a, b) => a.u.username < b.u.username));
+		(id === 'Status' &&
+			sort[0] === id &&
+			sortedTasks.sort((a, b) => a.taskStatus > b.taskStatus)) ||
+			(sort[0] !== id && sortedTasks.sort((a, b) => a.taskStatus < b.taskStatus));
+		setSort([id, 'asc']);
+		setTasks(sortedTasks);
+	};
 
 	const handleTaskDetails = (task) => {
 		setModal(
@@ -41,16 +51,16 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 		<>
 			<Flex.Container alignItems='center'>
 				<ButtonGroup align='center'>
-					<Button ghost info onClick={'onCancel'}>
+					<Button ghost info onClick={() => sortTasks('Creator')}>
 						{'Sort by Creator'}
 					</Button>
-					<Button info onClick={'confirm'}>
+					<Button info onClick={() => sortTasks('Date')}>
 						{'Sort by Date'}
 					</Button>
-					<Button small onClick={'confirm'}>
+					<Button small onClick={() => sortTasks('Status')}>
 						{'Sort by Status'}
 					</Button>
-					<Button primary onClick={'confirm'}>
+					<Button primary onClick={handleCreate}>
 						{'Create a task'}
 					</Button>
 				</ButtonGroup>
@@ -73,23 +83,6 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 						/>
 					))}
 			</div>
-			{/* <form>
-				<textarea
-					placeholder='Create a new task'
-					value={taskTitle}
-					style={{
-						width: '100%',
-						position: 'absolute',
-						bottom: '0',
-						zIndex: '9999',
-						backgroundColor: 'white',
-					}}
-					onChange={(e) => handleTask(e)}
-				></textarea>
-				<button type='submit' onClick={(e) => handleSave(e)}>
-					Submit
-				</button>
-			</form> */}
 		</>
 	);
 }
