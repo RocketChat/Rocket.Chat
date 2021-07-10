@@ -1055,12 +1055,28 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.search', () => {
+		beforeEach((done) => {
+			const sendMessage = (text) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: text,
+						},
+					})
+					.end(() => {});
+			};
+			for (let i = 0; i < 5; i++) { sendMessage('msg1'); }
+			done();
+		});
+
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1070,12 +1086,12 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1083,125 +1099,44 @@ describe('[Chat]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(1);
 				})
 				.end(done);
 		});
-	});
-	describe('[/chat.react]', () => {
-		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
-			request.post(api('chat.react'))
+		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
+			request.get(api('chat.search'))
 				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id,
-					shouldReact: false,
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 1,
+					count: 3,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should react a message successfully', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: 'smile',
-					messageId: message._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(3);
 				})
 				.end(done);
 		});
 
-		it('should return statusCode: 200 when the emoji is valid', (done) => {
-			request.post(api('chat.react'))
+		it('should return a empty list of messages when is provided a huge offset value', (done) => {
+			request.get(api('chat.search'))
 				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id,
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 9999,
+					count: 3,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should return statusCode: 200 and success when try react a message that\'s already reacted', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id,
-					shouldReact: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id,
-					shouldReact: false,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: ':squid:',
-					messageId: message._id,
-					shouldReact: true,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					emoji: 'bee',
-					messageId: message._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
-		});
-		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
-			request.post(api('chat.react'))
-				.set(credentials)
-				.send({
-					reaction: 'ant',
-					messageId: message._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
 		});
