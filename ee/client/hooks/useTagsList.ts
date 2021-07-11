@@ -32,7 +32,7 @@ export const useTagsList = (
 		async (start, end) => {
 			const { tags, total } = await getTags({
 				text: options.filter,
-				departmentId: options.departmentId,
+				...(options.departmentId && { departmentId: options.departmentId }),
 				offset: start,
 				count: end + start,
 			});

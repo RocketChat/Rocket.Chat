@@ -157,7 +157,11 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 				</Field>
 				{Tags && (
 					<Field>
-						<Tags tags={tags} handler={handleTags} />
+						<Tags
+							tags={tags}
+							handler={handleTags}
+							department={{ departmentId: room.departmentId }}
+						/>
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (

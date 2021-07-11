@@ -11,12 +11,17 @@ import { formsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
 const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false, department }) => {
-	const { value: tagsResult = [], phase: stateTags } = useEndpointData('livechat/tags.list', { departmentId: department._id });
+	const { value: tagsResult = [], phase: stateTags } = useEndpointData(
+		'livechat/tags.list',
+		department && {
+			departmentId: department._id,
+		},
+	);
 	const t = useTranslation();
 	const forms = useSubscription(formsSubscription);
 
 	const { useCurrentChatTags = () => {} } = forms;
-	const Tags = useCurrentChatTags();
+	const CurrentChatTags = useCurrentChatTags();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -55,7 +60,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false, 
 			</Field.Label>
 			{Tags && tagsList && tagsList.length > 0 ? (
 				<Field.Row>
-					<Tags
+					<CurrentChatTags
 						value={paginatedTagValue}
 						department={department}
 						handler={(tags) => {
