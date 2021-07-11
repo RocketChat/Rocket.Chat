@@ -2241,6 +2241,7 @@
   "Invite_user_to_join_channel_all_from": "Invite all users from [#channel] to join this channel",
   "Invite_user_to_join_channel_all_to": "Invite all users from this channel to join [#channel]",
   "Invite_Users": "Invite Users",
+  "IP": "IP",
   "IRC_Channel_Join": "Output of the JOIN command.",
   "IRC_Channel_Leave": "Output of the PART command.",
   "IRC_Channel_Users": "Output of the NAMES command.",

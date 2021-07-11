@@ -81,8 +81,6 @@ function OutOfOfficeForm({
 
 	const { isEnabled, roomIds, customMessage, startDate, endDate }: IFormValues = values as any;
 
-	console.log('the --', startDate);
-
 	const { handleIsEnabled, handleCustomMessage, handleStartDate, handleEndDate, handleRoomIds } =
 		handlers;
 
