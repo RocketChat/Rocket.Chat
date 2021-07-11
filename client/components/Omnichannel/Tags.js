@@ -1,6 +1,6 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -13,9 +13,13 @@ import { FormSkeleton } from './Skeleton';
 const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false, department }) => {
 	const { value: tagsResult = [], phase: stateTags } = useEndpointData(
 		'livechat/tags.list',
-		department && {
-			departmentId: department._id,
-		},
+		useMemo(
+			() =>
+				department && {
+					departmentId: department._id,
+				},
+			[department],
+		),
 	);
 	const t = useTranslation();
 	const forms = useSubscription(formsSubscription);
