@@ -13,7 +13,13 @@ const CloseChatModalData = ({ departmentId, onCancel, onConfirm }) => {
 		return <FormSkeleton />;
 	}
 	const { department } = data || {};
-	return <CloseChatModal onCancel={onCancel} onConfirm={onConfirm} department={department} />;
+	return (
+		<CloseChatModal
+			onCancel={onCancel}
+			onConfirm={onConfirm}
+			department={{ departmentId, ...department }}
+		/>
+	);
 };
 
 export default CloseChatModalData;

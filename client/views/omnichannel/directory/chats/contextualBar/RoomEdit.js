@@ -32,7 +32,7 @@ const getInitialValuesRoom = (room) => {
 
 	return {
 		topic: topic ?? '',
-		tags: tags ?? [],
+		tags: tags ? tags.map((tag) => ({ label: tag })) : [], // TODO: need to be fixed (value property as tag id)
 		livechatData: livechatData ?? {},
 		priorityId: priorityId ?? '',
 	};

@@ -85,13 +85,7 @@ const CloseChatModal = ({ department = {}, onCancel, onConfirm }) => {
 				</Field>
 				{Tags && (
 					<Field>
-						<Tags
-							tagRequired={tagRequired}
-							tags={tags}
-							handler={handleTags}
-							error={tagError}
-							department={department}
-						/>
+						<Tags tagRequired={tagRequired} handler={handleTags} department={department} />
 						<Field.Error>{tagError}</Field.Error>
 					</Field>
 				)}
