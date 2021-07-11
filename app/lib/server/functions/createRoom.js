@@ -2,7 +2,6 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
 
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization';
@@ -10,6 +9,7 @@ import { callbacks } from '../../../callbacks';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
+import { convertEphemeralTime } from './convertEphemeralTime';
 import { Team } from '../../../../server/sdk';
 
 
@@ -35,28 +35,15 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 	}
 	if (extraData.ephemeralTime) {
 		console.log(extraData.ephemeralTime);
-		switch (extraData.ephemeralTime) {
-			case '5mins':
-				extraData.ephemeralTime = moment().add(5, 'minutes').toDate();
-				break;
-			case '15mins':
-				extraData.ephemeralTime = moment().add(15, 'minutes').toDate();
-				break;
-			case '1hr':
-				extraData.ephemeralTime = moment().add(1, 'hour').toDate();
-				break;
-			case '6hr':
-				extraData.ephemeralTime = moment().add(6, 'hour').toDate();
-				break;
-			case '12hr':
-				extraData.ephemeralTime = moment().add(12, 'hour').toDate();
-				break;
-			case '24hr':
-				extraData.ephemeralTime = moment().add(24, 'hour').toDate();
-				break;
-		}
+		extraData.ephemeralTime = convertEphemeralTime(extraData.ephemeralTime);
 		// console.log(ephemeralTime);
 	}
+	if (extraData.msgEphemeralTime) {
+		console.log(extraData.ephemeralTime);
+		extraData.msgEphemeralTime = convertEphemeralTime(extraData.msgEphemeralTime);
+		// console.log(ephemeralTime);
+	}
+
 	if (!_.contains(members, owner.username)) {
 		members.push(owner.username);
 	}
@@ -136,6 +123,9 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 		extra.open = true;
 		if (room.ephemeralTime) {
 			extra.ephemeralTime = room.ephemeralTime;
+		}
+		if (room.msgEphemeralTime) {
+			extra.msgEphemeralTime = room.msgEphemeralTime;
 		}
 		if (room.prid) {
 			extra.prid = room.prid;

@@ -19,6 +19,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ ts: 1 });
 		this.tryEnsureIndex({ ephemeralTime: 1 }, { expireAfterSeconds: 0 });
+		this.tryEnsureIndex({ msgEphemeralTime: 1 }, { expireAfterSeconds: 0 });
 		// Tokenpass
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });

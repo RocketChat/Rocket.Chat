@@ -16,6 +16,7 @@ function RoomInfo({
 	archived,
 	broadcast,
 	ephemeralTime,
+	msgEphemeralTime,
 	announcement,
 	topic,
 	type,
@@ -173,6 +174,12 @@ function RoomInfo({
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Ephemeral_time')}</InfoPanel.Label>
 								<InfoPanel.Text>{formatDateAndTime(ephemeralTime)}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
+						{msgEphemeralTime && msgEphemeralTime !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Msg_Ephemeral_time')}</InfoPanel.Label>
+								<InfoPanel.Text>{formatDateAndTime(msgEphemeralTime)}</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 						{broadcast && broadcast !== '' && (

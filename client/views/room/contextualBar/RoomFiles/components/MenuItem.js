@@ -7,6 +7,7 @@ import { download } from '../../../../../lib/download';
 
 const MenuItem = ({ _id, name, url, onClickDelete }) => {
 	const t = useTranslation();
+	console.log(onClickDelete);
 	const menuOptions = {
 		downLoad: {
 			label: (

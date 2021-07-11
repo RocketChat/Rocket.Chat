@@ -25,6 +25,7 @@ const CreateChannel = ({
 	onChangeType,
 	onChangeEphemeral,
 	onChangeEphemeralTime,
+	onChangeMsgEphemeralTime,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
@@ -143,6 +144,14 @@ const CreateChannel = ({
 							<Field.Label>{'Ephemeral Time'}</Field.Label>
 						</Box>
 						<Select onChange={onChangeEphemeralTime} options={options} />
+					</Field>
+				)}
+				{values.ephemeral && values.ephemeralTime && (
+					<Field mbe='x24'>
+						<Box display='flex' flexDirection='column'>
+							<Field.Label>{'Message Ephemeral Time'}</Field.Label>
+						</Box>
+						<Select onChange={onChangeMsgEphemeralTime} options={options} />
 					</Field>
 				)}
 				<Field mbe='x24'>

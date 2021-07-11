@@ -37,6 +37,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		broadcast: false,
 		ephemeral: false,
 		ephemeralTime: null,
+		msgEphemeralTime: null,
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
@@ -50,6 +51,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		encrypted,
 		ephemeral,
 		ephemeralTime,
+		msgEphemeralTime,
 	} = values;
 	const {
 		handleUsers,
@@ -59,6 +61,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		handleReadOnly,
 		handleEphemeral,
 		handleEphemeralTime,
+		handleMsgEphemeralTime,
 	} = handlers;
 
 	const defaultOption = [
@@ -93,6 +96,9 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	const onChangeEphemeralTime = useMutableCallback((value) => {
 		handleEphemeralTime(value);
 	});
+	const onChangeMsgEphemeralTime = useMutableCallback((value) => {
+		handleMsgEphemeralTime(value);
+	});
 	const onCreate = useCallback(async () => {
 		const goToRoom = (rid) => {
 			goToRoomById(rid);
@@ -109,6 +115,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 				...(teamId && { teamId }),
 				ephemeral,
 				ephemeralTime,
+				msgEphemeralTime,
 			},
 		};
 		let roomData;
@@ -139,6 +146,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		reload,
 		ephemeral,
 		ephemeralTime,
+		msgEphemeralTime,
 	]);
 
 	return (
@@ -150,6 +158,7 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 			onChangeType={onChangeType}
 			onChangeEphemeral={onChangeEphemeral}
 			onChangeEphemeralTime={onChangeEphemeralTime}
+			onChangeMsgEphemeralTime={onChangeMsgEphemeralTime}
 			onChangeBroadcast={onChangeBroadcast}
 			canOnlyCreateOneType={canOnlyCreateOneType}
 			e2eEnabledForPrivateByDefault={e2eEnabledForPrivateByDefault}

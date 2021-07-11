@@ -1,0 +1,25 @@
+import moment from 'moment';
+
+export const convertEphemeralTime = function(time) {
+	switch (time) {
+		case '5mins':
+			time = moment().add(5, 'minutes').toDate();
+			break;
+		case '15mins':
+			time = moment().add(15, 'minutes').toDate();
+			break;
+		case '1hr':
+			time = moment().add(1, 'hour').toDate();
+			break;
+		case '6hr':
+			time = moment().add(6, 'hour').toDate();
+			break;
+		case '12hr':
+			time = moment().add(12, 'hour').toDate();
+			break;
+		case '24hr':
+			time = moment().add(24, 'hour').toDate();
+			break;
+	}
+	return time;
+};
