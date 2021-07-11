@@ -4,7 +4,7 @@ import { OutOfOfficeRooms, OutOfOfficeUsers } from '../../models/server';
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 import { callbacks } from '../../callbacks/server';
 
-async function sendMessageInRoomForUser(
+async function sendMessageInRoomForUsers(
 	userIds: string[],
 	roomId: string,
 ): Promise<void> {
@@ -29,7 +29,7 @@ async function handlePostMessage(
 		return message;
 	}
 
-	sendMessageInRoomForUser(foundOutOfOfficeRoom.userIds, room._id);
+	sendMessageInRoomForUsers(foundOutOfOfficeRoom.userIds, room._id);
 
 	OutOfOfficeRooms.removeById(foundOutOfOfficeRoom._id);
 

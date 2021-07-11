@@ -3,6 +3,9 @@ import { Base } from './_Base';
 class OutOfOfficeUsers extends Base {
 	constructor() {
 		super('OutOfOfficeUsers');
+
+		this.tryEnsureIndex({ userId: 1 });
+		this.tryEnsureIndex({ userId: 1, isEnabled: 1 }, { unique: true });
 	}
 
 	// insert
@@ -21,16 +24,7 @@ class OutOfOfficeUsers extends Base {
 		return this.find({ userId: { $in: userIds }, isEnabled: true }, { fields: { customMessage: 1, userId: 1 } }).fetch();
 	}
 
-	findAllFromRoomId(roomId: string): IOutOfOfficeUser[] {
-		return this.find({ roomIds: { $in: [roomId] }, sentRoomIds: { $nin: [roomId] } });
-	}
-
 	// update
-
-	updateSentRoomIds(docId: IOutOfOfficeUser['_id'], roomId: string): void {
-		return this.update({ _id: docId }, { $push: { sentRoomIds: roomId } });
-	}
-
 	setDisabled(userId: string): number {
 		return this.update({ userId }, { $set: { isEnabled: false } });
 	}
