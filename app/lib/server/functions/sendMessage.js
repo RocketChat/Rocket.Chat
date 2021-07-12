@@ -9,6 +9,7 @@ import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { convertEphemeralTime } from './convertEphemeralTime';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
@@ -179,7 +180,9 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		name,
 	};
 	message.rid = room._id;
-	if (room.ephemeral && room.ephemeralTime) {
+	if (room.ephemeral && room.msgEphemeralTime) {
+		message.expireAt = convertEphemeralTime(room.msgEphemeralTime);
+	} else if (room.ephemeral && room.ephemeralTime) {
 		message.expireAt = room.ephemeralTime;
 	}
 	if (!Match.test(message.msg, String)) {

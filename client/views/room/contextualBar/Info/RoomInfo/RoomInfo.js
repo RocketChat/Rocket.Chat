@@ -179,7 +179,7 @@ function RoomInfo({
 						{msgEphemeralTime && msgEphemeralTime !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Msg_Ephemeral_time')}</InfoPanel.Label>
-								<InfoPanel.Text>{formatDateAndTime(msgEphemeralTime)}</InfoPanel.Text>
+								<InfoPanel.Text>{msgEphemeralTime}</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 						{broadcast && broadcast !== '' && (
