@@ -11,7 +11,7 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', ({ departmentId }: {
 	}
 
 	const maxChatsPerSetting = settings.get('Livechat_maximum_chats_per_agent') as number;
-	const agentFilter = { $and: [{ 'livechat.maxNumberSimultaneousChat': { $gt: 0 } }, { $expr: { $lt: ['queueInfo.chats', 'livechat.maxNumberSimultaneousChats'] } }] };
+	const agentFilter = { $and: [{ 'livechat.maxNumberSimultaneousChat': { $gt: 0 } }, { $expr: { $lt: ['queueInfo.chats', 'livechat.maxNumberSimultaneousChat'] } }] };
 	// apply filter only if agent setting is 0 or is disabled
 	const globalFilter = maxChatsPerSetting > 0 ? { $and: [{ $or: [{ 'livechat.maxNumberSimultaneousChat': { $exists: false } }, { 'livechat.maxNumberSimultaneousChat': 0 }] }, { 'queueInfo.chats': { $lt: maxChatsPerSetting } }] } : {};
 
