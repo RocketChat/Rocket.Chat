@@ -616,6 +616,7 @@ jobs:
         fi
 
   release_snap_amd64:
+    # Obs: tracks can’t be opened dynamically. We have to explicitly open them by request when a new major version gets released, otherwise this task will fail.
     env:
       SNAPCRAFT_REPO: RocketChat/rocketchat-server-snap
       TESTS_REPO: RocketChat/rocketchat-release-tests
@@ -626,7 +627,7 @@ jobs:
       - name: Parse environment variables
         run: |
           export ROCKETCHAT_VERSION=${{ github.event.release.tag_name }}
-          echo "CHANNEL=${ROCKETCHAT_VERSION:0:1}.x" >> $GITHUB_ENV
+          echo "SNAP_TRACK=${ROCKETCHAT_VERSION:0:1}.x" >> $GITHUB_ENV
           echo "ROCKETCHAT_VERSION=$ROCKETCHAT_VERSION" >> $GITHUB_ENV
           [[ -z "$(echo ${{ env.ROCKETCHAT_VERSION }} | grep rc)" ]] && echo "CANDIDATE=false" >> $GITHUB_ENV
 
@@ -663,7 +664,7 @@ jobs:
         with:
           store_login: ${{ secrets.SNAPCRAFT_LOGIN }}
           snap: ${{ steps.build.outputs.snap }}
-          release: ${{ env.CHANNEL }}/edge
+          release: ${{ env.SNAP_TRACK }}/edge
       
       - name: Test snap updating
         run: ./test_scripts/snap_update_test.sh
@@ -671,18 +672,19 @@ jobs:
       - name: Promote edge to candidate
         run: |
           echo "${{ secrets.SNAPCRAFT_LOGIN }}" | snapcraft login --with -
-          REVISION=$(snapcraft list-revisions rocketchat-server --arch amd64 | grep $CHANNEL/edge | cut -d' ' -f 1 | head -n 1)
-          snapcraft release rocketchat-server $REVISION $CHANNEL/candidate
+          REVISION=$(snapcraft list-revisions rocketchat-server --arch amd64 | grep $SNAP_TRACK/edge | cut -d' ' -f 1 | head -n 1)
+          snapcraft release rocketchat-server $REVISION $SNAP_TRACK/candidate
       
       - name: Rocket.Chat Notification
         uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
         if: env.CANDIDATE == 'false'
+        continue-on-error: true
         with:
           type: ${{ job.status }}
           job_name: '*Snapcraft build*'
           mention: 'here'
           mention_if: 'failure'
-          url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+          url: ${{ secrets.RELEASE_IMAGES_ROCKETCHAT_WEBHOOK }}
 
   release_cloud:
     runs-on: ubuntu-latest
@@ -708,9 +710,10 @@ jobs:
       - name: Rocket.Chat Notification
         uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@master
         if: env.CANDIDATE == 'false'
+        continue-on-error: true
         with:
           type: ${{ job.status }}
           job_name: '*Packer image build* - [DO Marketplace](https://marketplace.digitalocean.com/vendorportal/5cbf905da6e1a17be804b006/32/edit)'
           mention: 'here'
           mention_if: 'failure'
-          url: ${{ secrets.ROCKETCHAT_WEBHOOK }}
+          url: ${{ secrets.RELEASE_IMAGES_ROCKETCHAT_WEBHOOK }}
