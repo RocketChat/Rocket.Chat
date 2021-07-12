@@ -4,7 +4,7 @@ import { settings } from '../../../../../app/settings/server';
 
 callbacks.add('livechat.applySimultaneousChatRestrictions', ({ departmentId }: { departmentId?: string }) => {
 	if (departmentId) {
-		const departmentLimit = departmentId ? LivechatDepartment.findOneById(departmentId)?.maxNumberSimultaneousChat : 0;
+		const departmentLimit = LivechatDepartment.findOneById(departmentId)?.maxNumberSimultaneousChat || 0;
 		const departmentFilter = departmentLimit > 0 ? { 'queueInfo.chats': { $lt: Number(departmentLimit) } } : {};
 
 		return { $match: departmentFilter };
