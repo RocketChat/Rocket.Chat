@@ -1,12 +1,9 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrMustJoinWithCode}}
-			{{#if tmid}}
-				{{> userActionIndicator id=tmid}}
-			{{else}}
-				{{> userActionIndicator id=rid}}
-			{{/if}}
 
+		{{> userActionIndicator rid=rid tmid=tmid}}
+			
 			{{#if isWritable}}
 				{{#if popupConfig}}
 					{{> messagePopupConfig popupConfig}}

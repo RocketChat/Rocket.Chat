@@ -7,8 +7,11 @@ import './userActionIndicator.html';
 
 const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 4;
 
-const showUserActivity = (action, activity, rid) => {
-	const users = UserAction.get(rid, activity);
+const showUserActivity = (activity, id) => {
+	// activities are in the form of user-recording, user-uploading
+	const action = activity.split('-')[1];
+	const users = UserAction.get(id, activity);
+
 	if (users.length === 0) {
 		return;
 	}
@@ -36,12 +39,12 @@ const showUserActivity = (action, activity, rid) => {
 
 Template.userActionIndicator.helpers({
 	typingUsersData() {
-		return showUserActivity('typing', USER_TYPING, this.id);
+		return showUserActivity(USER_TYPING, this.tmid || this.rid);
 	},
 	uploadingUsersData() {
-		return showUserActivity('uploading', USER_UPLOADING, this.id);
+		return showUserActivity(USER_UPLOADING, this.tmid || this.rid);
 	},
 	recordingUsersData() {
-		return showUserActivity('recording', USER_RECORDING, this.id);
+		return showUserActivity(USER_RECORDING, this.tmid || this.rid);
 	},
 });
