@@ -178,7 +178,7 @@ export class NotificationsModule {
 			return subsCount > 0;
 		});
 
-		this.streamRoom.allowWrite(async function(eventName, username, _typing, extraData) {
+		this.streamRoom.allowWrite(async function(eventName, username, _activity, extraData) {
 			const [rid, e] = eventName.split('/');
 
 			// TODO should this use WEB_RTC_EVENTS enum?
@@ -186,7 +186,9 @@ export class NotificationsModule {
 				return true;
 			}
 
-			if (e !== 'typing' && e !== 'recording' && e !== 'uploading' && e !== 'user-activity') {
+			// Infact user-activity streamer will handle typing action.
+			// Need to use 'typing' streamer till all other clients updated to use user-activity streamer.
+			if (e !== 'typing' && e !== 'user-activity') {
 				return false;
 			}
 

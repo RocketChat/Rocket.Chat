@@ -8,7 +8,6 @@ import './userActionIndicator.html';
 const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 4;
 
 const showUserActivity = (activity, id) => {
-	// activities are in the form of user-recording, user-uploading
 	const action = activity.split('-')[1];
 	const users = UserAction.get(id, activity);
 

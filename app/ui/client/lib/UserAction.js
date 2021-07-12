@@ -14,6 +14,7 @@ const rooms = {};
 export const USER_RECORDING = 'user-recording';
 export const USER_TYPING = 'user-typing';
 export const USER_UPLOADING = 'user-uploading';
+export const USER_ACTIVITY = 'user-activity';
 
 const recordingTimeouts = {};
 const uploadingTimeouts = {};
@@ -39,8 +40,8 @@ const shownName = function(user) {
 	return user.username;
 };
 
-const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), false, activityType, extras);
-const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, 'user-activity', shownName(Meteor.user()), true, activityType, extras);
+const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), false, activityType, extras);
+const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), true, activityType, extras);
 
 function handleStreamAction(activity, performingUsers, rid, username, extras) {
 	const id = extras?.tmid ? extras.tmid : rid;
@@ -51,11 +52,7 @@ function handleStreamAction(activity, performingUsers, rid, username, extras) {
 		users[username] = setTimeout(function() {
 			const u = performingUsers.get(id);
 			delete u[username];
-			if (extras && 'tmid' in extras) {
-				performingUsers.set(id, u);
-			} else {
-				performingUsers.set(id, u);
-			}
+			performingUsers.set(id, u);
 		}, timeout);
 	} else {
 		clearTimeout(users[username]);
@@ -89,7 +86,7 @@ export const UserAction = new class {
 				handleStreamAction(activity, typingUsers, rid, username, extras);
 			}
 		};
-		return Notifications.onRoom(rid, 'user-activity', rooms[rid]);
+		return Notifications.onRoom(rid, USER_ACTIVITY, rooms[rid]);
 	}
 
 	startPerformingAction(rid, activityType, timeouts, renews, extras) {
@@ -154,7 +151,7 @@ export const UserAction = new class {
 		if (!rooms[rid]) {
 			return;
 		}
-		Notifications.unRoom(rid, 'user-activity', rooms[rid]);
+		Notifications.unRoom(rid, USER_ACTIVITY, rooms[rid]);
 
 		Object.values(typingUsers.get(rid) || {}).forEach(clearTimeout);
 		Object.values(recordingUsers.get(rid) || {}).forEach(clearTimeout);
