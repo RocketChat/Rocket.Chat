@@ -195,9 +195,8 @@ const SearchList = forwardRef(function SearchList({ onClose }, ref) {
 		let nextSelectedElement = null;
 
 		if (dir === 'up') {
-			nextSelectedElement = selectedElement.current.parentElement.previousSibling.querySelector(
-				'a',
-			);
+			nextSelectedElement =
+				selectedElement.current.parentElement.previousSibling.querySelector('a');
 		} else {
 			nextSelectedElement = selectedElement.current.parentElement.nextSibling.querySelector('a');
 		}

@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
+import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserCard from '../../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
@@ -10,7 +11,6 @@ import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
 import UserInfo from './UserInfo';
 import UserActions from './actions/UserActions';
@@ -32,12 +32,16 @@ function UserInfoWithData({
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const { value, phase: state, error } = useEndpointData(
+	const {
+		value,
+		phase: state,
+		error,
+	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
-			uid,
-			username,
-		]),
+		useMemo(
+			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
+			[uid, username],
+		),
 	);
 
 	const user = useMemo(() => {

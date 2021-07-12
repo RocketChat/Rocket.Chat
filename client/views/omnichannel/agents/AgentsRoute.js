@@ -59,11 +59,12 @@ function AgentsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		agentsRoute.push({
-			context: 'info',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			agentsRoute.push({
+				context: 'info',
+				id,
+			}),
 	);
 
 	const { value: data, reload } = useEndpointData('livechat/users/agent', query);

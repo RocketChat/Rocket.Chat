@@ -26,7 +26,7 @@ export const saveUser = (
 			{ _id: user._id },
 			{
 				$set: {
-					username: user.username,
+					...(user.username && { username: user.username }),
 					// name: user.name,
 					// utcOffset: user.utcOffset,
 					status: user.status,
