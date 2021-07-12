@@ -206,7 +206,7 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { teamId, teamName, userId } = this.queryParams;
+		const { teamId, teamName, userId, canUserDelete = false } = this.queryParams;
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -219,7 +219,7 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, { offset, count }));
+		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,

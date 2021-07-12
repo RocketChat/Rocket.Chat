@@ -31,19 +31,18 @@ function createRole(name, scope, description) {
 	});
 }
 
-function addUserToRole(roleId, username) {
+function addUserToRole(roleName, username) {
 	return new Promise((resolve) => {
 		request.post(api('roles.addUserToRole'))
 			.set(credentials)
 			.send({
-				roleName: roleId,
+				roleName,
 				username,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('role._id', roleId);
 			})
 			.end((err, req) => {
 				resolve(req.body.role);
@@ -381,6 +380,57 @@ describe('[Roles]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.nested.property('error', 'Cannot delete role because it\'s in use [error-role-in-use]');
+				})
+				.end(done);
+		});
+	});
+
+	describe('POST [/roles.removeUserFromRole]', () => {
+		let usersScopedRole;
+		let subscriptionsScopedRole;
+
+		before(async () => {
+			usersScopedRole = await createRole(`usersScopedRole-${ Date.now() }`, 'Users');
+			subscriptionsScopedRole = await createRole(`subscriptionsScopedRole-${ Date.now() }`, 'Subscriptions');
+
+			await addUserToRole(usersScopedRole.name, login.user);
+			await addUserToRole(subscriptionsScopedRole.name, login.user);
+		});
+
+		it('should unassign a role with User scope from an user', (done) => {
+			request.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleName: usersScopedRole.name,
+					username: login.user,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('role._id', usersScopedRole._id);
+					expect(res.body).to.have.nested.property('role.name', usersScopedRole.name);
+					expect(res.body).to.have.nested.property('role.scope', usersScopedRole.scope);
+					expect(res.body).to.have.nested.property('role.description', usersScopedRole.description);
+				})
+				.end(done);
+		});
+
+		it('should unassign a role with Subscriptions scope from an user', (done) => {
+			request.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleName: subscriptionsScopedRole.name,
+					username: login.user,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('role._id', subscriptionsScopedRole._id);
+					expect(res.body).to.have.nested.property('role.name', subscriptionsScopedRole.name);
+					expect(res.body).to.have.nested.property('role.scope', subscriptionsScopedRole.scope);
+					expect(res.body).to.have.nested.property('role.description', subscriptionsScopedRole.description);
 				})
 				.end(done);
 		});
