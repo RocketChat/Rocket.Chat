@@ -84,12 +84,12 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 
 	const handleModalConfirm = async (): Promise<void> => {
 		mediasoupClient?.close();
-		await wsClient?.joinRoom();
 		setMediasoupPeers(wsPeers);
 		wsClient?.removeAllListeners();
 		if (wsClient) {
 			addListenersToMediasoupClient(wsClient, setMediasoupPeers);
 		}
+		await wsClient?.joinRoom();
 		setMediasoupClient(wsClient);
 		setWsClient(null);
 		closeModal();
