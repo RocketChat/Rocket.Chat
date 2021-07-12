@@ -17,6 +17,7 @@
 		&::before {
 			transform: scale(1.2);
 		}
+		color: var(--message-box-icons-hover-color);
 	}
 }
 

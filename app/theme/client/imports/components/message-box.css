@@ -144,6 +144,10 @@
 		& .rc-input__icon-svg--plus {
 			transition: transform 0.1s linear;
 		}
+
+		&:hover {
+			color: var(--message-box-icons-hover-color);
+		}
 	}
 
 	&__action-menu {
@@ -278,6 +282,14 @@
 		display: flex;
 		justify-content: space-between;
 	}
+}
+
+.message-box-outline:hover {
+	border-color: var(--message-box-container-border-color-outline);
+}
+
+.message-box-outline:focus {
+	border-color: var(--message-box-container-border-color-outline);
 }
 
 @media (width <= 500px) {
