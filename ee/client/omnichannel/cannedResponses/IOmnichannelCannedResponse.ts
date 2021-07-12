@@ -1,4 +1,4 @@
-import { ObjectFromApi } from './ObjectFromApi';
+import { ObjectFromApi } from '../../../../definition/ObjectFromApi';
 
 export type IOmnichannelCannedResponse = {
 	_id: string;

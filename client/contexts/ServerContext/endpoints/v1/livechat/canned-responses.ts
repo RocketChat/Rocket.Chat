@@ -1,4 +1,4 @@
-import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import { IOmnichannelCannedResponse } from '../../../../../../ee/client/omnichannel/cannedResponses/IOmnichannelCannedResponse';
 import { ObjectFromApi } from '../../../../../../definition/ObjectFromApi';
 
 export type CannedResponses = {

@@ -6,7 +6,7 @@ import GenericTable from '../../../../client/components/GenericTable';
 import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { EndpointResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import { EndpointResponse } from './IOmnichannelCannedResponse';
 
 export type CannedResponsesPageProps = {
 	data: EndpointResponse | undefined;
