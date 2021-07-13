@@ -217,7 +217,7 @@
 		"iconv-lite": "^0.4.24",
 		"image-size": "^0.6.3",
 		"imap": "^0.8.19",
-		"ip-range-check": "^0.0.2",
+		"ip-range-check": "^0.2.0",
 		"is-svg": "^4.3.1",
 		"jquery": "^3.5.1",
 		"jschardet": "^1.6.0",
