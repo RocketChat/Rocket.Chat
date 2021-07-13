@@ -3107,7 +3107,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe.only('[/users.logoutOtherUser]', () => {
+	describe('[/users.logoutOtherUser]', () => {
 		let user;
 		before(async () => {
 			user = await createUser();
