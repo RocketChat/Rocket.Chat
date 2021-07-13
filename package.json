@@ -141,7 +141,7 @@
 		"supertest": "^6.1.3",
 		"ts-loader": "^8.2.0",
 		"ts-node": "^10.0.0",
-		"typescript": "^4.3.4",
+		"typescript": "^4.3.5",
 		"webpack": "^4.44.1"
 	},
 	"dependencies": {
