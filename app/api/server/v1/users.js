@@ -951,6 +951,7 @@ API.v1.addRoute('users.logoutOtherUser', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
 
+		// this method logs out user automatically
 		Users.removeResumeService(otherUserId);
 
 		return API.v1.success({
