@@ -23,29 +23,36 @@ const initialValuesRoom = {
 	priorityId: '',
 };
 
-const getInitialValuesRoom = (room) => {
+const getInitialValuesRoom = (room, departmentTags) => {
 	if (!room) {
 		return initialValuesRoom;
 	}
 
-	const { topic, tags, livechatData, priorityId } = room;
+	const { topic, tags: roomTags, livechatData, priorityId } = room;
+	const tags = [];
+
+	departmentTags.forEach((tag) => {
+		if (roomTags && roomTags.includes(tag.name)) {
+			tags.push({ label: tag.name, value: tag._id });
+		}
+	});
 
 	return {
 		topic: topic ?? '',
-		tags: tags ? tags.map((tag) => ({ label: tag })) : [], // TODO: need to be fixed (value property as tag id)
+		tags,
 		livechatData: livechatData ?? {},
 		priorityId: priorityId ?? '',
 	};
 };
 
-function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
+function RoomEdit({ room, visitor, reload, reloadInfo, close, departmentTags }) {
 	const t = useTranslation();
 
 	const {
 		values: valuesRoom,
 		handlers: handlersRoom,
 		hasUnsavedChanges: hasUnsavedChangesRoom,
-	} = useForm(getInitialValuesRoom(room));
+	} = useForm(getInitialValuesRoom(room, departmentTags));
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
