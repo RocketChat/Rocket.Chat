@@ -3128,23 +3128,32 @@ describe('[Users]', function() {
 		});
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
-			updatePermission('logout-other-user', []);
-			request.post(api('users.logoutOtherUser'))
-				.set(credentials)
-				.send({ otherUserId: user._id })
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.end(done);
+			updatePermission('logout-other-user', []).then(
+				() => {
+					request.post(api('users.logoutOtherUser'))
+						.set(credentials)
+						.send({ otherUserId: user._id })
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.end(done);
+				},
+			);
 		});
 
-		// it('should logout other user', (done) => {
-		// 	updatePermission('logout-other-user', ['admin']);
-		// 	request.post(api('users.logoutOtherUser'))
-		// 		.set(credentials)
-		// 		.send({ otherUserId: user._id })
-		// 		.expect('Content-Type', 'application/json')
-		// 		.expect(200)
-		// 		.end(done);
-		// });
+		it('should logout other user', (done) => {
+			updatePermission('logout-other-user', ['admin']).then(
+				() => {
+					request.post(api('users.logoutOtherUser'))
+						.set(credentials)
+						.send({ otherUserId: user._id })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body.message).to.be.equal(`User ${ user._id } has been logged out!`);
+						})
+						.end(done);
+				});
+		},
+		);
 	});
 });
