@@ -1810,6 +1810,7 @@
   "Federation_Domain_details": "Add the domain name that this server should be linked to.",
   "Federation_Enable": "Enable Federation",
   "Federation_Fix_now": "Fix now!",
+  "Federation_Adding_Federated_Users": "Adding Federated Users",
   "Federation_Guide_adding_users": "We guide you on how to add your first federated user.",
   "Federation_Is_working_correctly": "Federation integration is working correctly.",
   "Federation_Public_key": "Public Key",

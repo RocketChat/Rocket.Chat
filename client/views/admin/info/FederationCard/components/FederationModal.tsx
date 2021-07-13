@@ -197,7 +197,7 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 			{currentStep === 3 && (
 				<>
 					<Modal.Header>
-						<Modal.Title>{t('Federation_Adding_users_from_another_server')}</Modal.Title>
+						<Modal.Title>{t('Federation_Adding_Federated_Users')}</Modal.Title>
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
