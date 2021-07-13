@@ -40,7 +40,7 @@
 		"@types/cookie": "^0.4.0",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/ejson": "^2.1.2",
-		"@types/express": "^4.17.12",
+		"@types/express": "^4.17.13",
 		"@types/mongodb": "^3.6.19",
 		"@types/node": "^14.17.4",
 		"@types/ws": "^7.4.6",
