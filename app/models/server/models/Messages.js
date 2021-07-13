@@ -457,6 +457,15 @@ export class Messages extends Base {
 		return this.findOne(query);
 	}
 
+	findOneByRoomIdAndMessageId(rid, messageId, options) {
+		const query = {
+			rid,
+			_id: messageId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByRoomIdAndType(roomId, type, options) {
 		const query = {
 			rid: roomId,
