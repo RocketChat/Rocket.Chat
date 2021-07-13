@@ -9,7 +9,6 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', ({ departmentId }: {
 			return { $match: { 'queueInfo.chats': { $lt: Number(departmentLimit) } } };
 		}
 
-		return { $match: departmentFilter };
 	}
 
 	const maxChatsPerSetting = settings.get('Livechat_maximum_chats_per_agent') as number;
