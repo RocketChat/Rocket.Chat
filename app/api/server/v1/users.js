@@ -933,3 +933,22 @@ API.v1.addRoute('users.listTeams', { authRequired: true }, {
 		});
 	},
 });
+
+/* TODO:
+	VALIDATE PAYLOAD {userId : string} --> throw error in case there is no userID
+	CHECK REQUESTER PERMISSIONS ---> throw unauthorized error if the requester doesn't have the right permission
+	FIND TARGET userID ---> throw error in case there is no userID
+	SUCCESS
+*/
+API.v1.addRoute('users.logoutOtherUser', { authRequired: true }, {
+	post() {
+		const { userId } = this.bodyParams;
+		const user = Users.findOneById(userId);
+
+		Users.removeResumeService(userId);
+
+		return API.v1.success({
+			user,
+		});
+	},
+});
