@@ -104,5 +104,16 @@
 		"contributors": [
 			"ggazzo"
 		]
+	}],
+	"3.15.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"g-thome",
+			"ggazzo",
+			"sampaiodiego",
+			"matheusbsilva137",
+			"pierre-lehnen-rc"
+		]
 	}]
 }
