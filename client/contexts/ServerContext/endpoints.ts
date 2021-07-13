@@ -14,6 +14,7 @@ import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
+import { CannedResponses } from './endpoints/v1/livechat/canned-responses';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
@@ -61,6 +62,7 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'canned-responses': CannedResponses;
 	'rooms.info': RoomsInfoEndpoint;
 	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
