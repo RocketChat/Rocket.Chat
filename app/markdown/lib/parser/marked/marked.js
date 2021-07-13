@@ -9,6 +9,10 @@ import { getGlobalWindow } from '../../getGlobalWindow';
 
 const renderer = new _marked.Renderer();
 
+// change Marked default paragraph rules in order to have line breaks (line breaks are normally considered as a new paragraph)
+_marked.Lexer.rules.paragraph = new RegExp(_marked.Lexer.rules.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'), '');
+_marked.Lexer.rules.gfm.paragraph = new RegExp(_marked.Lexer.rules.gfm.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'), '');
+
 let msg = null;
 
 renderer.code = function(code, lang, escaped) {
@@ -77,6 +81,10 @@ const highlight = function(code, lang) {
 		// Unknown language
 		return code;
 	}
+};
+
+renderer.paragraph = function(text) {
+	return text;
 };
 
 export const marked = (message, {
