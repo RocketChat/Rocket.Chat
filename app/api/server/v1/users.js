@@ -945,14 +945,11 @@ API.v1.addRoute('users.logoutOtherUser', { authRequired: true }, {
 		}
 
 		const { otherUserId } = this.bodyParams;
-		const otherUser = Users.findOneById(otherUserId);
 
-		if (!otherUser) {
+		// this method logs the user out automatically, if successful returns 1, otherwise 0
+		if (!Users.removeResumeService(otherUserId)) {
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
-
-		// this method logs out user automatically
-		Users.removeResumeService(otherUserId);
 
 		return API.v1.success({
 			message: `User ${ otherUserId } has been logged out!`,
