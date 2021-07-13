@@ -14,7 +14,7 @@ const Link: FC<LinkProps> = ({ value }) => {
 	const { src, label } = value;
 	const target = src.value.indexOf(baseURI) === 0 ? '' : '_blank';
 	return (
-		<a href={src.value} target={target} rel='noopener noreferrer'>
+		<a href={src.value} data-title={src.value} target={target} rel='noopener noreferrer'>
 			{((block: ASTLink['value']['label']): JSX.Element | string | null => {
 				switch (block.type) {
 					case 'PLAIN_TEXT':

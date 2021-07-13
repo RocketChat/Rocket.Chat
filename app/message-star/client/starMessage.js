@@ -15,6 +15,10 @@ Meteor.methods({
 			toastr.error(TAPi18n.__('error-starring-message'));
 			return false;
 		}
+		if (!ChatMessage.findOneByRoomIdAndMessageId(message.rid, message._id)) {
+			toastr.error(TAPi18n.__('error-starring-message'));
+			return false;
+		}
 		if (!settings.get('Message_AllowStarring')) {
 			toastr.error(TAPi18n.__('error-starring-message'));
 			return false;
