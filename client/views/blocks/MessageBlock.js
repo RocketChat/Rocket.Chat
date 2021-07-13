@@ -5,9 +5,10 @@ import {
 	kitContext,
 	messageParser,
 } from '@rocket.chat/fuselage-ui-kit';
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
+import { useBlockRendered } from '../../components/Message/hooks/useBlockRendered';
 import { renderMessageBody } from '../../lib/renderMessageBody';
 import './textParsers';
 
@@ -17,6 +18,7 @@ const mrkdwn = ({ text } = {}) =>
 
 messageParser.mrkdwn = mrkdwn;
 function MessageBlock({ mid: _mid, rid, blocks, appId }) {
+	const { ref, className } = useBlockRendered();
 	const context = {
 		action: ({ actionId, value, blockId, mid = _mid }) => {
 			ActionManager.triggerBlockAction({
@@ -36,14 +38,9 @@ function MessageBlock({ mid: _mid, rid, blocks, appId }) {
 		rid,
 	};
 
-	const ref = useRef();
-	useEffect(() => {
-		ref.current.dispatchEvent(new Event('rendered'));
-	}, []);
-
 	return (
 		<kitContext.Provider value={context}>
-			<div className='js-block-wrapper' ref={ref} />
+			<div className={className} ref={ref} />
 			<UiKitComponent render={UiKitMessage} blocks={blocks} />
 		</kitContext.Provider>
 	);
