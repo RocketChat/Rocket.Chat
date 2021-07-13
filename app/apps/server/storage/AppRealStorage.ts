@@ -1,12 +1,13 @@
-import { AppStorage } from '@rocket.chat/apps-engine/server/storage';
+import { AppMetadataStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-export class AppRealStorage extends AppStorage {
-	constructor(data) {
+import { AppsModel } from '../../../models/server/models/apps-model';
+
+export class AppRealStorage extends AppMetadataStorage {
+	constructor(private db: AppsModel) {
 		super('mongodb');
-		this.db = data;
 	}
 
-	create(item) {
+	public create(item: IAppStorageItem): Promise<IAppStorageItem> {
 		return new Promise((resolve, reject) => {
 			item.createdAt = new Date();
 			item.updatedAt = new Date();
@@ -34,7 +35,7 @@ export class AppRealStorage extends AppStorage {
 		});
 	}
 
-	retrieveOne(id) {
+	public retrieveOne(id: string): Promise<IAppStorageItem> {
 		return new Promise((resolve, reject) => {
 			let doc;
 
@@ -48,9 +49,9 @@ export class AppRealStorage extends AppStorage {
 		});
 	}
 
-	retrieveAll() {
+	public retrieveAll(): Promise<Map<string, IAppStorageItem>> {
 		return new Promise((resolve, reject) => {
-			let docs;
+			let docs: Array<IAppStorageItem>;
 
 			try {
 				docs = this.db.find({}).fetch();
@@ -66,8 +67,8 @@ export class AppRealStorage extends AppStorage {
 		});
 	}
 
-	update(item) {
-		return new Promise((resolve, reject) => {
+	public update(item: IAppStorageItem): Promise<IAppStorageItem> {
+		return new Promise<string>((resolve, reject) => {
 			try {
 				this.db.update({ id: item.id }, item);
 				resolve(item.id);
@@ -77,7 +78,7 @@ export class AppRealStorage extends AppStorage {
 		}).then(this.retrieveOne.bind(this));
 	}
 
-	remove(id) {
+	public remove(id: string): Promise<{ success: boolean }> {
 		return new Promise((resolve, reject) => {
 			try {
 				this.db.remove({ id });

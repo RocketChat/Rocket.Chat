@@ -1,4 +1,3 @@
-import { AppRealLogsStorage } from './logs-storage';
-import { AppRealStorage } from './storage';
-
-export { AppRealLogsStorage, AppRealStorage };
+export { AppRealLogsStorage } from './logs-storage';
+export { AppRealStorage } from './AppRealStorage';
+export { AppSourceStorage } from './AppSourceStorage';

@@ -12,7 +12,7 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
-import { AppRealLogsStorage, AppRealStorage } from './storage';
+import { AppRealLogsStorage, AppRealStorage, AppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -34,6 +34,7 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
+		this.appSourceStorage = new AppSourceStorage();
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -46,7 +47,12 @@ export class AppServerOrchestrator {
 
 		this._bridges = new RealAppBridges(this);
 
-		this._manager = new AppManager(this._storage, this._logStorage, this._bridges);
+		this._manager = new AppManager({
+			rlStorage: this._storage,
+			logStorage: this._logStorage,
+			rlBridges: this._bridges,
+			appSourceStorage: this.appSourceStorage,
+		});
 
 		this._communicators = new Map();
 		this._communicators.set('methods', new AppMethods(this));
