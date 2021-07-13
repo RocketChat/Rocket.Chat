@@ -934,21 +934,27 @@ API.v1.addRoute('users.listTeams', { authRequired: true }, {
 	},
 });
 
-/* TODO:
-	VALIDATE PAYLOAD {userId : string} --> throw error in case there is no userID
-	CHECK REQUESTER PERMISSIONS ---> throw unauthorized error if the requester doesn't have the right permission
-	FIND TARGET userID ---> throw error in case there is no userID
-	SUCCESS
-*/
 API.v1.addRoute('users.logoutOtherUser', { authRequired: true }, {
 	post() {
-		const { userId } = this.bodyParams;
-		const user = Users.findOneById(userId);
+		check(this.bodyParams, {
+			otherUserId: String,
+		});
 
-		Users.removeResumeService(userId);
+		if (!hasPermission(this.userId, 'logout-other-user')) {
+			return API.v1.unauthorized();
+		}
+
+		const { otherUserId } = this.bodyParams;
+		const otherUser = Users.findOneById(otherUserId);
+
+		if (!otherUser) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		Users.removeResumeService(otherUserId);
 
 		return API.v1.success({
-			user,
+			message: `User ${ otherUserId } has been logged out!`,
 		});
 	},
 });
