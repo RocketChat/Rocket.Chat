@@ -24,6 +24,11 @@ export const createRoom = ({ name, type, username, members = [] }) => {
 		});
 };
 
+export const asyncCreateRoom = ({ name, type, username, members = [] }) => new Promise((resolve) => {
+	createRoom({ name, type, username, members })
+		.end(resolve);
+});
+
 export const closeRoom = ({ type, roomId }) => {
 	if (!type) {
 		throw new Error('"type" is required in "closeRoom" test helper');

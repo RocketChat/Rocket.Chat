@@ -1512,6 +1512,42 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe('[/chat.starMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should star Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/chat.ignoreUser]', () => {
 		it('should fail if invalid roomId', (done) => {
 			request.get(api('chat.ignoreUser'))
