@@ -13,7 +13,7 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 
 		const { text, enabled, onlyMyDepartments } = this.queryParams;
 
-		const departments = Promise.await(findDepartments({
+		const { departments, total } = Promise.await(findDepartments({
 			userId: this.userId,
 			text,
 			enabled,
@@ -25,7 +25,11 @@ API.v1.addRoute('livechat/department', { authRequired: true }, {
 			},
 		}));
 
-		return API.v1.success(departments);
+		return API.v1.success({ departments,
+			count: departments.length,
+			offset,
+			total,
+		});
 	},
 	post() {
 		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
@@ -120,7 +124,7 @@ API.v1.addRoute('livechat/department/:_id', { authRequired: true }, {
 		}
 	},
 	delete() {
-		if (!hasPermission(this.userId, 'manage-livechat-departments')) {
+		if (!hasPermission(this.userId, 'manage-livechat-departments') && !hasPermission(this.userId, 'remove-livechat-department')) {
 			return API.v1.unauthorized();
 		}
 
