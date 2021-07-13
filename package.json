@@ -214,7 +214,7 @@
 		"gridfs-stream": "^1.1.1",
 		"he": "^1.2.0",
 		"highlight.js": "^9.18.3",
-		"iconv-lite": "^0.4.24",
+		"iconv-lite": "^0.6.3",
 		"image-size": "^0.6.3",
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.0.2",
