@@ -3106,4 +3106,45 @@ describe('[Users]', function() {
 				.end(done);
 		});
 	});
+
+	describe.only('[/users.logoutOtherUser]', () => {
+		let user;
+		before(async () => {
+			user = await createUser();
+		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+		it('should throw missing key errror', (done) => {
+			request.post(api('users.logoutOtherUser'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body.error).to.be.equal('Match error: Missing key \'otherUserId\'');
+				})
+				.end(done);
+		});
+
+		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
+			updatePermission('logout-other-user', []);
+			request.post(api('users.logoutOtherUser'))
+				.set(credentials)
+				.send({ otherUserId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.end(done);
+		});
+
+		// it('should logout other user', (done) => {
+		// 	updatePermission('logout-other-user', ['admin']);
+		// 	request.post(api('users.logoutOtherUser'))
+		// 		.set(credentials)
+		// 		.send({ otherUserId: user._id })
+		// 		.expect('Content-Type', 'application/json')
+		// 		.expect(200)
+		// 		.end(done);
+		// });
+	});
 });
