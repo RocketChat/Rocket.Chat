@@ -215,11 +215,55 @@ export class Users extends Base {
 		const usernameFilter = Array.isArray(usernames) ? { username: { $in: usernames } } : {};
 		const col = this.model.rawCollection();
 		return col.aggregate([
-			{ $match: { ...usernameFilter, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
-			{ $lookup: { from: 'rocketchat_subscription', localField: '_id', foreignField: 'u._id', as: 'subs' } },
-			{ $project: { agentId: '$_id', 'livechat.maxNumberSimultaneousChat': 1, username: 1, lastAssignTime: 1, lastRoutingTime: 1, 'queueInfo.chats': { $size: { $filter: { input: '$subs', as: 'sub', cond: { $and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }] } } } } } },
+			{
+				$match: {
+					...usernameFilter,
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$project: {
+					agentId: '$_id',
+					'livechat.maxNumberSimultaneousChat': 1,
+					username: 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					'queueInfo.chats': {
+						$size: {
+							$filter: {
+								input: '$subs',
+								as: 'sub',
+								cond: {
+									$and: [
+										{ $eq: ['$$sub.t', 'l'] },
+										{ $eq: ['$$sub.open', true] },
+										{ $ne: ['$$sub.onHold', true] },
+									],
+								},
+							},
+						},
+					},
+				},
+			},
 			...customFilter ? [customFilter] : [],
-			{ $sort: { 'queueInfo.chats': 1, lastAssignTime: 1, lastRoutingTime: 1, username: 1 } },
+			{
+				$sort: {
+					'queueInfo.chats': 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					username: 1,
+				},
+			},
 		]).toArray();
 	}
 
