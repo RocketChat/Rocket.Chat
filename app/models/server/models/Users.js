@@ -175,13 +175,12 @@ export class Users extends Base {
 	}
 
 	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
-		// fetch all available agents (available = haven't reached max active chats)
-		const availableAgents = Promise.await(this.getAgentLoadByUsernames(null, extraQuery));
-		const availableUsernames = availableAgents.map((u) => u.username);
+		// fetch all unavailable agents, and exclude them from the selection
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
-			// limit query to consider only those agents
-			username: { $in: availableUsernames },
+			// limit query to remove booked agents
+			username: { $nin: unavailableAgents },
 		};
 
 		const query = queryStatusAgentOnline(extraFilters);
@@ -211,18 +210,33 @@ export class Users extends Base {
 	}
 
 	// get next agent ignoring the ones reached the max amount of active chats
-	getAgentLoadByUsernames(usernames, customFilter) {
-		const usernameFilter = Array.isArray(usernames) ? { username: { $in: usernames } } : {};
+	getUnavailableAgents(departmentId, customFilter) {
 		const col = this.model.rawCollection();
+		// if department is provided, remove the agents that are not from the selected department
+		const departmentFilter = departmentId ? [{
+			$lookup: {
+				from: 'rocketchat_livechat_department_agent',
+				let: { departmentId: '$departmentId', agentId: '$agentId' },
+				pipeline: [{
+					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+				}, {
+					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+				}],
+				as: 'department',
+			},
+		}, {
+			$match: { department: { $size: 1 } },
+		}] : [];
+
 		return col.aggregate([
 			{
 				$match: {
-					...usernameFilter,
 					status: { $exists: true, $ne: 'offline' },
 					statusLivechat: 'available',
 					roles: 'livechat-agent',
 				},
 			},
+			...departmentFilter,
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
