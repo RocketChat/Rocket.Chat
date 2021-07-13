@@ -46,18 +46,22 @@ export async function configureEmailInboxes(): Promise<void> {
 			markSeen: true,
 		});
 
-		imap.on('email', Meteor.bindEnvironment(async (email) => {
-			if (!email.messageId) {
-				return;
-			}
+		// the closure should make sure the correct email inbox record is attached to the event
+		// instead of just the last one
+		(function(emailInboxRecord): void {
+			imap.on('email', async (email) => {
+				if (!email.messageId) {
+					return;
+				}
 
-			try {
-				await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
-				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-			} catch (e) {
-				// In case the email message history has been received by other instance..
-			}
-		}));
+				try {
+					await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
+					onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
+				} catch (e) {
+					// in case the email message history has been received by other instance...
+				}
+			});
+		}(emailInboxRecord));
 
 		imap.start();
 
