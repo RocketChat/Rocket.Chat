@@ -41,7 +41,7 @@
 		"@types/cookie-parser": "^1.4.2",
 		"@types/ejson": "^2.1.2",
 		"@types/express": "^4.17.12",
-		"@types/mongodb": "^3.6.19",
+		"@types/mongodb": "^3.6.20",
 		"@types/node": "^14.17.4",
 		"@types/ws": "^7.4.6",
 		"pm2": "^5.1.0",
