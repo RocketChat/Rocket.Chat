@@ -36,7 +36,7 @@ export class MentionsParser {
 	}
 
 	get userMentionRegex() {
-		return new RegExp(`(^|\\s|> ?)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
+		return new RegExp(`(^|\\s|>)@(${ this.pattern }(@(${ this.pattern }))?)`, 'gm');
 	}
 
 	get channelMentionRegex() {
