@@ -16,7 +16,7 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 	const [muted, setMuted] = useState(false);
 	const [speaking, setSpeaking] = useState<boolean>(false);
 
-	const runHark = (s: MediaStream): void => {
+	const runAudioAnalyser = (s: MediaStream): void => {
 		const speechEvents = analyseAudio(s);
 		speechEvents.on('speaking', () => {
 			setSpeaking(true);
@@ -32,7 +32,7 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 			const stream = new MediaStream();
 			stream.addTrack(track);
 
-			runHark(stream);
+			runAudioAnalyser(stream);
 
 			if (ref.current) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
