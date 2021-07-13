@@ -37,14 +37,8 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
 	const { users, name, description, type, readOnly, broadcast, encrypted, voice } = values;
-	const {
-		handleUsers,
-		handleEncrypted,
-		handleType,
-		handleBroadcast,
-		handleReadOnly,
-		handleVoice,
-	} = handlers;
+	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly, handleVoice } =
+		handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
