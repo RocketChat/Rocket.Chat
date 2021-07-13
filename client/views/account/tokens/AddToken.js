@@ -38,49 +38,54 @@ const AddToken = ({ onDidAddToken, ...props }) => {
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 
-	const handleAdd = useCallback(async () => {
-		try {
-			const token = await createTokenFn({ tokenName: name, bypassTwoFactor });
+	const handleAdd = useCallback(
+		async (event) => {
+			try {
+				event?.stopPropagation();
+				event?.preventDefault();
+				const token = await createTokenFn({ tokenName: name, bypassTwoFactor });
 
-			setModal(
-				<InfoModal
-					title={t('API_Personal_Access_Token_Generated')}
-					content={
-						<Box
-							dangerouslySetInnerHTML={{
-								__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-									token,
-									userId,
-								}),
-							}}
-						/>
-					}
-					confirmText={t('ok')}
-					onConfirm={closeModal}
-				/>,
-			);
-			reset();
-			onDidAddToken();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [
-		bypassTwoFactor,
-		closeModal,
-		createTokenFn,
-		dispatchToastMessage,
-		name,
-		onDidAddToken,
-		reset,
-		setModal,
-		t,
-		userId,
-	]);
+				setModal(
+					<InfoModal
+						title={t('API_Personal_Access_Token_Generated')}
+						content={
+							<Box
+								dangerouslySetInnerHTML={{
+									__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								}}
+							/>
+						}
+						confirmText={t('ok')}
+						onConfirm={closeModal}
+					/>,
+				);
+				reset();
+				onDidAddToken();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[
+			bypassTwoFactor,
+			closeModal,
+			createTokenFn,
+			dispatchToastMessage,
+			name,
+			onDidAddToken,
+			reset,
+			setModal,
+			t,
+			userId,
+		],
+	);
 
 	const bypassTwoFactorCheckboxId = useUniqueId();
 
 	return (
-		<FieldGroup is='form' marginBlock='x8' {...props}>
+		<FieldGroup is='form' marginBlock='x8' {...props} onSubmit={handleAdd}>
 			<Field>
 				<Field.Row>
 					<Margins inlineEnd='x4'>
