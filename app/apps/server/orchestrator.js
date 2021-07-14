@@ -48,10 +48,10 @@ export class AppServerOrchestrator {
 		this._bridges = new RealAppBridges(this);
 
 		this._manager = new AppManager({
-			rlStorage: this._storage,
+			metadataStorage: this._storage,
 			logStorage: this._logStorage,
-			rlBridges: this._bridges,
-			appSourceStorage: this.appSourceStorage,
+			bridges: this._bridges,
+			sourceStorage: this.appSourceStorage,
 		});
 
 		this._communicators = new Map();
