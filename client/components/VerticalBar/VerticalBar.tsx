@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import React, { FC, ComponentProps, memo } from 'react';
 
 import { useLayoutContextualBarPosition, useLayoutSizes } from '../../providers/LayoutProvider';
 
-function VerticalBar({ children, ...props }) {
+const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => {
 	const sizes = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	return (
 		<Box
-			rcx-vertical-bar
+			rcx-vertical-barReactChildrenq
 			backgroundColor='surface'
 			display='flex'
 			flexDirection='column'
@@ -27,6 +27,6 @@ function VerticalBar({ children, ...props }) {
 			{children}
 		</Box>
 	);
-}
+};
 
 export default memo(VerticalBar);

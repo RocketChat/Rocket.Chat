@@ -45,7 +45,7 @@ const ContactsContextualBar: FC<{ rid: IOmnichannelRoom['_id'] }> = ({ rid }) =>
 						<VerticalBar.Text>{t('Edit_Contact_Profile')}</VerticalBar.Text>
 					</>
 				)}
-				<VerticalBar.Close onClick={closeContextualBar} />
+				<VerticalBar.Close onClick={closeContextualBar as () => void} />
 			</VerticalBar.Header>
 			{context === 'edit' ? (
 				<ContactEditWithData id={_id} close={handleContactEditBarCloseButtonClick} />

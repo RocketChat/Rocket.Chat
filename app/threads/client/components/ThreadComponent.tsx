@@ -72,7 +72,7 @@ const ThreadComponent: FC<{
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
-	const ref = useRef<Element>(null);
+	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
