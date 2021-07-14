@@ -56,14 +56,14 @@ jobs:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -106,7 +106,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         meteor npm install
         cd ./ee/server/services
@@ -235,17 +235,17 @@ jobs:
         path: /home/runner/.cache/Cypress
         key: ${{ runner.OS }}-cache-cypress-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: NPM install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true' || steps.cache-cypress.outputs.cache-hit != 'true'
       run: |
         npm install
 
@@ -299,14 +299,14 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
-    - name: Cache node modules
-      id: cache-nodemodules
-      uses: actions/cache@v2
-      with:
-        path: |
-          ./node_modules
-          ./ee/server/services/node_modules
-        key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
+    # - name: Cache node modules
+    #   id: cache-nodemodules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ./node_modules
+    #       ./ee/server/services/node_modules
+    #     key: ${{ runner.OS }}-node_modules-4-${{ hashFiles('**/package-lock.json', '.github/workflows/build_and_test.yml') }}
 
     - name: Cache meteor local
       uses: actions/cache@v2
@@ -354,7 +354,7 @@ jobs:
         git version
 
     - name: npm install
-      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      # if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: |
         meteor npm install
 
