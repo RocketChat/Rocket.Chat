@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 
 services:
   rocketchat:
@@ -20,22 +20,25 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat
       - MONGO_OPLOG_URL=mongodb://mongo:27017/local
       - MAIL_URL=smtp://smtp.email
-#       - HTTP_PROXY=http://proxy.domain.com
-#       - HTTPS_PROXY=http://proxy.domain.com
+    #       - HTTP_PROXY=http://proxy.domain.com
+    #       - HTTPS_PROXY=http://proxy.domain.com
     depends_on:
       - mongo
     ports:
       - 3000:3000
     labels:
+      - "traefik.enable=true"
       - "traefik.backend=rocketchat"
-      - "traefik.frontend.rule=Host: your.domain.tld"
+      - "traefik.http.routers.rocketchat.rule=Host(`your.domain.tld`)"
+      - "traefik.http.routers.rocketchat.entrypoints=websecure"
+      - "traefik.http.routers.rocketchat.tls.certresolver=myresolver"
 
   mongo:
     image: mongo:4.0
     restart: unless-stopped
     volumes:
-     - ./data/db:/data/db
-     #- ./data/dump:/dump
+      - ./data/db:/data/db
+      #- ./data/dump:/dump
     command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
     labels:
       - "traefik.enable=false"
@@ -68,7 +71,7 @@ services:
       - ROCKETCHAT_USER=bot
       - ROCKETCHAT_PASSWORD=botpassword
       - BOT_NAME=bot
-  # you can add more scripts as you'd like here, they need to be installable by npm
+      # you can add more scripts as you'd like here, they need to be installable by npm
       - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-diagnostics
     depends_on:
       - rocketchat
@@ -76,27 +79,25 @@ services:
       - "traefik.enable=false"
     volumes:
       - ./scripts:/home/hubot/scripts
-  # this is used to expose the hubot port for notifications on the host on port 3001, e.g. for hubot-jenkins-notifier
+    # this is used to expose the hubot port for notifications on the host on port 3001, e.g. for hubot-jenkins-notifier
     ports:
       - 3001:8080
-
-  #traefik:
-  #  image: traefik:latest
-  #  restart: unless-stopped
-  #  command: >
-  #    traefik
-  #     --docker
-  #     --acme=true
-  #     --acme.domains='your.domain.tld'
-  #     --acme.email='your@email.tld'
-  #     --acme.entrypoint=https
-  #     --acme.storagefile=acme.json
-  #     --defaultentrypoints=http
-  #     --defaultentrypoints=https
-  #     --entryPoints='Name:http Address::80 Redirect.EntryPoint:https'
-  #     --entryPoints='Name:https Address::443 TLS.Certificates:'
-  #  ports:
-  #    - 80:80
-  #    - 443:443
-  #  volumes:
-  #    - /var/run/docker.sock:/var/run/docker.sock
+  traefik:
+    image: traefik:latest
+    restart: unless-stopped
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      # - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesResolvers.myresolver.acme.email=your@email.tld"
+      - "--certificatesResolvers.myresolver.acme.storage=acme.json"
+    ports:
+      - 8080:8080
+      - 443:443
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
