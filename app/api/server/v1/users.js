@@ -238,6 +238,10 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
+		const limit = count !== 0 ? [{
+			$limit: count,
+		}] : [];
+
 		const result = Promise.await(
 			UsersRaw.col
 				.aggregate([
@@ -260,9 +264,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 								$sort: actualSort,
 							}, {
 								$skip: offset,
-							}, {
-								$limit: count,
-							}],
+							}, ...limit],
 							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
