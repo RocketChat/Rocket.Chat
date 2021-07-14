@@ -14,6 +14,7 @@ const fetchSubscriptions = (): ISubscription[] =>
 		{
 			open: true,
 			hideUnreadStatus: { $ne: true },
+			archived: { $ne: true },
 		},
 		{
 			fields: {

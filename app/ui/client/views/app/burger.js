@@ -14,6 +14,7 @@ Template.burger.helpers({
 				open: true,
 				hideUnreadStatus: { $ne: true },
 				rid: { $ne: Session.get('openedRoom') },
+				archived: { $ne: true },
 			}, {
 				fields: {
 					unread: 1,
