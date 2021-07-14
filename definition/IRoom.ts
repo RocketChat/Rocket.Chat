@@ -72,7 +72,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
 	t: 'l';
 	v: {
-		_id?: string;
+		_id: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 	};

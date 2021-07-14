@@ -66,7 +66,9 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending';
 
-	urls: any;
-	file: any;
-	attachments: MessageAttachment[];
+	urls?: any;
+	file?: any;
+	attachments?: MessageAttachment[];
+
+	sentByEmail?: true;
 }
