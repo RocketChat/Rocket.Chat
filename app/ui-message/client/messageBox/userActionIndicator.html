@@ -1,0 +1,7 @@
+<template name="userActionIndicator" args="rid">
+	<div class="rc-message-box__activity-indicator">
+		{{> notifyUserActivity data=typingUsersData}}
+		{{> notifyUserActivity data=recordingUsersData}}
+		{{> notifyUserActivity data=uploadingUsersData}}
+	</div>
+</template>

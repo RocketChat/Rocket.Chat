@@ -3,6 +3,7 @@
 
 	width: 100%;
 	padding: 24px;
+	padding-top: 12px;
 
 	font-size: var(--message-box-text-size);
 
@@ -51,13 +52,14 @@
 			fill: currentColor;
 		}
 	}
+	&__activity-indicator {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 2fr));
+		grid-gap: 1em;
+	}
 
 	&__typing {
-		position: absolute;
-		top: 4px;
-		left: 0;
-
-		margin-left: 24px;
 
 		color: var(--message-box-user-typing-color);
 
