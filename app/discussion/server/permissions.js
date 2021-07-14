@@ -5,8 +5,8 @@ import { Permissions } from '../../models';
 Meteor.startup(() => {
 	// Add permissions for discussion
 	const permissions = [
-		{ _id: 'start-discussion', roles: ['admin', 'user', 'guest'] },
-		{ _id: 'start-discussion-other-user', roles: ['admin', 'user', 'owner'] },
+		{ _id: 'start-discussion', roles: ['admin', 'user', 'guest', 'app'] },
+		{ _id: 'start-discussion-other-user', roles: ['admin', 'user', 'owner', 'app'] },
 	];
 
 	for (const permission of permissions) {
