@@ -2,7 +2,14 @@
 	<div class="popup-user" title="{{#if outside}}{{_ 'Not_in_channel'}}{{/if}} {{#if suggestion}}{{_ 'Suggestion_from_recent_messages'}}{{/if}}">
 		{{#unless system}}
 		<div class="popup-user-avatar_wrap">
-			<div class="popup-user-status border-transparent-dark popup-user-status-{{status}}"></div>
+			{{#unless isTeam}}
+				<div class="popup-user-status_wrap">
+					<div class="popup-user-status border-transparent-dark popup-user-status-{{status}}"></div>
+				</div>
+			{{/unless}}
+			{{#if isTeam}}
+				{{> icon icon=teamIcon }}
+			{{/if}}
 			<div class="popup-user-avatar" style="background-image:url({{avatarUrlFromUsername username avatarETag}});"></div>
 		</div>
 		{{/unless}}

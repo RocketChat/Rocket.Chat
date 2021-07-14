@@ -1659,6 +1659,15 @@
 		margin-right: 4px;
 		flex-shrink: 0;
 	}
+
+	&-status_wrap {
+		display: inline-flex;
+
+		width: 17.5px;
+		height: 14px;
+		align-items: center;
+		justify-content: center;
+	}
 }
 
 .rc-old .popup-user-notice {

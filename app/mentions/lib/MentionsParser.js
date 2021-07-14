@@ -82,7 +82,7 @@ export class MentionsParser {
 			return this.userTemplate({
 				prefix,
 				className,
-				mention,
+				mention: mentionObj?.type === 'team' ? mentionObj?.roomId : mention,
 				label,
 				type: mentionObj?.type === 'team' ? 'team' : 'username',
 				title: this.useRealName ? mention : label,

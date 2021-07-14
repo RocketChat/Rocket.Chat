@@ -308,7 +308,7 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		const { currentTarget: { dataset: { channel, group, username } } } = e;
+		const { currentTarget: { dataset: { channel, group, username, team } } } = e;
 
 		if (channel) {
 			if (Layout.isEmbedded()) {
@@ -319,6 +319,14 @@ export const getCommonRoomEvents = () => ({
 		}
 
 		if (group) {
+			return;
+		}
+
+		if (team) {
+			if (Layout.isEmbedded()) {
+				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: team }), team });
+			}
+			goToRoomById(team);
 			return;
 		}
 
