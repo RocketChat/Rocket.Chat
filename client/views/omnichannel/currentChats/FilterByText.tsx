@@ -76,7 +76,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 
 	const { useCurrentChatTags = (): void => undefined } = forms;
 
-	const Tags = useCurrentChatTags();
+	const CurrentChatTags = useCurrentChatTags();
 
 	const onSubmit = useMutableCallback((e) => e.preventDefault());
 	const reducer = function (acc: any, curr: string): any {
@@ -189,11 +189,11 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 					/>
 				</Box>
 			</Box>
-			{Tags && (
+			{CurrentChatTags && (
 				<Box display='flex' flexDirection='row' marginBlockStart='x8' {...props}>
 					<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 						<Label mb='x4'>{t('Tags')}</Label>
-						<Tags value={tags} handler={handleTags} />
+						<CurrentChatTags value={tags} handler={handleTags} />
 					</Box>
 				</Box>
 			)}

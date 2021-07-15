@@ -7,7 +7,7 @@ import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { FormSkeleton } from '../../Skeleton';
 import RoomEdit from './RoomEdit';
 
-function VisitorData({ room, reload, reloadInfo, close }) {
+function VisitorData({ room, reload, reloadInfo, close, tags }) {
 	const t = useTranslation();
 
 	const {
@@ -40,6 +40,7 @@ function VisitorData({ room, reload, reloadInfo, close }) {
 			reload={reload}
 			reloadInfo={reloadInfo}
 			close={close}
+			departmentTags={tags}
 		/>
 	);
 }

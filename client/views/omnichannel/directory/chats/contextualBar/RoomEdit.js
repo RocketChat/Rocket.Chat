@@ -23,29 +23,36 @@ const initialValuesRoom = {
 	priorityId: '',
 };
 
-const getInitialValuesRoom = (room) => {
+const getInitialValuesRoom = (room, departmentTags) => {
 	if (!room) {
 		return initialValuesRoom;
 	}
 
-	const { topic, tags, livechatData, priorityId } = room;
+	const { topic, tags: roomTags, livechatData, priorityId } = room;
+	const tags = [];
+
+	departmentTags.forEach((tag) => {
+		if (roomTags && roomTags.includes(tag.name)) {
+			tags.push({ label: tag.name, value: tag._id });
+		}
+	});
 
 	return {
 		topic: topic ?? '',
-		tags: tags ?? [],
+		tags,
 		livechatData: livechatData ?? {},
 		priorityId: priorityId ?? '',
 	};
 };
 
-function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
+function RoomEdit({ room, visitor, reload, reloadInfo, close, departmentTags }) {
 	const t = useTranslation();
 
 	const {
 		values: valuesRoom,
 		handlers: handlersRoom,
 		hasUnsavedChanges: hasUnsavedChangesRoom,
-	} = useForm(getInitialValuesRoom(room));
+	} = useForm(getInitialValuesRoom(room, departmentTags));
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
@@ -157,7 +164,11 @@ function RoomEdit({ room, visitor, reload, reloadInfo, close }) {
 				</Field>
 				{Tags && (
 					<Field>
-						<Tags tags={tags} handler={handleTags} />
+						<Tags
+							tags={tags}
+							handler={handleTags}
+							department={{ departmentId: room.departmentId }}
+						/>
 					</Field>
 				)}
 				{PrioritiesSelect && priorities && priorities.length > 0 && (

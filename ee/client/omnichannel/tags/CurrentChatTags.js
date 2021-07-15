@@ -5,11 +5,17 @@ import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useTagsList } from '../../hooks/useTagsList';
 
-const CurrentChatTags = ({ value, handler }) => {
+const CurrentChatTags = ({ value, handler, department }) => {
 	const [tagsFilter, setTagsFilter] = useState('');
 
 	const { itemsList: tagsList, loadMoreItems: loadMoreTags } = useTagsList(
-		useMemo(() => ({ filter: tagsFilter }), [tagsFilter]),
+		useMemo(
+			() => ({
+				filter: tagsFilter,
+				...(department && department.departmentId && { departmentId: department.departmentId }),
+			}),
+			[tagsFilter, department],
+		),
 	);
 
 	const { phase: tagsPhase, items: tagsItems, itemCount: tagsTotal } = useRecordList(tagsList);
