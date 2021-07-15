@@ -21,9 +21,8 @@ const FederationCard = () => {
 	const setFederationEnabled = useSettingSetValue('FEDERATION_Enabled');
 
 	const federationHealthy = useSetting('FEDERATION_Healthy') as boolean;
-	// const setFederationHealthy = useSettingSetValue('FEDERATION_Healthy');
 
-	const settingsRoute = useRoute('admin/Federation');
+	const federationPopulated = useSetting('FEDERATION_Populated') as boolean;
 
 	// Set status of each section
 
@@ -34,7 +33,15 @@ const FederationCard = () => {
 	let federationSetupStatus = federationHealthy ? SectionStatus.SUCCESS : SectionStatus.FAILED;
 
 	// - Adding users
-	let federationAddingUsersStatus = SectionStatus.UNKNOWN;
+	let federationAddingUsersStatus;
+
+	if (federationPopulated) {
+		federationAddingUsersStatus = SectionStatus.SUCCESS;
+	} else if (federationHealthy) {
+		federationAddingUsersStatus = SectionStatus.FAILED;
+	} else {
+		federationAddingUsersStatus = SectionStatus.UNKNOWN;
+	}
 
 	if (!federationEnabled) {
 		federationEnabledStatus = SectionStatus.UNKNOWN;
@@ -95,7 +102,7 @@ const FederationCard = () => {
 			</Card.Body>
 			<Card.Footer>
 				<ButtonGroup align='end'>
-					<Button small onClick={() => settingsRoute.push()}>
+					<Button small onClick={handleModal}>
 						{t('Settings')}
 					</Button>
 				</ButtonGroup>

@@ -4,6 +4,7 @@ import { SettingValue } from '../../definition/ISetting';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { eventTypes } from '../../app/models/server/models/FederationEvents';
+import { Users } from '../../app/models/server/raw';
 
 function updateSetting(id: string, value: SettingValue): void {
 	const setting = settings.get(id);
@@ -55,6 +56,13 @@ async function runFederation(): Promise<void> {
 		updateSetting('FEDERATION_Healthy', true);
 	} catch (err) {
 		updateSetting('FEDERATION_Healthy', false);
+	}
+
+	// If federation is healthy, check if there are remote users
+	if (settings.get('FEDERATION_Healthy') as boolean) {
+		const user = await Users.findOne({ isRemote: true });
+
+		updateSetting('FEDERATION_Populated', !!user);
 	}
 }
 
