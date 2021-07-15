@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
-import { Messages } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
@@ -33,9 +32,6 @@ API.v1.addRoute('livechat/video.call/:token', {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
 
-			Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {
-				actionLinks: config.theme.actionLinks,
-			});
 			let rname;
 			if (rcSettings.get('Jitsi_URL_Room_Hash')) {
 				rname = rcSettings.get('uniqueID') + rid;
