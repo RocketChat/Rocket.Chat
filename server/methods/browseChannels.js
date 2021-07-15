@@ -99,6 +99,134 @@ const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) =
 	};
 };
 
+const getRecommendedChannels = (user, canViewAnon, searchTerm, pagination) => {
+	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
+		return;
+	}
+
+	const teams = Promise.await(Team.getAllPublicTeams());
+	const publicTeamIds = teams.map(({ _id }) => _id);
+
+	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userRooms = user.__rooms;
+
+	const userTags = Promise.await(RoomsRaw.findAllTagsFollowedByUser([...userTeamsIds, ...publicTeamIds], userRooms));
+
+	const cursor = Promise.await(RoomsRaw.findRecommendedChannels(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, userTags, pagination).toArray())[0];
+	const total = cursor.count[0].count; // count ignores the `skip` and `limit` options
+	const result = cursor.results;
+
+	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+
+	const results = result.map((room) => {
+		if (room.teamId) {
+			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			if (team) {
+				room.belongsTo = team.name;
+			}
+		}
+		return room;
+	});
+
+	return {
+		total,
+		results,
+	};
+};
+
+const getTrendingChannels = (user, canViewAnon, searchTerm) => {
+	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
+		return;
+	}
+
+	const teams = Promise.await(Team.getAllPublicTeams());
+	const publicTeamIds = teams.map(({ _id }) => _id);
+
+	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userRooms = user.__rooms;
+
+	const userTags = Promise.await(RoomsRaw.findAllTagsFollowedByUser([...userTeamsIds, ...publicTeamIds], userRooms));
+
+	const cursor = Promise.await(RoomsRaw.findTrendingChannels(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, userTags).toArray())[0];
+	const total = 25; // only top 25 channels
+	const result = cursor.results;
+
+	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+
+	const results = result.map((room) => {
+		if (room.teamId) {
+			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			if (team) {
+				room.belongsTo = team.name;
+			}
+		}
+		return room;
+	});
+
+	return {
+		total,
+		results,
+	};
+};
+
+const getAllChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
+	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
+		return;
+	}
+
+	const teams = Promise.await(Team.getAllPublicTeams());
+	const publicTeamIds = teams.map(({ _id }) => _id);
+
+	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userRooms = user.__rooms;
+
+	const cursor = Rooms.findAllChannelsForDiscovery(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
+		...pagination,
+		sort: {
+			featured: -1,
+			...sort,
+		},
+		fields: {
+			t: 1,
+			description: 1,
+			topic: 1,
+			name: 1,
+			fname: 1,
+			lastMessage: 1,
+			ts: 1,
+			archived: 1,
+			default: 1,
+			featured: 1,
+			usersCount: 1,
+			prid: 1,
+			teamId: 1,
+			tags: 1,
+		},
+	});
+	const total = cursor.count(); // count ignores the `skip` and `limit` options
+	const result = cursor.fetch();
+
+	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+
+	const results = result.map((room) => {
+		if (room.teamId) {
+			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			if (team) {
+				room.belongsTo = team.name;
+			}
+		}
+		return room;
+	});
+
+	return {
+		total,
+		results,
+	};
+};
+
 const getChannelsCountForTeam = mem((teamId) => Promise.await(RoomsRaw.findByTeamId(teamId, { projection: { _id: 1 } }).count()), {
 	maxAge: 2000,
 });
@@ -211,11 +339,11 @@ Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const searchTerm = s.trim(escapeRegExp(text));
 
-		if (!['channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {
+		if (!['trendingchannels', 'recommendedchannels', 'onlychannels', 'channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {
 			return;
 		}
 
-		const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
+		const roomParams = ['trendingchannels', 'recommendedchannels', 'onlychannels', 'channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
 		const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
 
 		if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
@@ -236,6 +364,12 @@ Meteor.methods({
 		const user = Meteor.user();
 
 		switch (type) {
+			case 'trendingchannels':
+				return getTrendingChannels(user, canViewAnonymous, searchTerm);
+			case 'recommendedchannels':
+				return getRecommendedChannels(user, canViewAnonymous, searchTerm, pagination);
+			case 'onlychannels':
+				return getAllChannels(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'channels':
 				return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'teams':

@@ -222,6 +222,41 @@ API.v1.addRoute('directory', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('discovery', { authRequired: true }, {
+	get() {
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+
+		const { text, type, workspace = 'local' } = query;
+
+		if (sort && Object.keys(sort).length > 1) {
+			return API.v1.failure('This method support only one "sort" parameter');
+		}
+		const sortBy = sort ? Object.keys(sort)[0] : undefined;
+		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
+			text,
+			type,
+			workspace,
+			sortBy,
+			sortDirection,
+			offset: Math.max(0, offset),
+			limit: Math.max(0, count),
+		}));
+
+		if (!result) {
+			return API.v1.failure('Please verify the parameters');
+		}
+		return API.v1.success({
+			result: result.results,
+			count: result.results.length,
+			offset,
+			total: result.total,
+		});
+	},
+});
+
 API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-logs')) {

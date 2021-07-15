@@ -589,6 +589,42 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
+	findAllChannelsForDiscovery(text, teamIds, roomIds, options) {
+		const searchTerm = text && new RegExp(text, 'i');
+
+		const query = {
+			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
+				{ t: 'c' },
+				{
+					$or: [
+						{
+							teamId: { $exists: false },
+						},
+						{
+							teamId: { $in: teamIds },
+						},
+						...roomIds?.length > 0 ? [{
+							_id: {
+								$in: roomIds,
+							},
+						}] : [],
+					],
+				},
+				...searchTerm ? [{
+					$or: [{
+						name: searchTerm,
+					}, {
+						fname: searchTerm,
+					}],
+				}] : [],
+			],
+		};
+
+		return this._db.find(query, options);
+	}
+
 	findContainingNameOrFNameInIdsAsTeamMain(text, rids, options) {
 		const query = {
 			teamMain: true,
@@ -1094,6 +1130,30 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	unsetAllTags() {
+		const query = { t: 'c' };
+
+		const update = {
+			$unset: {
+				tags: 1,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
+	}
+
+	unsetTagsByName(tags) {
+		const query = { t: 'c' };
+
+		const update = {
+			$pullAll: {
+				tags: tags,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	setAnnouncementById(_id, announcement, announcementDetails) {

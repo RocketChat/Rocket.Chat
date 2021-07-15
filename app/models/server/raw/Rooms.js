@@ -43,6 +43,226 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
+	findAllTagsFollowedByUser(teamIds, roomIds, options = {}) {
+		const query = {
+			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
+				{ t: 'c' },
+				{
+					$or: [
+						{$and: [
+							{
+								teamId: { $exists: true },
+							},
+							{
+								teamId: { $in: teamIds },
+							},
+						]},
+						{$and: [
+							{
+								teamId: { $exists: false },
+							},
+							...roomIds?.length > 0 ? [{
+								_id: {
+									$in: roomIds,
+								},
+							}] : [],
+						]},
+					],
+				},
+			],
+		};
+
+		return this.col.distinct("tags", query, options);
+	}
+
+	findRecommendedChannels(text, teamIds, roomIds, tags, pagination){
+		const searchTerm = text && new RegExp(text, 'i');
+
+		const query = [
+			{ 
+				$match: {
+					$and: [
+						{ teamMain: { $exists: false } },
+						{ prid: { $exists: false } },
+						{ t: 'c' },
+						{
+							$or: [
+								{$and: [
+									{
+										teamId: { $exists: true },
+									},
+									{
+										teamId: { $nin: teamIds },
+									},
+								]},
+								{$and: [
+									{
+										teamId: { $exists: false },
+									},
+									...roomIds?.length > 0 ? [{
+										_id: {
+											$nin: roomIds,
+										},
+									}] : [],
+								]},
+							],
+						},
+						{
+							tags: {
+								$in: tags,
+							}
+						},
+						...searchTerm ? [{
+							$or: [{
+								name: searchTerm,
+							}, {
+								fname: searchTerm,
+							}],
+						}] : [],
+					]
+				}
+			},
+			{
+				$project: {
+					t: 1,
+					description: 1,
+					topic: 1,
+					name: 1,
+					fname: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					default: 1,
+					featured: 1,
+					usersCount: 1,
+					prid: 1,
+					teamId: 1,
+					tags: 1,
+					tagsCount: {
+						$size: {
+						"$ifNull": [
+							"$tags",
+							[]
+						]
+						}
+					}
+				}
+			},
+			{
+				$sort: {
+					tagsCount: -1,
+				}
+			},
+			{
+				$facet: {
+					count: [
+						{
+							$count: 'count'
+						}
+					],
+					results: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+				}
+			}
+		];
+
+		return this.col.aggregate(query);
+	}
+
+	findTrendingChannels(text, teamIds, roomIds, tags, pagination){
+		const searchTerm = text && new RegExp(text, 'i');
+
+		const query = [
+			{ 
+				$match: {
+					$and: [
+						{ teamMain: { $exists: false } },
+						{ prid: { $exists: false } },
+						{ t: 'c' },
+						{
+							$or: [
+								{
+									teamId: { $exists: false },
+								},
+								{
+									teamId: { $in: teamIds },
+								},
+								...roomIds?.length > 0 ? [{
+									_id: {
+										$in: roomIds,
+									},
+								}] : [],
+							],
+						},
+						...searchTerm ? [{
+							$or: [{
+								name: searchTerm,
+							}, {
+								fname: searchTerm,
+							}],
+						}] : [],
+					]
+				}
+			},
+			{
+				$project: {
+					t: 1,
+					description: 1,
+					topic: 1,
+					name: 1,
+					fname: 1,
+					lastMessage: 1,
+					ts: 1,
+					archived: 1,
+					default: 1,
+					featured: 1,
+					usersCount: 1,
+					prid: 1,
+					teamId: 1,
+					tags: 1,
+					msgs: 1,
+					tagsCount: {
+						$size: {
+						"$ifNull": [
+							"$tags",
+							[]
+						]
+						}
+					},
+					recommended: {
+						$cond: [
+						  {
+							$in: [
+							  tags,
+							  "$tags"
+							]
+						  },
+						  1,
+						  0
+						]
+					  },
+				}
+			},
+			{
+				$sort: {
+					tagsCount: -1,
+					msgs: -1,
+					usersCount: -1,
+					lastMessage: -1,
+					ts: -1,
+				}
+			},
+			{
+				$facet: {
+					results: [{ $skip: 0 }, { $limit: 25 }],
+				}
+			}
+		];
+
+		return this.col.aggregate(query);
+	}
+
 	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
