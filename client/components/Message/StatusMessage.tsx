@@ -1,3 +1,4 @@
+import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
 import { useUserData } from '../../hooks/useUserData';
@@ -10,9 +11,9 @@ const StatusMessage: FC<{ uid: string }> = ({ uid }) => {
 	}
 
 	return (
-		<button className='message-custom-status' title={data.statusText}>
-			💬
-		</button>
+		<Box title={data.statusText}>
+			<Icon name='balloon-text' />
+		</Box>
 	);
 };
 
