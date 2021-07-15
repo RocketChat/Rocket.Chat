@@ -12,7 +12,7 @@ function RoomInfo({
 	name,
 	fname,
 	description,
-	tags = [],
+	tags,
 	archived,
 	broadcast,
 	announcement,
@@ -139,7 +139,7 @@ function RoomInfo({
 		<InfoPanel.Tag key={label} label={label} /*onClick={}*/ />
 	);
 
-	const tagsGroup = tags.map(mapTags).filter(Boolean);
+	const tagsGroup = tags?.map(mapTags).filter(Boolean);
 
 	return (
 		<>
