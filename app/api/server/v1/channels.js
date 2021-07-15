@@ -939,6 +939,12 @@ API.v1.addRoute('channels.setTags', { authRequired: true }, {
 			return API.v1.failure('The bodyParam "tags" is required');
 		}
 
+		if (!settings.get('Discovery_Enabled')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Discovery"', {
+				method: 'channels.setTags',
+			});
+		}
+
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
 		if (findResult.tags === this.bodyParams.tags) {
@@ -954,6 +960,15 @@ API.v1.addRoute('channels.setTags', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('channels.unsetAllTags', { authRequired: true }, {
+	post() {
+		const update = Rooms.unsetAllTags();
+
+		return API.v1.success();
+	},
+});
+
 
 API.v1.addRoute('channels.setAnnouncement', { authRequired: true }, {
 	post() {
