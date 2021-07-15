@@ -92,6 +92,18 @@ FlowRouter.route('/directory/:tab?', {
 	},
 });
 
+FlowRouter.route('/discovery/:tab?', {
+	name: 'discovery',
+	action: () => {
+		const DiscoveryPage = createTemplateForComponent(
+			'DiscoveryPage',
+			() => import('../views/discovery/DiscoveryPage'),
+			{ attachment: 'at-parent' },
+		);
+		appLayout.render('main', { center: DiscoveryPage });
+	},
+});
+
 FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	name: 'omnichannel-directory',
 	action: () => {
