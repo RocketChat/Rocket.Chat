@@ -76,24 +76,64 @@ class DeeplAutoTranslate extends AutoTranslate {
 		}
 		this.supportedLanguages[target] = [
 			{
-				language: 'en',
-				name: TAPi18n.__('Language_English', { lng: target }),
+				language: 'bg',
+				name: TAPi18n.__('Language_Bulgarian', { lng: target }),
+			},
+			{
+				language: 'cs',
+				name: TAPi18n.__('Language_Czech', { lng: target }),
+			},
+			{
+				language: 'da',
+				name: TAPi18n.__('Language_Danish', { lng: target }),
 			},
 			{
 				language: 'de',
 				name: TAPi18n.__('Language_German', { lng: target }),
 			},
 			{
-				language: 'fr',
-				name: TAPi18n.__('Language_French', { lng: target }),
+				language: 'el',
+				name: TAPi18n.__('Language_Greek', { lng: target }),
+			},
+			{
+				language: 'en',
+				name: TAPi18n.__('Language_English', { lng: target }),
 			},
 			{
 				language: 'es',
 				name: TAPi18n.__('Language_Spanish', { lng: target }),
 			},
 			{
+				language: 'et',
+				name: TAPi18n.__('Language_Estonian', { lng: target }),
+			},
+			{
+				language: 'fi',
+				name: TAPi18n.__('Language_Finnish', { lng: target }),
+			},
+			{
+				language: 'fr',
+				name: TAPi18n.__('Language_French', { lng: target }),
+			},
+			{
+				language: 'hu',
+				name: TAPi18n.__('Language_Hungarian', { lng: target }),
+			},
+			{
 				language: 'it',
 				name: TAPi18n.__('Language_Italian', { lng: target }),
+			},
+			{
+				language: 'ja',
+				name: TAPi18n.__('Language_Japanese', { lng: target }),
+			},
+			{
+				language: 'lt',
+				name: TAPi18n.__('Language_Lithuanian', { lng: target }),
+			},
+			{
+				language: 'lv',
+				name: TAPi18n.__('Language_Latvian', { lng: target }),
 			},
 			{
 				language: 'nl',
@@ -108,8 +148,28 @@ class DeeplAutoTranslate extends AutoTranslate {
 				name: TAPi18n.__('Language_Portuguese', { lng: target }),
 			},
 			{
+				language: 'ro',
+				name: TAPi18n.__('Language_Romanian', { lng: target }),
+			},
+			{
 				language: 'ru',
 				name: TAPi18n.__('Language_Russian', { lng: target }),
+			},
+			{
+				language: 'sk',
+				name: TAPi18n.__('Language_Slovak', { lng: target }),
+			},
+			{
+				language: 'sl',
+				name: TAPi18n.__('Language_Slovenian', { lng: target }),
+			},
+			{
+				language: 'sv',
+				name: TAPi18n.__('Language_Swedish', { lng: target }),
+			},
+			{
+				language: 'zh',
+				name: TAPi18n.__('Language_Chinese', { lng: target }),
 			},
 		];
 

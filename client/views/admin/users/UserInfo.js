@@ -19,12 +19,17 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const { value: data, phase: state, error, reload } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		error,
+		reload,
+	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
-			uid,
-			username,
-		]),
+		useMemo(
+			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
+			[uid, username],
+		),
 	);
 
 	const onChange = useMutableCallback(() => reload());
