@@ -1,6 +1,9 @@
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { settings } from '../../app/settings/server';
 import { SettingValue } from '../../definition/ISetting';
+import { dispatchEvent } from '../../app/federation/server/handler';
+import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { eventTypes } from '../../app/models/server/models/FederationEvents';
 
 function updateSetting(id: string, value: SettingValue): void {
 	const setting = settings.get(id);
@@ -19,6 +22,7 @@ async function runFederation(): Promise<void> {
 
 	const federationDomain = settings.get('FEDERATION_Domain') as string;
 
+	// Load SRV info
 	try {
 		const resolvedSRV = await resolveSRV(`_rocketchat._${ rocketChatProtocol }.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
@@ -26,6 +30,7 @@ async function runFederation(): Promise<void> {
 		updateSetting('FEDERATION_ResolvedSRV', '{}');
 	}
 
+	// Load public key info
 	try {
 		const resolvedTXT = await resolveTXT(`rocketchat-public-key.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedPublicKeyTXT', resolvedTXT);
@@ -33,11 +38,23 @@ async function runFederation(): Promise<void> {
 		updateSetting('FEDERATION_ResolvedPublicKeyTXT', '');
 	}
 
+	// Load legacy tcp protocol info
 	try {
 		const resolvedTXT = await resolveTXT(`rocketchat-tcp-protocol.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedProtocolTXT', resolvedTXT);
 	} catch (err) {
 		updateSetting('FEDERATION_ResolvedProtocolTXT', '');
+	}
+
+	// Test if federation is healthy
+	try {
+		dispatchEvent([getFederationDomain()], {
+			type: eventTypes.PING,
+		});
+
+		updateSetting('FEDERATION_Healthy', true);
+	} catch (err) {
+		updateSetting('FEDERATION_Healthy', false);
 	}
 }
 
