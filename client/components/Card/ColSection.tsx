@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-const ColSection: FC = ({ children }) => (
-	<Box mb='x8' color='info'>
+const ColSection: FC = ({ children, ...props }) => (
+	<Box mb='x8' color='info' {...props}>
 		{children}
 	</Box>
 );
