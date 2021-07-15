@@ -118,6 +118,28 @@ settings.addGroup('Accounts', function() {
 		],
 		public: true,
 	});
+	this.add('Accounts_Discovery_DefaultView', 'trending', {
+		type: 'select',
+		values: [
+			{
+				key: 'trending',
+				i18nLabel: 'Trending',
+			},
+			{
+				key: 'recommended',
+				i18nLabel: 'Recommended',
+			},
+			{
+				key: 'all',
+				i18nLabel: 'All',
+			},
+		],
+		public: true,
+		enableQuery: {
+			_id: 'Discovery_Enabled',
+			value: true,
+		},
+	});
 	this.add('Accounts_AllowInvisibleStatusOption', true, {
 		type: 'boolean',
 		public: true,
