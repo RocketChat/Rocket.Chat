@@ -21,7 +21,7 @@ const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props
 			view && Blaze.remove(view);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [name, JSON.stringify(props)]);
+	}, [name, props]);
 	return (
 		<Box
 			rcx-blaze-template
