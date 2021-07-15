@@ -14,6 +14,7 @@ import {
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { settings } from '../../../app/settings/client';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
@@ -41,7 +42,13 @@ const CreateChannel = ({
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState();
-	// const [tagsFilter, setTagsFilter] = useState('');
+
+	const discoveryEnabled = useSetting('Discovery_Enabled');
+	const discoveryTags = useSetting('Discovery_Tags');
+	const tagsAvailable =
+		discoveryEnabled && !!discoveryTags
+			? discoveryTags.split(',').map((item) => [item.trim(), `#${item.trim()}`])
+			: [];
 
 	const checkName = useDebouncedCallback(
 		async (name) => {
@@ -199,16 +206,9 @@ const CreateChannel = ({
 						maxWidth='100%'
 						placeholder={t('Select_an_option')}
 						onChange={onChangeTags}
-						/>*/}
+					/>*/}
 						<MultiSelect
-							options={[
-								['cooking', '#cooking'],
-								['action', '#action'],
-								['comedy', '#comedy'],
-								['romance', '#romance'],
-								['drama', '#drama'],
-								['fun', '#fun'],
-							]}
+							options={tagsAvailable}
 							value={values.tags}
 							maxWidth='100%'
 							placeholder={t('Select_an_option')}

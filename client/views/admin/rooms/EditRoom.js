@@ -20,6 +20,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
@@ -47,6 +48,10 @@ function EditRoom({ room, onChange }) {
 	const t = useTranslation();
 
 	const [deleted, setDeleted] = useState(false);
+
+	const discoveryEnabled = useSetting('Discovery_Enabled');
+	const discoveryTags = useSetting('Discovery_Tags');
+	const tagsAvailable = (discoveryEnabled && !!discoveryTags) ? discoveryTags.split(',').map(item => [item.trim(),'#'+item.trim()]) : [];
 
 	const setModal = useSetModal();
 
@@ -248,19 +253,12 @@ function EditRoom({ room, onChange }) {
 							</Field.Row>
 						</Field>
 					)*/}
-					{canViewTags && (
+					{discoveryEnabled && canViewTags && (
 						<Field>
 							<Field.Label>{t('Tags')}</Field.Label>
 							<Field.Row>
 								<MultiSelect
-								options={[
-									['cooking','#cooking'],
-									['action','#action'],
-									['comedy', '#comedy'],
-									['romance', '#romance'],
-									['drama', '#drama'],
-									['fun', '#fun']
-								]}
+								options={tagsAvailable}
 								value={roomTags}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}

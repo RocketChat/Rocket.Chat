@@ -125,6 +125,9 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const setModal = useSetModal();
 
+	const discoveryEnabled = useSetting('Discovery_Enabled');
+	const discoveryTags = useSetting('Discovery_Tags');
+	const tagsAvailable = (discoveryEnabled && !!discoveryTags) ? discoveryTags.split(',').map(item => [item.trim(),'#'+item.trim()]) : [];
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
@@ -381,19 +384,12 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Field>
 				)*/}
-				{canViewTags && (
+				{discoveryEnabled && canViewTags && (
 					<Field>
 						<Field.Label>{t('Tags')}</Field.Label>
 						<Field.Row>
 							<MultiSelect
-								options={[
-									['cooking','#cooking'],
-									['action','#action'],
-									['comedy', '#comedy'],
-									['romance', '#romance'],
-									['drama', '#drama'],
-									['fun', '#fun']
-								]}
+								options={tagsAvailable}
 								value={roomTags}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}

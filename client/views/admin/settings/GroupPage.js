@@ -7,7 +7,8 @@ import {
 	useEditableSettingsDispatch,
 	useEditableSettings,
 } from '../../../contexts/EditableSettingsContext';
-import { useSettingsDispatch, useSettings } from '../../../contexts/SettingsContext';
+import { useSetting, useSettingsDispatch, useSettings, useSettingSetValue } from '../../../contexts/SettingsContext';
+import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
@@ -39,6 +40,10 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 	const t = useTranslation();
 	const loadLanguage = useLoadLanguage();
 	const user = useUser();
+	const setDiscoveryTags = useSettingSetValue('Discovery_Tags');
+	const oldTags = useSetting('Discovery_Tags')?.split(',').map(item => item.trim());
+	const removeOldTags = useMethod('removeOldTags');
+	const removeTags = useMethod('removeTags');
 
 	const save = useMutableCallback(async () => {
 		const changes = changedEditableSettings.map(({ _id, value, editor }) => ({
@@ -60,6 +65,25 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 
 				await loadLanguage(lng);
 				dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
+				return;
+			}
+
+			if (changes.some(({ _id }) => _id === 'Discovery_Tags')) {
+				const updatedTags = changes.filter(({ _id }) => _id === 'Discovery_Tags').shift().value.split(',').map(item => item.trim());
+				const removedTags = oldTags.filter(tag => !updatedTags.includes(tag));
+				setDiscoveryTags(updatedTags.join(", "));
+				await removeOldTags(removedTags);
+				dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
+				return;
+			}
+
+			if (changes.some(({ _id }) => _id === 'Discovery_Enabled')) {
+				const enabled = changes.filter(({ _id }) => _id === 'Discovery_Enabled').shift().value;
+				if (enabled === false){
+					setDiscoveryTags('');
+					await removeTags();
+				}
+				dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 				return;
 			}
 
