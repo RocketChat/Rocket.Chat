@@ -55,9 +55,7 @@ FlowRouter.route('/home', {
 
 	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
-		console.log('flow router here');
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
-			console.log(queryParams.saml_idp_credentialToken);
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
 				// eslint-disable-next-line @typescript-eslint/camelcase
@@ -65,7 +63,6 @@ FlowRouter.route('/home', {
 			});
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
-					console.log(error);
 					if (error.reason) {
 						toastr.error(error.reason);
 					} else {
@@ -84,7 +81,6 @@ FlowRouter.route('/home', {
 
 			return;
 		}
-		console.log('default rendering');
 		appLayout.render('main', { center: 'home' });
 	},
 });
