@@ -65,20 +65,20 @@ FlowRouter.route('/home', {
 			});
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
+					console.log(error);
 					if (error.reason) {
-						console.log(error.reason);
 						toastr.error(error.reason);
 					} else {
 						handleError(error);
 					}
 				}
-				console.log('rendering in saml');
-				const redirectPath = localStorage.getItem('redirect_path');
 
+				const redirectPath = localStorage.getItem('redirect_path');
 				if (!redirectPath) {
 					appLayout.render('main', { center: 'home' });
 				} else {
-					FlowRouter.redirect(redirectPath);
+					localStorage.removeItem('redirect_path');
+					FlowRouter.go(redirectPath);
 				}
 			});
 
