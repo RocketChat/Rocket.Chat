@@ -1,1 +1,2 @@
-import './settings';
+import './startup/permissions';
+import './startup/settings';
