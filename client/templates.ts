@@ -61,7 +61,7 @@ createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
 	renderContainerView: () =>
 		HTML.DIV({
-			style: 'display: flex; flex: 1 1 100%;',
+			style: 'display: flex; flex: 1 1 100%; flex-direction: column;',
 		}),
 });
 
