@@ -11,20 +11,25 @@ import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-const ActiveUsersSection = () => {
+const ActiveUsersSection = ({ timezone }) => {
 	const t = useTranslation();
+	const utc = timezone === 'utc';
 	const formatDate = useFormatDate();
 	const period = useMemo(() => ({
-		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
-	}), []);
+		start: utc
+			? moment.utc().subtract(30, 'days')
+			: moment().subtract(30, 'days'),
+		end: utc
+			? moment.utc().subtract(1, 'days')
+			: moment().subtract(1, 'days'),
+	}), [utc]);
 
 	const params = useMemo(() => ({
 		start: period.start.clone().subtract(29, 'days').toISOString(),
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', useMemo(() => params, [params]));
 
 	const [
 		countDailyActiveUsers,
