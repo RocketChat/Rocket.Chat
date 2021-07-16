@@ -70,12 +70,17 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				appLayout.render('main', { center: 'home' });
+				const redirectPath = Meteor._localStorage.getItem('redirect_path');
+				if (!redirectPath) {
+					appLayout.render('main', { center: 'home' });
+				} else {
+					Meteor._localStorage.removeItem('redirect_path');
+					FlowRouter.go(redirectPath);
+				}
 			});
 
 			return;
 		}
-
 		appLayout.render('main', { center: 'home' });
 	},
 });
