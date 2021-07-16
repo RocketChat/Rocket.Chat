@@ -47,6 +47,7 @@ Meteor.loginWithSaml = function(options/* , callback*/) {
 	options = options || {};
 	const credentialToken = `id-${ Random.id() }`;
 	options.credentialToken = credentialToken;
+
 	window.location.href = `_saml/authorize/${ options.provider }/${ options.credentialToken }`;
 };
 
