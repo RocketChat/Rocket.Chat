@@ -6,7 +6,7 @@ import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -20,19 +20,20 @@ const EditRolePage = ({ data }) => {
 	const router = useRoute('admin-permissions');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
+		roleId: data._id,
 		name: data.name,
 		description: data.description || '',
 		scope: data.scope || 'Users',
 		mandatory2fa: !!data.mandatory2fa,
 	});
 
-	const saveRole = useMethod('authorization:saveRole');
-	const deleteRole = useMethod('authorization:deleteRole');
+	const saveRole = useEndpoint('POST', 'roles.update');
+	const deleteRole = useEndpoint('POST', 'roles.delete');
 
 	const handleManageUsers = useMutableCallback(() => {
 		usersInRoleRouter.push({
 			context: 'users-in-role',
-			_id: data.name,
+			_id: data._id,
 		});
 	});
 
@@ -49,7 +50,7 @@ const EditRolePage = ({ data }) => {
 	const handleDelete = useMutableCallback(async () => {
 		const deleteRoleAction = async () => {
 			try {
-				await deleteRole(data.name);
+				await deleteRole({ roleId: data._id });
 				dispatchToastMessage({ type: 'success', message: t('Role_removed') });
 				setModal();
 				router.push({});
