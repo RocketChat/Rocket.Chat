@@ -18,10 +18,6 @@ Template.sideNav.helpers({
 		return SideNav.getFlex().data;
 	},
 
-	footer() {
-		return String(settings.get('Layout_Sidenav_Footer')).trim();
-	},
-
 	roomType() {
 		return roomTypes.getTypes().map((roomType) => ({
 			template: roomType.customTemplate || 'roomList',
