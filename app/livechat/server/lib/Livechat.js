@@ -39,6 +39,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { validateEmailDomain } from '../../../lib/server';
 
 export const Livechat = {
 	Analytics,
@@ -223,6 +224,11 @@ export const Livechat = {
 	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
+		if (email) {
+			email = email.trim();
+			validateEmailDomain(email);
+		}
+
 		let userId;
 		const updateUser = {
 			$set: {
@@ -231,35 +237,32 @@ export const Livechat = {
 		};
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		let existingUser = null;
 
 		if (user) {
 			userId = user._id;
+		} else if (email && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			userId = existingUser._id;
 		} else {
 			if (!username) {
 				username = LivechatVisitors.getNextVisitorUsername();
 			}
 
-			let existingUser = null;
+			const userData = {
+				username,
+				ts: new Date(),
+			};
 
-			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
-				userId = existingUser._id;
-			} else {
-				const userData = {
-					username,
-					ts: new Date(),
-				};
-
-				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-					const connection = this.connection || connectionData;
-					if (connection && connection.httpHeaders) {
-						userData.userAgent = connection.httpHeaders['user-agent'];
-						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-						userData.host = connection.httpHeaders.host;
-					}
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+				const connection = this.connection || connectionData;
+				if (connection && connection.httpHeaders) {
+					userData.userAgent = connection.httpHeaders['user-agent'];
+					userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+					userData.host = connection.httpHeaders.host;
 				}
-
-				userId = LivechatVisitors.insert(userData);
 			}
+
+			userId = LivechatVisitors.insert(userData);
 		}
 
 		if (phone?.number) {
@@ -268,7 +271,7 @@ export const Livechat = {
 			];
 		}
 
-		if (email && email.trim() !== '') {
+		if (email) {
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
@@ -282,6 +285,9 @@ export const Livechat = {
 			Object.assign(updateUser, { $unset: { department: 1 } });
 		} else {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
+			}
 			updateUser.$set.department = dep && dep._id;
 		}
 
