@@ -938,7 +938,7 @@ API.v1.addRoute('users.logout', { authRequired: true }, {
 	post() {
 		const userId = this.bodyParams.userId || this.userId;
 
-		if (!hasPermission(this.userId, 'logout-other-user') && userId !== this.userId) {
+		if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
 			return API.v1.unauthorized();
 		}
 
