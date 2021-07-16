@@ -95,7 +95,7 @@ const FederationCard = () => {
 					</Section>
 					<Section
 						status={federationAddingUsersStatus}
-						title={t('Federation_Adding_users_from_another_server')}
+						title={t('Federation_Adding_Federated_Users')}
 						subtitle={t('Federation_Guide_adding_users')}
 					/>
 				</Card.Col>
