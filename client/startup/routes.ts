@@ -70,11 +70,11 @@ FlowRouter.route('/home', {
 					}
 				}
 
-				const redirectPath = localStorage.getItem('redirect_path');
+				const redirectPath = Meteor._localStorage.getItem('redirect_path');
 				if (!redirectPath) {
 					appLayout.render('main', { center: 'home' });
 				} else {
-					localStorage.removeItem('redirect_path');
+					Meteor._localStorage.removeItem('redirect_path');
 					FlowRouter.go(redirectPath);
 				}
 			});
