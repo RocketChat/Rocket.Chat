@@ -6,7 +6,7 @@ type NoResultsProps = {
 	title: string;
 	description: string;
 	buttonTitle?: string;
-	buttonAction?: Function;
+	buttonAction?: () => void;
 };
 
 const NoResults: FC<NoResultsProps> = ({ icon, title, description, buttonTitle, buttonAction }) => (
@@ -29,7 +29,9 @@ const NoResults: FC<NoResultsProps> = ({ icon, title, description, buttonTitle, 
 			{title}
 		</Box>
 		<Tile paddingBlockStart='x5' fontScale='p1' elevation='0' color='info' textAlign='center'>
-			{description}
+			<Box margin='auto' maxWidth='400px'>
+				{description}
+			</Box>
 		</Tile>
 		{buttonTitle && buttonAction && (
 			<Button marginBlockStart='x20' primary onClick={buttonAction}>
