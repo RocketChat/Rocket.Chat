@@ -52,6 +52,7 @@ addAction('video', ({ room }) => {
 
 	const groups = useStableArray([
 		'direct',
+		'direct_multiple',
 		'group',
 		'live',
 		enabledTeams && 'team',
