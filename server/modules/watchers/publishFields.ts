@@ -38,9 +38,10 @@ export const subscriptionFields = {
 	tunreadUser: 1,
 
 	// Omnichannel fields
+	department: 1,
 	v: 1,
 	onHold: 1,
-};
+} as const;
 
 export const roomFields = {
 	_id: 1,

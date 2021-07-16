@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import Busboy from 'busboy';
 import filesize from 'filesize';
 
 import { settings } from '../../../../settings';
 import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
-import { fileUploadIsValidContentType } from '../../../../utils';
+import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
 import { API } from '../../../../api/server';
+import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData';
 
 let maxFileSize;
 
@@ -36,40 +36,9 @@ API.v1.addRoute('livechat/upload/:rid', {
 			return API.v1.unauthorized();
 		}
 
-		const busboy = new Busboy({ headers: this.request.headers });
-		const files = [];
-		const fields = {};
-
-		Meteor.wrapAsync((callback) => {
-			busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-				if (fieldname !== 'file') {
-					return files.push(new Meteor.Error('invalid-field'));
-				}
-
-				const fileDate = [];
-				file.on('data', (data) => fileDate.push(data));
-
-				file.on('end', () => {
-					files.push({ fieldname, file, filename, encoding, mimetype, fileBuffer: Buffer.concat(fileDate) });
-				});
-			});
-
-			busboy.on('field', (fieldname, value) => { fields[fieldname] = value; });
-
-			busboy.on('finish', Meteor.bindEnvironment(() => callback()));
-
-			this.request.pipe(busboy);
-		})();
-
-		if (files.length === 0) {
-			return API.v1.failure('File required');
-		}
-
-		if (files.length > 1) {
-			return API.v1.failure('Just 1 file is allowed');
-		}
-
-		const file = files[0];
+		const { file, ...fields } = Promise.await(getUploadFormData({
+			request: this.request,
+		}));
 
 		if (!fileUploadIsValidContentType(file.mimetype)) {
 			return API.v1.failure({
@@ -95,7 +64,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			visitorToken,
 		};
 
-		const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
+		const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 		if (!uploadedFile) {
 			return API.v1.error('Invalid file');
 		}

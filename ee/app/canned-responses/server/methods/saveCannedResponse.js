@@ -18,6 +18,7 @@ Meteor.methods({
 			shortcut: String,
 			text: String,
 			scope: String,
+			tags: Match.Maybe([String]),
 			departmentId: Match.Maybe(String),
 		});
 
@@ -39,7 +40,8 @@ Meteor.methods({
 			if (responseData.scope === 'user') {
 				responseData.userId = user._id;
 			}
-			responseData.createdBy = user.username;
+			responseData.createdBy = { _id: user._id, username: user.username };
+			responseData._createdAt = new Date();
 		}
 		const createdCannedResponse = CannedResponse.createOrUpdateCannedResponse(_id, responseData);
 		notifications.streamCannedResponses.emit('canned-responses', { type: 'changed', ...createdCannedResponse });

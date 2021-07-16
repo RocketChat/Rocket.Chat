@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import DeleteWarningModal from '../../../components/DeleteWarningModal';
+import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
@@ -37,7 +37,14 @@ function AgentInfoActions({ reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteAgent}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	const handleEditClick = useMutableCallback(() =>
