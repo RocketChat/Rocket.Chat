@@ -3107,32 +3107,25 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.logoutOtherUser]', () => {
+	describe('[/users.logout]', () => {
 		let user;
+		let otherUser;
 		before(async () => {
 			user = await createUser();
+			otherUser = await createUser();
 		});
 		after(async () => {
 			await deleteUser(user);
+			await deleteUser(otherUser);
 			user = undefined;
-		});
-		it('should throw missing key errror', (done) => {
-			request.post(api('users.logoutOtherUser'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.error).to.be.equal('Match error: Missing key \'otherUserId\'');
-				})
-				.end(done);
 		});
 
 		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
 			updatePermission('logout-other-user', []).then(
 				() => {
-					request.post(api('users.logoutOtherUser'))
+					request.post(api('users.logout'))
 						.set(credentials)
-						.send({ otherUserId: user._id })
+						.send({ userId: otherUser._id })
 						.expect('Content-Type', 'application/json')
 						.expect(403)
 						.end(done);
@@ -3143,17 +3136,27 @@ describe('[Users]', function() {
 		it('should logout other user', (done) => {
 			updatePermission('logout-other-user', ['admin']).then(
 				() => {
-					request.post(api('users.logoutOtherUser'))
+					request.post(api('users.logout'))
 						.set(credentials)
-						.send({ otherUserId: user._id })
+						.send({ userId: otherUser._id })
 						.expect('Content-Type', 'application/json')
 						.expect(200)
-						.expect((res) => {
-							expect(res.body.message).to.be.equal(`User ${ user._id } has been logged out!`);
-						})
 						.end(done);
 				});
 		},
 		);
+
+		it('should logout the requester', (done) => {
+			updatePermission('logout-other-user', []).then(
+				() => {
+					console.log(user._id);
+					request.post(api('users.logout'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end(done);
+				},
+			);
+		});
 	});
 });
