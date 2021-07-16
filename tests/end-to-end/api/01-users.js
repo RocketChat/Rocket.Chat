@@ -3149,7 +3149,6 @@ describe('[Users]', function() {
 		it('should logout the requester', (done) => {
 			updatePermission('logout-other-user', []).then(
 				() => {
-					console.log(user._id);
 					request.post(api('users.logout'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
