@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import UserCard from '../../../components/UserCard';
 import { UserStatus } from '../../../components/UserStatus';
@@ -9,7 +10,6 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
@@ -19,12 +19,17 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const { value: data, phase: state, error, reload } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		error,
+		reload,
+	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
-			uid,
-			username,
-		]),
+		useMemo(
+			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
+			[uid, username],
+		),
 	);
 
 	const onChange = useMutableCallback(() => reload());

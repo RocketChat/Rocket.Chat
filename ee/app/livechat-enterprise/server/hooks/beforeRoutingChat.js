@@ -13,7 +13,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 		return inquiry;
 	}
 
-	const { _id, status } = inquiry;
+	const { _id, status, department } = inquiry;
 
 	if (status !== 'ready') {
 		return inquiry;
@@ -25,7 +25,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 
 	LivechatInquiry.queueInquiry(_id);
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
 	if (inq) {
 		dispatchInquiryPosition(inq);
 	}
