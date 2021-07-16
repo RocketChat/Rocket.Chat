@@ -147,7 +147,7 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 API.v1.addRoute('chat.search', { authRequired: true }, {
 	get() {
 		const { roomId, searchText } = this.queryParams;
-		const { count } = this.getPaginationItems();
+		const { offset, count } = this.getPaginationItems();
 
 		if (!roomId) {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -158,7 +158,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count).message.docs; });
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs; });
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(result, this.userId),
