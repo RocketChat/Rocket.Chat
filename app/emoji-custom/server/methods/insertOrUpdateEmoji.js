@@ -17,7 +17,9 @@ Meteor.methods({
 		if (!s.trim(emojiData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', { method: 'insertOrUpdateEmoji', field: 'Name' });
 		}
-
+		if (emojiData.emoji === 'undefined' && emojiData.newFile) {
+			throw new Meteor.Error('error-the-field-is-required', ' Emoji file is required', { method: 'insertOrUpdateEmoji', field: 'File' });
+		}
 		emojiData.name = limax(emojiData.name, { replacement: '_' });
 		emojiData.aliases = limax(emojiData.aliases, { replacement: '_' });
 
