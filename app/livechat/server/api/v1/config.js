@@ -1,4 +1,3 @@
-import { ConsoleLogger } from '@slack/client/dist/logger';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
