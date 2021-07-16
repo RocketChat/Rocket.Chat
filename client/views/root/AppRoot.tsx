@@ -1,5 +1,6 @@
 import React, { FC, lazy, Suspense } from 'react';
 
+import { VoiceRoomProvider } from '../room/providers/VoiceRoomProvider';
 import PageLoading from './PageLoading';
 
 const ConnectionStatusBar = lazy(
@@ -13,10 +14,12 @@ const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
 		<MeteorProvider>
-			<ConnectionStatusBar />
-			<BannerRegion />
-			<AppLayout />
-			<PortalsWrapper />
+			<VoiceRoomProvider>
+				<ConnectionStatusBar />
+				<BannerRegion />
+				<AppLayout />
+				<PortalsWrapper />
+			</VoiceRoomProvider>
 		</MeteorProvider>
 	</Suspense>
 );

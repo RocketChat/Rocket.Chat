@@ -77,6 +77,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 		try {
 			await mediasoupClient?.joinRoom();
 			setConnected(true);
+			mediasoupClient?.on('global-disconnection', () => handleDisconnect());
 		} catch (err) {
 			console.log(err);
 		}
@@ -86,6 +87,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 		mediasoupClient?.close();
 		setMediasoupPeers(wsPeers);
 		wsClient?.removeAllListeners();
+		wsClient?.on('global-disconnection', () => handleDisconnect());
 		if (wsClient) {
 			addListenersToMediasoupClient(wsClient, setMediasoupPeers);
 		}
@@ -129,6 +131,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 				setWsClient(null);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
 
 	return (

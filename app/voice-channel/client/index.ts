@@ -21,6 +21,10 @@ export default class VoiceRoom extends EventEmitter {
 
 	roomName: string;
 
+	muted: boolean;
+
+	deafen: boolean;
+
 	closed: boolean;
 
 	joined: boolean;
@@ -169,7 +173,7 @@ export default class VoiceRoom extends EventEmitter {
 		if (this.closed) {
 			return;
 		}
-
+		this.joined = false;
         this.protoo?.close();
         this.sendTransport?.close();
         this.recvTransport?.close();
@@ -307,6 +311,7 @@ export default class VoiceRoom extends EventEmitter {
 
 	async muteMic(): Promise<void> {
 		this.micProducer?.pause();
+		this.muted = true;
 
 		try {
 			await this.protoo?.request('pauseProducer', { producerId: this.micProducer?.id });
@@ -317,11 +322,18 @@ export default class VoiceRoom extends EventEmitter {
 
 	async unmuteMic(): Promise<void> {
 		this.micProducer?.resume();
+		this.muted = false;
 
 		try {
 			await this.protoo?.request('resumeProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
 			console.log(err);
 		}
+	}
+
+	toggleDeafen(): boolean {
+		this.deafen = !this.deafen;
+
+		return this.deafen;
 	}
 }
