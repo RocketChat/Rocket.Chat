@@ -86,7 +86,10 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	}
 
 	const __html = useMemo(() => {
-		const html = content && typeof content === 'string' && marked(content, markedOptions);
+		const html =
+			content &&
+			typeof content === 'string' &&
+			marked(new Option(content).innerHTML, markedOptions);
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions]);
 

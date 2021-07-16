@@ -109,7 +109,6 @@ class OutOfOfficeScheduler {
 			data: { userId },
 		});
 	}
-
 }
 
 export const outOfOfficeScheduler = new OutOfOfficeScheduler();

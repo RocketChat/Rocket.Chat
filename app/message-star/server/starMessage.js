@@ -23,6 +23,9 @@ Meteor.methods({
 		if (!subscription) {
 			return false;
 		}
+		if (!Messages.findOneByRoomIdAndMessageId(message.rid, message._id)) {
+			return false;
+		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
 		if (isTheLastMessage(room, message)) {
 			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);

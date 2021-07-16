@@ -126,7 +126,7 @@ const parseNotEscaped = (message, {
 		url = encodeURI(url);
 
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`, 'link');
+		return addAsToken(message, `<a data-title="${ url }" href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`, 'link');
 	});
 
 	// Support [Text](http://link)
@@ -142,7 +142,7 @@ const parseNotEscaped = (message, {
 
 		const escapedUrl = encodeURI(url);
 
-		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
+		return addAsToken(message, `<a data-title="${ escapedUrl }" href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 
 	// Support <http://link|Text>
@@ -155,7 +155,7 @@ const parseNotEscaped = (message, {
 		}
 		url = encodeURI(url);
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
+		return addAsToken(message, `<a data-title="${ url }" href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 	return msg;
 };

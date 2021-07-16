@@ -568,12 +568,22 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 API.v1.addRoute('groups.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
+		if (!query || Object.keys(query).length === 0) {
+			return API.v1.failure('Invalid query');
+		}
+
 		const ourQuery = Object.assign({}, query, { t: 'p' });
 
 		const room = Rooms.findOne(ourQuery);
 
 		if (room == null) {
 			return API.v1.failure('Group does not exists');
+		}
+
+		const user = this.getLoggedInUser();
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const online = Users.findUsersNotOffline({
