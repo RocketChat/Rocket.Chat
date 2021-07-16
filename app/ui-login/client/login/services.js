@@ -71,7 +71,7 @@ Template.loginServices.events({
 		if (this.service == null || this.service.service == null) {
 			return;
 		}
-		localStorage.setItem('redirect_path', window.location.pathname);
+		Meteor._localStorage.setItem('redirect_path', window.location.pathname);
 		const loadingIcon = $(e.currentTarget).find('.loading-icon');
 		const serviceIcon = $(e.currentTarget).find('.service-icon');
 		loadingIcon.removeClass('hidden');
