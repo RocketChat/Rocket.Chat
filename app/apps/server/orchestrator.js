@@ -12,7 +12,7 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
-import { AppRealLogsStorage, AppRealStorage, AppSourceStorage } from './storage';
+import { AppRealLogsStorage, AppRealStorage, AppGridFSSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -34,7 +34,7 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-		this.appSourceStorage = new AppSourceStorage();
+		this.appSourceStorage = new AppGridFSSourceStorage();
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));

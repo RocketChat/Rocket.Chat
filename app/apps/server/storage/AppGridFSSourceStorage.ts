@@ -1,8 +1,10 @@
 import { MongoInternals } from 'meteor/mongo';
+import { GridFSBucket, ObjectId } from 'mongodb';
 import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import { GridFSBucket } from 'mongodb';
 
-export class AppFileSystemSourceStorage extends AppSourceStorage {
+import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
+
+export class AppGridFSSourceStorage extends AppSourceStorage {
 	private bucket: GridFSBucket;
 
 	constructor() {
@@ -18,22 +20,46 @@ export class AppFileSystemSourceStorage extends AppSourceStorage {
 	}
 
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<boolean> {
-		await fs.writeFile(`${ tempPath + item.id }.zip`, zip);
+		return new Promise((resolve, reject) => {
+			const fileId = this.itemToId(item);
+			const writeStream = this.bucket.openUploadStreamWithId(fileId, fileId.toHexString())
+				.on('close', () => resolve(true))
+				.on('error', reject);
 
-		return true;
+			writeStream.write(zip);
+			writeStream.end();
+		});
 	}
 
 	public async fetch(item: IAppStorageItem): Promise<Buffer> {
-		this.bucket.openDownloadStream()
+		return streamToBuffer(this.bucket.openDownloadStream(this.itemToId(item)));
 	}
 
-	public async update(id: string, zip: Buffer): Promise<boolean> {
-		await fs.writeFile(`${ tempPath + id }.zip`, zip);
-		return true;
+	public async update(item: IAppStorageItem, zip: Buffer): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			const fileId = this.itemToId(item);
+			const writeStream = this.bucket.openUploadStreamWithId(fileId, fileId.toHexString())
+				.on('close', () => resolve(true))
+				.on('error', reject);
+
+			writeStream.write(zip);
+			writeStream.end();
+		});
 	}
 
 	public async remove(item: IAppStorageItem): Promise<boolean> {
-		fs.unlink(`${ tempPath + item.id }.zip`);
-		return true;
+		return new Promise((resolve, reject) => {
+			this.bucket.delete(this.itemToId(item), (error) => {
+				if (error) {
+					return reject(error);
+				}
+
+				resolve(true);
+			});
+		});
+	}
+
+	private itemToId(item: IAppStorageItem): ObjectId {
+		return new ObjectId(item.id.substr(0, 12));
 	}
 }
