@@ -55,8 +55,8 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 						renderFilter={renderFilter}
 						header={header}
 						renderRow={renderRow}
-						results={data && data.cannedResponses}
-						total={data && data.total}
+						results={data.cannedResponses}
+						total={data.total}
 						setParams={setParams}
 						params={params}
 					/>
