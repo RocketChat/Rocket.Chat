@@ -59,7 +59,7 @@ const normalizeMessage = (originalResource) => {
 	};
 
 	// Normalize mentions
-	for (const mention of resource.mentions) {
+	for (const mention of resource.mentions || []) {
 		// Ignore if we are dealing with all, here or rocket.cat
 		if (['all', 'here', 'rocket.cat'].indexOf(mention.username) !== -1) { continue; }
 
@@ -73,7 +73,7 @@ const normalizeMessage = (originalResource) => {
 	}
 
 	// Normalize channels
-	for (const channel of resource.channels) {
+	for (const channel of resource.channels || []) {
 		if (!isFullyQualified(channel.name)) {
 			const originalUsername = channel.name;
 

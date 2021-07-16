@@ -15,6 +15,7 @@ import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
+import { SystemLogger } from '../../../logger/server';
 
 
 // DEPRECATED
@@ -271,8 +272,10 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
-			Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
-
+			SystemLogger.error(`Exception while invoking method ${ method }`, error.message);
+			if (settings.get('Log_Level') === '2') {
+				Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
+			}
 			return API.v1.success(mountResult({ id, error }));
 		}
 	},
