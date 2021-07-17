@@ -5,6 +5,8 @@ import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
+import { IOmnichannelRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -160,14 +162,14 @@ export class NotificationsModule {
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
 
-		this.streamRoom.allowRead(async function(eventName, extraData) {
+		this.streamRoom.allowRead(async function(eventName, extraData): Promise<boolean> {
 			const [rid] = eventName.split('/');
 
 			// typing from livechat widget
 			if (extraData?.token) {
 				// TODO improve this to make a query 'v.token'
-				const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
-				return room && room.t === 'l' && room.v.token === extraData.token;
+				const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(rid, { projection: { t: 1, 'v.token': 1 } });
+				return !!room && room.t === 'l' && room.v.token === extraData.token;
 			}
 
 			if (!this.userId) {
@@ -178,7 +180,8 @@ export class NotificationsModule {
 			return subsCount > 0;
 		});
 
-		this.streamRoom.allowWrite(async function(eventName, username, _activity, extraData) {
+
+		this.streamRoom.allowWrite(async function(eventName, username, _activity, extraData): Promise<boolean> {
 			const [rid, e] = eventName.split('/');
 
 			// TODO should this use WEB_RTC_EVENTS enum?
@@ -199,15 +202,15 @@ export class NotificationsModule {
 				// typing from livechat widget
 				if (extraData?.token) {
 					// TODO improve this to make a query 'v.token'
-					const room = await Rooms.findOneById(rid, { projection: { t: 1, 'v.token': 1 } });
-					return room && room.t === 'l' && room.v.token === extraData.token;
+					const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(rid, { projection: { t: 1, 'v.token': 1 } });
+					return !!room && room.t === 'l' && room.v.token === extraData.token;
 				}
 
 				if (!this.userId) {
 					return false;
 				}
 
-				const user = await Users.findOneById(this.userId, {
+				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(this.userId, {
 					projection: {
 						[key]: 1,
 					},
@@ -274,7 +277,7 @@ export class NotificationsModule {
 		});
 
 		this.streamLivechatRoom.allowRead(async function(roomId, extraData) {
-			const room = await Rooms.findOneById(roomId, { projection: { _id: 0, t: 1, v: 1 } });
+			const room = await Rooms.findOneById<Pick<IOmnichannelRoom, 't'| 'v' >>(roomId, { projection: { _id: 0, t: 1, v: 1 } });
 
 			if (!room) {
 				console.warn(`Invalid eventName: "${ roomId }"`);
@@ -346,7 +349,7 @@ export class NotificationsModule {
 					);
 				};
 
-				const subscriptions: Pick<ISubscription, 'rid'>[] = await Subscriptions.find(
+				const subscriptions = await Subscriptions.find<Pick<ISubscription, 'rid'>>(
 					{ 'u._id': userId },
 					{ projection: { rid: 1 } },
 				).toArray();

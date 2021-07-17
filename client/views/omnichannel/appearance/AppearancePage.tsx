@@ -48,9 +48,8 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (
-		settings: Pick<ISetting, '_id'>[] & { value: unknown }[],
-	) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save: (settings: Pick<ISetting, '_id'>[] & { value: unknown }[]) => Promise<void> =
+		useMethod('livechat:saveAppearance');
 
 	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(
 		reduceAppearance(settings),

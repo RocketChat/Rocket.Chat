@@ -81,6 +81,7 @@
           "prefer-single"
         ],
         "indent": "off",
+        "no-dupe-class-members": "off",
         "no-extra-parens": "off",
         "no-spaced-func": "off",
         "no-unused-vars": "off",
@@ -116,9 +117,11 @@
             "enforceForArrowConditionals": false
           }
         ],
+        "@typescript-eslint/no-dupe-class-members": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": ["error", {
-          "argsIgnorePattern": "^_"
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
         }]
       },
       "env": {

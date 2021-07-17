@@ -22,12 +22,8 @@ const OmnichannelSidebar: FC = () => {
 	}, []);
 
 	const currentRoute = useCurrentRoute();
-	const [
-		currentRouteName,
-		currentRouteParams,
-		currentQueryStringParams,
-		currentRouteGroupName,
-	] = currentRoute;
+	const [currentRouteName, currentRouteParams, currentQueryStringParams, currentRouteGroupName] =
+		currentRoute;
 	const currentPath = useRoutePath(
 		currentRouteName ?? '',
 		currentRouteParams,
