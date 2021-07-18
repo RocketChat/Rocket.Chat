@@ -34,9 +34,7 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: 'RocketChat.createRoom' });
 	}
 	if (extraData.ephemeralTime) {
-		// console.log(extraData.ephemeralTime);
 		extraData.ephemeralTime = convertEphemeralTime(extraData.ephemeralTime);
-		// console.log(ephemeralTime);
 	}
 
 	if (!_.contains(members, owner.username)) {

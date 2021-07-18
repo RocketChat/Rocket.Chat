@@ -615,7 +615,7 @@ export class Messages extends Base {
 	}
 
 	setEphemeralTime(rid, time) {
-		console.log('inside message model');
+		if (!rid) { return; }
 		const query = { rid };
 		const update = {
 			$set: {

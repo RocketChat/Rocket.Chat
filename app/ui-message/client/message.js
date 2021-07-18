@@ -392,8 +392,7 @@ Template.message.helpers({
 	},
 	isEphemeral() {
 		const { room } = this;
-		if (room.t === 'e') { return true; }
-		return false;
+		return room.t === 'e';
 	},
 	roomIcon() {
 		const { room } = this;

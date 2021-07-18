@@ -6,7 +6,7 @@
   "1_hour":"One hour",
   "6_hours":"Six hours",
   "12_hours":"Twelve hours",
-  "24_hours":"Twenty-four hours",
+  "24_hours":"1 day",
   "__count__empty_rooms_will_be_removed_automatically": "__count__ empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ empty rooms will be removed automatically:<br/> __rooms__.",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__ is no longer __role__ by __user_by__",

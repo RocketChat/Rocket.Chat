@@ -847,6 +847,7 @@ export class Rooms extends Base {
 	}
 
 	setEphemeralTime(_id, time) {
+		if (!_id) { return; }
 		const query = { _id };
 		const update = {
 			$set: {

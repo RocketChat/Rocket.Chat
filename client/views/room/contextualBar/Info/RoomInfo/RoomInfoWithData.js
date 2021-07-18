@@ -37,7 +37,6 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const t = useTranslation();
 
 	const room = useUserRoom(rid);
-	console.log(room);
 	room.type = room.t;
 	room.rid = rid;
 	const { type, fname, broadcast, archived, joined = true, ephemeralTime, msgEphemeralTime } = room; // TODO implement joined

@@ -10,7 +10,6 @@ Meteor.methods({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
 
-		console.log(room);
 		switch (newEphemeralTime) {
 			case '5mins':
 				newEphemeralTime = moment().add(5, 'minutes').toDate();

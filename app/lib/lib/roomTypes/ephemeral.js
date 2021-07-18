@@ -20,13 +20,6 @@ export class PrivateRoomRoute extends RoomTypeRouteConfig {
 		console.log(params);
 		return openRoom('e', params.name);
 	}
-
-	// link(sub) {
-	// 	console.log(sub);
-	// 	return {
-	// 		id: sub.name,
-	// 	};
-	// }
 }
 
 export class EphemeralRoomType extends RoomTypeConfig {
@@ -101,7 +94,7 @@ export class EphemeralRoomType extends RoomTypeConfig {
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 				return !room.broadcast && room.ro;
 			case RoomSettingsEnum.E2E:
-				return settings.get('E2E_Enable') === true;
+				return settings.get('E2E_Enable');
 			case RoomSettingsEnum.SYSTEM_MESSAGES:
 			default:
 				return true;
