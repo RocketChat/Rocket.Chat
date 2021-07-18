@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, EmojiCustom } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
@@ -116,10 +117,16 @@ export function settings() {
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
-			actionLinks: [
-				{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall', params: '' },
-				{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' },
-			],
+			actionLinks: {
+				webrtc: [
+					{ icon: '', i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall', params: '' },
+					{ icon: '', i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall', params: '' },
+				],
+				jitsi: [
+					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall', params: '' },
+					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' },
+				],
+			},
 		},
 		messages: {
 			offlineMessage: initSettings.Livechat_offline_message,

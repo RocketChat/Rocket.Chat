@@ -32,6 +32,7 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus: string;
 
 	streamingOptions?: {
 		id?: string;

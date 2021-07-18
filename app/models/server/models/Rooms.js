@@ -59,6 +59,20 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setCallStatus(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	findByTokenpass(tokens) {
 		const query = {
 			'tokenpass.tokens.token': {

@@ -57,7 +57,6 @@ export type ServerMethods = {
 	'instances/get': (...args: any[]) => any;
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
-	'webrtc:createSession': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
 	'license:getTags': (...args: any[]) => any;
 	'livechat:addMonitor': (...args: any[]) => any;
