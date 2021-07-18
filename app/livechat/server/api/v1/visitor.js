@@ -128,6 +128,28 @@ API.v1.addRoute('livechat/visitor/:token/room', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('livechat/visitor.callStatus', {
+	post() {
+		try {
+			check(this.bodyParams, {
+				token: String,
+				callStatus: String,
+			});
+
+			const { token, callStatus } = this.bodyParams;
+			const guest = findGuest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
+			}
+
+
+			return API.v1.success({ token, callStatus });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
 API.v1.addRoute('livechat/visitor.status', {
 	post() {
 		try {
