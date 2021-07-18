@@ -52,7 +52,7 @@ export interface ITaskRoomUpdateData {
 	type: TASKRoomType;
 	updateRoom?: boolean; // default is true
 }
-
+// Copied for the team
 export interface ITaskRoomService {
 	create(uid: string, params: ITaskRoomCreateParams): Promise<ITaskRoom>;
 	updateRoom(uid: string, rid: string, isDefault: boolean, canUpdateAnyRoom: boolean): Promise<IRoom>;
