@@ -8,6 +8,7 @@ import { settings as rcSettings } from '../../../../settings';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 import { hasPermission, canSendMessage } from '../../../../authorization';
+import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute('livechat/video.call/:token', {
 	get() {
@@ -111,6 +112,48 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 				callStatus,
 			};
 			return API.v1.success({ videoCall });
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+	},
+});
+
+API.v1.addRoute('livechat/webrtc.call/:callId', { authRequired: true }, {
+	put() {
+		try {
+			check(this.urlParams, {
+				callId: String,
+			});
+
+			check(this.bodyParams, {
+				rid: Match.Maybe(String),
+				status: Match.Maybe(String),
+			});
+
+			if (!hasPermission(this.userId, 'view-l-room')) {
+				return API.v1.unauthorized();
+			}
+
+			const room = canSendMessage(this.queryParams.rid, {
+				uid: this.userId,
+				username: this.user.username,
+				type: this.user.type,
+			});
+			if (!room) {
+				throw new Meteor.Error('invalid-room');
+			}
+
+			const { callId } = this.urlParams;
+			const { rid, status } = this.bodyParams;
+
+			const call = Messages.findOneById(callId);
+			if (!call || call.t !== 'livechat_webrtc_video_call') {
+				throw new Meteor.Error('invalid-callId');
+			}
+
+			Livechat.updateCallStatus(callId, rid, status);
+
+			return API.v1.success({ status });
 		} catch (e) {
 			return API.v1.failure(e);
 		}

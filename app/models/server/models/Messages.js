@@ -1034,6 +1034,16 @@ export class Messages extends Base {
 		});
 	}
 
+	setCallStatus(_id, status) {
+		return this.update({
+			_id,
+		}, {
+			$set: {
+				callStatus: status,
+			},
+		});
+	}
+
 	setAsReadById(_id) {
 		return this.update({
 			_id,
