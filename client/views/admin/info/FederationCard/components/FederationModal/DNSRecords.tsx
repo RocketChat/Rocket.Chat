@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import { SectionStatus } from '../Section';
 import { DNSRecordItem } from './DNSRecordItem';
 import { DNSText } from './DNSText';
-import { DNSRecord, DNSRecordName, DNSRecordType, ResolvedDNS, TXTRecordName } from './Types';
+import { DNSRecord, DNSRecordName, DNSRecordType, ResolvedDNS, TXTRecordValue } from './Types';
 
 export const DNSRecords: FC<{
 	federationSubdomain: string;
@@ -26,7 +26,7 @@ export const DNSRecords: FC<{
 }) => {
 	function buildDNSRecord(
 		type: DNSRecordType,
-		name: DNSRecordName | TXTRecordName,
+		name: DNSRecordName | TXTRecordValue,
 		expectedValue: string,
 		options: {
 			rootLevelEntry: boolean;
@@ -64,7 +64,7 @@ export const DNSRecords: FC<{
 			}
 			case DNSRecordType.TXT: {
 				if (!rootLevelEntry) {
-					dnsRecord.value = resolvedEntries[type][name as TXTRecordName];
+					dnsRecord.value = resolvedEntries[type][name as TXTRecordValue];
 				}
 				break;
 			}
@@ -74,10 +74,21 @@ export const DNSRecords: FC<{
 
 		// If this is a root level entry, it will always fail if we can't find a resolved entry
 		if (rootLevelEntry) {
-			dnsRecord.status =
-				Object.keys(resolvedEntries[type]).length > 0
-					? SectionStatus.SUCCESS
-					: SectionStatus.FAILED;
+			switch (type) {
+				case DNSRecordType.SRV: {
+					dnsRecord.status =
+						Object.keys(resolvedEntries[type]).length > 0
+							? SectionStatus.SUCCESS
+							: SectionStatus.FAILED;
+					break;
+				}
+				case DNSRecordType.TXT: {
+					dnsRecord.status = resolvedEntries[type][name as TXTRecordValue]
+						? SectionStatus.SUCCESS
+						: SectionStatus.UNKNOWN;
+					break;
+				}
+			}
 		}
 
 		// If the entry is not failed, check the value
@@ -91,6 +102,9 @@ export const DNSRecords: FC<{
 			dnsRecord.expectedValue = longValueTitle;
 			dnsRecord.value = `${dnsRecord.value?.substr(0, 40)}...`;
 		}
+
+		// If this is a root level entry, we hide the error string
+		dnsRecord.hideErrorString = rootLevelEntry;
 
 		return dnsRecord;
 	}
@@ -129,7 +143,7 @@ export const DNSRecords: FC<{
 				rootLevelEntry: true,
 			},
 		),
-		buildDNSRecord(DNSRecordType.TXT, TXTRecordName.PUBLIC_KEY, federationPublicKey, {
+		buildDNSRecord(DNSRecordType.TXT, TXTRecordValue.PUBLIC_KEY, federationPublicKey, {
 			rootLevelEntry: false,
 			longValueTitle: '<my-public-key>',
 		}),
@@ -147,7 +161,7 @@ export const DNSRecords: FC<{
 					rootLevelEntry: true,
 				},
 			),
-			buildDNSRecord(DNSRecordType.TXT, TXTRecordName.PROTOCOL, rocketChatProtocol),
+			buildDNSRecord(DNSRecordType.TXT, TXTRecordValue.PROTOCOL, rocketChatProtocol),
 		];
 	}
 
@@ -156,40 +170,22 @@ export const DNSRecords: FC<{
 			<DNSText text='You must add the following DNS records on your server:' />
 			<DNSText text='SRV Record (2.0.0 or newer)' />
 			<Box style={{ marginTop: 10 }}>
-				{srvDNSRecords.map(({ status, title, expectedValue, value }) => (
-					<DNSRecordItem
-						key={title}
-						status={status}
-						title={title}
-						expectedValue={expectedValue}
-						value={value}
-					/>
+				{srvDNSRecords.map((record: DNSRecord) => (
+					<DNSRecordItem key={record.title} record={record} />
 				))}
 			</Box>
 			<DNSText text='Public Key TXT Record' />
 			<Box style={{ marginTop: 10 }}>
-				{txtDNSRecords.map(({ status, title, expectedValue, value }) => (
-					<DNSRecordItem
-						key={title}
-						status={status}
-						title={title}
-						expectedValue={expectedValue}
-						value={value}
-					/>
+				{txtDNSRecords.map((record: DNSRecord) => (
+					<DNSRecordItem key={record.title} record={record} />
 				))}
 			</Box>
 			{legacy && (
 				<>
 					<DNSText text='Protocol TXT Record' />
 					<Box style={{ marginTop: 10 }}>
-						{legacyTxtDNSRecords.map(({ status, title, expectedValue, value }) => (
-							<DNSRecordItem
-								key={title}
-								status={status}
-								title={title}
-								expectedValue={expectedValue}
-								value={value}
-							/>
+						{legacyTxtDNSRecords.map((record: DNSRecord) => (
+							<DNSRecordItem key={record.title} record={record} />
 						))}
 					</Box>
 				</>

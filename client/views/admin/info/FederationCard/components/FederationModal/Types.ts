@@ -17,9 +17,9 @@ export enum DNSRecordName {
 	WEIGHT = 'weight',
 }
 
-export enum TXTRecordName {
-	PUBLIC_KEY,
-	PROTOCOL,
+export enum TXTRecordValue {
+	PUBLIC_KEY = DNSRecordName.HOST,
+	PROTOCOL = DNSRecordName.PROTOCOL,
 }
 
 export type DNSRecord = {
@@ -27,9 +27,10 @@ export type DNSRecord = {
 	title: string;
 	expectedValue: string;
 	value?: string;
+	hideErrorString?: boolean;
 };
 
 export type ResolvedDNS = {
 	[DNSRecordType.SRV]: Record<DNSRecordName, string | number>;
-	[DNSRecordType.TXT]: Record<TXTRecordName, string>;
+	[DNSRecordType.TXT]: Record<TXTRecordValue, string>;
 };

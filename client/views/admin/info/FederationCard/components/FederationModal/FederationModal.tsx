@@ -19,7 +19,7 @@ import { useSetting, useSettingSetValue } from '../../../../../../contexts/Setti
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
-import { DNSRecordName, ResolvedDNS, TXTRecordName } from './Types';
+import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({
 	onClose,
@@ -106,8 +106,8 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 	const resolvedDNS: ResolvedDNS = {
 		srv: resolvedSRV,
 		txt: {
-			[TXTRecordName.PUBLIC_KEY]: resolvedPublicKeyTXT,
-			[TXTRecordName.PROTOCOL]: resolvedProtocolTXT,
+			[TXTRecordValue.PUBLIC_KEY]: resolvedPublicKeyTXT,
+			[TXTRecordValue.PROTOCOL]: resolvedProtocolTXT,
 		},
 	};
 
