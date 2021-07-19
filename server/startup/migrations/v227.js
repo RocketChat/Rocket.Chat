@@ -3,38 +3,47 @@ import { CannedResponse } from '../../../ee/app/models/server';
 
 function migrateCannedResponses() {
 	CannedResponse.tryDropIndex({ shortcut: 1 });
-	// get all canned responses
-	const currentResponseIndex = {};
-	const responses = CannedResponse.find({}, { fields: { _id: 1, shortcut: 1 } }).fetch();
+
+	const responses1 = Promise.await(CannedResponse.model.rawCollection().aggregate([
+		{ $match: { shortcut: { $exists: true } } },
+		{ $group: {
+			_id: { shortcut: '$shortcut' },
+			uniqueIds: { $addToSet: '$_id' },
+			count: { $sum: 1 },
+		} },
+		{ $match: { count: { $gte: 2 } } },
+	]).toArray());
+
 	const operations = [];
 
-	for (const response of responses) {
-		const { shortcut } = response;
-		let currentIndex = currentResponseIndex[shortcut];
-		if (!currentIndex && !(currentIndex === 0)) {
-			currentResponseIndex[shortcut] = 0;
-		} else {
-			currentResponseIndex[shortcut] += 1;
-		}
-		currentIndex = currentResponseIndex[shortcut];
+	for (const response of responses1) {
+		const { _id: { shortcut: key }, uniqueIds: ids } = response;
+		let currentIndex = 0;
 
-		if (currentIndex > 0) {
+		for (const id of ids) {
+			if (!currentIndex) {
+				currentIndex += 1;
+				continue;
+			}
+
 			operations.push({
 				updateOne: {
-					filter: { _id: response._id },
+					filter: { _id: id },
 					update: {
 						$set: {
-							shortcut: `${ shortcut }-${ currentIndex }`,
+							shortcut: `${ key }-${ currentIndex }`,
 						},
 					},
 				},
 			});
+			currentIndex += 1;
 		}
 	}
 
 	if (operations.length) {
 		Promise.await(CannedResponse.model.rawCollection().bulkWrite(operations, { ordered: false }));
 	}
+
 	CannedResponse.tryEnsureIndex({ shortcut: 1 }, { unique: true });
 }
 
