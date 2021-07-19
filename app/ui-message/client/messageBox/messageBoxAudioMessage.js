@@ -6,20 +6,18 @@ import { AudioRecorder, fileUpload, USER_RECORDING, UserAction } from '../../../
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
-const startRecording = (rid, tmid) => {
-	const result = new Promise((resolve, reject) =>
-		AudioRecorder.start((result) => (result ? resolve() : reject())));
-	result.then(() => {
+const startRecording = async (rid, tmid) => {
+	try {
+		await AudioRecorder.start()
 		UserAction.start(rid, USER_RECORDING, { tmid });
-	});
-	return result;
+	} catch(error) {
+		throw error
+	}
 };
 
-const stopRecording = (rid, tmid) => {
-	const result = new Promise((resolve) => AudioRecorder.stop(resolve));
-	result.then(() => {
-		UserAction.stop(rid, USER_RECORDING, { tmid });
-	});
+const stopRecording = async (rid, tmid) => {
+	const result = await new Promise((resolve) => AudioRecorder.stop(resolve));
+	UserAction.stop(rid, USER_RECORDING, { tmid });
 	return result;
 };
 
