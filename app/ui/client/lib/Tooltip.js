@@ -49,7 +49,7 @@ document.body.addEventListener('mouseover', (() => {
 				element.removeAttribute('title');
 				openToolTip(element.dataset.title, element);
 			}
-		}, 1000);
+		}, 300);
 		closeTooltip();
 	};
 })());
