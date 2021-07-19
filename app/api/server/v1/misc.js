@@ -272,10 +272,8 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
-			SystemLogger.error('Error starting video call:', error.message);
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
-			}
+			Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
+
 			return API.v1.success(mountResult({ id, error }));
 		}
 	},
