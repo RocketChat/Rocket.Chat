@@ -1,9 +1,10 @@
-import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box } from '@rocket.chat/fuselage';
+import { Field, TextInput, ToggleSwitch, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import AutoCompleteDepartmentMultiple from '../../../../client/components/AutoCompleteDepartmentMultiple';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
-const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, departmentList = [] }) => {
+const BusinessHoursMultiple = ({ values = {}, handlers = {}, className }) => {
 	const t = useTranslation();
 
 	const { active, name, departments } = values;
@@ -29,13 +30,7 @@ const BusinessHoursMultiple = ({ values = {}, handlers = {}, className, departme
 			<Field className={className}>
 				<Field.Label>{t('Departments')}</Field.Label>
 				<Field.Row>
-					<MultiSelectFiltered
-						options={departmentList}
-						value={departments}
-						onChange={handleDepartments}
-						maxWidth='100%'
-						placeholder={t('Departments')}
-					/>
+					<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} />
 				</Field.Row>
 			</Field>
 		</>
