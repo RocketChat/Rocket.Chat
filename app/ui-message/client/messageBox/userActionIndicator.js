@@ -18,7 +18,6 @@ const showUserActivity = (activity, id) => {
 		return {
 			action,
 			multi: false,
-			selfActivity: UserAction.selfActivity[activity],
 			users: users[0],
 		};
 	}
@@ -31,7 +30,6 @@ const showUserActivity = (activity, id) => {
 	return {
 		action,
 		multi: true,
-		selfActivity: UserAction.selfActivity[activity],
 		users: usernames.join(` ${ t('and') } `),
 	};
 };

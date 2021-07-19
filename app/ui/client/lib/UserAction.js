@@ -28,7 +28,6 @@ const recordingUsers = new ReactiveDict();
 const uploadingUsers = new ReactiveDict();
 const typingUsers = new ReactiveDict();
 
-const selfActivity = { USER_RECORDING: false, USER_UPLOADING: false, USER_TYPING: false };
 
 const shownName = function(user) {
 	if (!user) {
@@ -67,7 +66,6 @@ export const UserAction = new class {
 		Tracker.autorun(() => Session.get('openedRoom') && this.addStream(Session.get('openedRoom')));
 	}
 
-	get selfActivity() { return selfActivity; }
 
 	addStream(rid) {
 		if (rooms[rid]) {
@@ -93,7 +91,6 @@ export const UserAction = new class {
 		if (renews[rid]) {
 			return;
 		}
-		selfActivity[activityType] = true;
 
 		renews[rid] = setTimeout(() => {
 			clearTimeout(renews[rid]);
@@ -123,7 +120,6 @@ export const UserAction = new class {
 	}
 
 	stopPerformingAction(rid, activityType, timeouts, renews, extras) {
-		selfActivity[activityType] = false;
 		if (timeouts[rid]) {
 			clearTimeout(timeouts[rid]);
 			delete timeouts[rid];

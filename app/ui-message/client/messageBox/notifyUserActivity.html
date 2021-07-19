@@ -3,17 +3,9 @@
 		<div class="rc-message-box__typing">
 			<span class="rc-message-box__typing-user">{{users}}</span>
 			{{#if multi}}
-				{{#if selfActivity}}
-					{{_ "are_also"}} {{_ action}}
-				{{else}}
-					{{_ "are"}} {{_ action}}
-				{{/if}}
+				{{_ "are"}} {{_ action}}
 			{{else}}
-				{{#if selfActivity}}
-					{{_ "is_also" context="male"}} {{_ action context="male"}}
-				{{else}}
-					{{_ "is" }} {{_ action context="male"}}
-				{{/if}}
+				{{_ "is" }} {{_ action context="male"}}
 			{{/if}}
 		</div>
 	{{/with}}
