@@ -690,6 +690,7 @@
   "cache_cleared": "Cache cleared",
   "Call": "Call",
   "Call_provider": "Call Provider",
+  "Call_Already_Ended": "Call Already Ended",
   "call-management": "Call Management",
   "call-management_description": "Permission to start a meeting",
   "Caller": "Caller",

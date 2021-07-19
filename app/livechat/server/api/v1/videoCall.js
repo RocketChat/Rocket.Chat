@@ -146,7 +146,7 @@ API.v1.addRoute('livechat/webrtc.call/:callId', { authRequired: true }, {
 			const { callId } = this.urlParams;
 			const { rid, status } = this.bodyParams;
 
-			const call = Messages.findOneById(callId);
+			const call = Promise.await(Messages.findOneById(callId));
 			if (!call || call.t !== 'livechat_webrtc_video_call') {
 				throw new Meteor.Error('invalid-callId');
 			}
