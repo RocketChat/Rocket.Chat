@@ -51,7 +51,9 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return new Promise((resolve, reject) => {
 			this.bucket.delete(this.itemToId(item), (error) => {
 				if (error) {
-					return reject(error);
+					// Ignoring the error reason for now
+					console.error(error);
+					return resolve(false);
 				}
 
 				resolve(true);
@@ -60,6 +62,6 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	private itemToId(item: IAppStorageItem): ObjectId {
-		return new ObjectId(item.id.substr(0, 12));
+		return item.id as unknown as ObjectId;
 	}
 }
