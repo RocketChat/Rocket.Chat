@@ -11,22 +11,23 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 export type RemoveCannedResponseButtonProps = {
 	_id: string;
+	reload: () => void;
 };
 
-const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id }) => {
-	const unitsRoute = useRoute('omnichannel-units');
-	const removeUnit = useMethod('livechat:removeUnit');
+const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload }) => {
+	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
+	const removeCannedResponse = useMethod('removeCannedResponse');
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
-			await removeUnit(_id);
+			await removeCannedResponse(_id);
 		} catch (error) {
 			console.log(error);
 		}
-		unitsRoute.push({});
+		cannedResponsesRoute.push({});
 	});
 
 	const handleDelete = useMutableCallback((e) => {
@@ -34,7 +35,8 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id }
 		const onDeleteCannedResponse: () => Promise<void> = async () => {
 			try {
 				await handleRemoveClick();
-				dispatchToastMessage({ type: 'success', message: t('Unit_removed') });
+				reload();
+				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

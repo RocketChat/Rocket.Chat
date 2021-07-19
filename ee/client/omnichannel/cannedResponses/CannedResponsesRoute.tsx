@@ -79,7 +79,7 @@ const CannedResponsesRoute: FC = () => {
 			}),
 	);
 
-	const { value: data } = useEndpointData('canned-responses', query);
+	const { value: data, reload } = useEndpointData('canned-responses', query);
 
 	const getTime = useFormatDateAndTime();
 
@@ -164,7 +164,7 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} />
+				<RemoveCannedResponseButton _id={_id} reload={reload} />
 			</Table.Row>
 		),
 		[getTime, onRowClick],
