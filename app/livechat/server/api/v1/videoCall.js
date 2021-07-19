@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Messages, Rooms } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
-import { SystemLogger } from '../../../../logger/server';
 import { hasPermission, canSendMessage } from '../../../../authorization';
 
 API.v1.addRoute('livechat/video.call/:token', {
@@ -89,28 +89,29 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
 
-			if (!room.callStatus || room.callStatus === 'ended' || room.callStatus === 'declined') {
-				Rooms.setCallStatus(room._id, 'ringing');
-				Messages.createWithTypeRoomIdMessageAndUser(
+			let { callStatus } = room;
+
+			if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
+				Promise.await(Rooms.setCallStatus(room._id, 'ringing'));
+				Promise.await(Messages.createWithTypeRoomIdMessageAndUser(
 					'livechat_webrtc_video_call',
 					room._id,
-					'Join my room to start the video call',
+					TAPi18n.__('Join_my_room_to_start_the_video_call'),
 					this.user,
 					{
 						actionLinks: config.theme.actionLinks.webrtc,
 						callStatus: 'ringing',
-
 					},
-				);
+				));
+				callStatus = 'ringing';
 			}
 			const videoCall = {
 				rid: room._id,
 				provider: 'webrtc',
-				callStatus: room.callStatus,
+				callStatus,
 			};
 			return API.v1.success({ videoCall });
 		} catch (e) {
-			SystemLogger.error('Error starting webRTC video call:', e);
 			return API.v1.failure(e);
 		}
 	},

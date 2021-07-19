@@ -2285,6 +2285,7 @@
   "Join_the_Community": "Join the Community",
   "Join_the_given_channel": "Join the given channel",
   "Join_video_call": "Join video call",
+  "Join_my_room_to_start_the_video_call": "Join my room to start the video call",
   "join-without-join-code": "Join Without Join Code",
   "join-without-join-code_description": "Permission to bypass the join code in channels with join code enabled",
   "Joined": "Joined",

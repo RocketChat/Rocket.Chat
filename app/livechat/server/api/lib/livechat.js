@@ -119,12 +119,12 @@ export function settings() {
 			offlineColor: initSettings.Livechat_offline_title_color,
 			actionLinks: {
 				webrtc: [
-					{ icon: '', i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall', params: '' },
-					{ icon: '', i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall', params: '' },
+					{ i18nLabel: 'Join_call', label: TAPi18n.__('Join_call'), method_id: 'joinLivechatWebRTCCall' },
+					{ i18nLabel: 'End_call', label: TAPi18n.__('End_call'), method_id: 'endLivechatWebRTCCall' },
 				],
 				jitsi: [
-					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall', params: '' },
-					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall', params: '' },
+					{ icon: 'icon-videocam', i18nLabel: 'Accept', method_id: 'createLivechatCall' },
+					{ icon: 'icon-cancel', i18nLabel: 'Decline', method_id: 'denyLivechatCall' },
 				],
 			},
 		},
