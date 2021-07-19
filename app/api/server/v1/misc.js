@@ -15,7 +15,6 @@ import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
-import { SystemLogger } from '../../../logger/server';
 
 
 // DEPRECATED
