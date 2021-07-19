@@ -32,7 +32,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 }) => {
 	const t = useTranslation();
 
-	const Route = useRoute('');
+	const Route = useRoute('omnichannel-canned-responses');
 
 	const handleClick = useMutableCallback(() =>
 		Route.push({
@@ -50,26 +50,24 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				{data && data.total > 0 ? (
-					<GenericTable
-						renderFilter={renderFilter}
-						header={header}
-						renderRow={renderRow}
-						results={data.cannedResponses}
-						total={data.total}
-						setParams={setParams}
-						params={params}
-					/>
-				) : (
+				{data && data.total < 1 ? (
 					<NoResults
 						icon='baloon-exclamation'
 						title={t('No_Canned_Responses_Yet')}
 						description={t('No_Canned_Responses_Yet-description')}
 						buttonTitle={t('Create_your_First_Canned_Response')}
-						buttonAction={(): void => {
-							console.log('TODO! ROUTE TO NEW AND EDIT PAGE WHEN THEY EXIST!!!!');
-						}}
+						buttonAction={handleClick}
 					></NoResults>
+				) : (
+					<GenericTable
+						renderFilter={renderFilter}
+						header={header}
+						renderRow={renderRow}
+						results={data && data.cannedResponses}
+						total={data && data.total}
+						setParams={setParams}
+						params={params}
+					/>
 				)}
 			</Page.Content>
 			{children}
