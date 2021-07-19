@@ -6,12 +6,17 @@ import { getFederationDomain } from '../../app/federation/server/lib/getFederati
 import { eventTypes } from '../../app/models/server/models/FederationEvents';
 import { Users } from '../../app/models/server/raw';
 
-function updateSetting(id: string, value: SettingValue): void {
-	const setting = settings.get(id);
-	if (!setting) {
-		settings.add(id, value);
+function updateSetting(id: string, value: SettingValue | null): void {
+	if (value) {
+		const setting = settings.get(id);
+
+		if (!setting) {
+			settings.add(id, value);
+		} else {
+			settings.updateById(id, value);
+		}
 	} else {
-		settings.updateById(id, value);
+		settings.clearById(id);
 	}
 }
 
@@ -23,20 +28,12 @@ async function runFederation(): Promise<void> {
 
 	const federationDomain = settings.get('FEDERATION_Domain') as string;
 
-	// Load SRV info
-	try {
-		const resolvedSRV = await resolveSRV(`_rocketchat._${ rocketChatProtocol }.${ federationDomain }`);
-		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
-	} catch (err) {
-		updateSetting('FEDERATION_ResolvedSRV', '{}');
-	}
-
 	// Load public key info
 	try {
 		const resolvedTXT = await resolveTXT(`rocketchat-public-key.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedPublicKeyTXT', resolvedTXT);
 	} catch (err) {
-		updateSetting('FEDERATION_ResolvedPublicKeyTXT', '');
+		updateSetting('FEDERATION_ResolvedPublicKeyTXT', null);
 	}
 
 	// Load legacy tcp protocol info
@@ -44,7 +41,18 @@ async function runFederation(): Promise<void> {
 		const resolvedTXT = await resolveTXT(`rocketchat-tcp-protocol.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedProtocolTXT', resolvedTXT);
 	} catch (err) {
-		updateSetting('FEDERATION_ResolvedProtocolTXT', '');
+		updateSetting('FEDERATION_ResolvedProtocolTXT', null);
+	}
+
+	// Load SRV info
+	try {
+		// If there is a protocol entry on DNS, we use it
+		const protocol = settings.get('FEDERATION_ResolvedProtocolTXT') as string ? 'tcp' : rocketChatProtocol;
+
+		const resolvedSRV = await resolveSRV(`_rocketchat._${ protocol }.${ federationDomain }`);
+		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
+	} catch (err) {
+		updateSetting('FEDERATION_ResolvedSRV', '{}');
 	}
 
 	// Test if federation is healthy

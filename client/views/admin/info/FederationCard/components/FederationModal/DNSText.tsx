@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 export const DNSText: FC<{
 	text: string;
