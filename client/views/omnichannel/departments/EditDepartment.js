@@ -257,10 +257,10 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const formId = useUniqueId();
 
-	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [
-		data.agents,
-		agentList,
-	]);
+	const hasNewAgent = useMemo(
+		() => data.agents.length === agentList.length,
+		[data.agents, agentList],
+	);
 
 	return (
 		<Page flexDirection='row'>

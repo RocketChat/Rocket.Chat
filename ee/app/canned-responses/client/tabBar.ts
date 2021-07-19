@@ -11,7 +11,7 @@ addAction('canned-responses', () => {
 	return useMemo(() => (hasLicense && enabled ? {
 		groups: ['live'],
 		id: 'canned-responses',
-		title: 'Canned Responses',
+		title: 'Canned_Responses',
 		icon: 'canned-response',
 		template: lazy(() => import('../../../client/omnichannel/components/contextualBar/CannedResponse')),
 		order: 0,
