@@ -15,16 +15,23 @@ import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
+import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
+import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
+import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
+import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
+import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
+import { ListRoomsOfUserEndpoint } from './endpoints/v1/teams/listRoomsOfUser';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
+import { SendEmailCodeEndpoint } from './endpoints/v1/users/twoFactorAuth/sendEmailCode';
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -47,13 +54,20 @@ export type ServerEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
 	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
 	'teams.listRooms': ListRoomsEndpoint;
+	'teams.listRoomsOfUser': ListRoomsOfUserEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
 	'livechat/monitors.list': LivechatMonitorsList;
+	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
+	'rooms.info': RoomsInfoEndpoint;
+	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
+	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
+	'livechat/rooms': LivechatRoomsEndpoint;
+	'livechat/users/agent': LivechatUsersAgentEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
@@ -62,29 +76,29 @@ export type ServerEndpointMethodOf<Path extends ServerEndpointPath> = keyof Serv
 
 type ServerEndpoint<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ServerEndpoints[Path][Method] extends (...args: any[]) => any
 	? ServerEndpoints[Path][Method]
 	: (...args: any[]) => any;
 
 export type ServerEndpointRequestPayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[0];
 
 export type ServerEndpointFormData<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[1];
 
 export type ServerEndpointResponsePayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ReturnType<ServerEndpoint<Method, Path>>;
 
 export type ServerEndpointFunction<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = {
 	(params: ServerEndpointRequestPayload<Method, Path>): Promise<
 		ServerEndpointResponsePayload<Method, Path>
