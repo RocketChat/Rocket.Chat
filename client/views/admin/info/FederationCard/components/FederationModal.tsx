@@ -17,7 +17,6 @@ import React, { FC, ReactElement, useCallback, useState } from 'react';
 import { useSetting, useSettingSetValue } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../hooks/useForm';
-import InviteUsers from './InviteUsers';
 import { SectionStatus } from './Section';
 import getStatusIcon from './SectionStatusIcon';
 
@@ -438,7 +437,7 @@ const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): Re
 					</Modal.Header>
 					<Modal.Content>
 						<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-							<InviteUsers />
+							3
 						</Box>
 					</Modal.Content>
 				</>
