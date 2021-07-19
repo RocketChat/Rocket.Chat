@@ -62,22 +62,22 @@ const ActiveUsersSection = ({ timezone }) => {
 
 		const usersListsMap = data.month.reduce((map, dayData) => {
 			const date = moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day });
-			const i = date.diff(period.start, 'days');
-			if (i >= 0) {
-				map[i] = dayData.usersList;
-				dauValues[i].y = dayData.users;
+			const dateOffset = date.diff(period.start, 'days');
+			if (dateOffset >= 0) {
+				map[dateOffset] = dayData.usersList;
+				dauValues[dateOffset].y = dayData.users;
 			}
 			return map;
 		}, {});
 
-		const distributeValueOverPoints = (usersListsMap, i, T, array) => {
+		const distributeValueOverPoints = (usersListsMap, dateOffset, T, array) => {
 			const usersSet = new Set();
-			for (let k = i; T > 0; k--, T--) {
+			for (let k = dateOffset; T > 0; k--, T--) {
 				if (usersListsMap[k]) {
 					usersListsMap[k].forEach((userId) => usersSet.add(userId));
 				}
 			}
-			array[i].y = usersSet.size;
+			array[dateOffset].y = usersSet.size;
 		};
 
 		for (let i = 0; i < 30; i++) {

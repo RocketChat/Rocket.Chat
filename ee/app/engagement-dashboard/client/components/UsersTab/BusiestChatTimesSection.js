@@ -17,7 +17,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 		if (utc) {
 			return moment().utc({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').subtract(displacement, 'days');
 		}
-		return moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').subtract(displacement, 'days');
+		return moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1).subtract(displacement, 'days');
 	}, [displacement, utc]);
 
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
