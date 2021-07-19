@@ -35,7 +35,7 @@ class ExternalQueue {
 				});
 
 				if (result && result.data && result.data.username) {
-					const agent = Users.findOneOnlineAgentByUsername(result.data.username);
+					const agent = Users.findOneOnlineAgentByUserList(result.data.username);
 
 					if (agent) {
 						return {
