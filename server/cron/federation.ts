@@ -7,10 +7,10 @@ import { eventTypes } from '../../app/models/server/models/FederationEvents';
 import { Users } from '../../app/models/server/raw';
 
 function updateSetting(id: string, value: SettingValue | null): void {
-	if (value) {
+	if (value !== null) {
 		const setting = settings.get(id);
 
-		if (!setting) {
+		if (setting === undefined) {
 			settings.add(id, value);
 		} else {
 			settings.updateById(id, value);
