@@ -10,7 +10,7 @@ export class CannedResponse extends Base {
 
 		this.tryEnsureIndex({
 			shortcut: 1,
-		});
+		}, { unique: true });
 	}
 
 	createOrUpdateCannedResponse(_id, { shortcut, text, scope, userId, departmentId, createdBy }) {
