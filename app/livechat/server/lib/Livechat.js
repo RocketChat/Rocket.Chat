@@ -224,17 +224,30 @@ export const Livechat = {
 	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
 
-		if (email) {
-			email = email.trim();
-			validateEmailDomain(email);
-		}
-
 		let userId;
 		const updateUser = {
 			$set: {
 				token,
+				...phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {},
+				...name ? { name } : {},
 			},
 		};
+
+		if (email) {
+			email = email.trim();
+			validateEmailDomain(email);
+			updateUser.$set.visitorEmails = [
+				{ address: email },
+			];
+		}
+
+		if (department) {
+			const dep = LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
+			}
+			updateUser.$set.department = dep._id;
+		}
 
 		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
 		let existingUser = null;
@@ -263,32 +276,6 @@ export const Livechat = {
 			}
 
 			userId = LivechatVisitors.insert(userData);
-		}
-
-		if (phone?.number) {
-			updateUser.$set.phone = [
-				{ phoneNumber: phone.number },
-			];
-		}
-
-		if (email) {
-			updateUser.$set.visitorEmails = [
-				{ address: email },
-			];
-		}
-
-		if (name) {
-			updateUser.$set.name = name;
-		}
-
-		if (!department) {
-			Object.assign(updateUser, { $unset: { department: 1 } });
-		} else {
-			const dep = LivechatDepartment.findOneByIdOrName(department);
-			if (!dep) {
-				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
-			}
-			updateUser.$set.department = dep && dep._id;
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
