@@ -21,7 +21,10 @@ import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import { DNSRecordName, ResolvedDNS, TXTRecordName } from './Types';
 
-export const FederationModal: FC<{ onClose: () => void }> = ({ onClose, ...props }): ReactElement => {
+export const FederationModal: FC<{ onClose: () => void }> = ({
+	onClose,
+	...props
+}): ReactElement => {
 	const t = useTranslation();
 
 	// State
