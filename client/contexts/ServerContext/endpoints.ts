@@ -25,9 +25,12 @@ import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
+import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
+import { ListRoomsOfUserEndpoint } from './endpoints/v1/teams/listRoomsOfUser';
 import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
+import { SendEmailCodeEndpoint } from './endpoints/v1/users/twoFactorAuth/sendEmailCode';
 
 export type ServerEndpoints = {
 	'chat.getMessage': ChatGetMessageEndpoint;
@@ -50,6 +53,7 @@ export type ServerEndpoints = {
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
 	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
 	'teams.listRooms': ListRoomsEndpoint;
+	'teams.listRoomsOfUser': ListRoomsOfUserEndpoint;
 	'teams.addRooms': TeamsAddRoomsEndpoint;
 	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
 	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
@@ -57,6 +61,8 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'rooms.info': RoomsInfoEndpoint;
+	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;

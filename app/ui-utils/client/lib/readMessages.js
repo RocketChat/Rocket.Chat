@@ -31,7 +31,6 @@ export const readMessage = new class extends Emitter {
 			return;
 		}
 
-
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
@@ -71,6 +70,13 @@ export const readMessage = new class extends Emitter {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
+
+		const subscription = ChatSubscription.findOne({ rid });
+		if (subscription == null) {
+			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
+			return;
+		}
+
 		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);

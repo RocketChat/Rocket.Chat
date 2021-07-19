@@ -3,6 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
 import { popover } from '../../../../app/ui-utils/client';
+import CreateDiscussion from '../../../components/CreateDiscussion';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
@@ -10,7 +11,6 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateDirectMessage from '../CreateDirectMessage';
-import CreateDiscussion from '../CreateDiscussion';
 import CreateRoomListItem from './CreateRoomListItem';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];

@@ -34,6 +34,7 @@ const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	isTeam,
 	reload,
 }) => {
 	const t = useTranslation();
@@ -54,7 +55,7 @@ const RoomMembers = ({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
+				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
