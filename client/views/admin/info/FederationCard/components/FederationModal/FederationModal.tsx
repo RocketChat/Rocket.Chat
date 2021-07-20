@@ -1,5 +1,4 @@
 import {
-	Banner,
 	Box,
 	Button,
 	ButtonGroup,
@@ -19,6 +18,7 @@ import { useSetting, useSettingSetValue } from '../../../../../../contexts/Setti
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
+import InviteUsers from './InviteUsers';
 import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({
@@ -201,36 +201,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
-						<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-							<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
-								<Box style={{ fontWeight: 600 }}>
-									{t('Federation_Inviting_users_from_another_server')}
-								</Box>
-								<Box style={{ marginTop: 20 }}>
-									{t('Federation_Search_users_you_want_to_connect')}
-								</Box>
-								<Box style={{ marginTop: 20, paddingLeft: '1em' }}>
-									<ul style={{ listStyle: 'disc', listStylePosition: 'inside' }}>
-										<li>{t('Federation_Username')}</li>
-										<li>{t('Federation_Email')}</li>
-									</ul>
-								</Box>
-								<Box style={{ marginTop: 20 }}>
-									{t('Federation_You_will_invite_users_without_login_access')}
-								</Box>
-								<ButtonGroup align='start' style={{ marginTop: 20 }}>
-									<Button primary small>
-										{t('Federation_Invite_User')}
-									</Button>
-								</ButtonGroup>
-								<Banner style={{ marginTop: 20 }}>
-									<h2 style={{ fontWeight: 600 }}>
-										{t('Federation_Invite_Users_To_Private_Rooms')}
-									</h2>
-									<p>{t('Federation_Channels_Will_Be_Replicated')}</p>
-								</Banner>
-							</Box>
-						</Box>
+						<InviteUsers onClose={onClose} />
 					</Modal.Content>
 				</>
 			)}
