@@ -1,6 +1,6 @@
 import React, { FC, memo, MouseEvent, MouseEventHandler } from 'react';
 
-import { useRole } from '../../../../../../client/contexts/AuthorizationContext';
+import { usePermission } from '../../../../../../client/contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../../client/contexts/ModalContext';
 import CreateCannedResponse from '../../CannedResponse/modals';
 import CannedResponse from './CannedResponse';
@@ -26,9 +26,9 @@ const WrapCannedResponse: FC<{
 		);
 	};
 
-	const hasManagerRole = useRole('livechat-manager');
+	const hasManagerPermission = usePermission('view-all-canned-responses');
 
-	const canEdit = hasManagerRole || scope === 'user';
+	const canEdit = hasManagerPermission || scope === 'user';
 
 	return (
 		<CannedResponse
