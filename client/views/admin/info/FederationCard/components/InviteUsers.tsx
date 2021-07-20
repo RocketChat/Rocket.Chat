@@ -1,5 +1,4 @@
 import { Box, ButtonGroup, Button, Banner } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, ReactElement } from 'react';
 
 import { useRoute } from '../../../../../contexts/RouterContext';
@@ -9,7 +8,7 @@ const InviteUsers: FC = (): ReactElement => {
 	const t = useTranslation();
 
 	const directoryRoute = useRoute('directory');
-	const handleDirectory = () => directoryRoute.push({ tab: 'users' });
+	const handleDirectory = (): void => directoryRoute.push({ tab: 'users' });
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='stretch' flexGrow={1}>
