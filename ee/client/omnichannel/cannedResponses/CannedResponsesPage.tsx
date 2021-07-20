@@ -15,7 +15,6 @@ export type CannedResponsesPageProps = {
 	params: { current: number; itemsPerPage: number };
 	title: string;
 	renderRow: ReactNode | null;
-	children: ReactNode | null;
 	renderFilter: FC;
 };
 
@@ -26,12 +25,11 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	params,
 	title,
 	renderRow,
-	children,
 	renderFilter,
 }) => {
 	const t = useTranslation();
 
-	const Route = useRoute('');
+	const Route = useRoute('omnichannel-canned-responses');
 
 	const handleClick = useMutableCallback(() =>
 		Route.push({
@@ -59,7 +57,6 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 					params={params}
 				/>
 			</Page.Content>
-			{children}
 		</Page>
 	);
 };

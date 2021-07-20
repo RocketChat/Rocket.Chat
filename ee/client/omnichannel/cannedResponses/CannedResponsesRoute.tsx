@@ -4,7 +4,6 @@ import React, { useMemo, useCallback, useState, FC, ReactNode, ReactElement } fr
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
-import VerticalBar from '../../../../client/components/VerticalBar';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
@@ -12,7 +11,9 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponseFilter from './CannedResponseFilter';
+import CannedResponseNew from './CannedResponseNew';
 import CannedResponsesPage from './CannedResponsesPage';
 import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 
@@ -60,6 +61,7 @@ const CannedResponsesRoute: FC = () => {
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
 
 	const onHeaderClick = useMutableCallback((id) => {
 		const [sortBy, sortDirection] = sort;
@@ -167,27 +169,18 @@ const CannedResponsesRoute: FC = () => {
 				<RemoveCannedResponseButton _id={_id} reload={reload} />
 			</Table.Row>
 		),
-		[getTime, onRowClick],
+		[getTime, onRowClick, reload],
 	);
 
-	const EditCannedResponsesTab = useCallback(() => {
-		if (!context) {
-			return null;
-		}
-		const handleVerticalBarCloseButtonClick = (): void => {
-			cannedResponsesRoute.push({});
-		};
-
+	if (context === 'edit') {
 		return (
-			<VerticalBar>
-				<VerticalBar.Header>
-					{context === 'edit' && t('Edit_CannedResponse')}
-					{context === 'new' && t('New_CannedResponse')}
-					<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
-				</VerticalBar.Header>
-			</VerticalBar>
+			<CannedResponseEditWithData reload={reload} cannedResponseId={id} title={t('Edit_Tag')} />
 		);
-	}, [t, context, cannedResponsesRoute]);
+	}
+
+	if (context === 'new') {
+		return <CannedResponseNew reload={reload} />;
+	}
 
 	if (!canViewCannedResponses) {
 		return <NotAuthorizedPage />;
@@ -213,9 +206,7 @@ const CannedResponsesRoute: FC = () => {
 			header={header}
 			renderRow={renderRow}
 			title={t('Canned_Responses')}
-		>
-			<EditCannedResponsesTab />
-		</CannedResponsesPage>
+		></CannedResponsesPage>
 	);
 };
 

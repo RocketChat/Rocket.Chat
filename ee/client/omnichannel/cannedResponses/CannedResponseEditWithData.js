@@ -5,10 +5,10 @@ import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import CannedResponseEdit from './CannedResponseEdit';
+import CannedResponseEdit from './CannedResponseEditAdmin';
 
 function CannedResponseEditWithData({ cannedResponseId, reload, title }) {
-	const query = useMemo(() => ({ cannedResponseId }), [cannedResponseId]);
+	const query = useMemo(() => ({ _id: cannedResponseId }), [cannedResponseId]);
 	const { value: data, phase: state, error } = useEndpointData('canned-responses.getOne', query);
 
 	const t = useTranslation();
