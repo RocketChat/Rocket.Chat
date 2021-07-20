@@ -101,14 +101,14 @@ export const openRoom = async function(type, name, render = true) {
 			return callbacks.run('enter-room', sub);
 		} catch (error) {
 			c.stop();
-			if (type === 'd') {
+			if (type === 'd' && error.error !== 'error-invalid-user') {
 				const result = await call('createDirectMessage', ...name.split(', '));
 				if (result) {
 					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });
-			return appLayout.render('main', { center: 'roomNotFound' });
+			appLayout.render('main', { center: 'loading' });
 		}
 	});
 };
