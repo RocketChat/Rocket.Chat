@@ -82,7 +82,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				text: string;
 				scope: string;
 				tags: any;
-				departmentId: string;
+				departmentId: { value: string; label: string };
 			};
 			await saveCannedResponse({
 				...(_id && { _id }),
@@ -90,7 +90,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				text,
 				scope,
 				...(tags.length > 0 && { tags }),
-				...(departmentId && { departmentId }),
+				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Created') });
 			closeModal(null);

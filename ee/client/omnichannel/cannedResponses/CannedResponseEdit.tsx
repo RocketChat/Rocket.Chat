@@ -95,7 +95,7 @@ const CannedResponseEdit: FC<{
 				text: string;
 				scope: string;
 				tags: any;
-				departmentId: string;
+				departmentId: { value: string; label: string };
 			};
 			await saveCannedResponse({
 				...(_id && { _id }),
@@ -103,7 +103,7 @@ const CannedResponseEdit: FC<{
 				text,
 				scope,
 				...(tags.length > 0 && { tags }),
-				...(departmentId && { departmentId }),
+				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Created') });
 			Route.push({
