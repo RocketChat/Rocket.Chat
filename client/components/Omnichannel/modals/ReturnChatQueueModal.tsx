@@ -28,7 +28,7 @@ const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({
 					<ButtonGroup align='end'>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
 						<Button primary onClick={onMoveChat}>
-							{t('Move_queue')}
+							{t('Confirm')}
 						</Button>
 					</ButtonGroup>
 				</Box>

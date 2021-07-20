@@ -51,11 +51,12 @@ const CustomFieldsRoute = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		departmentsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			departmentsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data, reload } = useEndpointData('livechat/custom-fields', query);

@@ -16,7 +16,8 @@ type AppLayoutDescriptor = BlazeLayoutDescriptor | ComponentLayoutDescriptor | n
 
 class AppLayoutSubscription
 	extends Emitter<{ update: void }>
-	implements Subscription<AppLayoutDescriptor> {
+	implements Subscription<AppLayoutDescriptor>
+{
 	private descriptor: AppLayoutDescriptor = null;
 
 	getCurrentValue = (): AppLayoutDescriptor => this.descriptor;

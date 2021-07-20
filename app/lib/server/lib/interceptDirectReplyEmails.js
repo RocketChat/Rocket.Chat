@@ -4,7 +4,6 @@ import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
-
 import { processDirectEmail } from '.';
 
 export class IMAPIntercepter extends IMAPInterceptor {
