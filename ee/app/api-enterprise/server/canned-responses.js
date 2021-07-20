@@ -74,9 +74,9 @@ API.v1.addRoute('canned-responses', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('canned-responses.getOne', { authRequired: true }, {
+API.v1.addRoute('canned-responses/:_id', { authRequired: true }, {
 	get() {
-		const { _id } = this.requestParams();
+		const { _id } = this.urlParams;
 		check(_id, String);
 
 		const cannedResponse = Promise.await(findOneCannedResponse({

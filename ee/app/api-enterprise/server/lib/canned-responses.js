@@ -20,6 +20,9 @@ export async function findAllCannedResponses({ userId }) {
 				{
 					scope: 'department',
 				},
+				{
+					scope: 'global',
+				},
 			],
 		}).toArray();
 	}
@@ -55,6 +58,9 @@ export async function findAllCannedResponses({ userId }) {
 					$in: departmentIds,
 				},
 			},
+			{
+				scope: 'global',
+			},
 		],
 	}).toArray();
 }
@@ -63,6 +69,39 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
 		throw new Error('error-not-authorized');
 	}
+
+	let extraFilter = {};
+	// if user cannot see all, filter to private + public + departments user is in
+	if (!await hasPermissionAsync(userId, 'view-all-canned-responses')) {
+		const departments = await LivechatDepartmentAgents.find({
+			agentId: userId,
+		}, {
+			fields: {
+				departmentId: 1,
+			},
+		}).toArray();
+
+		const departmentIds = departments.map((department) => department.departmentId);
+
+		extraFilter = {
+			$or: [
+				{
+					scope: 'user',
+					userId,
+				},
+				{
+					scope: 'department',
+					departmentId: {
+						$in: departmentIds,
+					},
+				},
+				{
+					scope: 'global',
+				},
+			],
+		};
+	}
+
 	const filter = new RegExp(escapeRegExp(text), 'i');
 
 	const cursor = CannedResponse.find({
@@ -75,6 +114,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 				$in: tags,
 			},
 		},
+		...extraFilter,
 	}, {
 		sort: options.sort || { shortcut: 1 },
 		skip: options.offset,
@@ -92,6 +132,39 @@ export async function findOneCannedResponse({ userId, _id }) {
 	if (!await hasPermissionAsync(userId, 'view-canned-responses')) {
 		throw new Error('error-not-authorized');
 	}
-	const cannedResponse = CannedResponse.findOneById(_id);
-	return cannedResponse;
+
+	if (await hasPermissionAsync(userId, 'view-all-canned-responses')) {
+		return CannedResponse.findOneById(_id);
+	}
+
+	const departments = await LivechatDepartmentAgents.find({
+		agentId: userId,
+	}, {
+		fields: {
+			departmentId: 1,
+		},
+	}).toArray();
+
+	const departmentIds = departments.map((department) => department.departmentId);
+
+	const filter = {
+		_id,
+		$or: [
+			{
+				scope: 'user',
+				userId,
+			},
+			{
+				scope: 'department',
+				departmentId: {
+					$in: departmentIds,
+				},
+			},
+			{
+				scope: 'global',
+			},
+		],
+	};
+
+	return CannedResponse.findOne(filter);
 }

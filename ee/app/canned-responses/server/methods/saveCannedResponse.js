@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
+import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
@@ -22,7 +23,17 @@ Meteor.methods({
 			departmentId: Match.Maybe(String),
 		});
 
+		// check if the response already exists and we're not updating one
+		const duplicateShortcut = CannedResponse.findByShortcut(responseData.shortcut, { fields: { _id: 1 } });
+		if ((!_id && duplicateShortcut) || (_id && duplicateShortcut._id !== _id)) {
+			throw new Meteor.Error('error-invalid-shortcut', 'Shortcut provided already exists', { method: 'saveCannedResponse' });
+		}
+
 		if (responseData.scope === 'department' && !responseData.departmentId) {
+			throw new Meteor.Error('error-invalid-department', 'Invalid department', { method: 'saveCannedResponse' });
+		}
+
+		if (responseData.departmentId && !LivechatDepartment.findOneById(_id)) {
 			throw new Meteor.Error('error-invalid-department', 'Invalid department', { method: 'saveCannedResponse' });
 		}
 
