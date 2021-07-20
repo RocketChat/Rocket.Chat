@@ -401,7 +401,7 @@ describe('[Roles]', function() {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleName: usersScopedRole.name,
+					roleId: usersScopedRole._id,
 					username: login.user,
 				})
 				.expect('Content-Type', 'application/json')

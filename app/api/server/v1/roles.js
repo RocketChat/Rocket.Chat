@@ -84,9 +84,16 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 		});
 
 		const user = this.getUserFromParams();
+		const { roleName, roomId } = this.bodyParams;
+
+		const users = getUsersInRole(roleName, roomId, { fields: { username: 1 } }).fetch().map(({ username }) => username);
+
+		if (users.indexOf(user.username) > -1) {
+			throw new Meteor.Error('error-user-already-in-role', 'User already in role');
+		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('authorization:addUserToRole', this.bodyParams.roleName, user.username, this.bodyParams.roomId);
+			Meteor.call('authorization:addUserToRole', roleName, user.username, roomId);
 		});
 
 		return API.v1.success({

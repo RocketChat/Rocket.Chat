@@ -4251,6 +4251,7 @@
   "User_added_by": "User <em>__user_added__</em> added by <em>__user_by__</em>.",
   "User_added_successfully": "User added successfully",
   "User_and_group_mentions_only": "User and group mentions only",
+  "User_cant_be_empty": "User cannot be empty",
   "User_created_successfully!": "User create successfully!",
   "User_default": "User default",
   "User_doesnt_exist": "No user exists by the name of `@%s`.",

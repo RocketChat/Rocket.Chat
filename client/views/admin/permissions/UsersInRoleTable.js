@@ -24,10 +24,9 @@ function UsersInRoleTable({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setModal = useSetModal();
+	const closeModal = () => setModal();
 
 	const removeUser = useEndpoint('POST', 'roles.removeUserFromRole');
-
-	const closeModal = () => setModal();
 
 	const onRemove = useMutableCallback((username) => {
 		const remove = async () => {
