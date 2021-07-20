@@ -284,6 +284,26 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
 
+		if (users) {
+			const roles = users.map(({ roles }) => [...roles]);
+			users.rolesId = roles;
+
+			const rolesArr = [];
+			for (let i = 0; i < roles.length; i++) {
+				const rolesArrInner = [];
+				for (let j = 0; j < roles[i].length; j++) {
+					rolesArrInner.push(...Roles.find({ _id: roles[i][j] }, { fields: { name: 1, description: 1 } }).fetch().map(({ name, description }) => description || name));
+				}
+				rolesArr.push(rolesArrInner);
+			}
+
+			for (let i = 0; i < roles.length; i++) {
+				for (let j = 0; j < roles[i].length; j++) {
+					users[i].roles[j] = rolesArr[i][j];
+				}
+			}
+		}
+
 		return API.v1.success({
 			users,
 			count: users.length,
