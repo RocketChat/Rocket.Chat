@@ -15,8 +15,7 @@ export default {
 
 const room = {
 	t: 'c',
-	name:
-		'general general general general general general general general general general general general general general general general general general general',
+	name: 'general general general general general general general general general general general general general general general general general general general',
 	_id: 'GENERAL',
 	encrypted: true,
 	autoTranslate: true,

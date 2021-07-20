@@ -92,7 +92,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	const __html = useMemo(() => {
 		const html = ((): any => {
 			if (content && typeof content === 'string') {
-				const markedHtml = marked(content, markedOptions);
+				const markedHtml = marked(new Option(content).innerHTML, markedOptions);
 
 				if (parseEmoji) {
 					return renderMessageEmoji({ html: markedHtml });
@@ -101,6 +101,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 				return markedHtml;
 			}
 		})();
+
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
 
