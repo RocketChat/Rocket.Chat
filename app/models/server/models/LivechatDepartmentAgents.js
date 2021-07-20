@@ -108,7 +108,7 @@ export class LivechatDepartmentAgents extends Base {
 			return false;
 		}
 
-		const onlineUser = Users.findOneOnlineAgentByUsername(_.pluck(agents, 'username'));
+		const onlineUser = Users.findOneOnlineAgentByUserList(_.pluck(agents, 'username'));
 
 		return Boolean(onlineUser);
 	}
