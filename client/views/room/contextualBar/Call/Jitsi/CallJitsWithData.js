@@ -155,6 +155,8 @@ const CallJitsWithData = ({ rid }) => {
 	});
 
 	useEffect(() => {
+		let shouldDispose = false;
+
 		async function fetchData() {
 			if (!accepted || !jitsi) {
 				return;
@@ -181,9 +183,14 @@ const CallJitsWithData = ({ rid }) => {
 
 			jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-			return jitsi.openNewWindow ? none : clear;
+			shouldDispose = !jitsi.openNewWindow;;
 		}
-		return fetchData();
+		
+		fetchData().then(() => {
+			if (shouldDispose) { // o componente foi desmontado quando esse callback foi chamado
+			  jitsi.dispose();
+			}
+		});
 	}, [
 		accepted,
 		jitsi,

@@ -12,7 +12,7 @@ actionLinks.register('joinJitsiCall', function(message, params, instance) {
 
 		const room = Rooms.findOne({ _id: rid });
 		const user = Meteor.user();
-		const username = user ? user.username : '';
+		const username = Meteor.user()?.username;;
 		const currentTime = new Date().getTime();
 		const jitsiTimeout = new Date((room && room.jitsiTimeout) || currentTime).getTime();
 
