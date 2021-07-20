@@ -162,7 +162,6 @@ const CallJitsWithData = ({ rid }) => {
 				return;
 			}
 
-			const none = () => {};
 			const clear = () => {
 				jitsi.off('HEARTBEAT', testAndHandleTimeout);
 				jitsi.dispose();
@@ -183,12 +182,12 @@ const CallJitsWithData = ({ rid }) => {
 
 			jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-			shouldDispose = !jitsi.openNewWindow;;
+			shouldDispose = !jitsi.openNewWindow;
 		}
-		
+
 		fetchData().then(() => {
-			if (shouldDispose) { // o componente foi desmontado quando esse callback foi chamado
-			  jitsi.dispose();
+			if (shouldDispose) {
+				jitsi.dispose();
 			}
 		});
 	}, [
