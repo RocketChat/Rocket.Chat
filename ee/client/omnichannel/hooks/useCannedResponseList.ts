@@ -43,7 +43,7 @@ export const useCannedResponseList = (
 				count: end + start,
 			});
 
-			const { departments } = await getDepartments({});
+			const { departments } = await getDepartments({ text: '' });
 
 			return {
 				items: cannedResponses.map((cannedResponse: any) => {

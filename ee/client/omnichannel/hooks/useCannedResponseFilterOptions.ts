@@ -20,7 +20,7 @@ export const useCannedResponseFilterOptions = (): string[][] => {
 
 	useEffect(() => {
 		const fetchData = async (): Promise<void> => {
-			const { departments } = await getDepartments({});
+			const { departments } = await getDepartments({ text: '' });
 
 			const newOptions = departments.map((department: any) => [department._id, department.name]);
 
