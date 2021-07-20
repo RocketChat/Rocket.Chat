@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { FC } from 'react';
 
 import Card from '../../../../components/Card';
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -11,7 +11,7 @@ import { CardHeader, Section } from './components';
 import { FederationModal } from './components/FederationModal';
 import { SectionStatus } from './components/Section';
 
-const FederationCard = () => {
+const FederationCard: FC = () => {
 	const t = useTranslation();
 
 	const setModal = useSetModal();
@@ -54,7 +54,7 @@ const FederationCard = () => {
 		setModal(
 			<SettingsProvider privileged>
 				<FederationModal
-					onClose={() => {
+					onClose={(): void => {
 						setModal();
 					}}
 				/>
@@ -74,7 +74,7 @@ const FederationCard = () => {
 						mb='x6'
 						mis='x6'
 						checked={federationEnabled}
-						onChange={() => setFederationEnabled(!federationEnabled)}
+						onChange={(): Promise<void> => setFederationEnabled(!federationEnabled)}
 					/>
 				</Box>
 			</CardHeader>
