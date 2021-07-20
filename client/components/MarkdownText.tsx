@@ -95,6 +95,9 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 				const markedHtml = marked(new Option(content).innerHTML, markedOptions);
 
 				if (parseEmoji) {
+					// We are using the old emoji parser here. This could come
+					// with additional processing use, but is the workaround available right now.
+					// Should be replaced in the future with the new parser.
 					return renderMessageEmoji({ html: markedHtml });
 				}
 
