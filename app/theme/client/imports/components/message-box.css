@@ -55,11 +55,10 @@
 
 	&__action {
 		display: flex;
-		flex-direction: row;
-		align-items: center;
-		flex-wrap: wrap;
 
 		color: var(--message-box-user-activity-color);
+		align-items: center;
+		flex-flow: row wrap;
 
 		&-user {
 			color: var(--message-box-user-activity-user-color);
@@ -288,7 +287,7 @@
 		margin-top: 1rem;
 		padding: 0;
 
-		&__activity{
+		&__activity {
 			top: -1rem;
 
 			margin-left: 1rem;

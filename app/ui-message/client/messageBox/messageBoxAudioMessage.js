@@ -8,10 +8,10 @@ import './messageBoxAudioMessage.html';
 
 const startRecording = async (rid, tmid) => {
 	try {
-		await AudioRecorder.start()
+		await AudioRecorder.start();
 		UserAction.start(rid, USER_RECORDING, { tmid });
-	} catch(error) {
-		throw error
+	} catch (error) {
+		throw error;
 	}
 };
 

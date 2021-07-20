@@ -92,7 +92,8 @@ export const UserAction = new class {
 	}
 
 	start(rid, activityType, extras = {}) {
-		const key = `${ activityType }-${ rid }`;
+		const id = extras?.tmid ? extras.tmid : rid;
+		const key = `${ activityType }-${ id }`;
 
 		if (activityRenews[key]) {
 			return;
@@ -115,7 +116,8 @@ export const UserAction = new class {
 	}
 
 	stop(rid, activityType, extras) {
-		const key = `${ activityType }-${ rid }`;
+		const id = extras?.tmid ? extras.tmid : rid;
+		const key = `${ activityType }-${ id }`;
 
 		if (activityTimeouts[key]) {
 			clearTimeout(activityTimeouts[key]);
@@ -147,16 +149,6 @@ export const UserAction = new class {
 	}
 
 	get(roomId) {
-		// if (activityType === USER_RECORDING) {
-		// 	return _.keys(recordingUsers.get(roomId)) || [];
-		// }
-		// if (activityType === USER_UPLOADING) {
-		// 	return _.keys(uploadingUsers.get(roomId)) || [];
-		// }
-		// if (activityType === USER_TYPING) {
-		// 	return _.keys(typingUsers.get(roomId)) || [];
-		// }
 		return performingUsers.get(roomId);
-		// return [];
 	}
 }();
