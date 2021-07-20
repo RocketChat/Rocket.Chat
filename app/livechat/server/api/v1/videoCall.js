@@ -93,7 +93,8 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 			let { callStatus } = room;
 
 			if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
-				Promise.await(Rooms.setCallStatus(room._id, 'ringing'));
+				callStatus = 'ringing';
+				Promise.await(Rooms.setCallStatus(room._id, callStatus));
 				Promise.await(Messages.createWithTypeRoomIdMessageAndUser(
 					'livechat_webrtc_video_call',
 					room._id,
@@ -101,10 +102,8 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 					this.user,
 					{
 						actionLinks: config.theme.actionLinks.webrtc,
-						callStatus: 'ringing',
 					},
 				));
-				callStatus = 'ringing';
 			}
 			const videoCall = {
 				rid: room._id,
@@ -130,11 +129,14 @@ API.v1.addRoute('livechat/webrtc.call/:callId', { authRequired: true }, {
 				status: Match.Maybe(String),
 			});
 
+			const { callId } = this.urlParams;
+			const { rid, status } = this.bodyParams;
+
 			if (!hasPermission(this.userId, 'view-l-room')) {
 				return API.v1.unauthorized();
 			}
 
-			const room = canSendMessage(this.queryParams.rid, {
+			const room = canSendMessage(rid, {
 				uid: this.userId,
 				username: this.user.username,
 				type: this.user.type,
@@ -143,15 +145,12 @@ API.v1.addRoute('livechat/webrtc.call/:callId', { authRequired: true }, {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const { callId } = this.urlParams;
-			const { rid, status } = this.bodyParams;
-
 			const call = Promise.await(Messages.findOneById(callId));
 			if (!call || call.t !== 'livechat_webrtc_video_call') {
 				throw new Meteor.Error('invalid-callId');
 			}
 
-			Livechat.updateCallStatus(callId, rid, status);
+			Livechat.updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		} catch (e) {

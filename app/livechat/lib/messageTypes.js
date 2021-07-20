@@ -1,4 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils';
 
@@ -79,6 +80,27 @@ MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',
+});
+
+MessageTypes.registerType({
+	id: 'livechat_webrtc_video_call',
+	render(message) {
+		if (message.endTs) {
+			const hh = parseInt(Math.abs(message.endTs - message.ts) / 36e5);
+			const mm = parseInt(Math.abs(message.endTs - message.ts) / 6e4) % 60;
+			const ss = parseInt(Math.abs(message.endTs - message.ts) / 1000) % 60;
+			let callDuration = 'Lasted';
+			if (hh > 0) {
+				callDuration += ` ${ hh } hours ${ mm } minutes ${ ss } seconds.`;
+			} else if (mm > 0) {
+				callDuration += ` ${ mm } minutes ${ ss } seconds.`;
+			} else {
+				callDuration += ` ${ ss } seconds.`;
+			}
+			return `<i class="icon-phone"></i> Call ended at ${ moment(message.endTs).format('h:mm A') } - ${ callDuration }`;
+		}
+		return message.msg;
+	},
 });
 
 MessageTypes.registerType({

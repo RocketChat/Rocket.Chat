@@ -1200,9 +1200,11 @@ export const Livechat = {
 		};
 		LivechatVisitors.updateById(contactId, updateUser);
 	},
-	updateCallStatus(callId, rid, status) {
+	updateCallStatus(callId, rid, status, user = null) {
 		Rooms.setCallStatus(rid, status);
-		Messages.setCallStatus(callId, status);
+		if (status === 'ended' && user) {
+			return updateMessage({ _id: callId, msg: '', actionLinks: [], endTs: new Date() }, user);
+		}
 	},
 };
 
