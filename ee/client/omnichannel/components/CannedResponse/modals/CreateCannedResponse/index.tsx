@@ -1,6 +1,6 @@
 import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useRole } from '../../../../../../../client/contexts/AuthorizationContext';
+import { usePermission } from '../../../../../../../client/contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../../../client/contexts/ModalContext';
 import { useEndpoint } from '../../../../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../../../client/contexts/ToastMessagesContext';
@@ -18,7 +18,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
-	const hasManagerRole = useRole('livechat-manager');
+	const hasManagerPermission = usePermission('view-all-canned-responses');
 
 	const form = useForm({
 		_id: data ? data._id : '',
@@ -106,7 +106,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 
 	return (
 		<CreateCannedResponseModal
-			isManager={hasManagerRole}
+			isManager={hasManagerPermission}
 			values={values}
 			handlers={handlers}
 			errors={errors}
