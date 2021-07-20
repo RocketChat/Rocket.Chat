@@ -1,9 +1,9 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { ReactElement, memo } from 'react';
 
 import { useUserData } from '../../hooks/useUserData';
 
-const StatusMessage: FC<{ uid: string }> = ({ uid }) => {
+const StatusMessage = ({ uid }: { uid: string }): ReactElement | null => {
 	const data = useUserData(uid);
 
 	if (!data || !data.statusText) {
@@ -11,8 +11,8 @@ const StatusMessage: FC<{ uid: string }> = ({ uid }) => {
 	}
 
 	return (
-		<Box title={data.statusText}>
-			<Icon name='balloon-text' />
+		<Box title={data.statusText} justifyContent='center' display='flex'>
+			<Icon name='balloon-text' size='x16' />
 		</Box>
 	);
 };
