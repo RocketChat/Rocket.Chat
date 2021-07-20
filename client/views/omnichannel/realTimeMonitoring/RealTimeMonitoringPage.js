@@ -1,11 +1,12 @@
-import { Box, Select, Field, Margins } from '@rocket.chat/fuselage';
+import { Box, Select, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { getDateRange } from '../../../lib/getDateRange';
-import DepartmentAutoComplete from '../DepartmentAutoComplete';
+import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';
 import ChatDurationChart from './charts/ChatDurationChart';
 import ChatsChart from './charts/ChatsChart';
@@ -29,7 +30,7 @@ const RealTimeMonitoringPage = () => {
 
 	const departmentParams = useMemo(
 		() => ({
-			...(department && { departmentId: department }),
+			...(department?.value && { departmentId: department?.value }),
 		}),
 		[department],
 	);
@@ -77,27 +78,24 @@ const RealTimeMonitoringPage = () => {
 						alignSelf='center'
 						w='full'
 					>
-						<Field mie='x4' flexShrink={1}>
-							<Field.Label>{t('Department')}</Field.Label>
-							<Field.Row>
-								<DepartmentAutoComplete
-									placeholder={t('All')}
-									value={department}
-									onChange={setDepartment}
-									onlyMyDepartments
-								/>
-							</Field.Row>
-						</Field>
-						<Field mis='x4' flexShrink={1}>
-							<Field.Label>{t('Update_every')}</Field.Label>
-							<Field.Row>
-								<Select
-									options={reloadOptions}
-									onChange={useMutableCallback((val) => setReloadFrequency(val))}
-									value={reloadFrequency}
-								/>
-							</Field.Row>
-						</Field>
+						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
+							<Label mb='x4'>{t('Departments')}</Label>
+							<AutoCompleteDepartment
+								value={department}
+								onChange={setDepartment}
+								placeholder={t('All')}
+								label={t('All')}
+								onlyMyDepartments
+							/>
+						</Box>
+						<Box maxWidth='50%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
+							<Label mb='x4'>{t('Update_every')}</Label>
+							<Select
+								options={reloadOptions}
+								onChange={useMutableCallback((val) => setReloadFrequency(val))}
+								value={reloadFrequency}
+							/>
+						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<ConversationOverview

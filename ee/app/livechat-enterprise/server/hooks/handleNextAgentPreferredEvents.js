@@ -15,7 +15,7 @@ const normalizeDefaultAgent = (agent) => {
 	return { agentId, username };
 };
 
-const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(username, { fields: { _id: 1, username: 1 } }));
+const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
 
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
@@ -49,7 +49,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	}
 
 	const { servedBy: { username: usernameByRoom } } = room;
-	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } }));
+	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }));
 	return lastRoomAgent || defaultAgent;
 };
 
