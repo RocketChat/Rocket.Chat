@@ -420,7 +420,7 @@ describe('[Roles]', function() {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleName: subscriptionsScopedRole.name,
+					roleId: subscriptionsScopedRole._id,
 					username: login.user,
 				})
 				.expect('Content-Type', 'application/json')
