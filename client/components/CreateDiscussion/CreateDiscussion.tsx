@@ -168,6 +168,9 @@ const CreateDiscussion = ({
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
+					<Button onClick={onClose}>
+						{t('Cancel')}
+					</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>
