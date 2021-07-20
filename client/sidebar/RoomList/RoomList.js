@@ -3,7 +3,6 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { SideBarVoiceChannel } from '../../../app/voice-channel/client/VoiceChannelManager';
 import { useSession } from '../../contexts/SessionContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useUserPreference, useUserId } from '../../contexts/UserContext';
@@ -62,7 +61,6 @@ const RoomList = () => {
 					itemContent={(index, data) => <Row data={itemData} item={data} />}
 				/>
 			</Box>
-			<SideBarVoiceChannel />
 		</>
 	);
 };

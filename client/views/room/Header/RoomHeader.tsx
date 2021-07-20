@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 
-import { VoiceChannelButton } from '../../../../app/voice-channel/client/VoiceChannelManager';
 import { IOmnichannelRoom } from '../../../../definition/IRoom';
 import Header from '../../../components/Header';
 import MarkdownText from '../../../components/MarkdownText';
@@ -50,7 +49,6 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 				</Header.Subtitle>
 			</Header.Content.Row>
 		</Header.Content>
-		<VoiceChannelButton />
 		{slots?.posContent}
 		<Header.ToolBox>
 			<ToolBox room={room} />

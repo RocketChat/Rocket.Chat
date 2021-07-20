@@ -4,6 +4,7 @@ import { Peer, WebSocketTransport } from 'protoo-client';
 import { Device, types } from 'mediasoup-client';
 
 import { IPeer } from '../../../sfu/types';
+import { IVoiceRoomPeer } from '../../../definition/IVoiceRoomPeer';
 
 interface IData {
 	roomID: string;
@@ -49,6 +50,8 @@ export default class VoiceRoom extends EventEmitter {
 
 	consumers: Map<string, types.Consumer>;
 
+	peers: Array<IVoiceRoomPeer>;
+
 	constructor({ roomID, device, produce, consume, displayName, peerID, username, roomName }: IData) {
 		super();
 		this.roomID = roomID;
@@ -62,6 +65,7 @@ export default class VoiceRoom extends EventEmitter {
 		this.username = username;
 		this.joined = false;
 		this.roomName = roomName;
+		this.peers = new Array(0);
 	}
 
 	closeProtoo(): void {
@@ -73,14 +77,15 @@ export default class VoiceRoom extends EventEmitter {
 		this.protoo = new Peer(protooTransport);
 
 		this.protoo.on('open', async () => {
-			this.emit('connectionOpened');
 			const peers: Array<IPeer> =	await this.protoo?.request('join', {
 				displayName: this.displayName,
 				device: this.device,
 				username: this.username,
 				joined: false,
 			});
-			this.emit('allJoinedPeers', peers);
+			// this.emit('allJoinedPeers', peers);
+			this.peers.concat(peers);
+			this.emit('peer-change');
 		});
 
 		this.protoo.on('disconnected', () => {
@@ -131,8 +136,30 @@ export default class VoiceRoom extends EventEmitter {
 							this.consumers.set(consumer.id, consumer);
 
 							const peer = await this.protoo?.request('getPeer', peerID);
-							this.emit('newConsumer', consumer, peerID, peer);
+							// this.emit('newConsumer', consumer, peerID, peer);
 
+							let found = false;
+
+							this.peers.forEach((p) => {
+								if (p.id === peerID) {
+									p.track = consumer.track;
+									p.consumerId = consumer.id;
+									found = true;
+								}
+							});
+
+							if (!found) {
+								this.peers.push({
+									id: peerID,
+									track: consumer.track,
+									device: peer.device,
+									displayName: peer.displayName,
+									consumerId: consumer.id,
+									username: peer.username,
+								});
+							}
+
+							this.emit('peer-change');
 							consumer.on('transportclose', () => {
 								this.consumers.delete(consumer.id);
 							});
@@ -154,12 +181,17 @@ export default class VoiceRoom extends EventEmitter {
 			switch (notif.method) {
 				// Event triggered when peer disconnects
 				case 'peerClosed': {
-					this.emit('peerClosed', notif.data.peerId);
+					// this.emit('peerClosed', notif.data.peerId);
+					this.peers.filter((p) => p.id !== notif.data.peerId);
+					this.emit('peer-change');
 					break;
 				}
 				// Event triggered only when new peer joins & current peer hasnt joined the room
 				case 'peerJoined': {
-					this.emit('peerJoined', notif.data);
+					// this.emit('peerJoined', notif.data);
+					this.peers.push(notif.data);
+					this.emit('peer-change');
+					break;
 				}
 			}
 		});
@@ -268,7 +300,12 @@ export default class VoiceRoom extends EventEmitter {
 				username: this.username,
 				joined: true,
 			});
-			this.emit('allJoinedPeers', peerData);
+			// this.emit('allJoinedPeers', peerData);
+
+			this.peers = new Array(0);
+			this.peers.concat(peerData);
+
+			this.emit('peer-change');
 
 			if (this.produce) {
 				this.enableMic();
