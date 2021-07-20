@@ -139,7 +139,12 @@ const CreateDiscussion = ({
 					</Field>
 					<Field>
 						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row>
+						<Field.Row
+							w="full" 
+							display="flex" 
+							flexDirection="column" 
+							alignItems="stretch"
+						>
 							<UserAutoCompleteMultiple
 								value={usernames}
 								onChange={onChangeUsers}
