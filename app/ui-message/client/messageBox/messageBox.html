@@ -2,7 +2,7 @@
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrMustJoinWithCode}}
 
-		{{> userActionIndicator rid=rid tmid=tmid}}
+			{{> userActionIndicator rid=rid tmid=tmid}}
 
 			{{#if isWritable}}
 				{{#if popupConfig}}
