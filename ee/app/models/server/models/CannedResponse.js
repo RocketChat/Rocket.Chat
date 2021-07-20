@@ -41,6 +41,14 @@ export class CannedResponse extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByShortcut(shortcut, options) {
+		const query = {
+			shortcut,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByCannedResponseId(_id, options) {
 		const query = { _id };
 
