@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../../../app/authorization';
 import CannedResponse from '../../../models/server/models/CannedResponse';
-import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
+import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
@@ -30,7 +30,7 @@ Meteor.methods({
 		}
 
 		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
-		if ((!canSaveAll || !canSaveDepartment) && ['department'].includes(responseData.scope)) {
+		if (!canSaveAll && !canSaveDepartment && ['department'].includes(responseData.scope)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', { method: 'saveCannedResponse' });
 		}
 		// TODO: check if the department i'm trying to save is a department i can interact with
@@ -45,7 +45,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-department', 'Invalid department', { method: 'saveCannedResponse' });
 		}
 
-		if (responseData.departmentId && !LivechatDepartment.findOneById(_id)) {
+		if (responseData.departmentId && !LivechatDepartment.findOneById(responseData.departmentId)) {
 			throw new Meteor.Error('error-invalid-department', 'Invalid department', { method: 'saveCannedResponse' });
 		}
 
