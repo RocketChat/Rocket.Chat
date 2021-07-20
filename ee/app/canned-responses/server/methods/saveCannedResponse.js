@@ -9,7 +9,8 @@ import notifications from '../../../../../app/notifications/server/lib/Notificat
 
 Meteor.methods({
 	saveCannedResponse(_id, responseData) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'save-canned-responses')) {
+		const userId = Meteor.userId();
+		if (!userId || !hasPermission(userId, 'save-canned-responses')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
 		}
 
@@ -23,8 +24,19 @@ Meteor.methods({
 			departmentId: Match.Maybe(String),
 		});
 
+		const canSaveAll = hasPermission(userId, 'save-all-canned-responses');
+		if (!canSaveAll && ['global'].includes(responseData.scope)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', { method: 'saveCannedResponse' });
+		}
+
+		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
+		if ((!canSaveAll || !canSaveDepartment) && ['department'].includes(responseData.scope)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', { method: 'saveCannedResponse' });
+		}
+		// TODO: check if the department i'm trying to save is a department i can interact with
+
 		// check if the response already exists and we're not updating one
-		const duplicateShortcut = CannedResponse.findByShortcut(responseData.shortcut, { fields: { _id: 1 } });
+		const duplicateShortcut = CannedResponse.findOneByShortcut(responseData.shortcut, { fields: { _id: 1 } });
 		if ((!_id && duplicateShortcut) || (_id && duplicateShortcut._id !== _id)) {
 			throw new Meteor.Error('error-invalid-shortcut', 'Shortcut provided already exists', { method: 'saveCannedResponse' });
 		}
