@@ -17,6 +17,7 @@ const useInitialValues = (room) => {
 			ephemeralTime,
 			updateRoomEphemeral: false,
 			newEphemeralTime: '',
+			newMsgEphemeralTime: '',
 		}),
 		[ephemeralTime],
 	);
@@ -33,8 +34,8 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 		t('Room_updated_successfully'),
 	);
 	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room));
-	const { updateRoomEphemeral, newEphemeralTime } = values;
-	const { handleUpdateRoomEphemeral, handleNewEphemeralTime } = handlers;
+	const { updateRoomEphemeral, newEphemeralTime, newMsgEphemeralTime } = values;
+	const { handleUpdateRoomEphemeral, handleNewEphemeralTime, handleNewMsgEphemeralTime } = handlers;
 	const timeOptions = [
 		['5mins', t('5_mins')],
 		['15mins', t('15_mins')],
@@ -48,9 +49,10 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 			rid,
 			updateRoomEphemeral,
 			newEphemeralTime,
+			newMsgEphemeralTime,
 		};
 		await updateEphemeralRoom(params);
-	}, [updateEphemeralRoom, updateRoomEphemeral, newEphemeralTime, rid]);
+	}, [updateEphemeralRoom, updateRoomEphemeral, newEphemeralTime, rid, newMsgEphemeralTime]);
 	return (
 		<>
 			<VerticalBar.Header>
@@ -63,6 +65,12 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 						Room Ephemeral Time
 					</Box>
 					<Box>{formatDateAndTime(room.ephemeralTime)}</Box>
+				</Box>
+				<Box pbe='x16'>
+					<Box fontScale='p2' fontWeight='700' mb='x2'>
+						{t('Msg_Ephemeral_time')}
+					</Box>
+					<Box>{room.msgEphemeralTime}</Box>
 				</Box>
 				{canEdit && (
 					<Field pbe='x16'>
@@ -79,6 +87,23 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 								disabled={!updateRoomEphemeral}
 								value={newEphemeralTime}
 								onChange={handleNewEphemeralTime}
+								placeholder={t('Select_an_option')}
+								flexGrow={1}
+							/>
+						</Field.Row>
+					</Field>
+				)}
+				{canEdit && (
+					<Field pbe='x16'>
+						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
+							<Field.Label>{t('Update_Msg_Ephemeral')}</Field.Label>
+						</Box>
+						<Field.Row>
+							<Select
+								maxWidth='100%'
+								options={timeOptions}
+								value={newMsgEphemeralTime}
+								onChange={handleNewMsgEphemeralTime}
 								placeholder={t('Select_an_option')}
 								flexGrow={1}
 							/>

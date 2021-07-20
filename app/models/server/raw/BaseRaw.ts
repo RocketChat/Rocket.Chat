@@ -150,6 +150,14 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		}, options);
 	}
 
+	trashFindByIdAndRemove(_id: string): void {
+		const query: object = {
+			_id,
+			__collection__: this.name,
+		};
+		this.trash?.deleteOne(query);
+	}
+
 	async trashFindOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
 		const query: object = {
 			_id,

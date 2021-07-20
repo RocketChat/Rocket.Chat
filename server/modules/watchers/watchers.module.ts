@@ -119,12 +119,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 					broadcast('watch.messages', { clientAction, message });
 				}
 				break;
-			// case 'removed': {
-			// 	const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
-			// 	const message = trash || { _id: id };
-			// 	broadcast('watch.messages', { clientAction, message });
-			// 	break;
-			// }
+			case 'removed': {
+				const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+				const message = trash || { _id: id };
+				const removed = Messages.trashFindByIdAndRemove(id);
+				broadcast('watch.messages', { clientAction, message });
+
+				break;
+			}
 		}
 	});
 

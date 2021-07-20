@@ -625,6 +625,17 @@ export class Messages extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	setEphemeralTimeById(_id, time) {
+		if (!_id) { return; }
+		const query = { _id };
+		const update = {
+			$set: {
+				expireAt: time,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
 		if (snippeted == null) { snippeted = true; }
 		if (snippetedAt == null) { snippetedAt = 0; }
@@ -771,6 +782,10 @@ export class Messages extends Base {
 
 		return this.update(query, update, { multi: true });
 	}
+
+	// insertEphemeral(record, ...args) {
+	// 	this.insertEphemeral(record, ...args);
+	// }
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {

@@ -857,6 +857,17 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setMsgEphemeralTime(_id, time) {
+		if (!_id) { return; }
+		const query = { _id };
+		const update = {
+			$set: {
+				msgEphemeralTime: time,
+			},
+		};
+		return this.update(query, update);
+	}
+
 	setNameById(_id, name, fname) {
 		const query = { _id };
 

@@ -244,7 +244,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			if (messageAlreadyExists) {
 				return;
 			}
-			message._id = Messages.insert(message);
+			message._id = message.expireAt ? Messages.insertEphemeral(message) : Messages.insert(message);
 		}
 
 		if (Apps && Apps.isLoaded()) {

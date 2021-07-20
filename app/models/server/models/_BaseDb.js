@@ -286,6 +286,24 @@ export class BaseDb extends EventEmitter {
 		return result;
 	}
 
+	insertEphemeral(record, ...args) {
+		this.setUpdatedAt(record);
+
+		const result = this.originals.insert(record, ...args);
+
+		record._id = result;
+		const query = { _id: result };
+		const records = this.model.find(query).fetch();
+		for (const record of records) {
+			record._deletedAt = new Date();
+			record.__collection__ = this.name;
+
+			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
+		}
+
+		return result;
+	}
+
 	update(query, update, options = {}) {
 		this.setUpdatedAt(update, true, query);
 
