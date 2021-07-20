@@ -139,12 +139,7 @@ const CreateDiscussion = ({
 					</Field>
 					<Field>
 						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row
-							w="full" 
-							display="flex" 
-							flexDirection="column" 
-							alignItems="stretch"
-						>
+						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
 							<UserAutoCompleteMultiple
 								value={usernames}
 								onChange={onChangeUsers}
@@ -173,9 +168,7 @@ const CreateDiscussion = ({
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button onClick={onClose}>
-						{t('Cancel')}
-					</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>
