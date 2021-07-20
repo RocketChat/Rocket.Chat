@@ -239,11 +239,13 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			configureEmailInboxes();
 		});
 
-		this.onEvent('watch.messages', ({ message }) => {
-			if (message?._updatedAt) {
-				metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
-			}
-		});
+		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+			this.onEvent('watch.messages', ({ message }) => {
+				if (message?._updatedAt) {
+					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+				}
+			});
+		}
 	}
 
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {
