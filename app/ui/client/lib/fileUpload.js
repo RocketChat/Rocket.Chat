@@ -5,7 +5,7 @@ import { Handlebars } from 'meteor/ui';
 import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
-import { UserAction } from '../index';
+import { UserAction, USER_UPLOADING } from '../index';
 import { t, fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { modal, prependReplies } from '../../../ui-utils';
 
@@ -56,11 +56,11 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		},
 	});
 	if (Session.get('uploading').length) {
-		UserAction.start(rid, 'user-uploading', { tmid });
+		UserAction.start(rid, USER_UPLOADING, { tmid });
 	}
 	const msgUploadingInterval = setInterval(function() {
 		if (Session.get('uploading').length) {
-			UserAction.start(rid, 'user-uploading', { tmid });
+			UserAction.start(rid, USER_UPLOADING, { tmid });
 		}
 	}, 5000);
 
@@ -84,7 +84,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 
 		if (!Session.get('uploading').length) {
-			UserAction.stop(rid, 'user-uploading', { tmid });
+			UserAction.stop(rid, USER_UPLOADING, { tmid });
 			clearInterval(msgUploadingInterval);
 		}
 		return remainingUploads;
@@ -95,7 +95,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 			u.percentage = 0;
 		});
 		if (!uploads.length) {
-			UserAction.stop(rid, 'user-uploading', { tmid });
+			UserAction.stop(rid, USER_UPLOADING, { tmid });
 			clearInterval(msgUploadingInterval);
 		}
 		Session.set('uploading', uploads);
