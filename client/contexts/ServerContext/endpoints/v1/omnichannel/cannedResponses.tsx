@@ -10,10 +10,12 @@ export type CannedResponsesEndpoint = {
 		createdBy?: IUser['username'];
 		tags?: any;
 		departmentId?: ILivechatDepartment['_id'];
-		offset: number;
-		count: number;
+		offset?: number;
+		count?: number;
 	}) => {
 		cannedResponses: IOmnichannelCannedResponse[];
+		count?: number;
+		offset?: number;
 		total: number;
 	};
 	POST: (params: {

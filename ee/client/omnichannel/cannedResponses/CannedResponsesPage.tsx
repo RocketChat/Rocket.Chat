@@ -7,10 +7,9 @@ import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { EndpointResponse } from './IOmnichannelCannedResponse';
 
 export type CannedResponsesPageProps = {
-	data: EndpointResponse | undefined;
+	data: any;
 	header: ReactElement[];
 	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: number }>>;
 	params: { current: number; itemsPerPage: number };
