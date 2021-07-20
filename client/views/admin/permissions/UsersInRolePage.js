@@ -6,7 +6,7 @@ import Page from '../../../components/Page';
 import RoomAutoComplete from '../../../components/RoomAutoComplete';
 import UserAutoComplete from '../../../components/UserAutoComplete';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UsersInRoleTableContainer from './UsersInRoleTableContainer';
@@ -20,11 +20,11 @@ const UsersInRolePage = ({ data }) => {
 	const [user, setUser] = useState();
 	const [rid, setRid] = useState();
 
-	const { _id, name } = data;
+	const { _id, name, description } = data;
 
 	const router = useRoute('admin-permissions');
 
-	const addUser = useMethod('authorization:addUserToRole');
+	const addUser = useEndpoint('POST', 'roles.addUserToRole');
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({
@@ -35,7 +35,7 @@ const UsersInRolePage = ({ data }) => {
 
 	const handleAdd = useMutableCallback(async () => {
 		try {
-			await addUser(name, user, rid);
+			await addUser({ roleName: _id, username: user, roomId: rid });
 			dispatchToastMessage({ type: 'success', message: t('User_added') });
 			setUser();
 			reload.current();
@@ -46,7 +46,7 @@ const UsersInRolePage = ({ data }) => {
 
 	return (
 		<Page>
-			<Page.Header title={`${t('Users_in_role')} "${name}"`}>
+			<Page.Header title={`${t('Users_in_role')} "${description || name}"`}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 				</ButtonGroup>
@@ -83,7 +83,9 @@ const UsersInRolePage = ({ data }) => {
 							reloadRef={reload}
 							scope={data.scope}
 							rid={rid}
-							roleName={data.name}
+							roleId={_id}
+							roleName={name}
+							description={description}
 						/>
 					)}
 					{data.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}

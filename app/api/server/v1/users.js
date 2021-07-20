@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions, Roles } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
@@ -214,6 +214,18 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 					name: 1,
 				},
 			}).fetch();
+		}
+
+		if (user.roles) {
+			const rolesId = user.roles;
+			user.rolesId = user.roles;
+
+			const rolesArr = [];
+			for (const roleId of rolesId) {
+				rolesArr.push(...Roles.find({ _id: roleId }, { fields: { name: 1, description: 1 } }).fetch().map(({ name, description }) => description || name));
+			}
+
+			user.roles = rolesArr;
 		}
 
 		return API.v1.success({

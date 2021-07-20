@@ -11,7 +11,7 @@ import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
 const getInitialValue = (data) => ({
-	roles: data.roles,
+	roles: data.rolesId,
 	name: data.name ?? '',
 	password: '',
 	username: data.username,
@@ -147,7 +147,7 @@ function EditUser({ data, roles, ...props }) {
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
-	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+	const availableRoles = roles.map(({ _id, name, description }) => [_id, description || name]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
