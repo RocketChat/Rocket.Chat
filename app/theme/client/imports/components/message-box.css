@@ -52,34 +52,35 @@
 			fill: currentColor;
 		}
 	}
-	&__activity-indicator {
-		width: 100%;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 2fr));
-		grid-gap: 1em;
-	}
 
-	&__typing {
+	&__action {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		flex-wrap: wrap;
 
-		color: var(--message-box-user-typing-color);
-
-		font-size: var(--message-box-user-typing-text-size);
+		color: var(--message-box-user-activity-color);
 
 		&-user {
-			color: var(--message-box-user-typing-user-color);
+			color: var(--message-box-user-activity-user-color);
 
 			font-weight: bold;
 		}
 
-		&::after {
-			display: inline-block;
-			overflow: hidden;
+		&-indicator {
 
-			width: 0;
+			font-size: var(--message-box-user-activity-text-size);
 
-			content: "\2026"; /* ascii code for the ellipsis character */
-			animation: ellipsis steps(4, end) 1.5s infinite;
-			vertical-align: bottom;
+			&:last-child::after {
+				display: inline-block;
+				overflow: hidden;
+
+				width: 0;
+
+				content: "\2026"; /* ascii code for the ellipsis character */
+				animation: ellipsis steps(4, end) 1.5s infinite;
+				vertical-align: bottom;
+			}
 		}
 	}
 
@@ -287,7 +288,7 @@
 		margin-top: 1rem;
 		padding: 0;
 
-		&__typing {
+		&__activity{
 			top: -1rem;
 
 			margin-left: 1rem;
@@ -379,7 +380,7 @@
 	}
 }
 
-.rtl .rc-message-box__typing {
+.rtl .rc-message-box__activity {
 	right: 0;
 
 	margin-right: 24px;

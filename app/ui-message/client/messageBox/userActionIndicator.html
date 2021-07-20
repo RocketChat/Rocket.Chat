@@ -1,7 +1,17 @@
 <template name="userActionIndicator" args="rid, tmid">
-	<div class="rc-message-box__activity-indicator">
-		{{> notifyUserActivity data=typingUsersData}}
-		{{> notifyUserActivity data=recordingUsersData}}
-		{{> notifyUserActivity data=uploadingUsersData}}
+	<div class="rc-message-box__action">
+		{{#each data}}
+			<div class="rc-message-box__action-indicator">
+				<span class="rc-message-box__action-user">{{ users}}</span>
+				{{#if multi}}
+					{{_ "are"}} {{_ action}}
+				{{else}}
+					{{_ "is" }} {{_ action}}
+				{{/if}}
+			</div>
+			{{#unless end}}
+				<span>, </span>
+			{{/unless}}
+		{{/each}}
 	</div>
 </template>

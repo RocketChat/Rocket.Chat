@@ -16,18 +16,16 @@ export const USER_TYPING = 'user-typing';
 export const USER_UPLOADING = 'user-uploading';
 export const USER_ACTIVITY = 'user-activity';
 
-const recordingTimeouts = {};
-const uploadingTimeouts = {};
-const typingTimeouts = {};
 
-const recordingRenews = {};
-const uploadingRenews = {};
-const typingRenews = {};
+const activityTimeouts = {};
+const activityRenews = {};
+// stores in the form of
+// {
+// 	rid1: {'user-typing': { user-name1: timeout1, user-name2: timeout2}, 'user-recording': {user-name3: timeout3}},
+// 	tmid1: {'user-uploading': { user-name4: timeout4}},
+// }
 
-const recordingUsers = new ReactiveDict();
-const uploadingUsers = new ReactiveDict();
-const typingUsers = new ReactiveDict();
-
+const performingUsers = new ReactiveDict();
 
 const shownName = function(user) {
 	if (!user) {
@@ -42,23 +40,35 @@ const shownName = function(user) {
 const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), false, activityType, extras);
 const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), true, activityType, extras);
 
-function handleStreamAction(activity, performingUsers, rid, username, extras) {
+function handleStreamAction(activeUsers, rid, username, activityType, isActive, extras) {
 	const id = extras?.tmid ? extras.tmid : rid;
-	const users = performingUsers.get(id) || {};
+	const activities = performingUsers.all() || {};
+	const roomActivities = activities[id] || {};
 
-	if (activity === true) {
+	if (_.isEmpty(roomActivities)) {
+		activities[id] = roomActivities;
+	}
+
+	const users = roomActivities[activityType] || {};
+	if (_.isEmpty(users)) {
+		roomActivities[activityType] = users;
+	}
+
+	if (isActive === true) {
 		clearTimeout(users[username]);
 		users[username] = setTimeout(function() {
-			const u = performingUsers.get(id);
+			const activities = performingUsers.all();
+			const roomActivities = activities[id];
+			const u = roomActivities[activityType];
 			delete u[username];
-			performingUsers.set(id, u);
+			performingUsers.set(activities);
 		}, timeout);
 	} else {
 		clearTimeout(users[username]);
 		delete users[username];
 	}
 
-	performingUsers.set(id, users);
+	performingUsers.set(activities);
 }
 
 export const UserAction = new class {
@@ -76,71 +86,46 @@ export const UserAction = new class {
 			if (username === shownName(user)) {
 				return;
 			}
-			if (activityType === USER_RECORDING) {
-				handleStreamAction(activity, recordingUsers, rid, username, extras);
-			} else if (activityType === USER_UPLOADING) {
-				handleStreamAction(activity, uploadingUsers, rid, username, extras);
-			} else if (activityType === USER_TYPING) {
-				handleStreamAction(activity, typingUsers, rid, username, extras);
-			}
+			handleStreamAction(performingUsers, rid, username, activityType, activity, extras);
 		};
 		return Notifications.onRoom(rid, USER_ACTIVITY, rooms[rid]);
 	}
 
-	startPerformingAction(rid, activityType, timeouts, renews, extras) {
-		if (renews[rid]) {
+	start(rid, activityType, extras = {}) {
+		const key = `${ activityType }-${ rid }`;
+
+		if (activityRenews[key]) {
 			return;
 		}
 
-		renews[rid] = setTimeout(() => {
-			clearTimeout(renews[rid]);
-			delete renews[rid];
+		activityRenews[key] = setTimeout(() => {
+			clearTimeout(activityRenews[key]);
+			delete activityRenews[key];
 		}, renew);
 
 		startActivity(rid, activityType, extras);
-		if (timeouts[rid]) {
-			clearTimeout(timeouts[rid]);
-			delete timeouts[rid];
+
+		if (activityTimeouts[key]) {
+			clearTimeout(activityTimeouts[key]);
+			delete activityTimeouts[key];
 		}
 
-		timeouts[rid] = setTimeout(() => this.stop(rid, activityType), timeout);
-		return timeouts[rid];
-	}
-
-	start(rid, activityType, extras = {}) {
-		if (activityType === USER_RECORDING) {
-			this.startPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews, extras);
-		} else if (activityType === USER_TYPING) {
-			this.startPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews, extras);
-		} else if (activityType === USER_UPLOADING) {
-			this.startPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews, extras);
-		} else {
-			// console.log('activity type is invalid');
-		}
-	}
-
-	stopPerformingAction(rid, activityType, timeouts, renews, extras) {
-		if (timeouts[rid]) {
-			clearTimeout(timeouts[rid]);
-			delete timeouts[rid];
-		}
-		if (renews[rid]) {
-			clearTimeout(renews[rid]);
-			delete renews[rid];
-		}
-		return stopActivity(rid, activityType, extras);
+		activityTimeouts[key] = setTimeout(() => this.stop(rid, activityType, extras), timeout);
+		return activityTimeouts[key];
 	}
 
 	stop(rid, activityType, extras) {
-		if (activityType === USER_RECORDING) {
-			this.stopPerformingAction(rid, USER_RECORDING, recordingTimeouts, recordingRenews, extras);
-		} else if (activityType === USER_TYPING) {
-			this.stopPerformingAction(rid, USER_TYPING, typingTimeouts, typingRenews, extras);
-		} else if (activityType === USER_UPLOADING) {
-			this.stopPerformingAction(rid, USER_UPLOADING, uploadingTimeouts, uploadingRenews, extras);
-		} else {
-			// console.log('not a valid activity type');
+		const key = `${ activityType }-${ rid }`;
+
+		if (activityTimeouts[key]) {
+			clearTimeout(activityTimeouts[key]);
+			delete activityTimeouts[key];
 		}
+		if (activityRenews[key]) {
+			clearTimeout(activityRenews[key]);
+			delete activityRenews[key];
+		}
+		return stopActivity(rid, activityType, extras);
 	}
 
 	cancel(rid) {
@@ -148,26 +133,30 @@ export const UserAction = new class {
 			return;
 		}
 		Notifications.unRoom(rid, USER_ACTIVITY, rooms[rid]);
-
-		Object.values(typingUsers.get(rid) || {}).forEach(clearTimeout);
-		Object.values(recordingUsers.get(rid) || {}).forEach(clearTimeout);
-		Object.values(uploadingUsers.get(rid) || {}).forEach(clearTimeout);
-		typingUsers.set(rid);
-		recordingUsers.set(rid);
-		uploadingUsers.set(rid);
-
 		delete rooms[rid];
+
+		Object.values(performingUsers.all() || {}).forEach((roomActivities) => {
+			Object.values(roomActivities || {}).forEach((activity) => {
+				Object.values(activity || {}).forEach((value) => {
+					clearTimeout(value);
+				});
+			});
+		});
+
+		performingUsers.clear();
 	}
 
-	get(roomId, activityType) {
-		if (activityType === USER_RECORDING) {
-			return _.keys(recordingUsers.get(roomId)) || [];
-		}
-		if (activityType === USER_UPLOADING) {
-			return _.keys(uploadingUsers.get(roomId)) || [];
-		}
-		if (activityType === USER_TYPING) {
-			return _.keys(typingUsers.get(roomId)) || [];
-		}
+	get(roomId) {
+		// if (activityType === USER_RECORDING) {
+		// 	return _.keys(recordingUsers.get(roomId)) || [];
+		// }
+		// if (activityType === USER_UPLOADING) {
+		// 	return _.keys(uploadingUsers.get(roomId)) || [];
+		// }
+		// if (activityType === USER_TYPING) {
+		// 	return _.keys(typingUsers.get(roomId)) || [];
+		// }
+		return performingUsers.get(roomId);
+		// return [];
 	}
 }();
