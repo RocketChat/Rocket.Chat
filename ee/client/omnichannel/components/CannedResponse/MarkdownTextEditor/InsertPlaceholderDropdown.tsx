@@ -5,9 +5,10 @@ import React, { Dispatch, FC, memo, RefObject, SetStateAction } from 'react';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 
 const InsertPlaceholderDropdown: FC<{
+	onChange: any;
 	textAreaRef: RefObject<HTMLTextAreaElement>;
 	setVisible: Dispatch<SetStateAction<boolean>>;
-}> = ({ textAreaRef, setVisible }) => {
+}> = ({ onChange, textAreaRef, setVisible }) => {
 	const t = useTranslation();
 
 	const clickable = css`
@@ -29,6 +30,7 @@ const InsertPlaceholderDropdown: FC<{
 			);
 
 			setVisible(false);
+			onChange(textAreaRef.current.value);
 		}
 	};
 

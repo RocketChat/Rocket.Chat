@@ -1,5 +1,3 @@
-import { ObjectFromApi } from '../../../../definition/ObjectFromApi';
-
 export type IOmnichannelCannedResponse = {
 	_id: string;
 	shortcut: string;
@@ -14,7 +12,7 @@ export type IOmnichannelCannedResponse = {
 };
 
 export type EndpointResponse = {
-	cannedResponses: ObjectFromApi<IOmnichannelCannedResponse>[];
+	cannedResponses: IOmnichannelCannedResponse[];
 	count?: number;
 	offset?: number;
 	total: number;

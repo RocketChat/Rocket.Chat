@@ -7,16 +7,14 @@ import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import { EndpointResponse } from './IOmnichannelCannedResponse';
 
 export type CannedResponsesPageProps = {
-	data: EndpointResponse | undefined;
+	data: any;
 	header: ReactElement[];
 	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: number }>>;
 	params: { current: number; itemsPerPage: number };
 	title: string;
 	renderRow: ReactNode | null;
-	children: ReactNode | null;
 	renderFilter: FC;
 };
 
@@ -27,7 +25,6 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	params,
 	title,
 	renderRow,
-	children,
 	renderFilter,
 }) => {
 	const t = useTranslation();
@@ -70,7 +67,6 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 					/>
 				)}
 			</Page.Content>
-			{children}
 		</Page>
 	);
 };
