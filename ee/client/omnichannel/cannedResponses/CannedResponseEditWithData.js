@@ -5,7 +5,7 @@ import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import CannedResponseEdit from './CannedResponseEditAdmin';
+import CannedResponseEdit from './CannedResponseEdit';
 
 function CannedResponseEditWithData({ cannedResponseId, reload, title }) {
 	const query = useMemo(() => ({ _id: cannedResponseId }), [cannedResponseId]);

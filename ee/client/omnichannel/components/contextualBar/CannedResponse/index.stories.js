@@ -31,8 +31,7 @@ const cannedItems = [
 	},
 	{
 		shortcut: 'test3 long long long long long long long long long',
-		text:
-			'simple canned response test3 long long long long long long long long long long long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long long',
+		text: 'simple canned response test3 long long long long long long long long long long long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long long',
 		scope: 'Customer Support long long long long long long long long long long',
 		tags: ['sales', 'support', 'long', 'long', 'long', 'long', 'long', 'long', 'long', 'long'],
 	},

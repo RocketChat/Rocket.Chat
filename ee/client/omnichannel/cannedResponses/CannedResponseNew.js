@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CannedResponseEdit from './CannedResponseEditAdmin';
+import CannedResponseEdit from './CannedResponseEdit';
 
 function CannedResponseNew({ reload }) {
 	return <CannedResponseEdit reload={reload} isNew />;

@@ -27,9 +27,7 @@ export type CannedResponsesEndpoint = {
 		success: true;
 		statusCode: 200;
 	};
-	DELETE: (params: {
-		_id: IOmnichannelCannedResponse['_id'];
-	}) => {
+	DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => {
 		success: true;
 		statusCode: 200;
 	};

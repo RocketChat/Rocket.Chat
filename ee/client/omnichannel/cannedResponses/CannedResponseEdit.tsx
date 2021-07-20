@@ -1,11 +1,9 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
 import { useRole } from '../../../../client/contexts/AuthorizationContext';
-import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
@@ -13,7 +11,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponseForm from './components/cannedResponseForm';
 
-const CannedResponseEditAdmin: FC<{
+const CannedResponseEdit: FC<{
 	data: any;
 	reload: () => void;
 	isNew: boolean;
@@ -163,4 +161,4 @@ const CannedResponseEditAdmin: FC<{
 	);
 };
 
-export default memo(CannedResponseEditAdmin);
+export default memo(CannedResponseEdit);

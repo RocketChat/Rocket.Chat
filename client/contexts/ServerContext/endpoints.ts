@@ -14,7 +14,6 @@ import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
-import { CannedResponses } from './endpoints/v1/livechat/canned-responses';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
@@ -63,7 +62,6 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
-	'canned-responses': CannedResponses;
 	'rooms.info': RoomsInfoEndpoint;
 	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
@@ -78,29 +76,29 @@ export type ServerEndpointMethodOf<Path extends ServerEndpointPath> = keyof Serv
 
 type ServerEndpoint<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ServerEndpoints[Path][Method] extends (...args: any[]) => any
 	? ServerEndpoints[Path][Method]
 	: (...args: any[]) => any;
 
 export type ServerEndpointRequestPayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[0];
 
 export type ServerEndpointFormData<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = Parameters<ServerEndpoint<Method, Path>>[1];
 
 export type ServerEndpointResponsePayload<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = ReturnType<ServerEndpoint<Method, Path>>;
 
 export type ServerEndpointFunction<
 	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath
+	Path extends ServerEndpointPath,
 > = {
 	(params: ServerEndpointRequestPayload<Method, Path>): Promise<
 		ServerEndpointResponsePayload<Method, Path>

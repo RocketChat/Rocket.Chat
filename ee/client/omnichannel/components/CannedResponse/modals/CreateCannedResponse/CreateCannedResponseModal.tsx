@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import React, { FC, memo, ReactNode } from 'react';
 
