@@ -14,6 +14,7 @@ const Section: FC<{
 	status: SectionStatus;
 	title: string;
 	subtitle?: string;
+	children?: React.ReactNode;
 }> = ({ status, title, subtitle, children }) => (
 	<Card.Col.Section display='flex' alignItems='flex-start'>
 		{getStatusIcon(status)}
