@@ -14,13 +14,11 @@ const DepartmentField = ({ departmentId }) => {
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}
-	const {
-		department: { name },
-	} = data || { department: {} };
+	const { department: { name } = {} } = data || { department: {} };
 	return (
 		<Field>
 			<Label>{t('Department')}</Label>
-			<Info>{name}</Info>
+			<Info>{name || t('Department_not_found')}</Info>
 		</Field>
 	);
 };

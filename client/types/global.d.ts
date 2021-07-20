@@ -12,4 +12,6 @@ interface Window {
 	lastMessageWindow?: Record<string, unknown>;
 	lastMessageWindowHistory?: Record<string, unknown>;
 	favico?: any;
+	USE_REST_FOR_DDP_CALLS?: boolean;
+	ECDH_Enabled?: boolean;
 }

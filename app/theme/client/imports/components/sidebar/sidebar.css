@@ -34,21 +34,6 @@
 		-webkit-user-drag: none;
 	}
 
-	&__footer:not(:empty) {
-		width: auto;
-		height: var(--sidebar-footer-height);
-		padding: var(--sidebar-extra-small-default-padding) var(--sidebar-default-padding);
-
-		& img {
-			max-width: 100%;
-			height: 100%;
-		}
-
-		& a:any-link {
-			color: var(--rc-color-primary-light);
-		}
-	}
-
 	& .wrapper-unread {
 		position: relative;
 		z-index: 2;

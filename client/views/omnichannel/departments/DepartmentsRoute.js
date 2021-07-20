@@ -14,7 +14,7 @@ import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDepartments) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
@@ -25,20 +25,27 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 			}),
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
+			onlyMyDepartments,
 		}),
-		[text, itemsPerPage, current, column, direction],
+		[text, itemsPerPage, current, column, direction, onlyMyDepartments],
 	);
 
 function DepartmentsRoute() {
 	const t = useTranslation();
 	const canViewDepartments = usePermission('manage-livechat-departments');
+	const canRemoveDepartments = usePermission('remove-livechat-department');
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({
+		text: '',
+		current: 0,
+		itemsPerPage: 25,
+	});
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const onlyMyDepartments = true;
+	const query = useQuery(debouncedParams, debouncedSort, onlyMyDepartments);
 	const departmentsRoute = useRoute('omnichannel-departments');
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
@@ -53,11 +60,12 @@ function DepartmentsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		departmentsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			departmentsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/department', query);
@@ -110,11 +118,13 @@ function DepartmentsRoute() {
 				>
 					{t('Show_on_registration_page')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'remove'} w='x60'>
-					{t('Remove')}
-				</GenericTable.HeaderCell>,
+				canRemoveDepartments && (
+					<GenericTable.HeaderCell key={'remove'} w='x60'>
+						{t('Remove')}
+					</GenericTable.HeaderCell>
+				),
 			].filter(Boolean),
-		[sort, onHeaderClick, t],
+		[sort, onHeaderClick, t, canRemoveDepartments],
 	);
 
 	const renderRow = useCallback(
@@ -132,10 +142,10 @@ function DepartmentsRoute() {
 				<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
 				<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 				<Table.Cell withTruncatedText>{showOnRegistration ? t('Yes') : t('No')}</Table.Cell>
-				<RemoveDepartmentButton _id={_id} reload={reload} />
+				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[onRowClick, t, reload],
+		[canRemoveDepartments, onRowClick, t, reload],
 	);
 
 	if (!canViewDepartments) {

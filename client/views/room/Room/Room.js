@@ -1,13 +1,14 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import React, { useDebugValue, useMemo } from 'react';
 
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
 import Header from '../Header';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
-import { useRoom } from '../providers/RoomProvider';
+import { useRoom } from '../contexts/RoomContext';
 import {
 	useTab,
 	useTabBarOpen,
@@ -30,13 +31,13 @@ const Room = () => {
 	const hideFlexTab = useUserPreference('hideFlexTab');
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
-	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [
-		open,
-		close,
-		isOpen,
-		openUserInfo,
-	]);
+	const tabBar = useMemo(
+		() => ({ open, close, isOpen, openUserInfo }),
+		[open, close, isOpen, openUserInfo],
+	);
 
+	useDebugValue(room);
+	useDebugValue(tab);
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
@@ -53,24 +54,26 @@ const Room = () => {
 			</RoomTemplate.Body>
 			{tab && (
 				<RoomTemplate.Aside data-qa-tabbar-name={tab.id}>
-					{typeof tab.template === 'string' && (
-						<VerticalBarOldActions
-							{...tab}
-							name={tab.template}
-							tabBar={tabBar}
-							rid={room._id}
-							_id={room._id}
-						/>
-					)}
-					{typeof tab.template !== 'string' && (
-						<LazyComponent
-							template={tab.template}
-							tabBar={tabBar}
-							rid={room._id}
-							teamId={room.teamId}
-							_id={room._id}
-						/>
-					)}
+					<ErrorBoundary>
+						{typeof tab.template === 'string' && (
+							<VerticalBarOldActions
+								{...tab}
+								name={tab.template}
+								tabBar={tabBar}
+								rid={room._id}
+								_id={room._id}
+							/>
+						)}
+						{typeof tab.template !== 'string' && (
+							<LazyComponent
+								template={tab.template}
+								tabBar={tabBar}
+								rid={room._id}
+								teamId={room.teamId}
+								_id={room._id}
+							/>
+						)}
+					</ErrorBoundary>
 				</RoomTemplate.Aside>
 			)}
 		</RoomTemplate>

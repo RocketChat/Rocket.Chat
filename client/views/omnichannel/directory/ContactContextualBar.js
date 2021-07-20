@@ -10,11 +10,7 @@ import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 const ContactContextualBar = ({ contactReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
 	const bar = useRouteParameter('bar');
-	const page = useRouteParameter('page');
-	const tab = useRouteParameter('tab');
 	const id = useRouteParameter('id');
-
-	console.log(bar, tab, page, id);
 
 	const t = useTranslation();
 

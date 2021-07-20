@@ -43,6 +43,7 @@ export const CannedResponseEdit = ({ response, onSave, onReturn, onClose }) => {
 
 			<VerticalBar.Footer>
 				<ButtonGroup stretch>
+					<Button onClick={onReturn}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
 					</Button>
