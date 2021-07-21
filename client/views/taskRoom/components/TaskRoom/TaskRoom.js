@@ -1,4 +1,4 @@
-import { Flex, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { useState } from 'react';
 
 import { useSetModal } from '../../../../contexts/ModalContext';
@@ -48,7 +48,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 	};
 
 	return (
-		<>
+		<Box>
 			<Flex.Container alignItems='center'>
 				<ButtonGroup align='center'>
 					<Button ghost info onClick={() => sortTasks('Creator')}>
@@ -65,24 +65,26 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 					</Button>
 				</ButtonGroup>
 			</Flex.Container>
-			<Flex.Container>
-				{tasks !== undefined &&
-					tasks.length &&
-					tasks.map((task) => (
-						<Task
-							handleTaskDetails={() => handleTaskDetails(task)}
-							rid={rid}
-							title={task.title}
-							username={task.u.username}
-							taskId={task._id}
-							ts={task.ts}
-							status={task.taskStatus}
-							taskAssignee={task.taskAssignee}
-							key={task._id}
-							tcount={task.tcount}
-						/>
-					))}
-			</Flex.Container>
-		</>
+			<Box>
+				<Flex.Container>
+					{tasks !== undefined &&
+						tasks.length &&
+						tasks.map((task) => (
+							<Task
+								handleTaskDetails={() => handleTaskDetails(task)}
+								rid={rid}
+								title={task.title}
+								username={task.u.username}
+								taskId={task._id}
+								ts={task.ts}
+								status={task.taskStatus}
+								taskAssignee={task.taskAssignee}
+								key={task._id}
+								tcount={task.tcount}
+							/>
+						))}
+				</Flex.Container>
+			</Box>
+		</Box>
 	);
 }
