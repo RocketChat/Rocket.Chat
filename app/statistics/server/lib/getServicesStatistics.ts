@@ -1,23 +1,20 @@
-import type { SettingValue } from '../../../../definition/ISetting';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 
-function getCustomOAuthServices(): Record<string, Record<string, any>> {
-	const data: Record<string, Record<string, any>> = {};
-
-	settings.get(/Accounts_OAuth_Custom-[^-]+$/mi, function(key: string, value: SettingValue) {
-		const name = key.replace('Accounts_OAuth_Custom-', '');
-		data[name] = {
-			enabled: value,
-			mergeRoles: settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`),
-			users: Users.countActiveUsersByService(name),
-		};
-	});
-
-	return data;
+function getCustomOAuthServices(): Record<string, {
+	enabled: boolean;
+	mergeRoles: boolean;
+	users: number;
+}> {
+	const customOatuh = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
+	return Object.fromEntries(customOatuh.map(({ key, value }) => [key, {
+		enabled: Boolean(value),
+		mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
+		users: Users.countActiveUsersByService(name),
+	}]));
 }
 
-export function getServicesStatistics(): Record<string, any> {
+export function getServicesStatistics(): Record<string, unknown> {
 	return {
 		ldap: {
 			users: Users.countActiveUsersByService('ldap'),
