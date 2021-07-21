@@ -15,7 +15,8 @@ const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
+): ReactNode =>
+	list?.includes(key) ? <MarkdownText parseEmoji variant='inline' content={text} /> : text;
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);

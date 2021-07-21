@@ -5,7 +5,7 @@ import { addMessagePopup } from '../../../../../../app/ui-message/client/popup/c
 import { t } from '../../../../../../app/utils';
 
 addMessagePopup((template) => ({
-	title: t('Canned Responses'),
+	title: t('Canned_Responses'),
 	collection: CannedResponse,
 	trigger: '!',
 	prefix: '',

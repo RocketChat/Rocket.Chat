@@ -43,10 +43,14 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
+	const department = sortedByName.find(
+		(dep) => dep._id === (typeof value === 'string' ? value : value.value),
+	)?.value;
+
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={value}
+			value={department}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter}

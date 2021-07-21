@@ -933,3 +933,22 @@ API.v1.addRoute('users.listTeams', { authRequired: true }, {
 		});
 	},
 });
+
+API.v1.addRoute('users.logout', { authRequired: true }, {
+	post() {
+		const userId = this.bodyParams.userId || this.userId;
+
+		if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
+			return API.v1.unauthorized();
+		}
+
+		// this method logs the user out automatically, if successful returns 1, otherwise 0
+		if (!Users.removeResumeService(userId)) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		return API.v1.success({
+			message: `User ${ userId } has been logged out!`,
+		});
+	},
+});
