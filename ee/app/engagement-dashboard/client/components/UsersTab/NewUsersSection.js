@@ -13,8 +13,9 @@ import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 const TICK_WIDTH = 45;
 
-const NewUsersSection = () => {
+const NewUsersSection = ({ timezone }) => {
 	const t = useTranslation();
+	const utc = timezone === 'utc';
 
 	const periodOptions = useMemo(() => [
 		['last 7 days', t('Last_7_days')],
@@ -30,23 +31,35 @@ const NewUsersSection = () => {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
+					end: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+					end: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
+					end: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 		}
-	}, [periodId]);
+	}, [periodId, utc]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
@@ -55,7 +68,7 @@ const NewUsersSection = () => {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/new-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/new-users', useMemo(() => params, [params]));
 
 	const { ref: sizeRef, contentBoxSize: { inlineSize = 600 } = {} } = useResizeObserver();
 
@@ -93,7 +106,9 @@ const NewUsersSection = () => {
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
-			const i = moment(day).diff(period.start, 'days');
+			const i = utc
+				? moment(day).utc().diff(period.start, 'days')
+				: moment(day).diff(period.start, 'days');
 			if (i >= 0) {
 				values[i].newUsers += users;
 			}
@@ -106,7 +121,7 @@ const NewUsersSection = () => {
 			data.yesterday.variation,
 			values,
 		];
-	}, [data, period]);
+	}, [data, period, utc]);
 
 	const downloadData = () => {
 		const data = values.map(({ data, newUsers }) => [data, newUsers]);
