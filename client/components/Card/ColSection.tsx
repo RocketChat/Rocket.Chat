@@ -1,6 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ComponentProps, FC } from 'react';
 
-const ColSection: FC = (props) => <Box mb='x8' color='info' {...props} />;
+const ColSection: FC<ComponentProps<typeof Box>> = (props) => (
+	<Box rcx-card-col-section mb='x8' color='info' {...props} />
+);
 
 export default ColSection;
