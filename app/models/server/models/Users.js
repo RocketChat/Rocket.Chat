@@ -1565,7 +1565,7 @@ Find users to send a message by email if:
 			active: true,
 			type: { $nin: ['app'] },
 			roles: { $ne: ['guest'] },
-			[`services.${ serviceName }`]:  { $exists: true }
+			[`services.${ serviceName }`]: { $exists: true },
 		};
 
 		return this.find(query, options).count();
