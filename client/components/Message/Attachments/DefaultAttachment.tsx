@@ -80,13 +80,15 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 
 									const { value, ...rest } = field;
 
-									const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
-										if (line.trim() === '') {
-											return `${line}  <br/>`;
-										}
-										return `${line}  `;
-									});
-									return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+									return {
+										...rest,
+										value: (
+											<MarkdownText
+												variant='inline'
+												content={value.replace(/(.*)/g, (line: string) => `${line}  `)}
+											/>
+										),
+									};
 								})}
 							/>
 						)}
