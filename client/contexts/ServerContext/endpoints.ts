@@ -9,6 +9,8 @@ import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoint
 import { UnfollowMessageEndpoint as ChatUnfollowMessageEndpoint } from './endpoints/v1/chat/unfollowMessage';
 import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoints/v1/cloud/manualRegister';
 import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
+import { ResolveSrvEndpoint } from './endpoints/v1/dns/resolve.srv';
+import { ResolveTxtEndpoint } from './endpoints/v1/dns/resolve.txt';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
@@ -41,6 +43,8 @@ export type ServerEndpoints = {
 	'cloud.manualRegister': CloudManualRegisterEndpoint;
 	'chat.getDiscussions': ChatGetDiscussionsEndpoint;
 	'chat.getThreadsList': ChatGetThreadsListEndpoint;
+	'dns.resolve.srv': ResolveSrvEndpoint;
+	'dns.resolve.txt': ResolveTxtEndpoint;
 	'emoji-custom.list': EmojiCustomListEndpoint;
 	'channels.files': ChannelsFilesEndpoint;
 	'im.files': ImFilesEndpoint;
