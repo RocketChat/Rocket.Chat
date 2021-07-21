@@ -24,6 +24,7 @@ import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
 import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
 import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
@@ -68,6 +69,7 @@ export type ServerEndpoints = {
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
+	'canned-responses': CannedResponsesEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
