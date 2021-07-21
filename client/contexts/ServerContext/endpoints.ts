@@ -1,3 +1,4 @@
+import { EngagementDashboardActiveUsersEndpoint } from '../../../ee/app/engagement-dashboard/client/contexts/ServerContext/endpoints/EngagementDashboardActiveUsers';
 import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
 import { ChannelsMembersEndpoint } from './endpoints/v1/channels/members';
@@ -62,6 +63,7 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
 	'rooms.info': RoomsInfoEndpoint;
 	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
