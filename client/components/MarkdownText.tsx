@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { memoize } from '@rocket.chat/memo';
 import dompurify from 'dompurify';
 import marked from 'marked';
 import React, { FC, useMemo } from 'react';
@@ -65,8 +64,6 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
-const escapeTags = memoize((content: string) => new Option(content).innerHTML);
-
 const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	content,
 	variant = 'document',
@@ -95,7 +92,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	const __html = useMemo(() => {
 		const html = ((): any => {
 			if (content && typeof content === 'string') {
-				const markedHtml = marked(escapeTags(content), markedOptions);
+				const markedHtml = marked(new Option(content).innerHTML, markedOptions);
 
 				if (parseEmoji) {
 					// We are using the old emoji parser here. This could come
