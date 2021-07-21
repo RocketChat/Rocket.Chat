@@ -243,3 +243,7 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent('StatusMessage', () => import('./components/Message/StatusMessage'));
+
+createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));

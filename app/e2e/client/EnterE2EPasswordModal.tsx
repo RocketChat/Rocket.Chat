@@ -37,7 +37,7 @@ const EnterE2EPasswordModal = ({
 		<GenericModal
 			variant='warning'
 			title={t('Enter_E2E_password')}
-			cancelText={t('I_ll_do_it_later')}
+			cancelText={t('Do_It_Later')}
 			confirmText={t('Decode_Key')}
 			onConfirm={handleConfirm}
 			onClose={onClose}

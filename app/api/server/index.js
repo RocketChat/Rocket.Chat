@@ -15,6 +15,7 @@ import './v1/channels';
 import './v1/chat';
 import './v1/cloud';
 import './v1/commands';
+import './v1/dns';
 import './v1/e2e';
 import './v1/emoji-custom';
 import './v1/groups';
