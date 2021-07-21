@@ -8,7 +8,7 @@ Meteor.methods({
 		check(messages, [String]);
 
 		const cache = {};
-
+		console.log(messages);
 		return messages.map((msgId) => {
 			const msg = Messages.findOneById(msgId);
 

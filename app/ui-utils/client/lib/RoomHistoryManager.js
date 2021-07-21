@@ -120,7 +120,7 @@ export const RoomHistoryManager = new class extends Emitter {
 				loaded: undefined,
 			};
 		}
-
+		console.log('getRoom, RoomHistoryManager');
 		return this.histories[rid];
 	}
 
@@ -181,6 +181,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
+
 		if (subscription) {
 			({ ls } = subscription);
 			typeName = subscription.t + subscription.name;

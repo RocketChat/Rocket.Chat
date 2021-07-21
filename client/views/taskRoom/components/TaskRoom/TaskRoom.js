@@ -65,7 +65,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 					</Button>
 				</ButtonGroup>
 			</Flex.Container>
-			<div style={{ overflowY: 'scroll' }}>
+			<Flex.Container>
 				{tasks !== undefined &&
 					tasks.length &&
 					tasks.map((task) => (
@@ -82,7 +82,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 							tcount={task.tcount}
 						/>
 					))}
-			</div>
+			</Flex.Container>
 		</>
 	);
 }
