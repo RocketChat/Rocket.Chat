@@ -1638,6 +1638,17 @@ Find users to send a message by email if:
 		return this.find(query, options);
 	}
 
+	countActiveUsersByService(serviceName, options) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${ serviceName }`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
+	}
+
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
 	}
