@@ -81,10 +81,10 @@ async function main(mode: any): Promise<void> {
 
 	switch (mode) {
 		case ModeParam.MAIN:
-			await runMain(config);
+			runMain(config);
 			break;
 		case ModeParam.INSTANCE:
-			await runInstance(config);
+			runInstance(config);
 			break;
 	}
 }
