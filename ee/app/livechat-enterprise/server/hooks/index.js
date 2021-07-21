@@ -20,3 +20,4 @@ import './afterOnHoldChatResumed';
 import './afterReturnRoomAsInquiry';
 import './applyDepartmentRestrictions';
 import './afterForwardChatToAgent';
+import './applySimultaneousChatsRestrictions';
