@@ -15,3 +15,7 @@ interface Window {
 	USE_REST_FOR_DDP_CALLS?: boolean;
 	ECDH_Enabled?: boolean;
 }
+
+interface PromiseConstructor {
+	await<T>(promise: Promise<T>): T;
+}
