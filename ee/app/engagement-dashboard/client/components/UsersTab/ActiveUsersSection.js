@@ -5,25 +5,31 @@ import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-const ActiveUsersSection = () => {
+const ActiveUsersSection = ({ timezone }) => {
 	const t = useTranslation();
-
+	const utc = timezone === 'utc';
+	const formatDate = useFormatDate();
 	const period = useMemo(() => ({
-		start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-		end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-	}), []);
+		start: utc
+			? moment.utc().subtract(30, 'days')
+			: moment().subtract(30, 'days'),
+		end: utc
+			? moment.utc().subtract(1, 'days')
+			: moment().subtract(1, 'days'),
+	}), [utc]);
 
 	const params = useMemo(() => ({
-		start: period.start.clone().subtract(30, 'days').toISOString(),
+		start: period.start.clone().subtract(29, 'days').toISOString(),
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', useMemo(() => params, [params]));
 
 	const [
 		countDailyActiveUsers,
@@ -47,24 +53,6 @@ const ActiveUsersSection = () => {
 
 		const createPoints = () => Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => createPoint(i));
 
-		const distributeValueOverPoints = (value, i, T, array, prev) => {
-			for (let j = 0; j < T; ++j) {
-				const k = i + j;
-
-				if (k >= array.length) {
-					continue;
-				}
-
-				if (k >= 0) {
-					array[k].y += value;
-				}
-
-				if (k === -1) {
-					prev.y += value;
-				}
-			}
-		};
-
 		const dauValues = createPoints();
 		const prevDauValue = createPoint(-1);
 		const wauValues = createPoints();
@@ -72,12 +60,33 @@ const ActiveUsersSection = () => {
 		const mauValues = createPoints();
 		const prevMauValue = createPoint(-1);
 
-		for (const { users, day, month, year } of data.month) {
-			const i = moment.utc([year, month - 1, day, 0, 0, 0, 0]).diff(period.start, 'days');
-			distributeValueOverPoints(users, i, 1, dauValues, prevDauValue);
-			distributeValueOverPoints(users, i, 7, wauValues, prevWauValue);
-			distributeValueOverPoints(users, i, 30, mauValues, prevMauValue);
+		const usersListsMap = data.month.reduce((map, dayData) => {
+			const date = moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day });
+			const dateOffset = date.diff(period.start, 'days');
+			if (dateOffset >= 0) {
+				map[dateOffset] = dayData.usersList;
+				dauValues[dateOffset].y = dayData.users;
+			}
+			return map;
+		}, {});
+
+		const distributeValueOverPoints = (usersListsMap, dateOffset, T, array) => {
+			const usersSet = new Set();
+			for (let k = dateOffset; T > 0; k--, T--) {
+				if (usersListsMap[k]) {
+					usersListsMap[k].forEach((userId) => usersSet.add(userId));
+				}
+			}
+			array[dateOffset].y = usersSet.size;
+		};
+
+		for (let i = 0; i < 30; i++) {
+			distributeValueOverPoints(usersListsMap, i, 7, wauValues);
+			distributeValueOverPoints(usersListsMap, i, 30, mauValues);
 		}
+		prevWauValue.y = wauValues[28].y;
+		prevMauValue.y = mauValues[28].y;
+		prevDauValue.y = dauValues[28].y;
 
 		return [
 			dauValues[dauValues.length - 1].y,
@@ -226,12 +235,15 @@ const ActiveUsersSection = () => {
 									}}
 									enableSlices='x'
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
-										{points.map(({ serieId, data: { y: activeUsers } }) =>
-											<Box key={serieId} fontScale='p2'>
-												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
-										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
-										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
-											</Box>)}
+										<Box>
+											<Box>{formatDate(points[0].data.x)}</Box>
+											{points.map(({ serieId, data: { y: activeUsers } }) =>
+												<Box key={serieId} fontScale='p2'>
+													<Box>{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
+													|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
+													|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}</Box>
+												</Box>)}
+										</Box>
 									</Tile>}
 								/>
 							</Box>

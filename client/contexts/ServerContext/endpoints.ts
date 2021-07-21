@@ -1,3 +1,4 @@
+import { EngagementDashboardActiveUsersEndpoint } from '../../../ee/app/engagement-dashboard/client/contexts/ServerContext/endpoints/EngagementDashboardActiveUsers';
 import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
 import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
 import { ChannelsMembersEndpoint } from './endpoints/v1/channels/members';
@@ -23,6 +24,7 @@ import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
 import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
 import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
@@ -61,11 +63,13 @@ export type ServerEndpoints = {
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
+	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
 	'rooms.info': RoomsInfoEndpoint;
 	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
 	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
+	'canned-responses': CannedResponsesEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
