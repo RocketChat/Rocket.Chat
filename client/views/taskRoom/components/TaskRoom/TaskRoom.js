@@ -48,25 +48,23 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 	};
 
 	return (
-		<Box>
-			<Flex.Container alignItems='center'>
-				<ButtonGroup align='center'>
-					<Button ghost info onClick={() => sortTasks('Creator')}>
-						{'Sort by Creator'}
-					</Button>
-					<Button info onClick={() => sortTasks('Date')}>
-						{'Sort by Date'}
-					</Button>
-					<Button small onClick={() => sortTasks('Status')}>
-						{'Sort by Status'}
-					</Button>
-					<Button primary onClick={handleCreate}>
-						{'Create a task'}
-					</Button>
-				</ButtonGroup>
-			</Flex.Container>
-			<Box>
-				<Flex.Container>
+		<div className='wrapper'>
+			<ButtonGroup align='center'>
+				<Button ghost info onClick={() => sortTasks('Creator')}>
+					{'Sort by Creator'}
+				</Button>
+				<Button info onClick={() => sortTasks('Date')}>
+					{'Sort by Date'}
+				</Button>
+				<Button small onClick={() => sortTasks('Status')}>
+					{'Sort by Status'}
+				</Button>
+				<Button primary onClick={handleCreate}>
+					{'Create a task'}
+				</Button>
+			</ButtonGroup>
+			<Box style={{ overflowY: 'auto', height: '87.5vh' }}>
+				<Flex.Container className='taskRoom_tasksContainer' style={{ overflowY: 'auto' }}>
 					{tasks !== undefined &&
 						tasks.length &&
 						tasks.map((task) => (
@@ -85,6 +83,6 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 						))}
 				</Flex.Container>
 			</Box>
-		</Box>
+		</div>
 	);
 }

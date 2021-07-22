@@ -835,6 +835,7 @@ Meteor.startup(() => {
 
 		template.sendToBottom = function() {
 			wrapper.scrollTo(30, wrapper.scrollHeight);
+			console.log(wrapper, scrollTo);
 			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 		};
 
