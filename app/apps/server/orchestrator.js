@@ -12,14 +12,14 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
-import { AppRealLogsStorage, AppRealStorage, AppSourceStorageCreator } from './storage';
+import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
 let appsSourceStorageType;
-const appsSourceStorageCreator = new AppSourceStorageCreator();
+let appsSourceStorageFilesystemPath;
 
 export class AppServerOrchestrator {
 	constructor() {
@@ -37,7 +37,7 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-		this.appSourceStorage = appsSourceStorageCreator.setSourceStorage(appsSourceStorageType);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -54,7 +54,7 @@ export class AppServerOrchestrator {
 			metadataStorage: this._storage,
 			logStorage: this._logStorage,
 			bridges: this._bridges,
-			sourceStorage: this.appSourceStorage,
+			sourceStorage: this._appSourceStorage,
 		});
 
 		this._communicators = new Map();
@@ -102,8 +102,8 @@ export class AppServerOrchestrator {
 		return this._manager.getExternalComponentManager().getProvidedComponents();
 	}
 
-	setSourceStorage(storageType) {
-		this.getManager().setSourceStorage(appsSourceStorageCreator.setSourceStorage(storageType));
+	setSourceStorage(storageType, filesystemStoragePath) {
+		this._appSourceStorage.setStorage(storageType, filesystemStoragePath);
 	}
 
 	isInitialized() {
@@ -225,13 +225,13 @@ settings.addGroup('General', function() {
 			hidden: false,
 		});
 
-		this.add('Apps_Framework_Source_Package_Storage_Type', 'GridFS', {
+		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
 			type: 'select',
 			values: [{
-				key: 'GridFS',
+				key: 'gridfs',
 				i18nLabel: 'GridFS',
 			}, {
-				key: 'FileSystem',
+				key: 'filesystem',
 				i18nLabel: 'FileSystem',
 			}],
 			public: true,
@@ -244,21 +244,30 @@ settings.addGroup('General', function() {
 			public: true,
 			enableQuery: {
 				_id: 'Apps_Framework_Source_Package_Storage_Type',
-				value: 'FileSystem',
+				value: 'filesystem',
 			},
 			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
 		});
 	});
 });
 
-settings.get('Apps_Framework_Source_Package_Storage_Type', (key, value) => {
+settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
 	if (!Apps.isInitialized()) {
 		// can't call the `setSourceStorage` yet, so the constructor method will pick
-		// up this variable
+		// up these variables
 		appsSourceStorageType = value;
+		appsSourceStorageFilesystemPath = settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path');
 	} else {
-		Apps.setSourceStorage(value);
+		Apps.setSourceStorage(value, settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path'));
 	}
+});
+
+settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
+	if (!Apps.isInitialized()) {
+		return;
+	}
+
+	Apps.setSourceStorage(settings.get('Apps_Framework_Source_Package_Storage_Type'), value);
 });
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
