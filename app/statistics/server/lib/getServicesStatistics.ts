@@ -6,8 +6,8 @@ function getCustomOAuthServices(): Record<string, {
 	mergeRoles: boolean;
 	users: number;
 }> {
-	const customOatuh = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(customOatuh.map(({ key, value }) => {
+	const customOauth = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
+	return Object.fromEntries(customOauth.map(({ key, value }) => {
 		const name = key.replace('Accounts_OAuth_Custom-', '');
 		return [name, {
 			enabled: Boolean(value),
