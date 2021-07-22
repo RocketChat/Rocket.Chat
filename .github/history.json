@@ -63181,6 +63181,38 @@
           ]
         }
       ]
+    },
+    "3.17.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22727",
+          "title": "Regression: Properly force newline in attachment fields",
+          "userLogin": "tassoevan",
+          "description": "I've incorrectly enforcing the newline character in attachment fields, resulting in \"&lt;br /&gt;\" text being rendered.",
+          "contributors": [
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22676",
+          "title": "[NEW] Monitoring Track messages' round trip time",
+          "userLogin": "rodrigok",
+          "description": "Track messages' roundtrip time from backend saves time to the time when received back from the oplog allowing track of oplog slowness.\r\nPrometheus metric: `rocketchat_messages_roundtrip_time`",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   }
 }
