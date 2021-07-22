@@ -7,11 +7,14 @@ function getCustomOAuthServices(): Record<string, {
 	users: number;
 }> {
 	const customOatuh = settings.get(/Accounts_OAuth_Custom-[^-]+$/mi);
-	return Object.fromEntries(customOatuh.map(({ key, value }) => [key, {
-		enabled: Boolean(value),
-		mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
-		users: Users.countActiveUsersByService(name),
-	}]));
+	return Object.fromEntries(customOatuh.map(({ key, value }) => {
+		const name = key.replace('Accounts_OAuth_Custom-', '');
+		return [name, {
+			enabled: Boolean(value),
+			mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
+			users: Users.countActiveUsersByService(name),
+		}];
+	}));
 }
 
 export function getServicesStatistics(): Record<string, unknown> {
