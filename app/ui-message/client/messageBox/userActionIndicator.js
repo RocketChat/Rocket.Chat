@@ -15,21 +15,19 @@ Template.userActionIndicator.helpers({
 		if (_.isEmpty(roomAction)) {
 			return [];
 		}
-		const userActions = [];
 		const activities = Object.keys(roomAction) || {};
-		activities.forEach((key) => {
+		const userActions = activities.map((key) => {
 			const action = key.split('-')[1];
 			const users = Object.keys(roomAction[key]);
 			if (users.length < 1) {
 				return;
 			}
 			if (users.length === 1) {
-				userActions.push({
+				return {
 					action,
 					multi: false,
 					users: users[0],
-				});
-				return;
+				};
 			}
 			let last = users.pop();
 			if (users.length >= maxUsernames) {
@@ -37,12 +35,12 @@ Template.userActionIndicator.helpers({
 			}
 			let usernames = users.slice(0, maxUsernames - 1).join(', ');
 			usernames = [usernames, last];
-			userActions.push({
+			return {
 				action,
 				multi: true,
 				users: usernames.join(` ${ t('and') } `),
-			});
-		});
+			};
+		}).filter((i) => i);
 		if (_.isEmpty(userActions)) {
 			return [];
 		}
