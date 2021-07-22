@@ -4,6 +4,7 @@ import React, { useMemo, useCallback, useState, FC, ReactNode, ReactElement } fr
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
+import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
@@ -11,6 +12,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+import { AsyncStatePhase } from '../../../../client/lib/asyncState';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponseFilter from './CannedResponseFilter';
 import CannedResponseNew from './CannedResponseNew';
@@ -82,6 +84,11 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	const { value: data, reload } = useEndpointData('canned-responses', query);
+	const {
+		value: totalData,
+		phase: totalDataPhase,
+		reload: totalDataReload,
+	} = useEndpointData('canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
@@ -166,22 +173,32 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} reload={reload} />
+				<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload],
+		[getTime, onRowClick, reload, totalDataReload],
 	);
 
 	if (context === 'edit' && id) {
-		return <CannedResponseEditWithData reload={reload} cannedResponseId={id} />;
+		return (
+			<CannedResponseEditWithData
+				reload={reload}
+				totalDataReload={totalDataReload}
+				cannedResponseId={id}
+			/>
+		);
 	}
 
 	if (context === 'new') {
-		return <CannedResponseNew reload={reload} />;
+		return <CannedResponseNew reload={reload} totalDataReload={totalDataReload} />;
 	}
 
 	if (!canViewCannedResponses) {
 		return <NotAuthorizedPage />;
+	}
+
+	if (totalDataPhase === AsyncStatePhase.LOADING) {
+		return <PageSkeleton></PageSkeleton>;
 	}
 
 	return (
@@ -204,6 +221,7 @@ const CannedResponsesRoute: FC = () => {
 			header={header}
 			renderRow={renderRow}
 			title={t('Canned_Responses')}
+			totalCannedResponses={totalData?.total || 0}
 		></CannedResponsesPage>
 	);
 };

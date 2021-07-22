@@ -10,7 +10,8 @@ import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepart
 const CannedResponseEditWithData: FC<{
 	cannedResponseId: string;
 	reload: () => void;
-}> = ({ cannedResponseId, reload }) => {
+	totalDataReload: () => void;
+}> = ({ cannedResponseId, reload, totalDataReload }) => {
 	const {
 		value: data,
 		phase: state,
@@ -30,7 +31,13 @@ const CannedResponseEditWithData: FC<{
 			</Callout>
 		);
 	}
-	return <CannedResponseEditWithDepartmentData data={data} reload={reload} />;
+	return (
+		<CannedResponseEditWithDepartmentData
+			data={data}
+			reload={reload}
+			totalDataReload={totalDataReload}
+		/>
+	);
 };
 
 export default CannedResponseEditWithData;
