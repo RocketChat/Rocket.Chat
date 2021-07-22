@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
@@ -25,7 +25,7 @@ API.v1.addRoute('livechat/room', {
 		try {
 			check(this.queryParams, extraCheckParams);
 
-			const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+			const { token, rid: roomId, agentId, useDepartment, ...extraParams } = this.queryParams;
 
 			const guest = findGuest(token);
 			if (!guest) {
@@ -40,7 +40,13 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			const rid = roomId || Random.id();
-			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+
+			const departmentParam = useDepartment ? guest.department : undefined;
+			let room = Promise.await(findOpenRoom(token, departmentParam));
+
+			if (!room) {
+				room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			}
 
 			return API.v1.success(room);
 		} catch (e) {
