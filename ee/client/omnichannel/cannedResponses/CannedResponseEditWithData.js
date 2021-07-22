@@ -1,5 +1,5 @@
 import { Callout } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -8,8 +8,11 @@ import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import CannedResponseEdit from './CannedResponseEdit';
 
 function CannedResponseEditWithData({ cannedResponseId, reload, title }) {
-	const query = useMemo(() => ({ _id: cannedResponseId }), [cannedResponseId]);
-	const { value: data, phase: state, error } = useEndpointData('canned-responses.getOne', query);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(`canned-responses/${cannedResponseId}`);
 
 	const t = useTranslation();
 
