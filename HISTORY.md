@@ -1,6 +1,33 @@
 
 # 3.17.0 (Under Release Candidate Process)
 
+## 3.17.0-rc.1
+`2021-07-21  ·  1 🎉  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Monitoring Track messages' round trip time ([#22676](https://github.com/RocketChat/Rocket.Chat/pull/22676))
+
+  Track messages' roundtrip time from backend saves time to the time when received back from the oplog allowing track of oplog slowness.
+  Prometheus metric: `rocketchat_messages_roundtrip_time`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Properly force newline in attachment fields ([#22727](https://github.com/RocketChat/Rocket.Chat/pull/22727))
+
+  I've incorrectly enforcing the newline character in attachment fields, resulting in "&lt;br /&gt;" text being rendered.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@rodrigok](https://github.com/rodrigok)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 3.17.0-rc.0
 `2021-07-21  ·  6 🎉  ·  18 🚀  ·  35 🐛  ·  25 🔍  ·  28 👩‍💻👨‍💻`
 
