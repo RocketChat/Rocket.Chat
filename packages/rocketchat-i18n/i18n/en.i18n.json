@@ -4481,6 +4481,7 @@
   "WebRTC_monitor_call_from_%s": "Monitor call from %s",
   "WebRTC_Servers": "STUN/TURN Servers",
   "WebRTC_Servers_Description": "A list of STUN and TURN servers separated by comma.<br/>Username, password and port are allowed in the format `username:password@stun:host:port` or `username:password@turn:host:port`.",
+  "WebRTC_call_ended_message": "<i class=\"icon-phone\"></i> Call ended at __endTime__ - Lasted __callDuration__",
   "Website": "Website",
   "Wednesday": "Wednesday",
   "Weekly_Active_Users": "Weekly Active Users",

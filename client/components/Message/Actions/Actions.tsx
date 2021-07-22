@@ -1,7 +1,7 @@
 import { IconProps, ButtonGroup } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
+import { TranslationKey } from '../../../contexts/TranslationContext';
 import Content from '../Metrics/Content';
 import Action from './Action';
 
@@ -14,15 +14,14 @@ type ActionOptions = {
 	i18nLabel?: TranslationKey;
 	label?: string;
 	runAction?: RunAction;
+	actionLinksAlignment?: string;
 };
 
 const Actions: FC<{ actions: Array<ActionOptions>; runAction: RunAction; mid: string }> = ({
 	actions,
 	runAction,
 }) => {
-	const t = useTranslation();
-
-	const alignment = actions[0]?.label === t('Join_call') ? 'flex-start' : 'center';
+	const alignment = actions[0]?.actionLinksAlignment || 'center';
 
 	return (
 		<Content width='full' justifyContent={alignment}>

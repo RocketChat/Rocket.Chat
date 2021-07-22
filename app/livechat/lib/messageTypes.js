@@ -89,15 +89,15 @@ MessageTypes.registerType({
 			const hh = parseInt(Math.abs(message.endTs - message.ts) / 36e5);
 			const mm = parseInt(Math.abs(message.endTs - message.ts) / 6e4) % 60;
 			const ss = parseInt(Math.abs(message.endTs - message.ts) / 1000) % 60;
-			let callDuration = 'Lasted';
+			let callDuration = '';
 			if (hh > 0) {
-				callDuration += ` ${ hh } hours ${ mm } minutes ${ ss } seconds.`;
+				callDuration += `${ hh } hours ${ mm } minutes ${ ss } seconds.`;
 			} else if (mm > 0) {
-				callDuration += ` ${ mm } minutes ${ ss } seconds.`;
+				callDuration += `${ mm } minutes ${ ss } seconds.`;
 			} else {
-				callDuration += ` ${ ss } seconds.`;
+				callDuration += `${ ss } seconds.`;
 			}
-			return `<i class="icon-phone"></i> Call ended at ${ moment(message.endTs).format('h:mm A') } - ${ callDuration }`;
+			return TAPi18n.__('WebRTC_call_ended_message', { callDuration, endTime: moment(message.endTs).format('h:mm A') });
 		}
 		return message.msg;
 	},
