@@ -1,10 +1,12 @@
 import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket, ObjectId } from 'mongodb';
+import { GridFSBucket, GridFSBucketWriteStream, ObjectId } from 'mongodb';
 import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 
 export class AppGridFSSourceStorage extends AppSourceStorage {
+	private pathPrefix = 'GridFS:/';
+
 	private bucket: GridFSBucket;
 
 	constructor() {
@@ -19,12 +21,12 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		});
 	}
 
-	public async store(item: IAppStorageItem, zip: Buffer): Promise<boolean> {
+	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const fileId = this.itemToId(item);
-			const writeStream = this.bucket.openUploadStreamWithId(fileId, fileId.toHexString())
-				.on('close', () => resolve(true))
-				.on('error', reject);
+			const filename = this.itemToFilename(item);
+			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(filename)
+				.on('finish', () => resolve(this.idToPath(writeStream.id)))
+				.on('error', (error) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
@@ -32,34 +34,42 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	public async fetch(item: IAppStorageItem): Promise<Buffer> {
-		return streamToBuffer(this.bucket.openDownloadStream(this.itemToId(item)));
+		return streamToBuffer(this.bucket.openDownloadStream(this.itemToObjectId(item)));
 	}
 
-	public async update(item: IAppStorageItem, zip: Buffer): Promise<boolean> {
+	public async update(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const fileId = this.itemToId(item);
-			const writeStream = this.bucket.openUploadStreamWithId(fileId, fileId.toHexString())
-				.on('close', () => resolve(true))
-				.on('error', reject);
+			const fileId = this.itemToFilename(item);
+			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(fileId)
+				.on('finish', () => resolve(this.idToPath(writeStream.id)))
+				.on('error', (error) => reject(error));
 
 			writeStream.write(zip);
 			writeStream.end();
 		});
 	}
 
-	public async remove(item: IAppStorageItem): Promise<boolean> {
+	public async remove(item: IAppStorageItem): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this.bucket.delete(this.itemToId(item), (error) => {
+			this.bucket.delete(this.itemToObjectId(item), (error) => {
 				if (error) {
 					return reject(error);
 				}
 
-				resolve(true);
+				resolve();
 			});
 		});
 	}
 
-	private itemToId(item: IAppStorageItem): ObjectId {
-		return new ObjectId(item.id.substr(0, 12));
+	private itemToFilename(item: IAppStorageItem): string {
+		return `${ item.info.nameSlug }-v{ item.info.version }.package`;
+	}
+
+	private idToPath(id: GridFSBucketWriteStream['id']): string {
+		return this.pathPrefix + id;
+	}
+
+	private itemToObjectId(item: IAppStorageItem): ObjectId {
+		return new ObjectId(item.sourcePath?.substring(this.pathPrefix.length));
 	}
 }
