@@ -5,6 +5,7 @@ import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
 
 const CannedResponseEditWithData: FC<{
@@ -30,7 +31,12 @@ const CannedResponseEditWithData: FC<{
 			</Callout>
 		);
 	}
-	return <CannedResponseEditWithDepartmentData data={data} reload={reload} />;
+
+	if (data?.cannedResponse?.scope === 'department') {
+		return <CannedResponseEditWithDepartmentData data={data} reload={reload} />;
+	}
+
+	return <CannedResponseEdit data={data} reload={reload} />;
 };
 
 export default CannedResponseEditWithData;
