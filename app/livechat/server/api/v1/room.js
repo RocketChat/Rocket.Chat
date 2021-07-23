@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams, findOpenRoom } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams, findOpenRoom, findDepartment, getRoomById, updateGuest } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
@@ -18,6 +18,7 @@ API.v1.addRoute('livechat/room', {
 			token: String,
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
+			departmentId: Match.Maybe(String),
 		};
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
@@ -25,7 +26,7 @@ API.v1.addRoute('livechat/room', {
 		try {
 			check(this.queryParams, extraCheckParams);
 
-			const { token, rid: roomId, agentId, useDepartment, ...extraParams } = this.queryParams;
+			const { token, rid: roomId, agentId, departmentId, ...extraParams } = this.queryParams;
 
 			const guest = findGuest(token);
 			if (!guest) {
@@ -41,10 +42,19 @@ API.v1.addRoute('livechat/room', {
 
 			const rid = roomId || Random.id();
 
-			const departmentParam = useDepartment ? guest.department : undefined;
-			let room = Promise.await(findOpenRoom(token, departmentParam));
+			if (departmentId && departmentId.trim() && !findDepartment(departmentId, { _id: 1 })) {
+				throw new Meteor.Error('invalid-department');
+			}
 
-			if (!room) {
+			let room = Promise.await(findOpenRoom(token, departmentId));
+			if (room) {
+				room = Promise.await(getRoomById(room._id));
+				room = { room, newRoom: false };
+			} else {
+				if (guest.department !== departmentId) {
+					guest.department = departmentId;
+					Promise.await(updateGuest(token, { department: departmentId }));
+				}
 				room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
 			}
 
