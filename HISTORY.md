@@ -1,6 +1,30 @@
 
 # 3.17.0 (Under Release Candidate Process)
 
+## 3.17.0-rc.2
+`2021-07-22  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Prevent custom status from being visible in sequential messages ([#22733](https://github.com/RocketChat/Rocket.Chat/pull/22733))
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/126641946-866dae96-1983-43a5-b689-b24670473ad0.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/126641752-3163eb95-1cd4-4d99-a61a-4d06d9e7e13e.png)
+
+- Regression: Rocket.Chat crashes on startup if there's a Custom OAuth service configured ([#22740](https://github.com/RocketChat/Rocket.Chat/pull/22740))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 ## 3.17.0-rc.1
 `2021-07-21  ·  1 🎉  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
