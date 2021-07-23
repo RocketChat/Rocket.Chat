@@ -63213,6 +63213,36 @@
           ]
         }
       ]
+    },
+    "3.17.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22740",
+          "title": "Regression: Rocket.Chat crashes on startup if there's a Custom OAuth service configured",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "22733",
+          "title": "Regression: Prevent custom status from being visible in sequential messages",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/126641946-866dae96-1983-43a5-b689-b24670473ad0.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/126641752-3163eb95-1cd4-4d99-a61a-4d06d9e7e13e.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
