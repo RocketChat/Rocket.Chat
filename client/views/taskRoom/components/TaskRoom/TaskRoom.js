@@ -1,5 +1,5 @@
 import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { useSetModal } from '../../../../contexts/ModalContext';
 import TaskDetailsModal from '../../taskDetailsModal';
@@ -20,6 +20,12 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 			></CreateTaskModal>,
 		);
 	};
+
+	const tasksWrapper = useRef(null);
+
+	useEffect(() => {
+		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollTop);
+	}, []);
 
 	const sortTasks = (id) => {
 		const sortedTasks = [...tasks];
@@ -63,7 +69,11 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 					{'Create a task'}
 				</Button>
 			</ButtonGroup>
-			<Box style={{ overflowY: 'auto', height: '87.5vh' }}>
+			<Box
+				className='tasks__wrapper'
+				style={{ overflowY: 'auto', height: '87.5vh' }}
+				ref={tasksWrapper}
+			>
 				<Flex.Container className='taskRoom_tasksContainer' style={{ overflowY: 'auto' }}>
 					{tasks !== undefined &&
 						tasks.length &&

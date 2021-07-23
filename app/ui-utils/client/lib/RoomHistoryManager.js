@@ -158,7 +158,7 @@ export const RoomHistoryManager = new class extends Emitter {
 	async getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
-
+		console.log(room);
 		if (room.hasMore.curValue !== true) {
 			return;
 		}
