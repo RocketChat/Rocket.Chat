@@ -102,8 +102,8 @@ export class AppServerOrchestrator {
 		return this._manager.getExternalComponentManager().getProvidedComponents();
 	}
 
-	setSourceStorage(storageType, filesystemStoragePath) {
-		this._appSourceStorage.setStorage(storageType, filesystemStoragePath);
+	getAppSourceStorage() {
+		return this._appSourceStorage;
 	}
 
 	isInitialized() {
@@ -253,21 +253,18 @@ settings.addGroup('General', function() {
 
 settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
 	if (!Apps.isInitialized()) {
-		// can't call the `setSourceStorage` yet, so the constructor method will pick
-		// up these variables
 		appsSourceStorageType = value;
-		appsSourceStorageFilesystemPath = settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path');
 	} else {
-		Apps.setSourceStorage(value, settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path'));
+		Apps.getAppSourceStorage().setStorage(value);
 	}
 });
 
 settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
 	if (!Apps.isInitialized()) {
-		return;
+		appsSourceStorageFilesystemPath = value;
+	} else {
+		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
 	}
-
-	Apps.setSourceStorage(settings.get('Apps_Framework_Source_Package_Storage_Type'), value);
 });
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {

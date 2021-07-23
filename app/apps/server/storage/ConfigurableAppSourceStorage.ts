@@ -10,19 +10,19 @@ export class ConfigurableAppSourceStorage extends AppSourceStorage {
 
 	private storage: AppSourceStorage;
 
-	constructor(storageType: string, filesystemStoragePath?: string) {
+	constructor(readonly storageType: string, filesystemStoragePath: string) {
 		super();
 
 		this.filesystem = new AppFileSystemSourceStorage();
 		this.gridfs = new AppGridFSSourceStorage();
 
-		this.setStorage(storageType, filesystemStoragePath);
+		this.setStorage(storageType);
+		this.setFileSystemStoragePath(filesystemStoragePath);
 	}
 
-	public setStorage(type: string, filesystemStoragePath?: string): void {
+	public setStorage(type: string): void {
 		switch (type) {
 			case 'filesystem':
-				this.filesystem.setPath(filesystemStoragePath as string);
 				this.storage = this.filesystem;
 				break;
 			case 'gridfs':
@@ -31,13 +31,12 @@ export class ConfigurableAppSourceStorage extends AppSourceStorage {
 		}
 	}
 
+	public setFileSystemStoragePath(path: string): void {
+		this.filesystem.setPath(path);
+	}
+
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {
-		try {
-			return this.storage.store(item, zip);
-		} catch (err) {
-			console.log('wth', err);
-			throw err;
-		}
+		return this.storage.store(item, zip);
 	}
 
 	public async fetch(item: IAppStorageItem): Promise<Buffer> {
