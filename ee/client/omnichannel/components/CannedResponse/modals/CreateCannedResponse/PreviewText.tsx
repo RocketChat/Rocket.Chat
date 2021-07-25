@@ -5,7 +5,7 @@ import React, { FC, memo } from 'react';
 import MessageBody from '../../../../../../../client/components/Message/Body';
 
 const PreviewText: FC<{ text: any }> = ({ text }) => {
-	const msg = parser(text) as any;
+	const msg = text ? (parser(text) as any) : [];
 
 	return (
 		<Box
