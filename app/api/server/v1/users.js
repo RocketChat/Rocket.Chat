@@ -26,6 +26,7 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
+import { getBadgeCount } from '../../../lib/server/functions/notifications/mobile';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -185,6 +186,23 @@ API.v1.addRoute('users.getPresence', { authRequired: true }, {
 
 		return API.v1.success({
 			presence: user.status,
+		});
+	},
+});
+
+API.v1.addRoute('users.unreadCount', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-full-other-user-info')) {
+			return API.v1.unauthorized();
+		}
+
+		const user = this.getUserFromParams();
+		const unreadCount = Promise.await(getBadgeCount(user._id)) || 0;
+
+		return API.v1.success({
+			data: {
+				unread: unreadCount,
+			},
 		});
 	},
 });

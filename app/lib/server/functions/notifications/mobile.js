@@ -13,7 +13,7 @@ Meteor.startup(() => {
 	SubscriptionRaw = Subscriptions.model.rawCollection();
 });
 
-async function getBadgeCount(userId) {
+export async function getBadgeCount(userId) {
 	const [result = {}] = await SubscriptionRaw.aggregate([
 		{ $match: { 'u._id': userId, archived: { $ne: true } } },
 		{
