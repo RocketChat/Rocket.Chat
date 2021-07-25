@@ -10,14 +10,15 @@ import { useSetModal } from '../../../../../../client/contexts/ModalContext';
 import { useCurrentRoute, useRoute } from '../../../../../../client/contexts/RouterContext';
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
-import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
+import { useOmnichannelRoom } from '../../../../../../client/views/room/contexts/RoomContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
 import CreateCannedResponse from '../../CannedResponse/modals';
+import { parsePlaceHolder } from '../../CannedResponse/parsePlaceholder';
 import CannedResponseList from './CannedResponseList';
 
 export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
-	const room = useRoom();
+	const room = useOmnichannelRoom();
 	const [name] = useCurrentRoute();
 	const channelRoute = useRoute(name || '');
 	const setModal = useSetModal();
@@ -53,6 +54,8 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 		e.preventDefault();
 		e.stopPropagation();
 
+		text = parsePlaceHolder(text, room);
+
 		const { input } = chatMessages[room._id];
 
 		input.value = text;
@@ -60,7 +63,7 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 	};
 
 	const onClickCreate = (): void => {
-		setModal(<CreateCannedResponse reloadCannedList={reload} />);
+		setModal(<CreateCannedResponse room={room} reloadCannedList={reload} />);
 	};
 
 	return (
@@ -79,6 +82,7 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 			onClickItem={onClickItem}
 			onClickCreate={onClickCreate}
 			reload={reload}
+			room={room}
 		/>
 	);
 };

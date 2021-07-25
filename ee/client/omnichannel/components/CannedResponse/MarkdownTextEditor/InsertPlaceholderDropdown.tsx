@@ -50,11 +50,12 @@ const InsertPlaceholderDropdown: FC<{
 						{t('Email')}
 					</Box>
 				</Box>
-				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.phone')}>
+				{/* There is no phone information in livechat first info */}
+				{/* <Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.phone')}>
 					<Box mb='4px' style={{ width: '100%' }} fontScale='p1'>
 						{t('Phone')}
 					</Box>
-				</Box>
+				</Box> */}
 			</Box>
 			<Divider />
 			<Box textTransform='uppercase' fontScale='c1' fontSize='10px'>

@@ -5,6 +5,7 @@ import React, { FC } from 'react';
 import AutoCompleteDepartment from '../../../../../client/components/AutoCompleteDepartment';
 import Tags from '../../../../../client/components/Omnichannel/Tags';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
+import { IOmnichannelRoom } from '../../../../../definition/IRoom';
 import MarkdownTextEditor from '../../components/CannedResponse/MarkdownTextEditor';
 import PreviewText from '../../components/CannedResponse/modals/CreateCannedResponse/PreviewText';
 import SharingOptions from '../../components/CannedResponse/modals/CreateCannedResponse/SharingOptions';
@@ -18,6 +19,7 @@ const CannedResponseForm: FC<{
 	radioDescription: string;
 	onPreview: () => void;
 	previewState: boolean;
+	room?: IOmnichannelRoom;
 }> = ({
 	values,
 	handlers,
@@ -27,6 +29,7 @@ const CannedResponseForm: FC<{
 	onPreview,
 	previewState,
 	isManager,
+	room,
 }) => {
 	const { shortcut, text, scope, tags, departmentId } = values;
 	const { handleShortcut, handleText, handleTags, handleDepartmentId } = handlers;
@@ -59,7 +62,7 @@ const CannedResponseForm: FC<{
 					</Box>
 				</Field.Label>
 				{previewState ? (
-					<PreviewText text={text} />
+					<PreviewText text={text} room={room} />
 				) : (
 					<MarkdownTextEditor value={text} onChange={handleText} />
 				)}

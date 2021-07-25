@@ -2,6 +2,7 @@ import { Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import React, { FC, memo, ReactNode } from 'react';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
+import { IOmnichannelRoom } from '../../../../../../../definition/IRoom';
 import CannedResponseForm from '../../../../cannedResponses/components/cannedResponseForm';
 
 const CreateCannedResponseModal: FC<{
@@ -16,6 +17,7 @@ const CreateCannedResponseModal: FC<{
 	onSave: () => void;
 	onPreview: () => void;
 	previewState: boolean;
+	room: IOmnichannelRoom;
 }> = ({
 	isManager,
 	values,
@@ -28,6 +30,7 @@ const CreateCannedResponseModal: FC<{
 	onSave,
 	onPreview,
 	previewState,
+	room,
 }) => {
 	const t = useTranslation();
 
@@ -57,6 +60,7 @@ const CreateCannedResponseModal: FC<{
 					radioDescription={radioDescription}
 					onPreview={onPreview}
 					previewState={previewState}
+					room={room}
 				></CannedResponseForm>
 			</Modal.Content>
 			<Modal.Footer>

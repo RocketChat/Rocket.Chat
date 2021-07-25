@@ -17,7 +17,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Inquiry already taken', { method: 'livechat:takeInquiry' });
 		}
 
-		const user = Users.findOneById(Meteor.userId(), { fields: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 } });
+		const user = Users.findOneById(Meteor.userId(), { fields: { _id: 1, username: 1, name: 1, emails: 1, roles: 1, status: 1, statusLivechat: 1 } });
 		if (!userCanTakeInquiry(user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:takeInquiry' });
 		}
@@ -25,6 +25,8 @@ Meteor.methods({
 		const agent = {
 			agentId: user._id,
 			username: user.username,
+			name: user.name,
+			emails: user.emails,
 		};
 
 		return RoutingManager.takeInquiry(inquiry, agent, options);

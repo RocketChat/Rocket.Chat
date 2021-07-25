@@ -17,6 +17,7 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useTabContext } from '../../../../../../client/views/room/providers/ToolboxProvider';
 import { ILivechatDepartment } from '../../../../../../definition/ILivechatDepartment';
 import { IOmnichannelCannedResponse } from '../../../../../../definition/IOmnichannelCannedResponse';
+import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 
@@ -35,6 +36,7 @@ const CannedResponseList: FC<{
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
+	room: IOmnichannelRoom;
 }> = ({
 	loadMoreItems,
 	cannedItems,
@@ -50,6 +52,7 @@ const CannedResponseList: FC<{
 	onClickCreate,
 	onClickUse,
 	reload,
+	room,
 }) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -125,6 +128,7 @@ const CannedResponseList: FC<{
 						onClickBack={onClickItem}
 						onClickUse={onClickUse}
 						reload={reload}
+						room={room}
 					/>
 				</VerticalBar.InnerContent>
 			)}

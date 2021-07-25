@@ -6,12 +6,14 @@ import { useEndpoint } from '../../../../../../../client/contexts/ServerContext'
 import { useToastMessageDispatch } from '../../../../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../../../../client/hooks/useForm';
+import { IOmnichannelRoom } from '../../../../../../../definition/IRoom';
 import CreateCannedResponseModal from './CreateCannedResponseModal';
 
-const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> = ({
-	data,
-	reloadCannedList,
-}) => {
+const WrapCreateCannedResponseModal: FC<{
+	room: IOmnichannelRoom;
+	data?: any;
+	reloadCannedList?: any;
+}> = ({ room, data, reloadCannedList }) => {
 	const t = useTranslation();
 	const closeModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -117,6 +119,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 			onSave={onSave}
 			onPreview={onPreview}
 			previewState={preview}
+			room={room}
 		/>
 	);
 };

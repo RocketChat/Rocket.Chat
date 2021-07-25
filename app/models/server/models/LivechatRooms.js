@@ -561,6 +561,8 @@ export class LivechatRooms extends Base {
 				servedBy: {
 					_id: newAgent.agentId,
 					username: newAgent.username,
+					name: newAgent.name,
+					emails: newAgent.emails,
 					ts: new Date(),
 				},
 			},

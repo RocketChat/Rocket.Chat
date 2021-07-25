@@ -74,12 +74,17 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	t: 'l';
 	v: {
 		_id?: string;
+		name: string;
+		visitorEmails: {address: string}[];
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 	};
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		username: IUser['username'];
+		name: IUser['name'];
+		emails: IUser['emails'];
 	};
 	onHold?: boolean;
 	departmentId?: string;

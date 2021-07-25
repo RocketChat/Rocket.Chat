@@ -34,7 +34,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 	}));
 
 	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
-	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const { _id, username, token, department: departmentId, status = 'online', visitorEmails } = guest;
 
 	const room = Object.assign({
 		_id: rid,
@@ -48,6 +48,8 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		v: {
 			_id,
 			username,
+			name,
+			visitorEmails,
 			token,
 			status,
 		},
