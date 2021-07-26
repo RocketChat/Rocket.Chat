@@ -1,6 +1,4 @@
 import VoiceRoomClient from '.';
-import { IVoiceRoomPeer } from '../../../definition/IVoiceRoomPeer';
-
 
 type WsConnectionState = 'wsconnecting' | 'wsconnected' | 'disconnecting' | 'disconnected' | 'updating-peers';
 type MediasoupConnectionState = 'connecting' | 'connected' | 'updating-peers';
@@ -30,8 +28,3 @@ export type ErrorState = {
 }
 
 export type State = InitialState | MediasoupState | ErrorState | WsState;
-
-export type PeerQueryType = {
-	getCurrentValue: () => Array<IVoiceRoomPeer>;
-	subscribe: (callback: () => void) => (() => void);
-}
