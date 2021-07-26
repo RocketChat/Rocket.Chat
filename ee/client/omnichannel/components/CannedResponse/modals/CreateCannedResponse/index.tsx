@@ -94,7 +94,10 @@ const WrapCreateCannedResponseModal: FC<{
 				...(tags.length > 0 && { tags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
-			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Created') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t(_id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
+			});
 			closeModal(null);
 			reloadCannedList && reloadCannedList();
 		} catch (error) {

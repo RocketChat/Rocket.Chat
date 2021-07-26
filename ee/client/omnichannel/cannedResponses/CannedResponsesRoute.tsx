@@ -172,10 +172,8 @@ const CannedResponsesRoute: FC = () => {
 		[getTime, onRowClick, reload],
 	);
 
-	if (context === 'edit') {
-		return (
-			<CannedResponseEditWithData reload={reload} cannedResponseId={id} title={t('Edit_Tag')} />
-		);
+	if (context === 'edit' && id) {
+		return <CannedResponseEditWithData reload={reload} cannedResponseId={id} />;
 	}
 
 	if (context === 'new') {
