@@ -37,6 +37,7 @@ export const useCannedResponseList = (
 					['global', 'user'].find((option) => option === options.type) && { scope: options.type }),
 				...(options.type &&
 					!['global', 'user', 'all'].find((option) => option === options.type) && {
+						scope: 'department',
 						departmentId: options.type,
 					}),
 				offset: start,
