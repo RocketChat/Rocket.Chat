@@ -16,9 +16,10 @@ import CannedResponseForm from './components/cannedResponseForm';
 const CannedResponseEdit: FC<{
 	data?: CannedResponseEndpointGetReturn;
 	reload: () => void;
+	totalDataReload: () => void;
 	isNew?: boolean;
 	departmentData?: LivechatDepartmentSingleGetReturn;
-}> = ({ data, reload, isNew = false, departmentData = {} }) => {
+}> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const Route = useRoute('omnichannel-canned-responses');
@@ -116,10 +117,11 @@ const CannedResponseEdit: FC<{
 				context: '',
 			});
 			reload();
+			totalDataReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload]);
+	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 
 	const onPreview = (): void => {
 		setPreview(!preview);

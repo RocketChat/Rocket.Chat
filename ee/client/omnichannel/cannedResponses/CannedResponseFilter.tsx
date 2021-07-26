@@ -7,8 +7,8 @@ import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 type CannedResponsesFilterProps = {
 	sharingValue: string;
-	createdByValue: { value: string; label: string };
-	tagsValue: string;
+	createdByValue: string;
+	tagsValue: Array<{ value: string; label: string }>;
 	shortcutValue: string;
 	setSharing: (eventOrValue: unknown) => void;
 	setCreatedBy: (eventOrValue: unknown) => void;
