@@ -209,11 +209,10 @@ const NewUsersSection = ({ timezone }) => {
 											},
 										},
 										tooltip: {
-											container: {
-												backgroundColor: '#1F2329',
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-											},
+											backgroundColor: '#1F2329',
+											boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+											borderRadius: 2,
+											padding: 4,
 										},
 									}}
 									tooltip={({ value, indexValue }) => <Box fontScale='p2' color='alternative'>
