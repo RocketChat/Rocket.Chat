@@ -3,19 +3,22 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { useRole } from '../../../../client/contexts/AuthorizationContext';
+import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
+import { LivechatDepartmentSingleGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/livechat/departmentSingle';
+import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{
-	data: any;
+	data?: CannedResponseEndpointGetReturn;
 	reload: () => void;
-	isNew: boolean;
-}> = ({ data, reload, isNew = false }) => {
+	isNew?: boolean;
+	departmentData?: LivechatDepartmentSingleGetReturn;
+}> = ({ data, reload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const Route = useRoute('omnichannel-canned-responses');
@@ -28,7 +31,7 @@ const CannedResponseEdit: FC<{
 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
-	const hasManagerRole = useRole('livechat-manager');
+	const hasManagerPermission = usePermission('view-all-canned-responses');
 
 	const form = useForm({
 		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
@@ -38,7 +41,7 @@ const CannedResponseEdit: FC<{
 		scope: data ? data.cannedResponse.scope : 'user',
 		departmentId:
 			data && data.cannedResponse && data.cannedResponse.departmentId
-				? data.cannedResponse.departmentId
+				? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
 				: '',
 	});
 
@@ -149,7 +152,7 @@ const CannedResponseEdit: FC<{
 			<Page.ScrollableContentWithShadow fontScale='p1'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
-						isManager={hasManagerRole}
+						isManager={hasManagerPermission}
 						values={values}
 						handlers={handlers}
 						errors={errors}
