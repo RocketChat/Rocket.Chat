@@ -1,40 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { useSubscription } from 'use-subscription';
 
-// import { useUserRoom } from '../../../client/contexts/UserContext';
-
-import VoiceRoomClient from '.';
+import { ConnectionState, ErrorState, InitialState, MediasoupState, State, WsState } from './types';
 import { createVoiceClient } from './util';
 import { IRoom } from '../../../definition/IRoom';
-
-type WsConnectionState = 'wsconnecting' | 'wsconnected' | 'disconnecting' | 'disconnected' | 'updating-peers';
-type MediasoupConnectionState = 'connecting' | 'connected' | 'updating-peers';
-
-type ConnectionState = MediasoupConnectionState | 'notStarted' | 'error' | WsConnectionState;
-
-type InitialState = {
-	state: 'notStarted';
-}
-
-type WsState = {
-	state: WsConnectionState;
-	rid: string;
-	wsClient: VoiceRoomClient;
-}
-
-type MediasoupState = {
-	state: MediasoupConnectionState;
-	rid: string;
-	mediasoupClient: VoiceRoomClient;
-	wsClient: VoiceRoomClient | null;
-}
-
-type ErrorState = {
-	state: 'error';
-	err: any;
-}
-
-type State = InitialState | MediasoupState | ErrorState | WsState;
+import { IVoiceRoomPeer } from '../../../definition/IVoiceRoomPeer';
 
 export const isMediasoupState = (state: State): state is MediasoupState =>
 	['connected', 'connecting'].includes(state.state);
@@ -42,42 +12,58 @@ export const isMediasoupState = (state: State): state is MediasoupState =>
 export const isWsState = (state: State): state is WsState =>
 	['wsconnecting', 'wsconnected', 'disconnecting', 'disconnected'].includes(state.state);
 
+export const isInitialState = (state: State): state is InitialState => state.state === 'notStarted';
+
+export const isErrorState = (state: State): state is ErrorState => state.state === 'error';
+
 export class VoiceRoomManager extends Emitter<{
-	'click': undefined;
-	'change': ConnectionState | 'peer-change';
+	'change': ConnectionState;
+	'mediasoup-peer-change': undefined;
+	'ws-peer-change': undefined;
 }> {
 	public state: State = {
 		state: 'notStarted',
 	}
 
+	public mediasoupPeers: Array<IVoiceRoomPeer> = [];
+
+	public wsPeers: Array<IVoiceRoomPeer> = [];
+
 	constructor() {
 		super();
 	}
 
-	public setState(state: ConnectionState): void {
-		this.state.state = state;
-		this.emit('change', state);
+	private setMediasoupPeers(peers: Array<IVoiceRoomPeer>): void {
+		this.mediasoupPeers = [...peers];
+		this.emit('mediasoup-peer-change');
 	}
 
-	private setWsState(state: WsState, rid: string): void {
+	private setWsPeers(peers: Array<IVoiceRoomPeer>): void {
+		this.wsPeers = [...peers];
+		this.emit('ws-peer-change');
+	}
+
+	public setState(state: State): void {
 		this.state = {
-			state: state.state,
-			rid,
-			wsClient: state.wsClient,
+			...state,
 		};
 		this.emit('change', state.state);
 	}
 
 	private async connectWsClient(): Promise<void> {
 		try {
-			if (isWsState(this.state) || isMediasoupState(this.state)) {
-				if (this.state.wsClient) {
-					// addListenersToClient(this.state.wsClient, t);
-					await this.state.wsClient.join();
-				}
+			if (isWsState(this.state)) {
+				await this.state.wsClient.join();
 
-				if (this.state.state === 'wsconnecting') {
-					this.setState('wsconnected');
+				this.setState({
+					...this.state,
+					state: 'wsconnected',
+				});
+			}
+
+			if (isMediasoupState(this.state)) {
+				if (this.state.wsClient) {
+					await this.state.wsClient.join();
 				}
 			}
 		} catch (err) {
@@ -85,44 +71,56 @@ export class VoiceRoomManager extends Emitter<{
 		}
 	}
 
-	private setMediasoupState(state: WsState): void {
-		this.state = {
-			state: 'connecting',
-			rid: state.rid,
-			mediasoupClient: state.wsClient,
-			wsClient: null,
-		};
-
-		this.emit('change', 'connecting');
-	}
-
 	public connect(rid: string, room: IRoom): void {
 		const wsClient = createVoiceClient(room);
-		// wsClient.on('peer-change', () => {
-		// 	if (this.state.state === 'connected') {
-		// 		this.setState('updating-peers');
-		// 		this.setState('connected');
-		// 	}
-		// });
+
+		wsClient.on('peer-change', () => {
+			if (isMediasoupState(this.state)) {
+				this.setMediasoupPeers(this.state.mediasoupClient.peers);
+			}
+			if (isWsState(this.state) || isMediasoupState(this.state)) {
+				if (this.state.wsClient) {
+					this.setWsPeers(this.state.wsClient.peers);
+				}
+			}
+		});
+
 		// fix connection when changing rooms
 		if (isMediasoupState(this.state)) {
-			this.state.wsClient = wsClient;
-		} else {
-			this.setWsState({ rid, state: 'wsconnecting', wsClient }, rid);
+			if (this.state.rid !== rid) {
+				this.setState({
+					...this.state,
+					wsClient,
+				});
+				this.connectWsClient();
+			} else if (this.state.wsClient) {
+				wsClient.closeProtoo();
+				this.setWsPeers([]);
+				this.setState({ ...this.state, wsClient: null });
+			}
+		} else if (isWsState(this.state) || isInitialState(this.state)) {
+			this.setState({ rid, state: 'wsconnecting', wsClient });
+			this.connectWsClient();
 		}
-
-		this.connectWsClient();
 	}
 
 	private async connectMediasoupClient(): Promise<void> {
 		try {
 			if (isWsState(this.state)) {
-				this.setMediasoupState(this.state);
+				this.setState({
+					state: 'connecting',
+					rid: this.state.rid,
+					mediasoupClient: this.state.wsClient,
+					wsClient: null,
+				});
 			}
 
 			if (this.state.state === 'connecting') {
 				await this.state.mediasoupClient.joinRoom();
-				this.setState('connected');
+				this.setState({
+					...this.state,
+					state: 'connected',
+				});
 			}
 		} catch (err) {
 			console.log(err);
@@ -135,11 +133,18 @@ export class VoiceRoomManager extends Emitter<{
 		}
 	}
 
-	public disconnect(rid: string, room: IRoom): void {
+	public disconnect(): void {
 		if (isMediasoupState(this.state)) {
 			this.state.mediasoupClient.close();
-			this.setState('disconnected');
-			this.connect(rid, room);
+			this.setState({
+				rid: this.state.rid,
+				wsClient: this.state.mediasoupClient,
+				state: 'disconnected',
+			});
+			this.setState({
+				state: 'notStarted',
+			});
+			this.setMediasoupPeers([]);
 		}
 	}
 }
@@ -150,7 +155,6 @@ const query = {
 	subscribe: (callback: () => void): (() => void) => {
 		const stop = manager.on('change', callback);
 		return (): void => {
-			console.log('stopped');
 			stop();
 		};
 	},
@@ -161,45 +165,35 @@ export const useVoiceChannel = (): State => {
 	return voiceManagerState;
 };
 
+const mediasoupPeersQuery = {
+	getCurrentValue: (): Array<IVoiceRoomPeer> => manager.mediasoupPeers,
+	subscribe: (callback: () => void): (() => void) => {
+		const stop = manager.on('mediasoup-peer-change', callback);
+		return (): void => {
+			stop();
+		};
+	},
+};
+
+export const useMediasoupPeers = (): Array<IVoiceRoomPeer> => {
+	const mediasoupPeersState = useSubscription(mediasoupPeersQuery);
+	return mediasoupPeersState;
+};
+
+
+const wsPeersQuery = {
+	getCurrentValue: (): Array<IVoiceRoomPeer> => manager.wsPeers,
+	subscribe: (callback: () => void): (() => void) => {
+		const stop = manager.on('ws-peer-change', callback);
+		return (): void => {
+			stop();
+		};
+	},
+};
+
+export const useWsPeers = (): Array<IVoiceRoomPeer> => {
+	const wsPeersState = useSubscription(wsPeersQuery);
+	return wsPeersState;
+};
+
 export default manager;
-
-// export const SideBarVoiceChannel: FC = () => {
-// 	const meta = useVoiceChannelMeta();
-
-// 	console.log(meta);
-
-// 	if (!isMeta(meta)) {
-// 		return null;
-// 	}
-
-// 	return <SideBarVoiceChannelRoom rid={meta.rid} meta={meta}/>;
-// };
-
-// export const SideBarVoiceChannelRoom: FC<{ rid: string; meta: Meta }> = ({ rid, meta }) => {
-// 	const room = useUserRoom(rid);
-
-// 	const fn = useCallback(() => {
-// 		v.disconnect();
-// 	}, []);
-
-// 	if (!room) {
-// 		return null;
-// 	}
-
-
-// 	return <Button onClick={fn}>{JSON.stringify(room.name || room.fname)} {meta.state}</Button>;
-// };
-
-
-// export const VoiceChannelButton: FC = () => {
-// 	const meta = useVoiceChannelMeta();
-
-// 	const fn = useCallback(() => {
-// 		if (['notStarted', 'disconnected'].includes(meta.state)) {
-// 			return v.connect('GENERAL');
-// 		}
-// 		v.disconnect();
-// 	}, [meta]);
-
-// 	return <Button onClick={fn}>Here {meta.state}</Button>;
-// };

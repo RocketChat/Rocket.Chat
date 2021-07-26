@@ -84,7 +84,8 @@ export default class VoiceRoom extends EventEmitter {
 				joined: false,
 			});
 			// this.emit('allJoinedPeers', peers);
-			this.peers.concat(peers);
+			this.peers = new Array(0);
+			peers.forEach((i) => this.peers.push(i));
 			this.emit('peer-change');
 		});
 
@@ -182,7 +183,8 @@ export default class VoiceRoom extends EventEmitter {
 				// Event triggered when peer disconnects
 				case 'peerClosed': {
 					// this.emit('peerClosed', notif.data.peerId);
-					this.peers.filter((p) => p.id !== notif.data.peerId);
+					const idx = this.peers.findIndex((p) => p.id === notif.data.peerId);
+					this.peers.splice(idx, 1);
 					this.emit('peer-change');
 					break;
 				}
@@ -301,9 +303,8 @@ export default class VoiceRoom extends EventEmitter {
 				joined: true,
 			});
 			// this.emit('allJoinedPeers', peerData);
-
 			this.peers = new Array(0);
-			this.peers.concat(peerData);
+			peerData.forEach((i: IPeer) => this.peers.push(i));
 
 			this.emit('peer-change');
 
