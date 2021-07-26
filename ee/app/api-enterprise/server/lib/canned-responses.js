@@ -115,7 +115,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 			...shortcut ? [{ shortcut }] : [],
 			...text ? [{ $or: [{ shortcut: textFilter }, { text: textFilter }] }] : [],
 			...scope ? [{ scope }] : [],
-			...createdBy ? [{ 'createdBy.username': createdBy }] : [],
+			...createdBy ? [{ 'createdBy._id': createdBy }] : [],
 			...tags.length ? [{
 				tags: {
 					$in: tags,

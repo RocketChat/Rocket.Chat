@@ -25,15 +25,15 @@ const CannedResponsesRoute: FC = () => {
 
 	type CannedResponseFilterValues = {
 		sharing: string;
-		createdBy: { value: string; label: string };
-		tags: string;
+		createdBy: string;
+		tags: Array<{ value: string; label: string }>;
 		text: string;
 		firstMessage: string;
 	};
 
 	const { values, handlers } = useForm({
 		sharing: '',
-		createdBy: {},
+		createdBy: '',
 		tags: [],
 		text: '',
 	});
@@ -52,9 +52,9 @@ const CannedResponsesRoute: FC = () => {
 		() => ({
 			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(tags && tags.length > 0 && { tags }),
+			...(tags && tags.length > 0 && { tags: tags.map((tag) => tag.label) }),
 			...(sharing && { scope: sharing }),
-			...(createdBy?.label && { createdBy: createdBy.label }),
+			...(createdBy && createdBy !== 'all' && { createdBy }),
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
