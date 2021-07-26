@@ -110,7 +110,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 
 	const textFilter = new RegExp(escapeRegExp(text), 'i');
 
-	const filter = {
+	let filter = {
 		$and: [
 			...shortcut ? [{ shortcut }] : [],
 			...text ? [{ $or: [{ shortcut: textFilter }, { text: textFilter }] }] : [],
@@ -124,6 +124,10 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 			...extraFilter,
 		],
 	};
+
+	if (!filter.$and.length) {
+		filter = {};
+	}
 
 	const cursor = CannedResponse.find(filter, {
 		sort: options.sort || { shortcut: 1 },
