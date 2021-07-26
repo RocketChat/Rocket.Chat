@@ -14,7 +14,11 @@ const CannedResponseForm: FC<{
 	values: any;
 	handlers: any;
 	errors: any;
-	radioHandlers: any;
+	radioHandlers: {
+		setPublic: () => void;
+		setDepartment: () => void;
+		setPrivate: () => void;
+	};
 	radioDescription: string;
 	onPreview: () => void;
 	previewState: boolean;
