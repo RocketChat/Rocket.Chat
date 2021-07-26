@@ -23,8 +23,6 @@ export class AppFileSystemSourceStorage extends AppSourceStorage {
 
 		const filePath = this.itemToFilename(item);
 
-		console.log('what is the file path', filePath);
-
 		await fs.writeFile(filePath, zip);
 
 		return this.filenameToSourcePath(filePath);
