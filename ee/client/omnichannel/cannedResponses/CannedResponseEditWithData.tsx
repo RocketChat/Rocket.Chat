@@ -11,7 +11,8 @@ import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepart
 const CannedResponseEditWithData: FC<{
 	cannedResponseId: string;
 	reload: () => void;
-}> = ({ cannedResponseId, reload }) => {
+	totalDataReload: () => void;
+}> = ({ cannedResponseId, reload, totalDataReload }) => {
 	const {
 		value: data,
 		phase: state,
@@ -33,10 +34,16 @@ const CannedResponseEditWithData: FC<{
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {
-		return <CannedResponseEditWithDepartmentData data={data} reload={reload} />;
+		return (
+			<CannedResponseEditWithDepartmentData
+				data={data}
+				reload={reload}
+				totalDataReload={totalDataReload}
+			/>
+		);
 	}
 
-	return <CannedResponseEdit data={data} reload={reload} />;
+	return <CannedResponseEdit data={data} reload={reload} totalDataReload={totalDataReload} />;
 };
 
 export default CannedResponseEditWithData;
