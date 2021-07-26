@@ -1134,6 +1134,7 @@
   "Favorites": "Suosikit",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Tämä ominaisuus riippuu \"Lähetä vierailijan navigoinnin historiasta viestinä\".",
   "Features_Enabled": "Ominaisuudet käytössä",
+  "Federation_Domain": "Verkkotunnus",
   "FEDERATION_Domain": "Verkkotunnus",
   "FEDERATION_Status": "Tila",
   "Field": "Kenttä",
