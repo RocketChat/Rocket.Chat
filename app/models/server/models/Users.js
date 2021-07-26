@@ -160,12 +160,12 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findAgents() { // TODO: Create class Agent
+	findAgents(options) { // TODO: Create class Agent
 		const query = {
 			roles: 'livechat-agent',
 		};
 
-		return this.find(query);
+		return this.find(query, options);
 	}
 
 	findOnlineUserFromList(userList) { // TODO: Create class Agent
