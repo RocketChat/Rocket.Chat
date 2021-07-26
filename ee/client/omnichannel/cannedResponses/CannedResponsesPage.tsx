@@ -16,6 +16,7 @@ export type CannedResponsesPageProps = {
 	title: string;
 	renderRow: ReactNode | null;
 	renderFilter: FC;
+	totalCannedResponses: number;
 };
 
 const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
@@ -26,6 +27,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 	title,
 	renderRow,
 	renderFilter,
+	totalCannedResponses,
 }) => {
 	const t = useTranslation();
 
@@ -47,7 +49,7 @@ const CannedResponsesPage: FC<CannedResponsesPageProps> = ({
 				</ButtonGroup>
 			</Page.Header>
 			<Page.Content>
-				{data && data.total < 1 ? (
+				{totalCannedResponses < 1 ? (
 					<NoResults
 						icon='baloon-exclamation'
 						title={t('No_Canned_Responses_Yet')}

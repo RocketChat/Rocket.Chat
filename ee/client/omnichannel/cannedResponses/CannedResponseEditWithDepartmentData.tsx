@@ -11,7 +11,8 @@ import CannedResponseEdit from './CannedResponseEdit';
 const CannedResponseEditWithData: FC<{
 	data: CannedResponseEndpointGetReturn | undefined;
 	reload: () => void;
-}> = ({ data, reload }) => {
+	totalDataReload: () => void;
+}> = ({ data, reload, totalDataReload }) => {
 	const departmentId = useMemo(() => data?.cannedResponse?.departmentId, [data]) as string;
 	const {
 		value: departmentData,
@@ -33,7 +34,14 @@ const CannedResponseEditWithData: FC<{
 		);
 	}
 
-	return <CannedResponseEdit data={data} reload={reload} departmentData={departmentData} />;
+	return (
+		<CannedResponseEdit
+			data={data}
+			reload={reload}
+			totalDataReload={totalDataReload}
+			departmentData={departmentData}
+		/>
+	);
 };
 
 export default CannedResponseEditWithData;
