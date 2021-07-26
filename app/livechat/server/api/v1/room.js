@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { settings as rcSettings } from '../../../../settings';
 import { Messages, LivechatRooms } from '../../../../models';
 import { API } from '../../../../api/server';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams, findOpenRoom, findDepartment, getRoomById, updateGuest } from '../lib/livechat';
+import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
@@ -18,19 +18,24 @@ API.v1.addRoute('livechat/room', {
 			token: String,
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
-			departmentId: Match.Maybe(String),
 		};
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 
-		try {
-			check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams);
 
-			const { token, rid: roomId, agentId, departmentId, ...extraParams } = this.queryParams;
+		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+		const guest = findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		let room;
+		if (!roomId) {
+			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+			if (room) {
+				return API.v1.success({ room, newRoom: false });
 			}
 
 			let agent;
@@ -40,28 +45,17 @@ API.v1.addRoute('livechat/room', {
 				agent = { agentId, username };
 			}
 
-			const rid = roomId || Random.id();
-
-			if (departmentId && departmentId.trim() && !findDepartment(departmentId, { _id: 1 })) {
-				throw new Meteor.Error('invalid-department');
-			}
-
-			let room = Promise.await(findOpenRoom(token, departmentId));
-			if (room) {
-				room = Promise.await(getRoomById(room._id));
-				room = { room, newRoom: false };
-			} else {
-				if (guest.department !== departmentId) {
-					guest.department = departmentId;
-					Promise.await(updateGuest(token, { department: departmentId }));
-				}
-				room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
-			}
-
+			const rid = Random.id();
+			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
 			return API.v1.success(room);
-		} catch (e) {
-			return API.v1.failure(e);
 		}
+
+		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		return API.v1.success({ room, newRoom: false });
 	},
 });
 

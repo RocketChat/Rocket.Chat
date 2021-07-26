@@ -14,10 +14,6 @@ export function findTriggers() {
 	return LivechatTrigger.findEnabled().fetch().map(({ _id, actions, conditions, runOnce }) => ({ _id, actions, conditions, runOnce }));
 }
 
-export function findDepartment(departmentId, options) {
-	return LivechatDepartment.findOneById(departmentId, options);
-}
-
 export function findDepartments() {
 	return LivechatDepartment.findEnabledWithAgents({
 		_id: 1, name: 1, showOnRegistration: 1, showOnOfflineForm: 1,
@@ -34,10 +30,6 @@ export function findGuest(token) {
 			department: 1,
 		},
 	});
-}
-
-export function updateGuest(token, payload) {
-	return LivechatVisitors.update({ token }, { $set: payload });
 }
 
 export function findRoom(token, rid) {
@@ -70,10 +62,6 @@ export function findOpenRoom(token, departmentId) {
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
-}
-
-export function getRoomById(id) {
-	return LivechatRooms.findOneById(id);
 }
 
 export function getRoom({ guest, rid, roomInfo, agent, extraParams }) {
