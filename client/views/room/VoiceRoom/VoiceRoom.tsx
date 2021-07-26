@@ -5,15 +5,15 @@ import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react
 import VoiceRoomManager, {
 	isMediasoupState,
 	isWsState,
+	useMediasoupPeers,
 	useVoiceChannel,
+	useWsPeers,
 } from '../../../../app/voice-channel/client/VoiceChannelManager';
 import { IRoom } from '../../../../definition/IRoom';
 import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-// import { useVoiceRoomContext } from '../contexts/VoiceRoomContext';
 import VoicePeersList from './VoicePeersList';
-// import { protooConnectionWithVoiceRoomClient, addListenersToMediasoupClient } from './util';
 
 interface IVoiceRoom {
 	room: IRoom;
@@ -22,7 +22,8 @@ interface IVoiceRoom {
 
 const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	const state = useVoiceChannel();
-	// const [connected, setConnected] = useState(false);
+	const mediasoupPeers = useMediasoupPeers();
+	const wsPeers = useWsPeers();
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
 
@@ -30,30 +31,6 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	const t = useTranslation();
 
 	const closeModal = useMutableCallback(() => setModal(null));
-
-	// const handleConnection = async (type: 'mediasoup' | 'ws'): Promise<void> => {
-	// 	try {
-	// 		if (type === 'mediasoup') {
-	// 			if (mediasoupClient) {
-	// 				mediasoupClient.close();
-	// 			}
-	// 			await protooConnectionWithVoiceRoomClient(room, setMediasoupPeers, setMediasoupClient);
-	// 		} else {
-	// 			if (wsClient) {
-	// 				wsClient.close();
-	// 			}
-	// 			await protooConnectionWithVoiceRoomClient(room, setWsPeers, setWsClient);
-	// 		}
-	// 	} catch (err) {
-	// 		console.error(err);
-	// 	}
-	// };
-
-	const handleDisconnect = (): void => {
-		// setConnected(false);
-		// handleConnection('mediasoup');
-		VoiceRoomManager.disconnect(rid, room);
-	};
 
 	const toggleMic = (): void => {
 		if (isMediasoupState(state)) {
@@ -72,17 +49,22 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 
 	const join = useCallback(() => {
 		VoiceRoomManager.joinRoom(rid);
-	}, []);
+	}, [rid]);
+
+	const connectVoiceRoom = useCallback(() => {
+		VoiceRoomManager.connect(rid, room);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [rid]);
+
+	const handleDisconnect = (): void => {
+		VoiceRoomManager.disconnect();
+		connectVoiceRoom();
+	};
+
 	const handleModalConfirm = async (): Promise<void> => {
-		// mediasoupClient?.close();
-		// setMediasoupPeers(wsPeers);
-		// wsClient?.removeAllListeners();
-		// if (wsClient) {
-		// 	addListenersToMediasoupClient(wsClient, setMediasoupPeers);
-		// }
-		// await wsClient?.joinRoom();
-		// setMediasoupClient(wsClient);
-		// setWsClient(null);
+		handleDisconnect();
+		// @TODO: set correct timer OR move to await
+		setTimeout(() => join(), 500);
 		closeModal();
 	};
 
@@ -107,27 +89,21 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 		join();
 	};
 
-	const fn = useCallback(() => {
-		VoiceRoomManager.connect(rid, room);
+	useEffect(() => {
+		connectVoiceRoom();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
-
-	useEffect(() => {
-		fn();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rid]);
-
-	useEffect(() => {
-		console.log(state);
-	}, [state]);
-
+	// console.log(wsPeers);
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
-			{isWsState(state) && <VoicePeersList peers={state.wsClient.peers} deafen={deafen} />}
+			{(isWsState(state) ||
+				((isWsState(state) || isMediasoupState(state)) && state.rid !== rid)) && (
+				<VoicePeersList peers={wsPeers} deafen={deafen} />
+			)}
 
 			{isMediasoupState(state) && state.rid === rid && (
 				<Box display={state.rid !== rid ? 'none' : 'block'}>
-					<VoicePeersList peers={state.mediasoupClient.peers} deafen={deafen} />
+					<VoicePeersList peers={mediasoupPeers} deafen={deafen} />
 				</Box>
 			)}
 
