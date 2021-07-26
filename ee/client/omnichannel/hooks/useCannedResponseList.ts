@@ -32,7 +32,7 @@ export const useCannedResponseList = (
 	const fetchData = useCallback(
 		async (start, end) => {
 			const { cannedResponses, total } = await getCannedResponses({
-				...(options.filter && { shortcut: options.filter }),
+				...(options.filter && { text: options.filter }),
 				...(options.type &&
 					['global', 'user'].find((option) => option === options.type) && { scope: options.type }),
 				...(options.type &&
