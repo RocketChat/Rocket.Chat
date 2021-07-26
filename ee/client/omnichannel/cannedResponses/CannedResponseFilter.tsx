@@ -30,8 +30,8 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	const t = useTranslation();
 	const sharingList: SelectOptions = [
 		['', t('All')],
-		['private', t('Private')],
-		['public', t('Public')],
+		['user', t('Private')],
+		['global', t('Public')],
 		['department', t('Department')],
 	];
 
