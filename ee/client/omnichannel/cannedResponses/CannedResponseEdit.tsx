@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { useRole } from '../../../../client/contexts/AuthorizationContext';
+import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { LivechatDepartmentSingleGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/livechat/departmentSingle';
@@ -32,7 +32,7 @@ const CannedResponseEdit: FC<{
 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
-	const hasManagerRole = useRole('livechat-manager');
+	const hasManagerPermission = usePermission('view-all-canned-responses');
 
 	const form = useForm({
 		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
@@ -154,7 +154,7 @@ const CannedResponseEdit: FC<{
 			<Page.ScrollableContentWithShadow fontScale='p1'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
-						isManager={hasManagerRole}
+						isManager={hasManagerPermission}
 						values={values}
 						handlers={handlers}
 						errors={errors}
