@@ -32,7 +32,24 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 
 	if (settings.get('Enable_CSP')) {
-		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
+		const cdn_prefixes = [
+			settings.get('CDN_PREFIX'),
+			settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX'),
+		].filter(Boolean).join(' ');
+
+		res.setHeader(
+			'Content-Security-Policy',
+			[
+				`default-src 'self' ${ cdn_prefixes }`,
+				'connect-src * data:',
+				`font-src 'self' ${ cdn_prefixes } data:`,
+				'frame-src *',
+				'img-src * data:',
+				'media-src * data:',
+				`script-src 'self' 'unsafe-eval' ${ cdn_prefixes }`,
+				`style-src 'self' 'unsafe-inline' ${ cdn_prefixes }`,
+			].join('; '),
+		);
 	}
 
 	// Deprecated behavior
