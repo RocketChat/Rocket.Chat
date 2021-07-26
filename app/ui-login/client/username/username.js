@@ -3,11 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
+import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { Button } from '../../../ui';
-import { callbacks } from '../../../callbacks';
 import { t } from '../../../utils';
+import { callbacks } from '../../../callbacks';
 
 Template.username.onCreated(function() {
 	const self = this;
@@ -137,15 +138,21 @@ Template.username.events({
 			return;
 		}
 
-		const value = $('#username').val().trim();
-		if (value === '') {
+		const usernameValue = $('#username').val().trim();
+		if (usernameValue === '') {
 			username.empty = true;
 			instance.username.set(username);
 			Button.reset(button);
 			return;
 		}
 
-		return Meteor.call('setUsername', value, function(err) {
+		Meteor.call('saveCustomFields', formData, function(err) {
+			if (err != null) {
+				toastr.error(err.error);
+			}
+		});
+
+		Meteor.call('setUsername', usernameValue, function(err) {
 			if (err != null) {
 				if (err.error === 'username-invalid') {
 					username.invalid = true;
@@ -154,8 +161,8 @@ Template.username.events({
 				} else {
 					username.unavailable = true;
 				}
-				username.username = value;
-				username.escaped = _.escape(value);
+				username.username = usernameValue;
+				username.escaped = _.escape(usernameValue);
 			}
 
 			Button.reset(button);
