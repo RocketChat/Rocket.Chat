@@ -28,10 +28,6 @@ export class LivechatRooms extends Base {
 		return this.find(query, { sort: { ts: - 1 }, offset, limit });
 	}
 
-	findAll(filter, options) {
-		return this.find(filter, options);
-	}
-
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			t: 'l',
