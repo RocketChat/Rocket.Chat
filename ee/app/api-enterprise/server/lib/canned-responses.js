@@ -70,7 +70,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 		throw new Error('error-not-authorized');
 	}
 
-	let extraFilter = {};
+	let extraFilter = [];
 	// if user cannot see all, filter to private + public + departments user is in
 	if (!await hasPermissionAsync(userId, 'view-all-canned-responses')) {
 		const departments = await LivechatDepartmentAgents.find({
@@ -83,7 +83,7 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 
 		const departmentIds = departments.map((department) => department.departmentId);
 
-		extraFilter = {
+		extraFilter = [{
 			$or: [
 				{
 					scope: 'user',
@@ -99,23 +99,27 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, sco
 					scope: 'global',
 				},
 			],
-		};
+		}];
 	}
 
-	const filter = new RegExp(escapeRegExp(text), 'i');
+	const textFilter = new RegExp(escapeRegExp(text), 'i');
 
-	const cursor = CannedResponse.find({
-		...shortcut && { shortcut },
-		...text && { $or: [{ shortcut: filter }, { text: filter }] },
-		...scope && { scope },
-		...createdBy && { 'createdBy.username': createdBy },
-		...tags.length && {
-			tags: {
-				$in: tags,
-			},
-		},
-		...extraFilter,
-	}, {
+	const filter = {
+		$and: [
+			...shortcut ? [{ shortcut }] : [],
+			...text ? [{ $or: [{ shortcut: textFilter }, { text: textFilter }] }] : [],
+			...scope ? [{ scope }] : [],
+			...createdBy ? [{ 'createdBy.username': createdBy }] : [],
+			...tags.length ? [{
+				tags: {
+					$in: tags,
+				},
+			}] : [],
+			...extraFilter,
+		],
+	};
+
+	const cursor = CannedResponse.find(filter, {
 		sort: options.sort || { shortcut: 1 },
 		skip: options.offset,
 		limit: options.count,
