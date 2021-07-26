@@ -6,20 +6,19 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 
 const DirectTab = ({ errors, users, onChangeUsers }) => {
 	const t = useTranslation();
-	const userError = errors ? errors.user : undefined;
 
 	return (
 		<Field>
 			<Field.Label>{t('Users')}</Field.Label>
 			<Field.Row>
 				<UserAutoCompleteMultiple
-					error={userError}
+					error={errors.users}
 					value={users}
 					onChange={onChangeUsers}
 					placeholder={t('Username_Placeholder')}
 				/>
 			</Field.Row>
-			{userError && <Field.Error>{userError}</Field.Error>}
+			{errors.users && <Field.Error>{errors.users}</Field.Error>}
 		</Field>
 	);
 };
