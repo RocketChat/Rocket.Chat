@@ -1,6 +1,6 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, FC, ReactNode, ReactElement } from 'react';
+import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
@@ -43,7 +43,10 @@ const CannedResponsesRoute: FC = () => {
 	const { sharing, createdBy, tags, text } = values as CannedResponseFilterValues;
 	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
 
-	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+		current: 0,
+		itemsPerPage: 25,
+	});
 	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['shortcut', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
@@ -159,7 +162,7 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactNode => (
+		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactElement => (
 			<Table.Row
 				key={_id}
 				tabIndex={0}
