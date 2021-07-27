@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { Roles, Users } from '../../../models';
 import { API } from '../api';
-import { getUsersInRole, hasPermission } from '../../../authorization/server';
+import { getUsersInRole, hasPermission, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
 
@@ -86,9 +86,7 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 		const user = this.getUserFromParams();
 		const { roleName, roomId } = this.bodyParams;
 
-		const users = getUsersInRole(roleName, roomId, { fields: { username: 1 } }).fetch().map(({ username }) => username);
-
-		if (users.indexOf(user.username) > -1) {
+		if (hasRole(user._id, roleName, roomId)) {
 			throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 		}
 
