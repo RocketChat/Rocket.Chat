@@ -22,10 +22,10 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 	};
 
 	const tasksWrapper = useRef(null);
-
+	console.log(tasksWrapper);
 	useEffect(() => {
-		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollTop);
-	}, []);
+		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
+	});
 
 	const sortTasks = (id) => {
 		const sortedTasks = [...tasks];
@@ -53,6 +53,14 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 		);
 	};
 
+	const handleLoadMore = (e) => {
+		const top = e.target.scrollTop === 0;
+		if (!top) {
+			return;
+		}
+		console.log('loadmore');
+	};
+
 	return (
 		<div className='wrapper'>
 			<ButtonGroup align='center'>
@@ -71,6 +79,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 			</ButtonGroup>
 			<Box
 				className='tasks__wrapper'
+				onScroll={handleLoadMore}
 				style={{ overflowY: 'auto', height: '87.5vh' }}
 				ref={tasksWrapper}
 			>
