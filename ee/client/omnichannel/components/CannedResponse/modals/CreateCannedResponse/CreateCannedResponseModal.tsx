@@ -6,6 +6,7 @@ import CannedResponseForm from '../../../../cannedResponses/components/cannedRes
 
 const CreateCannedResponseModal: FC<{
 	isManager: boolean;
+	isMonitor: boolean;
 	values: any;
 	handlers: any;
 	errors: any;
@@ -18,6 +19,7 @@ const CreateCannedResponseModal: FC<{
 	previewState: boolean;
 }> = ({
 	isManager,
+	isMonitor,
 	values,
 	handlers,
 	errors,
@@ -50,6 +52,7 @@ const CreateCannedResponseModal: FC<{
 			<Modal.Content fontScale='p1'>
 				<CannedResponseForm
 					isManager={isManager}
+					isMonitor={isMonitor}
 					values={values}
 					handlers={handlers}
 					errors={errors}
