@@ -2,6 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/raw/CannedResponse';
+import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import { LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 
 export async function findAllCannedResponses({ userId }) {
@@ -44,7 +45,11 @@ export async function findAllCannedResponses({ userId }) {
 		},
 	}).toArray();
 
-	const departmentIds = departments.map((department) => department.departmentId);
+	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+	const combinedDepartments = [
+		...departments.map((department) => department.departmentId),
+		...monitoredDepartments.map((department) => department._id),
+	];
 
 	return CannedResponse.find({
 		$or: [
@@ -55,7 +60,7 @@ export async function findAllCannedResponses({ userId }) {
 			{
 				scope: 'department',
 				departmentId: {
-					$in: departmentIds,
+					$in: combinedDepartments,
 				},
 			},
 			{
@@ -81,7 +86,17 @@ export async function findAllCannedResponsesFilter({ userId, shortcut, text, dep
 			},
 		}).toArray();
 
-		const departmentIds = departmentId ? [departmentId] : departments.map((department) => department.departmentId);
+		const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+		const combinedDepartments = [
+			...departments.map((department) => department.departmentId),
+			...monitoredDepartments.map((department) => department._id),
+		];
+
+		const isDepartmentInScope = (departmentId) => !!combinedDepartments.includes(departmentId);
+
+		const departmentIds = departmentId && isDepartmentInScope(departmentId)
+			? [departmentId]
+			: combinedDepartments;
 
 		extraFilter = [{
 			$or: [
@@ -159,7 +174,11 @@ export async function findOneCannedResponse({ userId, _id }) {
 		},
 	}).toArray();
 
-	const departmentIds = departments.map((department) => department.departmentId);
+	const monitoredDepartments = LivechatUnit.findMonitoredDepartmentsByMonitorId(userId).fetch();
+	const combinedDepartments = [
+		...departments.map((department) => department.departmentId),
+		...monitoredDepartments.map((department) => department._id),
+	];
 
 	const filter = {
 		_id,
@@ -171,7 +190,7 @@ export async function findOneCannedResponse({ userId, _id }) {
 			{
 				scope: 'department',
 				departmentId: {
-					$in: departmentIds,
+					$in: combinedDepartments,
 				},
 			},
 			{
