@@ -29,6 +29,7 @@ const ImagePreview = ({ url, file }: ImagePreviewProps): ReactElement => {
 			<Box
 				is='img'
 				src={url}
+				maxWidth='full'
 				onLoad={handleLoad}
 				onError={handleError}
 				display={loading ? 'none' : 'initial'}

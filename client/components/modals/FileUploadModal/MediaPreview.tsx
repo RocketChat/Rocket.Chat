@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useState, memo } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { FilePreviewType } from './FilePreview';
+import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';
 
 type ReaderOnloadCallback = (url: FileReader['result']) => void;
@@ -51,7 +52,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	}
 
 	if (fileType === FilePreviewType.IMAGE) {
-		return <img src={url} />;
+		return <ImagePreview url={url} file={file} />;
 	}
 
 	if (fileType === FilePreviewType.VIDEO) {
