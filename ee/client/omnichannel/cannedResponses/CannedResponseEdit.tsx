@@ -3,19 +3,23 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useState, useMemo, useEffect, useCallback } from 'react';
 
 import Page from '../../../../client/components/Page';
-import { useRole } from '../../../../client/contexts/AuthorizationContext';
+import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
+import { LivechatDepartmentSingleGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/livechat/departmentSingle';
+import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{
-	data: any;
+	data?: CannedResponseEndpointGetReturn;
 	reload: () => void;
-	isNew: boolean;
-}> = ({ data, reload, isNew = false }) => {
+	totalDataReload: () => void;
+	isNew?: boolean;
+	departmentData?: LivechatDepartmentSingleGetReturn;
+}> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const Route = useRoute('omnichannel-canned-responses');
@@ -28,17 +32,20 @@ const CannedResponseEdit: FC<{
 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
-	const hasManagerRole = useRole('livechat-manager');
+	const hasManagerPermission = usePermission('view-all-canned-responses');
 
 	const form = useForm({
 		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
-		tags: data && data.cannedResponse && data.cannedResponse.tags ? data.cannedResponse.tags : [],
+		tags:
+			data?.cannedResponse?.tags && Array.isArray(data.cannedResponse.tags)
+				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
+				: [],
 		scope: data ? data.cannedResponse.scope : 'user',
 		departmentId:
 			data && data.cannedResponse && data.cannedResponse.departmentId
-				? data.cannedResponse.departmentId
+				? { value: data.cannedResponse.departmentId, label: departmentData?.department?.name }
 				: '',
 	});
 
@@ -97,23 +104,30 @@ const CannedResponseEdit: FC<{
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
+				typeof tag === 'object' ? tag?.value : tag,
+			);
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(tags.length > 0 && { tags }),
+				...(mappedTags.length > 0 && { tags: mappedTags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
-			dispatchToastMessage({ type: 'success', message: t('Canned_Response_Created') });
+			dispatchToastMessage({
+				type: 'success',
+				message: t(_id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
+			});
 			Route.push({
 				context: '',
 			});
 			reload();
+			totalDataReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload]);
+	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 
 	const onPreview = (): void => {
 		setPreview(!preview);
@@ -146,7 +160,7 @@ const CannedResponseEdit: FC<{
 			<Page.ScrollableContentWithShadow fontScale='p1'>
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
-						isManager={hasManagerRole}
+						isManager={hasManagerPermission}
 						values={values}
 						handlers={handlers}
 						errors={errors}
