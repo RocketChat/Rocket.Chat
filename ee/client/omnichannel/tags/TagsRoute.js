@@ -14,7 +14,7 @@ import TagsPage from './TagsPage';
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
+const useQuery = ({ text, itemsPerPage, current, viewAll }, [column, direction]) =>
 	useMemo(
 		() => ({
 			fields: JSON.stringify({ name: 1 }),
@@ -23,17 +23,18 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) =>
 				[column]: sortDir(direction),
 				usernames: column === 'name' ? sortDir(direction) : undefined,
 			}),
+			viewAll,
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[text, itemsPerPage, current, column, direction],
+		[text, itemsPerPage, current, column, direction, viewAll],
 	);
 
 function TagsRoute() {
 	const t = useTranslation();
 	const canViewTags = usePermission('manage-livechat-tags');
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25, viewAll: true });
 	const [sort, setSort] = useState(['name', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);

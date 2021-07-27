@@ -5,12 +5,13 @@ API.v1.addRoute('livechat/tags.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const { text, departmentId } = this.queryParams;
+		const { text, departmentId, viewAll = false } = this.queryParams;
 
 		return API.v1.success(Promise.await(findTags({
 			userId: this.userId,
 			text,
 			departmentId,
+			viewAll,
 			pagination: {
 				offset,
 				count,

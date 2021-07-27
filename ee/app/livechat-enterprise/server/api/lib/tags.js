@@ -3,14 +3,22 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import LivechatTag from '../../../../models/server/raw/LivechatTag';
 
-export async function findTags({ userId, text, departmentId, pagination: { offset, count, sort } }) {
+export async function findTags({ userId, text, departmentId, viewAll = false, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-tags') && !await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
 	}
+
+	const viewAllTags = !!await hasPermissionAsync(userId, 'view-all-livechat-tags');
+	// return either tags by department or tags without a department to user
+	const byDepartment = departmentId ? { $or: [{ departments: departmentId }, { numDepartments: 0 }] } : { numDepartments: 0 };
+	const viewAllFilter = viewAllTags && viewAll ? {} : byDepartment;
+
 	const filterReg = new RegExp(escapeRegExp(text), 'i');
 	const query = {
-		...text && { $or: [{ name: filterReg }, { description: filterReg }] },
-		...departmentId ? { $or: [{ departments: departmentId }, { numDepartments: 0 }] } : {},
+		$and: [
+			...text ? [{ $or: [{ name: filterReg }, { description: filterReg }] }] : [],
+			...[viewAllFilter],
+		],
 	};
 
 	const cursor = LivechatTag.find(query, {
