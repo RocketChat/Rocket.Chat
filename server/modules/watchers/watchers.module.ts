@@ -34,6 +34,7 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
+// import { FileUpload } from '../../../app/file-upload/server';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -120,11 +121,11 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 				break;
 			case 'removed': {
-				const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1 } });
+				const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1, file: 1 } });
 				const message = trash || { _id: id };
-				const removed = Messages.trashFindByIdAndRemove(id);
-				broadcast('watch.messages', { clientAction, message });
-
+				const room = trash.rid ? await Rooms.findOneById(trash.rid, { projection: roomFields }) : undefined;
+				Messages.trashFindByIdAndRemove(id);
+				if (room.t === 'e') { broadcast('watch.messages', { clientAction, message }); }
 				break;
 			}
 		}
