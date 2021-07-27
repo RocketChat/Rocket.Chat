@@ -24,7 +24,10 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 		_id: data ? data._id : '',
 		shortcut: data ? data.shortcut : '',
 		text: data ? data.text : '',
-		tags: data && data.tags ? data.tags : [],
+		tags:
+			data?.tags && Array.isArray(data.tags)
+				? data.tags.map((tag: string) => ({ label: tag, value: tag }))
+				: [],
 		scope: data ? data.scope : 'user',
 		departmentId: data && data.departmentId ? data.departmentId : '',
 	});
@@ -84,12 +87,15 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
+				typeof tag === 'object' ? tag?.value : tag,
+			);
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(tags.length > 0 && { tags }),
+				...(tags.length > 0 && { tags: mappedTags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({

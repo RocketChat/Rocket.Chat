@@ -31,6 +31,8 @@ const CannedResponsesRoute: FC = () => {
 		firstMessage: string;
 	};
 
+	type Scope = 'global' | 'department' | 'user';
+
 	const { values, handlers } = useForm({
 		sharing: '',
 		createdBy: '',
@@ -81,6 +83,15 @@ const CannedResponsesRoute: FC = () => {
 				context: 'edit',
 				id,
 			}),
+	);
+
+	const defaultOptions = useMemo(
+		() => ({
+			global: t('Public'),
+			department: t('Department'),
+			user: t('Private'),
+		}),
+		[t],
 	);
 
 	const { value: data, reload } = useEndpointData('canned-responses', query);
@@ -158,7 +169,7 @@ const CannedResponsesRoute: FC = () => {
 				qa-user-id={_id}
 			>
 				<Table.Cell withTruncatedText>{shortcut}</Table.Cell>
-				<Table.Cell withTruncatedText>{scope}</Table.Cell>
+				<Table.Cell withTruncatedText>{defaultOptions[scope as Scope]}</Table.Cell>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' alignItems='center'>
 						<UserAvatar size='x24' username={createdBy.username} />
@@ -176,7 +187,7 @@ const CannedResponsesRoute: FC = () => {
 				<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload, totalDataReload],
+		[getTime, onRowClick, reload, totalDataReload, defaultOptions],
 	);
 
 	if (context === 'edit' && id) {
