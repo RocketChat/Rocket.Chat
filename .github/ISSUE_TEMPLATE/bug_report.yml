@@ -38,7 +38,8 @@ body:
       label: Actual behavior
       description: What actually happens with SCREENSHOT, if applicable
   - type: markdown
-    value: "### Server Setup Information"
+    attributes:
+      value: "### Server Setup Information"
   - type: input
     validations:
       required: true
@@ -48,7 +49,7 @@ body:
     validations:
       required: true
     attributes:
-      label: Operating System
+      label: Server Operating System
   - type: input
     validations:
       required: true
@@ -77,7 +78,8 @@ body:
     attributes:
       label: MongoDB Version
   - type: markdown
-    value: "### Client Setup Information"
+    attributes:
+      value: "### Client Setup Information"
   - type: input
     validations:
       required: true
@@ -87,7 +89,7 @@ body:
     validations:
       required: true
     attributes:
-      label: Operating System
+      label: Client Operating System
   - type: textarea
     attributes:
       label: Additional context
