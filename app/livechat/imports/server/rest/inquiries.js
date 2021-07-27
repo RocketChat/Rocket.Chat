@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization';
 import { Users, LivechatDepartment, LivechatInquiry } from '../../../../models';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
@@ -48,9 +48,6 @@ API.v1.addRoute('livechat/inquiries.list', { authRequired: true }, {
 
 API.v1.addRoute('livechat/inquiries.take', { authRequired: true }, {
 	post() {
-		if (!hasPermission(this.userId, 'view-livechat-manager')) {
-			return API.v1.unauthorized();
-		}
 		try {
 			check(this.bodyParams, {
 				inquiryId: String,

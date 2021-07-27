@@ -10,7 +10,7 @@
 		<ul class="list clearfix">
 			{{# with messageContext}}
 				{{#each msg in messages}}
-					{{>message msg=msg room=room groupable=true subscription=subscription settings=settings u=u}}
+					{{>message msg=msg context="starred" room=room groupable=false subscription=subscription settings=settings u=u}}
 				{{/each}}
 			{{/with}}
 		</ul>

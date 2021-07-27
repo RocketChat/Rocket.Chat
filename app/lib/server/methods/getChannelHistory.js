@@ -2,13 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../../authorization';
-import { Subscriptions, Messages } from '../../../models';
-import { settings } from '../../../settings';
+import { hasPermission } from '../../../authorization/server';
+import { Subscriptions, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
 Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads }) {
+	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -36,6 +37,8 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
+		const hiddenMessageTypes = getHiddenSystemMessages(room);
+
 		const options = {
 			sort: {
 				ts: -1,
@@ -48,16 +51,9 @@ Meteor.methods({
 			options.fields = { editedAt: 0 };
 		}
 
-		let records = [];
-		if (_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestampInclusive(rid, latest, options).fetch();
-		} else if (_.isUndefined(oldest) && !inclusive) {
-			records = Messages.findVisibleByRoomIdBeforeTimestamp(rid, latest, options).fetch();
-		} else if (!_.isUndefined(oldest) && inclusive) {
-			records = Messages.findVisibleByRoomIdBetweenTimestampsInclusive(rid, oldest, latest, options).fetch();
-		} else {
-			records = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, latest, options).fetch();
-		}
+		const records = _.isUndefined(oldest)
+			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch()
+			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, oldest, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -68,7 +64,20 @@ Meteor.methods({
 			if (!_.isUndefined(oldest)) {
 				const firstMsg = messages[messages.length - 1];
 				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
-					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestamps(rid, oldest, firstMsg.ts, { limit: 1, sort: { ts: 1 } });
+					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+						rid,
+						oldest,
+						firstMsg.ts,
+						hiddenMessageTypes,
+						{
+							limit: 1,
+							sort: {
+								ts: 1,
+							},
+						},
+						showThreadMessages,
+					);
+
 					firstUnread = unreadMessages.fetch()[0];
 					unreadNotLoaded = unreadMessages.count();
 				}

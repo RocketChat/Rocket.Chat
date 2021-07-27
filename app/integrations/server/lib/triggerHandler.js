@@ -15,27 +15,14 @@ import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../
 import { logger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
 
-integrations.triggerHandler = new class RocketChatIntegrationHandler {
+export class RocketChatIntegrationHandler {
 	constructor() {
 		this.vm = vm;
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		Models.Integrations.find({ type: 'webhook-outgoing' }).observe({
-			added: (record) => {
-				this.addIntegration(record);
-			},
-
-			changed: (record) => {
-				this.removeIntegration(record);
-				this.addIntegration(record);
-			},
-
-			removed: (record) => {
-				this.removeIntegration(record);
-			},
-		});
+		Models.Integrations.find({ type: 'webhook-outgoing' }).fetch().forEach((data) => this.addIntegration(data));
 	}
 
 	addIntegration(record) {
@@ -205,7 +192,7 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 			message.channel = `#${ tmpRoom._id }`;
 		}
 
-		message = processWebhookMessage(message, user, defaultValues);
+		message = processWebhookMessage(message, user, defaultValues, trigger);
 		return message;
 	}
 
@@ -818,4 +805,6 @@ integrations.triggerHandler = new class RocketChatIntegrationHandler {
 
 		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
-}();
+}
+const triggerHandler = new RocketChatIntegrationHandler();
+export { integrations, triggerHandler };

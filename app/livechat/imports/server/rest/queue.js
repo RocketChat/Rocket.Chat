@@ -1,4 +1,4 @@
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { findQueueMetrics } from '../../../server/api/lib/queue';
 
 API.v1.addRoute('livechat/queue', { authRequired: true }, {

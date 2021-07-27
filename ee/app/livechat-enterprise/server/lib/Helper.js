@@ -1,27 +1,32 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import moment from 'moment';
 
-import { hasRole } from '../../../../../app/authorization';
-import { LivechatDepartment, Users, LivechatInquiry, LivechatRooms } from '../../../../../app/models/server';
+import {
+	LivechatDepartment,
+	Users,
+	LivechatInquiry,
+	LivechatRooms,
+	Messages,
+	LivechatCustomField,
+} from '../../../../../app/models/server';
 import { Rooms as RoomRaw } from '../../../../../app/models/server/raw';
 import { settings } from '../../../../../app/settings';
-import { Livechat } from '../../../../../app/livechat/server/lib/Livechat';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
+import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
-	if (agentId) {
-		const user = Users.getAgentInfo(agentId);
-		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
+	if (departmentId) {
+		const department = LivechatDepartment.findOneById(departmentId);
+		const { maxNumberSimultaneousChat } = department || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
 		}
 	}
 
-	if (departmentId) {
-		const department = LivechatDepartment.findOneById(departmentId);
-		const { maxNumberSimultaneousChat } = department || {};
+	if (agentId) {
+		const user = Users.getAgentInfo(agentId);
+		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
 		}
@@ -75,7 +80,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		Livechat.stream.emit(inquiry.rid, {
+		notifications.streamLivechatRoom.emit(inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -94,13 +99,14 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	});
 };
 
-const processWaitingQueue = async (department) => {
+export const processWaitingQueue = async (department) => {
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
 		return;
 	}
 
-	const room = await RoutingManager.delegateInquiry(inquiry);
+	const { defaultAgent } = inquiry;
+	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
 	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
@@ -108,7 +114,6 @@ const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
@@ -118,29 +123,8 @@ const processWaitingQueue = async (department) => {
 	await dispatchWaitingQueueStatus(departmentId);
 };
 
-export const checkWaitingQueue = (department) => {
-	if (!settings.get('Livechat_waiting_queue')) {
-		return;
-	}
-
-	const departments = (department && [department]) || LivechatDepartment.findEnabledWithAgents().fetch().map((department) => department._id);
-	if (departments.length === 0) {
-		return processWaitingQueue();
-	}
-
-	departments.forEach((department) => processWaitingQueue(department));
-};
-
-export const allowAgentSkipQueue = (agent) => {
-	check(agent, Match.ObjectIncluding({
-		agentId: String,
-	}));
-
-	return settings.get('Livechat_assign_new_conversation_to_bot') && hasRole(agent.agentId, 'bot');
-};
-
 export const setPredictedVisitorAbandonmentTime = (room) => {
-	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_auto_close_abandoned_rooms')) {
+	if (!room.v || !room.v.lastMessageTs || !settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
 		return;
 	}
 
@@ -160,9 +144,93 @@ export const setPredictedVisitorAbandonmentTime = (room) => {
 };
 
 export const updatePredictedVisitorAbandonment = () => {
-	if (settings.get('Livechat_auto_close_abandoned_rooms')) {
-		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
-	} else {
+	if (!settings.get('Livechat_abandoned_rooms_action') || (settings.get('Livechat_abandoned_rooms_action') === 'none')) {
 		LivechatRooms.unsetPredictedVisitorAbandonment();
+	} else {
+		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
+};
+
+export const updateRoomPriorityHistory = (rid, user, priority) => {
+	const history = {
+		priorityData: {
+			definedBy: user,
+			priority: priority || {},
+		},
+	};
+
+	Messages.createPriorityHistoryWithRoomIdMessageAndUser(rid, '', user, history);
+};
+
+export const updateInquiryQueuePriority = (roomId, priority) => {
+	const inquiry = LivechatInquiry.findOneByRoomId(roomId, { fields: { rid: 1, ts: 1 } });
+	if (!inquiry) {
+		return;
+	}
+
+	let { ts: estimatedServiceTimeAt } = inquiry;
+	let queueOrder = 1;
+	let estimatedWaitingTimeQueue = 0;
+
+	if (priority) {
+		const { dueTimeInMinutes } = priority;
+		queueOrder = 0;
+		estimatedWaitingTimeQueue = dueTimeInMinutes;
+		estimatedServiceTimeAt = new Date(estimatedServiceTimeAt.setMinutes(estimatedServiceTimeAt.getMinutes() + dueTimeInMinutes));
+	}
+
+	LivechatInquiry.setEstimatedServiceTimeAt(inquiry.rid, { queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
+};
+
+export const removePriorityFromRooms = (priorityId) => {
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id);
+	});
+
+	LivechatRooms.unsetPriorityById(priorityId);
+};
+
+export const updatePriorityInquiries = (priority) => {
+	if (!priority) {
+		return;
+	}
+
+	const { _id: priorityId } = priority;
+	LivechatRooms.findOpenByPriorityId(priorityId).forEach((room) => {
+		updateInquiryQueuePriority(room._id, priority);
+	});
+};
+
+export const getLivechatCustomFields = () => {
+	const customFields = LivechatCustomField.find({ visibility: 'visible', scope: 'visitor', public: true }).fetch();
+	return customFields.map(({ _id, label, regexp, required = false, type, defaultValue = null, options }) => ({ _id, label, regexp, required, type, defaultValue, ...options && options !== '' && { options: options.split(',') } }));
+};
+
+export const getLivechatQueueInfo = async (room) => {
+	if (!room) {
+		return null;
+	}
+
+	if (!settings.get('Livechat_waiting_queue')) {
+		return null;
+	}
+
+	const { _id: rid, departmentId: department } = room;
+	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
+	if (!inquiry) {
+		return null;
+	}
+
+	const { _id, status } = inquiry;
+	if (status !== 'queued') {
+		return null;
+	}
+
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+
+	if (!inq) {
+		return null;
+	}
+
+	return normalizeQueueInfo(inq);
 };

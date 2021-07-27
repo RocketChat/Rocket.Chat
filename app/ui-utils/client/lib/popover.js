@@ -1,16 +1,11 @@
 import './popover.html';
-import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { hide, leave } from './ChannelActions';
 import { messageBox } from './messageBox';
 import { MessageAction } from './MessageAction';
-import { RoomManager } from './RoomManager';
-import { ChatSubscription } from '../../../models/client';
-import { isRtl, handleError } from '../../../utils/client';
+import { isRtl } from '../../../utils/client';
 
 export const popover = {
 	renderedPopover: null,
@@ -54,6 +49,7 @@ Template.popover.onRendered(function() {
 	});
 	const { offsetVertical = 0, offsetHorizontal = 0 } = this.data;
 	const { activeElement } = this.data;
+	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
 	const position = _.throttle(() => {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
@@ -73,9 +69,11 @@ Template.popover.onRendered(function() {
 		const offsetWidth = offsetHorizontal * (horizontalDirection === 'left' ? 1 : -1);
 		const offsetHeight = offsetVertical * (verticalDirection === 'bottom' ? 1 : -1);
 
+		const leftDiff = window.innerWidth - originalWidth;
+
 		if (position) {
 			popoverContent.style.top = `${ position.top }px`;
-			popoverContent.style.left = `${ position.left }px`;
+			popoverContent.style.left = `${ position.left + leftDiff }px`;
 		} else {
 			const clientHeight = this.data.targetRect.height;
 			const popoverWidth = popoverContent.offsetWidth;
@@ -112,7 +110,7 @@ Template.popover.onRendered(function() {
 			}
 
 			popoverContent.style.top = `${ top }px`;
-			popoverContent.style.left = `${ left }px`;
+			popoverContent.style.left = `${ left + leftDiff }px`;
 		}
 
 		if (customCSSProperties) {
@@ -131,7 +129,6 @@ Template.popover.onRendered(function() {
 		if (activeElement) {
 			$(activeElement).addClass('active');
 		}
-
 		popoverContent.style.opacity = 1;
 	}, 50);
 	$(window).on('resize', position);
@@ -172,55 +169,11 @@ Template.popover.events({
 	'click [data-type="message-action"]'(e, t) {
 		const button = MessageAction.getButtonById(e.currentTarget.dataset.id);
 		if ((button != null ? button.action : undefined) != null) {
-			button.action.call(t.data.data, e, t.data.instance);
+			e.stopPropagation();
+			e.preventDefault();
+			const { tabBar, rid } = t.data.instance;
+			button.action.call(t.data.data, e, { tabBar, rid });
 			popover.close();
-			return false;
-		}
-	},
-	'click [data-type="sidebar-item"]'(e, instance) {
-		popover.close();
-		const { rid, name, template } = instance.data.data;
-		const action = e.currentTarget.dataset.id;
-
-		if (action === 'hide') {
-			hide(template, rid, name);
-		}
-
-		if (action === 'leave') {
-			leave(template, rid, name);
-		}
-
-		if (action === 'read') {
-			Meteor.call('readMessages', rid);
-			return false;
-		}
-
-		if (action === 'unread') {
-			Meteor.call('unreadMessages', null, rid, function(error) {
-				if (error) {
-					return handleError(error);
-				}
-
-				const subscription = ChatSubscription.findOne({ rid });
-				if (subscription == null) {
-					return;
-				}
-				RoomManager.close(subscription.t + subscription.name);
-
-				FlowRouter.go('home');
-			});
-
-			return false;
-		}
-
-		if (action === 'favorite') {
-			Meteor.call('toggleFavorite', rid, !$(e.currentTarget).hasClass('rc-popover__item--star-filled'), function(err) {
-				popover.close();
-				if (err) {
-					handleError(err);
-				}
-			});
-
 			return false;
 		}
 	},

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Users, Subscriptions } from '../../app/models';
+import { Users, Subscriptions } from '../../app/models/server';
 
 Meteor.methods({
 	saveUserPreferences(settings) {
@@ -19,14 +19,14 @@ Meteor.methods({
 			unreadAlert: Match.Optional(Boolean),
 			notificationsSoundVolume: Match.Optional(Number),
 			desktopNotifications: Match.Optional(String),
+			audioNotifications: Match.Optional(String),
 			mobileNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
-			desktopNotificationDuration: Match.Optional(Number),
 			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
-			hideAvatars: Match.Optional(Boolean),
+			displayAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
 			idleTimeLimit: Match.Optional(Number),
@@ -34,9 +34,8 @@ Meteor.methods({
 			sidebarShowUnread: Match.Optional(Boolean),
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
-			sidebarHideAvatar: Match.Optional(Boolean),
+			sidebarDisplayAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
-			sidebarShowDiscussion: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
@@ -50,6 +49,7 @@ Meteor.methods({
 			desktopNotifications: oldDesktopNotifications,
 			mobileNotifications: oldMobileNotifications,
 			emailNotificationMode: oldEmailNotifications,
+			audioNotifications: oldAudioNotifications,
 		} = (user.settings && user.settings.preferences) || {};
 
 		if (user.settings == null) {
@@ -77,25 +77,33 @@ Meteor.methods({
 		Meteor.defer(() => {
 			if (settings.desktopNotifications && oldDesktopNotifications !== settings.desktopNotifications) {
 				if (settings.desktopNotifications === 'default') {
-					Subscriptions.clearDesktopNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'desktopNotifications', 'desktopPrefOrigin');
 				} else {
-					Subscriptions.updateDesktopNotificationUserPreferences(user._id, settings.desktopNotifications);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.desktopNotifications, 'desktopNotifications', 'desktopPrefOrigin');
 				}
 			}
 
 			if (settings.mobileNotifications && oldMobileNotifications !== settings.mobileNotifications) {
 				if (settings.mobileNotifications === 'default') {
-					Subscriptions.clearMobileNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'mobilePushNotifications', 'mobilePrefOrigin');
 				} else {
-					Subscriptions.updateMobileNotificationUserPreferences(user._id, settings.mobileNotifications);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.mobileNotifications, 'mobilePushNotifications', 'mobilePrefOrigin');
 				}
 			}
 
 			if (settings.emailNotificationMode && oldEmailNotifications !== settings.emailNotificationMode) {
 				if (settings.emailNotificationMode === 'default') {
-					Subscriptions.clearEmailNotificationUserPreferences(user._id);
+					Subscriptions.clearNotificationUserPreferences(user._id, 'emailNotifications', 'emailPrefOrigin');
 				} else {
-					Subscriptions.updateEmailNotificationUserPreferences(user._id, settings.emailNotificationMode);
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.emailNotificationMode, 'emailNotifications', 'emailPrefOrigin');
+				}
+			}
+
+			if (settings.audioNotifications && oldAudioNotifications !== settings.audioNotifications) {
+				if (settings.audioNotifications === 'default') {
+					Subscriptions.clearNotificationUserPreferences(user._id, 'audioNotifications', 'audioPrefOrigin');
+				} else {
+					Subscriptions.updateNotificationUserPreferences(user._id, settings.audioNotifications, 'audioNotifications', 'audioPrefOrigin');
 				}
 			}
 

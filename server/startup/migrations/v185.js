@@ -1,11 +1,21 @@
-import { Migrations } from '../../../app/migrations';
-import { Settings } from '../../../app/models';
+import {
+	Migrations,
+} from '../../../app/migrations/server';
+import {
+	Settings,
+} from '../../../app/models/server';
 
 Migrations.add({
 	version: 185,
 	up() {
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Calls_Default' });
-		Settings.remove({ _id: 'API_Enable_Rate_Limiter_Limit_Time_Default' });
+		const setting = Settings.findOne({ _id: 'Message_SetNameToAliasEnabled' });
+		if (setting && setting.value) {
+			Settings.update({ _id: 'UI_Use_Real_Name' }, {
+				$set: {
+					value: true,
+				},
+			});
+		}
+		Settings.remove({ _id: 'Message_SetNameToAliasEnabled' });
 	},
 });

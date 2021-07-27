@@ -5,7 +5,7 @@ import { LegendSymbol } from './LegendSymbol';
 import { monochromaticColors, polychromaticColors } from './colors';
 
 export default {
-	title: 'admin/engagement/data/LegendSymbol',
+	title: 'admin/enterprise/engagement/data/LegendSymbol',
 	component: LegendSymbol,
 	decorators: [(fn) => <Margins children={fn()} all='x16' />],
 };

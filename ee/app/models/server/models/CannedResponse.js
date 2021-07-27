@@ -13,14 +13,16 @@ export class CannedResponse extends Base {
 		});
 	}
 
-	createOrUpdateCannedResponse(_id, { shortcut, text, scope, userId, departmentId, createdBy }) {
+	createOrUpdateCannedResponse(_id, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }) {
 		const record = {
 			shortcut,
 			text,
 			scope,
+			tags,
 			userId,
 			departmentId,
 			createdBy,
+			_createdAt,
 		};
 
 		if (_id) {
@@ -39,8 +41,25 @@ export class CannedResponse extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByShortcut(shortcut, options) {
+		const query = {
+			shortcut,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findByCannedResponseId(_id, options) {
 		const query = { _id };
+
+		return this.find(query, options);
+	}
+
+	findByDepartmentId(departmentId, options) {
+		const query = {
+			scope: 'department',
+			departmentId,
+		};
 
 		return this.find(query, options);
 	}

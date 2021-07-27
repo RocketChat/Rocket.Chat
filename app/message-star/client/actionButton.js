@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
+import { Rooms } from '../../models/client';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -23,8 +26,12 @@ Meteor.startup(function() {
 				}
 			});
 		},
-		condition({ msg: message, subscription, u }) {
+		condition({ msg: message, subscription, u, room }) {
 			if (subscription == null && settings.get('Message_AllowStarring')) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -63,23 +70,34 @@ Meteor.startup(function() {
 		id: 'jump-to-star-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['starred', 'threads', 'message', 'message-mobile'],
+		context: ['starred', 'threads', 'message-mobile'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
 			}
+			if (message.tmid) {
+				return FlowRouter.go(FlowRouter.getRouteName(), {
+					tab: 'thread',
+					context: message.tmid,
+					rid: message.rid,
+					jump: message._id,
+					name: Rooms.findOne({ _id: message.rid }).name,
+				}, {
+					jump: message._id,
+				});
+			}
 			RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
 		condition({ msg, subscription, u }) {
-			if (subscription == null || settings.get('Message_AllowStarring')) {
+			if (subscription == null || !settings.get('Message_AllowStarring')) {
 				return false;
 			}
 
 			return msg.starred && msg.starred.find((star) => star._id === u._id);
 		},
 		order: 100,
-		group: 'menu',
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({
@@ -88,9 +106,10 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['starred', 'threads'],
-		async action(event) {
+		async action() {
 			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
+			const permalink = await MessageAction.getPermaLink(message._id);
+			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ msg, subscription, u }) {

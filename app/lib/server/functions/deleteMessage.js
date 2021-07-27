@@ -8,15 +8,20 @@ import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../apps/server';
 
 export const deleteMessage = function(message, user) {
-	const keepHistory = settings.get('Message_KeepHistory');
-	const showDeletedStatus = settings.get('Message_ShowDeletedStatus');
 	const deletedMsg = Messages.findOneById(message._id);
+	const isThread = deletedMsg.tcount > 0;
+	const keepHistory = settings.get('Message_KeepHistory') || isThread;
+	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 
 	if (deletedMsg && Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
+	}
+
+	if (deletedMsg.tmid) {
+		Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
 	if (keepHistory) {

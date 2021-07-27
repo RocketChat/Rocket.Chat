@@ -10,6 +10,8 @@ export async function findAppearance({ userId }) {
 			$in: [
 				'Livechat_title',
 				'Livechat_title_color',
+				'Livechat_enable_message_character_limit',
+				'Livechat_message_character_limit',
 				'Livechat_show_agent_info',
 				'Livechat_show_agent_email',
 				'Livechat_display_offline_form',

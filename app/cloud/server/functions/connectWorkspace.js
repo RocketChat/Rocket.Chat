@@ -3,7 +3,6 @@ import { HTTP } from 'meteor/http';
 
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { saveRegistrationData } from './saveRegistrationData';
@@ -12,6 +11,12 @@ export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();
 	if (!connectToCloud) {
 		Settings.updateValueById('Register_Server', true);
+	}
+
+	// shouldn't get here due to checking this on the method
+	// but this is just to double check
+	if (!token) {
+		return new Error('Invalid token; the registration token is required.');
 	}
 
 	const redirectUri = getRedirectUri();
@@ -48,12 +53,6 @@ export function connectWorkspace(token) {
 	}
 
 	Promise.await(saveRegistrationData(data));
-
-	// Now that we have the client id and secret, let's get the access token
-	const accessToken = getWorkspaceAccessToken(true);
-	if (!accessToken) {
-		return false;
-	}
 
 	return true;
 }

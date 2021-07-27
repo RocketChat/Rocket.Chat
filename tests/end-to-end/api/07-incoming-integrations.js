@@ -348,6 +348,48 @@ describe('[Incoming Integrations]', function() {
 		});
 	});
 
+	describe('[/integrations.update]', () => {
+		it('should update an integration by id and return the new data', (done) => {
+			request.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated',
+					enabled: true,
+					alias: 'test updated',
+					username: 'rocket.cat',
+					scriptEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.alias).to.be.equal('test updated');
+				})
+				.end(done);
+		});
+
+		it('should have integration updated on subsequent gets', (done) => {
+			request.get(api(`integrations.get?integrationId=${ integration._id }`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.alias).to.be.equal('test updated');
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
 			updatePermission('manage-incoming-integrations', []).then(() => {

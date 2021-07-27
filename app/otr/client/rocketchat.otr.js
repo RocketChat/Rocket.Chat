@@ -11,6 +11,7 @@ class OTRClass {
 	constructor() {
 		this.enabled = new ReactiveVar(false);
 		this.instancesByRoomId = {};
+		this.crypto = null;
 	}
 
 	isEnabled() {

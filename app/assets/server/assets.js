@@ -7,8 +7,7 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings } from '../../settings';
-import { Settings } from '../../models';
+import { settings } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
@@ -210,7 +209,7 @@ export const RocketChatAssets = new class {
 			});
 		}
 
-		const file = new Buffer(binaryContent, 'binary');
+		const file = Buffer.from(binaryContent, 'binary');
 		if (assets[asset].constraints.width || assets[asset].constraints.height) {
 			const dimensions = sizeOf(file);
 			if (assets[asset].constraints.width && assets[asset].constraints.width !== dimensions.width) {
@@ -354,19 +353,7 @@ for (const key of Object.keys(assets)) {
 	addAssetToSetting(key, value);
 }
 
-Settings.find().observe({
-	added(record) {
-		return RocketChatAssets.processAsset(record._id, record.value);
-	},
-
-	changed(record) {
-		return RocketChatAssets.processAsset(record._id, record.value);
-	},
-
-	removed(record) {
-		return RocketChatAssets.processAsset(record._id, undefined);
-	},
-});
+settings.get(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
 Meteor.startup(function() {
 	return Meteor.setTimeout(function() {

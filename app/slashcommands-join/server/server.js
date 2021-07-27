@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions } from '../../models';
-import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
+import { api } from '../../../server/sdk/api';
 
 function Join(command, params, item) {
 	if (command !== 'join' || !Match.test(params, String)) {
@@ -19,10 +18,7 @@ function Join(command, params, item) {
 	const user = Meteor.users.findOne(Meteor.userId());
 	const room = Rooms.findOneByNameAndType(channel, 'c');
 	if (!room) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__('Channel_doesnt_exist', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

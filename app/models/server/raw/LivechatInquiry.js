@@ -9,10 +9,14 @@ export class LivechatInquiryRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneByRoomId(rid) {
+	findOneByRoomId(rid, options) {
 		const query = {
 			rid,
 		};
-		return this.findOne(query);
+		return this.findOne(query, options);
+	}
+
+	getDistinctQueuedDepartments() {
+		return this.col.distinct('department', { status: 'queued' });
 	}
 }

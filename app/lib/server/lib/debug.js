@@ -49,10 +49,19 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	}
 };
 
-const omitKeyArgs = (args) => args.map((arg) =>
-	(typeof arg !== 'object'
+const omitKeyArgs = (args, name) => {
+	if (name === 'saveSettings') {
+		return [args[0].map((arg) => _.omit(arg, 'value'))];
+	}
+
+	if (name === 'saveSetting') {
+		return [args[0], args[2]];
+	}
+
+	return args.map((arg) => (typeof arg !== 'object'
 		? arg
 		: _.omit(arg, 'password', 'msg', 'pass', 'username', 'message')));
+};
 
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
@@ -63,7 +72,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
-		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args)) }`);
+		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;

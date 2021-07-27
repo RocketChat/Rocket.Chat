@@ -1,0 +1,3 @@
+dist
+.config/data
+!.env

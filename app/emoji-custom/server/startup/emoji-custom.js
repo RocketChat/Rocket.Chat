@@ -104,6 +104,8 @@ Meteor.startup(function() {
 		}
 		if (/^svg$/i.test(params.emoji.split('.').pop())) {
 			res.setHeader('Content-Type', 'image/svg+xml');
+		} else if (/^png$/i.test(params.emoji.split('.').pop())) {
+			res.setHeader('Content-Type', 'image/png');
 		} else {
 			res.setHeader('Content-Type', 'image/jpeg');
 		}

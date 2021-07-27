@@ -23,11 +23,31 @@ let prometheusAPIUserAgent = false;
 
 export let API = {};
 
-const getRequestIP = (req) =>
-	req.headers['x-forwarded-for']
-	|| (req.connection && req.connection.remoteAddress)
-	|| (req.socket && req.socket.remoteAddress)
-	|| (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+const getRequestIP = (req) => {
+	const socket = req.socket || req.connection?.socket;
+	const remoteAddress = req.headers['x-real-ip'] || socket?.remoteAddress || req.connection?.remoteAddress || null;
+	let forwardedFor = req.headers['x-forwarded-for'];
+
+	if (!socket) {
+		return remoteAddress || forwardedFor || null;
+	}
+
+	const httpForwardedCount = parseInt(process.env.HTTP_FORWARDED_COUNT) || 0;
+	if (httpForwardedCount <= 0) {
+		return remoteAddress;
+	}
+
+	if (!_.isString(forwardedFor)) {
+		return remoteAddress;
+	}
+
+	forwardedFor = forwardedFor.trim().split(/\s*,\s*/);
+	if (httpForwardedCount > forwardedFor.length) {
+		return remoteAddress;
+	}
+
+	return forwardedFor[forwardedFor.length - httpForwardedCount];
+};
 
 export class APIClass extends Restivus {
 	constructor(properties) {
@@ -407,8 +427,14 @@ export class APIClass extends Restivus {
 		routes.forEach((route) => {
 			// Note: This is required due to Restivus calling `addRoute` in the constructor of itself
 			Object.keys(endpoints).forEach((method) => {
+				const _options = { ...options };
+
 				if (typeof endpoints[method] === 'function') {
 					endpoints[method] = { action: endpoints[method] };
+				} else {
+					const extraOptions = { ...endpoints[method] };
+					delete extraOptions.action;
+					Object.assign(_options, extraOptions);
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
@@ -435,9 +461,9 @@ export class APIClass extends Restivus {
 					try {
 						api.enforceRateLimit(this.request, this.response, this.userId, this.token);
 
-						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, options.permissionsRequired))) {
+						if (shouldVerifyPermissions && (!this.userId || !hasAllPermission(this.userId, _options.permissionsRequired))) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-								permissions: options.permissionsRequired,
+								permissions: _options.permissionsRequired,
 							});
 						}
 
@@ -452,8 +478,8 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						if (options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: options.twoFactorOptions, connection });
+						if (_options.twoFactorRequired) {
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
@@ -465,7 +491,7 @@ export class APIClass extends Restivus {
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
-						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, undefined, e);
+						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
@@ -497,6 +523,7 @@ export class APIClass extends Restivus {
 		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
 			const { user, username, email, password, code: bodyCode } = bodyParams;
+			let usernameToLDAPLogin = '';
 
 			if (password == null) {
 				return bodyParams;
@@ -514,10 +541,13 @@ export class APIClass extends Restivus {
 
 			if (typeof user === 'string') {
 				auth.user = user.includes('@') ? { email: user } : { username: user };
+				usernameToLDAPLogin = user;
 			} else if (username) {
 				auth.user = { username };
+				usernameToLDAPLogin = username;
 			} else if (email) {
 				auth.user = { email };
+				usernameToLDAPLogin = email;
 			}
 
 			if (auth.user == null) {
@@ -531,11 +561,21 @@ export class APIClass extends Restivus {
 				};
 			}
 
+			const objectToLDAPLogin = {
+				ldap: true,
+				username: usernameToLDAPLogin,
+				ldapPass: auth.password,
+				ldapOptions: {},
+			};
+			if (settings.get('LDAP_Enable') && !code) {
+				return objectToLDAPLogin;
+			}
+
 			if (code) {
 				return {
 					totp: {
 						code,
-						login: auth,
+						login: settings.get('LDAP_Enable') ? objectToLDAPLogin : auth,
 					},
 				};
 			}
@@ -553,6 +593,8 @@ export class APIClass extends Restivus {
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {},
+						httpHeaders: this.request.headers,
+						clientAddress: getRequestIP(this.request),
 					},
 				});
 
@@ -702,20 +744,51 @@ API = {
 };
 
 const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
-	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
-		if (settings.get('API_Enable_CORS') === true) {
-			this.response.writeHead(200, {
-				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token',
-			});
-		} else {
-			this.response.writeHead(405);
-			this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-		}
-	} else {
-		this.response.writeHead(404);
+	// check if a pre-flight request
+	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
+		this.done();
+		return;
 	}
+
+	if (!settings.get('API_Enable_CORS')) {
+		this.response.writeHead(405);
+		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
+		this.done();
+		return;
+	}
+
+	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
+
+	const defaultHeaders = {
+		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+		'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+	};
+
+	if (CORSOriginSetting === '*') {
+		this.response.writeHead(200, {
+			'Access-Control-Allow-Origin': '*',
+			...defaultHeaders,
+		});
+		this.done();
+		return;
+	}
+
+	const origins = CORSOriginSetting
+		.trim()
+		.split(',')
+		.map((origin) => String(origin).trim().toLocaleLowerCase());
+
+	// if invalid origin reply without required CORS headers
+	if (!origins.includes(this.request.headers.origin)) {
+		this.done();
+		return;
+	}
+
+	this.response.writeHead(200, {
+		'Access-Control-Allow-Origin': this.request.headers.origin,
+		Vary: 'Origin',
+		...defaultHeaders,
+	});
 	this.done();
 };
 
@@ -727,24 +800,6 @@ const createApi = function _createApi(_api, options = {}) {
 		defaultOptionsEndpoint,
 		auth: getUserAuth(),
 	}, options));
-
-	delete _api._config.defaultHeaders['Access-Control-Allow-Origin'];
-	delete _api._config.defaultHeaders['Access-Control-Allow-Headers'];
-	delete _api._config.defaultHeaders.Vary;
-
-	if (settings.get('API_Enable_CORS')) {
-		const origin = settings.get('API_CORS_Origin');
-
-		if (origin) {
-			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
-
-			if (origin !== '*') {
-				_api._config.defaultHeaders.Vary = 'Origin';
-			}
-		}
-
-		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
-	}
 
 	return _api;
 };

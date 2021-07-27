@@ -5,7 +5,7 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EJSON } from 'meteor/ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { Info } from '../../../utils/server';
@@ -15,6 +15,7 @@ import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
+import { SystemLogger } from '../../../logger/server';
 
 
 // DEPRECATED
@@ -49,7 +50,16 @@ API.v1.addRoute('info', { authRequired: false }, {
 
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
-		return API.v1.success(this.getUserInfo(Users.findOneById(this.userId, { fields: getDefaultUserFields() })));
+		const fields = getDefaultUserFields();
+		const user = Users.findOneById(this.userId, { fields });
+
+		// The password hash shouldn't be leaked but the client may need to know if it exists.
+		if (user?.services?.password?.bcrypt) {
+			user.services.password.exists = true;
+			delete user.services.password.bcrypt;
+		}
+
+		return API.v1.success(this.getUserInfo(user));
 	},
 });
 
@@ -128,9 +138,9 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 		const width = leftSize + rightSize;
 		const height = 20;
 
-		channel = s.escapeHTML(channel);
-		text = s.escapeHTML(text);
-		name = s.escapeHTML(name);
+		channel = escapeHTML(channel);
+		text = escapeHTML(text);
+		name = escapeHTML(name);
 
 		return {
 			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
@@ -262,6 +272,10 @@ const methodCall = () => ({
 			const result = Meteor.call(method, ...params);
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
+			SystemLogger.error(`Exception while invoking method ${ method }`, error.message);
+			if (settings.get('Log_Level') === '2') {
+				Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
+			}
 			return API.v1.success(mountResult({ id, error }));
 		}
 	},

@@ -9,7 +9,7 @@
 	<div class="flex-tab__result pinned-messages-list js-list">
 		<ul class="list clearfix">
 			{{# with messageContext}}
-				{{#each msg in messages}}{{> message msg=msg room=room groupable=true subscription=subscription settings=settings u=u }}{{/each}}
+				{{#each msg in messages}}{{> message context="pinned" msg=msg room=room groupable=true subscription=subscription settings=settings u=u }}{{/each}}
 			{{/with}}
 		</ul>
 

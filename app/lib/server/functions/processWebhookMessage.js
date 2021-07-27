@@ -1,13 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
+import mem from 'mem';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
-import { Subscriptions } from '../../../models';
+import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
-export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, mustBeJoined = false) {
+// show deprecation warning only once per hour for each integration
+const showDeprecation = mem(({ integration, channels, username }, error) => {
+	console.warn(`Warning: The integration "${ integration }" failed to send a message to "${ [].concat(channels).join(',') }" because user "${ username }" doesn't have permission or is not a member of the channel.`);
+	console.warn('This behavior is deprecated and starting from version v4.0.0 the following error will be thrown and the message will not be sent.');
+	console.error(error);
+}, { maxAge: 360000, cacheKey: (integration) => JSON.stringify(integration) });
+
+export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, integration = null) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
@@ -43,12 +51,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 				throw new Meteor.Error('invalid-channel');
 		}
 
-		if (mustBeJoined && !Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } })) {
-			// throw new Meteor.Error('invalid-room', 'Invalid room provided to send a message to, must be joined.');
-			throw new Meteor.Error('invalid-channel'); // Throwing the generic one so people can't "brute force" find rooms
-		}
-
-		if (messageObj.attachments && !_.isArray(messageObj.attachments)) {
+		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
 			console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
 			messageObj.attachments = undefined;
 		}
@@ -60,6 +63,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
+			tmid: messageObj.tmid,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
@@ -80,6 +84,19 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 					delete attachment.msg;
 				}
 			}
+		}
+
+		try {
+			validateRoomMessagePermissions(room, { uid: user._id, ...user });
+		} catch (error) {
+			if (!integration) {
+				throw error;
+			}
+			showDeprecation({
+				integration: integration.name,
+				channels: integration.channel,
+				username: integration.username,
+			}, error);
 		}
 
 		const messageReturn = sendMessage(user, message, room);

@@ -11,9 +11,17 @@ let useDefaultBlackList = false;
 let useDNSDomainCheck = false;
 
 settings.get('Accounts_BlockedDomainsList', function(key, value) {
+	if (!value) {
+		return;
+	}
+
 	emailDomainBlackList = value.split(',').filter(Boolean).map((domain) => domain.trim());
 });
 settings.get('Accounts_AllowedDomainsList', function(key, value) {
+	if (!value) {
+		return;
+	}
+
 	emailDomainWhiteList = value.split(',').filter(Boolean).map((domain) => domain.trim());
 });
 settings.get('Accounts_UseDefaultBlockedDomainsList', function(key, value) {

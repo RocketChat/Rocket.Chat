@@ -11,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const file = new Buffer(binaryContent, 'binary');
+		const file = Buffer.from(binaryContent, 'binary');
 
 		const rs = RocketChatFile.bufferToStream(file);
 		RocketChatFileCustomSoundsInstance.deleteFile(`${ soundData._id }.${ soundData.extension }`);

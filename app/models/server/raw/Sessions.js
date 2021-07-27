@@ -62,11 +62,12 @@ const getGroupSessionsByHour = (_id) => {
 	const isOpenSession = { $not: ['$session.closedAt'] };
 	const isAfterLoginAt = { $gte: ['$range', { $hour: '$session.loginAt' }] };
 	const isBeforeClosedAt = { $lte: ['$range', { $hour: '$session.closedAt' }] };
-	return {
+
+	const listGroup = {
 		$group: {
 			_id,
-			users: {
-				$sum: {
+			usersList: {
+				$addToSet: {
 					$cond: [
 						{
 							$or: [
@@ -74,13 +75,21 @@ const getGroupSessionsByHour = (_id) => {
 								{ $and: [isAfterLoginAt, isBeforeClosedAt] },
 							],
 						},
-						1,
-						0,
+						'$session.userId',
+						'$$REMOVE',
 					],
 				},
 			},
 		},
 	};
+
+	const countGroup = {
+		$addFields: {
+			users: { $size: '$usersList' },
+		},
+	};
+
+	return { listGroup, countGroup };
 };
 
 const getSortByFullDate = () => ({
@@ -112,12 +121,22 @@ export class SessionsRaw extends BaseRaw {
 		]).toArray();
 	}
 
+	async findLastLoginByIp(ip) {
+		return (await this.col.find({
+			ip,
+		}, {
+			sort: { loginAt: -1 },
+			limit: 1,
+		}).toArray())[0];
+	}
+
 	getActiveUsersOfPeriodByDayBetweenDates({ start, end }) {
 		return this.col.aggregate([
 			{
 				$match: {
 					...matchBasedOnDate(start, end),
 					type: 'user_daily',
+					mostImportantRole: { $ne: 'anonymous' },
 				},
 			},
 			{
@@ -126,6 +145,19 @@ export class SessionsRaw extends BaseRaw {
 						day: '$day',
 						month: '$month',
 						year: '$year',
+						userId: '$userId',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						day: '$_id.day',
+						month: '$_id.month',
+						year: '$_id.year',
+					},
+					usersList: {
+						$addToSet: '$_id.userId',
 					},
 					users: { $sum: 1 },
 				},
@@ -134,6 +166,7 @@ export class SessionsRaw extends BaseRaw {
 				$project: {
 					_id: 0,
 					...getProjectionByFullDate(),
+					usersList: 1,
 					users: 1,
 				},
 			},
@@ -145,7 +178,7 @@ export class SessionsRaw extends BaseRaw {
 		]).toArray();
 	}
 
-	getBusiestTimeWithinHoursPeriod({ start, end }) {
+	getBusiestTimeWithinHoursPeriod({ start, end, groupSize }) {
 		const match = {
 			$match: {
 				type: 'computed-session',
@@ -155,7 +188,7 @@ export class SessionsRaw extends BaseRaw {
 		const rangeProject = {
 			$project: {
 				range: {
-					$range: [0, 24],
+					$range: [0, 24, groupSize],
 				},
 				session: '$$ROOT',
 			},
@@ -163,7 +196,7 @@ export class SessionsRaw extends BaseRaw {
 		const unwind = {
 			$unwind: '$range',
 		};
-		const group = getGroupSessionsByHour('$range');
+		const groups = getGroupSessionsByHour('$range');
 		const presentationProject = {
 			$project: {
 				_id: 0,
@@ -176,7 +209,7 @@ export class SessionsRaw extends BaseRaw {
 				hour: -1,
 			},
 		};
-		return this.col.aggregate([match, rangeProject, unwind, group, presentationProject, sort]).toArray();
+		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
 	}
 
 	getTotalOfSessionsByDayBetweenDates({ start, end }) {
@@ -185,12 +218,13 @@ export class SessionsRaw extends BaseRaw {
 				$match: {
 					...matchBasedOnDate(start, end),
 					type: 'user_daily',
+					mostImportantRole: { $ne: 'anonymous' },
 				},
 			},
 			{
 				$group: {
 					_id: { year: '$year', month: '$month', day: '$day' },
-					users: { $sum: '$sessions' },
+					users: { $sum: 1 },
 				},
 			},
 			{
@@ -229,7 +263,7 @@ export class SessionsRaw extends BaseRaw {
 		const unwind = {
 			$unwind: '$range',
 		};
-		const group = getGroupSessionsByHour({ range: '$range', day: '$session.day', month: '$session.month', year: '$session.year' });
+		const groups = getGroupSessionsByHour({ range: '$range', day: '$session.day', month: '$session.month', year: '$session.year' });
 		const presentationProject = {
 			$project: {
 				_id: 0,
@@ -244,7 +278,7 @@ export class SessionsRaw extends BaseRaw {
 				hour: -1,
 			},
 		};
-		return this.col.aggregate([match, rangeProject, unwind, group, presentationProject, sort]).toArray();
+		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
 	}
 }
 

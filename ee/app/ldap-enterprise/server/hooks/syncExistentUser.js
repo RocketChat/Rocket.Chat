@@ -1,12 +1,19 @@
-import { callbacks } from '../../../../../app/callbacks';
 import { logger } from '../../../../../app/ldap/server/sync';
 import { setUserActiveStatus } from '../../../../../app/lib/server/functions/setUserActiveStatus';
+import { settings } from '../../../../../app/settings';
 
-callbacks.add('ldap.afterSyncExistentUser', ({ ldapUser, user }) => {
+export const syncExistentUser = ({ ldapUser, user }) => {
 	const activate = !!ldapUser && !ldapUser.pwdAccountLockedTime;
 
-	if (activate !== user.active) {
-		setUserActiveStatus(user._id, activate);
-		logger.info(`${ activate ? 'Activating' : 'Deactivating' } user ${ user.name } (${ user._id })`);
+	if (activate === user.active) {
+		return;
 	}
-}, callbacks.priority.MEDIUM, 'ldap-disable-enable-users');
+
+	const syncUserState = settings.get('LDAP_Sync_User_Active_State');
+	if (syncUserState === 'none' || (syncUserState === 'disable' && activate)) {
+		return;
+	}
+
+	setUserActiveStatus(user._id, activate);
+	logger.info(`${ activate ? 'Activating' : 'Deactivating' } user ${ user.name } (${ user._id })`);
+};

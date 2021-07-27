@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { callbacks } from '../../../../callbacks';
 import { settings } from '../../../../settings';
 
 /**
@@ -10,19 +11,18 @@ import { settings } from '../../../../settings';
 * @param {object} message the message to be parsed
 */
 export function parseMessageTextPerUser(messageText, message, receiver) {
-	if (!message.msg && message.attachments && message.attachments[0]) {
-		const lng = receiver.language || settings.get('Language') || 'en';
+	const lng = receiver.language || settings.get('Language') || 'en';
 
+	if (!message.msg && message.attachments && message.attachments[0]) {
 		return message.attachments[0].image_type ? TAPi18n.__('User_uploaded_image', { lng }) : TAPi18n.__('User_uploaded_file', { lng });
 	}
 
 	if (message.msg && message.t === 'e2e') {
-		const lng = receiver.language || settings.get('Language') || 'en';
-
 		return TAPi18n.__('Encrypted_message', { lng });
 	}
 
-	return messageText;
+	// perform processing required before sending message as notification such as markdown filtering
+	return callbacks.run('renderNotification', messageText);
 }
 
 /**
@@ -39,7 +39,7 @@ export function replaceMentionedUsernamesWithFullNames(message, mentions) {
 	}
 	mentions.forEach((mention) => {
 		if (mention.name) {
-			message = message.replace(new RegExp(s.escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
+			message = message.replace(new RegExp(escapeRegExp(`@${ mention.username }`), 'g'), mention.name);
 		}
 	});
 	return message;
@@ -57,7 +57,7 @@ export function messageContainsHighlight(message, highlights) {
 	if (! highlights || highlights.length === 0) { return false; }
 
 	return highlights.some(function(highlight) {
-		const regexp = new RegExp(s.escapeRegExp(highlight), 'i');
+		const regexp = new RegExp(escapeRegExp(highlight), 'i');
 		return regexp.test(message.msg);
 	});
 }

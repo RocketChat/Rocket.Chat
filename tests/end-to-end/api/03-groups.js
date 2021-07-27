@@ -537,6 +537,172 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
+	describe('[/groups.online]', () => {
+		const createUserAndChannel = async (setAsOnline = true) => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			if (setAsOnline) {
+				await request.post(api('users.setStatus'))
+					.set(testUserCredentials)
+					.send({
+						message: '',
+						status: 'online',
+					});
+			}
+
+			const roomName = `group-test-${ Date.now() }`;
+
+			const roomResponse = await createRoom({ name: roomName, type: 'p', members: [testUser.username], credentials: testUserCredentials });
+
+			return {
+				testUser,
+				testUserCredentials,
+				room: roomResponse.body.group,
+			};
+		};
+
+		it('should return an error if no query', () =>
+			request.get(api('groups.online'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an error if passing an empty query', () =>
+			request.get(api('groups.online'))
+				.set(credentials)
+				.query('query={}')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an array with online members', async () => {
+			const {
+				testUser,
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel();
+
+			const response = await request.get(api('groups.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`);
+
+			const { body } = response;
+
+			const expected = {
+				_id: testUser._id,
+				username: testUser.username,
+			};
+
+			expect(body.online).to.deep.include(expected);
+		});
+
+		it('should return an empty array if members are offline', async () => {
+			const {
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel(false);
+
+			const response = await request.get(api('groups.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`);
+
+			const { body } = response;
+
+			expect(body.online).to.deep.equal([]);
+		});
+
+		it('should return an error if requesting user is not in group', async () => {
+			const outsider = await createUser();
+			const outsiderCredentials = await login(outsider.username, password);
+
+			const {
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('groups.online'))
+				.set(outsiderCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				});
+		});
+	});
+
+	it('/groups.members', (done) => {
+		request.get(api('groups.members'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('members').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	it('/groups.files', (done) => {
+		request.get(api('groups.files'))
+			.set(credentials)
+			.query({
+				roomId: group._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('files').and.to.be.an('array');
+			})
+			.end(done);
+	});
+
+	describe('/groups.listAll', () => {
+		it('should fail if the user doesnt have view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', []).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should succeed if user has view-room-administration permission', (done) => {
+			updatePermission('view-room-administration', ['admin']).then(() => {
+				request.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('groups').and.to.be.an('array');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	it('/groups.counters', (done) => {
 		request.get(api('groups.counters'))
 			.set(credentials)
@@ -1095,6 +1261,162 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.a.property('success', true);
 					expect(res.body).to.have.a.property('moderators').that.is.an('array').that.has.lengthOf(1);
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
+				})
+				.end(done);
+		});
+	});
+
+	describe('/groups.setEncrypted', () => {
+		let testGroup;
+		it('/groups.create', (done) => {
+			request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `group.encrypted.test.${ Date.now() }`,
+				})
+				.end((err, res) => {
+					testGroup = res.body.group;
+					done();
+				});
+		});
+
+		it('should return an error when passing no boolean param', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: 'no-boolean',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The bodyParam "encrypted" is required');
+				})
+				.end(done);
+		});
+
+		it('should set group as encrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: true,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', true);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room encrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', true);
+		});
+
+		it('should set group as unencrypted correctly and return the new data', (done) => {
+			request.post(api('groups.setEncrypted'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					encrypted: false,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('group');
+					expect(res.body.group).to.have.property('_id', testGroup._id);
+					expect(res.body.group).to.have.property('encrypted', false);
+				})
+				.end(done);
+		});
+
+		it('should return the updated room unencrypted', async () => {
+			const roomInfo = await getRoomInfo(testGroup._id);
+			expect(roomInfo).to.have.a.property('success', true);
+			expect(roomInfo.group).to.have.a.property('_id', testGroup._id);
+			expect(roomInfo.group).to.have.a.property('encrypted', false);
+		});
+	});
+
+	describe('/groups.convertToTeam', () => {
+		before((done) => {
+			request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${ Date.now() }` })
+				.expect(200)
+				.expect((response) => {
+					this.newGroup = response.body.group;
+				})
+				.then(() => done());
+		});
+
+		it('should fail to convert group if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert group if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should successfully convert a group to a team', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('groups.convertToTeam'))
+						.set(credentials)
+						.send({ roomId: this.newGroup._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert group without the required parameters', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert group if it\'s already taken', (done) => {
+			request.post(api('groups.convertToTeam'))
+				.set(credentials)
+				.send({ roomId: this.newGroup._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
 				})
 				.end(done);
 		});

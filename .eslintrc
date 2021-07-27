@@ -11,7 +11,8 @@
     "jscolor": false
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks"
   ],
   "rules": {
     "jsx-quotes": [
@@ -24,7 +25,11 @@
     "react/jsx-fragments": [
       "error",
       "syntax"
-    ]
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": ["warn", {
+      "additionalHooks": "(useComponentDidUpdate)"
+    }]
   },
   "settings": {
     "import/resolver": {
@@ -70,10 +75,18 @@
         "@typescript-eslint"
       ],
       "rules": {
+        "func-call-spacing": "off",
         "jsx-quotes": [
           "error",
           "prefer-single"
         ],
+        "indent": "off",
+        "no-dupe-class-members": "off",
+        "no-extra-parens": "off",
+        "no-spaced-func": "off",
+        "no-unused-vars": "off",
+        "no-useless-constructor": "off",
+        "no-use-before-define": "off",
         "react/jsx-uses-react": "error",
         "react/jsx-uses-vars": "error",
         "react/jsx-no-undef": "error",
@@ -84,13 +97,32 @@
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/indent": [
           "error",
-          "tab"
+          "tab",
+          {
+            "SwitchCase": 1
+          }
         ],
-        "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/interface-name-prefix": [
           "error",
           "always"
-        ]
+        ],
+        "@typescript-eslint/no-extra-parens": [
+          "error",
+          "all",
+          {
+            "conditionalAssign": true,
+            "nestedBinaryExpressions": false,
+            "returnAssign": true,
+            "ignoreJSX": "all",
+            "enforceForArrowConditionals": false
+          }
+        ],
+        "@typescript-eslint/no-dupe-class-members": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": ["error", {
+          "argsIgnorePattern": "^_",
+          "ignoreRestSiblings": true
+        }]
       },
       "env": {
         "browser": true,

@@ -1,4 +1,3 @@
 app/theme/client/vendor/fontello/css/fontello.css
 app/meteor-autocomplete/client/autocomplete.css
-app/katex/katex.min.css
 app/emoji-emojione/client/*.css

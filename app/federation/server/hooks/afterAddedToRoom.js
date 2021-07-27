@@ -45,11 +45,16 @@ async function afterAddedToRoom(involvedUsers, room) {
 			//
 
 			// Get the users domains
-			const domainsAfterAdd = users.map((u) => u.federation.origin);
+			const domainsAfterAdd = [];
+			users.forEach((user) => {
+				if (user.hasOwnProperty('federation') && !domainsAfterAdd.includes(user.federation.origin)) {
+					domainsAfterAdd.push(user.federation.origin);
+				}
+			});
 
 			// Check if the number of domains is allowed
-			if (!checkRoomDomainsLength(room.federation.domains)) {
-				throw new Error('Cannot federate rooms with more than 10 domains');
+			if (!checkRoomDomainsLength(domainsAfterAdd)) {
+				throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
 			}
 
 			//

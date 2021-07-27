@@ -8,8 +8,10 @@ import { MessageAction } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Messages } from '../../../models';
 
-Meteor.startup(function() {
-	Tracker.autorun(function() {
+Meteor.startup(() => {
+	AutoTranslate.init();
+
+	Tracker.autorun(() => {
 		if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
 			MessageAction.addButton({
 				id: 'translate',

@@ -24,8 +24,8 @@ Migrations.add({
 			const inquiry = LivechatInquiry.findOneByRoomId(room._id);
 			if (!inquiry) {
 				try {
-					const { _id, fname, v } = room;
-					createLivechatInquiry(_id, fname, v, { msg: '' }, 'taken');
+					const { _id: rid, fname: name, v: guest } = room;
+					createLivechatInquiry({ rid, name, guest, message: { msg: '' }, initialStatus: 'taken' });
 				} catch (error) {
 					console.error(error);
 				}

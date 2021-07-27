@@ -22,7 +22,7 @@ settings.get('GoogleNaturalLanguage_ServiceAccount', (key, value) => {
 
 const setRoomSentiment = function(message) {
 	if (!languageClient) {
-		return;
+		return message;
 	}
 
 	languageClient.detectSentiment(message.msg, Meteor.bindEnvironment((error, result) => {

@@ -11,7 +11,6 @@ const applyRestrictions = (method) => function(originalFn, originalQuery, ...arg
 
 overwriteClassOnLicense('livechat-enterprise', LivechatRooms, {
 	find: applyRestrictions('find'),
-	findOne: applyRestrictions('findOne'),
 	update: applyRestrictions('update'),
 	remove: applyRestrictions('remove'),
 	updateDepartmentAncestorsById(originalFn, _id, departmentAncestors) {
@@ -46,6 +45,20 @@ LivechatRooms.prototype.findAbandonedOpenRooms = function(date) {
 	});
 };
 
+LivechatRooms.prototype.setOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $set: { onHold: true } },
+	);
+};
+
+LivechatRooms.prototype.unsetOnHold = function(roomId) {
+	return this.update(
+		{ _id: roomId },
+		{ $unset: { onHold: 1 } },
+	);
+};
+
 LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	return this.update({
 		open: true,
@@ -55,6 +68,47 @@ LivechatRooms.prototype.unsetPredictedVisitorAbandonment = function() {
 	}, {
 		multi: true,
 	});
+};
+
+LivechatRooms.prototype.unsetPredictedVisitorAbandonmentByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+	});
+};
+
+LivechatRooms.prototype.unsetAllOnHoldFieldsByRoomId = function(roomId) {
+	return this.update({
+		_id: roomId,
+	}, {
+		$unset: {
+			'omnichannel.predictedVisitorAbandonmentAt': 1,
+			onHold: 1,
+		},
+	});
+};
+
+LivechatRooms.prototype.unsetPriorityById = function(priorityId) {
+	return this.update({
+		open: true,
+		t: 'l',
+		priorityId,
+	}, {
+		$unset: { priorityId: 1 },
+	}, {
+		multi: true,
+	});
+};
+
+LivechatRooms.prototype.findOpenByPriorityId = function(priorityId, options) {
+	const query = {
+		t: 'l',
+		open: true,
+		priorityId,
+	};
+
+	return this.find(query, options);
 };
 
 export default LivechatRooms;
