@@ -86,7 +86,16 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 		} else {
 			setCurrentStep(currentStep + 1);
 		}
-	}, [currentStep, hasUnsavedChanges, domain, discoveryMethod]);
+	}, [
+		currentStep,
+		hasUnsavedChanges,
+		domain,
+		discoveryMethod,
+		commit,
+		onClose,
+		setFederationDomain,
+		setFederationDiscoveryMethod,
+	]);
 
 	const previousStep = useCallback(() => {
 		if (currentStep === 1) {
@@ -94,7 +103,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 		} else {
 			setCurrentStep(currentStep - 1);
 		}
-	}, [currentStep]);
+	}, [currentStep, onClose]);
 
 	// Resolve DNS
 	const resolvedSRVString = useSetting('FEDERATION_ResolvedSRV') as string;
@@ -152,10 +161,10 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 					</Modal.Header>
 					<Modal.Content>
 						<Tabs>
-							<Tabs.Item selected={currentTab === 1} onClick={() => setCurrentTab(1)}>
+							<Tabs.Item selected={currentTab === 1} onClick={(): void => setCurrentTab(1)}>
 								Configure DNS
 							</Tabs.Item>
-							<Tabs.Item selected={currentTab === 2} onClick={() => setCurrentTab(2)}>
+							<Tabs.Item selected={currentTab === 2} onClick={(): void => setCurrentTab(2)}>
 								Legacy Support
 							</Tabs.Item>
 						</Tabs>
