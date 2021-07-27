@@ -127,6 +127,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			email: '',
 			connectionData: undefined,
 			phone: {},
+			...visitor.id && { id: visitor.id },
 		};
 
 		if (visitor.visitorEmails && visitor.visitorEmails.length) {
@@ -137,7 +138,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			(registerData as any).phone = { number: visitor.phone[0].phoneNumber };
 		}
 
-		return Livechat.registerGuest(registerData);
+		return Livechat.registerGuest(registerData as any);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
