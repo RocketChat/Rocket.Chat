@@ -26,7 +26,7 @@ export const GenericFileAttachment: FC<GenericFileAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			{description && <MarkdownText content={description} />}
+			{description && <MarkdownText parseEmoji content={description} />}
 			<Attachment.Row>
 				{hasDownload && link ? (
 					<Attachment.TitleLink link={getURL(link)} title={title} />

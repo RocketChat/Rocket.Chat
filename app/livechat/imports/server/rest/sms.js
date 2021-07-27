@@ -73,6 +73,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const visitor = defineVisitor(sms.from);
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
 
@@ -84,6 +85,11 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				},
 			},
 		};
+
+		// create an empty room first place, so attachments have a place to live
+		if (!roomExists) {
+			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined));
+		}
 
 		let file;
 		let attachments;
@@ -98,33 +104,44 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			const uploadedFile = getUploadFile(details, smsUrl);
-			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+			let attachment;
+			try {
+				const uploadedFile = getUploadFile(details, smsUrl);
+				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+				const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
-			const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+				attachment = {
+					title: file.name,
+					type: 'file',
+					description: file.description,
+					title_link: fileUrl,
+				};
 
-			const attachment = {
-				title: file.name,
-				type: 'file',
-				description: file.description,
-				title_link: fileUrl,
-			};
-
-			if (/^image\/.+/.test(file.type)) {
-				attachment.image_url = fileUrl;
-				attachment.image_type = file.type;
-				attachment.image_size = file.size;
-				attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-			} else if (/^audio\/.+/.test(file.type)) {
-				attachment.audio_url = fileUrl;
-				attachment.audio_type = file.type;
-				attachment.audio_size = file.size;
-			} else if (/^video\/.+/.test(file.type)) {
-				attachment.video_url = fileUrl;
-				attachment.video_type = file.type;
-				attachment.video_size = file.size;
+				if (/^image\/.+/.test(file.type)) {
+					attachment.image_url = fileUrl;
+					attachment.image_type = file.type;
+					attachment.image_size = file.size;
+					attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+				} else if (/^audio\/.+/.test(file.type)) {
+					attachment.audio_url = fileUrl;
+					attachment.audio_type = file.type;
+					attachment.audio_size = file.size;
+				} else if (/^video\/.+/.test(file.type)) {
+					attachment.video_url = fileUrl;
+					attachment.video_type = file.type;
+					attachment.video_size = file.size;
+				}
+			} catch (e) {
+				console.error(`Attachment upload failed: ${ e.message }`);
+				attachment = {
+					fields: [{
+						title: 'User upload failed',
+						value: 'An attachment was received, but upload to server failed',
+						short: true,
+					}],
+					color: 'yellow',
+				};
 			}
-
 			attachments = [attachment];
 		}
 

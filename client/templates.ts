@@ -243,3 +243,12 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent('StatusMessage', () => import('./components/Message/StatusMessage'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			class: 'message-custom-status',
+		}),
+});
+
+createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));

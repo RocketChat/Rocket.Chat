@@ -79,7 +79,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Footer>
 				<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 					{dontAskAgain}
-					<ButtonGroup align='end' flexGrow={1}>
+					<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
 						{onCancel && (
 							<Button ghost onClick={onCancel}>
 								{cancelText ?? t('Cancel')}

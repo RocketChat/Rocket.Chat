@@ -62190,6 +62190,135 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.16.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22511",
+          "title": "[FIX] Livechat apps permission error",
+          "userLogin": "d-gubert",
+          "description": "Updated Apps-Engine version fixes errors with apps using livechat features.",
+          "milestone": "3.16.1",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22506",
+          "title": "[FIX] Prune messages not applying the user filter",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.15.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.15.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.26.0",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22506",
+          "title": "[FIX] Prune messages not applying the user filter",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.15.3",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.16.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22620",
+          "title": "Regression: Change the name of called methods in Users model",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.16.2",
+          "contributors": [
+            "tiagoevanp",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22619",
+          "title": "[FIX]  Markdown for UiKit blocks",
+          "userLogin": "ggazzo",
+          "milestone": "3.16.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22584",
+          "title": "[FIX] Checks the list of agents if at least one is online",
+          "userLogin": "tiagoevanp",
+          "milestone": "3.16.2",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22545",
+          "title": "[FIX] Error in permission check for getLivechatDepartmentByNameOrId method in Apps",
+          "userLogin": "d-gubert",
+          "description": "Update the Apps-Engine with a fix for the permission check on the `getLivechatDepartmentByNameOrId` method",
+          "milestone": "3.16.2",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22589",
+          "title": "[FIX] Livechat webhook request without headers",
+          "userLogin": "ggazzo",
+          "milestone": "3.16.2",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.16.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
     }
   }
 }
