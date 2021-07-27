@@ -168,10 +168,10 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} reload={reload} />
+				{!isMonitor && <RemoveCannedResponseButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload],
+		[getTime, onRowClick, reload, isMonitor],
 	);
 
 	if (context === 'edit' && id) {
