@@ -189,7 +189,7 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				{!isMonitor && (
+				{!(scope === 'global' && isMonitor) && (
 					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
 				)}
 			</Table.Row>
