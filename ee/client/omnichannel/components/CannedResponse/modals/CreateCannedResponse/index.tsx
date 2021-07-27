@@ -25,7 +25,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 		shortcut: data ? data.shortcut : '',
 		text: data ? data.text : '',
 		tags:
-			data && data.tags && Array.isArray(data.tags)
+			data?.tags && Array.isArray(data.tags)
 				? data.tags.map((tag: string) => ({ label: tag, value: tag }))
 				: [],
 		scope: data ? data.scope : 'user',

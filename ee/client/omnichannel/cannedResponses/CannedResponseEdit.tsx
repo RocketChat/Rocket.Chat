@@ -39,10 +39,7 @@ const CannedResponseEdit: FC<{
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
 		tags:
-			data &&
-			data.cannedResponse &&
-			data.cannedResponse.tags &&
-			Array.isArray(data.cannedResponse.tags)
+			data?.cannedResponse?.tags && Array.isArray(data.cannedResponse.tags)
 				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
 				: [],
 		scope: data ? data.cannedResponse.scope : 'user',
