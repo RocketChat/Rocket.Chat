@@ -37,6 +37,57 @@ body:
     attributes:
       label: Actual behavior
       description: What actually happens with SCREENSHOT, if applicable
+  - type: markdown
+    value: "### Server Setup Information"
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Version of Rocket.Chat Server
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Operating System
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Deployment Method
+      placeholder: snap/docker/tar/etc
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Number of Running Instances
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: DB Replicaset Oplog
+      placeholder: enabled/disabled
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: NodeJS Version
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: MongoDB Version
+  - type: markdown
+    value: "### Client Setup Information"
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Desktop App or Browser Version
+  - type: input
+    validations:
+      required: true
+    attributes:
+      label: Operating System
   - type: textarea
     attributes:
       label: Additional context
