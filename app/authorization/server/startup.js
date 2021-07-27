@@ -51,6 +51,7 @@ Meteor.startup(function() {
 		{ _id: 'join-without-join-code',             roles: ['admin', 'bot', 'app'] },
 		{ _id: 'leave-c',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
 		{ _id: 'leave-p',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
+		{ _id: 'logout-other-user',                  roles: ['admin'] },
 		{ _id: 'manage-assets',                      roles: ['admin'] },
 		{ _id: 'manage-email-inbox',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                       roles: ['admin'] },
