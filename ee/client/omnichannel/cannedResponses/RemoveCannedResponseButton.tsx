@@ -12,9 +12,14 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 export type RemoveCannedResponseButtonProps = {
 	_id: string;
 	reload: () => void;
+	totalDataReload: () => void;
 };
 
-const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, reload }) => {
+const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({
+	_id,
+	reload,
+	totalDataReload,
+}) => {
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
 	const removeCannedResponse = useMethod('removeCannedResponse');
 	const setModal = useSetModal();
@@ -36,6 +41,7 @@ const RemoveCannedResponseButton: FC<RemoveCannedResponseButtonProps> = ({ _id, 
 			try {
 				await handleRemoveClick();
 				reload();
+				totalDataReload();
 				dispatchToastMessage({ type: 'success', message: t('Canned_Response_Removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

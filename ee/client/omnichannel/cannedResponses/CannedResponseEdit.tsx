@@ -16,9 +16,10 @@ import CannedResponseForm from './components/cannedResponseForm';
 const CannedResponseEdit: FC<{
 	data?: CannedResponseEndpointGetReturn;
 	reload: () => void;
+	totalDataReload: () => void;
 	isNew?: boolean;
 	departmentData?: LivechatDepartmentSingleGetReturn;
-}> = ({ data, reload, isNew = false, departmentData = {} }) => {
+}> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const Route = useRoute('omnichannel-canned-responses');
@@ -38,7 +39,10 @@ const CannedResponseEdit: FC<{
 		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
 		shortcut: data ? data.cannedResponse.shortcut : '',
 		text: data ? data.cannedResponse.text : '',
-		tags: data && data.cannedResponse && data.cannedResponse.tags ? data.cannedResponse.tags : [],
+		tags:
+			data?.cannedResponse?.tags && Array.isArray(data.cannedResponse.tags)
+				? data.cannedResponse.tags.map((tag) => ({ label: tag, value: tag }))
+				: [],
 		scope: data ? data.cannedResponse.scope : 'user',
 		departmentId:
 			data && data.cannedResponse && data.cannedResponse.departmentId
@@ -101,12 +105,15 @@ const CannedResponseEdit: FC<{
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
+				typeof tag === 'object' ? tag?.value : tag,
+			);
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(tags.length > 0 && { tags }),
+				...(mappedTags.length > 0 && { tags: mappedTags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({
@@ -117,10 +124,11 @@ const CannedResponseEdit: FC<{
 				context: '',
 			});
 			reload();
+			totalDataReload();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload]);
+	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
 
 	const onPreview = (): void => {
 		setPreview(!preview);
