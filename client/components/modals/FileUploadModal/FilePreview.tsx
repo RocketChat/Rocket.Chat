@@ -1,6 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
+import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
 
 export enum FilePreviewType {
@@ -17,19 +17,32 @@ const getFileType = (fileType: File['type']): FilePreviewType | undefined => {
 	}
 };
 
+const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefined): boolean => {
+	if (!fileType) {
+		return false;
+	}
+	// Avoid preview if file size bigger than 10mb
+	if (file.size > 10 * 1000000) {
+		return false;
+	}
+	if (!Object.values(FilePreviewType).includes(fileType)) {
+		return false;
+	}
+	return true;
+};
+
 type FilePreviewProps = {
 	file: File;
 };
 
 const FilePreview = ({ file }: FilePreviewProps): ReactElement => {
 	const fileType = getFileType(file.type);
-	console.log('fileType', fileType);
-	if (fileType && Object.values(FilePreviewType).includes(fileType)) {
-		return <MediaPreview file={file} fileType={fileType} />;
+
+	if (shouldShowMediaPreview(file, fileType)) {
+		return <MediaPreview file={file} fileType={fileType as FilePreviewType} />;
 	}
 
-	// TODO display file size
-	return <Box>{file.name}</Box>;
+	return <GenericPreview file={file} />;
 };
 
 export default FilePreview;

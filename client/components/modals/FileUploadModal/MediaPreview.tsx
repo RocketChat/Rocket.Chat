@@ -1,13 +1,15 @@
-import { Box, Skeleton, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement, useEffect, useState, memo } from 'react';
 
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { FilePreviewType } from './FilePreview';
+import PreviewSkeleton from './PreviewSkeleton';
 
-type ReaderOnloadCallback = (url: FileReader['result'], file: File) => void;
+type ReaderOnloadCallback = (url: FileReader['result']) => void;
 
 const readFileAsDataURL = (file: File, callback: ReaderOnloadCallback): void => {
 	const reader = new FileReader();
-	reader.onload = (e): void => callback(e?.target?.result || null, file);
+	reader.onload = (e): void => callback(e?.target?.result || null);
 
 	return reader.readAsDataURL(file);
 };
@@ -31,25 +33,19 @@ type MediaPreviewProps = {
 	fileType: FilePreviewType;
 };
 
-// TODO
-// TODO
-// TODO
-// TODO
-// TODO
-// Translations
-// img onload onerror
 const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	const [loaded, url] = useFileAsDataURL(file);
+	const t = useTranslation();
 
 	if (!loaded) {
-		return <Skeleton variant='rect' w='full' h='x200' />;
+		return <PreviewSkeleton />;
 	}
 
 	if (typeof url !== 'string') {
 		return (
 			<Box display='flex' alignItems='center' w='full'>
 				<Icon name='image' size='x24' mie='x4' />
-				Cannot preview file
+				{t('FileUpload_Cannot_preview_file')}
 			</Box>
 		);
 	}
@@ -62,7 +58,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 		return (
 			<Box is='video' w='full' controls>
 				<source src={url} type={file.type} />
-				Your browser does not support the video element.
+				{t('Browser_does_not_support_video_element')}
 			</Box>
 		);
 	}
@@ -71,7 +67,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 		return (
 			<Box is='audio' w='full' controls>
 				<source src={url} type={file.type} />
-				Your browser does not support the audio element.
+				{t('Browser_does_not_support_audio_element')}
 			</Box>
 		);
 	}
