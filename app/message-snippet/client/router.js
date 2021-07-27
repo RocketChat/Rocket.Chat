@@ -1,19 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
 
-import { TabBar } from '../../ui-utils';
+import { appLayout } from '../../../client/lib/appLayout';
 
 FlowRouter.route('/snippet/:snippetId/:snippetName', {
 	name: 'snippetView',
 	action() {
-		BlazeLayout.render('main', { center: 'snippetPage', flexTabBar: null });
+		appLayout.render('main', { center: 'snippetPage' });
 	},
-	triggersEnter: [function() {
-		TabBar.hide();
-	}],
-	triggersExit: [
-		function() {
-			TabBar.show();
-		},
-	],
 });

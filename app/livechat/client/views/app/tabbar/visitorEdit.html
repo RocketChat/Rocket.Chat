@@ -30,10 +30,18 @@
 						</div>
 					</label>
 				</div>
+				{{#if canViewCustomFields }}
+					{{#each field in visitorCustomFields}}
+						{{> visitorEditCustomField field }}
+					{{/each}}
+				{{/if}}
 			{{/with}}
 
 			{{#with room}}
 				<h3>{{_ "Conversation" }}</h3>
+				{{#if customFieldsTemplate}}
+					{{> Template.dynamic template=customFieldsTemplate data=room }}
+				{{/if}}
 				<div class="rc-input rc-form-group rc-form-group--small">
 					<label class="rc-input__label">
 						<div class="rc-input__title">{{_ "Topic"}}</div>
@@ -77,7 +85,13 @@
 						{{/each}}
 					</ul>
 				</div>
+				{{#if canViewCustomFields }}
+					{{#each field in roomCustomFields}}
+						{{> visitorEditCustomField field }}
+					{{/each}}
+				{{/if}}
 			{{/with}}
+
 			<div class="rc-user-info__flex rc-user-info__row">
 				<button class='rc-button cancel' type="button"><span>{{_ "Cancel"}}</span></button>
 				<button class='rc-button rc-button--primary save'><span>{{_ "Save"}}</span></button>

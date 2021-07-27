@@ -4,6 +4,7 @@ import { settings } from '../../settings';
 
 export const SMS = {
 	enabled: false,
+	department: null,
 	services: {},
 	accountSid: null,
 	authToken: null,
@@ -23,4 +24,8 @@ export const SMS = {
 
 settings.get('SMS_Enabled', function(key, value) {
 	SMS.enabled = value;
+});
+
+settings.get('SMS_Default_Omnichannel_Department', function(key, value) {
+	SMS.department = value;
 });

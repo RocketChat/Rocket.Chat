@@ -33,10 +33,10 @@ settings.addGroup('LDAP', function() {
 	];
 
 	this.add('LDAP_Enable', false, { type: 'boolean', public: true });
-	this.add('LDAP_Login_Fallback', true, { type: 'boolean', enableQuery });
+	this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery: null });
 	this.add('LDAP_Find_User_After_Login', true, { type: 'boolean', enableQuery });
 	this.add('LDAP_Host', '', { type: 'string', enableQuery });
-	this.add('LDAP_Port', '389', { type: 'string', enableQuery });
+	this.add('LDAP_Port', '389', { type: 'int', enableQuery });
 	this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 	this.add('LDAP_Encryption', 'plain', { type: 'select', values: [{ key: 'plain', i18nLabel: 'No_Encryption' }, { key: 'tls', i18nLabel: 'StartTLS' }, { key: 'ssl', i18nLabel: 'SSL/LDAPS' }], enableQuery });
 	this.add('LDAP_CA_Cert', '', { type: 'string', multiline: true, enableQuery: enableTLSQuery, secret: true });
@@ -86,7 +86,12 @@ settings.addGroup('LDAP', function() {
 	});
 
 	this.section('Sync / Import', function() {
-		this.add('LDAP_Username_Field', 'sAMAccountName', { type: 'string', enableQuery });
+		this.add('LDAP_Username_Field', 'sAMAccountName', {
+			type: 'string',
+			enableQuery,
+			// public so that it's visible to AccountProfilePage:
+			public: true,
+		});
 		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber', { type: 'string', enableQuery });
 		this.add('LDAP_Default_Domain', '', { type: 'string', enableQuery });
 		this.add('LDAP_Merge_Existing_Users', false, { type: 'boolean', enableQuery });
@@ -117,6 +122,7 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels', false, { type: 'boolean', enableQuery: syncGroupsChannelsQuery });
 
 		this.add('LDAP_Sync_User_Avatar', true, { type: 'boolean', enableQuery });
+		this.add('LDAP_Avatar_Field', '', { type: 'string', enableQuery });
 
 		this.add('LDAP_Background_Sync', false, { type: 'boolean', enableQuery });
 		this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', { type: 'string', enableQuery: backgroundSyncQuery });

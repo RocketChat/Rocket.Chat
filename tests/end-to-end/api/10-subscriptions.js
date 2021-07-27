@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { createRoom } from '../../data/rooms.helper';
 
@@ -211,6 +213,20 @@ describe('[Subscriptions]', function() {
 					testChannel = res.body.channel;
 					done();
 				});
+		});
+		it('should fail when there are no messages on an channel', (done) => {
+			request.post(api('subscriptions.unread'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body).to.have.property('errorType', 'error-no-message-for-unread');
+				})
+				.end(done);
 		});
 		it('sending message', (done) => {
 			request.post(api('chat.sendMessage'))

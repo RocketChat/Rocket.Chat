@@ -5,6 +5,9 @@ import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
+import { Logger } from '../../../logger';
+
+const logger = new Logger('RateLimiter', {});
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())
@@ -23,8 +26,8 @@ DDPRateLimiter.addRule = (matcher, calls, time, callback) => {
 
 const { _increment } = DDPRateLimiter;
 DDPRateLimiter._increment = function(input) {
-	const session = Meteor.server.sessions[input.connectionId];
-	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+	const session = Meteor.server.sessions.get(input.connectionId);
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 
 	return _increment.call(DDPRateLimiter, input);
 };
@@ -33,8 +36,8 @@ DDPRateLimiter._increment = function(input) {
 // being shared among all matchs
 RateLimiter.prototype.check = function(input) {
 	// ==== BEGIN OVERRIDE ====
-	const session = Meteor.server.sessions[input.connectionId];
-	input.broadcastAuth = session && session.connectionHandle && session.connectionHandle.broadcastAuth === true;
+	const session = Meteor.server.sessions.get(input.connectionId);
+	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
 	const self = this;
@@ -107,8 +110,8 @@ const ruleIds = {};
 
 const callback = (message, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		console.warn('DDP RATE LIMIT:', message);
-		console.warn(JSON.stringify({ ...reply, ...input }, null, 2));
+		logger.info('DDP RATE LIMIT:', message);
+		logger.info(JSON.stringify({ ...reply, ...input }, null, 2));
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,

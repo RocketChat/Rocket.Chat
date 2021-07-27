@@ -18,7 +18,7 @@ export function updateEnabled(enabled) {
 }
 
 export const checkRoomType = (room) => room.t === 'p' || room.t === 'd';
-export const checkRoomDomainsLength = (domains) => domains.length <= 10;
+export const checkRoomDomainsLength = (domains) => domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
 
 export const hasExternalDomain = ({ federation }) => {
 	// same test as isFederated(room)

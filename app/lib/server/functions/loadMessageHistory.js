@@ -1,27 +1,13 @@
-import { settings } from '../../../settings';
-import { Messages } from '../../../models';
+import { settings } from '../../../settings/server';
+import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-const hideMessagesOfType = [];
+export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls, showThreadMessages = true }) {
+	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
-settings.get(/Message_HideType_.+/, function(key, value) {
-	const type = key.replace('Message_HideType_', '');
-	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
+	const hiddenMessageTypes = getHiddenSystemMessages(room);
 
-	return types.forEach((type) => {
-		const index = hideMessagesOfType.indexOf(type);
-
-		if (value === true && index === -1) {
-			return hideMessagesOfType.push(type);
-		}
-
-		if (index > -1) {
-			return hideMessagesOfType.splice(index, 1);
-		}
-	});
-});
-
-export const loadMessageHistory = function loadMessageHistory({ userId, rid, end, limit = 20, ls }) {
 	const options = {
 		sort: {
 			ts: -1,
@@ -35,12 +21,20 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 		};
 	}
 
-	let records;
-	if (end != null) {
-		records = Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hideMessagesOfType, options).fetch();
-	} else {
-		records = Messages.findVisibleByRoomIdNotContainingTypes(rid, hideMessagesOfType, options).fetch();
-	}
+	const records = end != null
+		? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+			rid,
+			end,
+			hiddenMessageTypes,
+			options,
+			showThreadMessages,
+		).fetch()
+		: Messages.findVisibleByRoomIdNotContainingTypes(
+			rid,
+			hiddenMessageTypes,
+			options,
+			showThreadMessages,
+		).fetch();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
@@ -50,13 +44,19 @@ export const loadMessageHistory = function loadMessageHistory({ userId, rid, end
 
 		if ((firstMessage != null ? firstMessage.ts : undefined) > ls) {
 			delete options.limit;
-
-			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, ls, firstMessage.ts, hideMessagesOfType, {
-				limit: 1,
-				sort: {
-					ts: 1,
+			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				ls,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				{
+					limit: 1,
+					sort: {
+						ts: 1,
+					},
 				},
-			});
+				showThreadMessages,
+			);
 
 			firstUnread = unreadMessages.fetch()[0];
 			unreadNotLoaded = unreadMessages.count();

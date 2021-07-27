@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import toastr from 'toastr';
 
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
@@ -18,18 +20,20 @@ Meteor.startup(function() {
 			context: ['message', 'message-mobile', 'threads'],
 			async action() {
 				const { msg } = messageArgs(this);
-				call('unfollowMessage', { mid: msg._id });
+				call('unfollowMessage', { mid: msg._id }).then(() =>
+					toastr.success(TAPi18n.__('You_unfollowed_this_message')),
+				);
 			},
-			condition({ msg: { tmid, replies = [] }, u }) {
-				if (tmid) {
-					const parentMessage = Messages.findOne({ _id: tmid }, { fields: { replies: 1 } });
+			condition({ msg: { _id, tmid, replies = [] }, u }, context) {
+				if (tmid || context) {
+					const parentMessage = Messages.findOne({ _id: tmid || _id }, { fields: { replies: 1 } });
 					if (parentMessage) {
 						replies = parentMessage.replies || [];
 					}
 				}
 				return replies.includes(u._id);
 			},
-			order: 0,
+			order: 2,
 			group: 'menu',
 		});
 	});

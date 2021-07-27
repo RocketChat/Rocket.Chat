@@ -2,10 +2,17 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../../models/server';
 import { hasPermission } from '../functions/hasPermission';
-import { CONSTANTS } from '../../lib';
+import { CONSTANTS, AuthorizationUtils } from '../../lib';
 
 Meteor.methods({
 	'authorization:addPermissionToRole'(permissionId, role) {
+		if (AuthorizationUtils.isPermissionRestrictedForRole(permissionId, role)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Permission is restricted', {
+				method: 'authorization:addPermissionToRole',
+				action: 'Adding_permission',
+			});
+		}
+
 		const uid = Meteor.userId();
 		const permission = Permissions.findOneById(permissionId);
 

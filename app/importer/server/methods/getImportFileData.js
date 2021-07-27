@@ -4,34 +4,39 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasRole } from '../../../authorization';
+import { hasPermission } from '../../../authorization';
+import { Imports } from '../../../models';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-
 import { Importers } from '..';
 
 Meteor.methods({
-	getImportFileData(importerKey) {
+	getImportFileData() {
 		const userId = Meteor.userId();
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getImportFileData' });
 		}
 
-		if (!hasRole(userId, 'admin')) {
-			throw new Meteor.Error('not_authorized', 'User not authorized', { method: 'getImportFileData' });
+		if (!hasPermission(userId, 'run-import')) {
+			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', { method: 'getImportFileData' });
 		}
+
+		const operation = Imports.findLastImport();
+		if (!operation) {
+			throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', { method: 'getImportFileData' });
+		}
+
+		const { importerKey } = operation;
 
 		const importer = Importers.get(importerKey);
 		if (!importer) {
 			throw new Meteor.Error('error-importer-not-defined', `The importer (${ importerKey }) has no import class defined.`, { method: 'getImportFileData' });
 		}
 
-		if (!importer.instance) {
-			return undefined;
-		}
+		importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 		const waitingSteps = [
-			ProgressStep.DOWNLOADING_FILE_URL,
+			ProgressStep.DOWNLOADING_FILE,
 			ProgressStep.PREPARING_CHANNELS,
 			ProgressStep.PREPARING_MESSAGES,
 			ProgressStep.PREPARING_USERS,
@@ -53,31 +58,17 @@ Meteor.methods({
 		];
 
 		if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
-			if (importer.instance.importRecord && importer.instance.importRecord.fileData) {
-				return importer.instance.importRecord.fileData;
-			}
+			return importer.instance.buildSelection();
 		}
 
 		const fileName = importer.instance.importRecord.file;
 		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
-		const results = importer.instance.prepareUsingLocalFile(fullFilePath);
+		const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
 
-		if (results instanceof Promise) {
-			return results.then((data) => {
-				importer.instance.updateRecord({
-					fileData: data,
-				});
-
-				return data;
-			}).catch((e) => {
-				console.error(e);
-				throw new Meteor.Error(e);
-			});
+		if (promise && promise instanceof Promise) {
+			Promise.await(promise);
 		}
-		importer.instance.updateRecord({
-			fileData: results,
-		});
 
-		return results;
+		return importer.instance.buildSelection();
 	},
 });

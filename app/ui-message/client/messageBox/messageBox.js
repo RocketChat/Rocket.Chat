@@ -29,7 +29,7 @@ import {
 	t,
 	roomTypes,
 	getUserPreference,
-} from '../../../utils';
+} from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
 import './messageBoxTyping';
@@ -82,7 +82,6 @@ Template.messageBox.onCreated(function() {
 		autogrow.update();
 	};
 
-	let isSending = false;
 
 	this.send = (event) => {
 		const { input } = this;
@@ -91,33 +90,39 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		const { autogrow, data: { rid, tmid, onSend } } = this;
+		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
 		const { value } = input;
 		this.set('');
 
-		if (!onSend || isSending) {
+		if (!onSend) {
 			return;
 		}
 
-		isSending = true;
-		onSend.call(this.data, event, { rid, tmid, value }, () => {
+		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
 			autogrow.update();
 			input.focus();
-			isSending = false;
 		});
 	};
 });
 
 Template.messageBox.onRendered(function() {
-	const $input = $(this.find('.js-input-message'));
-	this.source = $input[0];
-	$input.on('dataChange', () => {
-		const messages = $input.data('reply') || [];
-		this.replyMessageData.set(messages);
-	});
+	let inputSetup = false;
+
 	this.autorun(() => {
 		const { rid, subscription } = Template.currentData();
 		const room = Session.get(`roomData${ rid }`);
+
+		if (!inputSetup) {
+			const $input = $(this.find('.js-input-message'));
+			this.source = $input[0];
+			if (this.source) {
+				inputSetup = true;
+			}
+			$input.on('dataChange', () => {
+				const messages = $input.data('reply') || [];
+				this.replyMessageData.set(messages);
+			});
+		}
 
 		if (!room) {
 			return this.state.set({
@@ -208,6 +213,10 @@ Template.messageBox.helpers({
 			return false;
 		}
 
+		if (subscription?.onHold) {
+			return false;
+		}
+
 		const isReadOnly = roomTypes.readOnly(rid, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
 		const isArchived = roomTypes.archived(rid) || (subscription && subscription.t === 'd' && subscription.archived);
 
@@ -249,6 +258,10 @@ Template.messageBox.helpers({
 	},
 	isBlockedOrBlocker() {
 		return Template.instance().state.get('isBlockedOrBlocker');
+	},
+	onHold() {
+		const { rid, subscription } = Template.currentData();
+		return rid && !!subscription?.onHold;
 	},
 	isSubscribed() {
 		const { subscription } = Template.currentData();

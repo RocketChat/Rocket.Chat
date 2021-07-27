@@ -2,6 +2,7 @@ import { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
 
 import { AppActivationBridge } from './activation';
 import { AppDetailChangesBridge } from './details';
+import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
 import { AppApisBridge } from './api';
 import { AppEnvironmentalVariableBridge } from './environmental';
@@ -15,6 +16,8 @@ import { AppSettingBridge } from './settings';
 import { AppUserBridge } from './users';
 import { AppLivechatBridge } from './livechat';
 import { AppUploadBridge } from './uploads';
+import { UiInteractionBridge } from './uiInteraction';
+import { AppSchedulerBridge } from './scheduler';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -35,6 +38,9 @@ export class RealAppBridges extends AppBridges {
 		this._userBridge = new AppUserBridge(orch);
 		this._livechatBridge = new AppLivechatBridge(orch);
 		this._uploadBridge = new AppUploadBridge(orch);
+		this._uiInteractionBridge = new UiInteractionBridge(orch);
+		this._schedulerBridge = new AppSchedulerBridge(orch);
+		this._cloudWorkspaceBridge = new AppCloudBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -95,5 +101,17 @@ export class RealAppBridges extends AppBridges {
 
 	getUploadBridge() {
 		return this._uploadBridge;
+	}
+
+	getUiInteractionBridge() {
+		return this._uiInteractionBridge;
+	}
+
+	getSchedulerBridge() {
+		return this._schedulerBridge;
+	}
+
+	getCloudWorkspaceBridge() {
+		return this._cloudWorkspaceBridge;
 	}
 }

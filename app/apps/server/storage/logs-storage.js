@@ -1,5 +1,6 @@
 import { AppConsole } from '@rocket.chat/apps-engine/server/logging';
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
+import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 export class AppRealLogsStorage extends AppLogStorage {
 	constructor(model) {
@@ -24,6 +25,8 @@ export class AppRealLogsStorage extends AppLogStorage {
 	storeEntries(appId, logger) {
 		return new Promise((resolve, reject) => {
 			const item = AppConsole.toStorageEntry(appId, logger);
+
+			item.instanceId = InstanceStatus.id();
 
 			try {
 				const id = this.db.insert(item);

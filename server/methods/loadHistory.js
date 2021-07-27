@@ -4,29 +4,10 @@ import { check } from 'meteor/check';
 import { Subscriptions } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
-import { loadMessageHistory } from '../../app/lib';
-
-const hideMessagesOfType = [];
-
-settings.get(/Message_HideType_.+/, function(key, value) {
-	const type = key.replace('Message_HideType_', '');
-	const types = type === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [type];
-
-	return types.forEach((type) => {
-		const index = hideMessagesOfType.indexOf(type);
-
-		if (value === true && index === -1) {
-			return hideMessagesOfType.push(type);
-		}
-
-		if (index > -1) {
-			return hideMessagesOfType.splice(index, 1);
-		}
-	});
-});
+import { loadMessageHistory } from '../../app/lib/server';
 
 Meteor.methods({
-	loadHistory(rid, end, limit = 20, ls) {
+	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
@@ -49,6 +30,6 @@ Meteor.methods({
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromId, rid, end, limit, ls });
+		return loadMessageHistory({ userId: fromId, rid, end, limit, ls, showThreadMessages });
 	},
 });

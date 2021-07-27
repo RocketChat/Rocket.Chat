@@ -12,7 +12,7 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models';
 import { settings } from '../../../settings/server';
 
@@ -247,7 +247,7 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues, this.integration);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
@@ -333,7 +333,7 @@ class WebHookAPI extends APIClass {
 	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
 	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
 	*/
-	enforceRateLimit(objectForRateLimitMatch, request, response) {
+	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
 		const { method, url } = request;
 		const route = url.replace(`/${ this.apiPath }`, '');
 		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
@@ -354,7 +354,7 @@ class WebHookAPI extends APIClass {
 		const integrationForRateLimitMatch = objectForRateLimitMatch;
 		integrationForRateLimitMatch.route = nameRoute;
 
-		super.enforceRateLimit(integrationForRateLimitMatch, request, response);
+		super.enforceRateLimit(integrationForRateLimitMatch, request, response, userId);
 	}
 }
 

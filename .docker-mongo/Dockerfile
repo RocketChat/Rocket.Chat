@@ -1,24 +1,49 @@
-FROM rocketchat/base:8
+FROM node:12.22.1-buster-slim
 
-ADD . /app
-ADD entrypoint.sh /app/bundle/
+LABEL maintainer="buildmaster@rocket.chat"
 
-MAINTAINER buildmaster@rocket.chat
+# Install MongoDB and dependencies
+ENV MONGO_MAJOR 4.2
+ENV MONGO_VERSION 4.2.10
 
 RUN set -x \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4 \
- && echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list \
- && apt-get update \
- && apt-get install -y --force-yes pwgen mongodb-org \
- && echo "mongodb-org hold" | dpkg --set-selections \
- && echo "mongodb-org-server hold" | dpkg --set-selections \
- && echo "mongodb-org-shell hold" | dpkg --set-selections \
- && echo "mongodb-org-mongos hold" | dpkg --set-selections \
- && echo "mongodb-org-tools hold" | dpkg --set-selections \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force \
- && rm -rf /var/lib/apt/lists/*
+    && apt-get update \
+    && apt-get install -y wget gnupg dirmngr pwgen \
+    && wget -qO - "https://www.mongodb.org/static/pgp/server-${MONGO_MAJOR}.asc" | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$MONGO_MAJOR main" | tee "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list" \
+    && apt-get update \
+    && apt-get install -y \
+       mongodb-org=$MONGO_VERSION \
+       mongodb-org-server=$MONGO_VERSION \
+       mongodb-org-shell=$MONGO_VERSION \
+       mongodb-org-mongos=$MONGO_VERSION \
+       mongodb-org-tools=$MONGO_VERSION \
+       fontconfig \
+    && apt-get clean my room \
+    && groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads
+
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
+ADD --chown=rocketchat:rocketchat entrypoint.sh /app/bundle/
+
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force
 
 VOLUME /app/uploads
 
@@ -28,6 +53,7 @@ WORKDIR /app/bundle
 ENV DEPLOY_METHOD=docker-preview \
     NODE_ENV=production \
     MONGO_URL=mongodb://localhost:27017/rocketchat \
+    MONGO_OPLOG_URL=mongodb://localhost:27017/local \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \

@@ -5,13 +5,14 @@ import { RoomManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
 		id: 'mark-message-as-unread',
 		icon: 'flag',
 		label: 'Mark_unread',
-		context: ['message', 'message-mobile'],
+		context: ['message', 'message-mobile', 'threads'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			return Meteor.call('unreadMessages', message, function(error) {
@@ -28,7 +29,11 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		condition({ msg, u }) {
+		condition({ msg, u, room }) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return msg.u._id !== u._id;
 		},
 		order: 10,

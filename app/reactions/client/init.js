@@ -1,29 +1,35 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
-import { Template } from 'meteor/templating';
 
-import { Rooms } from '../../models';
+import { roomTypes } from '../../utils/client';
+import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { EmojiPicker } from '../../emoji';
 import { tooltip } from '../../ui/client/components/tooltip';
 
-Template.room.events({
-	'click .add-reaction, click [data-message-action="reaction-message"]'(event) {
+export const EmojiEvents = {
+	'click .add-reaction'(event) {
 		event.preventDefault();
 		event.stopPropagation();
 		const data = Blaze.getData(event.currentTarget);
-		const { msg: { rid, _id: mid } } = messageArgs(data);
+		const { msg: { rid, _id: mid, private: isPrivate } } = messageArgs(data);
 		const user = Meteor.user();
 		const room = Rooms.findOne({ _id: rid });
 
-		if (room.ro && !room.reactWhenReadOnly) {
-			if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-				return false;
-			}
+		if (!room) {
+			return false;
 		}
 
-		if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
+		if (!Subscriptions.findOne({ rid })) {
+			return false;
+		}
+
+		if (isPrivate) {
+			return false;
+		}
+
+		if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
 			return false;
 		}
 
@@ -37,7 +43,7 @@ Template.room.events({
 
 		const data = Blaze.getData(event.currentTarget);
 		const { msg: { _id: mid } } = messageArgs(data);
-		Meteor.call('setReaction', $(event.currentTarget).data('emoji'), mid, () => {
+		Meteor.call('setReaction', $(event.currentTarget).attr('data-emoji'), mid, () => {
 			tooltip.hide();
 		});
 	},
@@ -51,13 +57,13 @@ Template.room.events({
 		event.stopPropagation();
 		tooltip.hide();
 	},
-});
+};
 
 Meteor.startup(function() {
 	MessageAction.addButton({
 		id: 'reaction-message',
 		icon: 'add-reaction',
-		label: 'Reactions',
+		label: 'Add_Reaction',
 		context: [
 			'message',
 			'message-mobile',
@@ -73,16 +79,6 @@ Meteor.startup(function() {
 				return false;
 			}
 
-			if (room.ro && !room.reactWhenReadOnly) {
-				if (!Array.isArray(room.unmuted) || room.unmuted.indexOf(user.username) === -1) {
-					return false;
-				}
-			}
-
-			if (Array.isArray(room.muted) && room.muted.indexOf(user.username) !== -1) {
-				return false;
-			}
-
 			if (!subscription) {
 				return false;
 			}
@@ -91,9 +87,17 @@ Meteor.startup(function() {
 				return false;
 			}
 
+			if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
+
 			return true;
 		},
-		order: 22,
-		group: 'message',
+		order: -2,
+		group: ['message', 'menu'],
 	});
 });

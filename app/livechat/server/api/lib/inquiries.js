@@ -43,7 +43,15 @@ export async function findInquiries({ userId, department: filterDepartment, stat
 
 	const filter = {
 		...status && { status },
-		...department && { department },
+		$or: [
+			{
+				$and: [
+					{ defaultAgent: { $exists: true } },
+					{ 'defaultAgent.agentId': userId },
+				],
+			},
+			{ ...department && { department } },
+		],
 	};
 
 	const cursor = LivechatInquiry.find(filter, options);
@@ -64,6 +72,6 @@ export async function findOneInquiryByRoomId({ userId, roomId }) {
 	}
 
 	return {
-		inquiry: await LivechatInquiry.findOneQueuedByRoomId(roomId),
+		inquiry: await LivechatInquiry.findOneByRoomId(roomId),
 	};
 }

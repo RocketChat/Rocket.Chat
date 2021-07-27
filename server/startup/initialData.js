@@ -31,17 +31,20 @@ Meteor.startup(function() {
 
 			addUserRoles('rocket.cat', 'bot');
 
-			const rs = RocketChatFile.bufferToStream(new Buffer(Assets.getBinary('avatars/rocketcat.png'), 'utf8'));
+			const buffer = Buffer.from(Assets.getBinary('avatars/rocketcat.png'));
+
+			const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 			const fileStore = FileUpload.getStore('Avatars');
 			fileStore.deleteByName('rocket.cat');
 
 			const file = {
 				userId: 'rocket.cat',
 				type: 'image/png',
+				size: buffer.length,
 			};
 
 			Meteor.runAsUser('rocket.cat', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('rocket.cat', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
 			});
 		}
 
@@ -70,7 +73,7 @@ Meteor.startup(function() {
 						if (!Users.findOneByEmailAddress(process.env.ADMIN_EMAIL)) {
 							adminUser.emails = [{
 								address: process.env.ADMIN_EMAIL,
-								verified: true,
+								verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
 							}];
 
 							console.log(`Email: ${ process.env.ADMIN_EMAIL }`.green);
@@ -160,7 +163,7 @@ Meteor.startup(function() {
 				emails: [
 					{
 						address: 'rocketchat.internal.admin.test@rocket.chat',
-						verified: true,
+						verified: false,
 					},
 				],
 				status: 'offline',

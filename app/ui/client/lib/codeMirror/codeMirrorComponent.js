@@ -16,6 +16,15 @@ Template.CodeMirror.onRendered(async function() {
 	const textarea = this.find('textarea');
 	const editor = CodeMirror.fromTextArea(textarea, options);
 
+	this.autorun((c) => {
+		const { code } = Template.currentData();
+		if (code === undefined) {
+			return;
+		}
+		c.stop();
+		editor.setValue(code);
+	});
+
 	CodeMirrors[this.data.id || 'code-mirror-textarea'] = editor;
 	if (this.data && this.data.editorOnBlur) {
 		this.data.editorOnBlur(this.data.name);

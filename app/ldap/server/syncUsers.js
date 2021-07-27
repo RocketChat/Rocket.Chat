@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { importNewUsers } from './sync';
+import { sync } from './sync';
 import { hasRole } from '../../authorization';
 import { settings } from '../../settings';
 
@@ -19,9 +19,9 @@ Meteor.methods({
 			throw new Meteor.Error('LDAP_disabled');
 		}
 
-		this.unblock();
-
-		importNewUsers();
+		Meteor.defer(() => {
+			sync();
+		});
 
 		return {
 			message: 'Sync_in_progress',

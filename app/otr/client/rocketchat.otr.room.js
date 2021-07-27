@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
@@ -11,13 +10,17 @@ import toastr from 'toastr';
 
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
-import { modal } from '../../ui-utils';
+import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
+import { Presence } from '../../../client/lib/presence';
+import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
 		this.userId = userId;
 		this.roomId = roomId;
-		this.peerId = roomId.replace(userId, '');
+		this.peerId = getUidDirectMessage(roomId);
 		this.established = new ReactiveVar(false);
 		this.establishing = new ReactiveVar(false);
 
@@ -70,13 +73,9 @@ OTR.Room = class {
 			if (this.established.get()) {
 				if ($room.length && $title.length && !$('.otr-icon', $title).length) {
 					$title.prepend('<i class=\'otr-icon icon-key\'></i>');
-					$('.input-message-container').addClass('otr');
-					$('.inner-right-toolbar').prepend('<i class=\'otr-icon icon-key\'></i>');
 				}
 			} else if ($title.length) {
 				$('.otr-icon', $title).remove();
-				$('.input-message-container').removeClass('otr');
-				$('.inner-right-toolbar .otr-icon').remove();
 			}
 		});
 
@@ -181,7 +180,6 @@ OTR.Room = class {
 	}
 
 	onUserStream(type, data) {
-		const user = Meteor.users.findOne(data.userId);
 		switch (type) {
 			case 'handshake':
 				let timeout = null;
@@ -192,7 +190,7 @@ OTR.Room = class {
 					this.generateKeyPair().then(() => {
 						this.importPublicKey(data.publicKey).then(() => {
 							this.firstPeer = false;
-							FlowRouter.goToRoomById(data.roomId);
+							goToRoomById(data.roomId);
 							Meteor.defer(() => {
 								this.established.set(true);
 								this.acknowledge();
@@ -201,37 +199,42 @@ OTR.Room = class {
 					});
 				};
 
-				if (data.refresh && this.established.get()) {
-					this.reset();
-					establishConnection();
-				} else {
-					if (this.established.get()) {
+				(async () => {
+					const { username } = await Presence.get(data.userId);
+					if (data.refresh && this.established.get()) {
 						this.reset();
+						establishConnection();
+					} else {
+						if (this.established.get()) {
+							this.reset();
+						}
+
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
+								confirmText: TAPi18n.__('Yes'),
+								cancelText: TAPi18n.__('No'),
+								onClose: () => imperativeModal.close,
+								onCancel: () => {
+									Meteor.clearTimeout(timeout);
+									this.deny();
+									imperativeModal.close();
+								},
+								onConfirm: () => {
+									establishConnection();
+									imperativeModal.close();
+								},
+							},
+						});
 					}
 
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username: user.username }),
-						html: true,
-						showCancelButton: true,
-						allowOutsideClick: false,
-						confirmButtonText: TAPi18n.__('Yes'),
-						cancelButtonText: TAPi18n.__('No'),
-					}, (isConfirm) => {
-						if (isConfirm) {
-							establishConnection();
-						} else {
-							Meteor.clearTimeout(timeout);
-							this.deny();
-						}
-					});
-				}
-
-				timeout = Meteor.setTimeout(() => {
-					this.establishing.set(false);
-					modal.close();
-				}, 10000);
-
+					timeout = Meteor.setTimeout(() => {
+						this.establishing.set(false);
+						imperativeModal.close();
+					}, 10000);
+				})();
 				break;
 
 			case 'acknowledge':
@@ -241,27 +244,41 @@ OTR.Room = class {
 				break;
 
 			case 'deny':
-				if (this.establishing.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
-						html: true,
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+					if (this.establishing.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_denied_the_OTR_session', { username }),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 
 			case 'end':
-				if (this.established.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
-						html: true,
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+
+					if (this.established.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_ended_the_OTR_session', { username }),
+								confirmText: TAPi18n.__('Ok'),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 		}
 	}

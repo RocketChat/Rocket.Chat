@@ -2,44 +2,51 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
-const queryStatusAgentOnline = (extraFilters = {}) => {
-	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
-		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
-	}
-
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-		...extraFilters,
-	};
-
-	return query;
-};
+const queryStatusAgentOnline = (extraFilters = {}) => ({
+	status: {
+		$exists: true,
+		$ne: 'offline',
+	},
+	statusLivechat: 'available',
+	roles: 'livechat-agent',
+	...extraFilters,
+	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
+});
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.defaultFields = {
+			__rooms: 0,
+		};
+
+		this.tryEnsureIndex({ __rooms: 1 }, { sparse: 1 });
+
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ bio: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ nickname: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
 		this.tryEnsureIndex({ statusText: 1 });
 		this.tryEnsureIndex({ active: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ statusConnection: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ appId: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ type: 1 });
 		this.tryEnsureIndex({ 'visitorEmails.address': 1 });
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
+		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
+		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -81,7 +88,7 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	setOperator(_id, operator) {
+	setOperator(_id, operator) { // TODO:: Create class Agent
 		const update = {
 			$set: {
 				operator,
@@ -91,13 +98,19 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	findOnlineAgents() {
-		const query = queryStatusAgentOnline();
+	checkOnlineAgents(agentId) { // TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return Boolean(this.findOne(query));
+	}
+
+	findOnlineAgents(agentId) { // TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
 
-	findBotAgents(usernameList) {
+	findBotAgents(usernameList) { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -112,7 +125,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOneBotAgent() {
+	findOneBotAgent() { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -122,19 +135,32 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneOnlineAgentByUserList(userList, options) { // TODO:: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOne(query);
+		return this.findOne(query, options);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id) { // TODO: Create class Agent
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
 
-	findAgents() {
+	findOneAgentById(_id, options) { // TODO: Create class Agent
+		const query = {
+			_id,
+			roles: 'livechat-agent',
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findAgents() { // TODO: Create class Agent
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -142,7 +168,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOnlineUserFromList(userList) {
+	findOnlineUserFromList(userList) { // TODO: Create class Agent
 		const username = {
 			$in: [].concat(userList),
 		};
@@ -152,8 +178,16 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent() {
-		const query = queryStatusAgentOnline();
+	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
+		// fetch all unavailable agents, and exclude them from the selection
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
+		const extraFilters = {
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+			// limit query to remove booked agents
+			username: { $nin: unavailableAgents },
+		};
+
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -179,11 +213,85 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent() {
+	// get next agent ignoring the ones reached the max amount of active chats
+	getUnavailableAgents(departmentId, customFilter) {
+		const col = this.model.rawCollection();
+		// if department is provided, remove the agents that are not from the selected department
+		const departmentFilter = departmentId ? [{
+			$lookup: {
+				from: 'rocketchat_livechat_department_agent',
+				let: { departmentId: '$departmentId', agentId: '$agentId' },
+				pipeline: [{
+					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+				}, {
+					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+				}],
+				as: 'department',
+			},
+		}, {
+			$match: { department: { $size: 1 } },
+		}] : [];
+
+		return col.aggregate([
+			{
+				$match: {
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+				},
+			},
+			...departmentFilter,
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$project: {
+					agentId: '$_id',
+					'livechat.maxNumberSimultaneousChat': 1,
+					username: 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					'queueInfo.chats': {
+						$size: {
+							$filter: {
+								input: '$subs',
+								as: 'sub',
+								cond: {
+									$and: [
+										{ $eq: ['$$sub.t', 'l'] },
+										{ $eq: ['$$sub.open', true] },
+										{ $ne: ['$$sub.onHold', true] },
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+			...customFilter ? [customFilter] : [],
+			{
+				$sort: {
+					'queueInfo.chats': 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					username: 1,
+				},
+			},
+		]).toArray();
+	}
+
+
+	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
 			},
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -210,21 +318,7 @@ export class Users extends Base {
 		return null;
 	}
 
-	setLastRoutingTime(userId) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				lastRoutingTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setLivechatStatus(userId, status) {
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -238,7 +332,7 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	setLivechatData(userId, data = {}) {
+	setLivechatData(userId, data = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -252,15 +346,15 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	closeOffice() {
+	closeOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
 
-	openOffice() {
+	openOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'available'));
 	}
 
-	getAgentInfo(agentId) {
+	getAgentInfo(agentId) { // TODO: Create class Agent
 		const query = {
 			_id: agentId,
 		};
@@ -388,12 +482,89 @@ export class Users extends Base {
 		});
 	}
 
+	addRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: { $ne: rid },
+		}, {
+			$addToSet: { __rooms: rid },
+		});
+	}
+
+	removeRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		});
+	}
+
+	removeAllRoomsByUserId(_id) {
+		return this.update({
+			_id,
+		}, {
+			$set: { __rooms: [] },
+		});
+	}
+
+	removeRoomByRoomId(rid) {
+		return this.update({
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		}, { multi: true });
+	}
+
+	removeRoomByRoomIds(rids) {
+		return this.update({
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
 		}, {
 			$set: {
 				'services.totp.hashedBackup': backupCodes,
+			},
+		});
+	}
+
+	enableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: true,
+					changedAt: new Date(),
+				},
+			},
+		});
+	}
+
+	disableEmail2FAByUserId(userId) {
+		return this.update({
+			_id: userId,
+		}, {
+			$set: {
+				'services.email2fa': {
+					enabled: false,
+					changedAt: new Date(),
+				},
 			},
 		});
 	}
@@ -419,6 +590,40 @@ export class Users extends Base {
 		});
 	}
 
+	removeExpiredEmailCodesOfUserId(userId) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					expire: { $lt: new Date() },
+				},
+			},
+		});
+	}
+
+	removeEmailCodeByUserIdAndCode(userId, code) {
+		this.update({ _id: userId }, {
+			$pull: {
+				'services.emailCode': {
+					code,
+				},
+			},
+		});
+	}
+
+	addEmailCodeByUserId(userId, code, expire) {
+		this.update({ _id: userId }, {
+			$push: {
+				'services.emailCode': {
+					$each: [{
+						code,
+						expire,
+					}],
+					$slice: -5,
+				},
+			},
+		});
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -429,13 +634,19 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findOneByAppId(appId, options) {
+		const query = { appId };
+
+		return this.findOne(query, options);
+	}
+
 	findOneByImportId(_id, options) {
 		return this.findOne({ importIds: _id }, options);
 	}
 
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username };
@@ -443,12 +654,34 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByUsernameAndServiceNameIgnoringCase(username, serviceName, options) {
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
-		const query = { username, [`services.${ serviceName }.id`]: serviceName };
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = { username, [`services.${ serviceName }.id`]: userId };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+		const query = {
+			'emails.address': String(emailAddress).trim().toLowerCase(),
+			[`services.${ serviceName }.id`]: userId,
+		};
 
 		return this.findOne(query, options);
 	}
@@ -460,7 +693,7 @@ export class Users extends Base {
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
+		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
 
 		return this.findOne(query, options);
 	}
@@ -480,21 +713,46 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId, options) {
+	findOneById(userId, options = {}) {
 		const query = { _id: userId };
 
 		return this.findOne(query, options);
 	}
 
-	// FIND
-	findById(userId) {
-		const query = { _id: userId };
+	findOneActiveById(userId, options) {
+		const query = {
+			_id: userId,
+			active: true,
+		};
 
-		return this.find(query);
+		return this.findOne(query, options);
 	}
 
+	findOneByIdOrUsername(idOrUsername, options) {
+		const query = {
+			$or: [{
+				_id: idOrUsername,
+			}, {
+				username: idOrUsername,
+			}],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };
+		return this.find(query, options);
+	}
+
+	findNotOfflineByIds(users, options) {
+		const query = {
+			_id: { $in: users },
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
 		return this.find(query, options);
 	}
 
@@ -540,45 +798,56 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findActive(options = {}) {
-		return this.find({ active: true }, options);
-	}
-
-	findActiveByUsernameOrNameRegexWithExceptionsAndConditions(searchTerm, exceptions, conditions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (conditions == null) { conditions = {}; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+	findByUsernamesIgnoringCase(usernames, options) {
 		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
-			active: true,
-			type: {
-				$in: ['user', 'bot'],
+			username: {
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${ escapeRegExp(u) }$`, 'i')),
 			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}],
-			...conditions,
 		};
 
 		return this.find(query, options);
 	}
 
-	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
+	findActive(options = {}) {
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+		}, options);
+	}
+
+	findActiveByUserIds(ids, options = {}) {
+		return this.find({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			_id: { $in: ids },
+		}, options);
+	}
+
+	findActiveLocalGuests(idExceptions = [], options = {}) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: {
+				$eq: 'guest',
+				$size: 1,
+			},
+			isRemote: { $ne: true },
+		};
+
+		if (idExceptions) {
+			if (!_.isArray(idExceptions)) {
+				idExceptions = [idExceptions];
+			}
+
+			query._id = { $nin: idExceptions };
+		}
+
+		return this.find(query, options);
+	}
+
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -586,7 +855,7 @@ export class Users extends Base {
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
+		if (!searchTerm) {
 			const query = {
 				$and: [
 					{
@@ -600,7 +869,7 @@ export class Users extends Base {
 			return this._db.find(query, options);
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -608,14 +877,13 @@ export class Users extends Base {
 			acc.push({ [el.trim()]: termRegex });
 			return acc;
 		}, []);
+
 		const query = {
 			$and: [
 				{
 					active: true,
-					$or: orStmt,
-				},
-				{
 					username: { $exists: true, $nin: exceptions },
+					$or: orStmt,
 				},
 				...extraQuery,
 			],
@@ -691,13 +959,11 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	getLastLogin(options) {
-		if (options == null) { options = {}; }
-		const query = { lastLogin: { $exists: 1 } };
+	getLastLogin(options = { fields: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		options.limit = 1;
-		const [user] = this.find(query, options).fetch();
-		return user && user.lastLogin;
+		const [user] = this.find({}, options).fetch();
+		return user?.lastLogin;
 	}
 
 	findUsersByUsernames(usernames, options) {
@@ -770,7 +1036,11 @@ export class Users extends Base {
 	}
 
 	findActiveRemote(options = {}) {
-		return this.find({ active: true, isRemote: true }, options);
+		return this.find({
+			active: true,
+			isRemote: true,
+			roles: { $ne: ['guest'] },
+		}, options);
 	}
 
 	getSAMLByIdAndSAMLProvider(_id, provider) {
@@ -779,6 +1049,21 @@ export class Users extends Base {
 			'services.saml.provider': provider,
 		}, {
 			'services.saml': 1,
+		});
+	}
+
+	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.find({
+			$or: [
+				{ 'services.saml.nameID': nameID },
+				{ 'services.saml.idpSession': idpSession },
+			],
+		});
+	}
+
+	findBySAMLInResponseTo(inResponseTo) {
+		return this.find({
+			'services.saml.inResponseTo': inResponseTo,
 		});
 	}
 
@@ -799,6 +1084,16 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
+	updateInviteToken(_id, inviteToken) {
+		const update = {
+			$set: {
+				inviteToken,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
 	updateStatusText(_id, statusText) {
 		const update = {
 			$set: {
@@ -816,6 +1111,28 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	updateStatusById(_id, status) {
+		const update = {
+			$set: {
+				status,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	addPasswordToHistory(_id, password) {
+		const update = {
+			$push: {
+				'services.passwordHistory': {
+					$each: [password],
+					$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 
@@ -899,20 +1216,22 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	setAvatarOrigin(_id, origin) {
+	setAvatarData(_id, origin, etag) {
 		const update = {
 			$set: {
 				avatarOrigin: origin,
+				avatarETag: etag,
 			},
 		};
 
 		return this.update(_id, update);
 	}
 
-	unsetAvatarOrigin(_id) {
+	unsetAvatarData(_id) {
 		const update = {
 			$unset: {
 				avatarOrigin: 1,
+				avatarETag: 1,
 			},
 		};
 
@@ -938,6 +1257,25 @@ export class Users extends Base {
 		};
 
 		return this.update({}, update, { multi: true });
+	}
+
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate, role = 'user', active = false) {
+		const neverActive = { lastLogin: { $exists: 0 }, createdAt: { $lte: latestLastLoginDate } };
+		const idleTooLong = { lastLogin: { $lte: latestLastLoginDate } };
+
+		const query = {
+			$or: [neverActive, idleTooLong],
+			active: true,
+			roles: role,
+		};
+
+		const update = {
+			$set: {
+				active,
+			},
+		};
+
+		return this.update(query, update, { multi: true });
 	}
 
 	unsetLoginTokens(_id) {
@@ -995,6 +1333,36 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setBio(_id, bio = '') {
+		const update = {
+			...bio.trim() ? {
+				$set: {
+					bio,
+				},
+			} : {
+				$unset: {
+					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
+	setNickname(_id, nickname = '') {
+		const update = {
+			...nickname.trim() ? {
+				$set: {
+					nickname,
+				},
+			} : {
+				$unset: {
+					nickname: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
 	clearSettings(_id) {
 		const update = {
 			$set: {
@@ -1020,6 +1388,18 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
+	}
+
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
+		return this.update({
+			_id,
+			'services.resume.loginTokens.hashedToken': token,
+		}, {
+			$set: {
+				'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
+				'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
+			},
+		});
 	}
 
 	setUtcOffset(_id, utcOffset) {
@@ -1162,6 +1542,16 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	removeSamlServiceSession(_id) {
+		const update = {
+			$unset: {
+				'services.saml.idpSession': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	updateDefaultStatus(_id, statusDefault) {
 		return this.update({
 			_id,
@@ -1169,6 +1559,16 @@ export class Users extends Base {
 		}, {
 			$set: {
 				statusDefault,
+			},
+		});
+	}
+
+	setSamlInResponseTo(_id, inResponseTo) {
+		this.update({
+			_id,
+		}, {
+			$set: {
+				'services.saml.inResponseTo': inResponseTo,
 			},
 		});
 	}
@@ -1238,8 +1638,23 @@ Find users to send a message by email if:
 		return this.find(query, options);
 	}
 
+	countActiveUsersByService(serviceName, options) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${ serviceName }`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
+	}
+
 	getActiveLocalUserCount() {
 		return this.findActive().count() - this.findActiveRemote().count();
+	}
+
+	getActiveLocalGuestCount(idExceptions = []) {
+		return this.findActiveLocalGuests(idExceptions).count();
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {
@@ -1250,6 +1665,24 @@ Find users to send a message by email if:
 				},
 			},
 		});
+	}
+
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 

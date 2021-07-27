@@ -1,6 +1,11 @@
 import { settings } from '../../../settings';
 
 settings.addGroup('RetentionPolicy', function() {
+	const globalQuery = {
+		_id: 'RetentionPolicy_Enabled',
+		value: true,
+	};
+
 	this.add('RetentionPolicy_Enabled', false, {
 		type: 'boolean',
 		public: true,
@@ -28,18 +33,30 @@ settings.addGroup('RetentionPolicy', function() {
 		public: true,
 		i18nLabel: 'RetentionPolicy_Precision',
 		i18nDescription: 'RetentionPolicy_Precision_Description',
-		enableQuery: {
-			_id: 'RetentionPolicy_Enabled',
-			value: true,
-		},
+		enableQuery: [globalQuery, {
+			_id: 'RetentionPolicy_Advanced_Precision',
+			value: false,
+		}],
 	});
 
-	this.section('Global Policy', function() {
-		const globalQuery = {
-			_id: 'RetentionPolicy_Enabled',
-			value: true,
-		};
+	this.add('RetentionPolicy_Advanced_Precision', false, {
+		type: 'boolean',
+		public: true,
+		i18nLabel: 'RetentionPolicy_Advanced_Precision',
+		i18nDescription: 'RetentionPolicy_Advanced_Precision_Description',
+		enableQuery: globalQuery,
+	});
 
+	this.add('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *', {
+		type: 'string',
+		public: true,
+		i18nLabel: 'RetentionPolicy_Advanced_Precision_Cron',
+		i18nDescription: 'RetentionPolicy_Advanced_Precision_Cron_Description',
+		enableQuery: [globalQuery, { _id: 'RetentionPolicy_Advanced_Precision', value: true }],
+	});
+
+
+	this.section('Global Policy', function() {
 		this.add('RetentionPolicy_AppliesToChannels', false, {
 			type: 'boolean',
 			public: true,
@@ -80,6 +97,7 @@ settings.addGroup('RetentionPolicy', function() {
 			i18nLabel: 'RetentionPolicy_AppliesToDMs',
 			enableQuery: globalQuery,
 		});
+
 		this.add('RetentionPolicy_MaxAge_DMs', 30, {
 			type: 'int',
 			public: true,
@@ -91,12 +109,13 @@ settings.addGroup('RetentionPolicy', function() {
 			}, globalQuery],
 		});
 
-		this.add('RetentionPolicy_ExcludePinned', false, {
+		this.add('RetentionPolicy_DoNotPrunePinned', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'RetentionPolicy_ExcludePinned',
+			i18nLabel: 'RetentionPolicy_DoNotPrunePinned',
 			enableQuery: globalQuery,
 		});
+
 		this.add('RetentionPolicy_FilesOnly', false, {
 			type: 'boolean',
 			public: true,

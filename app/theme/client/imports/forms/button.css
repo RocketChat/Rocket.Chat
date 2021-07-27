@@ -58,17 +58,6 @@
 		top: -2px;
 	}
 
-	&::before {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		content: "";
-		cursor: pointer;
-	}
-
 	&:disabled {
 		cursor: default;
 

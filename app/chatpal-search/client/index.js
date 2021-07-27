@@ -5,3 +5,4 @@ import './template/admin';
 import './template/result';
 import './template/suggestion';
 import './route';
+import './style.css';

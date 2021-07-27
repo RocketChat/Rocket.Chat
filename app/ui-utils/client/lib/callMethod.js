@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { handleError } from '../../../utils';
+import { handleError } from '../../../utils/client/lib/handleError';
 
 /**
  * Wraps a Meteor method into a Promise.
@@ -12,6 +12,15 @@ export const call = (method, ...params) => new Promise((resolve, reject) => {
 	Meteor.call(method, ...params, (err, result) => {
 		if (err) {
 			handleError(err);
+			return reject(err);
+		}
+		return resolve(result);
+	});
+});
+
+export const callMethod = (method, ...params) => new Promise((resolve, reject) => {
+	Meteor.call(method, ...params, (err, result) => {
+		if (err) {
 			return reject(err);
 		}
 		return resolve(result);

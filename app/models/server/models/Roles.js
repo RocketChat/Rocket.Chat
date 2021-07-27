@@ -1,5 +1,4 @@
 import { Base } from './_Base';
-
 import * as Models from '..';
 
 
@@ -29,24 +28,43 @@ export class Roles extends Base {
 		});
 	}
 
-	createOrUpdate(name, scope = 'Users', description, protectedRole, mandatory2fa) {
-		const updateData = {};
-		updateData.name = name;
-		updateData.scope = scope;
+	updateById(_id, name, scope, description, mandatory2fa) {
+		const query = { _id };
 
-		if (description != null) {
-			updateData.description = description;
-		}
+		const update = {
+			$set: {
+				...name && { name },
+				...scope && { scope },
+				...description && { description },
+				...mandatory2fa && { mandatory2fa },
+			},
+		};
 
-		if (protectedRole) {
-			updateData.protected = protectedRole;
-		}
+		return this.update(query, update);
+	}
 
-		if (mandatory2fa != null) {
-			updateData.mandatory2fa = mandatory2fa;
-		}
+	createWithRandomId(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const role = {
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		};
 
-		this.upsert({ _id: name }, { $set: updateData });
+		return this.insert(role);
+	}
+
+	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const queryData = {
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		};
+
+		this.upsert({ _id: name }, { $set: queryData });
 	}
 
 	addUserRoles(userId, roles, scope) {
@@ -83,6 +101,14 @@ export class Roles extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUpdatedDate(updatedAfterDate, options) {
+		const query = {
+			_updatedAt: { $gte: new Date(updatedAfterDate) },
+		};
+
+		return this.find(query, options);
 	}
 
 	canAddUserToRole(uid, roleName, scope) {

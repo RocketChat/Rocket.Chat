@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import ldapjs from 'ldapjs';
 import Bunyan from 'bunyan';
 
+import { callbacks } from '../../callbacks/server';
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
 
@@ -257,14 +258,14 @@ export default class LDAP {
 		if (attribute) {
 			filter = new this.ldapjs.filters.EqualityFilter({
 				attribute,
-				value: new Buffer(id, 'hex'),
+				value: Buffer.from(id, 'hex'),
 			});
 		} else {
 			const filters = [];
 			Unique_Identifier_Field.forEach((item) => {
 				filters.push(new this.ldapjs.filters.EqualityFilter({
 					attribute: item,
-					value: new Buffer(id, 'hex'),
+					value: Buffer.from(id, 'hex'),
 				}));
 			});
 
@@ -274,6 +275,7 @@ export default class LDAP {
 		const searchOptions = {
 			filter,
 			scope: 'sub',
+			attributes: ['*', '+'],
 		};
 
 		logger.search.info('Searching by id', id);
@@ -368,6 +370,14 @@ export default class LDAP {
 					values[key] = value;
 				}
 			}
+
+			if (key === 'ou' && Array.isArray(value)) {
+				value.forEach((item, index) => {
+					if (item instanceof Buffer) {
+						value[index] = item.toString();
+					}
+				});
+			}
 		});
 
 		return values;
@@ -375,6 +385,8 @@ export default class LDAP {
 
 	searchAllPaged(BaseDN, options, page) {
 		this.bindIfNecessary();
+
+		({ BaseDN, options } = callbacks.run('ldap.beforeSearchAll', { BaseDN, options }));
 
 		const processPage = ({ entries, title, end, next }) => {
 			logger.search.info(title);
@@ -425,8 +437,8 @@ export default class LDAP {
 						title: 'Final Page',
 						end: true,
 					});
+					entries = [];
 				} else if (entries.length) {
-					logger.search.info('Page');
 					processPage({
 						entries,
 						title: 'Page',
@@ -452,6 +464,8 @@ export default class LDAP {
 
 	searchAllAsync(BaseDN, options, callback) {
 		this.bindIfNecessary();
+
+		({ BaseDN, options } = callbacks.run('ldap.beforeSearchAll', { BaseDN, options }));
 
 		this.client.search(BaseDN, options, (error, res) => {
 			if (error) {

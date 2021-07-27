@@ -1,7 +1,7 @@
 
 import { check } from 'meteor/check';
 
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { findExternalMessages } from '../../../server/api/lib/messages';
 
 API.v1.addRoute('livechat/messages.external/:roomId', { authRequired: true }, {

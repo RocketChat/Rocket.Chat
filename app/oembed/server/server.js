@@ -3,7 +3,7 @@ import querystring from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { HTTPInternals } from 'meteor/http';
-import { changeCase } from 'meteor/konecty:change-case';
+import { camelCase } from 'change-case';
 import _ from 'underscore';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
@@ -60,10 +60,16 @@ const toUtf8 = function(contentType, body) {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = function(urlObj, redirectCount = 5, callback) {
+const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callback) {
 	if (_.isString(urlObj)) {
 		urlObj = URL.parse(urlObj);
 	}
+
+	const portsProtocol = {
+		80: 'http:',
+		8080: 'http:',
+		443: 'https:',
+	};
 
 	const parsedUrl = _.pick(urlObj, ['host', 'hash', 'pathname', 'protocol', 'port', 'query', 'search', 'hostname']);
 	const ignoredHosts = settings.get('API_EmbedIgnoredHosts').replace(/\s/g, '').split(',') || [];
@@ -72,7 +78,12 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	}
 
 	const safePorts = settings.get('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-	if (parsedUrl.port && safePorts.length > 0 && !safePorts.includes(parsedUrl.port)) {
+
+	if (safePorts.length > 0 && parsedUrl.port && !safePorts.includes(parsedUrl.port)) {
+		return callback();
+	}
+
+	if (safePorts.length > 0 && !parsedUrl.port && !safePorts.some((port) => portsProtocol[port] === parsedUrl.protocol)) {
 		return callback();
 	}
 
@@ -91,6 +102,7 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 		maxRedirects: redirectCount,
 		headers: {
 			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
 	let headers = null;
@@ -131,10 +143,9 @@ const getUrlContent = function(urlObj, redirectCount = 5, callback) {
 	return stream.on('error', function(err) {
 		error = err;
 	});
-};
+});
 
 OEmbed.getUrlMeta = function(url, withFragment) {
-	const getUrlContentSync = Meteor.wrapAsync(getUrlContent);
 	const urlObj = URL.parse(url);
 	if (withFragment != null) {
 		const queryStringObj = querystring.parse(urlObj.query);
@@ -147,7 +158,7 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 		}
 		urlObj.path = path;
 	}
-	const content = getUrlContentSync(urlObj, 5);
+	const content = getUrlContent(urlObj, 5);
 	if (!content) {
 		return;
 	}
@@ -165,46 +176,46 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 			return escapeMeta('pageTitle', title);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=[']([^']*)['][^>]*\scontent=[']([^']*)['][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*(?:name|property)=["]([^"]*)["][^>]*\scontent=["]([^"]*)["][^>]*>/gmi, function(meta, name, value) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=[']([^']*)['][^>]*(?:name|property)=[']([^']*)['][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		content.body.replace(/<meta[^>]*\scontent=["]([^"]*)["][^>]*(?:name|property)=["]([^"]*)["][^>]*>/gmi, function(meta, value, name) {
-			return escapeMeta(changeCase.camelCase(name), value);
+			return escapeMeta(camelCase(name), value);
 		});
 		if (metas.fragment === '!' && (withFragment == null)) {
 			return OEmbed.getUrlMeta(url, true);
 		}
+		delete metas.oembedHtml;
 	}
 	let headers = undefined;
-	let data = undefined;
 
-
-	if (content && content.headers) {
+	if (content?.headers) {
 		headers = {};
 		const headerObj = content.headers;
 		Object.keys(headerObj).forEach((header) => {
-			headers[changeCase.camelCase(header)] = headerObj[header];
+			headers[camelCase(header)] = headerObj[header];
 		});
 	}
 	if (content && content.statusCode !== 200) {
-		return data;
+		return;
 	}
-	data = callbacks.run('oembed:afterParseContent', {
+	return callbacks.run('oembed:afterParseContent', {
+		url,
 		meta: metas,
 		headers,
 		parsedUrl: content.parsedUrl,
 		content,
 	});
-	return data;
 };
 
 OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 	const cache = OEmbedCache.findOneById(url);
+
 	if (cache != null) {
 		return cache.data;
 	}
@@ -248,6 +259,8 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
+
 OEmbed.rocketUrlParser = function(message) {
 	if (Array.isArray(message.urls)) {
 		let attachments = [];
@@ -267,6 +280,9 @@ OEmbed.rocketUrlParser = function(message) {
 				}
 				if (data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta);
+					if (item.meta && item.meta.oembedHtml) {
+						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml);
+					}
 				}
 				if (data.headers != null) {
 					item.headers = getRelevantHeaders(data.headers);

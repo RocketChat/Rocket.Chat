@@ -1,14 +1,9 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+import { appLayout } from '../../../client/lib/appLayout';
+import { registerAdminRoute } from '../../../client/views/admin';
 
-import { t } from '../../utils';
-
-FlowRouter.route('/admin/chatpal', {
+registerAdminRoute('/chatpal', {
 	name: 'chatpal-admin',
 	action() {
-		return BlazeLayout.render('main', {
-			center: 'ChatpalAdmin',
-			pageTitle: t('Chatpal_AdminPage'),
-		});
+		return appLayout.render('main', { center: 'ChatpalAdmin' });
 	},
 });

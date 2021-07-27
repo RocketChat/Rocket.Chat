@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import {
 	getCredentials,
 	api,
@@ -22,7 +24,9 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					text: 'Sample message',
+					alias: 'Gruggy',
 					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -38,8 +42,10 @@ describe('[Chat]', function() {
 				.set(credentials)
 				.send({
 					channel: 'general',
+					alias: 'Gruggy',
 					text: 'Sample message',
 					emoji: ':smirk:',
+					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -69,12 +75,14 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-			it('attachment.message_link', (done) =>
+			it('attachment.message_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						emoji: ':smirk:',
 						attachments: [{
 							color: '#ff0000',
@@ -89,17 +97,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_link', (done) =>
+			it('attachment.author_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -113,17 +122,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.title_link', (done) =>
+			it('attachment.title_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -137,17 +147,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.url', (done) =>
+			it('attachment.action.url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -168,11 +179,10 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('message.avatar', (done) =>
+			it('message.avatar', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -180,6 +190,7 @@ describe('[Chat]', function() {
 						text: 'Sample message',
 						emoji: ':smirk:',
 						avatar: 'javascript:alert("xss")',
+						alias: 'Gruggy',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -200,17 +211,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.image_url', (done) =>
+			it('attachment.action.image_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -232,17 +244,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.thumb_url', (done) =>
+			it('attachment.thumb_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -257,17 +270,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_icon', (done) =>
+			it('attachment.author_icon', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						alias: 'Gruggy',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -282,17 +296,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.image_url', (done) =>
+			it('attachment.image_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -307,16 +322,17 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
-			it('attachment.audio_url', (done) =>
+			it('attachment.audio_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -331,16 +347,17 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
-			it('attachment.video_url', (done) =>
+			it('attachment.video_url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -355,8 +372,7 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 		});
 
@@ -367,6 +383,8 @@ describe('[Chat]', function() {
 					channel: 'general',
 					text: 'Sample message',
 					emoji: ':smirk:',
+					alias: 'Gruggy',
+					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -398,44 +416,6 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-
-		it('should throw an error when the user try to set alias and avatar and he is not a BOT user', (done) => {
-			request.post(api('chat.postMessage'))
-				.set(credentials)
-				.send({
-					channel: 'general',
-					text: 'Sample message',
-					alias: 'Gruggy',
-					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
-					attachments: [{
-						color: '#ff0000',
-						text: 'Yay for gruggy!',
-						ts: '2016-12-09T16:53:06.761Z',
-						thumb_url: 'http://res.guggy.com/logo_128.png',
-						message_link: 12,
-						collapsed: false,
-						author_name: 'Bradley Hilton',
-						author_link: 'https://rocket.chat/',
-						author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
-						title: 'Attachment Example',
-						title_link: 'https://youtube.com',
-						title_link_download: 'https://youtube.com',
-						image_url: 'http://res.guggy.com/logo_128.png',
-						audio_url: 'http://www.w3schools.com/tags/horse.mp3',
-						video_url: 'http://www.w3schools.com/tags/movie.mp4',
-						fields: '',
-					}],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
-		});
-
 
 		it('should return statusCode 200 when postMessage successfully', (done) => {
 			request.post(api('chat.postMessage'))
@@ -506,7 +486,9 @@ describe('[Chat]', function() {
 				.send({
 					message: {
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -519,13 +501,15 @@ describe('[Chat]', function() {
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
-			it('attachment.message_link', (done) =>
+			it('attachment.message_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
+						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -539,17 +523,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.author_link', (done) =>
+			it('attachment.author_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -563,17 +548,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.title_link', (done) =>
+			it('attachment.title_link', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -587,17 +573,18 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 
-			it('attachment.action.url', (done) =>
+			it('attachment.action.url', () =>
 				request.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
 						channel: 'general',
 						text: 'Sample message',
+						alias: 'Gruggy',
 						emoji: ':smirk:',
+						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -618,49 +605,11 @@ describe('[Chat]', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done),
+					}),
 			);
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						channel: 'general',
-						text: 'Sample message',
-						emoji: ':smirk:',
-						attachments: [{
-							color: '#ff0000',
-							text: 'Yay for gruggy!',
-							ts: '2016-12-09T16:53:06.761Z',
-							thumb_url: 'http://res.guggy.com/logo_128.png',
-							message_link: 12,
-							collapsed: false,
-							author_name: 'Bradley Hilton',
-							author_link: 'https://rocket.chat/',
-							author_icon: 'https://avatars.githubusercontent.com/u/850391?v=3',
-							title: 'Attachment Example',
-							title_link: 'https://youtube.com',
-							title_link_download: 'https://youtube.com',
-							image_url: 'http://res.guggy.com/logo_128.png',
-							audio_url: 'http://www.w3schools.com/tags/horse.mp3',
-							video_url: 'http://www.w3schools.com/tags/movie.mp4',
-							fields: '',
-						}],
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
-		});
-
-		it('should throw an error when the user try to set alias and avatar and he is not a BOT user', (done) => {
 			request.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -746,8 +695,116 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		describe('oembed', () => {
+			let ytEmbedMsgId;
+			let imgUrlMsgId;
+
+			before(async () => {
+				const ytEmbedMsgPayload = {
+					_id: `id-${ Date.now() }`,
+					rid: 'GENERAL',
+					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+					emoji: ':smirk:',
+				};
+
+				const imgUrlMsgPayload = {
+					_id: `id-${ Date.now() }1`,
+					rid: 'GENERAL',
+					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					emoji: ':smirk:',
+				};
+
+				const ytPostResponse = await request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: ytEmbedMsgPayload });
+
+
+				const imgUrlResponse = await request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: imgUrlMsgPayload });
+
+				ytEmbedMsgId = ytPostResponse.body.message._id;
+				imgUrlMsgId = imgUrlResponse.body.message._id;
+				imgUrlMsgId = imgUrlResponse.body.message._id;
+			});
+
+			it('should have an iframe oembed with style max-width', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: ytEmbedMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
+
+							expect(res.body.message.urls[0])
+								.to.have.property('meta')
+								.to.have.property('oembedHtml')
+								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+						})
+						.end(done);
+				}, 500);
+			});
+
+			it('should embed an image preview if message has an image url', (done) => {
+				setTimeout(() => {
+					request.get(api('chat.getMessage'))
+						.set(credentials)
+						.query({
+							msgId: imgUrlMsgId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body)
+								.to.have.property('message')
+								.to.have.property('urls')
+								.to.be.an('array')
+								.that.is.not.empty;
+
+							expect(res.body.message.urls[0])
+								.to.have.property('headers')
+								.to.have.property('contentType', 'image/jpeg');
+						})
+						.end(done);
+				}, 200);
+			});
+		});
+
 		describe('Read only channel', () => {
 			let readOnlyChannel;
+
+			const userCredentials = {};
+			let user;
+			before((done) => {
+				const username = `user.test.readonly.${ Date.now() }`;
+				const email = `${ username }@rocket.chat`;
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({ email, name: username, username, password })
+					.end((err, res) => {
+						user = res.body.user;
+						request.post(api('login'))
+							.send({
+								user: username,
+								password,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								userCredentials['X-Auth-Token'] = res.body.data.authToken;
+								userCredentials['X-User-Id'] = res.body.data.userId;
+							})
+							.end(done);
+					});
+			});
 
 			it('Creating a read-only channel', (done) => {
 				request.post(api('channels.create'))
@@ -781,6 +838,99 @@ describe('[Chat]', function() {
 					})
 					.end(done);
 			});
+			it('Inviting regular user to read-only channel', (done) => {
+				request.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						userId: user._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(() => {
+						done();
+					});
+			});
+
+			it('should fail to send message when the user lacks permission', (done) => {
+				request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample blocked message',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+
+			it('should send a message when the user has permission to send messages on readonly channels', async () => {
+				await updatePermission('post-readonly', ['user']);
+
+				await request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample message overwriting readonly status',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').and.to.be.an('object');
+					});
+
+				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
+			});
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						alias: 'Gruggy',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						avatar: 'http://site.com/logo.png',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
 		});
 	});
 
@@ -905,12 +1055,28 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.search', () => {
+		beforeEach((done) => {
+			const sendMessage = (text) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: text,
+						},
+					})
+					.end(() => {});
+			};
+			for (let i = 0; i < 5; i++) { sendMessage('msg1'); }
+			done();
+		});
+
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -920,12 +1086,12 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -933,10 +1099,49 @@ describe('[Chat]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(1);
+				})
+				.end(done);
+		});
+		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 1,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(3);
+				})
+				.end(done);
+		});
+
+		it('should return a empty list of messages when is provided a huge offset value', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 9999,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
 		});
 	});
+
 	describe('[/chat.react]', () => {
 		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
 			request.post(api('chat.react'))
@@ -1354,6 +1559,148 @@ describe('[Chat]', function() {
 					})
 					.end(done);
 			});
+		});
+	});
+
+	describe('[/chat.unStarMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.unStarMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should unstar Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.unStarMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.starMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should star Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.ignoreUser]', () => {
+		it('should fail if invalid roomId', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'invalid',
+					userId: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should fail if invalid userId', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should successfully ignore user', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => {
+					done();
+				});
+		});
+		it('should successfully unignore user', (done) => {
+			request.get(api('chat.ignoreUser'))
+				.set(credentials)
+				.query({
+					rid: 'rocket.catrocketchat.internal.admin.test',
+					userId: 'rocket.cat',
+					ignore: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => {
+					done();
+				});
 		});
 	});
 

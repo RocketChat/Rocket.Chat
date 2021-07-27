@@ -9,7 +9,7 @@
 	<div class="flex-tab__result js-list">
 		<ul class="mentioned-messages-list list clearfix">
 			{{# with messageContext}}
-				{{#each msg in messages}}{{#nrr nrrargs 'message' groupable=false msg=msg room=room subscription=subscription settings=settings u=u customClass="mentions" context="mentions"}}{{/nrr}}{{/each}}
+				{{#each msg in messages}}{{> message groupable=false msg=msg room=room subscription=subscription settings=settings u=u customClass="mentions" context="mentions"}}{{/each}}
 			{{/with}}
 		</ul>
 		{{#if hasMore}}

@@ -469,6 +469,13 @@ export default class RocketAdapter {
 			if (slackMessage.edited) {
 				rocketMsgObj.editedAt = new Date(parseInt(slackMessage.edited.ts.split('.')[0]) * 1000);
 			}
+			rocketMsgObj.slackTs = slackMessage.ts;
+			if (slackMessage.thread_ts) {
+				const tmessage = Messages.findOneBySlackTs(slackMessage.thread_ts);
+				if (tmessage) {
+					rocketMsgObj.tmid = tmessage._id;
+				}
+			}
 			if (slackMessage.subtype === 'bot_message') {
 				rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
 			}

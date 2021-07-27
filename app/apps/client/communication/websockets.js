@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { slashCommands, APIClient } from '../../../utils';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
@@ -16,7 +16,7 @@ export const AppEvents = Object.freeze({
 	COMMAND_REMOVED: 'command/removed',
 });
 
-export class AppWebsocketReceiver extends EventEmitter {
+export class AppWebsocketReceiver extends Emitter {
 	constructor() {
 		super();
 

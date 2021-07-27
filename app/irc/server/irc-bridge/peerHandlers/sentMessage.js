@@ -1,5 +1,5 @@
-import { Users, Rooms, Subscriptions } from '../../../../models';
-import { sendMessage } from '../../../../lib';
+import { Users, Rooms } from '../../../../models';
+import { sendMessage, createDirectRoom } from '../../../../lib';
 /*
  *
  * Get direct chat room helper
@@ -7,47 +7,21 @@ import { sendMessage } from '../../../../lib';
  *
  */
 const getDirectRoom = (source, target) => {
-	const rid = [source._id, target._id].sort().join('');
+	const uids = [source._id, target._id];
+	const { _id, ...extraData } = createDirectRoom([source, target]);
 
-	Rooms.upsert({ _id: rid }, {
-		$setOnInsert: {
+	const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids);
+	if (room) {
+		return {
 			t: 'd',
-			msgs: 0,
-			ts: new Date(),
-		},
-	});
-
-	Subscriptions.upsert({ rid, 'u._id': target._id }, {
-		$setOnInsert: {
-			name: source.username,
-			t: 'd',
-			open: false,
-			alert: false,
-			unread: 0,
-			u: {
-				_id: target._id,
-				username: target.username,
-			},
-		},
-	});
-
-	Subscriptions.upsert({ rid, 'u._id': source._id }, {
-		$setOnInsert: {
-			name: target.username,
-			t: 'd',
-			open: false,
-			alert: false,
-			unread: 0,
-			u: {
-				_id: source._id,
-				username: source.username,
-			},
-		},
-	});
+			...room,
+		};
+	}
 
 	return {
-		_id: rid,
+		_id,
 		t: 'd',
+		...extraData,
 	};
 };
 

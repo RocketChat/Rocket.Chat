@@ -12,6 +12,15 @@ export class LivechatRooms extends Base {
 
 		this.tryEnsureIndex({ open: 1 }, { sparse: true });
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'metrics.visitorInactivity': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
+		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
+		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 	}
 
 	findLivechat(filter = {}, offset = 0, limit = 20) {
@@ -68,8 +77,8 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTopicAndTagsById(_id, topic, tags) {
-		const setData = {};
+	saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
+		const setData = { ...extra };
 		const unsetData = {};
 
 		if (topic != null) {
@@ -84,6 +93,17 @@ export class LivechatRooms extends Base {
 			setData.tags = tags;
 		} else {
 			unsetData.tags = 1;
+		}
+
+		if (livechatData) {
+			Object.keys(livechatData).forEach((key) => {
+				const value = s.trim(livechatData[key]);
+				if (value) {
+					setData[`livechatData.${ key }`] = value;
+				} else {
+					unsetData[`livechatData.${ key }`] = 1;
+				}
+			});
 		}
 
 		const update = {};
@@ -118,7 +138,7 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
-	findOneById(_id, fields) {
+	findOneById(_id, fields = {}) {
 		const options = {};
 
 		if (fields) {
@@ -146,6 +166,40 @@ export class LivechatRooms extends Base {
 			'v.token': visitorToken,
 		};
 
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			closedAt: { $exists: true },
+			servedBy: { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
 		return this.findOne(query, options);
 	}
 
@@ -193,6 +247,16 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
+	findOneOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
 		const query = {
 			t: 'l',
@@ -211,6 +275,16 @@ export class LivechatRooms extends Base {
 		};
 
 		return this.find(query);
+	}
+
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+		const query = {
+			t: 'l',
+			...visitorId && { 'v._id': visitorId },
+			...agentId && { 'servedBy._id': agentId },
+		};
+
+		return this.find(query, options);
 	}
 
 	findByVisitorId(visitorId) {
@@ -258,6 +332,20 @@ export class LivechatRooms extends Base {
 			},
 			$unset: {
 				waitingResponse: 1,
+			},
+		});
+	}
+
+	setNotResponseByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				waitingResponse: true,
+			},
+			$unset: {
+				responseBy: 1,
 			},
 		});
 	}
@@ -312,31 +400,33 @@ export class LivechatRooms extends Base {
 		}, update);
 	}
 
-	getTotalConversationsBetweenDate(t, date) {
+	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query).count();
 	}
 
-	getAnalyticsMetricsBetweenDate(t, date) {
+	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
 		const query = {
 			t,
 			ts: {
 				$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 				$lt: new Date(date.lt),	// ISODate, ts < date.lt
 			},
+			...departmentId && departmentId !== 'undefined' && { departmentId },
 		};
 
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date) {
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
@@ -345,6 +435,7 @@ export class LivechatRooms extends Base {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
 					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
 			{
@@ -400,19 +491,52 @@ export class LivechatRooms extends Base {
 
 
 	closeByRoomId(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
+
 		return this.update({
 			_id: roomId,
 			t: 'l',
 		}, {
 			$set: {
-				closer: closeInfo.closer,
-				closedBy: closeInfo.closedBy,
-				closedAt: closeInfo.closedAt,
-				'metrics.chatDuration': closeInfo.chatDuration,
+				closer,
+				closedBy,
+				closedAt,
+				'metrics.chatDuration': chatDuration,
+				'metrics.serviceTimeDuration': serviceTimeDuration,
 				'v.status': 'offline',
+				...extraData,
 			},
 			$unset: {
 				open: 1,
+			},
+		});
+	}
+
+	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$set: {
+				transcriptRequest: {
+					requestedAt,
+					requestedBy,
+					email,
+					subject,
+				},
+			},
+		});
+	}
+
+	removeTranscriptRequestByRoomId(roomId) {
+		return this.update({
+			_id: roomId,
+			t: 'l',
+		}, {
+			$unset: {
+				transcriptRequest: 1,
 			},
 		});
 	}
@@ -538,13 +662,88 @@ export class LivechatRooms extends Base {
 		return this.update(query, update);
 	}
 
-	setVisitorInactivityInSecondsByRoomId(roomId, visitorInactivity) {
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
 		const query = {
 			_id: roomId,
 		};
 		const update = {
 			$set: {
 				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferredAtById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferredAt: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				autoTransferOngoing: true,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unsetAutoTransferOngoingById(roomId) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$unset: {
+				autoTransferOngoing: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
 			},
 		};
 

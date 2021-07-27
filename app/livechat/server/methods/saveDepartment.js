@@ -9,6 +9,6 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveDepartment' });
 		}
 
-		return Livechat.saveDepartment(_id, departmentData, departmentAgents);
+		return Livechat.saveDepartment(_id, departmentData, { upsert: departmentAgents });
 	},
 });

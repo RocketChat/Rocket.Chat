@@ -1,7 +1,7 @@
-import { AdminBox } from '../../../ui-utils';
+import { registerAdminSidebarItem } from '../../../../client/views/admin';
 import { hasPermission } from '../../../authorization';
 
-AdminBox.addOption({
+registerAdminSidebarItem({
 	href: 'emoji-custom',
 	i18nLabel: 'Custom_Emoji',
 	icon: 'emoji',

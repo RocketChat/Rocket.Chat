@@ -1,26 +1,26 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib';
-import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
+import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 
 function findDirectMessageRoom(params, user) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
 
-	const room = getRoomByNameOrIdWithOptionToJoin({
+	const room = getDirectMessageByNameOrIdWithOptionToJoin({
 		currentUserId: user._id,
 		nameOrId: params.username || params.roomId,
-		type: 'd',
 	});
 
 	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
 	if (!canAccess || !room || room.t !== 'd') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any dirct message');
+		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
@@ -33,10 +33,18 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const findResult = findDirectMessageRoom(this.requestParams(), this.user);
+		const { username, usernames } = this.requestParams();
+
+		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
+
+		if (!users) {
+			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
+		}
+
+		const room = Meteor.call('createDirectMessage', ...users);
 
 		return API.v1.success({
-			room: findResult.room,
+			room: { ...room, _id: room.rid },
 		});
 	},
 });
@@ -168,17 +176,17 @@ API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', {
-				rid: findResult.room._id,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-			});
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult.room._id,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {
@@ -195,22 +203,32 @@ API.v1.addRoute(['dm.members', 'im.members'], { authRequired: true }, {
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-		const cursor = Subscriptions.findByRoomId(findResult.room._id, {
-			sort: { 'u.username': sort && sort.username ? sort.username : 1 },
+
+		check(this.queryParams, Match.ObjectIncluding({
+			status: Match.Maybe([String]),
+			filter: Match.Maybe(String),
+		}));
+		const { status, filter } = this.queryParams;
+
+		const extraQuery = {
+			_id: { $in: findResult.room.uids },
+			...status && { status: { $in: status } },
+		};
+
+		const options = {
+			sort: { username: sort && sort.username ? sort.username : 1 },
+			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
 			skip: offset,
 			limit: count,
-		});
+		};
 
+		const cursor = Users.findByActiveUsersExcept(filter, [], options, null, [extraQuery]);
+
+		const members = cursor.fetch();
 		const total = cursor.count();
-		const members = cursor.fetch().map((s) => s.u && s.u.username);
-
-		const users = Users.find({ username: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
-			sort: { username: sort && sort.username ? sort.username : 1 },
-		}).fetch();
 
 		return API.v1.success({
-			members: users,
+			members,
 			count: members.length,
 			offset,
 			total,

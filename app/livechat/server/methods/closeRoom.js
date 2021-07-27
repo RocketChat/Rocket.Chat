@@ -5,7 +5,7 @@ import { Subscriptions, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:closeRoom'(roomId, comment) {
+	'livechat:closeRoom'(roomId, comment, options = {}) {
 		const userId = Meteor.userId();
 		if (!userId || !hasPermission(userId, 'close-livechat-room')) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeRoom' });
@@ -31,6 +31,7 @@ Meteor.methods({
 			user,
 			room: LivechatRooms.findOneById(roomId),
 			comment,
+			options,
 		});
 	},
 });

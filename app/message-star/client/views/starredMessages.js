@@ -8,6 +8,7 @@ import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { Messages } from '../../../models/client';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { APIClient } from '../../../utils/client';
+import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
 
 const LIMIT_DEFAULT = 50;
 
@@ -18,9 +19,6 @@ Template.starredMessages.helpers({
 	messages() {
 		const instance = Template.instance();
 		return instance.messages.find({}, { limit: instance.limit.get(), sort: { ts: -1 } });
-	},
-	message() {
-		return _.extend(this, { actionContext: 'starred' });
 	},
 	hasMore() {
 		return Template.instance().hasMore.get();
@@ -76,6 +74,7 @@ Template.mentionsFlexTab.onDestroyed(function() {
 });
 
 Template.starredMessages.events({
+	...getCommonRoomEvents(),
 	'scroll .js-list': _.throttle(function(e, instance) {
 		if (e.target.scrollTop >= e.target.scrollHeight - e.target.clientHeight) {
 			return instance.limit.set(instance.limit.get() + 50);

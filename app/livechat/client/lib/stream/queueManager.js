@@ -1,73 +1,109 @@
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../../../utils/client';
-import { getLivechatInquiryCollection } from '../../collections/LivechatInquiry';
-import { LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER } from '../../../lib/stream/constants';
-import { hasRole } from '../../../../authorization/client';
+import { LivechatInquiry } from '../../collections/LivechatInquiry';
+import { inquiryDataStream } from './inquiry';
+import { call } from '../../../../ui-utils/client';
+import { getUserPreference } from '../../../../utils';
+import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
 
-const livechatQueueStreamer = new Meteor.Streamer('livechat-queue-stream');
-let agentDepartments = [];
+const departments = new Set();
 
-const events = {
-	added: (inquiry, collection) => {
-		delete inquiry.type;
-		collection.insert(inquiry);
-	},
-	changed: (inquiry, collection) => {
-		if (inquiry.status !== 'queued' || (inquiry.department && !agentDepartments.includes(inquiry.department))) {
-			return collection.remove({ rid: inquiry.rid });
-		}
-		delete inquiry.type;
-		collection.upsert({ rid: inquiry.rid }, inquiry);
-	},
-	removed: (inquiry, collection) => collection.remove({ rid: inquiry.rid }),
+const newInquirySound = () => {
+	const userId = Meteor.userId();
+	const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
+	const newRoomNotification = getUserPreference(userId, 'newRoomNotification');
+	const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
+
+	if (audioNotificationValue !== 'none') {
+		CustomSounds.play(newRoomNotification, {
+			volume: Number((audioVolume / 100).toPrecision(2)),
+		});
+	}
 };
 
-const appendListenerToDepartment = (departmentId, collection) => livechatQueueStreamer.on(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`, (inquiry) => events[inquiry.type](inquiry, collection));
+const events = {
+	added: (inquiry) => {
+		delete inquiry.type;
+		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		newInquirySound();
+	},
+	changed: (inquiry) => {
+		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
+			return LivechatInquiry.remove(inquiry._id);
+		}
+		delete inquiry.type;
+		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		if (saveResult?.insertedId) {
+			newInquirySound();
+		}
+	},
+	removed: (inquiry) => LivechatInquiry.remove(inquiry._id),
+};
 
-const removeListenerOfDepartment = (departmentId) => livechatQueueStreamer.removeListener(`${ LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER }/${ departmentId }`);
+const updateCollection = (inquiry) => { events[inquiry.type](inquiry); };
 
-const getInquiriesFromAPI = async (url) => {
-	const { inquiries } = await APIClient.v1.get(url);
+const getInquiriesFromAPI = async () => {
+	const { inquiries } = await APIClient.v1.get('livechat/inquiries.queued?sort={"ts": 1}');
 	return inquiries;
 };
 
-const updateInquiries = async (inquiries) => {
-	const collection = getLivechatInquiryCollection();
-	(inquiries || []).forEach((inquiry) => collection.upsert({ _id: inquiry._id }, inquiry));
+const removeListenerOfDepartment = (departmentId) => {
+	inquiryDataStream.removeListener(`department/${ departmentId }`, updateCollection);
+	departments.delete(departmentId);
 };
+
+const appendListenerToDepartment = (departmentId) => {
+	departments.add(departmentId);
+	inquiryDataStream.on(`department/${ departmentId }`, updateCollection);
+	return () => removeListenerOfDepartment(departmentId);
+};
+const addListenerForeachDepartment = async (departments = []) => {
+	const cleanupFunctions = departments.map((department) => appendListenerToDepartment(department));
+	return () => cleanupFunctions.forEach((cleanup) => cleanup());
+};
+
+
+const updateInquiries = async (inquiries = []) => inquiries.forEach((inquiry) => LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, _updatedAt: new Date(inquiry._updatedAt) }));
 
 const getAgentsDepartments = async (userId) => {
 	const { departments } = await APIClient.v1.get(`livechat/agents/${ userId }/departments?enabledDepartmentsOnly=true`);
 	return departments;
 };
 
-const addListenerForeachDepartment = async (userId, departments) => {
-	const collection = getLivechatInquiryCollection();
-	if (departments && Array.isArray(departments) && departments.length) {
-		departments.forEach((department) => appendListenerToDepartment(department, collection));
-	}
+const removeGlobalListener = () => inquiryDataStream.removeListener('public', updateCollection);
+
+const addGlobalListener = () => {
+	inquiryDataStream.on('public', updateCollection);
+	return removeGlobalListener;
 };
 
-const removeDepartmentsListeners = (departments) => {
-	(departments || []).forEach((department) => removeListenerOfDepartment(department._id));
+
+const subscribe = async (userId) => {
+	const config = await call('livechat:getRoutingConfig');
+	if (config && config.autoAssignAgent) {
+		return;
+	}
+
+	const agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
+
+	const cleanUp = agentDepartments.length ? await addListenerForeachDepartment(agentDepartments) : addGlobalListener();
+
+	updateInquiries(await getInquiriesFromAPI());
+
+	return () => {
+		LivechatInquiry.remove({});
+		removeGlobalListener();
+		cleanUp && cleanUp();
+		departments.clear();
+	};
 };
 
-const removeGlobalListener = () => {
-	livechatQueueStreamer.removeListener(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER);
-};
+export const initializeLivechatInquiryStream = (() => {
+	let cleanUp;
 
-export const initializeLivechatInquiryStream = async (userId) => {
-	const collection = getLivechatInquiryCollection();
-	collection.remove({});
-	if (agentDepartments.length) {
-		removeDepartmentsListeners(agentDepartments);
-	}
-	removeGlobalListener();
-	await updateInquiries(await getInquiriesFromAPI('livechat/inquiries.queued?sort={"ts": 1}'));
-	agentDepartments = (await getAgentsDepartments(userId)).map((department) => department.departmentId);
-	await addListenerForeachDepartment(userId, agentDepartments);
-	if (agentDepartments.length === 0 || hasRole(userId, 'livechat-manager')) {
-		livechatQueueStreamer.on(LIVECHAT_INQUIRY_QUEUE_STREAM_OBSERVER, (inquiry) => events[inquiry.type](inquiry, collection));
-	}
-};
+	return async (...args) => {
+		cleanUp && cleanUp();
+		cleanUp = await subscribe(...args);
+	};
+})();

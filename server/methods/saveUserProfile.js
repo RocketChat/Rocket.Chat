@@ -2,71 +2,82 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 
-import { saveCustomFields, passwordPolicy } from '../../app/lib';
-import { Users } from '../../app/models';
-import { settings as rcSettings } from '../../app/settings';
+import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
+import { Users } from '../../app/models/server';
+import { settings as rcSettings } from '../../app/settings/server';
+import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { compareUserPassword } from '../lib/compareUserPassword';
+import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
-Meteor.methods({
-	saveUserProfile(settings, customFields) {
-		check(settings, Object);
-		check(customFields, Match.Maybe(Object));
+function saveUserProfile(settings, customFields) {
+	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'saveUserProfile',
+		});
+	}
 
-		if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+	if (!this.userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'saveUserProfile',
+		});
+	}
+
+	const user = Users.findOneById(this.userId);
+
+	if (settings.realname || settings.username) {
+		if (!saveUserIdentity({
+			_id: this.userId,
+			name: settings.realname,
+			username: settings.username,
+		})) {
+			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', { method: 'saveUserProfile' });
+		}
+	}
+
+	if (settings.statusText || settings.statusText === '') {
+		Meteor.call('setUserStatus', null, settings.statusText);
+	}
+
+	if (settings.statusType) {
+		Meteor.call('setUserStatus', settings.statusType, null);
+	}
+
+	if (settings.bio != null) {
+		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
+			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
 		}
+		Users.setBio(user._id, settings.bio.trim());
+	}
 
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+	if (settings.nickname != null) {
+		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
+			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
 		}
+		Users.setNickname(user._id, settings.nickname.trim());
+	}
 
-		const user = Users.findOneById(this.userId);
+	if (settings.email) {
+		Meteor.call('setEmail', settings.email);
+	}
 
-		function checkPassword(user = {}, typedPassword) {
-			if (!(user.services && user.services.password && user.services.password.bcrypt && user.services.password.bcrypt.trim())) {
-				return true;
-			}
-
-			const passCheck = Accounts._checkPassword(user, {
-				digest: typedPassword.toLowerCase(),
-				algorithm: 'sha-256',
-			});
-
-			if (passCheck.error) {
-				return false;
-			}
-			return true;
-		}
-
-		if (settings.realname) {
-			Meteor.call('setRealName', settings.realname);
-		}
-
-		if (settings.username) {
-			Meteor.call('setUsername', settings.username);
-		}
-
-		if (settings.statusText || settings.statusText === '') {
-			Meteor.call('setUserStatus', null, settings.statusText);
-		}
-
-		if (settings.email) {
-			if (!checkPassword(user, settings.typedPassword)) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+	const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
+	if (canChangePasswordForOAuth || user.services?.password) {
+		// Should be the last check to prevent error when trying to check password for users without password
+		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+			// don't let user change to same password
+			if (compareUserPassword(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
-			Meteor.call('setEmail', settings.email);
-		}
-
-		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
-			if (!checkPassword(user, settings.typedPassword)) {
-				throw new Meteor.Error('error-invalid-password', 'Invalid password', {
+			if (user.services?.passwordHistory && !compareUserPasswordHistory(user, { plain: settings.newPassword })) {
+				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
 			}
@@ -77,19 +88,38 @@ Meteor.methods({
 				logout: false,
 			});
 
+			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
+
 			try {
 				Meteor.call('removeOtherTokens');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
 		}
+	}
 
-		Users.setProfile(this.userId, {});
+	Users.setProfile(this.userId, {});
 
-		if (customFields && Object.keys(customFields).length) {
-			saveCustomFields(this.userId, customFields);
+	if (customFields && Object.keys(customFields).length) {
+		saveCustomFields(this.userId, customFields);
+	}
+
+	return true;
+}
+
+const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
+	requireSecondFactor: true,
+});
+
+Meteor.methods({
+	saveUserProfile(settings, customFields, ...args) {
+		check(settings, Object);
+		check(customFields, Match.Maybe(Object));
+
+		if (settings.email || settings.newPassword) {
+			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
 		}
 
-		return true;
+		return saveUserProfile.call(this, settings, customFields);
 	},
 });

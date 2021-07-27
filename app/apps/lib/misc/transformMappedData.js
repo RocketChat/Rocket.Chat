@@ -73,8 +73,10 @@ export const transformMappedData = (data, map) => {
 			if (typeof result !== 'undefined') {
 				transformedData[to] = result;
 			}
-		} else if (typeof from === 'string' && typeof originalData[from] !== 'undefined') {
-			transformedData[to] = originalData[from];
+		} else if (typeof from === 'string') {
+			if (typeof originalData[from] !== 'undefined') {
+				transformedData[to] = originalData[from];
+			}
 			delete originalData[from];
 		}
 	});

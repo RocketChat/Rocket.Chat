@@ -3,11 +3,19 @@ import { Template } from 'meteor/templating';
 
 import { ChatPermissions } from './lib/ChatPermissions';
 import * as Models from '../../models';
+import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 function atLeastOne(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
+	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 	return permissions.some((permissionId) => {
+		if (user && user.roles) {
+			if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, user.roles)) {
+				return false;
+			}
+		}
+
 		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 
@@ -23,8 +31,15 @@ function atLeastOne(permissions = [], scope, userId) {
 
 function all(permissions = [], scope, userId) {
 	userId = userId || Meteor.userId();
+	const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
 
 	return permissions.every((permissionId) => {
+		if (user && user.roles) {
+			if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, user.roles)) {
+				return false;
+			}
+		}
+
 		const permission = ChatPermissions.findOne(permissionId, { fields: { roles: 1 } });
 		const roles = (permission && permission.roles) || [];
 

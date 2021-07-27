@@ -47,7 +47,7 @@ const validateAttachment = (attachment) => {
 	check(attachment, objectMaybeIncluding({
 		color: String,
 		text: String,
-		ts: Match.OneOf(String, Match.Integer),
+		ts: Match.OneOf(String, Number),
 		thumb_url: String,
 		button_alignment: String,
 		actions: [Match.Any],
@@ -76,8 +76,8 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const insertMessage = function(user, message, room, upsert = false) {
-	if (!user || !message || !room._id) {
+export const insertMessage = function(user, message, rid, upsert = false) {
+	if (!user || !message || !rid) {
 		return false;
 	}
 
@@ -103,7 +103,7 @@ export const insertMessage = function(user, message, room, upsert = false) {
 		_id,
 		username,
 	};
-	message.rid = room._id;
+	message.rid = rid;
 
 	if (!Match.test(message.msg, String)) {
 		message.msg = '';
@@ -119,7 +119,7 @@ export const insertMessage = function(user, message, room, upsert = false) {
 
 		const urls = message.html.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\(\)\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g);
 		if (urls) {
-			message.urls = urls.map((url) => ({ url }));
+			message.urls = [...new Set(urls)].map((url) => ({ url }));
 		}
 
 		message = Markdown.mountTokensBack(message, false);

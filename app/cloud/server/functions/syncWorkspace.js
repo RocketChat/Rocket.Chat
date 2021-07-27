@@ -1,12 +1,13 @@
 import { HTTP } from 'meteor/http';
 
-
+import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
-import { statistics } from '../../../statistics';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
+import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
+import { NPS, Banner } from '../../../../server/sdk';
 
 export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
@@ -14,32 +15,7 @@ export function syncWorkspace(reconnectCheck = false) {
 		return false;
 	}
 
-	const stats = statistics.get();
-
-	const address = settings.get('Site_Url');
-	const siteName = settings.get('Site_Name');
-	const website = settings.get('Website');
-
-	const setupComplete = settings.get('Show_Setup_Wizard') === 'completed';
-
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
-
-	const info = {
-		uniqueId: stats.uniqueId,
-		address,
-		siteName,
-		website,
-		organizationType,
-		industry,
-		orgSize,
-		country,
-		language,
-		workspaceType,
-		deploymentMethod: stats.deploy.method,
-		deploymentPlatform: stats.deploy.platform,
-		version: stats.version,
-		setupComplete,
-	};
+	const info = buildWorkspaceRegistrationData();
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
@@ -71,9 +47,51 @@ export function syncWorkspace(reconnectCheck = false) {
 	}
 
 	const { data } = result;
+	if (!data) {
+		return true;
+	}
 
-	if (data && data.publicKey) {
+	if (data.publicKey) {
 		Settings.updateValueById('Cloud_Workspace_PublicKey', data.publicKey);
+	}
+
+	if (data.nps) {
+		const {
+			id: npsId,
+			expireAt,
+		} = data.nps;
+
+		const startAt = new Date(data.nps.startAt);
+
+		Promise.await(NPS.create({
+			npsId,
+			startAt,
+			expireAt: new Date(expireAt),
+		}));
+
+		const now = new Date();
+
+		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
+			getAndCreateNpsSurvey(npsId);
+		}
+	}
+
+	// add banners
+	if (data.banners) {
+		for (const banner of data.banners) {
+			const {
+				createdAt,
+				expireAt,
+				startAt,
+			} = banner;
+
+			Promise.await(Banner.create({
+				...banner,
+				createdAt: new Date(createdAt),
+				expireAt: new Date(expireAt),
+				startAt: new Date(startAt),
+			}));
+		}
 	}
 
 	return true;

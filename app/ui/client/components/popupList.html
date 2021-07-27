@@ -24,9 +24,9 @@
 			 {{>avatar username=item.username}}
 		 </span>
 		 {{#if showRealNames}}
-		 	<span class="rc-popup-list__item-name">{{item.name}} ({{{modifier item.username}}})</span>
+		 	<span class="rc-popup-list__item-name">{{{modifier item.name}}}{{#if item.nickname}} ({{{modifier item.nickname}}}){{/if}} ({{{modifier item.username}}})</span>
 		 {{else}}
-		 	<span class="rc-popup-list__item-name">{{{modifier item.username}}}</span>
+		 	<span class="rc-popup-list__item-name">{{{modifier item.username}}}{{#if item.nickname}} ({{item.nickname}}){{/if}}</span>
 		 {{/if}}
 	</li>
 </template>
@@ -41,5 +41,14 @@
 			 {{>avatar username=item.name roomIcon=true}}
 		 </span>
 		 <span class="rc-popup-list__item-name">{{{modifier item.name}}}</span>
+	</li>
+</template>
+
+<template name="popupList_item_custom">
+	<li class="rc-popup-list__item">
+		<span class="rc-popup-list__item-image">
+			{{>avatar username=item.custom_name roomIcon=true}}
+		</span>
+		<span class="rc-popup-list__item-name">{{{modifier item.custom_name}}}</span>
 	</li>
 </template>

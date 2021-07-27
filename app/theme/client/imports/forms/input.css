@@ -50,6 +50,14 @@ textarea.rc-input__element {
 			right: 1rem;
 			left: auto;
 		}
+
+		&--clickable {
+			cursor: pointer;
+		}
+
+		&--right + .rc-input__element {
+			padding: 0 2.75rem 0 1rem;
+		}
 	}
 
 	&__element {

@@ -14,3 +14,4 @@ import '../imports/server/rest/visitors.js';
 import '../imports/server/rest/dashboards.js';
 import '../imports/server/rest/queue.js';
 import '../imports/server/rest/officeHour.js';
+import '../imports/server/rest/businessHours.js';

@@ -4,29 +4,19 @@ import objectPath from 'object-path';
 import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
-import { oplogEvents } from '../oplogEvents';
 
 export class Base {
-	constructor(nameOrModel) {
-		this._db = new BaseDb(nameOrModel, this);
+	constructor(nameOrModel, options) {
+		this._db = new BaseDb(nameOrModel, this, options);
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
 
+		this.removeListener = this._db.removeListener.bind(this._db);
 		this.on = this._db.on.bind(this._db);
 		this.emit = this._db.emit.bind(this._db);
 
 		this.db = this;
-
-		this._db.on('change', ({ action, oplog }) => {
-			if (!oplog) {
-				return;
-			}
-			oplogEvents.emit('record', {
-				collection: this.collectionName,
-				op: action,
-			});
-		});
 	}
 
 	get origin() {
@@ -114,6 +104,14 @@ export class Base {
 	find(...args) {
 		try {
 			return this[this.origin].find(...args);
+		} catch (e) {
+			console.error('Exception on find', e, ...args);
+		}
+	}
+
+	findById(...args) {
+		try {
+			return this[this.origin].findById(...args);
 		} catch (e) {
 			console.error('Exception on find', e, ...args);
 		}

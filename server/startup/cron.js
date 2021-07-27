@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { Logger } from '../../app/logger';
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics';
-import { settings } from '../../app/settings';
+import { oembedCron } from '../cron/oembed';
+import { statsCron } from '../cron/statistics';
+import { npsCron } from '../cron/nps';
+import { federationCron } from '../cron/federation';
 
 const logger = new Logger('SyncedCron');
 
@@ -16,55 +16,11 @@ SyncedCron.config({
 	collectionName: 'rocketchat_cron_history',
 });
 
-function generateStatistics() {
-	const cronStatistics = statistics.save();
+Meteor.defer(function() {
+	oembedCron(SyncedCron);
+	statsCron(SyncedCron, logger);
+	npsCron(SyncedCron);
+	federationCron(SyncedCron);
 
-	cronStatistics.host = Meteor.absoluteUrl();
-
-	if (settings.get('Statistics_reporting')) {
-		try {
-			const headers = {};
-			const token = getWorkspaceAccessToken();
-
-			if (token) {
-				headers.Authorization = `Bearer ${ token }`;
-			}
-
-			HTTP.post('https://collector.rocket.chat/', {
-				data: cronStatistics,
-				headers,
-			});
-		} catch (error) {
-			/* error*/
-			logger.warn('Failed to send usage report');
-		}
-	}
-}
-
-function cleanupOEmbedCache() {
-	return Meteor.call('OEmbedCacheCleanup');
-}
-
-Meteor.startup(function() {
-	return Meteor.defer(function() {
-		generateStatistics();
-
-		SyncedCron.add({
-			name: 'Generate and save statistics',
-			schedule(parser) {
-				return parser.cron('12 * * * *');
-			},
-			job: generateStatistics,
-		});
-
-		SyncedCron.add({
-			name: 'Cleanup OEmbed cache',
-			schedule(parser) {
-				return parser.cron('24 2 * * *');
-			},
-			job: cleanupOEmbedCache,
-		});
-
-		return SyncedCron.start();
-	});
+	SyncedCron.start();
 });

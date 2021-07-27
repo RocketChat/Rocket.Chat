@@ -1,25 +1,31 @@
-import { Meteor } from 'meteor/meteor';
+import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Meteor } from 'meteor/meteor';
 
-import { RealAppBridges } from './bridges';
-import { AppMethods, AppsRestApi, AppServerNotifier } from './communication';
-import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
-import { AppRealStorage, AppRealLogsStorage } from './storage';
-import { settings } from '../../settings';
-import { Permissions, AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models';
 import { Logger } from '../../logger';
-import { AppVisitorsConverter } from './converters/visitors';
-import { AppUploadsConverter } from './converters/uploads';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
+import { settings } from '../../settings';
+import { RealAppBridges } from './bridges';
+import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
 import { AppDepartmentsConverter } from './converters/departments';
+import { AppUploadsConverter } from './converters/uploads';
+import { AppVisitorsConverter } from './converters/visitors';
+import { AppRealLogsStorage, AppRealStorage } from './storage';
 
-class AppServerOrchestrator {
+function isTesting() {
+	return process.env.TEST_MODE === 'true';
+}
+
+export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
 	}
 
 	initialize() {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-		Permissions.createOrUpdate('manage-apps', ['admin']);
+		Permissions.create('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
@@ -46,6 +52,7 @@ class AppServerOrchestrator {
 		this._communicators.set('methods', new AppMethods(this));
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
 	}
@@ -82,6 +89,10 @@ class AppServerOrchestrator {
 		return this._manager;
 	}
 
+	getProvidedComponents() {
+		return this._manager.getExternalComponentManager().getProvidedComponents();
+	}
+
 	isInitialized() {
 		return this._isInitialized;
 	}
@@ -95,7 +106,7 @@ class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode');
+		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
 	getRocketChatLogger() {
@@ -104,8 +115,7 @@ class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			// eslint-disable-next-line
-			console.log(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 
@@ -145,12 +155,48 @@ class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps)
 			.then(() => this._manager.get());
 	}
+
+	async triggerEvent(event, ...payload) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		return this.getBridges().getListenerBridge().handleEvent(event, ...payload).catch((error) => {
+			if (error instanceof EssentialAppDisabledException) {
+				throw new Meteor.Error('error-essential-app-disabled');
+			}
+
+			throw error;
+		});
+	}
 }
 
+export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
 settings.addGroup('General', function() {
 	this.section('Apps', function() {
+		this.add('Apps_Logs_TTL', '30_days', {
+			type: 'select',
+			values: [
+				{
+					key: '7_days',
+					i18nLabel: 'Apps_Logs_TTL_7days',
+				},
+				{
+					key: '14_days',
+					i18nLabel: 'Apps_Logs_TTL_14days',
+				},
+				{
+					key: '30_days',
+					i18nLabel: 'Apps_Logs_TTL_30days',
+				},
+			],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Logs_TTL_Alert',
+		});
+
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
 			hidden: false,
@@ -168,6 +214,7 @@ settings.addGroup('General', function() {
 	});
 });
 
+
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
 	if (!Apps.isInitialized()) {
@@ -179,6 +226,34 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	} else {
 		Apps.unload();
 	}
+});
+
+settings.get('Apps_Logs_TTL', (key, value) => {
+	if (!Apps.isInitialized()) {
+		return;
+	}
+
+	let expireAfterSeconds = 0;
+
+	switch (value) {
+		case '7_days':
+			expireAfterSeconds = 604800;
+			break;
+		case '14_days':
+			expireAfterSeconds = 1209600;
+			break;
+		case '30_days':
+			expireAfterSeconds = 2592000;
+			break;
+	}
+
+	if (!expireAfterSeconds) {
+		return;
+	}
+
+	const model = Apps._logModel;
+
+	model.resetTTLIndex(expireAfterSeconds);
 });
 
 Meteor.startup(function _appServerOrchestrator() {

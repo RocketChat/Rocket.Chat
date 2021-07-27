@@ -20,6 +20,8 @@ mock('../../settings', {
 	settings: {
 		get(setting) {
 			switch (setting) {
+				case 'DeepLink_Url':
+					return 'https://go.rocket.chat';
 				case 'Markdown_SupportSchemesForLink':
 					return 'http,https';
 				case 'Markdown_Parser':
@@ -53,7 +55,7 @@ mock('../../callbacks', {
 mock('meteor/random', {
 	Random: {
 		id() {
-			return Math.random();
+			return Math.random().toString().replace('0.', 'A');
 		},
 	},
 });

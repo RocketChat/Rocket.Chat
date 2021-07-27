@@ -29,36 +29,19 @@ async function afterCreateDirectRoom(room, extras) {
 		// Ensure a genesis event for this room
 		const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
-		//
-		// Source User
-		//
 
-		// Add the source user to the room
-		const sourceUser = extras.from;
-		const normalizedSourceUser = normalizers.normalizeUser(sourceUser);
+		const events = await Promise.all(extras.members.map((member) => {
+			const normalizedMember = normalizers.normalizeUser(member);
 
-		const sourceSubscription = Subscriptions.findOne({ rid: normalizedRoom._id, 'u._id': normalizedSourceUser._id });
-		const normalizedSourceSubscription = normalizers.normalizeSubscription(sourceSubscription);
+			const sourceSubscription = Subscriptions.findOne({ rid: normalizedRoom._id, 'u._id': normalizedMember._id });
+			const normalizedSourceSubscription = normalizers.normalizeSubscription(sourceSubscription);
 
-		// Build the source user event
-		const sourceUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), normalizedRoom._id, normalizedSourceUser, normalizedSourceSubscription);
-
-		//
-		// Target User
-		//
-
-		// Add the target user to the room
-		const targetUser = extras.to;
-		const normalizedTargetUser = normalizers.normalizeUser(targetUser);
-
-		const targetSubscription = Subscriptions.findOne({ rid: normalizedRoom._id, 'u._id': normalizedTargetUser._id });
-		const normalizedTargetSubscription = normalizers.normalizeSubscription(targetSubscription);
-
-		// Dispatch the target user event
-		const targetUserEvent = await FederationRoomEvents.createAddUserEvent(getFederationDomain(), normalizedRoom._id, normalizedTargetUser, normalizedTargetSubscription);
+			// Build the user event
+			return FederationRoomEvents.createAddUserEvent(getFederationDomain(), normalizedRoom._id, normalizedMember, normalizedSourceSubscription);
+		}));
 
 		// Dispatch the events
-		dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, sourceUserEvent, targetUserEvent]);
+		dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...events]);
 	} catch (err) {
 		await deleteRoom(room._id);
 

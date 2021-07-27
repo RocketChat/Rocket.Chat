@@ -6,6 +6,7 @@ import s from 'underscore.string';
 import { settings } from '../../../../settings';
 import { t } from '../../../../utils';
 import { popover } from '../../../../ui-utils';
+import { getPopoverStatusConfig } from '../..';
 
 Template.editStatus.helpers({
 	canChange() {
@@ -20,61 +21,8 @@ Template.editStatus.helpers({
 });
 
 Template.editStatus.events({
-	'click .edit-status .rc-input__icon'(e) {
-		const options = [
-			{
-				icon: 'circle',
-				name: t('Online'),
-				modifier: 'online',
-				action: () => {
-					$('input[name=statusType]').val('online');
-					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--online');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Away'),
-				modifier: 'away',
-				action: () => {
-					$('input[name=statusType]').val('away');
-					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--away');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Busy'),
-				modifier: 'busy',
-				action: () => {
-					$('input[name=statusType]').val('busy');
-					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--busy');
-				},
-			},
-			{
-				icon: 'circle',
-				name: t('Invisible'),
-				modifier: 'offline',
-				action: () => {
-					$('input[name=statusType]').val('offline');
-					$('.edit-status .rc-input__icon').prop('class', 'rc-input__icon edit-status-type-icon--offline');
-				},
-			},
-		];
-
-		const config = {
-			popoverClass: 'edit-status-type',
-			columns: [
-				{
-					groups: [
-						{
-							items: options,
-						},
-					],
-				},
-			],
-			currentTarget: e.currentTarget,
-			offsetVertical: e.currentTarget.clientHeight,
-		};
-		popover.open(config);
+	'click .js-status-type'(e) {
+		popover.open(getPopoverStatusConfig(e.currentTarget));
 	},
 
 	'submit .edit-status__content'(e, instance) {

@@ -16,6 +16,7 @@ import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
+import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import Invites from './models/Invites';
@@ -28,7 +29,6 @@ import WebdavAccounts from './models/WebdavAccounts';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
-import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
@@ -37,6 +37,9 @@ import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
 import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
+import OmnichannelQueue from './models/OmnichannelQueue';
+import Analytics from './models/Analytics';
+import EmailInbox from './models/EmailInbox';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -65,6 +68,7 @@ export {
 	Roles,
 	CustomSounds,
 	CustomUserStatus,
+	Imports,
 	Integrations,
 	IntegrationHistory,
 	Invites,
@@ -77,7 +81,6 @@ export {
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,
-	LivechatOfficeHour,
 	LivechatPageVisited,
 	LivechatRooms,
 	LivechatTrigger,
@@ -86,4 +89,7 @@ export {
 	ReadReceipts,
 	LivechatExternalMessage,
 	LivechatInquiry,
+	Analytics,
+	OmnichannelQueue,
+	EmailInbox,
 };

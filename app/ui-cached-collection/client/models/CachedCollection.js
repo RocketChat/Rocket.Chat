@@ -6,16 +6,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import localforage from 'localforage';
 import _ from 'underscore';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../ui-utils/client/config';
-
-
-const fromEntries = Object.fromEntries || function fromEntries(iterable) {
-	return [...iterable].reduce((obj, { 0: key, 1: val }) => Object.assign(obj, { [key]: val }), {});
-};
+import { callMethod } from '../../../ui-utils/client/lib/callMethod';
 
 const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 	fn(...args, (err, result) => {
@@ -26,11 +22,9 @@ const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 	});
 });
 
-const call = wrap(Meteor.call);
-
 const localforageGetItem = wrap(localforage.getItem);
 
-class CachedCollectionManagerClass extends EventEmitter {
+class CachedCollectionManagerClass extends Emitter {
 	constructor() {
 		super();
 		this.items = [];
@@ -120,29 +114,29 @@ const nullLog = function() {};
 
 const log = (...args) => console.log(`CachedCollection ${ this.name } =>`, ...args);
 
-export class CachedCollection extends EventEmitter {
+export class CachedCollection extends Emitter {
 	constructor({
-		collection,
+		collection = new Mongo.Collection(null),
 		name,
-		methodName,
-		syncMethodName,
-		eventName,
+		methodName = `${ name }/get`,
+		syncMethodName = `${ name }/get`,
+		eventName = `${ name }-changed`,
 		eventType = 'onUser',
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		version = 8,
+		version = 16,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {
 		super();
-		this.collection = collection || new Mongo.Collection(null);
+		this.collection = collection;
 
 		this.ready = new ReactiveVar(false);
 		this.name = name;
-		this.methodName = methodName || `${ name }/get`;
-		this.syncMethodName = syncMethodName || `${ name }/get`;
-		this.eventName = eventName || `${ name }-changed`;
+		this.methodName = methodName;
+		this.syncMethodName = syncMethodName;
+		this.eventName = eventName;
 		this.eventType = eventType;
 		this.useSync = useSync;
 		this.listenChangesForLoggedUsersOnly = listenChangesForLoggedUsersOnly;
@@ -203,12 +197,17 @@ export class CachedCollection extends EventEmitter {
 			const _updatedAt = new Date(record._updatedAt);
 			record._updatedAt = _updatedAt;
 
+			if (record.lastMessage && typeof record.lastMessage._updatedAt === 'string') {
+				record.lastMessage._updatedAt = new Date(record.lastMessage._updatedAt);
+			}
+
 			if (_updatedAt > this.updatedAt) {
 				this.updatedAt = _updatedAt;
 			}
 		});
 
-		this.collection._collection._docs._map = fromEntries(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
@@ -219,7 +218,7 @@ export class CachedCollection extends EventEmitter {
 	async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await call(this.methodName);
+		const data = await callMethod(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
@@ -277,14 +276,17 @@ export class CachedCollection extends EventEmitter {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
 					room = ChatRoom.findOne(record.rid);
-					this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					if (room) {
+						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					}
 				} else {
 					room = this.collection.findOne({
 						_id: record._id,
 					});
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					room.name && RoomManager.close(room.t + room.name);
+					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {
@@ -316,7 +318,7 @@ export class CachedCollection extends EventEmitter {
 
 		this.log(`syncing from ${ this.updatedAt }`);
 
-		const data = await call(this.syncMethodName, this.updatedAt);
+		const data = await callMethod(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {

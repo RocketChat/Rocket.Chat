@@ -2,7 +2,6 @@ import os from 'os';
 
 import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
-import { MongoInternals } from 'meteor/mongo';
 
 import { Settings } from '../../../models';
 import { Info } from '../../../utils';
@@ -11,14 +10,11 @@ import { getWorkspaceAccessToken } from '../../../cloud/server';
 export default () => {
 	try {
 		const uniqueID = Settings.findOne('uniqueID');
-		const { _oplogHandle } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const oplogEnabled = _oplogHandle && _oplogHandle.onOplogEntry;
 
 		const params = {
 			uniqueId: uniqueID.value,
-			installedAt: uniqueID.createdAt,
+			installedAt: uniqueID.createdAt.toJSON(),
 			version: Info.version,
-			oplogEnabled,
 			osType: os.type(),
 			osPlatform: os.platform(),
 			osArch: os.arch(),
@@ -40,7 +36,11 @@ export default () => {
 		});
 
 		check(data, Match.ObjectIncluding({
-			versions: [String],
+			versions: [Match.ObjectIncluding({
+				version: Match.Optional(String),
+				security: Match.Optional(Boolean),
+				infoUrl: Match.Optional(String),
+			})],
 			alerts: Match.Optional([Match.ObjectIncluding({
 				id: Match.Optional(String),
 				title: Match.Optional(String),

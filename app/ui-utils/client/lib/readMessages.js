@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
-import EventEmitter from 'wolfy87-eventemitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from './RoomManager';
@@ -19,35 +18,17 @@ import { ChatSubscription, ChatMessage } from '../../../models';
 // window.addEventListener 'focus', ->
 // readMessage.refreshUnreadMark(undefined, true)
 
-export const readMessage = new class extends EventEmitter {
+export const readMessage = new class extends Emitter {
 	constructor() {
 		super();
 		this.debug = false;
-		this.read = _.debounce((force) => this.readNow(force), 2000);
 		this.enable();
 	}
 
-	readNow(force) {
-		this.log('--------------');
-		this.log('readMessage -> readNow init process force:', force);
-
-		if ((force !== true) && (this.enabled === false)) {
+	read(rid = Session.get('openedRoom')) {
+		if (!this.enabled) {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
-		}
-
-		const rid = Session.get('openedRoom');
-		if (rid == null) {
-			this.log('readMessage -> readNow canceled, no rid informed');
-			return;
-		}
-
-		if (force === true) {
-			this.log('readMessage -> readNow via force rid:', rid);
-			return Meteor.call('readMessages', rid, () => {
-				RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
-				return this.emit(rid);
-			});
 		}
 
 		const subscription = ChatSubscription.findOne({ rid });
@@ -81,8 +62,22 @@ export const readMessage = new class extends EventEmitter {
 			return;
 		}
 
-		this.log('readMessage -> readNow rid:', rid);
-		Meteor.call('readMessages', rid, () => {
+		return this.readNow(rid);
+	}
+
+	readNow(rid = Session.get('openedRoom')) {
+		if (rid == null) {
+			this.log('readMessage -> readNow canceled, no rid informed');
+			return;
+		}
+
+		const subscription = ChatSubscription.findOne({ rid });
+		if (subscription == null) {
+			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
+			return;
+		}
+
+		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
 		});
@@ -120,8 +115,7 @@ export const readMessage = new class extends EventEmitter {
 		}
 
 		if (!subscription.alert && (subscription.unread === 0)) {
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
@@ -164,9 +158,8 @@ export const readMessage = new class extends EventEmitter {
 
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
-			roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
+			$(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 		}
 	}
 }();
@@ -177,7 +170,7 @@ Meteor.startup(function() {
 		.on('blur', () => readMessage.disable())
 		.on('focus', () => {
 			readMessage.enable();
-			readMessage.readNow();
+			readMessage.read();
 		})
 		.on('touchend', () => {
 			readMessage.enable();
@@ -185,7 +178,12 @@ Meteor.startup(function() {
 		.on('keyup', (e) => {
 			const key = e.which;
 			if (key === 27) { // ESCAPE KEY
-				readMessage.readNow(true);
+				const rid = Session.get('openedRoom');
+				if (!rid) {
+					return;
+				}
+				readMessage.readNow(rid);
+				readMessage.refreshUnreadMark(rid);
 			}
 		});
 });

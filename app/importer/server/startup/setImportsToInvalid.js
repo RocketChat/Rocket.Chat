@@ -1,18 +1,38 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Imports } from '../models/Imports';
+import { Imports } from '../../../models';
 import { RawImports } from '../models/RawImports';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+
+function runDrop(fn) {
+	try {
+		fn();
+	} catch (e) {
+		console.log('error', e); // TODO: Remove
+		// ignored
+	}
+}
 
 Meteor.startup(function() {
-	// Make sure all imports are marked as invalid, data clean up since you can't
-	// restart an import at the moment.
-	Imports.update({ valid: { $ne: false } }, { $set: { valid: false } }, { multi: true });
+	const lastOperation = Imports.findLastImport();
+	let idToKeep = false;
 
-	// Clean up all the raw import data, since you can't restart an import at the moment
-	try {
-		RawImports.model.rawCollection().drop();
-	} catch (e) {
-		console.log('errror', e); // TODO: Remove
-		// ignored
+	// If the operation is ready to start, or already started but failed
+	// And there's still data for it on the temp collection
+	// Then we can keep the data there to let the user try again
+	if (lastOperation && [ProgressStep.USER_SELECTION, ProgressStep.ERROR].includes(lastOperation.status)) {
+		idToKeep = lastOperation._id;
+	}
+
+	if (idToKeep) {
+		Imports.invalidateOperationsExceptId(idToKeep);
+
+		// Clean up all the raw import data, except for the last operation
+		runDrop(() => RawImports.model.rawCollection().remove({ import: { $ne: idToKeep } }));
+	} else {
+		Imports.invalidateAllOperations();
+
+		// Clean up all the raw import data
+		runDrop(() => RawImports.model.rawCollection().drop());
 	}
 });

@@ -17,7 +17,7 @@ API.v1.addRoute('cloud.manualRegister', { authRequired: true }, {
 
 		const registrationInfo = retrieveRegistrationStatus();
 
-		if (registrationInfo.connectToCloud) {
+		if (registrationInfo.workspaceRegistered) {
 			return API.v1.failure('Workspace is already registered');
 		}
 

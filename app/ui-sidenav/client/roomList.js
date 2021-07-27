@@ -24,13 +24,12 @@ Template.roomList.helpers({
 				'settings.preferences.sidebarSortby': 1,
 				'settings.preferences.sidebarShowFavorites': 1,
 				'settings.preferences.sidebarShowUnread': 1,
-				'settings.preferences.sidebarShowDiscussion': 1,
 				'services.tokenpass': 1,
 				messageViewMode: 1,
 			},
 		});
 
-		const sortBy = getUserPreference(user, 'sidebarSortby') || 'alphabetical';
+		const sortBy = getUserPreference(user, 'sidebarSortby') || 'activity';
 		const query = {
 			open: true,
 		};
@@ -79,11 +78,6 @@ Template.roomList.helpers({
 				query.tokens = { $exists: true };
 			}
 
-			// if we display discussions as a separate group, we should hide them from the other lists
-			if (getUserPreference(user, 'sidebarShowDiscussion')) {
-				query.prid = { $exists: false };
-			}
-
 			if (getUserPreference(user, 'sidebarShowUnread')) {
 				query.$or = [
 					{ alert: { $ne: true } },
@@ -128,11 +122,7 @@ Template.roomList.helpers({
 		if (instance.data.anonymous) {
 			return 'No_channels_yet';
 		}
-		return roomTypes.roomTypes[instance.data.identifier].getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
-	},
-
-	showRoomCounter() {
-		return getUserPreference(Meteor.userId(), 'roomCounterSidebar');
+		return roomTypes.getConfig(instance.data.identifier).getUiText(UiTextContext.NO_ROOMS_SUBSCRIBED) || 'No_channels_yet';
 	},
 });
 
@@ -140,17 +130,120 @@ const getLowerCaseNames = (room, nameDefault = '', fnameDefault = '') => {
 	const name = room.name || nameDefault;
 	const fname = room.fname || fnameDefault || name;
 	return {
-		lowerCaseName: name.toLowerCase(),
-		lowerCaseFName: fname.toLowerCase(),
+		lowerCaseName: String(name).toLowerCase(),
+		lowerCaseFName: String(fname).toLowerCase(),
 	};
 };
 
 const mergeSubRoom = (subscription) => {
-	const room = Rooms.findOne(subscription.rid) || { _updatedAt: subscription.ts };
-	subscription.lastMessage = room.lastMessage;
-	subscription.lm = room._updatedAt;
-	subscription.streamingOptions = room.streamingOptions;
-	return Object.assign(subscription, getLowerCaseNames(subscription));
+	const options = {
+		fields: {
+			lm: 1,
+			lastMessage: 1,
+			uids: 1,
+			streamingOptions: 1,
+			usernames: 1,
+			topic: 1,
+			encrypted: 1,
+			jitsiTimeout: 1,
+			// autoTranslate: 1,
+			// autoTranslateLanguage: 1,
+			description: 1,
+			announcement: 1,
+			broadcast: 1,
+			archived: 1,
+			retention: 1,
+			teamId: 1,
+			teamMain: 1,
+
+			onHold: 1,
+			metrics: 1,
+			muted: 1,
+			servedBy: 1,
+			ts: 1,
+			waitingResponse: 1,
+			v: 1,
+			transcriptRequest: 1,
+			tags: 1,
+			closedAt: 1,
+			responseBy: 1,
+			priorityId: 1,
+			livechatData: 1,
+			departmentId: 1,
+		},
+	};
+
+	const room = Rooms.findOne({ _id: subscription.rid }, options) || { };
+
+	const lastRoomUpdate = room.lm || subscription.ts || subscription._updatedAt;
+
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+	} = room;
+
+	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
+
+	return Object.assign(subscription, getLowerCaseNames(subscription), {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+	});
 };
 
 const mergeRoomSub = (room) => {
@@ -159,14 +252,83 @@ const mergeRoomSub = (room) => {
 		return room;
 	}
 
+	const {
+		encrypted,
+		description,
+		cl,
+		topic,
+		announcement,
+		broadcast,
+		archived,
+		retention,
+		lastMessage,
+		streamingOptions,
+		teamId,
+		teamMain,
+		uids,
+		usernames,
+		jitsiTimeout,
+
+		v,
+		transcriptRequest,
+		servedBy,
+		onHold,
+		tags,
+		closedAt,
+		metrics,
+		muted,
+		waitingResponse,
+		responseBy,
+		priorityId,
+		livechatData,
+		departmentId,
+		ts,
+
+	} = room;
+
 	Subscriptions.update({
 		rid: room._id,
 	}, {
 		$set: {
-			lastMessage: room.lastMessage,
-			lm: room._updatedAt,
-			streamingOptions: room.streamingOptions,
+			encrypted,
+			description,
+			cl,
+			topic,
+			announcement,
+			broadcast,
+			archived,
+			retention,
+			uids,
+			usernames,
+			lastMessage,
+			streamingOptions,
+			teamId,
+			teamMain,
+			v,
+			transcriptRequest,
+			servedBy,
+			onHold,
+			tags,
+			closedAt,
+			metrics,
+			muted,
+			waitingResponse,
+			responseBy,
+			priorityId,
+			livechatData,
+			departmentId,
+			jitsiTimeout,
+			ts,
 			...getLowerCaseNames(room, sub.name, sub.fname),
+		},
+	});
+
+	Subscriptions.update({
+		rid: room._id,
+		lm: { $lt: room.lm },
+	}, {
+		$set: {
+			lm: room.lm,
 		},
 	});
 

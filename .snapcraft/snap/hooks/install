@@ -14,3 +14,13 @@ snapctl set mongo-oplog-url=mongodb://localhost:27017/local
 
 # Initialize the protocol to a default
 snapctl set https=disable
+
+# Initialize backup to a default
+snapctl set backup-on-refresh=disable
+
+# Initialize snap-refreshing to false
+snapctl set snap-refreshing=false
+
+# Initialize db-feature-compatibility-version to 3.6
+snapctl set db-feature-compatibility-version=3.6
+

@@ -2,6 +2,7 @@ import { logger } from '../lib/logger';
 import { FederationRoomEvents, Rooms } from '../../../models/server';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
+import { dispatchEvent } from '../handler';
 
 async function beforeDeleteRoom(roomId) {
 	const room = Rooms.findOneById(roomId, { fields: { federation: 1 } });

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { OAuth } from 'meteor/oauth';
+import { check } from 'meteor/check';
 
-import { TOTP } from './lib/totp';
-import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
+import { checkCodeForUser } from './code/index';
 
 Accounts.registerLoginHandler('totp', function(options) {
 	if (!options.totp || !options.totp.code) {
@@ -14,26 +15,70 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 callbacks.add('onValidateLogin', (login) => {
-	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+	if (login.type === 'resume' || login.type === 'proxy') {
+		return login;
+	}
+
+	const [loginArgs] = login.methodArguments;
+	// CAS login doesn't yet support 2FA.
+	if (loginArgs.cas) {
+		return login;
+	}
+
+	const { totp } = loginArgs;
+
+	checkCodeForUser({ user: login.user, code: totp && totp.code, options: { disablePasswordFallback: true } });
+
+	return login;
+}, callbacks.priority.MEDIUM, '2fa');
+
+const recreateError = (errorDoc) => {
+	let error;
+
+	if (errorDoc.meteorError) {
+		error = new Meteor.Error();
+		delete errorDoc.meteorError;
+	} else {
+		error = new Error();
+	}
+
+	Object.getOwnPropertyNames(errorDoc).forEach((key) => {
+		error[key] = errorDoc[key];
+	});
+	return error;
+};
+
+OAuth._retrievePendingCredential = function(key, ...args) {
+	const credentialSecret = args.length > 0 && args[0] !== undefined ? args[0] : null;
+	check(key, String);
+
+	const pendingCredential = OAuth._pendingCredentials.findOne({
+		key,
+		credentialSecret,
+	});
+
+	if (!pendingCredential) {
 		return;
 	}
 
-	if (login.type === 'password' && login.user.services && login.user.services.totp && login.user.services.totp.enabled === true) {
-		const { totp } = login.methodArguments[0];
-
-		if (!totp || !totp.code) {
-			throw new Meteor.Error('totp-required', 'TOTP Required');
-		}
-
-		const verified = TOTP.verify({
-			secret: login.user.services.totp.secret,
-			token: totp.code,
-			userId: login.user._id,
-			backupTokens: login.user.services.totp.hashedBackup,
+	if (pendingCredential.credential.error) {
+		OAuth._pendingCredentials.remove({
+			_id: pendingCredential._id,
 		});
-
-		if (verified !== true) {
-			throw new Meteor.Error('totp-invalid', 'TOTP Invalid');
-		}
+		return recreateError(pendingCredential.credential.error);
 	}
-}, callbacks.priority.MEDIUM, '2fa');
+
+	// Work-around to make the credentials reusable for 2FA
+	const future = new Date();
+	future.setMinutes(future.getMinutes() + 2);
+
+	OAuth._pendingCredentials.update({
+		_id: pendingCredential._id,
+	}, {
+		$set: {
+			createdAt: future,
+		},
+	});
+
+	return OAuth.openSecret(pendingCredential.credential);
+};

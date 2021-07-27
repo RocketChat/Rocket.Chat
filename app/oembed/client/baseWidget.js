@@ -1,25 +1,25 @@
 import { Template } from 'meteor/templating';
 
+import { createCollapseable } from '../../ui-utils';
+
+createCollapseable(Template.oembedBaseWidget, (instance) => instance.data.settings.collapseMediaByDefault || false);
+
 Template.oembedBaseWidget.helpers({
 	template() {
-		let contentType;
-		if (this.headers) {
-			contentType = this.headers.contentType;
-		}
+		const { collapsedMedia } = Template.instance();
+		this.collapsedMediaVar = () => collapsedMedia;
+		this.collapsed = collapsedMedia.get();
 
-		if (this._overrideTemplate) {
-			return this._overrideTemplate;
-		}
-		if (this.headers && contentType && contentType.match(/image\/.*/)) {
+		if (this.headers?.contentType?.match(/image\/.*/)) {
 			return 'oembedImageWidget';
 		}
-		if (this.headers && contentType && contentType.match(/audio\/.*/)) {
+		if (this.headers?.contentType?.match(/audio\/.*/)) {
 			return 'oembedAudioWidget';
 		}
-		if ((this.headers && contentType && contentType.match(/video\/.*/)) || (this.meta && this.meta.twitterPlayerStreamContentType && this.meta.twitterPlayerStreamContentType.match(/video\/.*/))) {
+		if (this.headers?.contentType?.match(/video\/.*/) || this.meta?.twitterPlayerStreamContentType?.match(/video\/.*/)) {
 			return 'oembedVideoWidget';
 		}
-		if (this.meta && this.meta.oembedHtml) {
+		if (this.meta?.oembedHtml) {
 			return 'oembedFrameWidget';
 		}
 		return 'oembedUrlWidget';

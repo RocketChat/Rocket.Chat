@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission, hasAtLeastOnePermission } from '../../../authorization/server';
+import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { Team } from '../../../../server/sdk';
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -184,11 +187,15 @@ function createChannelValidator(params) {
 	if (params.customFields && params.customFields.value && !(typeof params.customFields.value === 'object')) {
 		throw new Error(`Param "${ params.customFields.key }" must be an object if provided`);
 	}
+
+	if (params.teams.value && !Array.isArray(params.teams.value)) {
+		throw new Error(`Param ${ params.teams.key } must be an array`);
+	}
 }
 
 function createChannel(userId, params) {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
-	const id = Meteor.runAsUser(userId, () => Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields));
+	const id = Meteor.runAsUser(userId, () => Meteor.call('createChannel', params.name, params.members ? params.members : [], readOnly, params.customFields, params.extraData));
 
 	return {
 		channel: findChannelByIdOrName({ params: { roomId: id.rid }, userId: this.userId }),
@@ -220,6 +227,10 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 					value: bodyParams.members,
 					key: 'members',
 				},
+				teams: {
+					value: bodyParams.teams,
+					key: 'teams',
+				},
 			});
 		} catch (e) {
 			if (e.message === 'unauthorized') {
@@ -231,6 +242,21 @@ API.v1.addRoute('channels.create', { authRequired: true }, {
 
 		if (error) {
 			return error;
+		}
+
+		if (bodyParams.teams) {
+			const canSeeAllTeams = hasPermission(this.userId, 'view-all-teams');
+			const teams = Promise.await(Team.listByNames(bodyParams.teams, { projection: { _id: 1 } }));
+			const teamMembers = [];
+
+			for (const team of teams) {
+				const { records: members } = Promise.await(Team.members(this.userId, team._id, canSeeAllTeams, { offset: 0, count: Number.MAX_SAFE_INTEGER }));
+				const uids = members.map((member) => member.user.username);
+				teamMembers.push(...uids);
+			}
+
+			const membersToAdd = new Set([...teamMembers, ...bodyParams.members]);
+			bodyParams.members = [...membersToAdd];
 		}
 
 		return API.v1.success(API.channels.create.execute(userId, bodyParams));
@@ -361,17 +387,17 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', {
-				rid: findResult._id,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-			});
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult._id,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {
@@ -398,10 +424,14 @@ API.v1.addRoute('channels.invite', { authRequired: true }, {
 	post() {
 		const findResult = findChannelByIdOrName({ params: this.requestParams() });
 
-		const user = this.getUserFromParams();
+		const users = this.getUserListFromParams();
+
+		if (!users.length) {
+			return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
+		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('addUserToRoom', { rid: findResult._id, username: user.username });
+			Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 		});
 
 		return API.v1.success({
@@ -472,6 +502,24 @@ API.v1.addRoute('channels.list', { authRequired: true }, {
 				ourQuery._id = { $in: roomIds };
 			}
 
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = Subscriptions.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
+				.fetch()
+				.map((item) => item.rid);
+
+			ourQuery.$or = [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			}];
+
 			const cursor = Rooms.find(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
@@ -529,29 +577,31 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { offset, count } = this.getPaginationItems();
+		const { offset: skip, count: limit } = this.getPaginationItems();
 		const { sort = {} } = this.parseJsonQuery();
 
-		const subscriptions = Subscriptions.findByRoomId(findResult._id, {
-			fields: { 'u._id': 1 },
-			sort: { 'u.username': sort.username != null ? sort.username : 1 },
-			skip: offset,
-			limit: count,
+		check(this.queryParams, Match.ObjectIncluding({
+			status: Match.Maybe([String]),
+			filter: Match.Maybe(String),
+		}));
+		const { status, filter } = this.queryParams;
+
+		const cursor = findUsersOfRoom({
+			rid: findResult._id,
+			...status && { status: { $in: status } },
+			skip,
+			limit,
+			filter,
+			...sort?.username && { sort: { username: sort.username } },
 		});
 
-		const total = subscriptions.count();
-
-		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
-
-		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
-			sort: { username: sort.username != null ? sort.username : 1 },
-		}).fetch();
+		const total = cursor.count();
+		const members = cursor.fetch();
 
 		return API.v1.success({
-			members: users,
-			count: users.length,
-			offset,
+			members,
+			count: members.length,
+			offset: skip,
 			total,
 		});
 	},
@@ -626,12 +676,21 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 API.v1.addRoute('channels.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
+		if (!query || Object.keys(query).length === 0) {
+			return API.v1.failure('Invalid query');
+		}
+
 		const ourQuery = Object.assign({}, query, { t: 'c' });
 
 		const room = Rooms.findOne(ourQuery);
-
 		if (room == null) {
 			return API.v1.failure('Channel does not exists');
+		}
+
+		const user = this.getLoggedInUser();
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const online = Users.findUsersNotOffline({
@@ -758,7 +817,7 @@ API.v1.addRoute('channels.setDefault', { authRequired: true }, {
 		}
 
 		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('saveRoomSettings', findResult._id, 'default', this.bodyParams.default.toString());
+			Meteor.call('saveRoomSettings', findResult._id, 'default', ['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()));
 		});
 
 		return API.v1.success({
@@ -1048,5 +1107,53 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 			offset,
 			total,
 		});
+	},
+});
+
+API.v1.addRoute('channels.convertToTeam', { authRequired: true }, {
+	post() {
+		if (!hasAllPermission(this.userId, ['create-team', 'edit-room'])) {
+			return API.v1.unauthorized();
+		}
+
+		const { channelId, channelName } = this.bodyParams;
+
+		if (!channelId && !channelName) {
+			return API.v1.failure('The parameter "channelId" or "channelName" is required');
+		}
+
+		const room = findChannelByIdOrName({
+			params: {
+				roomId: channelId,
+				roomName: channelName,
+			},
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Channel not found');
+		}
+
+		const subscriptions = Subscriptions.findByRoomId(room._id, {
+			fields: { 'u._id': 1 },
+		});
+
+		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
+
+		const teamData = {
+			team: {
+				name: room.name,
+				type: room.t === 'c' ? 0 : 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room._id,
+			},
+		};
+
+		const team = Promise.await(Team.create(this.userId, teamData));
+
+		return API.v1.success({ team });
 	},
 });

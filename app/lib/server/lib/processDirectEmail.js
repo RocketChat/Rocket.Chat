@@ -102,10 +102,6 @@ export const processDirectEmail = function(email) {
 			}
 		}
 
-		if (message.alias == null && settings.get('Message_SetNameToAliasEnabled')) {
-			message.alias = user.name;
-		}
-
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 
 		return _sendMessage(user, message, room);

@@ -2,7 +2,6 @@ import url from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
 import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
@@ -11,8 +10,9 @@ import CAS from 'cas';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings';
-import { Rooms, Subscriptions, CredentialTokens } from '../../models';
+import { Rooms, CredentialTokens } from '../../models/server';
 import { _setRealName } from '../../lib';
+import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
 
@@ -125,6 +125,8 @@ Accounts.registerLoginHandler(function(options) {
 	const cas_version = parseFloat(settings.get('CAS_version'));
 	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
 	const trustUsername = settings.get('CAS_trust_username');
+	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
+	const userCreationEnabled = settings.get('CAS_Creation_User_Enabled');
 
 	// We have these
 	const ext_attrs = {
@@ -178,11 +180,12 @@ Accounts.registerLoginHandler(function(options) {
 	// First, look for a user that has logged in from CAS with this username before
 	let user = Meteor.users.findOne({ 'services.cas.external_id': result.username });
 	if (!user) {
-		// If that user was not found, check if there's any CAS user that is currently using that username on Rocket.Chat
+		// If that user was not found, check if there's any Rocket.Chat user with that username
 		// With this, CAS login will continue to work if the user is renamed on both sides and also if the user is renamed only on Rocket.Chat.
+		// It'll also allow non-CAS users to switch to CAS based login
 		if (trustUsername) {
 			const username = new RegExp(`^${ result.username }$`, 'i');
-			user = Meteor.users.findOne({ 'services.cas.external_id': { $exists: true }, username });
+			user = Meteor.users.findOne({ username });
 			if (user) {
 				// Update the user's external_id to reflect this new username.
 				Meteor.users.update(user, { $set: { 'services.cas.external_id': result.username } });
@@ -201,10 +204,10 @@ Accounts.registerLoginHandler(function(options) {
 
 			// Update email
 			if (int_attrs.email) {
-				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified: true }] } });
+				Meteor.users.update(user, { $set: { emails: [{ address: int_attrs.email, verified }] } });
 			}
 		}
-	} else {
+	} else if (userCreationEnabled) {
 		// Define new user
 		const newUser = {
 			username: result.username,
@@ -220,6 +223,13 @@ Accounts.registerLoginHandler(function(options) {
 			},
 		};
 
+		// Add username
+		if (int_attrs.username) {
+			_.extend(newUser, {
+				username: int_attrs.username,
+			});
+		}
+
 		// Add User.name
 		if (int_attrs.name) {
 			_.extend(newUser, {
@@ -230,7 +240,7 @@ Accounts.registerLoginHandler(function(options) {
 		// Add email
 		if (int_attrs.email) {
 			_.extend(newUser, {
-				emails: [{ address: int_attrs.email, verified: true }],
+				emails: [{ address: int_attrs.email, verified }],
 			});
 		}
 
@@ -249,22 +259,16 @@ Accounts.registerLoginHandler(function(options) {
 				if (room_name) {
 					let room = Rooms.findOneByNameAndType(room_name, 'c');
 					if (!room) {
-						room = Rooms.createWithIdTypeAndName(Random.id(), 'c', room_name);
-					}
-
-					if (!Subscriptions.findOneByRoomIdAndUserId(room._id, userId)) {
-						Subscriptions.createWithRoomAndUser(room, user, {
-							ts: new Date(),
-							open: true,
-							alert: true,
-							unread: 1,
-							userMentions: 1,
-							groupMentions: 0,
-						});
+						room = createRoom('c', room_name, user.username);
 					}
 				}
 			});
 		}
+	} else {
+		// Should fail as no user exist and can't be created
+		logger.debug(`User "${ result.username }" does not exist yet, will fail as no user creation is enabled`);
+		throw new Meteor.Error(Accounts.LoginCancelledError.numericError,
+			'no matching user account found');
 	}
 
 	return { userId: user._id };

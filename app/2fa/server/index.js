@@ -1,3 +1,4 @@
+import './MethodInvocationOverride';
 import './startup/settings';
 import './methods/checkCodesRemaining';
 import './methods/disable';
