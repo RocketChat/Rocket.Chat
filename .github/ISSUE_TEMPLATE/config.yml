@@ -1,0 +1,10 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Feature Request
+    url: https://github.com/RocketChat/feature-requests
+  - name: Get quick help
+    url: https://open.rocket.chat
+    about: Have a quick question? Join the Community server and ask on the appropriate channel.
+  - name: Get help on the forums
+    url: https://forums.rocket.chat
+    about: Have a complex question? Take a look at the forums and ask there if question is still open.
