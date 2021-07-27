@@ -21,7 +21,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState([]);
+	const [paginatedTagValue, handlePaginatedTagValue] = useState(tags);
 
 	const removeTag = (tag) => {
 		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
