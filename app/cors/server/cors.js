@@ -32,7 +32,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 
 	if (settings.get('Enable_CSP')) {
-		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
+		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src data: 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
 	}
 
 	// Deprecated behavior
