@@ -87,12 +87,15 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
+				typeof tag === 'object' ? tag?.value : tag,
+			);
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(tags.length > 0 && { tags }),
+				...(tags.length > 0 && { tags: mappedTags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({
