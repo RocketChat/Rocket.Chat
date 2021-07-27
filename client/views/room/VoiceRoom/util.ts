@@ -1,4 +1,5 @@
-import EventEmitter from 'events';
+// import EventEmitter from 'events';
+import { Emitter } from '@rocket.chat/emitter';
 
 const getMaxVolume = (analyser: AnalyserNode, data: Float32Array): number => {
 	let maxVolume = -Infinity;
@@ -12,7 +13,7 @@ const getMaxVolume = (analyser: AnalyserNode, data: Float32Array): number => {
 	return maxVolume;
 };
 
-export const analyseAudio = (source: MediaStream): EventEmitter => {
+export const analyseAudio = (source: MediaStream): Emitter => {
 	const audioContext = new AudioContext();
 	const audioSource = audioContext.createMediaStreamSource(source);
 	const analyser = audioContext.createAnalyser();
@@ -29,7 +30,7 @@ export const analyseAudio = (source: MediaStream): EventEmitter => {
 	const bufferLength = analyser.frequencyBinCount;
 	const dataArray = new Float32Array(bufferLength);
 
-	const emitter = new EventEmitter();
+	const emitter = new Emitter();
 
 	const loop = (): void => {
 		setTimeout(() => {

@@ -52,16 +52,14 @@ const RoomList = () => {
 	}, [sidebarViewMode]);
 
 	return (
-		<>
-			<Box h='full' w='full' ref={ref}>
-				<Virtuoso
-					totalCount={roomsList.length}
-					data={roomsList}
-					components={{ Scroller: ScrollerWithCustomProps }}
-					itemContent={(index, data) => <Row data={itemData} item={data} />}
-				/>
-			</Box>
-		</>
+		<Box h='full' w='full' ref={ref}>
+			<Virtuoso
+				totalCount={roomsList.length}
+				data={roomsList}
+				components={{ Scroller: ScrollerWithCustomProps }}
+				itemContent={(index, data) => <Row data={itemData} item={data} />}
+			/>
+		</Box>
 	);
 };
 

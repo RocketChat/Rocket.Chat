@@ -1,5 +1,4 @@
-import { EventEmitter } from 'events';
-
+import { Emitter } from '@rocket.chat/emitter';
 import { Peer, WebSocketTransport } from 'protoo-client';
 import { Device, types } from 'mediasoup-client';
 
@@ -17,7 +16,7 @@ interface IData {
 	roomName: string;
 }
 
-export default class VoiceRoom extends EventEmitter {
+export default class VoiceRoom extends Emitter {
 	roomID: string;
 
 	roomName: string;
