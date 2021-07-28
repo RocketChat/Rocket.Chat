@@ -41,7 +41,11 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return new Promise((resolve, reject) => {
 			const fileId = this.itemToFilename(item);
 			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(fileId)
-				.on('finish', () => resolve(this.idToPath(writeStream.id)))
+				.on('finish', () => {
+					resolve(this.idToPath(writeStream.id));
+					this.remove(item);
+				})
+
 				.on('error', (error) => reject(error));
 
 			writeStream.write(zip);
@@ -62,7 +66,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	private itemToFilename(item: IAppStorageItem): string {
-		return `${ item.info.nameSlug }-v{ item.info.version }.package`;
+		return `${ item.info.nameSlug }-${ item.info.version }.package`;
 	}
 
 	private idToPath(id: GridFSBucketWriteStream['id']): string {
