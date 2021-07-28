@@ -14,14 +14,14 @@ const commands = {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
-		const newUrl = new URL(baseURI + data.path);
+		const newUrl = new URL(`${ s.rtrim(baseURI, '/') }/${ s.ltrim(data.path, '/') }`);
 
 		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
 			ret[key] = value;
 			return ret;
 		}, {});
 
-		FlowRouter.go(newUrl.pathname, null, { ...FlowRouter.current().queryParams, ...newParams });
+		FlowRouter.go(s.ltrim(newUrl.pathname, __meteor_runtime_config__.ROOT_URL_PATH_PREFIX), null, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 
 	'set-user-status'(data) {
