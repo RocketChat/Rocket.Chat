@@ -18,6 +18,7 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
+		"@rocket.chat/string-helpers": "^0.27.0",
 		"bcrypt": "^5.0.1",
 		"body-parser": "^1.19.0",
 		"cookie": "^0.4.1",
