@@ -20,6 +20,8 @@ export class VoiceRoomManager extends Emitter<{
 	'change': ConnectionState;
 	'mediasoup-peer-change': undefined;
 	'ws-peer-change': undefined;
+	'toggle-mic': undefined;
+	'toggle-deafen': undefined;
 }> {
 	public state: State = {
 		state: 'notStarted',
@@ -29,8 +31,23 @@ export class VoiceRoomManager extends Emitter<{
 
 	public wsPeers: Array<IVoiceRoomPeer> = [];
 
+	public muted = false;
+
+	public deafen = false;
+
 	constructor() {
 		super();
+	}
+
+	private setMuted(value: boolean): void {
+		this.muted = value;
+		this.emit('toggle-mic');
+	}
+
+
+	private setDeafen(value: boolean): void {
+		this.deafen = value;
+		this.emit('toggle-deafen');
 	}
 
 	private setMediasoupPeers(peers: Array<IVoiceRoomPeer>): void {
@@ -145,6 +162,26 @@ export class VoiceRoomManager extends Emitter<{
 				state: 'notStarted',
 			});
 			this.setMediasoupPeers([]);
+			this.setMuted(false);
+			this.setDeafen(false);
+		}
+	}
+
+	public async toggleMic(): Promise<void> {
+		if (isMediasoupState(this.state)) {
+			try {
+				const state = await this.state.mediasoupClient.toggleMic();
+				this.setMuted(state);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	}
+
+	public toggleDeafen(): void {
+		if (isMediasoupState(this.state)) {
+			const state = this.state.mediasoupClient.toggleDeafen();
+			this.setDeafen(state);
 		}
 	}
 }
@@ -195,5 +232,29 @@ export const useWsPeers = (): Array<IVoiceRoomPeer> => {
 	const wsPeersState = useSubscription(wsPeersQuery);
 	return wsPeersState;
 };
+
+const toggleMicQuery = {
+	getCurrentValue: (): boolean => manager.muted,
+	subscribe: (callback: () => void): (() => void) => {
+		const stop = manager.on('toggle-mic', callback);
+		return (): void => {
+			stop();
+		};
+	},
+};
+
+export const useVoiceChannelMic = (): boolean => useSubscription(toggleMicQuery);
+
+const toggleDeafenQuery = {
+	getCurrentValue: (): boolean => manager.deafen,
+	subscribe: (callback: () => void): (() => void) => {
+		const stop = manager.on('toggle-deafen', callback);
+		return (): void => {
+			stop();
+		};
+	},
+};
+
+export const useVoiceChannelDeafen = (): boolean => useSubscription(toggleDeafenQuery);
 
 export default manager;
