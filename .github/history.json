@@ -63243,6 +63243,217 @@
           ]
         }
       ]
+    },
+    "3.17.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22779",
+          "title": "Regression: Remove Tags from canned response filter",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22782",
+          "title": "Regression: fix canned responses filters for monitors",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "tiagoevanp",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22781",
+          "title": "Regression: Create livechat-monitor permissions for Canned Responses",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22777",
+          "title": "Regression: Parse canned responses placeholders",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22751",
+          "title": "Regression: Data in the \"New Users\" section is delayed in 1 day",
+          "userLogin": "matheusbsilva137",
+          "description": "- Update nivo version (which was causing errors in the bar chart);\r\n - Fix 1 day delay in '7 days' and '30 days' periods;\r\n - Update tooltip theme.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22772",
+          "title": "[FIX] Support ID param on createVisitor method",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22775",
+          "title": "Regression: fix non ee tag field on canned responses",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22763",
+          "title": "[FIX] Blank screen in message auditing DM tab",
+          "userLogin": "ostjen",
+          "description": "The DM tab in message auditing was displaying a blank screen, instead of the actual tab.\r\n\r\n![image](https://user-images.githubusercontent.com/28611993/127041404-dfca7f6a-2b8b-4c15-9cbd-c6238fac0063.png)",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22773",
+          "title": "Regression: Translate scope on canned responses dashboard",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22767",
+          "title": "Regression: Fix empty tag field",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22765",
+          "title": "Regression: Federation warnings on ci",
+          "userLogin": "g-thome",
+          "description": "fix some linting warnings on federation modal",
+          "contributors": [
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "22766",
+          "title": "Regression: fix outdated data on canned filters",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22742",
+          "title": "[IMPROVE] Return open room if available for visitors",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22743",
+          "title": "Regression: Fix empty canned responses table when searching",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22762",
+          "title": "Regression: Filter of canned responses in contextual-bar",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "KevLehman",
+            "tiagoevanp",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22760",
+          "title": "Regression: Fix users not being able to see the scope of the canned m…",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22741",
+          "title": "Regression: Fixes empty department field on edit canned responses",
+          "userLogin": "MartinSchoeler",
+          "description": "This fixes the empty department field when editing a canned response via table on omnichannel menu. this also convert some of the files to TS that were created in js initially, also created/adjusted some types",
+          "contributors": [
+            "MartinSchoeler",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22738",
+          "title": "Regression: Allow users to update canned responses scope",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22735",
+          "title": "Regression: Allow users to search canned responses based on shortcut or content",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "MartinSchoeler",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22754",
+          "title": "Regression: Check for text before parse preview in create canned response form",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        }
+      ]
     }
   }
 }
