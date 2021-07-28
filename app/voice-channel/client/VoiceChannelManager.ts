@@ -89,6 +89,10 @@ export class VoiceRoomManager extends Emitter<{
 	}
 
 	public connect(rid: string, room: IRoom): void {
+		if (isWsState(this.state)) {
+			this.state.wsClient.close();
+		}
+
 		const wsClient = createVoiceClient(room);
 
 		wsClient.on('peer-change', () => {

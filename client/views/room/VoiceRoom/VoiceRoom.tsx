@@ -15,6 +15,7 @@ import { IRoom } from '../../../../definition/IRoom';
 import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useUserRoom } from '../../../contexts/UserContext';
 import VoicePeersList from './VoicePeersList';
 
 interface IVoiceRoom {
@@ -22,12 +23,13 @@ interface IVoiceRoom {
 	rid: string;
 }
 
-const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
+const VoiceRoom: FC<IVoiceRoom> = ({ rid }): ReactElement => {
 	const state = useVoiceChannel();
 	const mediasoupPeers = useMediasoupPeers();
 	const wsPeers = useWsPeers();
 	const muted = useVoiceChannelMic();
 	const deafen = useVoiceChannelDeafen();
+	const room = useUserRoom(rid);
 
 	const setModal = useSetModal();
 	const t = useTranslation();
@@ -42,7 +44,11 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 
 	const join = (): void => VoiceRoomManager.joinRoom(rid);
 
-	const connectVoiceRoom = (): void => VoiceRoomManager.connect(rid, room);
+	const connectVoiceRoom = (): void => {
+		if (room) {
+			VoiceRoomManager.connect(rid, room);
+		}
+	};
 
 	const handleDisconnect = (): void => {
 		VoiceRoomManager.disconnect();
