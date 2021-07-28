@@ -1,9 +1,11 @@
+import { IncomingHttpHeaders } from 'http';
+
 import { request } from 'undici';
 
 interface IPostParams {
 	url: string;
 	body: any;
-	headers: any;
+	headers: IncomingHttpHeaders | string[] | null;
 }
 
 export function post(params: IPostParams): Promise<any> {
