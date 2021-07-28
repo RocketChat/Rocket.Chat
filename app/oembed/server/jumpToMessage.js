@@ -57,7 +57,7 @@ callbacks.add('beforeSaveMessage', (msg) => {
 		// user has to belong to the room the message was first wrote in
 		const room = Rooms.findOneById(jumpToMessage.rid);
 		const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-		const canAccessRoomForUser = canAccessRoom(room, currentUser) || isLiveChatRoomVisitor;
+		const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
 		if (!canAccessRoomForUser) {
 			return;
 		}
