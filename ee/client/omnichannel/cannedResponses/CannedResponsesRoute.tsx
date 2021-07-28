@@ -41,8 +41,8 @@ const CannedResponsesRoute: FC = () => {
 		text: '',
 	});
 
-	const { sharing, createdBy, tags, text } = values as CannedResponseFilterValues;
-	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
+	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
+	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
 	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
 		current: 0,
@@ -58,13 +58,12 @@ const CannedResponsesRoute: FC = () => {
 		() => ({
 			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(tags && tags.length > 0 && { tags: tags.map((tag) => tag.label) }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing, tags],
+		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing],
 	);
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
@@ -226,11 +225,9 @@ const CannedResponsesRoute: FC = () => {
 				<CannedResponseFilter
 					sharingValue={sharing}
 					createdByValue={createdBy}
-					tagsValue={tags}
 					shortcutValue={text}
 					setSharing={handleSharing}
 					setCreatedBy={handleCreatedBy}
-					setTags={handleTags}
 					setShortcut={handleText}
 				/>
 			)}
