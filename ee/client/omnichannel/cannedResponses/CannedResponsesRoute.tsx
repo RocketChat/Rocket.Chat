@@ -1,9 +1,10 @@
 import { Table, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState, FC, ReactNode, ReactElement } from 'react';
+import React, { useMemo, useCallback, useState, FC, ReactElement } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NotAuthorizedPage from '../../../../client/components/NotAuthorizedPage';
+import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
@@ -11,6 +12,7 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
+import { AsyncStatePhase } from '../../../../client/lib/asyncState';
 import CannedResponseEditWithData from './CannedResponseEditWithData';
 import CannedResponseFilter from './CannedResponseFilter';
 import CannedResponseNew from './CannedResponseNew';
@@ -20,26 +22,32 @@ import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 const CannedResponsesRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
+	const isMonitor = usePermission('save-department-canned-responses');
 
 	type CannedResponseFilterValues = {
 		sharing: string;
-		createdBy: { value: string; label: string };
-		tags: string;
+		createdBy: string;
+		tags: Array<{ value: string; label: string }>;
 		text: string;
 		firstMessage: string;
 	};
 
+	type Scope = 'global' | 'department' | 'user';
+
 	const { values, handlers } = useForm({
 		sharing: '',
-		createdBy: {},
+		createdBy: '',
 		tags: [],
 		text: '',
 	});
 
-	const { sharing, createdBy, tags, text } = values as CannedResponseFilterValues;
-	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
+	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
+	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
-	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
+	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
+		current: 0,
+		itemsPerPage: 25,
+	});
 	const [sort, setSort] = useState<[string, 'asc' | 'desc' | undefined]>(['shortcut', 'asc']);
 
 	const debouncedParams = useDebouncedValue(params, 500);
@@ -50,13 +58,12 @@ const CannedResponsesRoute: FC = () => {
 		() => ({
 			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(tags && tags.length > 0 && { tags }),
 			...(sharing && { scope: sharing }),
-			...(createdBy?.label && { createdBy: createdBy.label }),
+			...(createdBy && createdBy !== 'all' && { createdBy }),
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing, tags],
+		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing],
 	);
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
@@ -73,15 +80,30 @@ const CannedResponsesRoute: FC = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback(
-		(id) => (): void =>
+	const onRowClick = useMutableCallback((id, scope) => (): void => {
+		if (!(scope === 'global' && isMonitor)) {
 			cannedResponsesRoute.push({
 				context: 'edit',
 				id,
-			}),
+			});
+		}
+	});
+
+	const defaultOptions = useMemo(
+		() => ({
+			global: t('Public'),
+			department: t('Department'),
+			user: t('Private'),
+		}),
+		[t],
 	);
 
 	const { value: data, reload } = useEndpointData('canned-responses', query);
+	const {
+		value: totalData,
+		phase: totalDataPhase,
+		reload: totalDataReload,
+	} = useEndpointData('canned-responses');
 
 	const getTime = useFormatDateAndTime();
 
@@ -141,17 +163,17 @@ const CannedResponsesRoute: FC = () => {
 	);
 
 	const renderRow = useCallback(
-		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactNode => (
+		({ _id, shortcut, scope, createdBy, createdAt, tags = [] }): ReactElement => (
 			<Table.Row
 				key={_id}
 				tabIndex={0}
 				role='link'
-				onClick={onRowClick(_id)}
+				onClick={onRowClick(_id, scope)}
 				action
 				qa-user-id={_id}
 			>
 				<Table.Cell withTruncatedText>{shortcut}</Table.Cell>
-				<Table.Cell withTruncatedText>{scope}</Table.Cell>
+				<Table.Cell withTruncatedText>{defaultOptions[scope as Scope]}</Table.Cell>
 				<Table.Cell withTruncatedText>
 					<Box display='flex' alignItems='center'>
 						<UserAvatar size='x24' username={createdBy.username} />
@@ -166,24 +188,34 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} reload={reload} />
+				{!(scope === 'global' && isMonitor) && (
+					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+				)}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload],
+		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor],
 	);
 
-	if (context === 'edit') {
+	if (context === 'edit' && id) {
 		return (
-			<CannedResponseEditWithData reload={reload} cannedResponseId={id} title={t('Edit_Tag')} />
+			<CannedResponseEditWithData
+				reload={reload}
+				totalDataReload={totalDataReload}
+				cannedResponseId={id}
+			/>
 		);
 	}
 
 	if (context === 'new') {
-		return <CannedResponseNew reload={reload} />;
+		return <CannedResponseNew reload={reload} totalDataReload={totalDataReload} />;
 	}
 
 	if (!canViewCannedResponses) {
 		return <NotAuthorizedPage />;
+	}
+
+	if (totalDataPhase === AsyncStatePhase.LOADING) {
+		return <PageSkeleton></PageSkeleton>;
 	}
 
 	return (
@@ -193,11 +225,9 @@ const CannedResponsesRoute: FC = () => {
 				<CannedResponseFilter
 					sharingValue={sharing}
 					createdByValue={createdBy}
-					tagsValue={tags}
 					shortcutValue={text}
 					setSharing={handleSharing}
 					setCreatedBy={handleCreatedBy}
-					setTags={handleTags}
 					setShortcut={handleText}
 				/>
 			)}
@@ -206,6 +236,7 @@ const CannedResponsesRoute: FC = () => {
 			header={header}
 			renderRow={renderRow}
 			title={t('Canned_Responses')}
+			totalCannedResponses={totalData?.total || 0}
 		></CannedResponsesPage>
 	);
 };
