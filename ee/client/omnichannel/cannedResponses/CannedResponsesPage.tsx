@@ -1,6 +1,6 @@
 import { Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, ReactNode, ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 
 import GenericTable from '../../../../client/components/GenericTable';
 import NoResults from '../../../../client/components/GenericTable/NoResults';
@@ -11,11 +11,11 @@ import { useTranslation } from '../../../../client/contexts/TranslationContext';
 export type CannedResponsesPageProps = {
 	data: any;
 	header: ReactElement[];
-	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: number }>>;
-	params: { current: number; itemsPerPage: number };
+	setParams: Dispatch<SetStateAction<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>>;
+	params: { current?: number; itemsPerPage?: 25 | 50 | 100 };
 	title: string;
-	renderRow: ReactNode | null;
-	renderFilter: FC;
+	renderFilter?: (props: any) => ReactElement;
+	renderRow?: (props: any) => ReactElement;
 	totalCannedResponses: number;
 };
 

@@ -19,6 +19,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
+	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
 	const form = useForm({
 		_id: data ? data._id : '',
@@ -116,6 +117,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	return (
 		<CreateCannedResponseModal
 			isManager={hasManagerPermission}
+			isMonitor={hasMonitorPermission}
 			values={values}
 			handlers={handlers}
 			errors={errors}
