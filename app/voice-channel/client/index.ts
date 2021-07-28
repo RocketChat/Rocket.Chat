@@ -368,6 +368,16 @@ export default class VoiceRoom extends Emitter {
 		}
 	}
 
+	async toggleMic(): Promise<boolean> {
+		if (this.muted) {
+			await this.unmuteMic();
+		} else {
+			await this.muteMic();
+		}
+
+		return this.muted;
+	}
+
 	toggleDeafen(): boolean {
 		this.deafen = !this.deafen;
 
