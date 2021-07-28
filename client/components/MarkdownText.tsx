@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
 import marked from 'marked';
-import React, { FC, useMemo } from 'react';
+import React, { ComponentProps, FC, useMemo } from 'react';
 
 import { renderMessageEmoji } from '../lib/renderMessageEmoji';
 
@@ -11,7 +11,7 @@ type MarkdownTextParams = {
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
-};
+} & ComponentProps<typeof Box>;
 
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
@@ -107,7 +107,8 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
-
+	console.log(content);
+	console.log(__html);
 	return __html ? (
 		<Box
 			dangerouslySetInnerHTML={{ __html }}

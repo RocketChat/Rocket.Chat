@@ -5,6 +5,7 @@ import MarkdownText from '../../../../../../../client/components/MarkdownText';
 
 const PreviewText: FC<{ text: string }> = ({ text }) => (
 	<Box
+		style={{ wordBreak: 'break-word' }}
 		rows={10}
 		display='flex'
 		flexDirection='column'
@@ -14,7 +15,13 @@ const PreviewText: FC<{ text: string }> = ({ text }) => (
 		rcx-box--animated
 		rcx-input-box__wrapper
 	>
-		<MarkdownText content={text} parseEmoji={true} />
+		<MarkdownText
+			style={{ whiteSpace: 'pre' }}
+			content={text}
+			variant='inline'
+			withTruncatedText={true}
+			parseEmoji={true}
+		/>
 	</Box>
 );
 

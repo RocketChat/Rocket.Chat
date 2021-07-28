@@ -9,6 +9,7 @@ const Textarea = forwardRef<Element, TextareaProps>(function Textarea(props, ref
 			is='textarea'
 			ref={ref}
 			w='full'
+			style={{ wordBreak: 'break-word' }}
 			rcx-box--animated
 			rcx-input-box--type={'textarea'}
 			rcx-input-box--undecorated
