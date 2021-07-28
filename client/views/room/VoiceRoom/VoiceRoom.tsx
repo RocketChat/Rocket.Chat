@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, ReactElement, useCallback, useEffect } from 'react';
+import React, { FC, ReactElement, useEffect } from 'react';
 
 import VoiceRoomManager, {
 	isMediasoupState,
@@ -40,14 +40,9 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 
 	const toggleDeafen = (): void => VoiceRoomManager.toggleDeafen();
 
-	const join = useCallback(() => {
-		VoiceRoomManager.joinRoom(rid);
-	}, [rid]);
+	const join = (): void => VoiceRoomManager.joinRoom(rid);
 
-	const connectVoiceRoom = useCallback(() => {
-		VoiceRoomManager.connect(rid, room);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rid]);
+	const connectVoiceRoom = (): void => VoiceRoomManager.connect(rid, room);
 
 	const handleDisconnect = (): void => {
 		VoiceRoomManager.disconnect();
