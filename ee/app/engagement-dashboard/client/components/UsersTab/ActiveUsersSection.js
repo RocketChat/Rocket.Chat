@@ -62,8 +62,8 @@ const ActiveUsersSection = ({ timezone }) => {
 
 		const usersListsMap = data.month.reduce((map, dayData) => {
 			const date = utc
-						? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
-						: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
+				? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
+				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
 			const dateOffset = date.diff(period.start, 'days');
 			if (dateOffset >= 0) {
 				map[dateOffset] = dayData.usersList;
