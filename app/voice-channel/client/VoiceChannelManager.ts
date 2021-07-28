@@ -115,7 +115,7 @@ export class VoiceRoomManager extends Emitter<{
 				this.setWsPeers([]);
 				this.setState({ ...this.state, wsClient: null });
 			}
-		} else if (isWsState(this.state) || isInitialState(this.state)) {
+		} else {
 			this.setState({ rid, state: 'wsconnecting', wsClient });
 			this.connectWsClient();
 		}
@@ -134,6 +134,9 @@ export class VoiceRoomManager extends Emitter<{
 
 			if (this.state.state === 'connecting') {
 				await this.state.mediasoupClient.joinRoom();
+			}
+
+			if (this.state.state === 'connecting') {
 				this.setState({
 					...this.state,
 					state: 'connected',
@@ -153,6 +156,9 @@ export class VoiceRoomManager extends Emitter<{
 	public disconnect(): void {
 		if (isMediasoupState(this.state)) {
 			this.state.mediasoupClient.close();
+			if (this.state.wsClient) {
+				this.state.wsClient.close();
+			}
 			this.setState({
 				rid: this.state.rid,
 				wsClient: this.state.mediasoupClient,

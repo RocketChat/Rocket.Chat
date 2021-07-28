@@ -81,7 +81,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 		connectVoiceRoom();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
-	// console.log(wsPeers);
+
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
 			{(isWsState(state) ||
