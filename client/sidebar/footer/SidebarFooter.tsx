@@ -3,6 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import { settings } from '../../../app/settings/client';
+import { useVoiceChannel } from '../../../app/voice-channel/client/VoiceChannelManager';
+import GlobalVoiceController from './GlobalVoiceController';
 
 const SidebarFooter = (): ReactElement => {
 	const sidebarFooterStyle = css`
@@ -19,6 +21,12 @@ const SidebarFooter = (): ReactElement => {
 			color: var(--rc-color-primary-light);
 		}
 	`;
+
+	const state = useVoiceChannel();
+
+	if (state.state === 'connected') {
+		return <GlobalVoiceController />;
+	}
 
 	return (
 		<Box

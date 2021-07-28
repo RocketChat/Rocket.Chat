@@ -12,7 +12,6 @@ import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useSidebarPaletteColor } from '../hooks/useSidebarPaletteColor';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import GlobalVoiceController from './GlobalVoiceController';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
@@ -60,9 +59,6 @@ const RoomList = () => {
 				components={{ Scroller: ScrollerWithCustomProps }}
 				itemContent={(index, data) => <Row data={itemData} item={data} />}
 			/>
-			<Box position='absolute' style={{ bottom: 0, left: 0, right: 0, zIndex: 10 }}>
-				<GlobalVoiceController />
-			</Box>
 		</Box>
 	);
 };
