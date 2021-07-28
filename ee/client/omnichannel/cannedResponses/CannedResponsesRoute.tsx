@@ -22,6 +22,7 @@ import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 const CannedResponsesRoute: FC = () => {
 	const t = useTranslation();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
+	const isMonitor = usePermission('save-department-canned-responses');
 
 	type CannedResponseFilterValues = {
 		sharing: string;
@@ -79,13 +80,14 @@ const CannedResponsesRoute: FC = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback(
-		(id) => (): void =>
+	const onRowClick = useMutableCallback((id, scope) => (): void => {
+		if (!(scope === 'global' && isMonitor)) {
 			cannedResponsesRoute.push({
 				context: 'edit',
 				id,
-			}),
-	);
+			});
+		}
+	});
 
 	const defaultOptions = useMemo(
 		() => ({
@@ -166,7 +168,7 @@ const CannedResponsesRoute: FC = () => {
 				key={_id}
 				tabIndex={0}
 				role='link'
-				onClick={onRowClick(_id)}
+				onClick={onRowClick(_id, scope)}
 				action
 				qa-user-id={_id}
 			>
@@ -186,10 +188,12 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+				{!(scope === 'global' && isMonitor) && (
+					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+				)}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload, totalDataReload, defaultOptions],
+		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor],
 	);
 
 	if (context === 'edit' && id) {
