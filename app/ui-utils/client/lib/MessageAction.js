@@ -396,46 +396,4 @@ Meteor.startup(async function() {
 		order: 18,
 		group: 'menu',
 	});
-
-	MessageAction.addButton({
-		id: 'task-details',
-		icon: 'report',
-		label: 'Task details',
-		context: ['message', 'message-mobile'],
-		async action() {
-			const { msg: message } = messageArgs(this);
-
-			modal.open({
-				title: 'Task Details',
-				modifier: 'modal',
-				content: 'taskDetailsModalWithData',
-				data: { message,
-					onCreate() {
-						modal.close();
-					},
-					onClose: () => modal.close() },
-				confirmOnEnter: false,
-				showConfirmButton: false,
-				showCancelButton: false,
-			});
-		},
-		condition({ room: { taskRoomId, t }, subscription }) {
-			if (!taskRoomId) {
-				return false;
-			}
-			if (!subscription) {
-				return false;
-			}
-
-			const isLivechatRoom = roomTypes.isLivechatRoom(t);
-			if (isLivechatRoom) {
-				return false;
-			}
-
-			// add permissions
-			return true;
-		},
-		order: -4,
-		group: ['message', 'menu'],
-	});
 });
