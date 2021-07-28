@@ -221,8 +221,9 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ id, token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
+		check(id, Match.Maybe(String));
 
 		let userId;
 		const updateUser = {
@@ -264,6 +265,7 @@ export const Livechat = {
 			const userData = {
 				username,
 				ts: new Date(),
+				...id && { _id: id },
 			};
 
 			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
