@@ -12,6 +12,7 @@ type ActionOptions = {
 	i18nLabel?: TranslationKey;
 	label?: string;
 	runAction?: RunAction;
+	danger?: boolean;
 };
 
 const resolveLegacyIcon = (legacyIcon: string | undefined): string | undefined => {
@@ -22,13 +23,22 @@ const resolveLegacyIcon = (legacyIcon: string | undefined): string | undefined =
 	return legacyIcon && legacyIcon.replace(/^icon-/, '');
 };
 
-const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction }) => {
+const Action: FC<ActionOptions> = ({ id, icon, i18nLabel, label, mid, runAction, danger }) => {
 	const t = useTranslation();
 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button id={id} data-mid={mid} data-actionlink={id} onClick={runAction} primary small>
+		<Button
+			id={id}
+			data-mid={mid}
+			data-actionlink={id}
+			onClick={runAction}
+			marginInline='x4'
+			primary
+			small
+			danger={danger}
+		>
 			{icon && <Icon name={resolvedIcon} />}
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>
