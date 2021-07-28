@@ -106,6 +106,8 @@ export class SAML {
 
 		let { username } = userObject;
 
+		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
+
 		if (!user) {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
