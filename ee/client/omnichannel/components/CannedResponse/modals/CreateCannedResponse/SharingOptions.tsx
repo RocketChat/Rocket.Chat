@@ -3,17 +3,22 @@ import React, { FC, memo } from 'react';
 
 import { useTranslation } from '../../../../../../../client/contexts/TranslationContext';
 
-const SharingOptions: FC<{ isMonitor: boolean; scope: string; radioHandlers: any }> = ({
-	isMonitor,
-	scope,
-	radioHandlers: { setPublic, setPrivate, setDepartment },
-}) => {
+const SharingOptions: FC<{
+	isMonitor: boolean;
+	isManager: boolean;
+	scope: string;
+	radioHandlers: any;
+}> = ({ isMonitor, isManager, scope, radioHandlers: { setPublic, setPrivate, setDepartment } }) => {
 	const t = useTranslation();
 
 	return (
 		<>
 			<Box display='flex' mie='12px'>
-				<RadioButton onChange={setPublic} disabled={isMonitor} checked={scope === 'global'} />
+				<RadioButton
+					onChange={setPublic}
+					disabled={isMonitor && !isManager}
+					checked={scope === 'global'}
+				/>
 				<Box mis='8px'>{t('Public')}</Box>
 			</Box>
 			<Box display='flex' mie='12px'>
