@@ -16,7 +16,7 @@ function isIterable(obj) {
 	return typeof obj[Symbol.iterator] === 'function';
 }
 
-export default memo(function Task({
+export default memo(function Message({
 	_id,
 	msg,
 	following,
