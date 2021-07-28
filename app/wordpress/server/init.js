@@ -86,5 +86,5 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 }), 1000);
 
 Meteor.startup(function() {
-	return settings.get(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+	return settings.get(/^(API\_Wordpress\_URL$|Accounts\_OAuth\_Wordpress\_)/, () => fillSettings());
 });
