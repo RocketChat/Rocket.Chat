@@ -1278,6 +1278,12 @@ export const Livechat = {
 		};
 		LivechatVisitors.updateById(contactId, updateUser);
 	},
+	updateCallStatus(callId, rid, status, user = null) {
+		Rooms.setCallStatus(rid, status);
+		if (status === 'ended' && user) {
+			return updateMessage({ _id: callId, msg: '', actionLinks: [], endTs: new Date() }, user);
+		}
+	},
 };
 
 settings.watch('Livechat_history_monitor_type', (value) => {

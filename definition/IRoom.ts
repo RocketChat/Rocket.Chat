@@ -3,6 +3,7 @@ import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
 type RoomType = 'c' | 'd' | 'p' | 'l';
+type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -32,6 +33,7 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus?: CallStatus;
 
 	streamingOptions?: {
 		id?: string;
