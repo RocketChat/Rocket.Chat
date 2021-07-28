@@ -9,6 +9,8 @@ import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoint
 import { UnfollowMessageEndpoint as ChatUnfollowMessageEndpoint } from './endpoints/v1/chat/unfollowMessage';
 import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoints/v1/cloud/manualRegister';
 import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
+import { ResolveSrvEndpoint } from './endpoints/v1/dns/resolve.srv';
+import { ResolveTxtEndpoint } from './endpoints/v1/dns/resolve.txt';
 import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
 import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
 import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
@@ -17,6 +19,7 @@ import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
+import { LivechatDepartmentSingle } from './endpoints/v1/livechat/departmentSingle';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
@@ -24,6 +27,7 @@ import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
 import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { CannedResponseEndpoint } from './endpoints/v1/omnichannel/cannedResponse';
 import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
@@ -41,6 +45,8 @@ export type ServerEndpoints = {
 	'cloud.manualRegister': CloudManualRegisterEndpoint;
 	'chat.getDiscussions': ChatGetDiscussionsEndpoint;
 	'chat.getThreadsList': ChatGetThreadsListEndpoint;
+	'dns.resolve.srv': ResolveSrvEndpoint;
+	'dns.resolve.txt': ResolveTxtEndpoint;
 	'emoji-custom.list': EmojiCustomListEndpoint;
 	'channels.files': ChannelsFilesEndpoint;
 	'im.files': ImFilesEndpoint;
@@ -62,6 +68,7 @@ export type ServerEndpoints = {
 	'livechat/monitors.list': LivechatMonitorsList;
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
+	'livechat/department/${string}': LivechatDepartmentSingle;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
 	'rooms.info': RoomsInfoEndpoint;
@@ -70,6 +77,7 @@ export type ServerEndpoints = {
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
 	'canned-responses': CannedResponsesEndpoint;
+	'canned-responses/${string}': CannedResponseEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

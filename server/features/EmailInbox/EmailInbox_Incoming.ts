@@ -43,6 +43,7 @@ function getGuestByEmail(email: string, name: string, department?: string): any 
 		phone: undefined,
 		username: undefined,
 		connectionData: undefined,
+		id: undefined,
 	});
 
 	const newGuest = LivechatVisitors.findOneById(userId, {});

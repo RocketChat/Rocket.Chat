@@ -23,6 +23,7 @@ import { getStatistics as federationGetStatistics } from '../../../federation/se
 import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team } from '../../../../server/sdk';
 
@@ -183,6 +184,7 @@ export const statistics = {
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();
+		statistics.services = getServicesStatistics();
 
 		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
 			projection: {

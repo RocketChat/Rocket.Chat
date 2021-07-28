@@ -111,6 +111,17 @@ export class LivechatDepartment extends Base {
 
 		return this.findOne(query, options);
 	}
+
+	findByUnitIds(unitIds, options) {
+		const query = {
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
 }
 
 export default new LivechatDepartment();
