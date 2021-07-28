@@ -32,7 +32,9 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 
 	if (settings.get('Enable_CSP')) {
-		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
+		const urls = [settings.get('CDN_PREFIX_ALL'), settings.get('CDN_JSCSS_PREFIX'), settings.get('CDN_PREFIX')].filter(Boolean).join(' ');
+
+		res.setHeader('Content-Security-Policy', `default-src 'self'; script-src ${ urls } 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src ${ urls } 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;`);
 	}
 
 	// Deprecated behavior
