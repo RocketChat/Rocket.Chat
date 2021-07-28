@@ -15,6 +15,7 @@ import { CachedUserList } from './models/CachedUserList';
 import { ChatRoom } from './models/ChatRoom';
 import { ChatSubscription } from './models/ChatSubscription';
 import { ChatMessage } from './models/ChatMessage';
+import { ChatTask } from './models/ChatTask';
 import { RoomRoles } from './models/RoomRoles';
 import { UserAndRoom } from './models/UserAndRoom';
 import { UserRoles } from './models/UserRoles';
@@ -27,6 +28,7 @@ const Users = _.extend({}, users, Meteor.users);
 const Subscriptions = _.extend({}, subscriptions, ChatSubscription);
 const Messages = _.extend({}, ChatMessage);
 const Rooms = _.extend({}, ChatRoom);
+const Tasks = _.extend({}, ChatTask);
 
 export {
 	Base,
@@ -37,6 +39,7 @@ export {
 	Subscriptions,
 	Users,
 	Messages,
+	Tasks,
 	CachedChannelList,
 	CachedChatRoom,
 	CachedChatSubscription,
@@ -48,6 +51,7 @@ export {
 	AuthzCachedCollection,
 	ChatPermissions,
 	ChatMessage,
+	ChatTask,
 	ChatSubscription,
 	Rooms,
 	CustomSounds,

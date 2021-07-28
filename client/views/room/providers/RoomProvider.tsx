@@ -29,6 +29,7 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 
 	useEffect(() => {
 		RoomManager.open(rid);
+		console.log('openRM');
 		return (): void => {
 			RoomManager.back(rid);
 		};

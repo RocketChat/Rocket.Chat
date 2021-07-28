@@ -32,6 +32,7 @@ export const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve
 
 
 NewRoomManager.on('changed', (rid) => {
+	console.log('newRoom');
 	Session.set('openedRoom', rid);
 	RoomManager.openedRoom = rid;
 });

@@ -204,7 +204,6 @@ export const RoomManager = new function() {
 					unreadSince: new ReactiveVar(undefined),
 				};
 			}
-
 			openedRooms[typeName].lastSeen = new Date();
 
 			if (openedRooms[typeName].ready) {

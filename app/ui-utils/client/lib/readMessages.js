@@ -60,6 +60,7 @@ export const readMessage = new class extends Emitter {
 			}
 		// if unread mark is not visible and there is more more not loaded unread messages
 		} else if (RoomHistoryManager.getRoom(rid).unreadNotLoaded.get() > 0) {
+			console.log('efef');
 			return;
 		}
 
