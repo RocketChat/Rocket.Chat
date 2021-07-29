@@ -27,8 +27,10 @@ const WrapCannedResponse: FC<{
 	};
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
+	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
-	const canEdit = hasManagerPermission || scope === 'user';
+	const canEdit =
+		hasManagerPermission || (hasMonitorPermission && scope !== 'global') || scope === 'user';
 
 	return (
 		<CannedResponse
