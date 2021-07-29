@@ -1,6 +1,24 @@
 
 # 3.17.0 (Under Release Candidate Process)
 
+## 3.17.0-rc.4
+`2021-07-28  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix canned responses permissions for monitors & managers ([#22793](https://github.com/RocketChat/Rocket.Chat/pull/22793))
+
+- Regression: Internal Error when saving files using GridFS ([#22792](https://github.com/RocketChat/Rocket.Chat/pull/22792))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 ## 3.17.0-rc.3
 `2021-07-27  ·  1 🚀  ·  2 🐛  ·  17 🔍  ·  10 👩‍💻👨‍💻`
 
