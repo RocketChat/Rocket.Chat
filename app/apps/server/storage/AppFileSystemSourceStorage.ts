@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { join, normalize } from 'path';
 
 import { AppSourceStorage, IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
@@ -54,7 +55,7 @@ export class AppFileSystemSourceStorage extends AppSourceStorage {
 	}
 
 	private itemToFilename(item: IAppStorageItem): string {
-		return `${ this.path + item.id }.zip`;
+		return `${ normalize(join(this.path, item.id)) }.zip`;
 	}
 
 	private filenameToSourcePath(filename: string): string {

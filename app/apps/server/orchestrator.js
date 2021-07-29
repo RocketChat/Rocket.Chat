@@ -12,11 +12,14 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
-import { AppRealLogsStorage, AppRealStorage, AppGridFSSourceStorage } from './storage';
+import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
+
+let appsSourceStorageType;
+let appsSourceStorageFilesystemPath;
 
 export class AppServerOrchestrator {
 	constructor() {
@@ -34,7 +37,7 @@ export class AppServerOrchestrator {
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
-		this.appSourceStorage = new AppGridFSSourceStorage();
+		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -51,7 +54,7 @@ export class AppServerOrchestrator {
 			metadataStorage: this._storage,
 			logStorage: this._logStorage,
 			bridges: this._bridges,
-			sourceStorage: this.appSourceStorage,
+			sourceStorage: this._appSourceStorage,
 		});
 
 		this._communicators = new Map();
@@ -97,6 +100,10 @@ export class AppServerOrchestrator {
 
 	getProvidedComponents() {
 		return this._manager.getExternalComponentManager().getProvidedComponents();
+	}
+
+	getAppSourceStorage() {
+		return this._appSourceStorage;
 	}
 
 	isInitialized() {
@@ -217,9 +224,48 @@ settings.addGroup('General', function() {
 			public: true,
 			hidden: false,
 		});
+
+		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+			type: 'select',
+			values: [{
+				key: 'gridfs',
+				i18nLabel: 'GridFS',
+			}, {
+				key: 'filesystem',
+				i18nLabel: 'FileSystem',
+			}],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
+		});
+
+		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+			type: 'string',
+			public: true,
+			enableQuery: {
+				_id: 'Apps_Framework_Source_Package_Storage_Type',
+				value: 'filesystem',
+			},
+			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
+		});
 	});
 });
 
+settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageType = value;
+	} else {
+		Apps.getAppSourceStorage().setStorage(value);
+	}
+});
+
+settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageFilesystemPath = value;
+	} else {
+		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
+	}
+});
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
