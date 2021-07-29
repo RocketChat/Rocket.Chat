@@ -51,6 +51,8 @@ export default class VoiceRoom extends Emitter {
 
 	peers: Array<IVoiceRoomPeer>;
 
+	peerID: string;
+
 	constructor({ roomID, device, produce, consume, displayName, peerID, username, roomName }: IData) {
 		super();
 		this.roomID = roomID;
@@ -65,6 +67,7 @@ export default class VoiceRoom extends Emitter {
 		this.joined = false;
 		this.roomName = roomName;
 		this.peers = new Array(0);
+		this.peerID = peerID;
 	}
 
 	closeProtoo(): void {
@@ -305,11 +308,16 @@ export default class VoiceRoom extends Emitter {
 			this.peers = new Array(0);
 			peerData.forEach((i: IPeer) => this.peers.push(i));
 
-			this.emit('peer-change');
-
 			if (this.produce) {
-				this.enableMic();
+				await this.enableMic();
 			}
+
+			const idx = this.peers.findIndex((p) => p.id === this.peerID);
+			this.peers[idx].track = this.micProducer?.track || undefined;
+			this.peers[idx].deafen = true;
+			this.peers[idx].disableDeafenControls = true;
+
+			this.emit('peer-change');
 		} catch (err) {
 			console.log(err);
 		}

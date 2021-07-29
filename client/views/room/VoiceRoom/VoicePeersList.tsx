@@ -6,13 +6,13 @@ import VoicePeer from './VoicePeer';
 
 interface IProps {
 	peers: IVoiceRoomPeer[];
-	deafen?: boolean;
+	globalDeafen?: boolean;
 }
 
-const VoicePeersList: FC<IProps> = ({ peers, deafen }): React.ReactElement => (
+const VoicePeersList: FC<IProps> = ({ peers, globalDeafen }): React.ReactElement => (
 	<Box display='flex' flexWrap='wrap' justifyContent='center'>
 		{peers.map((peer) => (
-			<VoicePeer key={peer.id} {...peer} deafen={deafen} />
+			<VoicePeer key={peer.id} {...peer} globalDeafen={globalDeafen} />
 		))}
 	</Box>
 );
