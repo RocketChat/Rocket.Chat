@@ -236,6 +236,7 @@ export class Store {
        */
 			self.write = function(rs, fileId, callback) {
 				const file = self.getCollection().findOne({ _id: fileId });
+				let finishing = false;
 
 				const errorHandler = Meteor.bindEnvironment(function(err) {
 					self.onWriteError.call(self, err, fileId, file);
@@ -243,6 +244,11 @@ export class Store {
 				});
 
 				const finishHandler = Meteor.bindEnvironment(function() {
+					if (finishing) {
+						return;
+					}
+					finishing = true;
+
 					let size = 0;
 					const readStream = self.getReadStream(fileId, file);
 
@@ -253,6 +259,9 @@ export class Store {
 						size += data.length;
 					}));
 					readStream.on('end', Meteor.bindEnvironment(function() {
+						if (file.complete) {
+							return;
+						}
 						// Set file attribute
 						file.complete = true;
 						file.etag = UploadFS.generateEtag();

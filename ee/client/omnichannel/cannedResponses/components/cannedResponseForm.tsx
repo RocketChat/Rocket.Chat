@@ -79,7 +79,12 @@ const CannedResponseForm: FC<{
 						<Field.Label>{t('Sharing')}</Field.Label>
 						<Field.Description>{radioDescription}</Field.Description>
 						<Field.Row mbs='12px' justifyContent='start'>
-							<SharingOptions isMonitor={isMonitor} scope={scope} radioHandlers={radioHandlers} />
+							<SharingOptions
+								isMonitor={isMonitor}
+								isManager={isManager}
+								scope={scope}
+								radioHandlers={radioHandlers}
+							/>
 						</Field.Row>
 					</Field>
 					{scope === 'department' && (
