@@ -15,6 +15,7 @@ export const USER_RECORDING = 'user-recording';
 export const USER_TYPING = 'user-typing';
 export const USER_UPLOADING = 'user-uploading';
 export const USER_ACTIVITY = 'user-activity';
+const TYPING = 'typing';
 
 
 const activityTimeouts = {};
@@ -37,10 +38,24 @@ const shownName = function(user) {
 	return user.username;
 };
 
-const stopActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), false, activityType, extras);
-const startActivity = (rid, activityType, extras) => Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), true, activityType, extras);
+const checkUseNewActionIndicator = function() {
+	return settings.get('Use_New_Action_Indicator');
+};
 
-function handleStreamAction(activeUsers, rid, username, activityType, isActive, extras) {
+// use 'typing' stream if the client wants to use older 'user action indicator' version.
+// otherwise use 'user-activity' stream.
+const stopActivity = (rid, activityType, extras) => {
+	const stream = USER_TYPING && !checkUseNewActionIndicator() ? TYPING : USER_ACTIVITY;
+	return Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), false, activityType, extras);
+};
+const startActivity = (rid, activityType, extras) => {
+	const stream = USER_TYPING && !checkUseNewActionIndicator() ? TYPING : USER_ACTIVITY;
+	return Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), true, activityType, extras);
+};
+
+function handleStreamAction(activeUsers, rid, username, actionType, isActive, extras = {}) {
+	// actionType and extras will be null if Use_New_Action_Indicator is false.
+	const activityType = actionType || USER_TYPING;
 	const id = extras?.tmid ? extras.tmid : rid;
 	const activities = performingUsers.all() || {};
 	const roomActivities = activities[id] || {};
@@ -88,6 +103,11 @@ export const UserAction = new class {
 			}
 			handleStreamAction(performingUsers, rid, username, activityType, activity, extras);
 		};
+		// If the user using older activity indicator, subscribe for typing action.
+		// we can remove once all clients support new typing features.
+		if (!checkUseNewActionIndicator()) {
+			Notifications.onRoom(rid, TYPING, rooms[rid]);
+		}
 		return Notifications.onRoom(rid, USER_ACTIVITY, rooms[rid]);
 	}
 
@@ -134,6 +154,11 @@ export const UserAction = new class {
 		if (!rooms[rid]) {
 			return;
 		}
+
+		if (!checkUseNewActionIndicator()) {
+			Notifications.unRoom(rid, TYPING, rooms[rid]);
+		}
+
 		Notifications.unRoom(rid, USER_ACTIVITY, rooms[rid]);
 		delete rooms[rid];
 

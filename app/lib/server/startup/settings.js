@@ -1022,6 +1022,13 @@ settings.addGroup('General', function() {
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
 	});
+	this.section('User_Action_Indicators', function() {
+		this.add('Use_New_Action_Indicator', true, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'User_New_Action_Indicator_Description',
+		});
+	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
 			type: 'int',
