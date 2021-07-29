@@ -20,7 +20,7 @@ export class Roles extends Base {
 	isUserInRoles(userId, roles, scope) {
 		roles = [].concat(roles);
 		return roles.some((roleName) => {
-			const role = this.findOne(roleName);
+			const role = this.findOneByIdOrName(roleName);
 			const roleScope = (role && role.scope) || 'Users';
 			const model = Models[roleScope];
 
@@ -70,7 +70,7 @@ export class Roles extends Base {
 	addUserRoles(userId, roles, scope) {
 		roles = [].concat(roles);
 		for (const roleName of roles) {
-			const role = this.findOne(roleName);
+			const role = this.findOneByIdOrName(roleName);
 			const roleScope = (role && role.scope) || 'Users';
 			const model = Models[roleScope];
 
@@ -82,7 +82,7 @@ export class Roles extends Base {
 	removeUserRoles(userId, roles, scope) {
 		roles = [].concat(roles);
 		for (const roleName of roles) {
-			const role = this.findOne(roleName);
+			const role = this.findOneByIdOrName(roleName);
 			const roleScope = (role && role.scope) || 'Users';
 			const model = Models[roleScope];
 
@@ -111,8 +111,8 @@ export class Roles extends Base {
 		return this.find(query, options);
 	}
 
-	canAddUserToRole(uid, roleName, scope) {
-		const role = this.findOne({ _id: roleName }, { fields: { scope: 1 } });
+	canAddUserToRole(uid, roleId, scope) {
+		const role = this.findOne({ _id: roleId }, { fields: { scope: 1 } });
 		if (!role) {
 			return false;
 		}
