@@ -19,6 +19,7 @@ import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
+import { LivechatDepartmentSingle } from './endpoints/v1/livechat/departmentSingle';
 import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
 import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
 import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
@@ -26,6 +27,7 @@ import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
 import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
 import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
 import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
+import { CannedResponseEndpoint } from './endpoints/v1/omnichannel/cannedResponse';
 import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
@@ -66,6 +68,7 @@ export type ServerEndpoints = {
 	'livechat/monitors.list': LivechatMonitorsList;
 	'livechat/tags.list': LivechatTagsList;
 	'livechat/department': LivechatDepartment;
+	'livechat/department/${string}': LivechatDepartmentSingle;
 	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
 	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
 	'rooms.info': RoomsInfoEndpoint;
@@ -74,6 +77,7 @@ export type ServerEndpoints = {
 	'livechat/rooms': LivechatRoomsEndpoint;
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
 	'canned-responses': CannedResponsesEndpoint;
+	'canned-responses/${string}': CannedResponseEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
