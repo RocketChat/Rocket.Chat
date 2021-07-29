@@ -63454,6 +63454,36 @@
           ]
         }
       ]
+    },
+    "3.17.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22793",
+          "title": "Regression: Fix canned responses permissions for monitors & managers",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22792",
+          "title": "Regression: Internal Error when saving files using GridFS",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
