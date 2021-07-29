@@ -338,7 +338,7 @@ describe('[Roles]', function() {
 			roleWithUser = await createRole(`roleWithUser-${ Date.now() }`, 'Users');
 			roleWithoutUser = await createRole(`roleWithoutUser-${ Date.now() }`, 'Users');
 
-			await addUserToRole(roleWithUser._id, login.user);
+			await addUserToRole(roleWithUser.name, login.user);
 		});
 
 		it('should delete a role that it is not being used', (done) => {
@@ -394,15 +394,15 @@ describe('[Roles]', function() {
 			usersScopedRole = await createRole(`usersScopedRole-${ Date.now() }`, 'Users');
 			subscriptionsScopedRole = await createRole(`subscriptionsScopedRole-${ Date.now() }`, 'Subscriptions');
 
-			await addUserToRole(usersScopedRole._id, login.user);
-			await addUserToRole(subscriptionsScopedRole._id, login.user, 'GENERAL');
+			await addUserToRole(usersScopedRole.name, login.user);
+			await addUserToRole(subscriptionsScopedRole.name, login.user, 'GENERAL');
 		});
 
 		it('should unassign a role with User scope from an user', (done) => {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleName: usersScopedRole._id,
+					roleName: usersScopedRole.name,
 					username: login.user,
 				})
 				.expect('Content-Type', 'application/json')
@@ -421,7 +421,7 @@ describe('[Roles]', function() {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleName: subscriptionsScopedRole._id,
+					roleName: subscriptionsScopedRole.name,
 					username: login.user,
 					scope: 'GENERAL',
 				})

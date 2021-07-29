@@ -21,13 +21,6 @@ Meteor.methods({
 			});
 		}
 
-		const role = Roles.findOneByIdOrName(roleName);
-		if (!role) {
-			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
-				method: 'authorization:addUserToRole',
-			});
-		}
-
 		if (roleName === 'admin' && !hasPermission(Meteor.userId(), 'assign-admin-role')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 				method: 'authorization:addUserToRole',
@@ -48,13 +41,13 @@ Meteor.methods({
 		}
 
 		// verify if user can be added to given scope
-		if (scope && !Roles.canAddUserToRole(user._id, role._id, scope)) {
+		if (scope && !Roles.canAddUserToRole(user._id, roleName, scope)) {
 			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});
 		}
 
-		const add = Roles.addUserRoles(user._id, role._id, scope);
+		const add = Roles.addUserRoles(user._id, roleName, scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {

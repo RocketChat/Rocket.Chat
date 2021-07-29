@@ -244,7 +244,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (!hasRole(user._id, role._id, data.scope)) {
+		if (!hasRole(user._id, role.name, data.scope)) {
 			throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
 		}
 
@@ -255,7 +255,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			}
 		}
 
-		Roles.removeUserRoles(user._id, role._id, data.scope);
+		Roles.removeUserRoles(user._id, role.name, data.scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
