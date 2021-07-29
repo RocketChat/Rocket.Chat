@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import _ from 'lodash';
 import React, { FC } from 'react';
 
+import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { SectionStatus } from '../Section';
 import { DNSRecordItem } from './DNSRecordItem';
 import { DNSText } from './DNSText';
@@ -24,6 +25,8 @@ export const DNSRecords: FC<{
 	resolvedEntries,
 	legacy,
 }) => {
+	const t = useTranslation();
+
 	function buildDNSRecord(
 		type: DNSRecordType,
 		name: DNSRecordName | TXTRecordValue,
@@ -167,14 +170,14 @@ export const DNSRecords: FC<{
 
 	return (
 		<>
-			<DNSText text='You must add the following DNS records on your server:' />
-			<DNSText text='SRV Record (2.0.0 or newer)' />
+			<DNSText text={t('Federation_Must_add_records')} />
+			<DNSText text={t('Federation_SRV_records_2.0.0')} />
 			<Box style={{ marginTop: 10 }}>
 				{srvDNSRecords.map((record: DNSRecord) => (
 					<DNSRecordItem key={record.title} record={record} />
 				))}
 			</Box>
-			<DNSText text='Public Key TXT Record' />
+			<DNSText text={t('Federation_Public_key_TXT_record')} />
 			<Box style={{ marginTop: 10 }}>
 				{txtDNSRecords.map((record: DNSRecord) => (
 					<DNSRecordItem key={record.title} record={record} />
@@ -182,7 +185,7 @@ export const DNSRecords: FC<{
 			</Box>
 			{legacy && (
 				<>
-					<DNSText text='Protocol TXT Record' />
+					<DNSText text={t('Federation_Protocol_TXT_record')} />
 					<Box style={{ marginTop: 10 }}>
 						{legacyTxtDNSRecords.map((record: DNSRecord) => (
 							<DNSRecordItem key={record.title} record={record} />
