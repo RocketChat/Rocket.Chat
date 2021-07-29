@@ -160,6 +160,10 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
+	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+		return true;
+	}
+
 	if (typeof user === 'string') {
 		user = getUserForCheck(user);
 	}
