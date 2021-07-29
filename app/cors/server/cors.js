@@ -41,7 +41,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 			'Content-Security-Policy',
 			[
 				`default-src 'self' ${ cdn_prefixes }`,
-				'connect-src * data:',
+				'connect-src *',
 				`font-src 'self' ${ cdn_prefixes } data:`,
 				'frame-src *',
 				'img-src * data:',
