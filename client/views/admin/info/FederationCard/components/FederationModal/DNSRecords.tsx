@@ -169,7 +169,7 @@ export const DNSRecords: FC<{
 		<>
 			<DNSText text='You must add the following DNS records on your server:' />
 			<DNSText text='SRV Record (2.0.0 or newer)' />
-			<Box style={{ marginTop: 10 }}>
+			<Box style={{ marginTop: 10, marginBottom: 15 }}>
 				{srvDNSRecords.map((record: DNSRecord) => (
 					<DNSRecordItem key={record.title} record={record} />
 				))}
@@ -181,14 +181,14 @@ export const DNSRecords: FC<{
 				))}
 			</Box>
 			{legacy && (
-				<>
+				<Box style={{ marginTop: 15 }}>
 					<DNSText text='Protocol TXT Record' />
 					<Box style={{ marginTop: 10 }}>
 						{legacyTxtDNSRecords.map((record: DNSRecord) => (
 							<DNSRecordItem key={record.title} record={record} />
 						))}
 					</Box>
-				</>
+				</Box>
 			)}
 		</>
 	);

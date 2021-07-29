@@ -10,8 +10,8 @@ export const DNSRecordItem: FC<{
 }> = ({ record: { status, title, expectedValue, value, hideErrorString } }) => (
 	<Box display='flex' alignItems='flex-start'>
 		{getStatusIcon(status)}
-		<Box flexDirection='column' style={{ marginTop: -2, fontWeight: 'bold', fontSize: '85%' }}>
-			{title}: {expectedValue}{' '}
+		<Box flexDirection='column' style={{ marginTop: -2, fontSize: '90%' }}>
+			<b>{title}</b>: {expectedValue}{' '}
 			{!hideErrorString && status === SectionStatus.FAILED ? `(${value || '?'})` : ''}
 		</Box>
 	</Box>

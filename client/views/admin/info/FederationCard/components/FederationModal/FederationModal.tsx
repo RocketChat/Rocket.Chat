@@ -20,6 +20,7 @@ import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';
 import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
+import './styles.css';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({
 	onClose,
