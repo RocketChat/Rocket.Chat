@@ -212,6 +212,11 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 				</>
 			)}
 			<Modal.Footer>
+				{currentStep === 2 && (
+					<Box style={{ color: '#6C727A', marginTop: 9, fontSize: 12, float: 'left' }}>
+						{t('Federation_DNS_info_update')}
+					</Box>
+				)}
 				<ButtonGroup align='end'>
 					<Button onClick={previousStep}>{currentStep === 1 ? t('Cancel') : t('Back')}</Button>
 					<Button primary onClick={nextStep}>

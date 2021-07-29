@@ -183,6 +183,12 @@ export const DNSRecords: FC<{
 					<DNSRecordItem key={record.title} record={record} />
 				))}
 			</Box>
+			{!legacy && (
+				<Box style={{ marginTop: 20, padding: 10, backgroundColor: '#F2F3F5' }}>
+					<p style={{ fontWeight: 'bold' }}>{t('Federation_HTTP_instead_HTTPS')}</p>
+					{t('Federation_HTTP_instead_HTTPS_details')}
+				</Box>
+			)}
 			{legacy && (
 				<>
 					<DNSText text={t('Federation_Protocol_TXT_record')} />
