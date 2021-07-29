@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
 
@@ -26,6 +26,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	const wsPeers = useWsPeers();
 	const [muteMic, setMuteMic] = useState(false);
 	const [deafen, setDeafen] = useState(false);
+	const [showCallout, setCallout] = useState(false);
 
 	const setModal = useSetModal();
 	const t = useTranslation();
@@ -93,9 +94,23 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 		connectVoiceRoom();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
-	// console.log(wsPeers);
+
+	useEffect(() => {
+		if (state.state === 'error') {
+			setCallout(true);
+			setTimeout(() => {
+				setCallout(false);
+				connectVoiceRoom();
+			}, 2000);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state]);
+	console.log(state);
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
+			{showCallout && (
+				<Callout type='danger' title='Error connecting to voice channel. Please try again' />
+			)}
 			{(isWsState(state) ||
 				((isWsState(state) || isMediasoupState(state)) && state.rid !== rid)) && (
 				<VoicePeersList peers={wsPeers} deafen={deafen} />

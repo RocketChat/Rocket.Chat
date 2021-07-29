@@ -85,6 +85,13 @@ export class VoiceRoomManager extends Emitter<{
 			}
 		});
 
+		wsClient.on('error', (err) => {
+			this.setState({
+				state: 'error',
+				err,
+			});
+		});
+
 		// fix connection when changing rooms
 		if (isMediasoupState(this.state)) {
 			if (this.state.rid !== rid) {

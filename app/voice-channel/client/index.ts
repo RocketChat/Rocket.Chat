@@ -168,6 +168,7 @@ export default class VoiceRoom extends Emitter {
 
 						accept();
 					} catch (error) {
+						this.emit('error', error);
 						console.log(error);
 						reject(error);
 					}
@@ -311,6 +312,7 @@ export default class VoiceRoom extends Emitter {
 				this.enableMic();
 			}
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -338,6 +340,7 @@ export default class VoiceRoom extends Emitter {
 				},
 			});
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -348,6 +351,7 @@ export default class VoiceRoom extends Emitter {
 		try {
 			await this.protoo?.request('pauseProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -358,6 +362,7 @@ export default class VoiceRoom extends Emitter {
 		try {
 			await this.protoo?.request('resumeProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
