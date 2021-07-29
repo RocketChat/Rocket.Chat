@@ -126,7 +126,7 @@ function ThreadList({
 					{!error && total > 0 && threads.length > 0 && (
 						<Virtuoso
 							style={{
-								minHeight: blockSize,
+								height: blockSize,
 								width: inlineSize,
 							}}
 							totalCount={total}

@@ -84,7 +84,7 @@ function DiscussionList({
 					{!error && total > 0 && discussions.length > 0 && (
 						<Virtuoso
 							style={{
-								minHeight: blockSize,
+								height: blockSize,
 								width: inlineSize,
 								overflow: 'hidden',
 							}}
