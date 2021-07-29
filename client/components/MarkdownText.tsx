@@ -107,8 +107,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'] });
 	}, [content, preserveHtml, sanitizer, markedOptions, parseEmoji]);
-	console.log(content);
-	console.log(__html);
+
 	return __html ? (
 		<Box
 			dangerouslySetInnerHTML={{ __html }}
