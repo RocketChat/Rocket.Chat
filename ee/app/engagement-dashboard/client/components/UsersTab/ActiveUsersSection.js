@@ -101,7 +101,7 @@ const ActiveUsersSection = ({ timezone }) => {
 			wauValues,
 			mauValues,
 		];
-	}, [data]);
+	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
 		const data = [{
