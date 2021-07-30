@@ -1840,7 +1840,7 @@
   "Federation_SRV_no_support": "If your DNS provider does not support SRV records with _http or _https",
   "Federation_SRV_no_support_details": "Some DNS providers will not allow setting _https or _http on SRV records, so we have support for those cases, using our old DNS record resolution method.",
   "Federation_Must_add_records": "You must add the following DNS records on your server:",
-  "Federation_SRV_records_2.0.0": "SRV Record (2.0.0 or newer)",
+  "Federation_SRV_records_200": "SRV Record (2.0.0 or newer)",
   "Federation_Public_key_TXT_record": "Public Key TXT Record",
   "Federation_Protocol_TXT_record": "Protocol TXT Record",
   "Federation_Legacy_support": "Legacy Support",
