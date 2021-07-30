@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { Roles, Users } from '../../../models';
 import { API } from '../api';
-import { getUsersInRole, hasPermission } from '../../../authorization/server';
+import { getUsersInRole, hasPermission, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
 
@@ -202,7 +202,7 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 		}
 
-		const existingUsers = Roles.findUsersInRole(role._id, role.scope);
+		const existingUsers = Roles.findUsersInRole(role.name, role.scope);
 
 		if (existingUsers && existingUsers.count() > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
@@ -219,11 +219,13 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 		check(this.bodyParams, {
 			roleName: String,
 			username: String,
+			scope: Match.Maybe(String),
 		});
 
 		const data = {
 			roleName: this.bodyParams.roleName,
 			username: this.bodyParams.username,
+			scope: this.bodyParams.scope,
 		};
 
 		if (!hasPermission(this.userId, 'access-permissions')) {
@@ -242,18 +244,18 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (user.roles.indexOf(role.name) === -1) {
+		if (!hasRole(user._id, role.name, data.scope)) {
 			throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
 		}
 
 		if (role._id === 'admin') {
-			const adminCount = Roles.findUsersInRole('admin', role.scope).count();
+			const adminCount = Roles.findUsersInRole('admin').count();
 			if (adminCount === 1) {
 				throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 			}
 		}
 
-		Roles.removeUserRoles(user._id, role.name, role.scope);
+		Roles.removeUserRoles(user._id, role.name, data.scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -263,7 +265,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 					_id: user._id,
 					username: user.username,
 				},
-				scope: role.scope,
+				scope: data.scope,
 			});
 		}
 
