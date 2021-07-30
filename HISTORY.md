@@ -1,6 +1,57 @@
 
 # 3.17.0 (Under Release Candidate Process)
 
+## 3.17.0-rc.5
+`2021-07-29  ·  2 🐛  ·  5 🔍  ·  9 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Content-Security-Policy ignoring CDN configuration ([#22791](https://github.com/RocketChat/Rocket.Chat/pull/22791) by [@nmagedman](https://github.com/nmagedman))
+
+- Quote message not working for Livechat visitors ([#22586](https://github.com/RocketChat/Rocket.Chat/pull/22586))
+
+  ### Before:
+  ![image](https://user-images.githubusercontent.com/34130764/124583613-de2b1180-de70-11eb-82aa-18564b317626.png)
+  ### After:
+  ![image](https://user-images.githubusercontent.com/34130764/124583775-12063700-de71-11eb-8ab5-b0169fac2d40.png)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Added missing translate keys for Federation ([#22810](https://github.com/RocketChat/Rocket.Chat/pull/22810))
+
+- Regression: Fix tooltip style in the "Busiest Chat Times" chart ([#22813](https://github.com/RocketChat/Rocket.Chat/pull/22813))
+
+  - Fix tooltip in the Engagement Dashboard's "Busiest Chat Times" chart (Hours).
+
+  **Expected behavior:**
+  ![busiest-times-ed](https://user-images.githubusercontent.com/36537004/127527827-465397ed-f089-4fb7-9ab2-6fa8cea6abdf.PNG)
+
+- Regression: Replaced manual state control with a .once event ([#22800](https://github.com/RocketChat/Rocket.Chat/pull/22800))
+
+- Regression: roles.removeUserFromRole API not working with scoped roles. ([#22799](https://github.com/RocketChat/Rocket.Chat/pull/22799))
+
+- Regression: Text wrap in MarkdownTextEditor and PreviewText ([#22798](https://github.com/RocketChat/Rocket.Chat/pull/22798))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@nmagedman](https://github.com/nmagedman)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@alansikora](https://github.com/alansikora)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
 ## 3.17.0-rc.4
 `2021-07-28  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 

@@ -63484,6 +63484,85 @@
           ]
         }
       ]
+    },
+    "3.17.0-rc.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22791",
+          "title": "[FIX] Content-Security-Policy ignoring CDN configuration",
+          "userLogin": "ggazzo",
+          "milestone": "3.16.4",
+          "contributors": [
+            "ggazzo",
+            "nmagedman"
+          ]
+        },
+        {
+          "pr": "22799",
+          "title": "Regression: roles.removeUserFromRole API not working with scoped roles.",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22813",
+          "title": "Regression: Fix tooltip style in the \"Busiest Chat Times\" chart",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix tooltip in the Engagement Dashboard's \"Busiest Chat Times\" chart (Hours).\r\n\r\n**Expected behavior:**\r\n![busiest-times-ed](https://user-images.githubusercontent.com/36537004/127527827-465397ed-f089-4fb7-9ab2-6fa8cea6abdf.PNG)",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "22810",
+          "title": "Regression: Added missing translate keys for Federation",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora"
+          ]
+        },
+        {
+          "pr": "22798",
+          "title": "Regression: Text wrap in MarkdownTextEditor and PreviewText",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22586",
+          "title": "[FIX] Quote message not working for Livechat visitors",
+          "userLogin": "murtaza98",
+          "description": "### Before:\r\n![image](https://user-images.githubusercontent.com/34130764/124583613-de2b1180-de70-11eb-82aa-18564b317626.png)\r\n### After:\r\n![image](https://user-images.githubusercontent.com/34130764/124583775-12063700-de71-11eb-8ab5-b0169fac2d40.png)",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22800",
+          "title": "Regression: Replaced manual state control with a .once event",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
