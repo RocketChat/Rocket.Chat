@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChatSubscription } from '../../app/models';
+import { ChatSubscription } from '../../app/models/client';
 
 Meteor.methods({
 	openRoom(rid) {
@@ -8,13 +8,16 @@ Meteor.methods({
 			return false;
 		}
 
-		ChatSubscription.update({
-			rid,
-			'u._id': Meteor.userId(),
-		}, {
-			$set: {
-				open: true,
+		ChatSubscription.update(
+			{
+				rid,
+				'u._id': Meteor.userId(),
 			},
-		});
+			{
+				$set: {
+					open: true,
+				},
+			},
+		);
 	},
 });

@@ -10,12 +10,11 @@ import { RocketChatFile } from '../../file';
 import { settings } from '../../settings';
 import { Users, Roles, Rooms, Subscriptions } from '../../models';
 import { Logger } from '../../logger';
-import { _setRealName, _setUsername } from '../../lib';
+import { _setRealName } from '../../lib';
 import { templateVarHandler } from '../../utils';
 import { FileUpload } from '../../file-upload';
-import { addUserToRoom, removeUserFromRoom, createRoom } from '../../lib/server/functions';
+import { addUserToRoom, removeUserFromRoom, createRoom, saveUserIdentity } from '../../lib/server/functions';
 import { api } from '../../../server/sdk/api';
-
 
 export const logger = new Logger('LDAPSync', {});
 
@@ -320,12 +319,17 @@ export function mapLDAPGroupsToChannels(ldap, ldapUser, user) {
 
 		for (const channel of channels) {
 			let room = Rooms.findOneByNonValidatedName(channel);
+
 			if (!room) {
 				room = createRoomForSync(channel);
 			}
 			if (isUserInLDAPGroup(ldap, ldapUser, user, ldapField)) {
-				userChannels.push(room._id);
-			} else if (syncUserRolesEnforceAutoChannels) {
+				if (room.teamMain) {
+					logger.error(`Can't add user to channel ${ channel } because it is a team.`);
+				} else {
+					userChannels.push(room._id);
+				}
+			} else if (syncUserRolesEnforceAutoChannels && !room.teamMain) {
 				const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 				if (subscription) {
 					removeUserFromRoom(room._id, user);
@@ -404,7 +408,7 @@ export function syncUserData(user, ldapUser, ldap) {
 		const username = slug(getLdapUsername(ldapUser));
 		if (user && user._id && username !== user.username) {
 			logger.info('Syncing user username', user.username, '->', username);
-			_setUsername(user._id, username);
+			saveUserIdentity({ _id: user._id, username });
 		}
 	}
 

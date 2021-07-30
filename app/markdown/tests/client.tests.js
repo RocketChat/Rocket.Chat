@@ -3,10 +3,11 @@ import 'babel-polyfill';
 import assert from 'assert';
 
 import './client.mocks.js';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import { original } from '../lib/parser/original/original';
 import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');
@@ -14,15 +15,26 @@ const italicWrapper = (text) => wrapper(`<em>${ text }</em>`, '_');
 const strikeWrapper = (text) => wrapper(`<strike>${ text }</strike>`, '~');
 const headerWrapper = (text, level) => `<h${ level }>${ text }</h${ level }>`;
 const quoteWrapper = (text) => `<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
-const linkWrapped = (link, title) => `<a href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
+const linkWrapped = (link, title) => `<a data-title="${ link }" href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
 const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${ text }</code></span>`, '`');
 const codeWrapper = (text, lang) => `<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 
 const bold = {
+	'**': '**',
+	'* *': '* *',
+	'** *': '** *',
+	'** **': '** **',
+	'* Hello*': '* Hello*',
+	'*Hello *': '*Hello *',
+	':custom*emoji*case:': `:custom${ boldWrapper('emoji') }case:`,
+	'text*hello*text': `text${ boldWrapper('hello') }text`,
+	'*hello*text': `${ boldWrapper('hello') }text`,
+	'text*hello*': `text${ boldWrapper('hello') }`,
+	'*Hel lo*': boldWrapper('Hel lo'),
 	'*Hello*': boldWrapper('Hello'),
 	'**Hello**': boldWrapper('Hello'),
-	'**Hello*': boldWrapper('Hello'),
-	'*Hello**': boldWrapper('Hello'),
+	'**Hello*': `*${ boldWrapper('Hello') }`,
+	'*Hello**': `${ boldWrapper('Hello') }*`,
 	Hello: 'Hello',
 	'*Hello': '*Hello',
 	'Hello*': 'Hello*',
@@ -40,16 +52,27 @@ const bold = {
 };
 
 const italic = {
+	__: '__',
+	'_ _': '_ _',
+	'__ _': '__ _',
+	'__ __': '__ __',
+	'_ Hello_': '_ Hello_',
+	'_Hello _': '_Hello _',
+	':custom_emoji_case:': ':custom_emoji_case:',
+	text_hello_text: 'text_hello_text',
+	_hello_text: '_hello_text',
+	text_hello_: 'text_hello_',
+	'_Hel lo_': italicWrapper('Hel lo'),
 	_Hello_: italicWrapper('Hello'),
 	__Hello__: italicWrapper('Hello'),
-	__Hello_: italicWrapper('Hello'),
-	_Hello__: italicWrapper('Hello'),
+	__Hello_: `_${ italicWrapper('Hello') }`,
+	_Hello__: `${ italicWrapper('Hello') }_`,
 	Hello: 'Hello',
 	_Hello: '_Hello',
 	Hello_: 'Hello_',
 	He_llo: 'He_llo',
-	___Hello___: '___Hello___',
-	___Hello__: '___Hello__',
+	___Hello___: `_${ italicWrapper('Hello') }_`,
+	___Hello__: `_${ italicWrapper('Hello') }`,
 	'_Hello_ this is dog': `${ italicWrapper('Hello') } this is dog`,
 	'Rocket cat says _Hello_': `Rocket cat says ${ italicWrapper('Hello') }`,
 	'He said _Hello_ to her': `He said ${ italicWrapper('Hello') } to her`,
@@ -59,16 +82,27 @@ const italic = {
 };
 
 const strike = {
+	'~~': '~~',
+	'~ ~': '~ ~',
+	'~~ ~': '~~ ~',
+	'~~ ~~': '~~ ~~',
+	'~ Hello~': '~ Hello~',
+	'~Hello ~': '~Hello ~',
+	':custom~emoji~case:': `:custom${ strikeWrapper('emoji') }case:`,
+	'text~hello~text': `text${ strikeWrapper('hello') }text`,
+	'~hello~text': `${ strikeWrapper('hello') }text`,
+	'text~hello~': `text${ strikeWrapper('hello') }`,
+	'~Hel lo~': strikeWrapper('Hel lo'),
 	'~Hello~': strikeWrapper('Hello'),
 	'~~Hello~~': strikeWrapper('Hello'),
-	'~~Hello~': strikeWrapper('Hello'),
-	'~Hello~~': strikeWrapper('Hello'),
+	'~~Hello~': `~${ strikeWrapper('Hello') }`,
+	'~Hello~~': `${ strikeWrapper('Hello') }~`,
 	Hello: 'Hello',
 	'~Hello': '~Hello',
 	'Hello~': 'Hello~',
 	'He~llo': 'He~llo',
-	'~~~Hello~~~': '~~~Hello~~~',
-	'~~~Hello~~': '~~~Hello~~',
+	'~~~Hello~~~': `~${ strikeWrapper('Hello') }~`,
+	'~~~Hello~~': `~${ strikeWrapper('Hello') }`,
 	'~Hello~ this is dog': `${ strikeWrapper('Hello') } this is dog`,
 	'Rocket cat says ~Hello~': `Rocket cat says ${ strikeWrapper('Hello') }`,
 	'He said ~Hello~ to her': `He said ${ strikeWrapper('Hello') } to her`,

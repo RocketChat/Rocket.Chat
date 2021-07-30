@@ -55,7 +55,7 @@ mock('../../callbacks', {
 mock('meteor/random', {
 	Random: {
 		id() {
-			return Math.random();
+			return Math.random().toString().replace('0.', 'A');
 		},
 	},
 });

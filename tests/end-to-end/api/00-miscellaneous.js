@@ -127,13 +127,14 @@ describe('miscellaneous', function() {
 					'desktopNotifications',
 					'mobileNotifications',
 					'enableAutoAway',
+					'enableMessageParserEarlyAdoption',
 					// 'highlights',
 					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
-					'hideAvatars',
+					'displayAvatars',
 					'hideFlexTab',
 					'sendOnEnter',
 					'idleTimeLimit',
@@ -141,10 +142,9 @@ describe('miscellaneous', function() {
 					'sidebarShowUnread',
 					'sidebarSortby',
 					'sidebarViewMode',
-					'sidebarHideAvatar',
+					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-					'sidebarShowDiscussion',
 				];
 
 				expect(res.body).to.have.property('success', true);
@@ -156,7 +156,7 @@ describe('miscellaneous', function() {
 				expect(res.body).to.have.nested.property('emails[0].address', adminEmail);
 				expect(res.body).to.have.nested.property('settings.preferences').and.to.be.an('object');
 				expect(res.body.settings.preferences).to.have.all.keys(allUserPreferencesKeys);
-				expect(res.body.services).to.not.have.property('password');
+				expect(res.body.services).to.not.have.nested.property('password.bcrypt');
 			})
 			.end(done);
 	});

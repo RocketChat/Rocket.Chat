@@ -423,9 +423,7 @@ describe('[Chat]', function() {
 				.send({
 					channel: 'general',
 					text: 'Sample message',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 					attachments: [{
 						color: '#ff0000',
 						text: 'Yay for gruggy!',
@@ -659,9 +657,7 @@ describe('[Chat]', function() {
 						_id: message._id,
 						rid: 'GENERAL',
 						msg: 'Sample message',
-						alias: 'Gruggy',
 						emoji: ':smirk:',
-						avatar: 'http://res.guggy.com/logo_128.png',
 						attachments: [{
 							color: '#ff0000',
 							text: 'Yay for gruggy!',
@@ -708,18 +704,14 @@ describe('[Chat]', function() {
 					_id: `id-${ Date.now() }`,
 					rid: 'GENERAL',
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 				};
 
 				const imgUrlMsgPayload = {
 					_id: `id-${ Date.now() }1`,
 					rid: 'GENERAL',
 					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
-					alias: 'Gruggy',
 					emoji: ':smirk:',
-					avatar: 'http://res.guggy.com/logo_128.png',
 				};
 
 				const ytPostResponse = await request.post(api('chat.sendMessage'))
@@ -755,10 +747,10 @@ describe('[Chat]', function() {
 							expect(res.body.message.urls[0])
 								.to.have.property('meta')
 								.to.have.property('oembedHtml')
-								.to.have.string('<iframe style="max-width: 100%"');
+								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
 						})
 						.end(done);
-				}, 200);
+				}, 500);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -881,25 +873,64 @@ describe('[Chat]', function() {
 					.end(done);
 			});
 
-			it('should send a message when the user has permission to send messages on readonly channels', (done) => {
-				updatePermission('post-readonly', ['user']).then(() => {
-					request.post(api('chat.sendMessage'))
-						.set(userCredentials)
-						.send({
-							message: {
-								rid: readOnlyChannel._id,
-								msg: 'Sample message overwriting readonly status',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('message').and.to.be.an('object');
-						})
-						.end(done);
-				});
+			it('should send a message when the user has permission to send messages on readonly channels', async () => {
+				await updatePermission('post-readonly', ['user']);
+
+				await request.post(api('chat.sendMessage'))
+					.set(userCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Sample message overwriting readonly status',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message').and.to.be.an('object');
+					});
+
+				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
 			});
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						alias: 'Gruggy',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
+		});
+
+		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: 'Sample message',
+						avatar: 'http://site.com/logo.png',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Not enough permission');
+				})
+				.end(done);
 		});
 	});
 
@@ -1024,12 +1055,28 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.search', () => {
+		beforeEach((done) => {
+			const sendMessage = (text) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: text,
+						},
+					})
+					.end(() => {});
+			};
+			for (let i = 0; i < 5; i++) { sendMessage('msg1'); }
+			done();
+		});
+
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1039,12 +1086,12 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1052,10 +1099,49 @@ describe('[Chat]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(1);
+				})
+				.end(done);
+		});
+		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 1,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(3);
+				})
+				.end(done);
+		});
+
+		it('should return a empty list of messages when is provided a huge offset value', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 9999,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
 		});
 	});
+
 	describe('[/chat.react]', () => {
 		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
 			request.post(api('chat.react'))
@@ -1497,6 +1583,42 @@ describe('[Chat]', function() {
 		it('should unstar Message successfully', (done) => {
 			updateSetting('Message_AllowStarring', true).then(() => {
 				request.post(api('chat.unStarMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('[/chat.starMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should star Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.starMessage'))
 					.set(credentials)
 					.send({
 						messageId: message._id,

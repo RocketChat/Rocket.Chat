@@ -7,7 +7,7 @@ import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
 
-const queueInquiry = async (room, inquiry, defaultAgent) => {
+export const queueInquiry = async (room, inquiry, defaultAgent) => {
 	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 	inquiry = LivechatInquiry.findOneById(inquiry._id);
@@ -41,7 +41,8 @@ export const QueueManager = {
 		LivechatRooms.updateRoomCount();
 
 		await queueInquiry(room, inquiry, agent);
-		return room;
+
+		return LivechatRooms.findOneById(rid);
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
@@ -61,7 +62,7 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUsername(servedBy.username)) {
+		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 

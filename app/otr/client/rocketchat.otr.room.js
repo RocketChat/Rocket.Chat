@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Random } from 'meteor/random';
 import { EJSON } from 'meteor/ejson';
 import { Tracker } from 'meteor/tracker';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
@@ -11,9 +10,11 @@ import toastr from 'toastr';
 
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
-import { modal } from '../../ui-utils';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
+import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -189,7 +190,7 @@ OTR.Room = class {
 					this.generateKeyPair().then(() => {
 						this.importPublicKey(data.publicKey).then(() => {
 							this.firstPeer = false;
-							FlowRouter.goToRoomById(data.roomId);
+							goToRoomById(data.roomId);
 							Meteor.defer(() => {
 								this.established.set(true);
 								this.acknowledge();
@@ -208,31 +209,32 @@ OTR.Room = class {
 							this.reset();
 						}
 
-						modal.open({
-							title: TAPi18n.__('OTR'),
-							text: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
-							html: true,
-							showCancelButton: true,
-							allowOutsideClick: false,
-							confirmButtonText: TAPi18n.__('Yes'),
-							cancelButtonText: TAPi18n.__('No'),
-						}, (isConfirm) => {
-							if (isConfirm) {
-								establishConnection();
-							} else {
-								Meteor.clearTimeout(timeout);
-								this.deny();
-							}
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_wants_to_start_otr_Do_you_want_to_accept', { username }),
+								confirmText: TAPi18n.__('Yes'),
+								cancelText: TAPi18n.__('No'),
+								onClose: () => imperativeModal.close,
+								onCancel: () => {
+									Meteor.clearTimeout(timeout);
+									this.deny();
+									imperativeModal.close();
+								},
+								onConfirm: () => {
+									establishConnection();
+									imperativeModal.close();
+								},
+							},
 						});
 					}
 
 					timeout = Meteor.setTimeout(() => {
 						this.establishing.set(false);
-						modal.close();
+						imperativeModal.close();
 					}, 10000);
 				})();
-
-
 				break;
 
 			case 'acknowledge':
@@ -242,28 +244,41 @@ OTR.Room = class {
 				break;
 
 			case 'deny':
-				if (this.establishing.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_denied_the_OTR_session', { username: user.username }),
-						html: true,
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+					if (this.establishing.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_denied_the_OTR_session', { username }),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 
 			case 'end':
-				if (this.established.get()) {
-					this.reset();
-					const user = Meteor.users.findOne(this.peerId);
-					modal.open({
-						title: TAPi18n.__('OTR'),
-						text: TAPi18n.__('Username_ended_the_OTR_session', { username: user.username }),
-						html: true,
-						confirmButtonText: TAPi18n.__('Ok'),
-					});
-				}
+				(async () => {
+					const { username } = await Presence.get(this.peerId);
+
+					if (this.established.get()) {
+						this.reset();
+						imperativeModal.open({ component: GenericModal,
+							props: {
+								variant: 'warning',
+								title: TAPi18n.__('OTR'),
+								children: TAPi18n.__('Username_ended_the_OTR_session', { username }),
+								confirmText: TAPi18n.__('Ok'),
+								onClose: imperativeModal.close,
+								onConfirm: imperativeModal.close,
+							},
+						});
+					}
+				})();
 				break;
 		}
 	}

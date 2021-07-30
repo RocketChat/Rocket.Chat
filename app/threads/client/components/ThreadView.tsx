@@ -12,6 +12,7 @@ type ThreadViewProps = {
 	onToggleExpand: (expanded: boolean) => void;
 	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
+	onClickBack: () => void;
 };
 
 const ThreadView = forwardRef<Element, ThreadViewProps>(({
@@ -21,6 +22,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 	onToggleExpand,
 	onToggleFollow,
 	onClose,
+	onClickBack,
 }, ref) => {
 	const hasExpand = useLayoutContextualBarExpanded();
 
@@ -60,14 +62,14 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				display='flex'
 				flexDirection='column'
 				width={'full'}
-				maxWidth={hasExpand && expanded ? 855 : null}
+				maxWidth={hasExpand && expanded ? 855 : undefined}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}
 				style={style} // workaround due to a RTL bug in Fuselage
 			>
 				<VerticalBar.Header>
-					<VerticalBar.Icon name='thread' />
+					{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' /> }
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
 					{hasExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
 					<VerticalBar.Actions>

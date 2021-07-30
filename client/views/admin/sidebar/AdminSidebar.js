@@ -14,11 +14,10 @@ function AdminSidebar() {
 	const t = useTranslation();
 
 	const canViewSettings = useAtLeastOnePermission(
-		useMemo(() => [
-			'view-privileged-setting',
-			'edit-privileged-setting',
-			'manage-selected-settings',
-		], []),
+		useMemo(
+			() => ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'],
+			[],
+		),
 	);
 
 	const closeAdminFlex = useCallback(() => {
@@ -32,24 +31,33 @@ function AdminSidebar() {
 
 	const currentRoute = useCurrentRoute();
 	const currentPath = useRoutePath(...currentRoute);
-	const [,,, currentRouteGroupName] = currentRoute;
+	const [, , , currentRouteGroupName] = currentRoute;
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'admin') {
-			SideNav.closeFlex();
+			SideNav.toggleFlex(-1);
 		}
 	}, [currentRouteGroupName]);
 
 	// TODO: uplift this provider
-	return <SettingsProvider privileged>
-		<Sidebar>
-			<Sidebar.Header onClose={closeAdminFlex} title={<>{t('Administration')} <PlanTag/></>}/>
-			<Sidebar.Content>
-				<AdminSidebarPages currentPath={currentPath}/>
-				{canViewSettings && <AdminSidebarSettings currentPath={currentPath}/>}
-			</Sidebar.Content>
-		</Sidebar>
-	</SettingsProvider>;
+	return (
+		<SettingsProvider privileged>
+			<Sidebar>
+				<Sidebar.Header
+					onClose={closeAdminFlex}
+					title={
+						<>
+							{t('Administration')} <PlanTag />
+						</>
+					}
+				/>
+				<Sidebar.Content>
+					<AdminSidebarPages currentPath={currentPath} />
+					{canViewSettings && <AdminSidebarSettings currentPath={currentPath} />}
+				</Sidebar.Content>
+			</Sidebar>
+		</SettingsProvider>
+	);
 }
 
 export default memo(AdminSidebar);

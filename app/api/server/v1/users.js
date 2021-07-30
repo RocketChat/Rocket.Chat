@@ -5,6 +5,7 @@ import _ from 'underscore';
 import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
+import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -19,11 +20,12 @@ import {
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { setStatusText } from '../../../lib/server';
-import { findUsersToAutocomplete } from '../lib/users';
+import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
+import { Team } from '../../../../server/sdk';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -229,18 +231,52 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		const users = Users.find(query, {
-			sort: sort || { username: 1 },
-			skip: offset,
-			limit: count,
-			fields,
-		}).fetch();
+		const nonEmptyQuery = getNonEmptyQuery(query);
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+
+		const result = Promise.await(
+			UsersRaw.col
+				.aggregate([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
+						},
+					},
+					{
+						$facet: {
+							sortedResults: [{
+								$sort: actualSort,
+							}, {
+								$skip: offset,
+							}, {
+								$limit: count,
+							}],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+						},
+					},
+				])
+				.toArray(),
+		);
+
+		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: Users.find(query).count(),
+			total,
 		});
 	},
 });
@@ -420,12 +456,20 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+							method: 'users.setStatus',
+						});
+					}
+
 					Meteor.users.update(user._id, {
 						$set: {
 							status,
 							statusDefault: status,
 						},
 					});
+
 					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -572,7 +616,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				showMessageInMainThread: Match.Maybe(Boolean),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
-				hideAvatars: Match.Maybe(Boolean),
+				displayAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
 				language: Match.Maybe(String),
@@ -580,9 +624,8 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarShowUnread: Match.Optional(Boolean),
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
-				sidebarHideAvatar: Match.Optional(Boolean),
+				sidebarDisplayAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
-				sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
@@ -722,7 +765,8 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			this.logger.error('[2fa] User was not found when requesting 2fa email code');
+			return API.v1.success();
 		}
 
 		emailCheck.sendEmailCode(getUserForCheck(userId));
@@ -872,5 +916,39 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 		Promise.await(resetTOTP(user._id, true));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.listTeams', { authRequired: true }, {
+	get() {
+		const { userId } = this.bodyParams;
+
+		// If the caller has permission to view all teams, there's no need to filter the teams
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+
+		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
+
+		return API.v1.success({
+			teams,
+		});
+	},
+});
+
+API.v1.addRoute('users.logout', { authRequired: true }, {
+	post() {
+		const userId = this.bodyParams.userId || this.userId;
+
+		if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
+			return API.v1.unauthorized();
+		}
+
+		// this method logs the user out automatically, if successful returns 1, otherwise 0
+		if (!Users.removeResumeService(userId)) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		return API.v1.success({
+			message: `User ${ userId } has been logged out!`,
+		});
 	},
 });

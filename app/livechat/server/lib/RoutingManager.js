@@ -13,7 +13,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
 export const RoutingManager = {
@@ -43,9 +43,9 @@ export const RoutingManager = {
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
-	async delegateInquiry(inquiry, agent) {
+	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 
@@ -53,7 +53,7 @@ export const RoutingManager = {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		return this.takeInquiry(inquiry, agent);
+		return this.takeInquiry(inquiry, agent, options);
 	},
 
 	assignAgent(inquiry, agent) {
@@ -101,8 +101,8 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);
+			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -110,7 +110,7 @@ export const RoutingManager = {
 		return true;
 	},
 
-	async takeInquiry(inquiry, agent) {
+	async takeInquiry(inquiry, agent, options = { clientAction: false }) {
 		check(agent, Match.ObjectIncluding({
 			agentId: String,
 			username: String,
@@ -128,13 +128,17 @@ export const RoutingManager = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId) {
+		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
 			return room;
 		}
 
-		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', agent, inquiry);
+		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
-			return null;
+			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
+		}
+
+		if (room.onHold) {
+			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
 		LivechatInquiry.takeInquiry(_id);
@@ -165,6 +169,18 @@ export const RoutingManager = {
 
 		dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
+	},
+
+	removeAllRoomSubscriptions(room, ignoreUser) {
+		const { _id: roomId } = room;
+
+		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		subscriptions?.forEach(({ u }) => {
+			if (ignoreUser && ignoreUser._id === u._id) {
+				return;
+			}
+			removeAgentFromSubscription(roomId, u);
+		});
 	},
 };
 
