@@ -154,7 +154,7 @@
 		"@nivo/bar": "0.73.1",
 		"@nivo/core": "0.73.0",
 		"@nivo/heatmap": "0.73.0",
-		"@nivo/line": "0.73.0",
+		"@nivo/line": "0.62.0",
 		"@nivo/pie": "0.73.0",
 		"@rocket.chat/apps-engine": "1.27.1",
 		"@rocket.chat/css-in-js": "^0.28.0",
