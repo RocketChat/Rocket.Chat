@@ -27,7 +27,7 @@ const DefaultParentRoomField = ({
 	}
 
 	if (!value || !value.room) {
-		return <Callout type={'error'}>{t('Error')}</Callout>;
+		return <Callout type={'danger'}>{t('Error')}</Callout>;
 	}
 
 	return (
