@@ -63563,6 +63563,81 @@
           ]
         }
       ]
+    },
+    "3.16.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22815",
+          "title": "Release 3.16.4",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.17.0-rc.6": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22794",
+          "title": "Regression: Data in the \"Active Users\" section is delayed in 1 day",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix 1 day delay in the Engagement Dashboard's \"Active Users\" section;\r\n- Downgrade `@nivo/line` version.\r\n**Expected behavior:**\r\n![active-users-engagement-dashboard](https://user-images.githubusercontent.com/36537004/127372185-390dc42f-bc90-4841-a22b-731f0aafcafe.PNG)",
+          "contributors": [
+            "matheusbsilva137",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22815",
+          "title": "Release 3.16.4",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22822",
+          "title": "Bump: Fuselage 0.28.0",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22811",
+          "title": "Regression: Small UI changes Federation",
+          "userLogin": "alansikora",
+          "contributors": [
+            "alansikora",
+            "murtaza98",
+            "tiagoevanp",
+            "matheusbsilva137",
+            "pierre-lehnen-rc",
+            "ggazzo",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
