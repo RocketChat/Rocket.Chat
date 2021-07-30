@@ -1,13 +1,15 @@
 import { Meteor } from 'meteor/meteor';
+import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models';
-import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
+import { Rooms, Subscriptions, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
@@ -385,17 +387,17 @@ API.v1.addRoute('channels.history', { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', {
-				rid: findResult._id,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-			});
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult._id,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {
@@ -575,29 +577,31 @@ API.v1.addRoute('channels.members', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { offset, count } = this.getPaginationItems();
+		const { offset: skip, count: limit } = this.getPaginationItems();
 		const { sort = {} } = this.parseJsonQuery();
 
-		const subscriptions = Subscriptions.findByRoomId(findResult._id, {
-			fields: { 'u._id': 1 },
-			sort: { 'u.username': sort.username != null ? sort.username : 1 },
-			skip: offset,
-			limit: count,
+		check(this.queryParams, Match.ObjectIncluding({
+			status: Match.Maybe([String]),
+			filter: Match.Maybe(String),
+		}));
+		const { status, filter } = this.queryParams;
+
+		const cursor = findUsersOfRoom({
+			rid: findResult._id,
+			...status && { status: { $in: status } },
+			skip,
+			limit,
+			filter,
+			...sort?.username && { sort: { username: sort.username } },
 		});
 
-		const total = subscriptions.count();
-
-		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
-
-		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
-			sort: { username: sort.username != null ? sort.username : 1 },
-		}).fetch();
+		const total = cursor.count();
+		const members = cursor.fetch();
 
 		return API.v1.success({
-			members: users,
-			count: users.length,
-			offset,
+			members,
+			count: members.length,
+			offset: skip,
 			total,
 		});
 	},
@@ -672,12 +676,21 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 API.v1.addRoute('channels.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
+		if (!query || Object.keys(query).length === 0) {
+			return API.v1.failure('Invalid query');
+		}
+
 		const ourQuery = Object.assign({}, query, { t: 'c' });
 
 		const room = Rooms.findOne(ourQuery);
-
 		if (room == null) {
 			return API.v1.failure('Channel does not exists');
+		}
+
+		const user = this.getLoggedInUser();
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const online = Users.findUsersNotOffline({

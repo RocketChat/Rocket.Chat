@@ -1,18 +1,14 @@
-import { HTML } from 'meteor/htmljs';
-
-import { createTemplateForComponent } from '../../reactAdapters';
 import { createRouteGroup } from '../../lib/createRouteGroup';
 
-createTemplateForComponent('omnichannelFlex', () => import('./sidebar/OmnichannelSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
-});
-
-export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () => import('./OmnichannelRouter'));
+export const registerOmnichannelRoute = createRouteGroup('omnichannel', '/omnichannel', () =>
+	import('./OmnichannelRouter'),
+);
 
 registerOmnichannelRoute('/installation', {
 	name: 'omnichannel-installation',
 	lazyRouteComponent: () => import('./installation/Installation'),
 });
+
 registerOmnichannelRoute('/managers', {
 	name: 'omnichannel-managers',
 	lazyRouteComponent: () => import('./managers/ManagersRoute'),
@@ -25,7 +21,7 @@ registerOmnichannelRoute('/agents/:context?/:id?', {
 
 registerOmnichannelRoute('/webhooks', {
 	name: 'omnichannel-webhooks',
-	lazyRouteComponent: () => import('./webhooks/WebhooksPage'),
+	lazyRouteComponent: () => import('./webhooks/WebhooksPageContainer'),
 });
 
 registerOmnichannelRoute('/customfields/:context?/:id?', {
@@ -35,17 +31,12 @@ registerOmnichannelRoute('/customfields/:context?/:id?', {
 
 registerOmnichannelRoute('/appearance', {
 	name: 'omnichannel-appearance',
-	lazyRouteComponent: () => import('./appearance/AppearancePage'),
+	lazyRouteComponent: () => import('./appearance/AppearancePageContainer'),
 });
 
 registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {
 	name: 'omnichannel-businessHours',
 	lazyRouteComponent: () => import('./businessHours/BusinessHoursRouter'),
-});
-
-registerOmnichannelRoute('/managers', {
-	name: 'omnichannel-managers',
-	lazyRouteComponent: () => import('./managers/ManagersRoute'),
 });
 
 registerOmnichannelRoute('/units/:context?/:id?', {
@@ -70,7 +61,7 @@ registerOmnichannelRoute('/triggers/:context?/:id?', {
 
 registerOmnichannelRoute('/facebook', {
 	name: 'omnichannel-facebook',
-	lazyRouteComponent: () => import('./facebook/FacebookPage'),
+	lazyRouteComponent: () => import('./facebook/FacebookPageContainer'),
 });
 
 registerOmnichannelRoute('/current', {

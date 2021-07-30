@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
+import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
@@ -7,13 +7,19 @@ import {
 	useEditableSettingsDispatch,
 } from '../../../contexts/EditableSettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { Setting } from './Setting';
+import SectionSkeleton from './SectionSkeleton';
+import Setting from './Setting';
 
-export function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
-	const editableSettings = useEditableSettings(useMemo(() => ({
-		group: groupId,
-		section: sectionName,
-	}), [groupId, sectionName]));
+function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
+	const editableSettings = useEditableSettings(
+		useMemo(
+			() => ({
+				group: groupId,
+				section: sectionName,
+			}),
+			[groupId, sectionName],
+		),
+	);
 
 	const changed = useMemo(
 		() => editableSettings.some(({ changed }) => changed),
@@ -21,7 +27,10 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 	);
 
 	const canReset = useMemo(
-		() => editableSettings.some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)),
+		() =>
+			editableSettings.some(
+				({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue),
+			),
 		[editableSettings],
 	);
 
@@ -36,8 +45,8 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 					value: packageValue,
 					editor: packageEditor,
 					changed:
-						JSON.stringify(value) !== JSON.stringify(packageValue)
-						|| JSON.stringify(editor) !== JSON.stringify(packageEditor),
+						JSON.stringify(value) !== JSON.stringify(packageValue) ||
+						JSON.stringify(editor) !== JSON.stringify(packageEditor),
 				})),
 		);
 	});
@@ -48,39 +57,38 @@ export function Section({ children, groupId, hasReset = true, help, sectionName,
 		reset();
 	};
 
-	return <Accordion.Item
-		data-qa-section={sectionName}
-		noncollapsible={solo || !sectionName}
-		title={sectionName && t(sectionName)}
-	>
-		{help && <Box is='p' color='hint' fontScale='p1'>{help}</Box>}
+	return (
+		<Accordion.Item
+			data-qa-section={sectionName}
+			noncollapsible={solo || !sectionName}
+			title={sectionName && t(sectionName)}
+		>
+			{help && (
+				<Box is='p' color='hint' fontScale='p1'>
+					{help}
+				</Box>
+			)}
 
-		<FieldGroup>
-			{editableSettings.map((setting) => <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />)}
+			<FieldGroup>
+				{editableSettings.map((setting) => (
+					<Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />
+				))}
 
-
-			{children}
-		</FieldGroup>
-		{hasReset && canReset && <Button
-			children={t('Reset_section_settings')}
-			danger
-			marginBlockStart={'x16'}
-			data-section={sectionName}
-			onClick={handleResetSectionClick}
-		/>}
-	</Accordion.Item>;
+				{children}
+			</FieldGroup>
+			{hasReset && canReset && (
+				<Button
+					children={t('Reset_section_settings')}
+					danger
+					marginBlockStart={'x16'}
+					data-section={sectionName}
+					onClick={handleResetSectionClick}
+				/>
+			)}
+		</Accordion.Item>
+	);
 }
 
-export function SectionSkeleton() {
-	return <Accordion.Item noncollapsible title={<Skeleton />}>
-		<Box is='p' color='hint' fontScale='p1'>
-			<Skeleton />
-		</Box>
-
-		<FieldGroup>
-			{Array.from({ length: 10 }).map((_, i) => <Setting.Skeleton key={i} />)}
-		</FieldGroup>
-	</Accordion.Item>;
-}
-
-Section.Skeleton = SectionSkeleton;
+export default Object.assign(Section, {
+	Skeleton: SectionSkeleton,
+});

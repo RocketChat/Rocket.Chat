@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { useState, useCallback } from 'react';
 
-import { StepOne, StepTwo, StepThree } from '.';
+import { StepOne, StepTwo } from '.';
+
+const STEPS = { LIST_ROOMS: 'LIST_ROOMS', CONFIRM_DELETE: 'CONFIRM_DELETE' };
 
 export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
-	const [step, setStep] = useState(1);
+	const hasRooms = rooms?.length > 0;
+
+	const [step, setStep] = useState(hasRooms ? STEPS.LIST_ROOMS : STEPS.CONFIRM_DELETE);
 	const [deletedRooms, setDeletedRooms] = useState({});
 	const [keptRooms, setKeptRooms] = useState({});
 
-	const onContinue = useMutableCallback(() => {
-		if (step === 1 && rooms.length === 0) {
-			return setStep(3);
-		}
-		setStep(step + 1);
-	});
+	const onContinue = useCallback(() => {
+		setStep(STEPS.CONFIRM_DELETE);
+	}, [setStep]);
 
-	const onReturn = useMutableCallback(() => {
-		if (step === 3 && rooms.length === 0) {
-			return setStep(1);
-		}
-		setStep(step - 1);
-	});
+	const onReturn = useCallback(() => {
+		setStep(STEPS.LIST_ROOMS);
+	}, [setStep]);
 
 	const onChangeRoomSelection = useMutableCallback((room) => {
 		if (deletedRooms[room._id]) {
-			setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: undefined }));
+			setDeletedRooms((deletedRooms) => {
+				delete deletedRooms[room._id];
+				return { ...deletedRooms };
+			});
 			return;
 		}
 		setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: room }));
@@ -38,13 +39,27 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 	});
 
 	const onSelectRooms = useMutableCallback(() => {
-		const keptRooms = Object.fromEntries(rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]));
+		const keptRooms = Object.fromEntries(
+			rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]),
+		);
 		setKeptRooms(keptRooms);
 		onContinue();
 	});
 
-	if (step === 2) {
-		return <StepTwo
+	if (step === STEPS.CONFIRM_DELETE) {
+		return (
+			<StepTwo
+				onConfirm={onConfirm}
+				onReturn={hasRooms && onReturn}
+				onCancel={onCancel}
+				deletedRooms={deletedRooms}
+				keptRooms={keptRooms}
+			/>
+		);
+	}
+
+	return (
+		<StepOne
 			rooms={rooms}
 			onCancel={onCancel}
 			params={{}}
@@ -53,21 +68,8 @@ export const DeleteTeamModal = ({ onCancel, onConfirm, rooms }) => {
 			onChangeParams={(...args) => console.log(args)}
 			onConfirm={onSelectRooms}
 			onChangeRoomSelection={onChangeRoomSelection}
-		/>;
-	}
-
-	if (step === 3) {
-		return <StepThree
-			onConfirm={onConfirm}
-			onReturn={onReturn}
-			onCancel={onCancel}
-			deletedRooms={deletedRooms}
-			keptRooms={keptRooms}
-		/>;
-	}
-
-	return <StepOne onConfirm={onContinue} onCancel={onCancel} />;
+		/>
+	);
 };
-
 
 export default DeleteTeamModal;

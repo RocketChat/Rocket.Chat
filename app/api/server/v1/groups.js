@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
-import { Match } from 'meteor/check';
+import { Match, check } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
@@ -8,6 +8,7 @@ import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -23,6 +24,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 			fname: 1,
 			prid: 1,
 			archived: 1,
+			broadcast: 1,
 		},
 	};
 	const room = params.roomId
@@ -54,6 +56,7 @@ export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = t
 		ro: room.ro,
 		t: room.t,
 		name: roomName,
+		broadcast: room.broadcast,
 	};
 }
 
@@ -356,9 +359,17 @@ API.v1.addRoute('groups.history', { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, offset, count, unreads });
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult.rid,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {
@@ -491,36 +502,40 @@ API.v1.addRoute('groups.listAll', { authRequired: true }, {
 
 API.v1.addRoute('groups.members', { authRequired: true }, {
 	get() {
-		const findResult = findPrivateGroupByIdOrName({ params: this.requestParams(), userId: this.userId });
-		const room = Rooms.findOneById(findResult.rid, { fields: { broadcast: 1 } });
+		const findResult = findPrivateGroupByIdOrName({
+			params: this.requestParams(),
+			userId: this.userId,
+		});
 
-		if (room.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
+		if (findResult.broadcast && !hasPermission(this.userId, 'view-broadcast-member-list')) {
 			return API.v1.unauthorized();
 		}
 
-		const { offset, count } = this.getPaginationItems();
+		const { offset: skip, count: limit } = this.getPaginationItems();
 		const { sort = {} } = this.parseJsonQuery();
 
-		const subscriptions = Subscriptions.findByRoomId(findResult.rid, {
-			fields: { 'u._id': 1 },
-			sort: { 'u.username': sort.username != null ? sort.username : 1 },
-			skip: offset,
-			limit: count,
+		check(this.queryParams, Match.ObjectIncluding({
+			status: Match.Maybe([String]),
+			filter: Match.Maybe(String),
+		}));
+		const { status, filter } = this.queryParams;
+
+		const cursor = findUsersOfRoom({
+			rid: findResult.rid,
+			...status && { status: { $in: status } },
+			skip,
+			limit,
+			filter,
+			...sort?.username && { sort: { username: sort.username } },
 		});
 
-		const total = subscriptions.count();
-
-		const members = subscriptions.fetch().map((s) => s.u && s.u._id);
-
-		const users = Users.find({ _id: { $in: members } }, {
-			fields: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1 },
-			sort: { username: sort.username != null ? sort.username : 1 },
-		}).fetch();
+		const total = cursor.count();
+		const members = cursor.fetch();
 
 		return API.v1.success({
-			members: users,
-			count: users.length,
-			offset,
+			members,
+			count: members.length,
+			offset: skip,
 			total,
 		});
 	},
@@ -553,12 +568,22 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 API.v1.addRoute('groups.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
+		if (!query || Object.keys(query).length === 0) {
+			return API.v1.failure('Invalid query');
+		}
+
 		const ourQuery = Object.assign({}, query, { t: 'p' });
 
 		const room = Rooms.findOne(ourQuery);
 
 		if (room == null) {
 			return API.v1.failure('Group does not exists');
+		}
+
+		const user = this.getLoggedInUser();
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const online = Users.findUsersNotOffline({

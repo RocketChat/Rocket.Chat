@@ -1,39 +1,42 @@
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
-import ChannelDeletionTable from './ChannelDeletionTable';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import RoomLinkList from '../../RoomLinkList';
 
-export const StepTwo = ({
-	rooms,
-	// params,
-	// onChangeParams,
-	onToggleAllRooms,
-	onChangeRoomSelection,
-	onConfirm,
-	onCancel,
-	selectedRooms,
-}) => {
+export const StepTwo = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }) => {
 	const t = useTranslation();
 
-	return <GenericModal
-		variant='warning'
-		title={t('Teams_about_the_channels')}
-		onConfirm={onConfirm}
-		onCancel={onCancel}
-		onClose={onCancel}
-		confirmText={t('Continue')}
-	>
-		{t('Teams_delete_team_choose_channels')}
-		<ChannelDeletionTable
-			onToggleAllRooms={onToggleAllRooms}
-			rooms={rooms}
-			params={{}}
-			onChangeParams={() => {}}
-			onChangeRoomSelection={onChangeRoomSelection}
-			selectedRooms={selectedRooms}
-		/>
-	</GenericModal>;
+	return (
+		<GenericModal
+			variant='danger'
+			icon='trash'
+			title={t('Deleting')}
+			onConfirm={() => onConfirm(Object.values(deletedRooms).map(({ _id }) => _id))}
+			onCancel={onReturn}
+			confirmText={t('Remove')}
+			cancelText={t('Back')}
+			onClose={onCancel}
+		>
+			<p>{t('Teams_delete_team')}</p>
+			{!!Object.values(deletedRooms).length && (
+				<>
+					<br />
+					<p>
+						{t('Teams_deleted_channels')} <RoomLinkList rooms={deletedRooms} />
+					</p>
+				</>
+			)}
+			{!!Object.values(keptRooms).length && (
+				<>
+					<br />
+					<p>
+						{t('Teams_kept_channels')} <RoomLinkList rooms={keptRooms} />
+					</p>
+				</>
+			)}
+		</GenericModal>
+	);
 };
 
 export default StepTwo;

@@ -8,8 +8,9 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function UsersByTimeOfTheDaySection() {
+const UsersByTimeOfTheDaySection = ({ timezone }) => {
 	const t = useTranslation();
+	const utc = timezone === 'utc';
 
 	const periodOptions = useMemo(() => [
 		['last 7 days', t('Last_7_days')],
@@ -23,23 +24,35 @@ export function UsersByTimeOfTheDaySection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days')
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
+					end: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days')
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+					end: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days')
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
+					end: utc
+						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
 				};
 		}
-	}, [periodId]);
+	}, [periodId, utc]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
@@ -68,7 +81,9 @@ export function UsersByTimeOfTheDaySection() {
 		}));
 
 		for (const { users, hour, day, month, year } of data.week) {
-			const date = moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
+			const date = utc
+				? moment.utc([year, month - 1, day, 0, 0, 0, 0]).toISOString()
+				: moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
 			values[hour][date] += users;
 		}
 
@@ -76,7 +91,7 @@ export function UsersByTimeOfTheDaySection() {
 			dates.map((date) => date.toISOString()),
 			values,
 		];
-	}, [data, period.end, period.start]);
+	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
 		const _data = data.week.map(({
@@ -101,7 +116,11 @@ export function UsersByTimeOfTheDaySection() {
 			? <Box display='flex' style={{ height: 696 }}>
 				<Flex.Item align='stretch' grow={1} shrink={0}>
 					<Box style={{ position: 'relative' }}>
-						<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+						<Box style={{
+							position: 'absolute',
+							width: '100%',
+							height: '100%',
+						}}>
 							<ResponsiveHeatMap
 								data={values}
 								indexBy='hour'
@@ -177,4 +196,6 @@ export function UsersByTimeOfTheDaySection() {
 			</Box>
 			: <Skeleton variant='rect' height={696} />}
 	</Section>;
-}
+};
+
+export default UsersByTimeOfTheDaySection;

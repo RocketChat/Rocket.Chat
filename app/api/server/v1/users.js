@@ -255,28 +255,28 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 						},
 					},
 					{
-						$skip: offset,
-					},
-					{
-						$limit: count,
-					},
-					{
 						$facet: {
-							sortedResults: [{ $sort: actualSort }],
-							totalCount: [{ $count: 'value' }],
+							sortedResults: [{
+								$sort: actualSort,
+							}, {
+								$skip: offset,
+							}, {
+								$limit: count,
+							}],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
 				])
 				.toArray(),
 		);
 
-		const { sortedResults: users, totalCount } = result[0];
+		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
 
 		return API.v1.success({
 			users,
 			count: users.length,
 			offset,
-			total: totalCount[0].value,
+			total,
 		});
 	},
 });
@@ -456,12 +456,20 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+							method: 'users.setStatus',
+						});
+					}
+
 					Meteor.users.update(user._id, {
 						$set: {
 							status,
 							statusDefault: status,
 						},
 					});
+
 					setUserStatus(user, status);
 				} else {
 					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
@@ -608,7 +616,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				showMessageInMainThread: Match.Maybe(Boolean),
 				hideUsernames: Match.Maybe(Boolean),
 				hideRoles: Match.Maybe(Boolean),
-				hideAvatars: Match.Maybe(Boolean),
+				displayAvatars: Match.Maybe(Boolean),
 				hideFlexTab: Match.Maybe(Boolean),
 				sendOnEnter: Match.Maybe(String),
 				language: Match.Maybe(String),
@@ -616,9 +624,8 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				sidebarShowUnread: Match.Optional(Boolean),
 				sidebarSortby: Match.Optional(String),
 				sidebarViewMode: Match.Optional(String),
-				sidebarHideAvatar: Match.Optional(Boolean),
+				sidebarDisplayAvatar: Match.Optional(Boolean),
 				sidebarGroupByType: Match.Optional(Boolean),
-				sidebarShowDiscussion: Match.Optional(Boolean),
 				muteFocusedConversations: Match.Optional(Boolean),
 			}),
 		});
@@ -923,6 +930,25 @@ API.v1.addRoute('users.listTeams', { authRequired: true }, {
 
 		return API.v1.success({
 			teams,
+		});
+	},
+});
+
+API.v1.addRoute('users.logout', { authRequired: true }, {
+	post() {
+		const userId = this.bodyParams.userId || this.userId;
+
+		if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
+			return API.v1.unauthorized();
+		}
+
+		// this method logs the user out automatically, if successful returns 1, otherwise 0
+		if (!Users.removeResumeService(userId)) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		return API.v1.success({
+			message: `User ${ userId } has been logged out!`,
 		});
 	},
 });

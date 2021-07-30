@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -119,6 +120,14 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
@@ -135,7 +144,7 @@ export class UsersRaw extends BaseRaw {
 			roles: roleName,
 		};
 
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
 	getDistinctFederationDomains() {
@@ -154,6 +163,7 @@ export class UsersRaw extends BaseRaw {
 							$and: [
 								{ $eq: ['$u._id', '$$id'] },
 								{ $eq: ['$open', true] },
+								{ $ne: ['$onHold', true] },
 								{ ...department && { $eq: ['$department', department] } },
 							],
 						},
@@ -164,6 +174,29 @@ export class UsersRaw extends BaseRaw {
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
 			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
 			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
+		];
+
+		if (department) {
+			aggregate.push({ $unwind: '$departments' });
+			aggregate.push({ $match: { 'departments.departmentId': department } });
+		}
+
+		aggregate.push({ $limit: 1 });
+
+		const [agent] = await this.col.aggregate(aggregate).toArray();
+		if (agent) {
+			await this.setLastRoutingTime(agent.agentId);
+		}
+
+		return agent;
+	}
+
+	async getLastAvailableAgentRouted(department, ignoreAgentId) {
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
+			{ $sort: { lastRoutingTime: 1, username: 1 } },
 		];
 
 		if (department) {

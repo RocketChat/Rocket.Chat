@@ -206,7 +206,8 @@ export class CachedCollection extends Emitter {
 			}
 		});
 
-		this.collection._collection._docs._map = Object.fromEntries(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
@@ -275,14 +276,17 @@ export class CachedCollection extends Emitter {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
 					room = ChatRoom.findOne(record.rid);
-					this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					if (room) {
+						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					}
 				} else {
 					room = this.collection.findOne({
 						_id: record._id,
 					});
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					room.name && RoomManager.close(room.t + room.name);
+					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {

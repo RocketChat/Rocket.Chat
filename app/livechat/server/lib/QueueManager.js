@@ -41,7 +41,8 @@ export const QueueManager = {
 		LivechatRooms.updateRoomCount();
 
 		await queueInquiry(room, inquiry, agent);
-		return room;
+
+		return LivechatRooms.findOneById(rid);
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
@@ -61,7 +62,7 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUsername(servedBy.username)) {
+		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 

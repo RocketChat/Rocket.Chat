@@ -13,14 +13,16 @@ export class CannedResponse extends Base {
 		});
 	}
 
-	createOrUpdateCannedResponse(_id, { shortcut, text, scope, userId, departmentId, createdBy }) {
+	createOrUpdateCannedResponse(_id, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }) {
 		const record = {
 			shortcut,
 			text,
 			scope,
+			tags,
 			userId,
 			departmentId,
 			createdBy,
+			_createdAt,
 		};
 
 		if (_id) {
@@ -35,6 +37,14 @@ export class CannedResponse extends Base {
 	// FIND
 	findOneById(_id, options) {
 		const query = { _id };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByShortcut(shortcut, options) {
+		const query = {
+			shortcut,
+		};
 
 		return this.findOne(query, options);
 	}

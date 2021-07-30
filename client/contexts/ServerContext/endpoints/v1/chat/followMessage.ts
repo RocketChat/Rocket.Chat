@@ -6,4 +6,4 @@ export type FollowMessageEndpoint = {
 		statusCode: 200;
 		body: {};
 	};
-}
+};

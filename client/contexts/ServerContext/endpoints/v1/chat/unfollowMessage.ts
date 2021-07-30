@@ -6,4 +6,4 @@ export type UnfollowMessageEndpoint = {
 		statusCode: 200;
 		body: {};
 	};
-}
+};

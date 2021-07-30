@@ -35,6 +35,34 @@ export interface ISubscription extends IRocketChatRecord {
 	roles?: string[];
 
 	onHold?: boolean;
+	encrypted?: boolean;
+	E2EKey?: string;
+	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
+
+
+	fname?: unknown;
+
+	code?: unknown;
+	archived?: unknown;
+	audioNotifications?: unknown;
+	audioNotificationValue?: unknown;
+	desktopNotifications?: unknown;
+	mobilePushNotifications?: unknown;
+	emailNotifications?: unknown;
+	blocked?: unknown;
+	blocker?: unknown;
+	autoTranslate?: unknown;
+	autoTranslateLanguage?: unknown;
+	disableNotifications?: unknown;
+	muteGroupMentions?: unknown;
+	ignored?: unknown;
+
+	department?: unknown;
+	v?: unknown;
+}
+
+export interface IOmnichannelSubscription extends ISubscription {
+	department?: string; // TODO REMOVE/DEPRECATE no need keeo in both room and subscription
 }
 
 export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {

@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 
-import { createEphemeralPortal } from '../../../../client/reactAdapters';
+import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
 
 const Dep = new Tracker.Dependency();
 
@@ -28,14 +28,14 @@ export const closeTooltip = () => {
 	unregister = unregister && unregister();
 };
 
-export const openToolTip = async (title, anchor) => {
+export const openToolTip = (title, anchor) => {
 	dom = dom || createAnchor();
 	state = {
 		title,
 		anchor,
 	};
 	Dep.changed();
-	unregister = unregister || await createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
+	unregister = unregister || createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
 };
 
 document.body.addEventListener('mouseover', (() => {
@@ -45,11 +45,11 @@ document.body.addEventListener('mouseover', (() => {
 		timeout = setTimeout(() => {
 			const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
 			if (element) {
-				element.dataset.title = element.dataset.title || element.title;
+				element.dataset.title = element.title || element.dataset.title;
 				element.removeAttribute('title');
 				openToolTip(element.dataset.title, element);
 			}
-		}, 1000);
+		}, 300);
 		closeTooltip();
 	};
 })());

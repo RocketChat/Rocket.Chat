@@ -16,7 +16,9 @@ export const equals = <T>(a: T, b: T): boolean => {
 	}
 
 	if (a instanceof Uint8Array && b instanceof Uint8Array) {
-		if (a.length !== b.length) { return false; }
+		if (a.length !== b.length) {
+			return false;
+		}
 		for (let i = 0; i < a.length; i++) {
 			if (a[i] !== b[i]) {
 				return false;
