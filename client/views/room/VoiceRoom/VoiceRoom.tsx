@@ -15,7 +15,6 @@ import { IRoom } from '../../../../definition/IRoom';
 import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useUserRoom } from '../../../contexts/UserContext';
 import VoicePeersList from './VoicePeersList';
 
 interface IVoiceRoom {
@@ -23,13 +22,12 @@ interface IVoiceRoom {
 	rid: string;
 }
 
-const VoiceRoom: FC<IVoiceRoom> = ({ rid }): ReactElement => {
+const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 	const state = useVoiceChannel();
 	const mediasoupPeers = useMediasoupPeers();
 	const wsPeers = useWsPeers();
 	const muted = useVoiceChannelMic();
 	const deafen = useVoiceChannelDeafen();
-	const room = useUserRoom(rid);
 
 	const setModal = useSetModal();
 	const t = useTranslation();
@@ -44,11 +42,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid }): ReactElement => {
 
 	const join = (): void => VoiceRoomManager.joinRoom(rid);
 
-	const connectVoiceRoom = (): void => {
-		if (room) {
-			VoiceRoomManager.connect(rid, room);
-		}
-	};
+	const connectVoiceRoom = (): void => VoiceRoomManager.connect(rid, room);
 
 	const handleDisconnect = (): void => {
 		VoiceRoomManager.disconnect();
@@ -87,7 +81,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid }): ReactElement => {
 		connectVoiceRoom();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
-
+	console.log(state);
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
 			{(isWsState(state) ||
