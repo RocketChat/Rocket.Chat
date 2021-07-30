@@ -111,7 +111,7 @@ export class SAML {
 		if (!user) {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
-				active: true,
+				active,
 				globalRoles,
 				emails,
 				services: {
