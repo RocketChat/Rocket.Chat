@@ -169,7 +169,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 								{t('Federation_Legacy_support')}
 							</Tabs.Item>
 						</Tabs>
-						<Box style={{ marginTop: 30 }}>
+						<Box mbs='x24'>
 							{currentTab === 1 && (
 								<DNSRecords
 									federationSubdomain={federationSubdomain}
@@ -182,9 +182,13 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 							)}
 							{currentTab === 2 && (
 								<>
-									<Box style={{ marginBottom: 15 }}>
-										<b>{t('Federation_SRV_no_support')}</b>
-										<p style={{ marginTop: 8 }}>{t('Federation_SRV_no_support_details')}</p>
+									<Box mbe='x16'>
+										<Box is='p' fontWeight='c2' fontSize='p1'>
+											{t('Federation_SRV_no_support')}
+										</Box>
+										<Box is='p' mbs='x8' fontSize='x12'>
+											{t('Federation_SRV_no_support_details')}
+										</Box>
 									</Box>
 									<DNSRecords
 										federationSubdomain={federationSubdomain}
@@ -214,7 +218,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 			)}
 			<Modal.Footer>
 				{currentStep === 2 && (
-					<Box style={{ color: '#6C727A', marginTop: 9, fontSize: 12, float: 'left' }}>
+					<Box mbs='x8' color='hint' fontSize='x12' position='absolute'>
 						{t('Federation_DNS_info_update')}
 					</Box>
 				)}

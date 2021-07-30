@@ -171,28 +171,32 @@ export const DNSRecords: FC<{
 	return (
 		<>
 			<DNSText text={t('Federation_Must_add_records')} />
-			<DNSText text={t('Federation_SRV_records_2.0.0')} />
-			<Box style={{ marginTop: 10, marginBottom: 15 }}>
-				{srvDNSRecords.map((record: DNSRecord) => (
-					<DNSRecordItem key={record.title} record={record} />
-				))}
+			<Box mbs='x16'>
+				<DNSText text={t('Federation_SRV_records_200')} />
+				<Box mbs='x8'>
+					{srvDNSRecords.map((record: DNSRecord) => (
+						<DNSRecordItem key={record.title} record={record} />
+					))}
+				</Box>
 			</Box>
-			<DNSText text={t('Federation_Public_key_TXT_record')} />
-			<Box style={{ marginTop: 10 }}>
-				{txtDNSRecords.map((record: DNSRecord) => (
-					<DNSRecordItem key={record.title} record={record} />
-				))}
+			<Box mbs='x16'>
+				<DNSText text={t('Federation_Public_key_TXT_record')} />
+				<Box mbs='x8'>
+					{txtDNSRecords.map((record: DNSRecord) => (
+						<DNSRecordItem key={record.title} record={record} />
+					))}
+				</Box>
 			</Box>
 			{!legacy && (
-				<Box style={{ marginTop: 20, padding: 10, backgroundColor: '#F2F3F5' }}>
-					<p style={{ fontWeight: 'bold' }}>{t('Federation_HTTP_instead_HTTPS')}</p>
+				<Box mbs='x16' p='x16' bg='disabled' fontSize='x12'>
+					<Box fontWeight='c2'>{t('Federation_HTTP_instead_HTTPS')}</Box>
 					{t('Federation_HTTP_instead_HTTPS_details')}
 				</Box>
 			)}
 			{legacy && (
-				<Box style={{ marginTop: 15 }}>
+				<Box mbs='x16'>
 					<DNSText text={t('Federation_Protocol_TXT_record')} />
-					<Box style={{ marginTop: 10 }}>
+					<Box mbs='x8'>
 						{legacyTxtDNSRecords.map((record: DNSRecord) => (
 							<DNSRecordItem key={record.title} record={record} />
 						))}
