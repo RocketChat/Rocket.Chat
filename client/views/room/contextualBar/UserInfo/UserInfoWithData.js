@@ -32,12 +32,16 @@ function UserInfoWithData({
 
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
-	const { value, phase: state, error } = useEndpointData(
+	const {
+		value,
+		phase: state,
+		error,
+	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
-			uid,
-			username,
-		]),
+		useMemo(
+			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
+			[uid, username],
+		),
 	);
 
 	const user = useMemo(() => {

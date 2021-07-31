@@ -51,6 +51,7 @@ Meteor.startup(function() {
 		{ _id: 'join-without-join-code',             roles: ['admin', 'bot', 'app'] },
 		{ _id: 'leave-c',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
 		{ _id: 'leave-p',                            roles: ['admin', 'user', 'bot', 'anonymous', 'app'] },
+		{ _id: 'logout-other-user',                  roles: ['admin'] },
 		{ _id: 'manage-assets',                      roles: ['admin'] },
 		{ _id: 'manage-email-inbox',                 roles: ['admin'] },
 		{ _id: 'manage-emoji',                       roles: ['admin'] },
@@ -137,6 +138,8 @@ Meteor.startup(function() {
 		{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
 		{ _id: 'view-all-teams', roles: ['admin'] },
+		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'remove-livechat-department',  roles: ['livechat-manager', 'admin'] },
 	];
 
 	for (const permission of permissions) {

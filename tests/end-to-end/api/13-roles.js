@@ -31,6 +31,26 @@ function createRole(name, scope, description) {
 	});
 }
 
+function addUserToRole(roleName, username, scope) {
+	return new Promise((resolve) => {
+		request.post(api('roles.addUserToRole'))
+			.set(credentials)
+			.send({
+				roleName,
+				username,
+				roomId: scope,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end((err, req) => {
+				resolve(req.body.role);
+			});
+	});
+}
+
 describe('[Roles]', function() {
 	this.retries(0);
 
@@ -306,6 +326,113 @@ describe('[Roles]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.nested.property('error', 'Role name already exists [error-duplicate-role-names-not-allowed]');
+				})
+				.end(done);
+		});
+	});
+
+	describe('POST [/roles.delete]', () => {
+		let roleWithUser;
+		let roleWithoutUser;
+		before(async () => {
+			roleWithUser = await createRole(`roleWithUser-${ Date.now() }`, 'Users');
+			roleWithoutUser = await createRole(`roleWithoutUser-${ Date.now() }`, 'Users');
+
+			await addUserToRole(roleWithUser.name, login.user);
+		});
+
+		it('should delete a role that it is not being used', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: roleWithoutUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should NOT delete a role that it is protected', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: 'admin',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Cannot delete a protected role [error-role-protected]');
+				})
+				.end(done);
+		});
+
+		it('should NOT delete a role that it is being used', (done) => {
+			request.post(api('roles.delete'))
+				.set(credentials)
+				.send({
+					roleId: roleWithUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.nested.property('error', 'Cannot delete role because it\'s in use [error-role-in-use]');
+				})
+				.end(done);
+		});
+	});
+
+	describe('POST [/roles.removeUserFromRole]', () => {
+		let usersScopedRole;
+		let subscriptionsScopedRole;
+
+		before(async () => {
+			usersScopedRole = await createRole(`usersScopedRole-${ Date.now() }`, 'Users');
+			subscriptionsScopedRole = await createRole(`subscriptionsScopedRole-${ Date.now() }`, 'Subscriptions');
+
+			await addUserToRole(usersScopedRole.name, login.user);
+			await addUserToRole(subscriptionsScopedRole.name, login.user, 'GENERAL');
+		});
+
+		it('should unassign a role with User scope from an user', (done) => {
+			request.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleName: usersScopedRole.name,
+					username: login.user,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('role._id', usersScopedRole._id);
+					expect(res.body).to.have.nested.property('role.name', usersScopedRole.name);
+					expect(res.body).to.have.nested.property('role.scope', usersScopedRole.scope);
+					expect(res.body).to.have.nested.property('role.description', usersScopedRole.description);
+				})
+				.end(done);
+		});
+
+		it('should unassign a role with Subscriptions scope from an user', (done) => {
+			request.post(api('roles.removeUserFromRole'))
+				.set(credentials)
+				.send({
+					roleName: subscriptionsScopedRole.name,
+					username: login.user,
+					scope: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('role._id', subscriptionsScopedRole._id);
+					expect(res.body).to.have.nested.property('role.name', subscriptionsScopedRole.name);
+					expect(res.body).to.have.nested.property('role.scope', subscriptionsScopedRole.scope);
+					expect(res.body).to.have.nested.property('role.description', subscriptionsScopedRole.description);
 				})
 				.end(done);
 		});

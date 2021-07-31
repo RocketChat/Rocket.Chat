@@ -178,10 +178,15 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId) { // TODO: Create class Agent
+	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
+		// fetch all unavailable agents, and exclude them from the selection
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+			// limit query to remove booked agents
+			username: { $nin: unavailableAgents },
 		};
+
 		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
@@ -207,6 +212,79 @@ export class Users extends Base {
 		}
 		return null;
 	}
+
+	// get next agent ignoring the ones reached the max amount of active chats
+	getUnavailableAgents(departmentId, customFilter) {
+		const col = this.model.rawCollection();
+		// if department is provided, remove the agents that are not from the selected department
+		const departmentFilter = departmentId ? [{
+			$lookup: {
+				from: 'rocketchat_livechat_department_agent',
+				let: { departmentId: '$departmentId', agentId: '$agentId' },
+				pipeline: [{
+					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+				}, {
+					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+				}],
+				as: 'department',
+			},
+		}, {
+			$match: { department: { $size: 1 } },
+		}] : [];
+
+		return col.aggregate([
+			{
+				$match: {
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+				},
+			},
+			...departmentFilter,
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$project: {
+					agentId: '$_id',
+					'livechat.maxNumberSimultaneousChat': 1,
+					username: 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					'queueInfo.chats': {
+						$size: {
+							$filter: {
+								input: '$subs',
+								as: 'sub',
+								cond: {
+									$and: [
+										{ $eq: ['$$sub.t', 'l'] },
+										{ $eq: ['$$sub.open', true] },
+										{ $ne: ['$$sub.onHold', true] },
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+			...customFilter ? [customFilter] : [],
+			{
+				$sort: {
+					'queueInfo.chats': 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					username: 1,
+				},
+			},
+		]).toArray();
+	}
+
 
 	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {
@@ -1558,6 +1636,17 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	countActiveUsersByService(serviceName, options) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${ serviceName }`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
 	}
 
 	getActiveLocalUserCount() {

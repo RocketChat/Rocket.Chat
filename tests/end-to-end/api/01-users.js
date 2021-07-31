@@ -175,7 +175,7 @@ describe('[Users]', function() {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+						expect(res.body).to.have.property('error', `${ name } is blocked and can't be used! [error-blocked-username]`);
 					})
 					.end(done);
 			});
@@ -3104,6 +3104,58 @@ describe('[Users]', function() {
 					expect(teams[0].isOwner).to.not.be.eql(teams[1].isOwner);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.logout]', () => {
+		let user;
+		let otherUser;
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+		});
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+			user = undefined;
+		});
+
+		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
+			updatePermission('logout-other-user', []).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.send({ userId: otherUser._id })
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.end(done);
+				},
+			);
+		});
+
+		it('should logout other user', (done) => {
+			updatePermission('logout-other-user', ['admin']).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.send({ userId: otherUser._id })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end(done);
+				});
+		},
+		);
+
+		it('should logout the requester', (done) => {
+			updatePermission('logout-other-user', []).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end(done);
+				},
+			);
 		});
 	});
 });
