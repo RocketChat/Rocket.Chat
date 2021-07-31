@@ -58,9 +58,10 @@ function AdminUserInformationStep({ step, title, active }) {
 	};
 
 	const regexpForUsernameValidation = useSetting('UTF8_Names_Validation');
-	const usernameRegExp = useMemo(() => new RegExp(`^${regexpForUsernameValidation}$`), [
-		regexpForUsernameValidation,
-	]);
+	const usernameRegExp = useMemo(
+		() => new RegExp(`^${regexpForUsernameValidation}$`),
+		[regexpForUsernameValidation],
+	);
 	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 
 	const [name, setName] = useState('');
@@ -71,12 +72,10 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
 
-	const isContinueEnabled = useMemo(() => name && username && email && password, [
-		name,
-		username,
-		email,
-		password,
-	]);
+	const isContinueEnabled = useMemo(
+		() => name && username && email && password,
+		[name, username, email, password],
+	);
 
 	const [commiting, setCommiting] = useState(false);
 

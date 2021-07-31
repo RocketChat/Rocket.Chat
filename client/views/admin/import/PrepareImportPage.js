@@ -58,9 +58,10 @@ function PrepareImportPage() {
 	const [isImporting, setImporting] = useSafely(useState(false));
 
 	const usersCount = useMemo(() => users.filter(({ do_import }) => do_import).length, [users]);
-	const channelsCount = useMemo(() => channels.filter(({ do_import }) => do_import).length, [
-		channels,
-	]);
+	const channelsCount = useMemo(
+		() => channels.filter(({ do_import }) => do_import).length,
+		[channels],
+	);
 
 	const importHistoryRoute = useRoute('admin-import');
 	const newImportRoute = useRoute('admin-import-new');

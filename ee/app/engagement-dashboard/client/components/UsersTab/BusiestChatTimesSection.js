@@ -8,15 +8,20 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { Section } from '../Section';
 
-const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }) => {
 	const t = useTranslation();
 	const isLgScreen = useBreakpoints().includes('lg');
+	const utc = timezone === 'utc';
 
-	const currentDate = useMemo(() =>
-		moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-			.subtract(1).subtract(displacement, 'days'), [displacement]);
+	const currentDate = useMemo(() => {
+		if (utc) {
+			return moment().utc({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').subtract(displacement, 'days');
+		}
+		return moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1).subtract(displacement, 'days');
+	}, [displacement, utc]);
+
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/hourly-data', useMemo(() => params, [params]));
 	const values = useMemo(() => {
 		if (!data) {
 			return [];
@@ -99,11 +104,10 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick })
 									},
 								},
 								tooltip: {
-									container: {
-										backgroundColor: '#1F2329',
-										boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-										borderRadius: 2,
-									},
+									backgroundColor: '#1F2329',
+									boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+									borderRadius: 2,
+									padding: 4,
 								},
 							}}
 							tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
@@ -117,17 +121,23 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick })
 	</>;
 };
 
-const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick }) => {
-	const currentDate = useMemo(() => moment.utc().subtract(displacement, 'weeks'), [displacement]);
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }) => {
+	const utc = timezone === 'utc';
+	const currentDate = useMemo(() => {
+		if (utc) {
+			return moment.utc().subtract(displacement, 'weeks');
+		}
+		return moment().subtract(displacement, 'weeks');
+	}, [displacement, utc]);
 	const formattedCurrentDate = useMemo(() => {
 		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
 		return `${ startOfWeekDate.format('L') } - ${ currentDate.format('L') }`;
 	}, [currentDate]);
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/chat-busier/weekly-data', useMemo(() => params, [params]));
 	const values = useMemo(() => (data ? data.month.map(({ users, day, month, year }) => ({
 		users,
-		day: String(moment.utc([year, month - 1, day, 0, 0, 0]).valueOf()),
+		day: String(moment({ year, month: month - 1, day }).valueOf()),
 	})).sort(({ day: a }, { day: b }) => a - b) : []), [data]);
 
 	return <>
@@ -214,7 +224,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick }) 
 	</>;
 };
 
-const BusiestChatTimesSection = () => {
+const BusiestChatTimesSection = ({ timezone }) => {
 	const t = useTranslation();
 
 	const [timeUnit, setTimeUnit] = useState('hours');
@@ -243,6 +253,7 @@ const BusiestChatTimesSection = () => {
 			displacement={displacement}
 			onPreviousDateClick={handlePreviousDateClick}
 			onNextDateClick={handleNextDateClick}
+			timezone={timezone}
 		/>
 	</Section>;
 };
