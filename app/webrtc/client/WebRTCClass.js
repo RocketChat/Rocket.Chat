@@ -115,7 +115,7 @@ class WebRTCClass {
   		@param room {String}
    */
 
-	constructor(selfId, room) {
+	constructor(selfId, room, autoAccept = false) {
 		this.config = {
 			iceServers: [],
 		};
@@ -153,7 +153,7 @@ class WebRTCClass {
 		this.active = false;
 		this.remoteMonitoring = false;
 		this.monitor = false;
-		this.autoAccept = false;
+		this.autoAccept = autoAccept;
 		this.navigator = undefined;
 		const userAgent = navigator.userAgent.toLocaleLowerCase();
 
@@ -503,6 +503,7 @@ class WebRTCClass {
 			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;
 			Object.entries(peerConnections).forEach(([, peerConnection]) => peerConnection.addStream(stream));
+			document.querySelector('video#localVideo').srcObject = stream;
 			callback(null, this.localStream);
 		};
 		const onError = (error) => {
@@ -663,7 +664,6 @@ class WebRTCClass {
 
 	onRemoteCall(data) {
 		if (this.autoAccept === true) {
-			goToRoomById(data.room);
 			Meteor.defer(() => {
 				this.joinCall({
 					to: data.from,
@@ -873,6 +873,7 @@ class WebRTCClass {
 		if (peerConnection.iceConnectionState !== 'closed' && peerConnection.iceConnectionState !== 'failed' && peerConnection.iceConnectionState !== 'disconnected' && peerConnection.iceConnectionState !== 'completed') {
 			peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
 		}
+		document.querySelector('video#remoteVideo').srcObject = this.remoteItems.get()[0]?.url;
 	}
 
 
@@ -916,28 +917,41 @@ const WebRTC = new class {
 		this.instancesByRoomId = {};
 	}
 
-	getInstanceByRoomId(rid) {
-		const subscription = ChatSubscription.findOne({ rid });
-		if (!subscription) {
-			return;
-		}
+	getInstanceByRoomId(rid, visitorId = null) {
 		let enabled = false;
-		switch (subscription.t) {
-			case 'd':
-				enabled = settings.get('WebRTC_Enable_Direct');
-				break;
-			case 'p':
-				enabled = settings.get('WebRTC_Enable_Private');
-				break;
-			case 'c':
-				enabled = settings.get('WebRTC_Enable_Channel');
+		if (!visitorId) {
+			const subscription = ChatSubscription.findOne({ rid });
+			if (!subscription) {
+				return;
+			}
+			switch (subscription.t) {
+				case 'd':
+					enabled = settings.get('WebRTC_Enable_Direct');
+					break;
+				case 'p':
+					enabled = settings.get('WebRTC_Enable_Private');
+					break;
+				case 'c':
+					enabled = settings.get('WebRTC_Enable_Channel');
+					break;
+				case 'l':
+					enabled = settings.get('Omnichannel_call_provider') === 'WebRTC';
+			}
+		} else {
+			enabled = settings.get('Omnichannel_call_provider') === 'WebRTC';
 		}
 		enabled &&= settings.get('WebRTC_Enabled');
 		if (enabled === false) {
 			return;
 		}
 		if (this.instancesByRoomId[rid] == null) {
-			this.instancesByRoomId[rid] = new WebRTCClass(Meteor.userId(), rid);
+			let uid = Meteor.userId();
+			let autoAccept = false;
+			if (visitorId) {
+				uid = visitorId;
+				autoAccept = true;
+			}
+			this.instancesByRoomId[rid] = new WebRTCClass(uid, rid, autoAccept);
 		}
 		return this.instancesByRoomId[rid];
 	}

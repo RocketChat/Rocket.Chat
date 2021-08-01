@@ -161,7 +161,11 @@ export class NotificationsModule {
 		this.streamLogged.allowRead('logged');
 
 		this.streamRoom.allowRead(async function(eventName, extraData) {
-			const [rid] = eventName.split('/');
+			const [rid, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
 
 			// typing from livechat widget
 			if (extraData?.token) {
@@ -223,21 +227,42 @@ export class NotificationsModule {
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function(eventName, ...args) {
-			if (!this.userId) {
-				return false;
-			}
-
 			const [roomId, e] = eventName.split('/');
+			if (!this.userId) {
+				const room = await Rooms.findOneById(roomId, { projection: { t: 1, 'servedBy._id': 1 } });
+				if (room.t === 'l' && e === 'webrtc') {
+					notifyUser(room.servedBy._id, e, ...args);
+					return false;
+				}
+			}
 			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
+				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, { projection: { 'v._id': 1, _id: 0 } }).toArray();
+				if (livechatSubscriptions) {
+					livechatSubscriptions.forEach((subscription) => notifyUser(subscription.v._id, e, ...args));
+					return false;
+				}
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();
 				subscriptions.forEach((subscription) => notifyUser(subscription.u._id, e, ...args));
 			}
 			return false;
 		});
 
-		this.streamUser.allowWrite('logged');
+		this.streamUser.allowWrite(async (eventName) => {
+			const [userId, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
+
+			return (userId != null) && (this.userId === userId);
+		});
 		this.streamUser.allowRead(async function(eventName) {
-			const [userId] = eventName.split('/');
+			const [userId, e] = eventName.split('/');
+
+			if (e === 'webrtc') {
+				return true;
+			}
+
 			return (this.userId != null) && this.userId === userId;
 		});
 

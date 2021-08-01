@@ -6,7 +6,7 @@ import { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
-import { handleError } from '../../app/utils/client';
+import { handleError, APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
@@ -14,6 +14,7 @@ import { createTemplateForComponent } from '../lib/portals/createTemplateForComp
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
+const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 
 FlowRouter.wait();
 
@@ -47,6 +48,25 @@ FlowRouter.route('/login', {
 
 	action() {
 		FlowRouter.go('home');
+	},
+});
+
+FlowRouter.route('/meet/:rid', {
+	name: 'meet',
+
+	async action(_params, queryParams) {
+		if (queryParams?.token !== undefined) {
+			// visitor login
+			const visitor = await APIClient.v1.get(`/livechat/visitor/${queryParams?.token}`);
+			if (visitor?.visitor) {
+				return appLayout.render({ component: MeetPage });
+			}
+			return toastr.error("Visitor doesn't exist!");
+		}
+		if (!Meteor.userId()) {
+			FlowRouter.go('home');
+		}
+		appLayout.render({ component: MeetPage });
 	},
 });
 
