@@ -20,7 +20,7 @@ const Section: FC<{
 		{getStatusIcon(status)}
 		<Box flexDirection='column'>
 			<Card.Col.Title>{title}</Card.Col.Title>
-			{subtitle && <Box style={{ marginTop: 3 }}>{subtitle}</Box>}
+			{subtitle && <Box mbs='x2'>{subtitle}</Box>}
 			{children}
 		</Box>
 	</Card.Col.Section>
