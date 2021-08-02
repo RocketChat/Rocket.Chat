@@ -589,29 +589,15 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findAllChannelsForDiscovery(searchTags, text, teamIds, roomIds, options) {
+	findAllChannelsForDiscovery(searchTags, text, options) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = {
 			$and: [
 				{ teamMain: { $exists: false } },
+				{ teamId: { $exists: false } },
 				{ prid: { $exists: false } },
 				{ t: 'c' },
-				{
-					$or: [
-						{
-							teamId: { $exists: false },
-						},
-						{
-							teamId: { $in: teamIds },
-						},
-						...roomIds?.length > 0 ? [{
-							_id: {
-								$in: roomIds,
-							},
-						}] : [],
-					],
-				},
 				...searchTags?.length > 0 ? [{
 					tags: {
 						$all: searchTags,

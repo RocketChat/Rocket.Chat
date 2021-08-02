@@ -104,31 +104,12 @@ const getRecommendedChannels = (user, canViewAnon, searchTerm, pagination) => {
 		return;
 	}
 
-	const teams = Promise.await(Team.getAllPublicTeams());
-	const publicTeamIds = teams.map(({ _id }) => _id);
-
-	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userRooms = user.__rooms;
-
 	const userTags = user.settings?.preferences?.tags ?? [];
-	// const userTags = Promise.await(RoomsRaw.findAllTagsFollowedByUser([...userTeamsIds, ...publicTeamIds], userRooms));
+	// const userTags = Promise.await(RoomsRaw.findAllTagsFollowedByUser(userRooms));
 
-	const cursor = Promise.await(RoomsRaw.findRecommendedChannels(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, userTags, pagination).toArray())[0];
+	const cursor = Promise.await(RoomsRaw.findRecommendedChannels(searchTerm, userTags, pagination).toArray())[0];
 	const total = cursor.count[0]?.count; // count ignores the `skip` and `limit` options
-	const result = cursor.results;
-
-	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
-
-	const results = result.map((room) => {
-		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
-			if (team) {
-				room.belongsTo = team.name;
-			}
-		}
-		return room;
-	});
+	const { results } = cursor;
 
 	return {
 		total,
@@ -141,29 +122,9 @@ const getTrendingChannels = (user, canViewAnon, searchTerm) => {
 		return;
 	}
 
-	const teams = Promise.await(Team.getAllPublicTeams());
-	const publicTeamIds = teams.map(({ _id }) => _id);
-
-	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userRooms = user.__rooms;
-
-	const cursor = Promise.await(RoomsRaw.findTrendingChannels(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms).toArray())[0];
-
+	const cursor = Promise.await(RoomsRaw.findTrendingChannels(searchTerm).toArray())[0];
 	const total = cursor.results.length;
-	const result = cursor.results;
-
-	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
-
-	const results = result.map((room) => {
-		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
-			if (team) {
-				room.belongsTo = team.name;
-			}
-		}
-		return room;
-	});
+	const { results } = cursor;
 
 	return {
 		total,
@@ -176,13 +137,7 @@ const getAllChannels = (user, canViewAnon, searchTags, searchTerm, sort, paginat
 		return;
 	}
 
-	const teams = Promise.await(Team.getAllPublicTeams());
-	const publicTeamIds = teams.map(({ _id }) => _id);
-
-	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userRooms = user.__rooms;
-
-	const cursor = Rooms.findAllChannelsForDiscovery(searchTags, searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
+	const cursor = Rooms.findAllChannelsForDiscovery(searchTags, searchTerm, {
 		...pagination,
 		sort: {
 			featured: -1,
@@ -201,25 +156,11 @@ const getAllChannels = (user, canViewAnon, searchTags, searchTerm, sort, paginat
 			featured: 1,
 			usersCount: 1,
 			prid: 1,
-			teamId: 1,
 			tags: 1,
 		},
 	});
 	const total = cursor.count(); // count ignores the `skip` and `limit` options
-	const result = cursor.fetch();
-
-	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
-	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
-
-	const results = result.map((room) => {
-		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
-			if (team) {
-				room.belongsTo = team.name;
-			}
-		}
-		return room;
-	});
+	const results = cursor.fetch();
 
 	return {
 		total,

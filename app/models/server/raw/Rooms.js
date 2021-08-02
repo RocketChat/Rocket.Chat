@@ -43,41 +43,25 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findAllTagsFollowedByUser(teamIds, roomIds, options = {}) {
+	findAllTagsFollowedByUser(roomIds, options = {}) {
 		const query = {
 			$and: [
 				{ teamMain: { $exists: false } },
+				{ teamId: { $exists: false } },
 				{ prid: { $exists: false } },
 				{ t: 'c' },
-				{
-					$or: [
-						{ $and: [
-							{
-								teamId: { $exists: true },
-							},
-							{
-								teamId: { $in: teamIds },
-							},
-						] },
-						{ $and: [
-							{
-								teamId: { $exists: false },
-							},
-							...roomIds?.length > 0 ? [{
-								_id: {
-									$in: roomIds,
-								},
-							}] : [],
-						] },
-					],
-				},
+				...roomIds?.length > 0 ? [{
+					_id: {
+						$in: roomIds,
+					},
+				}] : [],
 			],
 		};
 
 		return this.col.distinct('tags', query, options);
 	}
 
-	findRecommendedChannels(text, teamIds, roomIds, tags, pagination) {
+	findRecommendedChannels(text, tags, pagination) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = [
@@ -85,30 +69,9 @@ export class RoomsRaw extends BaseRaw {
 				$match: {
 					$and: [
 						{ teamMain: { $exists: false } },
+						{ teamId: { $exists: false } },
 						{ prid: { $exists: false } },
 						{ t: 'c' },
-						{
-							$or: [
-								{ $and: [
-									{
-										teamId: { $exists: true },
-									},
-									{
-										teamId: { $nin: teamIds },
-									},
-								] },
-								{ $and: [
-									{
-										teamId: { $exists: false },
-									},
-									...roomIds?.length > 0 ? [{
-										_id: {
-											$nin: roomIds,
-										},
-									}] : [],
-								] },
-							],
-						},
 						{
 							tags: {
 								$in: tags,
@@ -138,7 +101,6 @@ export class RoomsRaw extends BaseRaw {
 					featured: 1,
 					usersCount: 1,
 					prid: 1,
-					teamId: 1,
 					tags: 1,
 					tagsCount: {
 						$size: {
@@ -170,7 +132,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(query);
 	}
 
-	findTrendingChannels(text, teamIds, roomIds) {
+	findTrendingChannels(text) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = [
@@ -178,23 +140,9 @@ export class RoomsRaw extends BaseRaw {
 				$match: {
 					$and: [
 						{ teamMain: { $exists: false } },
+						{ teamId: { $exists: false } },
 						{ prid: { $exists: false } },
 						{ t: 'c' },
-						{
-							$or: [
-								{
-									teamId: { $exists: false },
-								},
-								{
-									teamId: { $nin: teamIds },
-								},
-								...roomIds?.length > 0 ? [{
-									_id: {
-										$nin: roomIds,
-									},
-								}] : [],
-							],
-						},
 						...searchTerm ? [{
 							$or: [{
 								name: searchTerm,
@@ -219,7 +167,6 @@ export class RoomsRaw extends BaseRaw {
 					featured: 1,
 					usersCount: 1,
 					prid: 1,
-					teamId: 1,
 					tags: 1,
 					msgs: 1,
 					tagsCount: {
