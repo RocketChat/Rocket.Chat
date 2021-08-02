@@ -3,35 +3,30 @@ import React, { FC, FormEvent, memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
-import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 type CannedResponsesFilterProps = {
 	sharingValue: string;
-	createdByValue: { value: string; label: string };
-	tagsValue: string;
+	createdByValue: string;
 	shortcutValue: string;
 	setSharing: (eventOrValue: unknown) => void;
 	setCreatedBy: (eventOrValue: unknown) => void;
-	setTags: (eventOrValue: unknown) => void;
 	setShortcut: (eventOrValue: unknown) => void;
 };
 
 const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	sharingValue = '',
 	createdByValue = '',
-	tagsValue = '',
 	shortcutValue = '',
 	setSharing,
 	setCreatedBy,
-	setTags,
 	setShortcut,
 	...props
 }) => {
 	const t = useTranslation();
 	const sharingList: SelectOptions = [
 		['', t('All')],
-		['private', t('Private')],
-		['public', t('Public')],
+		['user', t('Private')],
+		['global', t('Public')],
 		['department', t('Department')],
 	];
 
@@ -64,10 +59,6 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Box mb='x4'>{t('Created_by')}</Box>
 				<AutoCompleteAgent onChange={setCreatedBy} value={createdByValue} haveAll />
-			</Box>
-			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
-				<Box mb='x4'>{t('Tags')}</Box>
-				<AutoCompleteTagsMultiple onChange={setTags} value={tagsValue} />
 			</Box>
 		</Box>
 	);

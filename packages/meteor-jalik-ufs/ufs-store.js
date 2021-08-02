@@ -253,6 +253,9 @@ export class Store {
 						size += data.length;
 					}));
 					readStream.on('end', Meteor.bindEnvironment(function() {
+						if (file.complete) {
+							return;
+						}
 						// Set file attribute
 						file.complete = true;
 						file.etag = UploadFS.generateEtag();
@@ -308,7 +311,7 @@ export class Store {
 
 				const ws = self.getWriteStream(fileId, file);
 				ws.on('error', errorHandler);
-				ws.on('finish', finishHandler);
+				ws.once('finish', finishHandler);
 
 				// Execute transformation
 				self.transformWrite(rs, ws, fileId, file);

@@ -1,15 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import { parser } from '@rocket.chat/message-parser';
 import React, { FC, memo } from 'react';
 
-import MessageBody from '../../../../../../../client/components/Message/Body';
+import MarkdownText from '../../../../../../../client/components/MarkdownText';
 
-const PreviewText: FC<{ text: any }> = ({ text }) => {
-	const msg = parser(text) as any;
+const PreviewText: FC<{ text: string }> = ({ text }) => {
+	const textM = text.split(/\n/).join('  \n');
 
 	return (
 		<Box
-			rows={10}
+			style={{ wordBreak: 'normal' }}
 			display='flex'
 			flexDirection='column'
 			pbs='12px'
@@ -18,7 +17,7 @@ const PreviewText: FC<{ text: any }> = ({ text }) => {
 			rcx-box--animated
 			rcx-input-box__wrapper
 		>
-			<MessageBody tokens={msg} mentions={[]} />
+			<MarkdownText w='full' flexGrow={1} content={textM} parseEmoji={true} />
 		</Box>
 	);
 };
