@@ -51,15 +51,15 @@ export class RoomsRaw extends BaseRaw {
 				{ t: 'c' },
 				{
 					$or: [
-						{$and: [
+						{ $and: [
 							{
 								teamId: { $exists: true },
 							},
 							{
 								teamId: { $in: teamIds },
 							},
-						]},
-						{$and: [
+						] },
+						{ $and: [
 							{
 								teamId: { $exists: false },
 							},
@@ -68,20 +68,20 @@ export class RoomsRaw extends BaseRaw {
 									$in: roomIds,
 								},
 							}] : [],
-						]},
+						] },
 					],
 				},
 			],
 		};
 
-		return this.col.distinct("tags", query, options);
+		return this.col.distinct('tags', query, options);
 	}
 
-	findRecommendedChannels(text, teamIds, roomIds, tags, pagination){
+	findRecommendedChannels(text, teamIds, roomIds, tags, pagination) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = [
-			{ 
+			{
 				$match: {
 					$and: [
 						{ teamMain: { $exists: false } },
@@ -89,15 +89,15 @@ export class RoomsRaw extends BaseRaw {
 						{ t: 'c' },
 						{
 							$or: [
-								{$and: [
+								{ $and: [
 									{
 										teamId: { $exists: true },
 									},
 									{
 										teamId: { $nin: teamIds },
 									},
-								]},
-								{$and: [
+								] },
+								{ $and: [
 									{
 										teamId: { $exists: false },
 									},
@@ -106,13 +106,13 @@ export class RoomsRaw extends BaseRaw {
 											$nin: roomIds,
 										},
 									}] : [],
-								]},
+								] },
 							],
 						},
 						{
 							tags: {
 								$in: tags,
-							}
+							},
 						},
 						...searchTerm ? [{
 							$or: [{
@@ -121,8 +121,8 @@ export class RoomsRaw extends BaseRaw {
 								fname: searchTerm,
 							}],
 						}] : [],
-					]
-				}
+					],
+				},
 			},
 			{
 				$project: {
@@ -142,39 +142,39 @@ export class RoomsRaw extends BaseRaw {
 					tags: 1,
 					tagsCount: {
 						$size: {
-						"$ifNull": [
-							"$tags",
-							[]
-						]
-						}
-					}
-				}
+							$ifNull: [
+								'$tags',
+								[],
+							],
+						},
+					},
+				},
 			},
 			{
 				$sort: {
 					tagsCount: -1,
-				}
+				},
 			},
 			{
 				$facet: {
 					count: [
 						{
-							$count: 'count'
-						}
+							$count: 'count',
+						},
 					],
 					results: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
-				}
-			}
+				},
+			},
 		];
 
 		return this.col.aggregate(query);
 	}
 
-	findTrendingChannels(text, teamIds, roomIds, tags, pagination){
+	findTrendingChannels(text, teamIds, roomIds) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = [
-			{ 
+			{
 				$match: {
 					$and: [
 						{ teamMain: { $exists: false } },
@@ -186,11 +186,11 @@ export class RoomsRaw extends BaseRaw {
 									teamId: { $exists: false },
 								},
 								{
-									teamId: { $in: teamIds },
+									teamId: { $nin: teamIds },
 								},
 								...roomIds?.length > 0 ? [{
 									_id: {
-										$in: roomIds,
+										$nin: roomIds,
 									},
 								}] : [],
 							],
@@ -202,8 +202,8 @@ export class RoomsRaw extends BaseRaw {
 								fname: searchTerm,
 							}],
 						}] : [],
-					]
-				}
+					],
+				},
 			},
 			{
 				$project: {
@@ -224,25 +224,13 @@ export class RoomsRaw extends BaseRaw {
 					msgs: 1,
 					tagsCount: {
 						$size: {
-						"$ifNull": [
-							"$tags",
-							[]
-						]
-						}
+							$ifNull: [
+								'$tags',
+								[],
+							],
+						},
 					},
-					recommended: {
-						$cond: [
-						  {
-							$in: [
-							  tags,
-							  "$tags"
-							]
-						  },
-						  1,
-						  0
-						]
-					  },
-				}
+				},
 			},
 			{
 				$sort: {
@@ -251,13 +239,13 @@ export class RoomsRaw extends BaseRaw {
 					usersCount: -1,
 					lastMessage: -1,
 					ts: -1,
-				}
+				},
 			},
 			{
 				$facet: {
 					results: [{ $skip: 0 }, { $limit: 25 }],
-				}
-			}
+				},
+			},
 		];
 
 		return this.col.aggregate(query);

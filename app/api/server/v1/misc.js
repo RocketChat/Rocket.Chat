@@ -227,7 +227,7 @@ API.v1.addRoute('discovery', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, query } = this.parseJsonQuery();
 
-		const { text, type, workspace = 'local' } = query;
+		const { searchTags, text, type, workspace = 'local' } = query;
 
 		if (sort && Object.keys(sort).length > 1) {
 			return API.v1.failure('This method support only one "sort" parameter');
@@ -236,6 +236,7 @@ API.v1.addRoute('discovery', { authRequired: true }, {
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
 		const result = Meteor.runAsUser(this.userId, () => Meteor.call('browseChannels', {
+			searchTags,
 			text,
 			type,
 			workspace,
@@ -244,6 +245,10 @@ API.v1.addRoute('discovery', { authRequired: true }, {
 			offset: Math.max(0, offset),
 			limit: Math.max(0, count),
 		}));
+
+		// if (type === 'recommendedChannels' && !result.results.length) {
+		// 	throw new Meteor.Error('error-no-user-tags', 'Set tags in preferences to recommend', { route: 'discovery' });
+		// }
 
 		if (!result) {
 			return API.v1.failure('Please verify the parameters');

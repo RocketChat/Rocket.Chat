@@ -1,8 +1,9 @@
-import { Box, Callout, Chip, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import { useRoute } from '../../../../../contexts/RouterContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import InfoPanel from '../../../../InfoPanel';
 import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
@@ -134,10 +135,18 @@ function RoomInfo({
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
-	
-	const mapTags = (label) => (
-		<InfoPanel.Tag key={label} label={label} /*onClick={}*/ />
+
+	const discoveryRoute = useRoute('discovery');
+	const onClickTag = useMemo(
+		() => (tag) => (e) => {
+			if (e.type === 'click' || e.key === 'Enter') {
+				discoveryRoute.push({ tab: 'all', tag });
+			}
+		},
+		[discoveryRoute],
 	);
+
+	const mapTags = (tag) => <InfoPanel.Tag key={tag} tag={tag} onClick={onClickTag(tag)} />;
 
 	const tagsGroup = tags?.map(mapTags).filter(Boolean);
 

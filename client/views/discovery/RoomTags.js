@@ -10,8 +10,6 @@ function RoomTags({ room }) {
 			<Margins inline='x2'>
 				{room.default && <Tag variant='primary'>{t('default')}</Tag>}
 				{room.featured && <Tag variant='primary'>{t('featured')}</Tag>}
-				{room.trending && <Tag variant='danger'>{t('trending')}</Tag>}
-				{room.recommended && <Tag variant='warning'>{t('recommended')}</Tag>}
 			</Margins>
 		</Box>
 	);

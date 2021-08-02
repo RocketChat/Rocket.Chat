@@ -92,7 +92,7 @@ FlowRouter.route('/directory/:tab?', {
 	},
 });
 
-FlowRouter.route('/discovery/:tab?', {
+FlowRouter.route('/discovery/:tab?/:tag?', {
 	name: 'discovery',
 	action: () => {
 		const DiscoveryPage = createTemplateForComponent(

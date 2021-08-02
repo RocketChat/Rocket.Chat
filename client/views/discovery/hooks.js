@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 export function useQuery(
+	searchTags = [],
 	{ text, itemsPerPage, current },
 	[column, direction],
 	type,
@@ -9,6 +10,7 @@ export function useQuery(
 	return useMemo(
 		() => ({
 			query: JSON.stringify({
+				searchTags,
 				type,
 				text,
 				workspace,
@@ -17,6 +19,6 @@ export function useQuery(
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[itemsPerPage, current, column, direction, type, workspace, text],
+		[itemsPerPage, current, column, direction, type, workspace, text, searchTags],
 	);
 }

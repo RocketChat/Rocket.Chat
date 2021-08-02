@@ -589,7 +589,7 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findAllChannelsForDiscovery(text, teamIds, roomIds, options) {
+	findAllChannelsForDiscovery(searchTags, text, teamIds, roomIds, options) {
 		const searchTerm = text && new RegExp(text, 'i');
 
 		const query = {
@@ -612,6 +612,11 @@ export class Rooms extends Base {
 						}] : [],
 					],
 				},
+				...searchTags?.length > 0 ? [{
+					tags: {
+						$all: searchTags,
+					},
+				}] : [],
 				...searchTerm ? [{
 					$or: [{
 						name: searchTerm,
@@ -1149,7 +1154,7 @@ export class Rooms extends Base {
 
 		const update = {
 			$pullAll: {
-				tags: tags,
+				tags,
 			},
 		};
 

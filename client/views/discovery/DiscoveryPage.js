@@ -5,9 +5,9 @@ import Page from '../../components/Page';
 import { useCurrentRoute, useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import TrendingTab from './TrendingTab';
-import RecommendedTab from './RecommendedTab';
 import ChannelsTab from './ChannelsTab';
+import RecommendedTab from './RecommendedTab';
+import TrendingTab from './TrendingTab';
 
 function DiscoveryPage() {
 	const t = useTranslation();
@@ -16,6 +16,7 @@ function DiscoveryPage() {
 	const federationEnabled = useSetting('FEDERATION_Enabled');
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
+	const tag = useRouteParameter('tag');
 	const discoveryRoute = useRoute('discovery');
 
 	useEffect(() => {
@@ -47,7 +48,7 @@ function DiscoveryPage() {
 			<Page.Content>
 				{(tab === 'trending' && <TrendingTab />) ||
 					(tab === 'recommended' && <RecommendedTab />) ||
-                    (tab === 'all' && <ChannelsTab />)}
+					(tab === 'all' && <ChannelsTab tag={tag} />)}
 			</Page.Content>
 		</Page>
 	);
