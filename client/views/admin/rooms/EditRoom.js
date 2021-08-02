@@ -9,7 +9,7 @@ import {
 	Callout,
 	TextAreaInput,
 	MultiSelect,
-	//PaginatedMultiSelectFiltered,
+	// PaginatedMultiSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
@@ -20,8 +20,8 @@ import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
@@ -51,7 +51,10 @@ function EditRoom({ room, onChange }) {
 
 	const discoveryEnabled = useSetting('Discovery_Enabled');
 	const discoveryTags = useSetting('Discovery_Tags');
-	const tagsAvailable = (discoveryEnabled && !!discoveryTags) ? discoveryTags.split(',').map(item => [item.trim(),'#'+item.trim()]) : [];
+	const tagsAvailable =
+		discoveryEnabled && !!discoveryTags
+			? discoveryTags.split(',').map((item) => [item.trim(), `#${item.trim()}`])
+			: [];
 
 	const setModal = useSetModal();
 
@@ -224,7 +227,7 @@ function EditRoom({ room, onChange }) {
 							</Field.Row>
 						</Field>
 					)}
-					{/*canViewTags && (
+					{/* canViewTags && (
 						<Field>
 							<Field.Label>{t('Tags')}</Field.Label>
 							<Field.Row>
@@ -258,13 +261,13 @@ function EditRoom({ room, onChange }) {
 							<Field.Label>{t('Tags')}</Field.Label>
 							<Field.Row>
 								<MultiSelect
-								options={tagsAvailable}
-								value={roomTags}
-								maxWidth='100%'
-								placeholder={t('Select_an_option')}
-								onChange={handleRoomTags}
-								disabled={roomType !== 'c'}
-							/>
+									options={tagsAvailable}
+									value={roomTags}
+									maxWidth='100%'
+									placeholder={t('Select_an_option')}
+									onChange={handleRoomTags}
+									disabled={roomType !== 'c'}
+								/>
 							</Field.Row>
 						</Field>
 					)}

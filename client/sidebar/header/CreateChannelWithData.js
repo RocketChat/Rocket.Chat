@@ -38,7 +38,18 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 	};
 	const { values, handlers, hasUnsavedChanges } = useForm(initialValues);
 
-	const { users, name, description, type, readOnly, broadcast, encrypted, tags, topic, announcement } = values;
+	const {
+		users,
+		name,
+		description,
+		type,
+		readOnly,
+		broadcast,
+		encrypted,
+		tags,
+		topic,
+		announcement,
+	} = values;
 	const {
 		handleUsers,
 		handleEncrypted,

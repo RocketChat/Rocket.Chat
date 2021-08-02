@@ -12,10 +12,10 @@ export const saveRoomTags = function(rid, roomTags, user, sendMessage = true) {
 
 	const update = Rooms.setTagsById(rid, roomTags);
 	if (update && sendMessage) {
-		if (roomTags.length){
+		if (roomTags.length) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_tags', rid, roomTags, user);
 		} else {
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_removed_tags', rid, "", user);
+			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_removed_tags', rid, '', user);
 		}
 	}
 	return update;

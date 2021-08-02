@@ -10,7 +10,9 @@ const Discovery = (props) => {
 	const showDiscovery = useSetting('Discovery_Enabled');
 	const handleDiscovery = useMutableCallback(() => discoveryRoute.push({}));
 
-	return showDiscovery ? <Sidebar.TopBar.Action {...props} icon='hash' onClick={handleDiscovery} /> : null;
+	return showDiscovery ? (
+		<Sidebar.TopBar.Action {...props} icon='hash' onClick={handleDiscovery} />
+	) : null;
 };
 
 export default Discovery;

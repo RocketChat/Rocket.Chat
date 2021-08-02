@@ -13,7 +13,7 @@ import {
 	Box,
 	Icon,
 	TextAreaInput,
-	//PaginatedMultiSelectFiltered,
+	// PaginatedMultiSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -127,7 +127,10 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 
 	const discoveryEnabled = useSetting('Discovery_Enabled');
 	const discoveryTags = useSetting('Discovery_Tags');
-	const tagsAvailable = (discoveryEnabled && !!discoveryTags) ? discoveryTags.split(',').map(item => [item.trim(),'#'+item.trim()]) : [];
+	const tagsAvailable =
+		discoveryEnabled && !!discoveryTags
+			? discoveryTags.split(',').map((item) => [item.trim(), `#${item.trim()}`])
+			: [];
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const maxAgeDefault = useSetting(`RetentionPolicy_MaxAge_${typeMap[room.t]}`) || 30;
 
@@ -355,7 +358,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 						</Field.Row>
 					</Field>
 				)}
-				{/*canViewTags && (
+				{/* canViewTags && (
 					<Field>
 						<Field.Label>{t('Tags')}</Field.Label>
 						<Field.Row>

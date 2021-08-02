@@ -1,6 +1,6 @@
-import { Meteor } from "meteor/meteor";
+import { Meteor } from 'meteor/meteor';
 
-import { settings } from "../../../settings";
+import { settings } from '../../../settings';
 
 Meteor.startup(() => {
 	settings.addGroup('Discovery', function() {
@@ -10,10 +10,10 @@ Meteor.startup(() => {
 			i18nDescription: 'Discovery_Enabled',
 			public: true,
 		});
-        this.add('Discovery_Tags', '', {
+		this.add('Discovery_Tags', '', {
 			type: 'string',
-            i18nLabel: 'Discovery_Tags',
-            i18nDescription: 'Discovery_Tags_Description',
+			i18nLabel: 'Discovery_Tags',
+			i18nDescription: 'Discovery_Tags_Description',
 			enableQuery: {
 				_id: 'Discovery_Enabled',
 				value: true,

@@ -699,14 +699,14 @@ describe('[Channels]', function() {
 				.set(credentials)
 				.send({
 					roomId: channel._id,
-					tags: ['these','are','tags','of','a','channel','for','api','tests'],
+					tags: ['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests'],
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('tags');
-					expect(res.body.tags).to.have.members(['these','are','tags','of','a','channel','for','api','tests']);
+					expect(res.body.tags).to.have.members(['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests']);
 				})
 				.end(done);
 		});

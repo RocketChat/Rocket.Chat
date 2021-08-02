@@ -4,7 +4,6 @@ import { Rooms } from '../../app/models';
 
 Meteor.methods({
 	removeTags() {
-
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeTags',
