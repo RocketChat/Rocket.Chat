@@ -50,6 +50,7 @@ export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper'
 		childList: true,
 		subtree: true,
 	});
+	console.log('waitUntilWrapperExists');
 });
 
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
@@ -82,13 +83,14 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 			},
 		}, { multi: true });
 	}
-
+	console.log('upsertMessage');
 	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
 export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const { queries } = ChatMessage;
+	console.log('upsertMessageBulk');
 	collection.queries = [];
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
@@ -127,6 +129,7 @@ export const RoomHistoryManager = new class extends Emitter {
 	async queue() {
 		return new Promise((resolve) => {
 			const requestId = uuidv4();
+			console.log('queue');
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();
@@ -141,6 +144,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	run(fn) {
 		const difference = differenceInMilliseconds(new Date(), this.lastRequest);
+		console.log('grun');
 		if (!this.lastRequest || difference > 500) {
 			return fn();
 		}
@@ -158,7 +162,7 @@ export const RoomHistoryManager = new class extends Emitter {
 	async getMore(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
-		console.log(room);
+
 		if (room.hasMore.curValue !== true) {
 			return;
 		}
@@ -181,7 +185,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
-
+		console.log(subscription);
 		if (subscription) {
 			({ ls } = subscription);
 			typeName = subscription.t + subscription.name;
@@ -192,7 +196,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
-		console.log(result, this.histories);
+		console.log('get more');
 		this.unqueue();
 
 		let previousHeight;
@@ -247,7 +251,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		if (room.hasMoreNext.curValue !== true) {
 			return;
 		}
-
+		console.log('getmore next');
 		await this.queue();
 		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
 		instance.atBottom = false;
