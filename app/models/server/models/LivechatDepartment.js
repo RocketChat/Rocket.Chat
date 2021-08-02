@@ -92,7 +92,7 @@ export class LivechatDepartment extends Base {
 		return this.remove(query);
 	}
 
-	findEnabledWithAgents(fields = null) {
+	findEnabledWithAgents(fields = undefined) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
@@ -110,6 +110,17 @@ export class LivechatDepartment extends Base {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByUnitIds(unitIds, options) {
+		const query = {
+			parentId: {
+				$exists: true,
+				$in: unitIds,
+			},
+		};
+
+		return this.find(query, options);
 	}
 }
 

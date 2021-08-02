@@ -14,7 +14,7 @@ async function findUsers({ role, text, pagination: { offset, count, sort } }) {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,

@@ -16,9 +16,10 @@ const OTRWithData = ({ rid, tabBar }) => {
 	const otr = useMemo(() => ORTInstance.getInstanceByRoomId(rid), [rid]);
 
 	const [isEstablished, isEstablishing] = useReactiveValue(
-		useCallback(() => (otr ? [otr.established.get(), otr.establishing.get()] : [false, false]), [
-			otr,
-		]),
+		useCallback(
+			() => (otr ? [otr.established.get(), otr.establishing.get()] : [false, false]),
+			[otr],
+		),
 	);
 
 	const userStatus = usePresence(otr.peerId);
