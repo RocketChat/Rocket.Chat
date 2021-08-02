@@ -47,17 +47,22 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 					setStatus(data.callStatus);
 				}
 			});
-			if (status === 'inProgress') {
-				webrtcInstance.startCall({
-					audio: true,
-					video: {
-						width: { ideal: 1920 },
-						height: { ideal: 1080 },
-					},
-				});
-			}
 		}
-	}, [roomId, setStatus, status, visitorId, visitorToken]);
+	}, [setStatus, visitorId, roomId, visitorToken]);
+
+	useEffect(() => {
+		if (!visitorToken && status === 'inProgress') {
+			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
+			webrtcInstance.startCall({
+				audio: true,
+				video: {
+					width: { ideal: 1920 },
+					height: { ideal: 1080 },
+				},
+			});
+		}
+	}, [status, visitorToken, roomId]);
+
 	switch (status) {
 		case 'ringing':
 			// Todo Deepak
