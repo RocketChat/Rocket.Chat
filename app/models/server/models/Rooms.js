@@ -1124,7 +1124,12 @@ export class Rooms extends Base {
 	}
 
 	unsetAllTags() {
-		const query = { t: 'c' };
+		const query = {
+			$and: [
+				{ t: 'c' },
+				{ tags: { $exists: true } },
+			],
+		};
 
 		const update = {
 			$unset: {
@@ -1136,7 +1141,12 @@ export class Rooms extends Base {
 	}
 
 	unsetTagsByName(tags) {
-		const query = { t: 'c' };
+		const query = {
+			$and: [
+				{ t: 'c' },
+				{ tags: { $in: tags } },
+			],
+		};
 
 		const update = {
 			$pullAll: {

@@ -963,9 +963,11 @@ API.v1.addRoute('channels.setTags', { authRequired: true }, {
 
 API.v1.addRoute('channels.unsetAllTags', { authRequired: true }, {
 	post() {
-		const update = Rooms.unsetAllTags();
+		const rooms = Rooms.unsetAllTags();
 
-		return API.v1.success();
+		return API.v1.success({
+			rooms,
+		});
 	},
 });
 
