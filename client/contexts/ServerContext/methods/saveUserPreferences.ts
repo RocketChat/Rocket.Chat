@@ -31,6 +31,7 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
+	tags: string[];
 };
 
 export type SaveUserPreferencesMethod = (preferences: Partial<UserPreferences>) => boolean;

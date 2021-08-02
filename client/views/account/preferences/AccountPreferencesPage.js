@@ -6,6 +6,7 @@ import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import PreferencesDiscoverySection from './PreferencesDiscoverySection';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
 import PreferencesHighlightsSection from './PreferencesHighlightsSection';
 import PreferencesLocalizationSection from './PreferencesLocalizationSection';
@@ -25,6 +26,7 @@ const AccountPreferencesPage = () => {
 	const commitRef = useRef({});
 
 	const dataDownloadEnabled = useSetting('UserData_EnableDownload');
+	const discoveryEnabled = useSetting('Discovery_Enabled');
 
 	const onChange = useCallback(
 		({ initialValue, value, key }) => {
@@ -97,6 +99,9 @@ const AccountPreferencesPage = () => {
 						<PreferencesUserPresenceSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesNotificationsSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesMessagesSection commitRef={commitRef} onChange={onChange} />
+						{discoveryEnabled && (
+							<PreferencesDiscoverySection commitRef={commitRef} onChange={onChange} />
+						)}
 						<PreferencesHighlightsSection commitRef={commitRef} onChange={onChange} />
 						<PreferencesSoundSection commitRef={commitRef} onChange={onChange} />
 						{dataDownloadEnabled && <PreferencesMyDataSection onChange={onChange} />}

@@ -129,6 +129,7 @@ describe('miscellaneous', function() {
 					'enableAutoAway',
 					'enableMessageParserEarlyAdoption',
 					// 'highlights',
+					// 'tags',
 					'showMessageInMainThread',
 					'desktopNotificationRequireInteraction',
 					'messageViewMode',
