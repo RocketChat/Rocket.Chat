@@ -1,4 +1,4 @@
-/*  */import s from 'underscore.string';
+import s from 'underscore.string';
 
 import { isURL } from './isURL';
 import { settings } from '../../settings';
@@ -39,9 +39,11 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	const cloudRoute = s.trim(cloud_route || '');
 	const cdnPrefix = s.rtrim(s.trim(_cdn_prefix || ''), '/');
 	const pathPrefix = s.rtrim(s.trim(_root_url_path_prefix || ''), '/');
+
 	const finalPath = s.ltrim(s.trim(path), '/');
+
 	const url = s.rtrim(`${ pathPrefix }/${ finalPath }`, '/') + query;
-	
+
 	if (cloud) {
 		const cloudParams = cloud_params || {};
 		return getCloudUrl(url, siteUrl, cloudRoute, cloudParams);
@@ -52,7 +54,7 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	}
 
 	if (full) {
-		return siteUrl.replace(pathPrefix,'') + url;
+		return siteUrl.replace(pathPrefix, '') + url;
 	}
 
 	return url;
