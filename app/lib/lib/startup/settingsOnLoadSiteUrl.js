@@ -16,7 +16,7 @@ settings.get('Site_Url', function(key, value) {
 		host = match[1];
 		// prefix = match[2].replace(/\/$/, '');
 	}
-	__meteor_runtime_config__.ROOT_URL = value;
+	__meteor_runtime_config__.ROOT_URL = `${ value }/rocketchat`;
 
 	if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
 		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
