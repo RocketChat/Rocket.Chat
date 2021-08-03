@@ -28,6 +28,18 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
 	});
 
+	useEffect(() => {
+		const fetchData = async () => {
+			const d = await ChatTask.find({ rid }).fetch();
+			console.log(d);
+		};
+		fetchData();
+
+		return () => {
+			fetchData();
+		};
+	}, [rid]);
+
 	const sortTasks = (id) => {
 		const sortedTasks = [...tasks];
 		(id === 'Date' && sort[0] === id && sortedTasks.sort((a, b) => a.ts > b.ts)) ||

@@ -311,7 +311,7 @@ export const RoomHistoryManager = new class extends Emitter {
 	async getMoreTask(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
-		console.log('getMoreTask1');
+
 		if (room.hasMore.curValue !== true) {
 			return;
 		}
@@ -319,7 +319,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		room.isLoading.set(true);
 
 		await this.queue();
-		console.log('getMoreTask2');
+
 		// ScrollListener.setLoader true
 		const lastTask = ChatTask.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -334,7 +334,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		let typeName = undefined;
 
 		const subscription = ChatSubscription.findOne({ rid });
-		console.log(subscription);
+
 		if (subscription) {
 			({ ls } = subscription);
 			typeName = subscription.t + subscription.name;
@@ -342,7 +342,7 @@ export const RoomHistoryManager = new class extends Emitter {
 			const curRoomDoc = ChatRoom.findOne({ _id: rid });
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
-		console.log('getMoreTask3');
+
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistoryTask', rid, ts, limit, ls, showMessageInMainThread);
 		console.log('get more');
@@ -374,7 +374,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		room.loaded += visibleTasks.length;
 
-		console.log('getMoreTask5');
+
 		if (tasks.length < limit) {
 			room.hasMore.set(false);
 		}
@@ -387,7 +387,6 @@ export const RoomHistoryManager = new class extends Emitter {
 		// 	const heightDiff = wrapper.scrollHeight - previousHeight;
 		// 	wrapper.scrollTop = scroll + heightDiff;
 		// });
-		console.log('getMoreTask7');
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);

@@ -7,18 +7,19 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { upsertMessage, RoomHistoryManager, upsertTask } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom, ChatTask } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { call } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
@@ -45,6 +46,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
+	const taskStream = new Meteor.Streamer('room-task');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
@@ -98,44 +100,80 @@ export const RoomManager = new function() {
 						if (room.taskRoomId) {
 							console.log('taskRoom, getMoreIfIsEmptyTaskRoom');
 							RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
+							if (record.streamActive !== true) {
+								record.streamActive = true;
+								taskStream.on(record.rid, async (task) => {
+									console.log('inside msgStrem');
+									// Should not send message to room if room has not loaded all the current messages
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
+									}
+									// Do not load command messages into channel
+									if (task.t !== 'command') {
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										const isNew = !ChatTask.findOne({ _id: task._id, temp: { $ne: true } });
+										upsertTask({ task, subscription });
+
+										task.room = {
+											type,
+											name,
+										};
+										if (isNew) {
+											menu.updateUnreadBars();
+											callbacks.run('streamNewMessage', task);
+										}
+									}
+
+									task.name = room.name;
+									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+									handleTrackSettingsChange(task);
+
+									callbacks.run('streamMessage', task);
+
+									return fireGlobalEvent('new-message', task);
+								});
+								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+							}
 						} else {
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
-						}
-						if (record.streamActive !== true) {
-							record.streamActive = true;
-							msgStream.on(record.rid, async (msg) => {
-								console.log('inside msgStrem');
-								// Should not send message to room if room has not loaded all the current messages
-								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
-									return;
-								}
-								// Do not load command messages into channel
-								if (msg.t !== 'command') {
-									const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
-									const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-									upsertMessage({ msg, subscription });
-
-									msg.room = {
-										type,
-										name,
-									};
-									if (isNew) {
-										menu.updateUnreadBars();
-										callbacks.run('streamNewMessage', msg);
+							if (record.streamActive !== true) {
+								record.streamActive = true;
+								msgStream.on(record.rid, async (msg) => {
+									console.log('inside msgStrem');
+									// Should not send message to room if room has not loaded all the current messages
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
 									}
-								}
+									// Do not load command messages into channel
+									if (msg.t !== 'command') {
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+										upsertMessage({ msg, subscription });
 
-								msg.name = room.name;
-								Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+										msg.room = {
+											type,
+											name,
+										};
+										if (isNew) {
+											menu.updateUnreadBars();
+											callbacks.run('streamNewMessage', msg);
+										}
+									}
 
-								handleTrackSettingsChange(msg);
+									msg.name = room.name;
+									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
 
-								callbacks.run('streamMessage', msg);
+									handleTrackSettingsChange(msg);
 
-								return fireGlobalEvent('new-message', msg);
-							});
-							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
-							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+									callbacks.run('streamMessage', msg);
+
+									return fireGlobalEvent('new-message', msg);
+								});
+								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+							}
 						}
 					}
 
