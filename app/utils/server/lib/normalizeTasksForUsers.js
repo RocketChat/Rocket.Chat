@@ -15,7 +15,7 @@ function getNameOfUsername(users, username) {
 	return users.get(username) || username;
 }
 
-export const normalizeTasksForUser = (tasks, uid) => {
+export const normalizeTasksForUsers = (tasks, uid) => {
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return tasks.map((tasks) => filterStarred(tasks, uid));
@@ -23,17 +23,17 @@ export const normalizeTasksForUser = (tasks, uid) => {
 
 	const usernames = new Set();
 
-	tasks.forEach((message) => {
-		message = filterStarred(message, uid);
+	tasks.forEach((task) => {
+		task = filterStarred(task, uid);
 
-		if (!message.u || !message.u.username) {
+		if (!task.u || !task.u.username) {
 			return;
 		}
-		usernames.add(message.u.username);
+		usernames.add(task.u.username);
 
-		(message.mentions || []).forEach(({ username }) => { usernames.add(username); });
+		(task.mentions || []).forEach(({ username }) => { usernames.add(username); });
 
-		Object.values(message.reactions || {})
+		Object.values(task.reactions || {})
 			.forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
 	});
 

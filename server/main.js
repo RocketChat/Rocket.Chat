@@ -39,6 +39,7 @@ import './methods/getUsersOfRoom';
 import './methods/hideRoom';
 import './methods/ignoreUser';
 import './methods/loadHistory';
+import './methods/loadHistoryTask';
 import './methods/loadLocale';
 import './methods/loadMissedMessages';
 import './methods/loadNextMessages';

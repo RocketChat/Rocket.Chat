@@ -243,7 +243,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
-		console.log('get more');
+		console.log('loadHistory ->');
 		this.unqueue();
 
 		let previousHeight;
@@ -355,16 +355,16 @@ export const RoomHistoryManager = new class extends Emitter {
 			room.loaded = 0;
 		}
 
-		const visibleMessages = tasks.filter((task) => !task.tmid || showMessageInMainThread || task.tshow);
+		const visibleTasks = tasks.filter((task) => !task.tmid || showMessageInMainThread || task.tshow);
 
-		room.loaded += visibleMessages.length;
+		room.loaded += visibleTasks.length;
 
 
 		if (tasks.length < limit) {
 			room.hasMore.set(false);
 		}
 
-		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+		if (room.hasMore.get() && (visibleTasks.length === 0 || room.loaded < limit)) {
 			return this.getMore(rid);
 		}
 
