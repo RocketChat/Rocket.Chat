@@ -1,4 +1,5 @@
 import { Random } from 'meteor/random';
+import moment from 'moment-timezone';
 
 import { settings } from '../../../settings/server';
 import './email';
@@ -1069,6 +1070,29 @@ settings.addGroup('General', function() {
 	this.section('NPS', function() {
 		this.add('NPS_survey_enabled', true, {
 			type: 'boolean',
+		});
+	});
+	this.section('Timezone', function() {
+		this.add('Default_Timezone_For_Reporting', 'server', {
+			type: 'select',
+			values: [{
+				key: 'server',
+				i18nLabel: 'Default_Server_Timezone',
+			}, {
+				key: 'custom',
+				i18nLabel: 'Default_Custom_Timezone',
+			}, {
+				key: 'user',
+				i18nLabel: 'Default_User_Timezone',
+			}],
+		});
+		this.add('Default_Custom_Timezone', '', {
+			type: 'select',
+			values: moment.tz.names().map((key) => ({ key, i18nLabel: key })),
+			enableQuery: {
+				_id: 'Default_Timezone_For_Reporting',
+				value: 'custom',
+			},
 		});
 	});
 });

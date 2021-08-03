@@ -7,7 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 
 import { QueueManager } from './QueueManager';
@@ -40,6 +40,30 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { validateEmailDomain } from '../../../lib/server';
+
+const padOffset = (offset) => {
+	const numberOffset = Number(offset);
+	const absOffset = Math.abs(numberOffset);
+	const isNegative = !(numberOffset === absOffset);
+
+	return `${ isNegative ? '-' : '+' }${ absOffset < 10 ? `0${ absOffset }` : absOffset }:00`;
+};
+
+const guessTimezoneFromOffset = (offset) => moment.tz.names()
+	.find((tz) => padOffset(offset) === moment.tz(tz).format('Z').toString()) || moment.tz.guess();
+
+const getTimezone = (user) => {
+	const timezone = settings.get('Default_Timezone_For_Reporting');
+
+	switch (timezone) {
+		case 'custom':
+			return settings.get('Default_Custom_Timezone');
+		case 'user':
+			return guessTimezoneFromOffset(user.utcOffset);
+		default:
+			return moment.tz.guess();
+	}
+};
 
 export const Livechat = {
 	Analytics,
@@ -983,6 +1007,7 @@ export const Livechat = {
 
 		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
+		const timezone = getTimezone(user);
 
 		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
@@ -1002,7 +1027,7 @@ export const Livechat = {
 				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
-			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 			const singleMessage = `
 				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
 				<p>${ message.msg }</p>
@@ -1019,7 +1044,7 @@ export const Livechat = {
 		} else {
 			fromEmail = settings.get('From_Email');
 		}
-
+		console.log(html);
 		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
 		this.sendEmail(fromEmail, email, fromEmail, mailSubject, html);
@@ -1045,6 +1070,7 @@ export const Livechat = {
 		check(user, Match.ObjectIncluding({
 			_id: String,
 			username: String,
+			utcOffset: Number,
 			name: Match.Maybe(String),
 		}));
 
@@ -1058,13 +1084,14 @@ export const Livechat = {
 			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
 		}
 
-		const { _id, username, name } = user;
+		const { _id, username, name, utcOffset } = user;
 		const transcriptRequest = {
 			requestedAt: new Date(),
 			requestedBy: {
 				_id,
 				username,
 				name,
+				utcOffset,
 			},
 			email,
 			subject,
