@@ -9,7 +9,7 @@ addAction('export-messages', ({ room }) => {
 		() =>
 			hasPermission
 				? {
-						groups: ['channel', 'group', 'direct'],
+						groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 						id: 'export-messages',
 						anonymous: true,
 						title: 'Export_Messages',

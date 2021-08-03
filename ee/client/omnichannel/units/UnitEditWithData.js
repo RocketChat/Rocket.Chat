@@ -7,36 +7,28 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import UnitEdit from './UnitEdit';
 
-function UnitEditWithData({ unitId, reload, allUnits }) {
+function UnitEditWithData({ unitId, reload, title }) {
 	const query = useMemo(() => ({ unitId }), [unitId]);
 	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
-	const {
-		value: availableDepartments,
-		phase: availableDepartmentsState,
-		error: availableDepartmentsError,
-	} = useEndpointData('livechat/department');
-	const {
-		value: availableMonitors,
-		phase: availableMonitorsState,
-		error: availableMonitorsError,
-	} = useEndpointData('livechat/monitors.list');
 	const {
 		value: unitMonitors,
 		phase: unitMonitorsState,
 		error: unitMonitorsError,
 	} = useEndpointData('livechat/unitMonitors.list', query);
 
+	const {
+		value: unitDepartments,
+		phase: unitDepartmentsState,
+		error: unitDepartmentsError,
+	} = useEndpointData(`livechat/departments.by-unit/${unitId}`);
+
 	const t = useTranslation();
 
-	if (
-		[state, availableDepartmentsState, availableMonitorsState, unitMonitorsState].includes(
-			AsyncStatePhase.LOADING,
-		)
-	) {
+	if ([state, unitMonitorsState, unitDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
-	if (error || availableDepartmentsError || availableMonitorsError || unitMonitorsError) {
+	if (error || unitMonitorsError || unitDepartmentsError) {
 		return (
 			<Callout m='x16' type='danger'>
 				{t('Not_Available')}
@@ -44,24 +36,13 @@ function UnitEditWithData({ unitId, reload, allUnits }) {
 		);
 	}
 
-	const filteredDepartments = {
-		departments: availableDepartments.departments.filter(
-			(department) =>
-				!allUnits ||
-				!allUnits.units ||
-				!department.ancestors ||
-				department.ancestors[0] === unitId ||
-				!allUnits.units.find((unit) => unit._id === department.ancestors[0]),
-		),
-	};
-
 	return (
 		<UnitEdit
+			title={title}
 			unitId={unitId}
 			data={data}
-			availableDepartments={filteredDepartments}
-			availableMonitors={availableMonitors}
 			unitMonitors={unitMonitors}
+			unitDepartments={unitDepartments}
 			reload={reload}
 		/>
 	);

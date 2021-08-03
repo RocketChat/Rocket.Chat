@@ -1,17 +1,27 @@
-import React, { lazy, useMemo, Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
+import { useCurrentRoute, useRoute } from '../../contexts/RouterContext';
 import SettingsProvider from '../../providers/SettingsProvider';
 import AdministrationLayout from './AdministrationLayout';
 
-function AdministrationRouter({ lazyRouteComponent, ...props }) {
-	const LazyRouteComponent = useMemo(() => lazy(lazyRouteComponent), [lazyRouteComponent]);
+function AdministrationRouter({ renderRoute }) {
+	const [routeName] = useCurrentRoute();
+	const defaultRoute = useRoute('admin-info');
+	useEffect(() => {
+		if (routeName === 'admin-index') {
+			defaultRoute.push();
+		}
+	}, [defaultRoute, routeName]);
+
 	return (
 		<AdministrationLayout>
 			<SettingsProvider privileged>
-				<Suspense fallback={<PageSkeleton />}>
-					<LazyRouteComponent {...props} />
-				</Suspense>
+				{renderRoute ? (
+					<Suspense fallback={<PageSkeleton />}>{renderRoute()}</Suspense>
+				) : (
+					<PageSkeleton />
+				)}
 			</SettingsProvider>
 		</AdministrationLayout>
 	);

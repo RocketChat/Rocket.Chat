@@ -27,17 +27,8 @@ export default function IncomingWebhookForm({
 
 	const absoluteUrl = useAbsoluteUrl();
 
-	const {
-		enabled,
-		channel,
-		username,
-		name,
-		alias,
-		avatarUrl,
-		emoji,
-		scriptEnabled,
-		script,
-	} = formValues;
+	const { enabled, channel, username, name, alias, avatarUrl, emoji, scriptEnabled, script } =
+		formValues;
 
 	const {
 		handleEnabled,

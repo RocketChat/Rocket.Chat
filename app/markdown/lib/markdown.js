@@ -3,13 +3,13 @@
  * @param {Object} message - The message object
  */
 import { Meteor } from 'meteor/meteor';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { marked } from './parser/marked/marked';
 import { original } from './parser/original/original';
 import { filtered } from './parser/filtered/filtered';
 import { code } from './parser/original/code';
 import { settings } from '../../settings';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 const parsers = {
 	original,

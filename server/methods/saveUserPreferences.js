@@ -26,7 +26,7 @@ Meteor.methods({
 			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
-			hideAvatars: Match.Optional(Boolean),
+			displayAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),
 			sendOnEnter: Match.Optional(String),
 			idleTimeLimit: Match.Optional(Number),
@@ -34,9 +34,8 @@ Meteor.methods({
 			sidebarShowUnread: Match.Optional(Boolean),
 			sidebarSortby: Match.Optional(String),
 			sidebarViewMode: Match.Optional(String),
-			sidebarHideAvatar: Match.Optional(Boolean),
+			sidebarDisplayAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
-			sidebarShowDiscussion: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));

@@ -17,7 +17,7 @@ const LayoutProvider: FC = ({ children }) => {
 			children={children}
 			value={useMemo(
 				() => ({
-					isMobile: !breakpoints.includes('sm'),
+					isMobile: !breakpoints.includes('md'),
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
 					sidebar: menu,

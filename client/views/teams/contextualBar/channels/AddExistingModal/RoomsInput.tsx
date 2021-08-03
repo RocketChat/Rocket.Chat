@@ -76,8 +76,8 @@ const RoomsInput: FC<RoomsInputProps> = ({ onChange, ...props }) => {
 	);
 
 	const handleChange = useCallback<AutoCompleteProps['onChange']>(
-		(value, action) => {
-			onChange(rooms[value as IRoom['_id']], action);
+		(value, action: 'remove' | undefined) => {
+			onChange(rooms[value as string], action);
 		},
 		[onChange, rooms],
 	);

@@ -370,6 +370,14 @@ export default class LDAP {
 					values[key] = value;
 				}
 			}
+
+			if (key === 'ou' && Array.isArray(value)) {
+				value.forEach((item, index) => {
+					if (item instanceof Buffer) {
+						value[index] = item.toString();
+					}
+				});
+			}
 		});
 
 		return values;

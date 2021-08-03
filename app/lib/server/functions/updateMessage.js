@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import { parser } from '@rocket.chat/message-parser';
 
 import { Messages, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Apps } from '../../../apps/server';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
+
+const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
 export const updateMessage = function(message, user, originalMessage) {
 	if (!originalMessage) {
@@ -39,10 +43,17 @@ export const updateMessage = function(message, user, originalMessage) {
 		username: user.username,
 	};
 
-	const urls = message.msg.match(/([A-Za-z]{3,9}):\/\/([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((\/[-\+=!:~%\/\.@\,\w]*)?\??([-\+=&!:;%@\/\.\,\w]+)?(?:#([^\s\)]+))?)?/g) || [];
-	message.urls = urls.map((url) => ({ url }));
+	parseUrlsInMessage(message);
 
 	message = callbacks.run('beforeSaveMessage', message);
+
+	try {
+		if (message.msg && DISABLE_MESSAGE_PARSER !== 'true') {
+			message.md = parser(message.msg);
+		}
+	} catch (e) {
+		console.log(e); // errors logged while the parser is at experimental stage
+	}
 
 	const tempid = message._id;
 	delete message._id;

@@ -4,12 +4,12 @@ import { Template } from 'meteor/templating';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import * as BlazeLayout from '../../../../client/lib/portals/blazeLayout';
+import { appLayout } from '../../../../client/lib/appLayout';
 import { APIClient } from '../../../utils/client';
 
 FlowRouter.route('/oauth/authorize', {
 	action(params, queryParams) {
-		BlazeLayout.render('main', {
+		appLayout.render('main', {
 			center: 'authorize',
 			modal: true,
 			client_id: queryParams.client_id,
@@ -22,7 +22,7 @@ FlowRouter.route('/oauth/authorize', {
 
 FlowRouter.route('/oauth/error/:error', {
 	action(params) {
-		BlazeLayout.render('main', {
+		appLayout.render('main', {
 			center: 'oauth404',
 			modal: true,
 			error: params.error,

@@ -2,7 +2,7 @@ import { Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../components/Page';
-import { useRoute, useRouteParameter } from '../../contexts/RouterContext';
+import { useCurrentRoute, useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import ChannelsTab from './ChannelsTab';
@@ -13,19 +13,22 @@ function DirectoryPage() {
 	const t = useTranslation();
 
 	const defaultTab = useSetting('Accounts_Directory_DefaultView');
-
 	const federationEnabled = useSetting('FEDERATION_Enabled');
-
+	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
-
 	const directoryRoute = useRoute('directory');
-	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
 	useEffect(() => {
+		if (routeName !== 'directory') {
+			return;
+		}
+
 		if (!tab || (tab === 'external' && !federationEnabled)) {
 			return directoryRoute.replace({ tab: defaultTab });
 		}
-	}, [directoryRoute, tab, federationEnabled, defaultTab]);
+	}, [routeName, directoryRoute, tab, federationEnabled, defaultTab]);
+
+	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
 	return (
 		<Page>

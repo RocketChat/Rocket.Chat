@@ -15,7 +15,6 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 		return next();
 	}
 
-
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 
 	let domainWhiteList = settings.get('Livechat_AllowedDomainsList');
@@ -31,6 +30,9 @@ WebApp.connectHandlers.use('/livechat', Meteor.bindEnvironment((req, res, next) 
 		}
 
 		res.setHeader('Content-Security-Policy', `frame-ancestors ${ referer.protocol }//${ referer.host }`);
+	} else {
+		// TODO need to remove inline scripts from this route to be able to enable CSP here as well
+		res.removeHeader('Content-Security-Policy');
 	}
 
 	res.write(indexHtmlWithServerURL);

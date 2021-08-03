@@ -3,7 +3,7 @@ import { addAction, QuickActionsEnum } from '../../../../../client/views/room/li
 addAction(QuickActionsEnum.OnHoldChat, {
 	groups: ['live'],
 	id: QuickActionsEnum.OnHoldChat,
-	title: 'Livechat_onHold_Chat',
+	title: 'Omnichannel_onHold_Chat',
 	icon: 'pause-unfilled',
 	order: 4,
 });

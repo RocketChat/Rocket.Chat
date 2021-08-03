@@ -11,7 +11,7 @@ import {
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -33,14 +33,8 @@ const CreateChannel = ({
 	const namesValidation = useSetting('UTF8_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const channelNameExists = useMethod('roomNameExists');
-	const channelNameRegex = useMemo(() => {
-		if (allowSpecialNames) {
-			return '';
-		}
-		const regex = new RegExp(`^${namesValidation}$`);
 
-		return regex;
-	}, [allowSpecialNames, namesValidation]);
+	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
 
 	const [nameError, setNameError] = useState();
 
@@ -53,7 +47,7 @@ const CreateChannel = ({
 			if (!name || name.length === 0) {
 				return setNameError(t('Field_required'));
 			}
-			if (!channelNameRegex.test(name)) {
+			if (!allowSpecialNames && !channelNameRegex.test(name)) {
 				return setNameError(t('error-invalid-name'));
 			}
 			const isNotAvailable = await channelNameExists(name);
@@ -62,7 +56,7 @@ const CreateChannel = ({
 			}
 		},
 		100,
-		[name],
+		[channelNameRegex],
 	);
 
 	useEffect(() => {
@@ -126,7 +120,7 @@ const CreateChannel = ({
 						/>
 					</Box>
 				</Field>
-				<Field mbe='x24' disabled={values.broadcast}>
+				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
 							<Field.Label>{t('Read_only')}</Field.Label>
@@ -141,7 +135,7 @@ const CreateChannel = ({
 						/>
 					</Box>
 				</Field>
-				<Field disabled={e2edisabled} mbe='x24'>
+				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
 							<Field.Label>{t('Encrypted')}</Field.Label>

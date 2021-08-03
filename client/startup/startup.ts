@@ -25,6 +25,8 @@ if (window.DISABLE_ANIMATION) {
 }
 
 Meteor.startup(() => {
+	fireGlobalEvent('startup', true);
+
 	Accounts.onLogout(() => Session.set('openedRoom', null));
 
 	TimeSync.loggingEnabled = false;
@@ -45,6 +47,7 @@ Meteor.startup(() => {
 		}
 
 		const user = await synchronizeUserData(uid);
+
 		if (!user) {
 			return;
 		}

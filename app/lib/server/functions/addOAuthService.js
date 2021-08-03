@@ -1,12 +1,12 @@
 /* eslint no-multi-spaces: 0 */
 /* eslint comma-spacing: 0 */
-import s from 'underscore.string';
+import { capitalize } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings';
 
 export function addOAuthService(name, values = {}) {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
-	name = s.capitalize(name);
+	name = capitalize(name);
 	settings.add(`Accounts_OAuth_Custom-${ name }`                        , values.enabled || false                       , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Enable', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-url`                    , values.serverURL || ''                        , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'URL', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-token_path`             , values.tokenPath || '/oauth/token'            , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Token_Path', persistent: true });

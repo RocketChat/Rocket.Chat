@@ -20,7 +20,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import { roomTypes, RoomSettingsEnum } from '../../../../../../app/utils/client';
-import DeleteChannelWarning from '../../../../../components/DeleteChannelWarning';
+import GenericModal from '../../../../../components/GenericModal';
 import RawText from '../../../../../components/RawText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
@@ -231,6 +231,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
+		room._id,
 	);
 	const canDelete = usePermission(`delete-${room.t}`);
 	const canToggleEncryption =
@@ -259,7 +260,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				...data,
 				...(joinCode && { joinCode: joinCodeRequired ? joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes ? systemMessages : [],
+					systemMessages: hideSysMes && systemMessages,
 				}),
 			});
 
@@ -281,7 +282,16 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 			onCancel();
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={onCancel}
+				confirmText={t('Yes_delete_it')}
+			>
+				{t('Delete_Room_Warning')}
+			</GenericModal>,
+		);
 	});
 
 	const changeRoomType = useMutableCallback(() => {
@@ -365,7 +375,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Just_invited_people_can_access_this_channel')}</Field.Hint>
+						<Field.Hint>{t('Teams_New_Private_Description_Enabled')}</Field.Hint>
 					</Field>
 				)}
 				{canViewReadOnly && (
@@ -397,7 +407,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				{canViewArchived && (
 					<Field>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
-							<Field.Label>{t('Archived')}</Field.Label>
+							<Field.Label>{t('Room_archivation_state_true')}</Field.Label>
 							<Field.Row>
 								<ToggleSwitch
 									disabled={!canArchiveOrUnarchive}

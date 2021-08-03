@@ -17,3 +17,7 @@ import './onSaveVisitorInfo';
 import './onBusinessHourStart';
 import './onAgentAssignmentFailed';
 import './afterOnHoldChatResumed';
+import './afterReturnRoomAsInquiry';
+import './applyDepartmentRestrictions';
+import './afterForwardChatToAgent';
+import './applySimultaneousChatsRestrictions';

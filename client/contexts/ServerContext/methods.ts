@@ -1,4 +1,5 @@
 import { FollowMessageMethod } from './methods/followMessage';
+import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import { SaveSettingsMethod } from './methods/saveSettings';
@@ -103,6 +104,7 @@ export type ServerMethods = {
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
 	'removeWebdavAccount': (...args: any[]) => any;
+	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
@@ -129,6 +131,7 @@ export type ServerMethods = {
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 };
 
 export type ServerMethodName = keyof ServerMethods;

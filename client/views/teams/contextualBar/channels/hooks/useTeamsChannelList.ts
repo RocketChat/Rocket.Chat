@@ -34,7 +34,7 @@ export const useTeamsChannelList = (
 			const { rooms, total } = await apiEndPoint({
 				teamId: options.teamId,
 				offset: start,
-				count: end - start,
+				count: end,
 				filter: options.text,
 				type: options.type,
 			});

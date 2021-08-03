@@ -3,11 +3,8 @@ import React from 'react';
 
 import { useRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 
 function NotFoundPage() {
-	useWipeInitialPageLoading();
-
 	const t = useTranslation();
 	const homeRoute = useRoute('home');
 

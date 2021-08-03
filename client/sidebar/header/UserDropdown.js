@@ -1,7 +1,6 @@
 import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import { callbacks } from '../../../app/callbacks/client';
@@ -14,6 +13,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const ADMIN_PERMISSIONS = [
@@ -47,13 +47,18 @@ const getItems = () => AccountBox.getItems();
 
 const UserDropdown = ({ user, onClose }) => {
 	const t = useTranslation();
-	const homeRoute = useRoute('home');
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
+
+	const logout = useLogout();
 
 	const { name, username, avatarETag, status, statusText } = user;
 
 	const useRealName = useSetting('UI_Use_Real_Name');
+	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
+		? (key) => userStatus.list[key].name !== 'invisible'
+		: () => true;
+
 	const showAdmin = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 
 	const handleCustomStatus = useMutableCallback((e) => {
@@ -74,15 +79,6 @@ const UserDropdown = ({ user, onClose }) => {
 		onClose();
 	});
 
-	const handleLogout = useMutableCallback(() => {
-		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
-			homeRoute.push({});
-			popover.close();
-		});
-	});
-
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
 		popover.close();
@@ -90,6 +86,11 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
+		popover.close();
+	});
+
+	const handleLogout = useMutableCallback(() => {
+		logout();
 		popover.close();
 	});
 
@@ -131,26 +132,28 @@ const UserDropdown = ({ user, onClose }) => {
 				<Box pi='x16' fontScale='c1' textTransform='uppercase'>
 					{t('Status')}
 				</Box>
-				{Object.keys(userStatus.list).map((key, i) => {
-					const status = userStatus.list[key];
-					const name = status.localizeName ? t(status.name) : status.name;
-					const modifier = status.statusType || user.status;
+				{Object.keys(userStatus.list)
+					.filter(filterInvisibleStatus)
+					.map((key, i) => {
+						const status = userStatus.list[key];
+						const name = status.localizeName ? t(status.name) : status.name;
+						const modifier = status.statusType || user.status;
 
-					return (
-						<Option
-							onClick={() => {
-								setStatus(status.statusType);
-								onClose();
-							}}
-							key={i}
-						>
-							<Option.Column>
-								<UserStatus status={modifier} />
-							</Option.Column>
-							<Option.Content>{name}</Option.Content>
-						</Option>
-					);
-				})}
+						return (
+							<Option
+								onClick={() => {
+									setStatus(status.statusType);
+									onClose();
+								}}
+								key={i}
+							>
+								<Option.Column>
+									<UserStatus status={modifier} />
+								</Option.Column>
+								<Option.Content>{name}</Option.Content>
+							</Option>
+						);
+					})}
 				<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} />
 			</div>
 

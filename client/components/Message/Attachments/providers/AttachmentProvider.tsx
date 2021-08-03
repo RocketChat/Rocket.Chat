@@ -6,7 +6,7 @@ import { useLayout } from '../../../../contexts/LayoutContext';
 import { useUserPreference } from '../../../../contexts/UserContext';
 import { AttachmentContext, AttachmentContextValue } from '../context/AttachmentContext';
 
-const AttachmentProvider: FC<{}> = ({ children }) => {
+const AttachmentProvider: FC = ({ children }) => {
 	const { isMobile } = useLayout();
 	const reducedData = usePrefersReducedData();
 	const collapsedByDefault = !!useUserPreference<boolean>('collapseMediaByDefault');

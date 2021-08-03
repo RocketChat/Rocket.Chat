@@ -5,9 +5,9 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { escapeHTML } from '../../../lib/escapeHTML';
 import { replaceVariables } from './utils.js';
 
 let contentHeader;
@@ -25,7 +25,12 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), escapeHTML(value));
+
+export const replacekey = (str, key, value = '') => str.replace(
+	new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
+	value,
+);
+
 export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
@@ -54,6 +59,7 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
+
 export const wrap = (html, data = {}) => {
 	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);

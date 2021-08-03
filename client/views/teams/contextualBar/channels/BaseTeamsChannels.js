@@ -81,8 +81,8 @@ const BaseTeamsChannels = ({
 					</Box>
 				)}
 				{!loading && channels.length === 0 && (
-					<Box pi='x24' pb='x12'>
-						{t('No_results_found')}
+					<Box textAlign='center' p='x12' color='neutral-600'>
+						{t('No_channels_in_team')}
 					</Box>
 				)}
 				{!loading && (

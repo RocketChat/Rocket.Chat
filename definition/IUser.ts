@@ -37,6 +37,7 @@ export interface IUserServices {
 	password?: {
 		bcrypt: string;
 	};
+	passwordHistory?: string[];
 	email?: {
 		verificationTokens?: IUserEmailVerificationToken[];
 	};
@@ -84,6 +85,14 @@ export interface IRole {
 	protected: boolean;
 	scope?: string;
 	_id: string;
+}
+
+export interface IDailyActiveUsers {
+	usersList: string[];
+	users: number;
+	day: number;
+	month: number;
+	year: number;
 }
 
 export interface IUser extends IRocketChatRecord {

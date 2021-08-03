@@ -5,6 +5,7 @@ import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useUserRoom, useUserId } from '../../../../../contexts/UserContext';
 import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
+import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { FilesList, FilesListOptions } from '../../../../../lib/lists/FilesList';
 
 export const useFilesList = (
@@ -12,12 +13,17 @@ export const useFilesList = (
 ): {
 	filesList: FilesList;
 	initialItemCount: number;
+	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const [filesList] = useState(() => new FilesList(options));
-
+	const [filesList, setFilesList] = useState(() => new FilesList(options));
+	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
 	const room = useUserRoom(options.rid);
 	const uid = useUserId();
+
+	useComponentDidUpdate(() => {
+		options && reload();
+	}, [options, reload]);
 
 	useEffect(() => {
 		if (filesList.options !== options) {
@@ -40,7 +46,8 @@ export const useFilesList = (
 		async (start, end) => {
 			const { files, total } = await getFiles({
 				roomId: options.rid,
-				count: end - start,
+				offset: start,
+				count: end,
 				sort: JSON.stringify({ uploadedAt: -1 }),
 				query: JSON.stringify({
 					name: { $regex: options.text || '', $options: 'i' },
@@ -69,6 +76,7 @@ export const useFilesList = (
 	useStreamUpdatesForMessageList(filesList, uid, options.rid);
 
 	return {
+		reload,
 		filesList,
 		loadMoreItems,
 		initialItemCount,

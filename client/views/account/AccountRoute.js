@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { SideNav } from '../../../app/ui-utils/client';
 import NotAuthorizedPage from '../../components/NotAuthorizedPage';
 import { usePermission } from '../../contexts/AuthorizationContext';
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
+import { useRouteParameter, useRoute, useCurrentRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import AccountIntegrationsPage from './AccountIntegrationsPage';
 import AccountProfilePage from './AccountProfilePage';
@@ -13,12 +13,17 @@ import AccountTokensPage from './tokens/AccountTokensPage';
 import './sidebarItems';
 
 const AccountRoute = () => {
+	const [routeName] = useCurrentRoute();
 	const page = useRouteParameter('group');
 	const router = useRoute('account');
 
 	useEffect(() => {
+		if (routeName !== 'account') {
+			return;
+		}
+
 		!page && router.push({ group: 'profile' });
-	}, [page, router]);
+	}, [routeName, page, router]);
 
 	useEffect(() => {
 		SideNav.setFlex('accountFlex');

@@ -95,7 +95,7 @@ const PermissionsTable = () => {
 						<Icon name='plus' />
 					</Button>
 				</Page.Header>
-				<Margins blockEnd='x8'>
+				<Margins blockEnd='x16'>
 					<Tabs>
 						<Tabs.Item
 							selected={type === 'permissions'}

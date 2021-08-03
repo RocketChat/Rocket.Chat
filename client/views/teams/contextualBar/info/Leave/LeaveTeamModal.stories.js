@@ -3,7 +3,7 @@ import React from 'react';
 import LeaveTeamModal, { StepOne, StepTwo } from '.';
 
 export default {
-	title: 'components/LeaveTeamModal',
+	title: 'teams/LeaveTeamModal',
 	component: LeaveTeamModal,
 };
 
@@ -25,6 +25,4 @@ export const Default = () => <LeaveTeamModal rooms={rooms} />;
 
 export const ModalStepOne = () => <StepOne rooms={rooms} selectedRooms={{}} {...commonProps} />;
 
-export const ModalStepTwo = () => (
-	<StepTwo keptRooms={rooms} lastOwnerRooms={{}} {...commonProps} />
-);
+export const ModalStepTwo = () => <StepTwo {...commonProps} />;

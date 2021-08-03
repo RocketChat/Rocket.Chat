@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms, Messages, Subscriptions, Integrations } from '../../../models';
-import { roomTypes, getValidRoomName } from '../../../utils';
-import { callbacks } from '../../../callbacks';
+import { Rooms, Messages, Subscriptions, Integrations } from '../../../models/server';
+import { roomTypes, getValidRoomName } from '../../../utils/server';
+import { callbacks } from '../../../callbacks/server';
 import { checkUsernameAvailability } from '../../../lib/server/functions';
 
 const updateRoomName = (rid, displayName, isDiscussion) => {
@@ -34,6 +34,7 @@ export const saveRoomName = function(rid, displayName, user, sendMessage = true)
 	if (!update) {
 		return;
 	}
+
 	Integrations.updateRoomName(room.name, displayName);
 	if (sendMessage) {
 		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);

@@ -1,9 +1,9 @@
 import { Box, Table } from '@rocket.chat/fuselage';
+import { capitalize } from '@rocket.chat/string-helpers';
 import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { capitalize } from '../../../lib/capitalize';
 
 const style = {
 	whiteSpace: 'nowrap',

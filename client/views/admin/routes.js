@@ -6,14 +6,6 @@ export const registerAdminRoute = createRouteGroup('admin', '/admin', () =>
 	import('./AdministrationRouter'),
 );
 
-registerAdminRoute('/', {
-	triggersEnter: [
-		(context, redirect) => {
-			redirect('admin-info');
-		},
-	],
-});
-
 registerAdminRoute('/custom-sounds/:context?/:id?', {
 	name: 'custom-sounds',
 	lazyRouteComponent: () => import('./customSounds/AdminSoundsRoute'),

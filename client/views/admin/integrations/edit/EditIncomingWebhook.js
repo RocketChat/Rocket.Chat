@@ -1,8 +1,7 @@
 import { Field, Box, Margins, Button } from '@rocket.chat/fuselage';
 import React, { useMemo, useCallback } from 'react';
 
-import DeleteSuccessModal from '../../../../components/DeleteSuccessModal';
-import DeleteWarningModal from '../../../../components/DeleteWarningModal';
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
@@ -34,9 +33,10 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [
-		data._id,
-	]);
+	const deleteQuery = useMemo(
+		() => ({ type: 'webhook-incoming', integrationId: data._id }),
+		[data._id],
+	);
 	const deleteIntegration = useEndpointAction('POST', 'integrations.remove', deleteQuery);
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
@@ -44,27 +44,32 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 
 	const handleDeleteIntegration = useCallback(() => {
 		const closeModal = () => setModal();
+
+		const handleClose = () => {
+			closeModal();
+			router.push({});
+		};
+
 		const onDelete = async () => {
 			const result = await deleteIntegration();
 			if (result.success) {
 				setModal(
-					<DeleteSuccessModal
-						children={t('Your_entry_has_been_deleted')}
-						onClose={() => {
-							closeModal();
-							router.push({});
-						}}
-					/>,
+					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+						{t('Your_entry_has_been_deleted')}
+					</GenericModal>,
 				);
 			}
 		};
 
 		setModal(
-			<DeleteWarningModal
-				children={t('Integration_Delete_Warning')}
-				onDelete={onDelete}
+			<GenericModal
+				variant='danger'
+				onConfirm={onDelete}
 				onCancel={closeModal}
-			/>,
+				confirmText={t('Delete')}
+			>
+				{t('Integration_Delete_Warning')}
+			</GenericModal>,
 		);
 	}, [deleteIntegration, router, setModal, t]);
 

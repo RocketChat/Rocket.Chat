@@ -31,7 +31,7 @@ export const useDiscussionsList = (
 				roomId: options.rid,
 				text: options.text,
 				offset: start,
-				count: end - start,
+				count: end,
 			});
 
 			return {

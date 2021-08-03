@@ -3,7 +3,7 @@ import React from 'react';
 import RegisterServerStep from './RegisterServerStep';
 
 export default {
-	title: 'views/setupWizard/steps/RegisterServerStep',
+	title: 'components/setupWizard/steps/RegisterServerStep',
 	component: RegisterServerStep,
 };
 

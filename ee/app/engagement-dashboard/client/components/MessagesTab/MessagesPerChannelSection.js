@@ -9,7 +9,7 @@ import { LegendSymbol } from '../data/LegendSymbol';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function MessagesPerChannelSection() {
+const MessagesPerChannelSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -86,8 +86,15 @@ export function MessagesPerChannelSection() {
 										? <Box>
 											<Flex.Item grow={1} shrink={1}>
 												<Margins inline='x24'>
-													<Box style={{ position: 'relative', height: 300 }}>
-														<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+													<Box style={{
+														position: 'relative',
+														height: 300,
+													}}>
+														<Box style={{
+															position: 'absolute',
+															width: '100%',
+															height: '100%',
+														}}>
 															<ResponsivePie
 																data={[
 																	{
@@ -221,4 +228,6 @@ export function MessagesPerChannelSection() {
 			</Margins>
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default MessagesPerChannelSection;

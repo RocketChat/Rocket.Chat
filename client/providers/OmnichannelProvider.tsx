@@ -141,4 +141,4 @@ const OmnichannelProvider: FC = ({ children }) => {
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };
 
-export default memo(OmnichannelProvider);
+export default memo<typeof OmnichannelProvider>(OmnichannelProvider);

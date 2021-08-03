@@ -5,9 +5,9 @@ import { useUserPreference } from '../../contexts/UserContext';
 
 export const useAvatarTemplate = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const sidebarHideAvatar = useUserPreference('sidebarHideAvatar');
+	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar');
 	return useMemo(() => {
-		if (sidebarHideAvatar) {
+		if (!sidebarDisplayAvatar) {
 			return null;
 		}
 
@@ -28,5 +28,5 @@ export const useAvatarTemplate = () => {
 		);
 
 		return renderRoomAvatar;
-	}, [sidebarHideAvatar, sidebarViewMode]);
+	}, [sidebarDisplayAvatar, sidebarViewMode]);
 };

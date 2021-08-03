@@ -4,7 +4,7 @@ import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData
 import UserItem from './UserItem';
 
 const Row = ({ item, data }) => {
-	const { t, SideBarItemTemplate, AvatarTemplate, useRealName, extended } = data;
+	const { t, SideBarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
 		return (

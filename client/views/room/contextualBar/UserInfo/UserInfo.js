@@ -5,6 +5,7 @@ import MarkdownText from '../../../../components/MarkdownText';
 import UTCClock from '../../../../components/UTCClock';
 import UserCard from '../../../../components/UserCard';
 import VerticalBar from '../../../../components/VerticalBar';
+import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import InfoPanel from '../../../InfoPanel';
@@ -13,6 +14,7 @@ import Avatar from './Avatar';
 function UserInfo({
 	username,
 	bio,
+	canViewAllInfo,
 	email,
 	verified,
 	showRealNames,
@@ -31,8 +33,24 @@ function UserInfo({
 	...props
 }) {
 	const t = useTranslation();
-
 	const timeAgo = useTimeAgo();
+	const customFieldsToShowSetting = useSetting('Accounts_CustomFieldsToShowInUserInfo');
+	let customFieldsToShowObj;
+	try {
+		customFieldsToShowObj = JSON.parse(customFieldsToShowSetting);
+	} catch (error) {
+		customFieldsToShowObj = undefined;
+	}
+
+	const customFieldsToShow = customFieldsToShowObj
+		? Object.values(customFieldsToShowObj).map((value) => {
+				const role = Object.values(value);
+				const roleNameToShow = Object.keys(value);
+				const customField = {};
+				customField[roleNameToShow] = customFields[role];
+				return customField;
+		  })
+		: [];
 
 	return (
 		<VerticalBar.ScrollableContent p='x24' {...props}>
@@ -50,7 +68,7 @@ function UserInfo({
 				</InfoPanel.Section>
 
 				<InfoPanel.Section>
-					{!!roles && (
+					{roles.length !== 0 && (
 						<InfoPanel.Field>
 							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCard.Roles>{roles}</UserCard.Roles>
@@ -73,10 +91,12 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
-						<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{canViewAllInfo && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 
 					{name && (
 						<InfoPanel.Field>
@@ -129,18 +149,21 @@ function UserInfo({
 						</InfoPanel.Field>
 					)}
 
-					{customFields &&
-						Object.entries(customFields).map(([label, value]) => (
-							<InfoPanel.Field key={label}>
-								<InfoPanel.Label>{t(label)}</InfoPanel.Label>
-								<InfoPanel.Text>{value}</InfoPanel.Text>
+					{customFieldsToShow.map((customField) =>
+						Object.values(customField)[0] ? (
+							<InfoPanel.Field key={Object.keys(customField)[0]}>
+								<InfoPanel.Label>{t(Object.keys(customField)[0])}</InfoPanel.Label>
+								<InfoPanel.Text>{Object.values(customField)[0]}</InfoPanel.Text>
 							</InfoPanel.Field>
-						))}
+						) : null,
+					)}
 
-					<InfoPanel.Field>
-						<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
-						<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
-					</InfoPanel.Field>
+					{createdAt && (
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
+					)}
 				</InfoPanel.Section>
 			</InfoPanel>
 		</VerticalBar.ScrollableContent>

@@ -1,5 +1,4 @@
 import { HTML } from 'meteor/htmljs';
-import { ComponentProps, ComponentType } from 'react';
 
 import { createTemplateForComponent } from './lib/portals/createTemplateForComponent';
 
@@ -7,12 +6,25 @@ createTemplateForComponent('MessageActions', () => import('./components/Message/
 
 createTemplateForComponent('reactAttachments', () => import('./components/Message/Attachments'));
 
-createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'));
+createTemplateForComponent('ThreadMetric', () => import('./components/Message/Metrics/Thread'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'min-height: 36px;',
+		}),
+});
 
 createTemplateForComponent(
 	'DiscussionMetric',
 	() => import('./components/Message/Metrics/Discussion'),
+	{
+		renderContainerView: () =>
+			HTML.DIV({
+				style: 'min-height: 36px;',
+			}),
+	},
 );
+
+createTemplateForComponent('MessageBody', () => import('./components/Message/Body'));
 
 createTemplateForComponent(
 	'BroadCastMetric',
@@ -21,28 +33,25 @@ createTemplateForComponent(
 
 createTemplateForComponent(
 	'Checkbox',
-	(): Promise<{
-		default: ComponentType<ComponentProps<typeof import('@rocket.chat/fuselage').CheckBox>>;
-	}> => import('@rocket.chat/fuselage').then(({ CheckBox }) => ({ default: CheckBox })),
+	async (): Promise<{ default: typeof import('@rocket.chat/fuselage').CheckBox }> => {
+		const { CheckBox } = await import('@rocket.chat/fuselage');
+		return { default: CheckBox };
+	},
 	{
-		renderContainerView: () => HTML.DIV({ class: 'rcx-checkbox', style: 'display: flex;' }), // eslint-disable-line new-cap
+		attachment: 'at-parent',
 	},
 );
 
-createTemplateForComponent(
-	'ThreadComponent',
-	() => import('../app/threads/client/components/ThreadComponent'),
-	{
-		renderContainerView: () =>
-			HTML.DIV({ class: 'contextual-bar', style: 'display: flex; height: 100%;' }), // eslint-disable-line new-cap
-	},
-);
-
-createTemplateForComponent('RoomForeword', () => import('./components/RoomForeword'));
+createTemplateForComponent('RoomForeword', () => import('./components/RoomForeword'), {
+	attachment: 'at-parent',
+});
 
 createTemplateForComponent(
 	'accountSecurity',
 	() => import('./views/account/security/AccountSecurityPage'),
+	{
+		attachment: 'at-parent',
+	},
 );
 
 createTemplateForComponent('messageLocation', () => import('./views/location/MessageLocation'));
@@ -50,7 +59,10 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
-	renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }), // eslint-disable-line new-cap
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'display: flex; flex: 1 1 100%;',
+		}),
 });
 
 createTemplateForComponent(
@@ -58,7 +70,6 @@ createTemplateForComponent(
 	() => import('../app/ui-utils/client/lib/ReactionListContent'),
 	{
 		renderContainerView: () =>
-			// eslint-disable-next-line new-cap
 			HTML.DIV({
 				style:
 					'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;',
@@ -70,35 +81,35 @@ createTemplateForComponent(
 	'omnichannelFlex',
 	() => import('./views/omnichannel/sidebar/OmnichannelSidebar'),
 	{
-		renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 	},
 );
 
 createTemplateForComponent('auditPage', () => import('../ee/client/audit/AuditPage'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent('auditLogPage', () => import('../ee/client/audit/AuditLogPage'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%;' }), // eslint-disable-line new-cap
+	attachment: 'at-parent',
 });
 
 createTemplateForComponent(
 	'DiscussionMessageList',
 	() => import('./views/room/contextualBar/Discussions'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
 createTemplateForComponent('ThreadsList', () => import('./views/room/contextualBar/Threads'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
 createTemplateForComponent(
 	'ExportMessages',
 	() => import('./views/room/contextualBar/ExportMessages'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
@@ -106,19 +117,19 @@ createTemplateForComponent(
 	'KeyboardShortcuts',
 	() => import('./views/room/contextualBar/KeyboardShortcuts'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
 createTemplateForComponent('room', () => import('./views/room/Room'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
 createTemplateForComponent(
 	'AutoTranslate',
 	() => import('./views/room/contextualBar/AutoTranslate'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
@@ -126,7 +137,7 @@ createTemplateForComponent(
 	'NotificationsPreferences',
 	() => import('./views/room/contextualBar/NotificationPreferences'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
@@ -134,7 +145,7 @@ createTemplateForComponent(
 	'InviteUsers',
 	() => import('./views/room/contextualBar/RoomMembers/InviteUsers'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
@@ -142,7 +153,7 @@ createTemplateForComponent(
 	'EditInvite',
 	() => import('./views/room/contextualBar/RoomMembers/EditInvite'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
@@ -150,35 +161,34 @@ createTemplateForComponent(
 	'AddUsers',
 	() => import('./views/room/contextualBar/RoomMembers/AddUsers'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
 createTemplateForComponent('membersList', () => import('./views/room/contextualBar/RoomMembers'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
 createTemplateForComponent('OTR', () => import('./views/room/contextualBar/OTR'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
 createTemplateForComponent(
 	'EditRoomInfo',
 	() => import('./views/room/contextualBar/Info/EditRoomInfo'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
 createTemplateForComponent('RoomInfo', () => import('./views/room/contextualBar/Info/RoomInfo'), {
-	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 });
 
 createTemplateForComponent(
 	'UserInfoWithData',
 	() => import('./views/room/contextualBar/UserInfo'),
 	{
-		// eslint-disable-next-line new-cap
 		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
@@ -187,48 +197,42 @@ createTemplateForComponent(
 	'channelFilesList',
 	() => import('./views/room/contextualBar/RoomFiles'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
-createTemplateForComponent('RoomAnnouncement', () => import('./views/room/Announcement'), {
-	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
-});
+createTemplateForComponent('RoomAnnouncement', () => import('./views/room/Announcement'));
 
 createTemplateForComponent(
 	'PruneMessages',
 	() => import('./views/room/contextualBar/PruneMessages'),
 	{
-		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }), // eslint-disable-line new-cap
+		renderContainerView: () => HTML.DIV({ class: 'contextual-bar' }),
 	},
 );
 
-createTemplateForComponent('Burger', () => import('./views/room/Header/Burger'), {
-	renderContainerView: () => HTML.DIV(), // eslint-disable-line new-cap
-});
+createTemplateForComponent('Burger', () => import('./views/room/Header/Burger'));
 
 createTemplateForComponent(
 	'resetPassword',
 	() => import('./views/login/ResetPassword/ResetPassword'),
 	{
-		// eslint-disable-next-line new-cap
 		renderContainerView: () => HTML.DIV({ style: 'display: flex;' }),
 	},
 );
 
 createTemplateForComponent('ModalBlock', () => import('./views/blocks/ConnectedModalBlock'), {
-	// eslint-disable-next-line new-cap
 	renderContainerView: () => HTML.DIV({ style: 'display: flex; width: 100%; height: 100%;' }),
 });
 
 createTemplateForComponent('Blocks', () => import('./views/blocks/MessageBlock'));
 
 createTemplateForComponent('adminFlex', () => import('./views/admin/sidebar/AdminSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
 createTemplateForComponent('accountFlex', () => import('./views/account/AccountSidebar'), {
-	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }), // eslint-disable-line new-cap
+	renderContainerView: () => HTML.DIV({ style: 'height: 100%; position: relative;' }),
 });
 
 createTemplateForComponent('SortList', () => import('./components/SortList'));
@@ -239,3 +243,12 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent('StatusMessage', () => import('./components/Message/StatusMessage'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			class: 'message-custom-status',
+		}),
+});
+
+createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));

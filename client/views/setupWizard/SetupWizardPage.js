@@ -4,7 +4,6 @@ import React from 'react';
 
 import ScrollableContentWrapper from '../../components/ScrollableContentWrapper';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useWipeInitialPageLoading } from '../../hooks/useWipeInitialPageLoading';
 import { finalStep } from './SetupWizardState';
 import SideBar from './SideBar';
 import AdminUserInformationStep from './steps/AdminUserInformationStep';
@@ -13,8 +12,6 @@ import RegisterServerStep from './steps/RegisterServerStep';
 import SettingsBasedStep from './steps/SettingsBasedStep';
 
 function SetupWizardPage({ currentStep = 1 }) {
-	useWipeInitialPageLoading();
-
 	const t = useTranslation();
 	const small = useMediaQuery('(max-width: 760px)');
 

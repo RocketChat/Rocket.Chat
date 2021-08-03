@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Icon, Tabs } from '@rocket.chat/fuselage';
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
@@ -18,11 +18,6 @@ function IntegrationsPage() {
 	}, [router]);
 
 	const context = useRouteParameter('context');
-	useEffect(() => {
-		if (!context) {
-			router.push({ context: 'webhook-incoming' });
-		}
-	}, [context, router]);
 
 	const showTable = !['zapier', 'bots'].includes(context);
 
@@ -41,7 +36,7 @@ function IntegrationsPage() {
 				</ButtonGroup>
 			</Page.Header>
 			<Tabs>
-				<Tabs.Item selected={context === 'webhook-incoming'} onClick={goToIncoming}>
+				<Tabs.Item selected={!context || context === 'webhook-incoming'} onClick={goToIncoming}>
 					{t('Incoming')}
 				</Tabs.Item>
 				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={goToOutgoing}>

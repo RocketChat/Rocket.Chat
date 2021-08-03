@@ -12,13 +12,13 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useRef, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
-import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import UserInfo from '../../room/contextualBar/UserInfo';
 import { formsSubscription } from '../additionalForms';
 
@@ -87,9 +87,9 @@ function AgentEdit({ data, userDepartments, availableDepartments, uid, reset, ..
 			await saveAgentStatus({ status, agentId: uid });
 			dispatchToastMessage({ type: 'success', message: t('saved') });
 			agentsRoute.push({});
+			reset();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-			console.log(error);
 		}
 		commit();
 		commitMaxChats();

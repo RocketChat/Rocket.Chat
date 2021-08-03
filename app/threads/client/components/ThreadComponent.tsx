@@ -100,7 +100,7 @@ const ThreadComponent: FC<{
 	}, [dispatchToastMessage, followMessage, unfollowMessage, mid]);
 
 	const handleClose = useCallback(() => {
-		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name });
+		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
 	const [viewData, setViewData] = useState(() => ({

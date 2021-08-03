@@ -3,7 +3,7 @@ import React from 'react';
 import Retry from './Retry';
 
 export default {
-	title: 'Image',
+	title: 'components/Image',
 	component: Image,
 };
 

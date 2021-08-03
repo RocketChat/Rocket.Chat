@@ -1,4 +1,3 @@
-import { Icon, Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
@@ -10,44 +9,51 @@ import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';
 
 const ContactContextualBar = ({ contactReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
-	const context = useRouteParameter('context');
+	const bar = useRouteParameter('bar');
 	const id = useRouteParameter('id');
 
 	const t = useTranslation();
 
 	const handleContactsVerticalBarCloseButtonClick = () => {
-		directoryRoute.push({});
+		directoryRoute.push({ page: 'contacts' });
+	};
+
+	const handleContactsVerticalBarBackButtonClick = () => {
+		directoryRoute.push({ page: 'contacts', id, bar: 'info' });
 	};
 
 	return (
 		<VerticalBar className={'contextual-bar'}>
 			<VerticalBar.Header>
-				{context === 'new' && (
-					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='user' size='x20' /> {t('New_Contact')}
-					</Box>
+				{bar === 'new' && (
+					<>
+						<VerticalBar.Icon name='user' />
+						<VerticalBar.Text>{t('New_Contact')}</VerticalBar.Text>
+					</>
 				)}
-				{context === 'info' && (
-					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='user' size='x20' /> {t('Contact_Info')}
-					</Box>
+				{bar === 'info' && (
+					<>
+						<VerticalBar.Icon name='user' />
+						<VerticalBar.Text>{t('Contact_Info')}</VerticalBar.Text>
+					</>
 				)}
-				{context === 'edit' && (
-					<Box flexShrink={1} flexGrow={1} withTruncatedText mi='x8'>
-						<Icon name='pencil' size='x20' /> {t('Edit_Contact_Profile')}
-					</Box>
+				{bar === 'edit' && (
+					<>
+						<VerticalBar.Icon name='pencil' />
+						<VerticalBar.Text>{t('Edit_Contact_Profile')}</VerticalBar.Text>
+					</>
 				)}
 				<VerticalBar.Close onClick={handleContactsVerticalBarCloseButtonClick} />
 			</VerticalBar.Header>
-			{context === 'new' && (
+			{bar === 'new' && (
 				<ContactNewEdit reload={contactReload} close={handleContactsVerticalBarCloseButtonClick} />
 			)}
-			{context === 'info' && <ContactInfo reload={contactReload} id={id} />}
-			{context === 'edit' && (
+			{bar === 'info' && <ContactInfo reload={contactReload} id={id} />}
+			{bar === 'edit' && (
 				<ContactEditWithData
 					id={id}
 					reload={contactReload}
-					close={handleContactsVerticalBarCloseButtonClick}
+					close={handleContactsVerticalBarBackButtonClick}
 				/>
 			)}
 		</VerticalBar>
