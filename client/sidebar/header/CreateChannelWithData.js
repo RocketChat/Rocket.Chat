@@ -50,14 +50,8 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 		topic,
 		announcement,
 	} = values;
-	const {
-		handleUsers,
-		handleEncrypted,
-		handleType,
-		handleBroadcast,
-		handleReadOnly,
-		handleTags,
-	} = handlers;
+	const { handleUsers, handleEncrypted, handleType, handleBroadcast, handleReadOnly, handleTags,
+	} =	handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
