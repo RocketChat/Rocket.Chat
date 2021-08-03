@@ -239,7 +239,7 @@ button {
 	.rc-old .main-content-flex {
 		flex: 1 0 auto !important; /* 1 */
 
-		height: auto !important; /* 1 */ 
+		height: auto !important; /* 1 */
 	}
 
 	.rc-alerts {
