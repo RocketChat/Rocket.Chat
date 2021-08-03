@@ -219,7 +219,7 @@ export class Users extends Base {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId ? [{
 			$lookup: {
-				from: 'rocketchat_livechat_department_agent',
+				from: 'rocketchat_livechat_department_agents',
 				let: { departmentId: '$departmentId', agentId: '$agentId' },
 				pipeline: [{
 					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
@@ -273,7 +273,7 @@ export class Users extends Base {
 					},
 				},
 			},
-			...customFilter ? [customFilter] : [],
+			...customFilter ? [{ $match: customFilter }] : [],
 			{
 				$sort: {
 					'queueInfo.chats': 1,
