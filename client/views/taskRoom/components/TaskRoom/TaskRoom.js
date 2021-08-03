@@ -1,6 +1,7 @@
 import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { useEffect, useState, useRef } from 'react';
 
+import { ChatTask } from '../../../../../app/models/client';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import TaskDetailsModal from '../../taskDetailsModal';
 import CreateTaskModal from '../CreateTaskModal';
@@ -26,6 +27,24 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 	useEffect(() => {
 		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
 	});
+
+	const f = () => {
+		const query = {
+			rid,
+		};
+
+		const options = {
+			sort: {
+				ts: 1,
+			},
+		};
+		return ChatTask.find(query, options);
+	};
+	let t;
+	setTimeout(() => {
+		t = f();
+		console.log(t);
+	}, 3000);
 
 	const sortTasks = (id) => {
 		const sortedTasks = [...tasks];

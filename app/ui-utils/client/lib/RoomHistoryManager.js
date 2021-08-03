@@ -517,9 +517,17 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	getMoreIfIsEmpty(rid) {
 		const room = this.getRoom(rid);
-
+		console.log('getMoreifEmpty');
 		if (room.loaded === undefined) {
 			return this.getMore(rid);
+		}
+	}
+
+	getMoreIfIsEmptyTaskRoom(rid) {
+		const room = this.getRoom(rid);
+		console.log('getMoreifEmptyTask');
+		if (room.loaded === undefined) {
+			return this.getMoreTask(rid);
 		}
 	}
 
@@ -531,6 +539,15 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	clear(rid) {
 		ChatMessage.remove({ rid });
+		if (this.histories[rid]) {
+			this.histories[rid].hasMore.set(true);
+			this.histories[rid].isLoading.set(false);
+			this.histories[rid].loaded = undefined;
+		}
+	}
+
+	clearTasks(rid) {
+		ChatTask.remove({ rid });
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);
