@@ -96,6 +96,7 @@ export const RoomManager = new function() {
 						record.rid = room._id;
 						console.log('here3');
 						if (room.taskRoomId) {
+							console.log('taskRoom, getMoreIfIsEmptyTaskRoom');
 							RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
 						} else {
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);

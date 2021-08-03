@@ -53,6 +53,21 @@ export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper'
 	console.log('waitUntilWrapperExists');
 });
 
+export const waitUntilWrapperExistsTaskRoom = async (selector = '.taskRoom_tasksContainer') => document.querySelector(selector) || new Promise((resolve) => {
+	const observer = new MutationObserver(function(mutations, obs) {
+		const element = document.querySelector(selector);
+		if (element) {
+			obs.disconnect(); // stop observing
+			return resolve(element);
+		}
+	});
+	observer.observe(document, {
+		childList: true,
+		subtree: true,
+	});
+	console.log('waitUntilWrapperExists');
+});
+
 export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatMessage) => {
 	const userId = msg.u && msg.u._id;
 
@@ -296,7 +311,7 @@ export const RoomHistoryManager = new class extends Emitter {
 	async getMoreTask(rid, limit = defaultLimit) {
 		let ts;
 		const room = this.getRoom(rid);
-
+		console.log('getMoreTask1');
 		if (room.hasMore.curValue !== true) {
 			return;
 		}
@@ -304,7 +319,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		room.isLoading.set(true);
 
 		await this.queue();
-
+		console.log('getMoreTask2');
 		// ScrollListener.setLoader true
 		const lastTask = ChatTask.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
 		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
@@ -327,7 +342,7 @@ export const RoomHistoryManager = new class extends Emitter {
 			const curRoomDoc = ChatRoom.findOne({ _id: rid });
 			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
 		}
-
+		console.log('getMoreTask3');
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistoryTask', rid, ts, limit, ls, showMessageInMainThread);
 		console.log('get more');
@@ -339,12 +354,12 @@ export const RoomHistoryManager = new class extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitUntilWrapperExists();
-
-		if (wrapper) {
-			previousHeight = wrapper.scrollHeight;
-			scroll = wrapper.scrollTop;
-		}
+		// const wrapper = await waitUntilWrapperExistsTaskRoom();
+		// console.log('getMoreTask4');
+		// if (wrapper) {
+		// 	previousHeight = wrapper.scrollHeight;
+		// 	scroll = wrapper.scrollTop;
+		// }
 
 		upsertTaskBulk({
 			tasks: tasks.filter((task) => task.t !== 'command'),
@@ -359,20 +374,20 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		room.loaded += visibleTasks.length;
 
-
+		console.log('getMoreTask5');
 		if (tasks.length < limit) {
 			room.hasMore.set(false);
 		}
-
+		console.log('--------------------------------------------------->', tasks);
 		if (room.hasMore.get() && (visibleTasks.length === 0 || room.loaded < limit)) {
-			return this.getMore(rid);
+			return this.getMoreTask(rid);
 		}
 
-		waitAfterFlush(() => {
-			const heightDiff = wrapper.scrollHeight - previousHeight;
-			wrapper.scrollTop = scroll + heightDiff;
-		});
-
+		// waitAfterFlush(() => {
+		// 	const heightDiff = wrapper.scrollHeight - previousHeight;
+		// 	wrapper.scrollTop = scroll + heightDiff;
+		// });
+		console.log('getMoreTask7');
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
