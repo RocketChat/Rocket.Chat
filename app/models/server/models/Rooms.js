@@ -69,7 +69,7 @@ export class Rooms extends Base {
 				callStatus: status,
 			},
 		};
-
+		
 		return this.update(query, update);
 	}
 
