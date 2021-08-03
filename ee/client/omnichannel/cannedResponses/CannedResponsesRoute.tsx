@@ -8,6 +8,7 @@ import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
@@ -21,7 +22,10 @@ import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 
 const CannedResponsesRoute: FC = () => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
+	const isMonitor = usePermission('save-department-canned-responses');
+	const isManager = usePermission('save-all-canned-responses');
 
 	type CannedResponseFilterValues = {
 		sharing: string;
@@ -40,8 +44,8 @@ const CannedResponsesRoute: FC = () => {
 		text: '',
 	});
 
-	const { sharing, createdBy, tags, text } = values as CannedResponseFilterValues;
-	const { handleSharing, handleCreatedBy, handleTags, handleText } = handlers;
+	const { sharing, createdBy, text } = values as CannedResponseFilterValues;
+	const { handleSharing, handleCreatedBy, handleText } = handlers;
 
 	const [params, setParams] = useState<{ current?: number; itemsPerPage?: 25 | 50 | 100 }>({
 		current: 0,
@@ -57,13 +61,12 @@ const CannedResponsesRoute: FC = () => {
 		() => ({
 			text: debouncedText,
 			sort: JSON.stringify({ [debouncedSort[0]]: debouncedSort[1] === 'asc' ? 1 : -1 }),
-			...(tags && tags.length > 0 && { tags: tags.map((tag) => tag.label) }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
 			...(debouncedParams.itemsPerPage && { count: debouncedParams.itemsPerPage }),
 			...(debouncedParams.current && { offset: debouncedParams.current }),
 		}),
-		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing, tags],
+		[createdBy, debouncedParams, debouncedSort, debouncedText, sharing],
 	);
 
 	const cannedResponsesRoute = useRoute('omnichannel-canned-responses');
@@ -80,13 +83,19 @@ const CannedResponsesRoute: FC = () => {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback(
-		(id) => (): void =>
-			cannedResponsesRoute.push({
-				context: 'edit',
-				id,
-			}),
-	);
+	const onRowClick = useMutableCallback((id, scope) => (): void => {
+		if (scope === 'global' && isMonitor && !isManager) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Not_authorized'),
+			});
+			return;
+		}
+		cannedResponsesRoute.push({
+			context: 'edit',
+			id,
+		});
+	});
 
 	const defaultOptions = useMemo(
 		() => ({
@@ -167,7 +176,7 @@ const CannedResponsesRoute: FC = () => {
 				key={_id}
 				tabIndex={0}
 				role='link'
-				onClick={onRowClick(_id)}
+				onClick={onRowClick(_id, scope)}
 				action
 				qa-user-id={_id}
 			>
@@ -187,10 +196,12 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+				{!(scope === 'global' && isMonitor && !isManager) && (
+					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
+				)}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload, totalDataReload, defaultOptions],
+		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor, isManager],
 	);
 
 	if (context === 'edit' && id) {
@@ -222,11 +233,9 @@ const CannedResponsesRoute: FC = () => {
 				<CannedResponseFilter
 					sharingValue={sharing}
 					createdByValue={createdBy}
-					tagsValue={tags}
 					shortcutValue={text}
 					setSharing={handleSharing}
 					setCreatedBy={handleCreatedBy}
-					setTags={handleTags}
 					setShortcut={handleText}
 				/>
 			)}
