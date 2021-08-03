@@ -273,7 +273,7 @@ export class Users extends Base {
 					},
 				},
 			},
-			...customFilter ? [{ $match: customFilter }] : [],
+			...customFilter ? [customFilter] : [],
 			{
 				$sort: {
 					'queueInfo.chats': 1,
