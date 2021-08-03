@@ -104,18 +104,31 @@ const ActiveUsersSection = ({ timezone }) => {
 	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
-		const data = [{
-			countDailyActiveUsers,
-			diffDailyActiveUsers,
-			countWeeklyActiveUsers,
-			diffWeeklyActiveUsers,
-			countMonthlyActiveUsers,
-			diffMonthlyActiveUsers,
-			dauValues,
-			wauValues,
-			mauValues,
-		}];
-		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
+		const values = [
+			{ type: 'DAU', value: dauValues },
+			{ type: 'WAU', value: wauValues },
+			{ type: 'MAU', value: mauValues },
+		];
+
+		for (const { type, value } of values) {
+			const data = [
+				['Date', 'Value'],
+				...value.map(({ x, y }) => [x.toString(), y]),
+			];
+			downloadCsvAs(data, `ActiveUsersSection_${ type }_start_${ params.start }_end_${ params.end }`);
+		}
+		const data = [
+			['DAU', 'Diff. DAU', 'WAU', 'Diff. WAU', 'MAU', 'Diff. MAU'],
+			[
+				countDailyActiveUsers,
+				diffDailyActiveUsers,
+				countWeeklyActiveUsers,
+				diffWeeklyActiveUsers,
+				countMonthlyActiveUsers,
+				diffMonthlyActiveUsers,
+			],
+		];
+		downloadCsvAs(data, `ActiveUsersSection_stats_start_${ params.start }_end_${ params.end }`);
 	};
 
 
