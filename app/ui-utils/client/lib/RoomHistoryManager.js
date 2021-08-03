@@ -12,7 +12,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom, ChatTask } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';
@@ -87,6 +87,40 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
+export const upsertTask = async ({ task, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatTask) => {
+	const userId = task.u && task.u._id;
+
+	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
+		task.ignored = true;
+	}
+
+	// const roles = [
+	// 	(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
+	// 	(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
+	// ].map((e) => e.roles);
+	// msg.roles = _.union.apply(_.union, roles);
+
+
+	if (task.t === 'e2e' && !task.file) {
+		task.e2e = 'pending';
+	}
+	task = await promises.run('onClientMessageReceived', task) || task;
+
+	const { _id, ...taskToUpsert } = task;
+
+	if (task.tcount) {
+		collection.direct.update({ tmid: _id }, {
+			$set: {
+				following: task.replies && task.replies.indexOf(uid) > -1,
+				threadMsg: normalizeThreadMessage(taskToUpsert),
+				repliesCount: task.tcount,
+			},
+		}, { multi: true });
+	}
+	console.log('upserttask');
+	return collection.direct.upsert({ _id }, taskToUpsert);
+};
+
 export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const { queries } = ChatMessage;
@@ -95,6 +129,19 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
 			ChatMessage.queries = queries;
+		}
+		upsertMessage({ msg, subscription, uid }, collection);
+	});
+}
+
+export function upsertTaskBulk({ tasks, subscription }, collection = ChatTask) {
+	const uid = Tracker.nonreactive(() => Meteor.userId());
+	const { queries } = ChatTask;
+	console.log('upsertMessageBulk');
+	collection.queries = [];
+	tasks.forEach((msg, index) => {
+		if (index === tasks.length - 1) {
+			ChatTask.queries = queries;
 		}
 		upsertMessage({ msg, subscription, uid }, collection);
 	});
@@ -227,6 +274,93 @@ export const RoomHistoryManager = new class extends Emitter {
 
 
 		if (messages.length < limit) {
+			room.hasMore.set(false);
+		}
+
+		if (room.hasMore.get() && (visibleMessages.length === 0 || room.loaded < limit)) {
+			return this.getMore(rid);
+		}
+
+		waitAfterFlush(() => {
+			const heightDiff = wrapper.scrollHeight - previousHeight;
+			wrapper.scrollTop = scroll + heightDiff;
+		});
+
+		room.isLoading.set(false);
+		waitAfterFlush(() => {
+			readMessage.refreshUnreadMark(rid);
+			return RoomManager.updateMentionsMarksOfRoom(typeName);
+		});
+	}
+
+	async getMoreTask(rid, limit = defaultLimit) {
+		let ts;
+		const room = this.getRoom(rid);
+
+		if (room.hasMore.curValue !== true) {
+			return;
+		}
+
+		room.isLoading.set(true);
+
+		await this.queue();
+
+		// ScrollListener.setLoader true
+		const lastTask = ChatTask.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
+		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
+
+		if (lastTask) {
+			({ ts } = lastTask);
+		} else {
+			ts = undefined;
+		}
+
+		let ls = undefined;
+		let typeName = undefined;
+
+		const subscription = ChatSubscription.findOne({ rid });
+		console.log(subscription);
+		if (subscription) {
+			({ ls } = subscription);
+			typeName = subscription.t + subscription.name;
+		} else {
+			const curRoomDoc = ChatRoom.findOne({ _id: rid });
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+		}
+
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await call('loadHistoryTask', rid, ts, limit, ls, showMessageInMainThread);
+		console.log('get more');
+		this.unqueue();
+
+		let previousHeight;
+		let scroll;
+		const { tasks = [] } = result;
+		room.unreadNotLoaded.set(result.unreadNotLoaded);
+		room.firstUnread.set(result.firstUnread);
+
+		const wrapper = await waitUntilWrapperExists();
+
+		if (wrapper) {
+			previousHeight = wrapper.scrollHeight;
+			scroll = wrapper.scrollTop;
+		}
+
+		upsertTaskBulk({
+			tasks: tasks.filter((task) => task.t !== 'command'),
+			subscription,
+		});
+
+		if (!room.loaded) {
+			room.loaded = 0;
+		}
+
+		const visibleMessages = tasks.filter((task) => !task.tmid || showMessageInMainThread || task.tshow);
+
+		room.loaded += visibleMessages.length;
+
+
+		if (tasks.length < limit) {
 			room.hasMore.set(false);
 		}
 

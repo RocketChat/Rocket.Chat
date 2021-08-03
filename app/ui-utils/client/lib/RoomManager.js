@@ -91,7 +91,7 @@ export const RoomManager = new function() {
 					const name = typeName.substr(1);
 
 					const room = roomTypes.findRoom(type, name, user);
-
+					console.log('Room', room);
 					if (room != null) {
 						record.rid = room._id;
 						console.log('here3');
@@ -99,6 +99,7 @@ export const RoomManager = new function() {
 						if (record.streamActive !== true) {
 							record.streamActive = true;
 							msgStream.on(record.rid, async (msg) => {
+								console.log('inside msgStrem');
 								// Should not send message to room if room has not loaded all the current messages
 								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 									return;

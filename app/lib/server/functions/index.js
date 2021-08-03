@@ -17,6 +17,7 @@ export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';
 export { loadMessageHistory } from './loadMessageHistory';
+export { loadTaskHistory } from './loadTaskHistory';
 export { processWebhookMessage } from './processWebhookMessage';
 export { removeUserFromRoom } from './removeUserFromRoom';
 export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';

@@ -2,9 +2,8 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 import { ChannelName, RoomID } from './IRoom';
 
-export interface IMessage extends IRocketChatRecord {
+export interface ITask extends IRocketChatRecord {
 	rid: RoomID;
-	msg: string;
 	ts: Date;
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -25,6 +24,7 @@ export interface IMessage extends IRocketChatRecord {
 	t?: string;
 	e2e?: 'pending';
 
+	taskTitle: string;
 	taskAssignee?: Pick<IUser, '_id' | 'username' | 'name'>;
 	taskDescription?: string;
 	taskStatus: {_id: string}[];
