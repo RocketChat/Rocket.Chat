@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import _ from 'underscore';
 
 import { UserAction } from '../../../ui';
 import { t } from '../../../utils';
@@ -11,8 +10,8 @@ const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 2;
 
 Template.userActionIndicator.helpers({
 	data() {
-		const roomAction = UserAction.get(this.tmid || this.rid);
-		if (_.isEmpty(roomAction)) {
+		const roomAction = UserAction.get(this.tmid || this.rid) || {};
+		if (!Object.keys(roomAction).length) {
 			return [];
 		}
 		const activities = Object.keys(roomAction) || {};
@@ -41,7 +40,7 @@ Template.userActionIndicator.helpers({
 				users: usernames.join(` ${ t('and') } `),
 			};
 		}).filter((i) => i);
-		if (_.isEmpty(userActions)) {
+		if (!Object.keys(userActions).length) {
 			return [];
 		}
 		// insert end=true for the last item.
