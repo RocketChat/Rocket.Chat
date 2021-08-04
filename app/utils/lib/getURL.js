@@ -55,7 +55,8 @@ export const _getURL = (path, { cdn, full, cloud, cloud_route, cloud_params, _cd
 	}
 
 	if (full) {
-		return siteUrl.replace(new RegExp(`${ escapeRegExp(/pathPrefix$/) }`, '')) + url;
+		console.log('https://tutorial.egroupware.net/rocketchat'.replace(new RegExp(`${ escapeRegExp('/rocketchat') }$`), '') + url);
+		return siteUrl.replace(new RegExp(`${ escapeRegExp(pathPrefix) }$`), '') + url;
 	}
 
 	return url;
