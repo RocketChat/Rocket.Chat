@@ -104,20 +104,19 @@ const ActiveUsersSection = ({ timezone }) => {
 	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
-		const values = [
-			{ type: 'DAU', value: dauValues },
-			{ type: 'WAU', value: wauValues },
-			{ type: 'MAU', value: mauValues },
-		];
+		const values = [];
 
-		for (const { type, value } of values) {
-			const data = [
-				['Date', 'Value'],
-				...value.map(({ x, y }) => [x.toString(), y]),
-			];
-			downloadCsvAs(data, `ActiveUsersSection_${ type }_start_${ params.start }_end_${ params.end }`);
+		for (let i = 0; i < 30; i++) {
+			values.push([dauValues[i].x, dauValues[i].y, wauValues[i].y, mauValues[i].y]);
 		}
+
 		const data = [
+			['Date', 'DAU', 'WAU', 'MAU'],
+			...values,
+		];
+		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
+
+		const dataStats = [
 			['DAU', 'Diff. DAU', 'WAU', 'Diff. WAU', 'MAU', 'Diff. MAU'],
 			[
 				countDailyActiveUsers,
@@ -128,7 +127,7 @@ const ActiveUsersSection = ({ timezone }) => {
 				diffMonthlyActiveUsers,
 			],
 		];
-		downloadCsvAs(data, `ActiveUsersSection_stats_start_${ params.start }_end_${ params.end }`);
+		downloadCsvAs(dataStats, `ActiveUsersSection_stats_start_${ params.start }_end_${ params.end }`);
 	};
 
 
