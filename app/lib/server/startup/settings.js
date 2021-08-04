@@ -1023,10 +1023,10 @@ settings.addGroup('General', function() {
 		});
 	});
 	this.section('User_Action_Indicators', function() {
-		this.add('Use_New_Action_Indicator', true, {
+		this.add('Fire_Old_Typing_Event', true, {
 			type: 'boolean',
 			public: true,
-			i18nDescription: 'User_New_Action_Indicator_Description',
+			i18nDescription: 'Fire_Old_Typing_Event_Description',
 		});
 	});
 	this.section('REST API', function() {
