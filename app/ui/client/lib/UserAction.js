@@ -18,8 +18,8 @@ export const USER_ACTIVITY = 'user-activity';
 const TYPING = 'typing';
 
 
-const activityTimeouts = {};
-const activityRenews = {};
+const activityTimeouts = new Map();
+const activityRenews = new Map();
 // stores in the form of
 // {
 // 	rid1: {'user-typing': { user-name1: timeout1, user-name2: timeout2}, 'user-recording': {user-name3: timeout3}},
@@ -56,7 +56,7 @@ const startActivity = (rid, activityType, extras) => {
 function handleStreamAction(activeUsers, rid, username, actionType, isActive, extras = {}) {
 	// actionType and extras will be null if Use_New_Action_Indicator is false.
 	const activityType = actionType || USER_TYPING;
-	const id = extras?.tmid ? extras.tmid : rid;
+	const id = extras?.tmid || rid;
 	const activities = performingUsers.all() || {};
 	const roomActivities = activities[id] || {};
 
@@ -112,40 +112,40 @@ export const UserAction = new class {
 	}
 
 	start(rid, activityType, extras = {}) {
-		const id = extras?.tmid ? extras.tmid : rid;
+		const id = extras?.tmid || rid;
 		const key = `${ activityType }-${ id }`;
 
-		if (activityRenews[key]) {
+		if (activityRenews.get(key)) {
 			return;
 		}
 
-		activityRenews[key] = setTimeout(() => {
-			clearTimeout(activityRenews[key]);
-			delete activityRenews[key];
-		}, renew);
+		activityRenews.set(key, setTimeout(() => {
+			clearTimeout(activityRenews.get(key));
+			activityRenews.delete(key);
+		}, renew));
 
 		startActivity(rid, activityType, extras);
 
-		if (activityTimeouts[key]) {
-			clearTimeout(activityTimeouts[key]);
-			delete activityTimeouts[key];
+		if (activityTimeouts.get(key)) {
+			clearTimeout(activityTimeouts.get(key));
+			activityTimeouts.delete(key);
 		}
 
-		activityTimeouts[key] = setTimeout(() => this.stop(rid, activityType, extras), timeout);
-		return activityTimeouts[key];
+		activityTimeouts.set(key, setTimeout(() => this.stop(rid, activityType, extras), timeout));
+		return activityTimeouts.get(key);
 	}
 
 	stop(rid, activityType, extras) {
-		const id = extras?.tmid ? extras.tmid : rid;
+		const id = extras?.tmid || rid;
 		const key = `${ activityType }-${ id }`;
 
-		if (activityTimeouts[key]) {
-			clearTimeout(activityTimeouts[key]);
-			delete activityTimeouts[key];
+		if (activityTimeouts.get(key)) {
+			clearTimeout(activityTimeouts.get(key));
+			activityTimeouts.delete(key);
 		}
-		if (activityRenews[key]) {
-			clearTimeout(activityRenews[key]);
-			delete activityRenews[key];
+		if (activityRenews.get(key)) {
+			clearTimeout(activityRenews.get(key));
+			activityRenews.delete(key);
 		}
 		return stopActivity(rid, activityType, extras);
 	}
