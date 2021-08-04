@@ -27,7 +27,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 	const mediasoupPeers = useMediasoupPeers();
 	const wsPeers = useWsPeers();
 	const muted = useVoiceChannelMic();
-	const deafen = useVoiceChannelDeafen();
+	const globalDeafen = useVoiceChannelDeafen();
 
 	const setModal = useSetModal();
 	const t = useTranslation();
