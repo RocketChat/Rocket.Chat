@@ -1,9 +1,8 @@
 import { Migrations } from '../../../app/migrations';
-import { Mongo } from "meteor/mongo";
 import { GridFSBucket } from 'mongodb';
 import { Readable } from 'stream';
 import { MongoInternals } from 'meteor/mongo';
-import { Meteor } from 'meteor/meteor';
+
 
 Migrations.add({
 	version: 229,
