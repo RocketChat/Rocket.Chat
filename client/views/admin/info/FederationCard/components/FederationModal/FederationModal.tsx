@@ -20,7 +20,6 @@ import { useForm } from '../../../../../../hooks/useForm';
 import { DNSRecords } from './DNSRecords';
 import InviteUsers from './InviteUsers';
 import { DNSRecordName, ResolvedDNS, TXTRecordValue } from './Types';
-import './styles.css';
 
 export const FederationModal: FC<{ onClose: () => void }> = ({
 	onClose,
@@ -161,7 +160,7 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
-						<Tabs>
+						<Tabs mi='neg-x24'>
 							<Tabs.Item selected={currentTab === 1} onClick={(): void => setCurrentTab(1)}>
 								{t('Federation_Configure_DNS')}
 							</Tabs.Item>
