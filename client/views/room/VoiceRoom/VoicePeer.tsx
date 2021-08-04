@@ -5,12 +5,18 @@ import { IVoiceRoomPeer } from '../../../../definition/IVoiceRoomPeer';
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { analyseAudio } from './util';
 
-const VoicePeer: FC<IVoiceRoomPeer> = ({
+interface IProps extends IVoiceRoomPeer {
+	globalDeafen?: boolean;
+}
+
+const VoicePeer: FC<IProps> = ({
 	id,
 	displayName,
 	track,
 	username,
 	deafen,
+	disableDeafenControls,
+	globalDeafen,
 }): ReactElement => {
 	const ref = useRef<HTMLAudioElement>(null);
 	const [muted, setMuted] = useState(false);
@@ -54,9 +60,9 @@ const VoicePeer: FC<IVoiceRoomPeer> = ({
 			>
 				<UserAvatar size='x124' username={username || ''} />
 			</Box>
-			<audio ref={ref} muted={muted || deafen} autoPlay />
+			<audio ref={ref} muted={muted || deafen || globalDeafen} autoPlay />
 			<p>{displayName}</p>
-			{track && (
+			{track && !disableDeafenControls && (
 				<Button onClick={toggleMute}>
 					{muted ? <Icon name='volume-off' size='x24' /> : <Icon name='volume' size='x24' />}
 				</Button>

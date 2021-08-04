@@ -6,4 +6,5 @@ export interface IVoiceRoomPeer {
 	consumerId?: string;
 	username?: string;
 	deafen?: boolean;
+	disableDeafenControls?: boolean;
 }
