@@ -124,7 +124,10 @@ const NewUsersSection = ({ timezone }) => {
 	}, [data, period, utc]);
 
 	const downloadData = () => {
-		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		const data = [
+			['Date', 'New Users'],
+			...values.map(({ date, newUsers }) => [date, newUsers]),
+		];
 		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
