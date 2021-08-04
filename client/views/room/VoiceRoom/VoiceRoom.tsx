@@ -86,12 +86,12 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
 			{(isWsState(state) ||
 				((isWsState(state) || isMediasoupState(state)) && state.rid !== rid)) && (
-				<VoicePeersList peers={wsPeers} deafen={deafen} />
+				<VoicePeersList peers={wsPeers} globalDeafen={globalDeafen} />
 			)}
 
 			{isMediasoupState(state) && state.rid === rid && (
 				<Box display={state.rid !== rid ? 'none' : 'block'}>
-					<VoicePeersList peers={mediasoupPeers} deafen={deafen} />
+					<VoicePeersList peers={mediasoupPeers} globalDeafen={globalDeafen} />
 				</Box>
 			)}
 
@@ -105,7 +105,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 							<Icon name='phone-off' size='x24' />
 						</Button>
 						<Button square onClick={toggleDeafen}>
-							{deafen ? (
+							{globalDeafen ? (
 								<Icon name='headphone-off' size='x24' />
 							) : (
 								<Icon name='headphone' size='x24' />
