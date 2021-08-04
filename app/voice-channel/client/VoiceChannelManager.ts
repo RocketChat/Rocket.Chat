@@ -106,7 +106,6 @@ export class VoiceRoomManager extends Emitter<{
 			}
 		});
 
-		// fix connection when changing rooms
 		if (isMediasoupState(this.state)) {
 			if (this.state.rid !== rid) {
 				this.setState({
