@@ -159,7 +159,7 @@
 		"@rocket.chat/apps-engine": "1.27.1",
 		"@rocket.chat/css-in-js": "^0.28.0",
 		"@rocket.chat/emitter": "^0.28.0",
-		"@rocket.chat/fuselage": "^0.28.0",
+		"@rocket.chat/fuselage": "^0.6.3-dev.303",
 		"@rocket.chat/fuselage-hooks": "^0.28.0",
 		"@rocket.chat/fuselage-polyfills": "^0.28.0",
 		"@rocket.chat/fuselage-tokens": "^0.28.0",
