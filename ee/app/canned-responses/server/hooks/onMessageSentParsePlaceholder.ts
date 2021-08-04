@@ -1,7 +1,7 @@
 import get from 'lodash.get';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { Users, LivechatVisitors } from '../../../../../app/models/server';
+import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
 import { IMessage } from '../../../../../definition/IMessage';
 import { IOmnichannelRoom, isOmnichannelRoom } from '../../../../../definition/IRoom';
 
@@ -28,7 +28,12 @@ const placeholderFields = {
 	},
 };
 
-callbacks.add('beforeSaveMessage', (message: IMessage, room: IOmnichannelRoom): any => {
+callbacks.add('beforeSaveMessage', (message: IMessage): any => {
+	if (!message.msg || message.msg === '') {
+		return message;
+	}
+
+	const room: IOmnichannelRoom = Rooms.findOneById(message.rid);
 	if (!isOmnichannelRoom(room)) {
 		return message;
 	}
