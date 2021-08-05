@@ -24,6 +24,8 @@ import LivechatRoomsModel from '../models/LivechatRooms';
 import { LivechatRoomsRaw } from './LivechatRooms';
 import MessagesModel from '../models/Messages';
 import { MessagesRaw } from './Messages';
+import TasksModel from '../models/Tasks';
+import { TasksRaw } from './Tasks';
 import LivechatExternalMessagesModel from '../models/LivechatExternalMessages';
 import { LivechatExternalMessageRaw } from './LivechatExternalMessages';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
@@ -83,6 +85,7 @@ export const LivechatDepartment = new LivechatDepartmentRaw(LivechatDepartmentMo
 export const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(LivechatDepartmentAgentsModel.model.rawCollection(), trashCollection);
 export const LivechatRooms = new LivechatRoomsRaw(LivechatRoomsModel.model.rawCollection(), trashCollection);
 export const Messages = new MessagesRaw(MessagesModel.model.rawCollection(), trashCollection);
+export const Tasks = new TasksRaw(TasksModel.model.rawCollection(), trashCollection);
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection(), trashCollection);
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
@@ -110,6 +113,7 @@ export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistor
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,
+	[Tasks.col.collectionName]: TasksModel,
 	[Subscriptions.col.collectionName]: SubscriptionsModel,
 	[Settings.col.collectionName]: SettingsModel,
 	[Roles.col.collectionName]: RolesModel,
@@ -129,6 +133,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 	const models = {
 		Messages,
 		Users,
+		Tasks,
 		Subscriptions,
 		Settings,
 		LivechatInquiry,
