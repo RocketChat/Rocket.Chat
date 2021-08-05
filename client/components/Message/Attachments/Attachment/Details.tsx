@@ -7,8 +7,8 @@ const Details: FC<ComponentProps<typeof Box>> = ({ ...props }) => (
 		fontScale='p1'
 		color='info'
 		bg='neutral-100'
-		pi='x16'
-		pb='x16'
+		pi='x4'
+		pb='x4'
 		{...props}
 	/>
 );
