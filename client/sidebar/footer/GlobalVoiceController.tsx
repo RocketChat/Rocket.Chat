@@ -64,7 +64,7 @@ const GlobalVoiceController: FC = (): ReactElement | null => {
 					</Button>
 				</ButtonGroup>
 			</Box>
-			<Sidebar.Item highlighted={null} clickable={false} style={{ backgroundColor: 'transparent' }}>
+			<Sidebar.Item disabled style={{ backgroundColor: 'transparent' }}>
 				{roomAvatar && <Sidebar.Item.Avatar>{roomAvatar(room)}</Sidebar.Item.Avatar>}
 				<Sidebar.Item.Content>
 					<Sidebar.Item.Content>
