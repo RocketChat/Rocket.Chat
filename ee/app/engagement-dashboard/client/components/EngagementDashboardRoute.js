@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { useCurrentRoute, useRoute, useRouteParameter } from '../../../../../client/contexts/RouterContext';
+import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import { EngagementDashboardPage } from './EngagementDashboardPage';
 
 export function EngagementDashboardRoute() {
