@@ -9,6 +9,7 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
+import { Rooms, Subscriptions, Tasks, Users } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
 import { promises } from '../../../promises/server';
@@ -16,10 +17,6 @@ import { updateTask, sendTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
-import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { IUser } from '../../../../definition/IUser';
-
-import Message from '/client/views/room/contextualBar/Discussions/components/Message';
 
 
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {

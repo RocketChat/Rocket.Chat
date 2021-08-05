@@ -23,22 +23,10 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 	};
 
 	const tasksWrapper = useRef(null);
-	console.log(tasksWrapper);
+
 	useEffect(() => {
 		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
 	});
-
-	useEffect(() => {
-		const fetchData = async () => {
-			const d = await ChatTask.find({ rid }).fetch();
-			console.log(d);
-		};
-		fetchData();
-
-		return () => {
-			fetchData();
-		};
-	}, [rid]);
 
 	const sortTasks = (id) => {
 		const sortedTasks = [...tasks];
@@ -104,7 +92,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 								handleTaskDetails={() => handleTaskDetails(task)}
 								rid={rid}
 								title={task.title}
-								username={task.u.username}
+								username={task.u && task.u.length && task.u.username}
 								taskId={task._id}
 								ts={task.ts}
 								status={task.taskStatus}

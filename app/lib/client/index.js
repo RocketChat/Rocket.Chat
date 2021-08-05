@@ -7,6 +7,7 @@ import './lib/startup/commands';
 import './lib/settings';
 import './lib/userRoles';
 import './methods/sendMessage';
+import './methods/sendTask';
 import './views/customFieldsForm.html';
 import './views/customFieldsForm';
 import '../startup/defaultRoomTypes';

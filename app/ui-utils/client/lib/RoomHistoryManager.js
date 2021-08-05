@@ -184,7 +184,7 @@ export const RoomHistoryManager = new class extends Emitter {
 				loaded: undefined,
 			};
 		}
-		console.log('getRoom, RoomHistoryManager');
+
 		return this.histories[rid];
 	}
 
