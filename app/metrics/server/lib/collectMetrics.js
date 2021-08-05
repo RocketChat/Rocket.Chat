@@ -158,7 +158,7 @@ const updatePrometheusConfig = async () => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().forEach((metric) => { metric.hashMap = {}; });
+			client.register.getMetricsAsArray().then((arr) => arr.forEach((metric) => { metric.hashMap = {}; }));
 		}, is.resetInterval);
 	}
 

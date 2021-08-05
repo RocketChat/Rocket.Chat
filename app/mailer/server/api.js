@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
-import stripHtml from 'string-strip-html';
+import { stripHtml } from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';

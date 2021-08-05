@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'react-fast-refresh',
-	version: '0.1.0',
+	version: '0.1.1',
 	summary: 'Removed -update React components with HMR',
 	documentation: 'README.md',
 	devOnly: true,
