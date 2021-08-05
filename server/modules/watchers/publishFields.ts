@@ -35,6 +35,7 @@ export const subscriptionFields = {
 	E2EKey: 1,
 	tunread: 1,
 	tunreadGroup: 1,
+	taskRoomId: 1,
 	tunreadUser: 1,
 
 	// Omnichannel fields
