@@ -107,7 +107,7 @@ const ActiveUsersSection = ({ timezone }) => {
 		const values = [];
 
 		for (let i = 0; i < 30; i++) {
-			values.push([dauValues[i].x, dauValues[i].y, wauValues[i].y, mauValues[i].y]);
+			values.push([moment(dauValues[i].x).format('YYYY-MM-DD'), dauValues[i].y, wauValues[i].y, mauValues[i].y]);
 		}
 
 		const data = [
