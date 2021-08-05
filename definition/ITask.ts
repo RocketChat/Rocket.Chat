@@ -7,7 +7,12 @@ export interface ITask extends IRocketChatRecord {
 	ts: Date;
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
-
+	mentions?: {
+		_id: string;
+		type: 'user';
+		name?: string;
+		username?: string;
+	}[];
 	_hidden?: boolean;
 	imported?: boolean;
 	replies?: IUser['_id'][];

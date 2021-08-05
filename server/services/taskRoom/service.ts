@@ -6,6 +6,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
+import { TasksRaw } from '../../../app/models/server/raw/Tasks';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { TaskRoom } from '../../../app/models/server/raw/TaskRoom';
@@ -37,6 +38,7 @@ import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { canAccessRoom } from '../authorization/canAccessRoom';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
+import { ITask } from '/definition/ITask';
 
 export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 	protected name = 'taskRoom';
@@ -49,9 +51,7 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 
 	private Users: UsersRaw;
 
-	private TeamMembersModel: TeamMemberRaw;
-
-	private MessagesModel: MessagesRaw;
+	private TasksModel: TasksRaw;
 
 	constructor(db: Db) {
 		super();
@@ -59,9 +59,8 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
 		this.SubscriptionsModel = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
 		this.TaskRoomModel = new TaskRoom(db.collection('rocketchat_team'));
-		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
 		this.Users = new UsersRaw(db.collection('users'));
-		this.MessagesModel = new MessagesRaw(db.collection('rocketchat_message'));
+		this.TasksModel = new TasksRaw(db.collection('rocketchat_task'));
 	}
 
 	async create(uid: string, { taskRoom, room = { name: taskRoom.name, extraData: {} }, members, owner }: ITaskRoomCreateParams): Promise<ITaskRoom> {
@@ -150,11 +149,11 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 		}
 	}
 
-	async findByMessageId(id: string): Promise<IMessage> {
- 		const [messageDetails] = await Promise.all([
- 			this.MessagesModel.find({ id: id }).fetch(),
+	async findByMessageId(id: string): Promise<ITask> {
+ 		const [taskDetails] = await Promise.all([
+ 			this.TasksModel.find({ id: id }).fetch(),
  		]);
-		return messageDetails;
+		return taskDetails;
 	}
 
 // 	async update(uid: string, teamId: string, updateData: ITeamUpdateData): Promise<void> {

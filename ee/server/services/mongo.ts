@@ -13,6 +13,7 @@ export enum Collections {
 	User = 'users',
 	Trash = 'rocketchat_trash',
 	Messages = 'rocketchat_message',
+	Tasks = 'rocketchat_task',
 	Rooms = 'rocketchat_room',
 	Settings = 'rocketchat_settings',
 }
