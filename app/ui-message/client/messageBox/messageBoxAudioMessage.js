@@ -9,7 +9,7 @@ import './messageBoxAudioMessage.html';
 const startRecording = async (rid, tmid) => {
 	try {
 		await AudioRecorder.start();
-		UserAction.start(rid, USER_RECORDING, { tmid });
+		UserAction.performContinuosly(rid, USER_RECORDING, { tmid });
 	} catch (error) {
 		throw error;
 	}
@@ -117,9 +117,6 @@ Template.messageBoxAudioMessage.events({
 				instance.time.set(`${ String(minutes).padStart(2, '0') }:${ String(seconds).padStart(2, '0') }`);
 			}, 1000));
 			recordingRoomId.set(this.rid);
-			recordingIndicatorInterval.set(setInterval(() => {
-				UserAction.start(this.rid, USER_RECORDING, { tmid: this.tmid });
-			}, 5000));
 		} catch (error) {
 			console.log(error);
 			instance.isMicrophoneDenied.set(true);

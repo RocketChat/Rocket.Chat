@@ -579,7 +579,7 @@ export class ChatMessages {
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
 			if (input.value.trim()) {
-				UserAction.start(rid, USER_TYPING, { tmid });
+				UserAction.performContinuosly(rid, USER_TYPING, { tmid });
 			} else {
 				UserAction.stop(rid, USER_TYPING, { tmid });
 			}

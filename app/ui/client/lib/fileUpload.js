@@ -56,13 +56,8 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		},
 	});
 	if (Session.get('uploading').length) {
-		UserAction.start(rid, USER_UPLOADING, { tmid });
+		UserAction.performContinuosly(rid, USER_UPLOADING, { tmid });
 	}
-	const msgUploadingInterval = setInterval(function() {
-		if (Session.get('uploading').length) {
-			UserAction.start(rid, USER_UPLOADING, { tmid });
-		}
-	}, 5000);
 
 	Tracker.autorun((computation) => {
 		const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
@@ -85,7 +80,6 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 
 		if (!Session.get('uploading').length) {
 			UserAction.stop(rid, USER_UPLOADING, { tmid });
-			clearInterval(msgUploadingInterval);
 		}
 		return remainingUploads;
 	} catch (error) {
@@ -96,7 +90,6 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		});
 		if (!uploads.length) {
 			UserAction.stop(rid, USER_UPLOADING, { tmid });
-			clearInterval(msgUploadingInterval);
 		}
 		Session.set('uploading', uploads);
 	}

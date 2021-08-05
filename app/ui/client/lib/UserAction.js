@@ -20,6 +20,7 @@ const TYPING = 'typing';
 
 const activityTimeouts = new Map();
 const activityRenews = new Map();
+const continuingIntervals = new Map();
 // stores in the form of
 // {
 // 	rid1: {'user-typing': { user-name1: timeout1, user-name2: timeout2}, 'user-recording': {user-name3: timeout3}},
@@ -109,6 +110,20 @@ export const UserAction = new class {
 		return Notifications.onRoom(rid, USER_ACTIVITY, rooms[rid]);
 	}
 
+	performContinuosly(rid, activityType, extras = {}) {
+		const id = extras?.tmid || rid;
+		const key = `${ activityType }-${ id }`;
+
+		if (continuingIntervals.get(key)) {
+			return;
+		}
+		this.start(rid, activityType, extras);
+
+		continuingIntervals.set(key, setInterval(() => {
+			this.start(rid, activityType, extras);
+		}, renew));
+	}
+
 	start(rid, activityType, extras = {}) {
 		const id = extras?.tmid || rid;
 		const key = `${ activityType }-${ id }`;
@@ -144,6 +159,10 @@ export const UserAction = new class {
 		if (activityRenews.get(key)) {
 			clearTimeout(activityRenews.get(key));
 			activityRenews.delete(key);
+		}
+		if (continuingIntervals.get(key)) {
+			clearInterval(continuingIntervals.get(key));
+			continuingIntervals.delete(key);
 		}
 		return stopActivity(rid, activityType, extras);
 	}
