@@ -1,9 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import toastr from 'toastr';
 
-import { ChatTask } from '../../../../../app/models/client';
-import { call } from '../../../../../app/ui-utils/client';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
@@ -27,8 +26,7 @@ const CreateTaskModalWithInfo = ({ onCreate, onClose, rid, ...props }) => {
 
 	const handleSave = useMutableCallback(async () => {
 		const data = await createTask(values);
-		console.log(data);
-		ChatTask.insert(data.task);
+		await Meteor.call('sendTask', data.task);
 		if (data.success) {
 			toastr.success(t('Saved'));
 		}

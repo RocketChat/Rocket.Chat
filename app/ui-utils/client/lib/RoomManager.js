@@ -46,7 +46,7 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
-	const taskStream = new Meteor.Streamer('room-task');
+	const taskStream = new Meteor.Streamer('room-tasks');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
@@ -97,13 +97,12 @@ export const RoomManager = new function() {
 						record.rid = room._id;
 						console.log('here3');
 						if (room.taskRoomId) {
-							console.log('taskRoom, getMoreIfIsEmptyTaskRoom');
 							RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
 							if (record.streamActive !== true) {
 								console.log('streamActive taskRoom');
 								record.streamActive = true;
 								taskStream.on(record.rid, async (task) => {
-									console.log('inside msgStrem');
+									console.log('inside taskStrem', task);
 									// Should not send message to room if room has not loaded all the current messages
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
@@ -192,6 +191,7 @@ export const RoomManager = new function() {
 			if (openedRooms[typeName]) {
 				if (openedRooms[typeName].rid != null) {
 					msgStream.removeAllListeners(openedRooms[typeName].rid);
+					taskStream.removeAllListeners(openedRooms[typeName].rid);
 					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 				}
