@@ -11,6 +11,10 @@ export async function findDepartments({ userId, onlyMyDepartments = false, text,
 	}
 
 	let query = {
+		$or: [
+			{ type: { $eq: 'd' } },
+			{ type: { $exists: false } },
+		],
 		...enabled && { enabled: Boolean(enabled) },
 		...text && { name: new RegExp(escapeRegExp(text), 'i') },
 	};

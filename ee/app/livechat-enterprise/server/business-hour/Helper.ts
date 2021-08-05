@@ -7,7 +7,7 @@ import {
 	LivechatDepartmentAgents,
 	Users,
 } from '../../../../../app/models/server/raw';
-import { LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
@@ -53,7 +53,7 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		if (isEnterprise) {
 			return;
 		}
-		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour({ fields: { _id: 1 } });
+		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({ projection: { _id: 1 } });
 		if (!defaultBusinessHour) {
 			return;
 		}

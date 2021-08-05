@@ -359,9 +359,17 @@ API.v1.addRoute('groups.history', { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', { rid: findResult.rid, latest: latestDate, oldest: oldestDate, inclusive, offset, count, unreads });
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult.rid,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {
@@ -560,12 +568,22 @@ API.v1.addRoute('groups.messages', { authRequired: true }, {
 API.v1.addRoute('groups.online', { authRequired: true }, {
 	get() {
 		const { query } = this.parseJsonQuery();
+		if (!query || Object.keys(query).length === 0) {
+			return API.v1.failure('Invalid query');
+		}
+
 		const ourQuery = Object.assign({}, query, { t: 'p' });
 
 		const room = Rooms.findOne(ourQuery);
 
 		if (room == null) {
 			return API.v1.failure('Group does not exists');
+		}
+
+		const user = this.getLoggedInUser();
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const online = Users.findUsersNotOffline({

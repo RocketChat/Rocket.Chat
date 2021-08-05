@@ -11,7 +11,7 @@ import {
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import UserAutoCompleteMultiple from '../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useMethod } from '../../contexts/ServerContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';

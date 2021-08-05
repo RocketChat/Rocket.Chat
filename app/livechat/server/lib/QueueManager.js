@@ -62,7 +62,7 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUsername(servedBy.username)) {
+		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 

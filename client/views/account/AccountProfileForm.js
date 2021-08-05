@@ -15,13 +15,13 @@ import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
+import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 
@@ -95,9 +95,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				: t('Passwords_do_not_match'),
 		[t, password, confirmationPassword],
 	);
-	const emailError = useMemo(() => (isEmail(email) ? undefined : 'error-invalid-email-address'), [
-		email,
-	]);
+	const emailError = useMemo(
+		() => (isEmail(email) ? undefined : 'error-invalid-email-address'),
+		[email],
+	);
 	const checkUsername = useDebouncedCallback(
 		async (username) => {
 			if (user.username === username) {

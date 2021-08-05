@@ -1,6 +1,4 @@
 declare module 'meteor/meteor' {
-	import { EJSON } from 'meteor/ejson';
-
 	namespace Meteor {
 		interface IDDPMessage {
 			msg: 'method';
@@ -30,7 +28,7 @@ declare module 'meteor/meteor' {
 					send: (data: string) => void;
 				};
 				_launchConnectionAsync: () => void;
-				allowConnection: (allow: boolean) => void;
+				allowConnection: () => void;
 			};
 
 			onMessage(message: string): void;

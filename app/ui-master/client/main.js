@@ -12,21 +12,12 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
+import { fireGlobalEvent } from '../../ui-utils/client';
 
 import './main.html';
 
-function executeCustomScript(script) {
-	eval(script);//eslint-disable-line
-}
 
-function customScriptsOnLogout() {
-	const script = settings.get('Custom_Script_On_Logout') || '';
-	if (script.trim()) {
-		executeCustomScript(script);
-	}
-}
-
-callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
+callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.main.helpers({
 	removeSidenav: () => Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
@@ -81,16 +72,10 @@ Template.main.helpers({
 		return mandatoryRole !== undefined && is2faEnabled;
 	},
 	CustomScriptLoggedOut: () => {
-		const script = settings.get('Custom_Script_Logged_Out') || '';
-		if (script.trim()) {
-			executeCustomScript(script);
-		}
+		fireGlobalEvent('Custom_Script_Logged_Out');
 	},
 	CustomScriptLoggedIn: () => {
-		const script = settings.get('Custom_Script_Logged_In') || '';
-		if (script.trim()) {
-			executeCustomScript(script);
-		}
+		fireGlobalEvent('Custom_Script_Logged_In');
 	},
 	embeddedVersion: () => {
 		if (Layout.isEmbedded()) {

@@ -6,6 +6,7 @@ import React, {
 	useState,
 	useCallback,
 	useLayoutEffect,
+	MouseEventHandler,
 } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -143,7 +144,8 @@ export const useTabContext = (): ToolboxActionConfig | undefined =>
 export const useTab = (): ToolboxActionConfig | undefined =>
 	useContext(ToolboxContext).activeTabBar;
 export const useTabBarOpen = (): Function => useContext(ToolboxContext).open;
-export const useTabBarClose = (): Function => useContext(ToolboxContext).close;
+export const useTabBarClose = (): MouseEventHandler<HTMLOrSVGElement> =>
+	useContext(ToolboxContext).close;
 export const useTabBarOpenUserInfo = (): Function => useContext(ToolboxContext).openUserInfo;
 
 export default ToolboxProvider;

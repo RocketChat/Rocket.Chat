@@ -8,23 +8,16 @@ import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
-const queryStatusAgentOnline = (extraFilters = {}) => {
-	if (settings.get('Livechat_enabled_when_agent_idle') === false) {
-		extraFilters = Object.assign(extraFilters, { statusConnection: { $ne: 'away' } });
-	}
-
-	const query = {
-		status: {
-			$exists: true,
-			$ne: 'offline',
-		},
-		statusLivechat: 'available',
-		roles: 'livechat-agent',
-		...extraFilters,
-	};
-
-	return query;
-};
+const queryStatusAgentOnline = (extraFilters = {}) => ({
+	status: {
+		$exists: true,
+		$ne: 'offline',
+	},
+	statusLivechat: 'available',
+	roles: 'livechat-agent',
+	...extraFilters,
+	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
+});
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -95,7 +88,7 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	setOperator(_id, operator) {
+	setOperator(_id, operator) { // TODO:: Create class Agent
 		const update = {
 			$set: {
 				operator,
@@ -105,13 +98,19 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
-	findOnlineAgents(agentId) {
+	checkOnlineAgents(agentId) { // TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return Boolean(this.findOne(query));
+	}
+
+	findOnlineAgents(agentId) { // TODO:: Create class Agent
 		const query = queryStatusAgentOnline(agentId && { _id: agentId });
 
 		return this.find(query);
 	}
 
-	findBotAgents(usernameList) {
+	findBotAgents(usernameList) { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -126,7 +125,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOneBotAgent() {
+	findOneBotAgent() { // TODO:: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -136,19 +135,23 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username, options) {
+	findOneOnlineAgentByUserList(userList, options) { // TODO:: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
 		const query = queryStatusAgentOnline({ username });
 
 		return this.findOne(query, options);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id) { // TODO: Create class Agent
 		const query = queryStatusAgentOnline({ _id });
 
 		return this.findOne(query);
 	}
 
-	findOneAgentById(_id, options) {
+	findOneAgentById(_id, options) { // TODO: Create class Agent
 		const query = {
 			_id,
 			roles: 'livechat-agent',
@@ -157,7 +160,7 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findAgents() {
+	findAgents() { // TODO: Create class Agent
 		const query = {
 			roles: 'livechat-agent',
 		};
@@ -165,7 +168,7 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	findOnlineUserFromList(userList) {
+	findOnlineUserFromList(userList) { // TODO: Create class Agent
 		const username = {
 			$in: [].concat(userList),
 		};
@@ -175,10 +178,15 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId) {
+	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
+		// fetch all unavailable agents, and exclude them from the selection
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+			// limit query to remove booked agents
+			username: { $nin: unavailableAgents },
 		};
+
 		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
@@ -205,7 +213,80 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent(ignoreAgentId) {
+	// get next agent ignoring the ones reached the max amount of active chats
+	getUnavailableAgents(departmentId, customFilter) {
+		const col = this.model.rawCollection();
+		// if department is provided, remove the agents that are not from the selected department
+		const departmentFilter = departmentId ? [{
+			$lookup: {
+				from: 'rocketchat_livechat_department_agent',
+				let: { departmentId: '$departmentId', agentId: '$agentId' },
+				pipeline: [{
+					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
+				}, {
+					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
+				}],
+				as: 'department',
+			},
+		}, {
+			$match: { department: { $size: 1 } },
+		}] : [];
+
+		return col.aggregate([
+			{
+				$match: {
+					status: { $exists: true, $ne: 'offline' },
+					statusLivechat: 'available',
+					roles: 'livechat-agent',
+				},
+			},
+			...departmentFilter,
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$project: {
+					agentId: '$_id',
+					'livechat.maxNumberSimultaneousChat': 1,
+					username: 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					'queueInfo.chats': {
+						$size: {
+							$filter: {
+								input: '$subs',
+								as: 'sub',
+								cond: {
+									$and: [
+										{ $eq: ['$$sub.t', 'l'] },
+										{ $eq: ['$$sub.open', true] },
+										{ $ne: ['$$sub.onHold', true] },
+									],
+								},
+							},
+						},
+					},
+				},
+			},
+			...customFilter ? [customFilter] : [],
+			{
+				$sort: {
+					'queueInfo.chats': 1,
+					lastAssignTime: 1,
+					lastRoutingTime: 1,
+					username: 1,
+				},
+			},
+		]).toArray();
+	}
+
+
+	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
@@ -237,7 +318,7 @@ export class Users extends Base {
 		return null;
 	}
 
-	setLivechatStatus(userId, status) {
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -251,7 +332,7 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	setLivechatData(userId, data = {}) {
+	setLivechatData(userId, data = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
 		};
@@ -265,15 +346,15 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	closeOffice() {
+	closeOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'not-available'));
 	}
 
-	openOffice() {
+	openOffice() { // TODO: Create class Agent
 		this.findAgents().forEach((agent) => this.setLivechatStatus(agent._id, 'available'));
 	}
 
-	getAgentInfo(agentId) {
+	getAgentInfo(agentId) { // TODO: Create class Agent
 		const query = {
 			_id: agentId,
 		};
@@ -1555,6 +1636,17 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	countActiveUsersByService(serviceName, options) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${ serviceName }`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
 	}
 
 	getActiveLocalUserCount() {

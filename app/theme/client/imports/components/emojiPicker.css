@@ -23,7 +23,7 @@
 
 .emoji-picker {
 	position: absolute;
-	z-index: 100;
+	z-index: 9999;
 
 	display: none;
 

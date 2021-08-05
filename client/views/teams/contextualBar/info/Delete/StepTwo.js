@@ -1,41 +1,40 @@
-import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import ChannelDeletionTable from './ChannelDeletionTable';
+import RoomLinkList from '../../RoomLinkList';
 
-export const StepTwo = ({
-	rooms,
-	// params,
-	// onChangeParams,
-	onToggleAllRooms,
-	onChangeRoomSelection,
-	onConfirm,
-	onCancel,
-	selectedRooms,
-}) => {
+export const StepTwo = ({ deletedRooms, keptRooms, onConfirm, onReturn, onCancel }) => {
 	const t = useTranslation();
 
 	return (
 		<GenericModal
-			variant='warning'
-			title={t('Teams_about_the_channels')}
-			onConfirm={onConfirm}
-			onCancel={onCancel}
+			variant='danger'
+			icon='trash'
+			title={t('Deleting')}
+			onConfirm={() => onConfirm(Object.values(deletedRooms).map(({ _id }) => _id))}
+			onCancel={onReturn}
+			confirmText={t('Remove')}
+			cancelText={t('Back')}
 			onClose={onCancel}
-			confirmText={t('Continue')}
 		>
-			<Box>{t('Teams_delete_team_choose_channels')}</Box>
-			<Box mbs='x20'>{t('Teams_delete_team_public_notice')}</Box>
-			<ChannelDeletionTable
-				onToggleAllRooms={onToggleAllRooms}
-				rooms={rooms}
-				params={{}}
-				onChangeParams={() => {}}
-				onChangeRoomSelection={onChangeRoomSelection}
-				selectedRooms={selectedRooms}
-			/>
+			<p>{t('Teams_delete_team')}</p>
+			{!!Object.values(deletedRooms).length && (
+				<>
+					<br />
+					<p>
+						{t('Teams_deleted_channels')} <RoomLinkList rooms={deletedRooms} />
+					</p>
+				</>
+			)}
+			{!!Object.values(keptRooms).length && (
+				<>
+					<br />
+					<p>
+						{t('Teams_kept_channels')} <RoomLinkList rooms={keptRooms} />
+					</p>
+				</>
+			)}
 		</GenericModal>
 	);
 };

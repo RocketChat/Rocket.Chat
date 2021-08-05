@@ -17,6 +17,9 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
+	public get(_id: RegExp, callback?: SettingCallback): SettingComposedValue[];
+
+	public get(_id: string, callback?: SettingCallback): SettingValue | void;
 
 	public get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
 		if (callback != null) {

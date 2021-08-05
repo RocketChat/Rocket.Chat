@@ -71,9 +71,53 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
+	post() {
+		check(this.bodyParams, Match.ObjectIncluding({
+			teamId: Match.Maybe(String),
+			teamName: Match.Maybe(String),
+			roomsToRemove: Match.Maybe([String]),
+		}));
+		const { roomsToRemove, teamId, teamName } = this.bodyParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
+
+		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
+
+		if (!hasPermission(this.userId, 'convert-team', team.roomId)) {
+			return API.v1.unauthorized();
+		}
+
+		const rooms: string[] = Promise.await(Team.getMatchingTeamRooms(team._id, roomsToRemove));
+
+		if (rooms.length) {
+			rooms.forEach((room) => {
+				Meteor.call('eraseRoom', room);
+			});
+		}
+
+		Promise.all([
+			Team.unsetTeamIdOfRooms(team._id),
+			Team.removeAllMembersFromTeam(team._id),
+			Team.deleteById(team._id),
+		]);
+
+		return API.v1.success();
+	},
+});
+
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
 		const { rooms, teamId, teamName } = this.bodyParams;
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -166,7 +210,7 @@ API.v1.addRoute('teams.listRooms', { authRequired: true }, {
 API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
-		const { teamId, teamName, userId } = this.queryParams;
+		const { teamId, teamName, userId, canUserDelete = false } = this.queryParams;
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
@@ -175,11 +219,11 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 
 		const allowPrivateTeam = hasPermission(this.userId, 'view-all-teams', team.roomId);
 
-		if (!hasPermission(this.userId, 'view-all-team-channels', team.roomId)) {
+		if (!(this.userId === userId || hasPermission(this.userId, 'view-all-team-channels', team.roomId))) {
 			return API.v1.unauthorized();
 		}
 
-		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, { offset, count }));
+		const { records, total } = Promise.await(Team.listRoomsOfUser(this.userId, team._id, userId, allowPrivateTeam, canUserDelete, { offset, count }));
 
 		return API.v1.success({
 			rooms: records,
@@ -380,6 +424,9 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 
 		// Move every other room back to the workspace
 		Promise.await(Team.unsetTeamIdOfRooms(team._id));
+
+		// Delete all team memberships
+		Team.removeAllMembersFromTeam(teamId);
 
 		// And finally delete the team itself
 		Promise.await(Team.deleteById(team._id));

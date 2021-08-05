@@ -20,7 +20,7 @@ export const useMessageDeletionIsAllowed = (rid, uid) => {
 			return () => false;
 		}
 
-		if (!userHasPermissonToDeleteAny || !userHasPermissonToDeleteOwn) {
+		if (!userHasPermissonToDeleteAny && !userHasPermissonToDeleteOwn) {
 			return () => false;
 		}
 

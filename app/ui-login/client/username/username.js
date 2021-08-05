@@ -69,11 +69,12 @@ Template.username.events({
 
 		return Meteor.call('setUsername', value, function(err) {
 			if (err != null) {
-				console.log(err);
 				if (err.error === 'username-invalid') {
 					username.invalid = true;
+				} else if (err.error === 'error-blocked-username') {
+					username.blocked = true;
 				} else {
-					username.error = true;
+					username.unavailable = true;
 				}
 				username.username = value;
 				username.escaped = _.escape(value);
