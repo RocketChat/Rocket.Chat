@@ -7,10 +7,10 @@ import UsersTab from './UsersTab';
 import MessagesTab from './MessagesTab';
 import ChannelsTab from './ChannelsTab';
 
-export const EngagementDashboardPage = ({
+export function EngagementDashboardPage({
 	tab = 'users',
 	onSelectTab,
-}) => {
+}) {
 	const t = useTranslation();
 	const timezoneOptions = useMemo(() => [
 		['utc', t('UTC_Timezone')],
