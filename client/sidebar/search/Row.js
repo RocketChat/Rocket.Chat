@@ -4,13 +4,13 @@ import SideBarItemTemplateWithData from '../RoomList/SideBarItemTemplateWithData
 import UserItem from './UserItem';
 
 const Row = ({ item, data }) => {
-	const { t, SideBarItemTemplate, avatarTemplate: AvatarTemplate, useRealName, extended } = data;
+	const { t, SideBarItemTemplate, avatarTemplate: AvatarTemplate, showRealName, extended } = data;
 
 	if (item.t === 'd' && !item.u) {
 		return (
 			<UserItem
 				id={`search-${item._id}`}
-				useRealName={useRealName}
+				useRealName={showRealName}
 				t={t}
 				item={item}
 				SideBarItemTemplate={SideBarItemTemplate}
