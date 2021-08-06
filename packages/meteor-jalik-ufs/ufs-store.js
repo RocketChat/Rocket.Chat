@@ -236,7 +236,6 @@ export class Store {
        */
 			self.write = function(rs, fileId, callback) {
 				const file = self.getCollection().findOne({ _id: fileId });
-				let finishing = false;
 
 				const errorHandler = Meteor.bindEnvironment(function(err) {
 					self.onWriteError.call(self, err, fileId, file);
@@ -244,11 +243,6 @@ export class Store {
 				});
 
 				const finishHandler = Meteor.bindEnvironment(function() {
-					if (finishing) {
-						return;
-					}
-					finishing = true;
-
 					let size = 0;
 					const readStream = self.getReadStream(fileId, file);
 
@@ -317,7 +311,7 @@ export class Store {
 
 				const ws = self.getWriteStream(fileId, file);
 				ws.on('error', errorHandler);
-				ws.on('finish', finishHandler);
+				ws.once('finish', finishHandler);
 
 				// Execute transformation
 				self.transformWrite(rs, ws, fileId, file);
