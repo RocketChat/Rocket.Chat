@@ -93,6 +93,7 @@ export default class VoiceRoom extends Emitter {
 			this.peers = new Array(0);
 			peers.forEach((i) => this.peers.push(i));
 			this.emit('peer-change');
+			this.emit('wsconnected');
 		});
 
 		this.protoo.on('disconnected', () => {
@@ -316,7 +317,7 @@ export default class VoiceRoom extends Emitter {
 			if (this.produce) {
 				await this.enableMic();
 			}
-
+			this.emit('connected');
 			const idx = this.peers.findIndex((p) => p.id === this.peerID);
 			this.peers[idx].track = this.micProducer?.track || undefined;
 			this.peers[idx].deafen = true;
