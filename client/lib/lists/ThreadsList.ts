@@ -31,7 +31,7 @@ const isThreadFollowedByUser = (threadMessage: ThreadMessage, uid: IUser['_id'])
 	threadMessage.replies?.includes(uid) ?? false;
 
 const isThreadUnread = (threadMessage: ThreadMessage, tunread: ISubscription['tunread']): boolean =>
-	tunread.includes(threadMessage._id);
+	Boolean(tunread?.includes(threadMessage._id));
 
 const isThreadTextMatching = (threadMessage: ThreadMessage, regex: RegExp): boolean =>
 	regex.test(threadMessage.msg);
