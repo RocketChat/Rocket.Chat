@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
-import { ITask } from '../../../definition/ITask';
 import { IUser } from '../../../definition/IUser';
 import { useStream } from '../../contexts/ServerContext';
 import { MessageList } from '../../lib/lists/MessageList';
