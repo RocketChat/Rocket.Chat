@@ -54,7 +54,7 @@ const startActivity = (rid, activityType, extras) => {
 	return Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), true, activityType, extras);
 };
 
-function handleStreamAction(activeUsers, rid, username, actionType, isActive, extras = {}) {
+function handleStreamAction(rid, username, actionType, isActive, extras = {}) {
 	// actionType and extras will be null if Fire_Old_Typing_Event is true.
 	const activityType = actionType || USER_TYPING;
 	const id = extras?.tmid || rid;
@@ -102,7 +102,7 @@ export const UserAction = new class {
 			if (username === shownName(user)) {
 				return;
 			}
-			handleStreamAction(performingUsers, rid, username, activityType, activity, extras);
+			handleStreamAction(rid, username, activityType, activity, extras);
 		};
 		// We have subscribed to new as well as older user-activity versions for compatiblity purpose.
 		// We can remove it once all clients support new user-activity.
