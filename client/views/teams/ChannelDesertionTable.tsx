@@ -66,11 +66,11 @@ const ChannelDesertionTable: FC<ChannelDesertionTableProps> = ({
 				fixed={false}
 				pagination={false}
 			>
-				{(room: IRoom, key: string): ReactElement => (
+				{(room, key): ReactElement => (
 					<ChannelRow
+						key={key}
 						formatDate={formatDate}
 						room={room}
-						key={key}
 						onChange={onChangeRoomSelection}
 						selected={!!selectedRooms[room._id]}
 						lastOwnerWarning={lastOwnerWarning}

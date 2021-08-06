@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Callout, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import VoiceRoomManager, {
 	isMediasoupState,
@@ -8,6 +8,8 @@ import VoiceRoomManager, {
 	useMediasoupPeers,
 	useVoiceChannel,
 	useWsPeers,
+	useVoiceChannelMic,
+	useVoiceChannelDeafen,
 } from '../../../../app/voice-channel/client/VoiceChannelManager';
 import { IRoom } from '../../../../definition/IRoom';
 import GenericModal from '../../../components/GenericModal';
@@ -20,13 +22,13 @@ interface IVoiceRoom {
 	rid: string;
 }
 
-const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
+const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 	const state = useVoiceChannel();
 	const mediasoupPeers = useMediasoupPeers();
 	const wsPeers = useWsPeers();
-	const [muteMic, setMuteMic] = useState(false);
-	const [deafen, setDeafen] = useState(false);
 	const [showCallout, setCallout] = useState(false);
+	const muted = useVoiceChannelMic();
+	const globalDeafen = useVoiceChannelDeafen();
 
 	const setModal = useSetModal();
 	const t = useTranslation();
@@ -34,28 +36,14 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 	const closeModal = useMutableCallback(() => setModal(null));
 
 	const toggleMic = (): void => {
-		if (isMediasoupState(state)) {
-			setMuteMic((prev) => {
-				if (prev) {
-					state.mediasoupClient.unmuteMic();
-				} else {
-					state.mediasoupClient.muteMic();
-				}
-				return !prev;
-			});
-		}
+		VoiceRoomManager.toggleMic();
 	};
 
-	const toggleDeafen = (): void => setDeafen((prev) => !prev);
+	const toggleDeafen = (): void => VoiceRoomManager.toggleDeafen();
 
-	const join = useCallback(() => {
-		VoiceRoomManager.joinRoom(rid);
-	}, [rid]);
+	const join = (): void => VoiceRoomManager.joinRoom(rid);
 
-	const connectVoiceRoom = useCallback(() => {
-		VoiceRoomManager.connect(rid, room);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [rid]);
+	const connectVoiceRoom = (): void => VoiceRoomManager.connect(rid, room);
 
 	const handleDisconnect = (): void => {
 		VoiceRoomManager.disconnect();
@@ -113,12 +101,12 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 			)}
 			{(isWsState(state) ||
 				((isWsState(state) || isMediasoupState(state)) && state.rid !== rid)) && (
-				<VoicePeersList peers={wsPeers} deafen={deafen} />
+				<VoicePeersList peers={wsPeers} globalDeafen={globalDeafen} />
 			)}
 
 			{isMediasoupState(state) && state.rid === rid && (
 				<Box display={state.rid !== rid ? 'none' : 'block'}>
-					<VoicePeersList peers={mediasoupPeers} deafen={deafen} />
+					<VoicePeersList peers={mediasoupPeers} globalDeafen={globalDeafen} />
 				</Box>
 			)}
 
@@ -126,13 +114,13 @@ const VoiceRoom: FC<IVoiceRoom> = ({ room, rid }): ReactElement => {
 				{isMediasoupState(state) && state.rid === rid ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
-							{muteMic ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
+							{muted ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
 						</Button>
 						<Button primary danger square onClick={handleDisconnect}>
 							<Icon name='phone-off' size='x24' />
 						</Button>
 						<Button square onClick={toggleDeafen}>
-							{deafen ? (
+							{globalDeafen ? (
 								<Icon name='headphone-off' size='x24' />
 							) : (
 								<Icon name='headphone' size='x24' />

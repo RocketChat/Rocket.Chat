@@ -52,7 +52,7 @@ const RoomList = () => {
 	}, [sidebarViewMode]);
 
 	return (
-		<Box h='full' w='full' ref={ref}>
+		<Box h='full' w='full' ref={ref} position='relative'>
 			<Virtuoso
 				totalCount={roomsList.length}
 				data={roomsList}

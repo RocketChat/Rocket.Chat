@@ -21,6 +21,10 @@ export default class VoiceRoom extends Emitter {
 
 	roomName: string;
 
+	muted: boolean;
+
+	deafen: boolean;
+
 	closed: boolean;
 
 	joined: boolean;
@@ -51,6 +55,8 @@ export default class VoiceRoom extends Emitter {
 
 	peers: Array<IVoiceRoomPeer>;
 
+	peerID: string;
+
 	constructor({ roomID, device, produce, consume, displayName, peerID, username, roomName }: IData) {
 		super();
 		this.roomID = roomID;
@@ -65,6 +71,7 @@ export default class VoiceRoom extends Emitter {
 		this.joined = false;
 		this.roomName = roomName;
 		this.peers = new Array(0);
+		this.peerID = peerID;
 	}
 
 	closeProtoo(): void {
@@ -203,7 +210,7 @@ export default class VoiceRoom extends Emitter {
 		if (this.closed) {
 			return;
 		}
-
+		this.joined = false;
         this.protoo?.close();
         this.sendTransport?.close();
         this.recvTransport?.close();
@@ -306,11 +313,16 @@ export default class VoiceRoom extends Emitter {
 			this.peers = new Array(0);
 			peerData.forEach((i: IPeer) => this.peers.push(i));
 
-			this.emit('peer-change');
-
 			if (this.produce) {
-				this.enableMic();
+				await this.enableMic();
 			}
+
+			const idx = this.peers.findIndex((p) => p.id === this.peerID);
+			this.peers[idx].track = this.micProducer?.track || undefined;
+			this.peers[idx].deafen = true;
+			this.peers[idx].disableDeafenControls = true;
+
+			this.emit('peer-change');
 		} catch (err) {
 			this.emit('error', err);
 			console.log(err);
@@ -347,6 +359,7 @@ export default class VoiceRoom extends Emitter {
 
 	async muteMic(): Promise<void> {
 		this.micProducer?.pause();
+		this.muted = true;
 
 		try {
 			await this.protoo?.request('pauseProducer', { producerId: this.micProducer?.id });
@@ -358,6 +371,7 @@ export default class VoiceRoom extends Emitter {
 
 	async unmuteMic(): Promise<void> {
 		this.micProducer?.resume();
+		this.muted = false;
 
 		try {
 			await this.protoo?.request('resumeProducer', { producerId: this.micProducer?.id });
@@ -365,5 +379,21 @@ export default class VoiceRoom extends Emitter {
 			this.emit('error', err);
 			console.log(err);
 		}
+	}
+
+	async toggleMic(): Promise<boolean> {
+		if (this.muted) {
+			await this.unmuteMic();
+		} else {
+			await this.muteMic();
+		}
+
+		return this.muted;
+	}
+
+	toggleDeafen(): boolean {
+		this.deafen = !this.deafen;
+
+		return this.deafen;
 	}
 }

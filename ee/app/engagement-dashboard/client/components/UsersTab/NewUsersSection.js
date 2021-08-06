@@ -35,7 +35,7 @@ const NewUsersSection = ({ timezone }) => {
 						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days').utc()
 						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
 					end: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
 						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
@@ -45,7 +45,7 @@ const NewUsersSection = ({ timezone }) => {
 						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days').utc()
 						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
 					end: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
 						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
@@ -80,7 +80,7 @@ const NewUsersSection = ({ timezone }) => {
 			return null;
 		}
 
-		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').toISOString());
+		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').format('YYYY-MM-DD'));
 
 		const relation = Math.ceil(values.length / maxTicks);
 
@@ -102,7 +102,7 @@ const NewUsersSection = ({ timezone }) => {
 		}
 
 		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
-			date: moment(period.start).add(i, 'days').toISOString(),
+			date: moment(period.start).add(i, 'days').format('YYYY-MM-DD'),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
@@ -124,7 +124,10 @@ const NewUsersSection = ({ timezone }) => {
 	}, [data, period, utc]);
 
 	const downloadData = () => {
-		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		const data = [
+			['Date', 'New Users'],
+			...values.map(({ date, newUsers }) => [date, newUsers]),
+		];
 		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
@@ -209,11 +212,10 @@ const NewUsersSection = ({ timezone }) => {
 											},
 										},
 										tooltip: {
-											container: {
-												backgroundColor: '#1F2329',
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-											},
+											backgroundColor: '#1F2329',
+											boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+											borderRadius: 2,
+											padding: 4,
 										},
 									}}
 									tooltip={({ value, indexValue }) => <Box fontScale='p2' color='alternative'>

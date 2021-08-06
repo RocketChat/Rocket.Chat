@@ -1,34 +1,67 @@
 import { Box, Pagination, Table, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect, useCallback, forwardRef } from 'react';
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	forwardRef,
+	ReactNode,
+	ReactElement,
+	Key,
+	RefAttributes,
+} from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import ScrollableContentWrapper from '../ScrollableContentWrapper';
-import HeaderCell from './HeaderCell';
 import LoadingRow from './LoadingRow';
 
-const GenericTable = (
+const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
+const defaultSetParamsValue = (): void => undefined;
+
+type Params = { text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 };
+
+type GenericTableProps<
+	FilterProps extends { onChange?: (params: Params) => void },
+	ResultProps extends { _id?: Key },
+> = {
+	fixed?: boolean;
+	header?: ReactNode;
+	params?: Params;
+	setParams?: (params: Params) => void;
+	children?: (props: ResultProps, key: number) => ReactElement;
+	renderFilter?: (props: FilterProps) => ReactElement;
+	renderRow?: (props: ResultProps) => ReactElement;
+	results?: ResultProps[];
+	total?: number;
+	pagination?: boolean;
+} & FilterProps;
+
+const GenericTable: {
+	<FilterProps extends { onChange?: (params: Params) => void }, ResultProps extends { _id?: Key }>(
+		props: GenericTableProps<FilterProps, ResultProps> & RefAttributes<HTMLElement>,
+	): ReactElement | null;
+} = forwardRef(function GenericTable(
 	{
 		children,
 		fixed = true,
 		header,
-		params: paramsDefault = '',
+		params: paramsDefault = defaultParamsValue,
+		setParams = defaultSetParamsValue,
 		renderFilter,
 		renderRow: RenderRow,
 		results,
-		setParams = () => {},
 		total,
 		pagination = true,
 		...props
 	},
 	ref,
-) => {
+) {
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
 
-	const [itemsPerPage, setItemsPerPage] = useState(25);
+	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 
 	const [current, setCurrent] = useState(0);
 
@@ -40,7 +73,13 @@ const GenericTable = (
 
 	const Loading = useCallback(() => {
 		const headerCells = flattenChildren(header);
-		return Array.from({ length: 10 }, (_, i) => <LoadingRow key={i} cols={headerCells.length} />);
+		return (
+			<>
+				{Array.from({ length: 10 }, (_, i) => (
+					<LoadingRow key={i} cols={headerCells.length} />
+				))}
+			</>
+		);
 	}, [header]);
 
 	const showingResultsLabel = useCallback(
@@ -53,7 +92,9 @@ const GenericTable = (
 
 	return (
 		<>
-			{typeof renderFilter === 'function' ? renderFilter({ onChange: setFilter, ...props }) : null}
+			{typeof renderFilter === 'function'
+				? renderFilter({ ...props, onChange: setFilter } as any) // TODO: ugh
+				: null}
 			{results && !results.length ? (
 				<Tile fontScale='p1' elevation='0' color='info' textAlign='center'>
 					{t('No_data_found')}
@@ -98,8 +139,6 @@ const GenericTable = (
 			)}
 		</>
 	);
-};
-
-export default Object.assign(forwardRef(GenericTable), {
-	HeaderCell,
 });
+
+export default GenericTable;
