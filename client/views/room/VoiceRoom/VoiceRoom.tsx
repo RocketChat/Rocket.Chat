@@ -91,9 +91,15 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 				connectVoiceRoom();
 			}, 2000);
 		}
+
+		if (state.state === 'disconnected' || state.state === 'notStarted') {
+			connectVoiceRoom();
+		}
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [state]);
+	}, [state.state]);
 	console.log(state);
+
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
 			{showCallout && (
@@ -111,7 +117,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 			)}
 
 			<Box display='flex' justifyContent='center' alignItems='center' pb='x24'>
-				{isMediasoupState(state) && state.rid === rid ? (
+				{isMediasoupState(state) && state.rid === rid && state.state === 'connected' ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
 							{muted ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
@@ -128,9 +134,11 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 						</Button>
 					</ButtonGroup>
 				) : (
-					<Button primary success square onClick={handleJoin}>
-						<Icon name='phone' size='x24' />
-					</Button>
+					state.state === 'wsconnected' && (
+						<Button primary success square onClick={handleJoin}>
+							<Icon name='phone' size='x24' />
+						</Button>
+					)
 				)}
 			</Box>
 		</Box>
