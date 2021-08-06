@@ -1,6 +1,6 @@
-import { Box, Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, ReactElement, useEffect } from 'react';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import VoiceRoomManager, {
 	isMediasoupState,
@@ -26,6 +26,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 	const state = useVoiceChannel();
 	const mediasoupPeers = useMediasoupPeers();
 	const wsPeers = useWsPeers();
+	const [showCallout, setCallout] = useState(false);
 	const muted = useVoiceChannelMic();
 	const globalDeafen = useVoiceChannelDeafen();
 
@@ -82,8 +83,28 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rid]);
 
+	useEffect(() => {
+		if (state.state === 'error') {
+			setCallout(true);
+			setTimeout(() => {
+				setCallout(false);
+				connectVoiceRoom();
+			}, 2000);
+		}
+
+		if (state.state === 'disconnected' || state.state === 'notStarted') {
+			connectVoiceRoom();
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state.state]);
+	console.log(state);
+
 	return (
 		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
+			{showCallout && (
+				<Callout type='danger' title='Error connecting to voice channel. Please try again' />
+			)}
 			{(isWsState(state) ||
 				((isWsState(state) || isMediasoupState(state)) && state.rid !== rid)) && (
 				<VoicePeersList peers={wsPeers} globalDeafen={globalDeafen} />
@@ -96,7 +117,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 			)}
 
 			<Box display='flex' justifyContent='center' alignItems='center' pb='x24'>
-				{isMediasoupState(state) && state.rid === rid ? (
+				{isMediasoupState(state) && state.rid === rid && state.state === 'connected' ? (
 					<ButtonGroup>
 						<Button square onClick={toggleMic}>
 							{muted ? <Icon name='mic-off' size='x24' /> : <Icon name='mic' size='x24' />}
@@ -113,9 +134,11 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 						</Button>
 					</ButtonGroup>
 				) : (
-					<Button primary success square onClick={handleJoin}>
-						<Icon name='phone' size='x24' />
-					</Button>
+					state.state === 'wsconnected' && (
+						<Button primary success square onClick={handleJoin}>
+							<Icon name='phone' size='x24' />
+						</Button>
+					)
 				)}
 			</Box>
 		</Box>

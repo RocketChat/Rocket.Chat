@@ -93,6 +93,7 @@ export default class VoiceRoom extends Emitter {
 			this.peers = new Array(0);
 			peers.forEach((i) => this.peers.push(i));
 			this.emit('peer-change');
+			this.emit('wsconnected');
 		});
 
 		this.protoo.on('disconnected', () => {
@@ -175,6 +176,7 @@ export default class VoiceRoom extends Emitter {
 
 						accept();
 					} catch (error) {
+						this.emit('error', error);
 						console.log(error);
 						reject(error);
 					}
@@ -315,7 +317,7 @@ export default class VoiceRoom extends Emitter {
 			if (this.produce) {
 				await this.enableMic();
 			}
-
+			this.emit('connected');
 			const idx = this.peers.findIndex((p) => p.id === this.peerID);
 			this.peers[idx].track = this.micProducer?.track || undefined;
 			this.peers[idx].deafen = true;
@@ -323,6 +325,7 @@ export default class VoiceRoom extends Emitter {
 
 			this.emit('peer-change');
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -350,6 +353,7 @@ export default class VoiceRoom extends Emitter {
 				},
 			});
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -361,6 +365,7 @@ export default class VoiceRoom extends Emitter {
 		try {
 			await this.protoo?.request('pauseProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}
@@ -372,6 +377,7 @@ export default class VoiceRoom extends Emitter {
 		try {
 			await this.protoo?.request('resumeProducer', { producerId: this.micProducer?.id });
 		} catch (err) {
+			this.emit('error', err);
 			console.log(err);
 		}
 	}

@@ -71,11 +71,6 @@ export class VoiceRoomManager extends Emitter<{
 		try {
 			if (isWsState(this.state)) {
 				await this.state.wsClient.join();
-
-				this.setState({
-					...this.state,
-					state: 'wsconnected',
-				});
 			}
 
 			if (isMediasoupState(this.state)) {
@@ -106,6 +101,32 @@ export class VoiceRoomManager extends Emitter<{
 			}
 		});
 
+		wsClient.on('error', (err) => {
+			this.setState({
+				state: 'error',
+				err,
+			});
+		});
+
+		wsClient.on('wsconnected', () => {
+			if (this.state.state === 'wsconnecting') {
+				this.setState({
+					...this.state,
+					state: 'wsconnected',
+				});
+			}
+		});
+
+		wsClient.on('connected', () => {
+			if (this.state.state === 'connecting') {
+				this.setState({
+					...this.state,
+					state: 'connected',
+				});
+			}
+		});
+
+		// fix connection when changing rooms
 		if (isMediasoupState(this.state)) {
 			if (this.state.rid !== rid) {
 				this.setState({
@@ -137,13 +158,6 @@ export class VoiceRoomManager extends Emitter<{
 
 			if (this.state.state === 'connecting') {
 				await this.state.mediasoupClient.joinRoom();
-			}
-
-			if (this.state.state === 'connecting') {
-				this.setState({
-					...this.state,
-					state: 'connected',
-				});
 			}
 		} catch (err) {
 			console.log(err);
