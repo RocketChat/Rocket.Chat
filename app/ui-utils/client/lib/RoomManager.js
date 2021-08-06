@@ -101,6 +101,7 @@ export const RoomManager = new function() {
 							if (record.streamActive !== true) {
 								console.log('streamActive taskRoom');
 								record.streamActive = true;
+								console.log(taskStream);
 								taskStream.on(record.rid, async (task) => {
 									console.log('inside taskStrem', task);
 									// Should not send message to room if room has not loaded all the current messages

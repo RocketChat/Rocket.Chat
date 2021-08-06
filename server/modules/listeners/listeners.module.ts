@@ -112,13 +112,13 @@ export class ListenersModule {
 			if (!task.rid) {
 				return;
 			}
-
-			notifications.streamRoomMessage._emit('__my_tasks__', [task], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
+			console.log('watchtask');
+			notifications.streamRoomTask._emit('__my_tasks__', [task], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
 				eventName,
 				args: [...args, allowed],
 			}));
 
-			notifications.streamRoomMessage.emitWithoutBroadcast(task.rid, task);
+			notifications.streamRoomTask.emitWithoutBroadcast(task.rid, task);
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
