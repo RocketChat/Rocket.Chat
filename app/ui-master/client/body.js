@@ -7,11 +7,12 @@ import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
 import { chatMessages } from '../../ui';
-import { Layout, modal, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
+import { Layout, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models';
-
 import './body.html';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import GenericModal from '../../../client/components/GenericModal';
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -21,14 +22,8 @@ Template.body.onRendered(function() {
 		if (e.keyCode === 27 && (e.shiftKey === true || e.ctrlKey === true) && (unread != null) && unread !== '') {
 			e.preventDefault();
 			e.stopPropagation();
-			modal.open({
-				title: t('Clear_all_unreads_question'),
-				type: 'warning',
-				confirmButtonText: t('Yes_clear_all'),
-				showCancelButton: true,
-				cancelButtonText: t('Cancel'),
-				confirmButtonColor: '#DD6B55',
-			}, function() {
+
+			const handleClearUnreadAllMessages = () => {
 				const subscriptions = ChatSubscription.find({
 					open: true,
 				}, {
@@ -47,6 +42,21 @@ Template.body.onRendered(function() {
 						Meteor.call('readMessages', subscription.rid);
 					}
 				});
+
+				imperativeModal.close();
+			};
+
+			imperativeModal.open({
+				component: GenericModal,
+				props: {
+					children: t('Are_you_sure_you_want_to_clear_all_unread_messages'),
+					variant: 'warning',
+					title: t('Clear_all_unreads_question'),
+					confirmText: t('Yes_clear_all'),
+					onClose: imperativeModal.close,
+					onCancel: imperativeModal.close,
+					onConfirm: handleClearUnreadAllMessages,
+				},
 			});
 		}
 	});
