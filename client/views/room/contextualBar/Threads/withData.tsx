@@ -1,40 +1,67 @@
 import { useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { useUserId, useUserSubscription } from '../../../../contexts/UserContext';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import { useThreadsList } from './useThreadsList';
 
-const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };
+const subscriptionFields = { tunread: true, tunreadUser: true, tunreadGroup: true };
 const roomFields = { t: 1, name: 1 };
 
-export function withData(Component) {
-	const WrappedComponent = ({ rid, ...props }) => {
+export function withData(
+	Component: FC<{
+		[k: string]: unknown;
+	}>,
+): FC<{ rid: string }> {
+	const WrappedComponent: FC<{ rid: string }> = ({ rid, ...props }) => {
 		const userId = useUserId();
 		const onClose = useTabBarClose();
 		const room = useUserRoom(rid, roomFields);
 		const subscription = useUserSubscription(rid, subscriptionFields);
 
-		const [type, setType] = useLocalStorage('thread-list-type', 'all');
+		const [type, setType] = useLocalStorage<'all' | 'following' | 'unread'>(
+			'thread-list-type',
+			'all',
+		);
 
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
 
-		const options = useMemo(
-			() => ({
-				rid,
-				text: debouncedText,
-				type,
-				tunread: subscription?.tunread,
-				uid: userId,
-			}),
-			[rid, debouncedText, type, subscription, userId],
-		);
+		const options: ThreadsListOptions = useMemo(() => {
+			if (type === 'all' || !subscription || !userId) {
+				return {
+					rid,
+					text: debouncedText,
+					type: 'all',
+				};
+			}
+			switch (type) {
+				case 'following':
+					return {
+						rid,
+						text: debouncedText,
+						type,
+						uid: userId,
+					};
+				case 'unread':
+					return {
+						rid,
+						text: debouncedText,
+						type,
+						tunread: subscription?.tunread,
+					};
+			}
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [rid, debouncedText, type, subscription?.tunread?.sort().join(), userId]);
 
-		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(options, userId);
+		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(
+			options,
+			userId as string,
+		);
 		const { phase, error, items: threads, itemCount: totalItemCount } = useRecordList(threadsList);
 
 		const handleTextChange = useCallback((event) => {
