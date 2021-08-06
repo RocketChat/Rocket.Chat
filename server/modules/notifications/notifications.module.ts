@@ -234,11 +234,10 @@ export class NotificationsModule {
 					notifyUser(room.servedBy._id, e, ...args);
 					return false;
 				}
-			}
-			if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
+			} else if (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId) > 0) {
 				const livechatSubscriptions: ISubscription[] = await Subscriptions.findByLivechatRoomIdAndNotUserId(roomId, this.userId, { projection: { 'v._id': 1, _id: 0 } }).toArray();
-				if (livechatSubscriptions) {
-					livechatSubscriptions.forEach((subscription) => notifyUser(subscription.v._id, e, ...args));
+				if (livechatSubscriptions && e === 'webrtc') {
+					livechatSubscriptions.forEach((subscription) => subscription.v && notifyUser(subscription.v._id, e, ...args));
 					return false;
 				}
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, { projection: { 'u._id': 1, _id: 0 } }).toArray();

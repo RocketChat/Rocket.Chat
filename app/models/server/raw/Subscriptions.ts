@@ -25,7 +25,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndNotUserId(roomId: string, userId: string | undefined, options: FindOneOptions<T> = {}): Cursor<T> {
+	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
 			rid: roomId,
 			'u._id': {
@@ -36,7 +36,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string | undefined, options: FindOneOptions<T> = {}): Cursor<T> {
+	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
 			rid: roomId,
 			'servedBy._id': {

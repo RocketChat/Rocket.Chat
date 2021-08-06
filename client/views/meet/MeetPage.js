@@ -10,13 +10,14 @@ import CallPage from './CallPage';
 function MeetPage() {
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
+	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
 	const visitorToken = useQueryStringParameter('token');
-	const visitorId = useQueryStringParameter('id');
 
 	const setupCallForVisitor = useCallback(async () => {
 		const room = await APIClient.v1.get(`/livechat/room?token=${visitorToken}&rid=${roomId}`);
 		if (room?.room?.v?.token === visitorToken) {
+			setVisitorId(room.room.v._id);
 			setStatus(room?.room?.callStatus || 'ended');
 			return setIsRoomMember(true);
 		}

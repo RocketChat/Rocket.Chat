@@ -4443,6 +4443,7 @@
   "Visitor_message": "Visitor Messages",
   "Visitor_Name": "Visitor Name",
   "Visitor_Name_Placeholder": "Please enter a visitor name...",
+  "Visitor_does_not_exist": "Visitor does not exist!",
   "Visitor_Navigation": "Visitor Navigation",
   "Visitor_page_URL": "Visitor page URL",
   "Visitor_time_on_site": "Visitor time on site",

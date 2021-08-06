@@ -1,5 +1,6 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
@@ -61,7 +62,7 @@ FlowRouter.route('/meet/:rid', {
 			if (visitor?.visitor) {
 				return appLayout.render({ component: MeetPage });
 			}
-			return toastr.error("Visitor doesn't exist!");
+			return toastr.error(TAPi18n.__('Visitor_does_not_exist'));
 		}
 		if (!Meteor.userId()) {
 			FlowRouter.go('home');
