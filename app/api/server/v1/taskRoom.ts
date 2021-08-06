@@ -22,7 +22,7 @@ import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../..
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 	post() {
 		//  Permission_taskRoom
-		if (!hasPermission(this.userId, 'create-team')) {
+		if (!hasPermission(this.userId, 'create-taskRoom')) {
 			return API.v1.unauthorized();
 		}
 		const { name, type, members, room, owner } = this.bodyParams;

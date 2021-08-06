@@ -49,12 +49,7 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	getUsersByMentions({ msg, title, rid, u: sender }) {
-		let mentions;
-		if (msg) {
-			mentions = this.getUserMentions(msg);
-		} else {
-			mentions = this.getUserMentions(title);
-		}
+		let mentions = msg ? this.getUserMentions(msg) : this.getUserMentions(title);
 		const mentionsAll = [];
 		const userMentions = [];
 

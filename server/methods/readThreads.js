@@ -13,7 +13,7 @@ Meteor.methods({
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
-
+		console.log('readThread');
 		const thread = Messages.findOneById(tmid);
 		if (!thread) {
 			return;
