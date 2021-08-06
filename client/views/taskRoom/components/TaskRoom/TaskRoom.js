@@ -1,7 +1,6 @@
 import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { useEffect, useState, useRef } from 'react';
 
-import { ChatTask } from '../../../../../app/models/client';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import TaskDetailsModal from '../../taskDetailsModal';
 import CreateTaskModal from '../CreateTaskModal';
@@ -92,7 +91,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 								handleTaskDetails={() => handleTaskDetails(task)}
 								rid={rid}
 								title={task.title}
-								username={task.u && task.u.length && task.u.username}
+								username={task.u && task.u.username}
 								taskId={task._id}
 								ts={task.ts}
 								status={task.taskStatus}

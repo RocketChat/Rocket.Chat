@@ -22,7 +22,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/goToRoomById';
-import TeamNameInput from './TaskRoomNameInput';
+import TaskRoomNameInput from './TaskRoomNameInput';
 import UsersInput from './UsersInput';
 
 type CreateTaskRoomModalState = {
@@ -88,7 +88,7 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 
 	const [nameError, setNameError] = useState<string>();
 
-	const teamNameExists = useMethod('roomNameExists');
+	const roomNameExists = useMethod('roomNameExists');
 
 	const checkName = useDebouncedCallback(
 		async (name: string) => {
@@ -108,7 +108,7 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 				return;
 			}
 
-			const isNotAvailable = await teamNameExists(name);
+			const isNotAvailable = await roomNameExists(name);
 			if (isNotAvailable) {
 				setNameError(t('Teams_Errors_team_name', { name }));
 			}
@@ -161,10 +161,10 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 	);
 
 	const canSave = hasUnsavedChanges && !nameError;
-	const canCreateTeam = usePermission('create-team');
-	const isCreateButtonEnabled = canSave && canCreateTeam;
+	const canCreateTaskRoom = usePermission('create-taskRoom');
+	const isCreateButtonEnabled = canSave && canCreateTaskRoom;
 
-	const createTeam = useEndpointActionExperimental('POST', 'taskRoom.create');
+	const createTaskRoom = useEndpointActionExperimental('POST', 'taskRoom.create');
 
 	const onCreate = useCallback(async () => {
 		const params = {
@@ -181,12 +181,12 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 			},
 		};
 
-		const data = await createTeam(params);
+		const data = await createTaskRoom(params);
 
-		goToRoomById(data.team.roomId);
+		goToRoomById(data.taskRoom.roomId);
 
 		onClose();
-	}, [name, members, type, readOnly, description, broadcast, encrypted, createTeam, onClose]);
+	}, [name, members, type, readOnly, description, broadcast, encrypted, createTaskRoom, onClose]);
 
 	return {
 		name,
@@ -254,7 +254,7 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 				<Field mbe='x24'>
 					<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
 					<Field.Row>
-						<TeamNameInput
+						<TaskRoomNameInput
 							ref={focusRef}
 							private={type}
 							error={hasUnsavedChanges ? nameError : undefined}

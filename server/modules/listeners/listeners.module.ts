@@ -112,7 +112,7 @@ export class ListenersModule {
 			if (!task.rid) {
 				return;
 			}
-			console.log('watchtask');
+
 			notifications.streamRoomTask._emit('__my_tasks__', [task], undefined, false, (streamer, _sub, eventName, args, allowed) => streamer.changedPayload(streamer.subscriptionName, 'id', {
 				eventName,
 				args: [...args, allowed],

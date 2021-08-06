@@ -11,7 +11,7 @@ const findParentMessage = (() => {
 	const waiting = [];
 	let resolve;
 	let pending = new Promise((r) => { resolve = r; });
-	console.log('1222222');
+
 	const getMessages = _.debounce(async function() {
 		const _tmp = [...waiting];
 		waiting.length = 0;
@@ -22,7 +22,7 @@ const findParentMessage = (() => {
 	const get = async (tmid) => {
 		getMessages();
 		const messages = await pending;
-		console.log(messages);
+		console.log(messages, 'message from findParentMessage');
 		return messages.find(({ _id }) => _id === tmid);
 	};
 
