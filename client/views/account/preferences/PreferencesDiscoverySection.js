@@ -19,6 +19,7 @@ const PreferencesDiscoverySection = ({ onChange, commitRef, ...props }) => {
 	const { values, handlers, commit } = useForm({ tags: userTags }, onChange);
 
 	const { tags } = values;
+	const displayTags = tags.filter((tag) => tagsAvailable.includes(tag));
 
 	const { handleTags } = handlers;
 
@@ -32,7 +33,7 @@ const PreferencesDiscoverySection = ({ onChange, commitRef, ...props }) => {
 					<Field.Row>
 						<MultiSelect
 							options={tagsAvailable}
-							value={tags}
+							value={displayTags}
 							maxWidth='100%'
 							placeholder={t('Select_an_option')}
 							onChange={handleTags}

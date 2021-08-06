@@ -694,37 +694,62 @@ describe('[Channels]', function() {
 	});
 
 	describe('/channels.setTags', () => {
-		it('should set the tags of the channel with an array', (done) => {
-			request.post(api('channels.setTags'))
-				.set(credentials)
-				.send({
-					roomId: channel._id,
-					tags: ['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests'],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('tags');
-					expect(res.body.tags).to.have.members(['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests']);
-				})
-				.end(done);
+		after(() => updateSetting('Discovery_Enabled', false));
+		it('should return an error when the setting "Discovery_Enabled" is disabled', (done) => {
+			updateSetting('Discovery_Enabled', false).then(() => {
+				request.post(api('channels.setTags'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						tags: ['these', 'tags', 'will', 'not', 'be', 'set'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error');
+						expect(res.body).to.have.a.property('errorType');
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('Enable \"Discovery\" [error-not-allowed]');
+					})
+					.end(done);
+			});
 		});
-		it('should set the tags of the channel with an empty array (remove tags)', (done) => {
-			request.post(api('channels.setTags'))
-				.set(credentials)
-				.send({
-					roomId: channel._id,
-					tags: [],
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('tags');
-					expect(res.body.tags).to.have.members([]);
-				})
-				.end(done);
+		it('should set the tags of the channel with an array when the setting "Discovery_Enabled" is enabled', (done) => {
+			updateSetting('Discovery_Enabled', true).then(() => {
+				request.post(api('channels.setTags'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						tags: ['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('tags');
+						expect(res.body.tags).to.have.members(['these', 'are', 'tags', 'of', 'a', 'channel', 'for', 'api', 'tests']);
+					})
+					.end(done);
+			});
+		});
+		it('should set the tags of the channel with an empty array (remove tags) when the setting "Discovery_Enabled" is enabled', (done) => {
+			updateSetting('Discovery_Enabled', true).then(() => {
+				request.post(api('channels.setTags'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						tags: [],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('tags');
+						expect(res.body.tags).to.have.members([]);
+					})
+					.end(done);
+			});
 		});
 	});
 
