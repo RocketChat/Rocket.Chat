@@ -49,6 +49,7 @@ const getStream = (streamName, options = {}) => {
 	return (eventName, callback) => {
 		streamer.on(eventName, callback);
 		return () => {
+			console.log('remove getStream', streamer, eventName, callback);
 			streamer.removeListener(eventName, callback);
 		};
 	};

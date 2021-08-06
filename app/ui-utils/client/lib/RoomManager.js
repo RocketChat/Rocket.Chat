@@ -103,7 +103,7 @@ export const RoomManager = new function() {
 								record.streamActive = true;
 								console.log(taskStream);
 								taskStream.on(record.rid, async (task) => {
-									// Should not send message to room if room has not loaded all the current task
+									// Should not send task to room if room has not loaded all the current task
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
 									}
@@ -119,7 +119,7 @@ export const RoomManager = new function() {
 										};
 										if (isNew) {
 											menu.updateUnreadBars();
-											callbacks.run('streamNewMessage', task);
+											// callbacks.run('streamNewMessage', task);
 										}
 									}
 
@@ -128,9 +128,45 @@ export const RoomManager = new function() {
 
 									handleTrackSettingsChange(task);
 
-									callbacks.run('streamMessage', task);
+									// callbacks.run('streamMessage', task);
 
 									return fireGlobalEvent('new-message', task);
+								});
+								// Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
+								// Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+
+								RoomHistoryManager.getMoreIfIsEmpty(room._id);
+
+								msgStream.on(record.rid, async (msg) => {
+									console.log('inside msgStrem', msg);
+									// Should not send message to room if room has not loaded all the current messages
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
+									}
+									// Do not load command messages into channel
+									if (msg.t !== 'command') {
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
+										upsertMessage({ msg, subscription });
+
+										msg.room = {
+											type,
+											name,
+										};
+										if (isNew) {
+											menu.updateUnreadBars();
+											callbacks.run('streamNewMessage', msg);
+										}
+									}
+
+									msg.name = room.name;
+									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+									handleTrackSettingsChange(msg);
+
+									callbacks.run('streamMessage', msg);
+
+									return fireGlobalEvent('new-message', msg);
 								});
 								Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 								Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
@@ -166,7 +202,7 @@ export const RoomManager = new function() {
 
 									handleTrackSettingsChange(msg);
 
-									callbacks.run('streamMessage', msg);
+									// callbacks.run('streamMessage', msg);
 
 									return fireGlobalEvent('new-message', msg);
 								});

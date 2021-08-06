@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
+import { ITask } from '../../../definition/ITask';
 import { IUser } from '../../../definition/IUser';
 import { useStream } from '../../contexts/ServerContext';
 import { MessageList } from '../../lib/lists/MessageList';
@@ -44,6 +45,7 @@ export const useStreamUpdatesForMessageList = (
 	rid: IRoom['_id'] | null,
 ): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
+	const subscribeToRoomTasks = useStream('room-tasks');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	useEffect(() => {
@@ -58,6 +60,10 @@ export const useStreamUpdatesForMessageList = (
 				messageList.handle(message);
 			},
 		);
+
+		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomMessagesRidEvent>(rid, (task) => {
+			messageList.handle(task);
+		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
 			`${rid}/deleteMessage`,
@@ -76,8 +82,9 @@ export const useStreamUpdatesForMessageList = (
 
 		return (): void => {
 			unsubscribeFromRoomMessages();
+			unsubscribeFromRoomTasks();
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList]);
+	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList, subscribeToRoomTasks]);
 };
