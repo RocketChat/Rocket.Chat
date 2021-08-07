@@ -130,10 +130,13 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-const validateMessage = (message, room, user) => {
+export const validateMessage = (message, room, user) => {
 	check(message, objectMaybeIncluding({
 		_id: String,
 		msg: String,
+		title: String,
+		taskDescription: String,
+		taskStatus: String,
 		text: String,
 		alias: String,
 		emoji: String,

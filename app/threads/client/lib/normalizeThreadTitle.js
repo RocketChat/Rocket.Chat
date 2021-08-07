@@ -27,10 +27,9 @@ export const normalizeThreadTitle = ({ ...message }) => {
 			roomTemplate: ({ prefix, mention }) => `${ prefix }<strong> ${ mention } </strong>`,
 		});
 		const { html } = emojiParser({ html: filteredMessage });
-		if (message.title) {
-			return instance.parse({ ...message, title: filteredMessage, html }).html;
-		}
-		return instance.parse({ ...message, msg: filteredMessage, html }).html;
+		const parsedInstace = message.title ? instance.parse({ ...message, title: filteredMessage, html }).html : instance.parse({ ...message, msg: filteredMessage, html }).html;
+
+		return parsedInstace;
 	}
 
 	if (message.attachments) {
