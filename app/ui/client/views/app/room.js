@@ -189,7 +189,6 @@ Template.roomOld.helpers({
 		return state.get('subscribed');
 	},
 	messagesHistory() {
-		console.log('msghist');
 		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
@@ -596,7 +595,6 @@ Meteor.startup(() => {
 			const hasMoreNext = RoomHistoryManager.hasMoreNext(this._id);
 
 			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				console.log('loadmoreR');
 				if (hasMore === true && t.lastScrollTop <= height / 3) {
 					RoomHistoryManager.getMore(this._id);
 				} else if (hasMoreNext === true && Math.ceil(t.lastScrollTop) >= e.target.scrollHeight - height) {

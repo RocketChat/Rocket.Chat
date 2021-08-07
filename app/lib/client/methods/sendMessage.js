@@ -11,7 +11,6 @@ import { t } from '../../../utils/client';
 
 Meteor.methods({
 	sendMessage(message) {
-		console.log('sendMessageClient');
 		if (!Meteor.userId() || s.trim(message.msg) === '') {
 			return false;
 		}

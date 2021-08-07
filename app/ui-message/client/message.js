@@ -58,7 +58,6 @@ Template.message.helpers({
 	},
 	unread() {
 		const { msg, subscription } = this;
-		console.log(subscription?.tunread?.includes(msg._id), subscription);
 		return subscription?.tunread?.includes(msg._id);
 	},
 	mention() {
