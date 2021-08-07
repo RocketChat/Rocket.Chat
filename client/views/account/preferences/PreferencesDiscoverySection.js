@@ -19,7 +19,9 @@ const PreferencesDiscoverySection = ({ onChange, commitRef, ...props }) => {
 	const { values, handlers, commit } = useForm({ tags: userTags }, onChange);
 
 	const { tags } = values;
-	const displayTags = tags.filter((tag) => tagsAvailable.includes(tag));
+
+	const tagValues = tagsAvailable.map((t) => t[0]);
+	const displayTags = tags.filter((tag) => tagValues.includes(tag));
 
 	const { handleTags } = handlers;
 
