@@ -8,6 +8,7 @@ Template.header.helpers({
 		return Template.instance().data.back;
 	},
 	buttons() {
+		console.log('asdasd');
 	},
 });
 

@@ -20,6 +20,7 @@ export const Login = (function() {
 			const inputs = $form.find('input');
 			return inputs.each(function() {
 				if (this.value !== '') {
+					console.log(this.value);
 					return $(this).parents('.input-text').addClass('active');
 				}
 			});
