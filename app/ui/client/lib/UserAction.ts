@@ -17,9 +17,9 @@ export const USER_ACTIVITY = 'user-activity';
 const TYPING = 'typing';
 
 
-const activityTimeouts = new Map<string, NodeJS.Timer>();
-const activityRenews = new Map<string, NodeJS.Timer>();
-const continuingIntervals = new Map<string, NodeJS.Timer>();
+const activityTimeouts = new Map();
+const activityRenews = new Map();
+const continuingIntervals = new Map();
 const rooms = new Map<string, Function>();
 
 const performingUsers = new ReactiveDict();
@@ -135,14 +135,14 @@ export const UserAction = new class {
 		}
 
 		activityRenews.set(key, setTimeout(() => {
-			clearTimeout(activityRenews.get(key) as NodeJS.Timer);
+			clearTimeout(activityRenews.get(key));
 			activityRenews.delete(key);
 		}, renew));
 
 		startActivity(rid, activityType, extras);
 
 		if (activityTimeouts.get(key)) {
-			clearTimeout(activityTimeouts.get(key) as NodeJS.Timer);
+			clearTimeout(activityTimeouts.get(key));
 			activityTimeouts.delete(key);
 		}
 
@@ -155,15 +155,15 @@ export const UserAction = new class {
 		const key = `${ activityType }-${ id }`;
 
 		if (activityTimeouts.get(key)) {
-			clearTimeout(activityTimeouts.get(key) as NodeJS.Timer);
+			clearTimeout(activityTimeouts.get(key));
 			activityTimeouts.delete(key);
 		}
 		if (activityRenews.get(key)) {
-			clearTimeout(activityRenews.get(key) as NodeJS.Timer);
+			clearTimeout(activityRenews.get(key));
 			activityRenews.delete(key);
 		}
 		if (continuingIntervals.get(key)) {
-			clearInterval(continuingIntervals.get(key) as NodeJS.Timer);
+			clearInterval(continuingIntervals.get(key));
 			continuingIntervals.delete(key);
 		}
 		stopActivity(rid, activityType, extras);
@@ -180,7 +180,7 @@ export const UserAction = new class {
 
 		Object.values(performingUsers.all() || {}).forEach((roomActivities) => {
 			Object.values(roomActivities || {}).forEach((activity: IActivity) => {
-				Object.values(activity || {}).forEach((value: NodeJS.Timer) => {
+				Object.values(activity || {}).forEach((value) => {
 					clearTimeout(value);
 				});
 			});
