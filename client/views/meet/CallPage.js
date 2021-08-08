@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
+	const t = useTranslation();
 	useEffect(() => {
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
@@ -67,6 +69,19 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 				<h1 style={{ color: 'white', textAlign: 'center', marginTop: 250 }}>
 					Waiting for the visitor to join ...
 				</h1>
+			);
+		case 'declined':
+			return (
+				<Box
+					minHeight='90%'
+					display='flex'
+					justifyContent='center'
+					alignItems='center'
+					color='white'
+					fontSize='s1'
+				>
+					{t('Call_declined')}
+				</Box>
 			);
 		case 'inProgress':
 			return (
