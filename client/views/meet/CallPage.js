@@ -1,11 +1,12 @@
 import { Box, Flex } from '@rocket.chat/fuselage';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 
 function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
+	const [isAgentActive, setIsAgentActive] = useState(false);
 	useEffect(() => {
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
@@ -25,10 +26,18 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 					setStatus(data.callStatus);
 				}
 			});
-			setStatus('inProgress');
 			Notifications.notifyRoom(roomId, 'webrtc', 'callStatus', { callStatus: 'inProgress' });
-		} else {
+		} else if (!isAgentActive) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
+			if (status === 'inProgress') {
+				webrtcInstance.startCall({
+					audio: true,
+					video: {
+						width: { ideal: 1920 },
+						height: { ideal: 1080 },
+					},
+				});
+			}
 			Notifications.onRoom(roomId, 'webrtc', (type, data) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
@@ -47,21 +56,9 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 					setStatus(data.callStatus);
 				}
 			});
+			setIsAgentActive(true);
 		}
-	}, [setStatus, visitorId, roomId, visitorToken]);
-
-	useEffect(() => {
-		if (!visitorToken && status === 'inProgress') {
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
-			webrtcInstance.startCall({
-				audio: true,
-				video: {
-					width: { ideal: 1920 },
-					height: { ideal: 1080 },
-				},
-			});
-		}
-	}, [status, visitorToken, roomId]);
+	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken]);
 
 	switch (status) {
 		case 'ringing':
