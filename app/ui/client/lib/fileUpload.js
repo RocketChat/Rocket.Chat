@@ -34,6 +34,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 
 	uploads.push(upload);
 	Session.set('uploading', uploads);
+
 	const { xhr, promise } = APIClient.upload(`v1/rooms.upload/${ rid }`, {}, data, {
 		progress(progress) {
 			const uploads = Session.get('uploading') || [];

@@ -22,7 +22,6 @@ const stopRecording = async (rid, tmid) => {
 };
 
 const recordingInterval = new ReactiveVar(null);
-const recordingIndicatorInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
 const clearIntervalVariables = () => {
@@ -30,10 +29,6 @@ const clearIntervalVariables = () => {
 		clearInterval(recordingInterval.get());
 		recordingInterval.set(null);
 		recordingRoomId.set(null);
-	}
-	if (recordingIndicatorInterval.get()) {
-		clearInterval(recordingIndicatorInterval.get());
-		recordingIndicatorInterval.set(null);
 	}
 };
 
@@ -153,7 +148,3 @@ Template.messageBoxAudioMessage.events({
 		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
 	},
 });
-
-// Template.messageBoxAudioMessage.onDestroyed(function() {
-// 	MsgRecording.cancel(this.data.rid);
-// });

@@ -49,6 +49,7 @@ const stopActivity = (rid: string, activityType: string, extras: IExtras): void 
 	const stream = activityType === USER_TYPING && fireOldTypingEvent() ? TYPING : USER_ACTIVITY;
 	Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), false, activityType, extras);
 };
+
 const startActivity = (rid: string, activityType: string, extras: IExtras): void => {
 	const stream = activityType === USER_TYPING && fireOldTypingEvent() ? TYPING : USER_ACTIVITY;
 	Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), true, activityType, extras);
