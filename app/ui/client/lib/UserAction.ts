@@ -57,7 +57,8 @@ const startActivity = (rid: string, activityType: string, extras: IExtras): void
 
 function handleStreamAction(rid: string, username: string, actionType: string, isActive: boolean, extras: IExtras): void {
 	// actionType and extras will be null if Fire_Old_Typing_Event is true.
-	const activityType = actionType || USER_TYPING;
+	// actionType gets an object from livechat client.
+	const activityType = actionType && typeof actionType === 'string' ? actionType : USER_TYPING;
 	const id = extras?.tmid || rid;
 	const activities = performingUsers.all() || {};
 	const roomActivities = activities[id] as IRoomActivity || {};
