@@ -1159,6 +1159,15 @@ settings.addGroup('Message', function() {
 		public: true,
 		i18nDescription: 'Message_GroupingPeriodDescription',
 	});
+	this.add('Task_AllowDeleting', true, {
+		type: 'boolean',
+		public: true,
+	});
+	this.add('Task_AllowDeleting_BlockDeleteInMinutes', 0, {
+		type: 'int',
+		public: true,
+		i18nDescription: 'Task_AllowDeleting_BlockDeleteInMinutes',
+	});
 	this.add('API_Embed', true, {
 		type: 'boolean',
 		public: true,

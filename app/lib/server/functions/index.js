@@ -8,6 +8,7 @@ export { cleanRoomHistory } from './cleanRoomHistory';
 export { createRoom } from './createRoom';
 export { createDirectRoom } from './createDirectRoom';
 export { deleteMessage } from './deleteMessage';
+export { deleteTask } from './deleteTask';
 export { deleteRoom } from './deleteRoom';
 export { deleteUser } from './deleteUser';
 export { getFullUserData } from './getFullUserData';

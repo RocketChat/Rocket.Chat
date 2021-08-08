@@ -9,11 +9,11 @@ import moment from 'moment';
 import toastr from 'toastr';
 
 import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
-import { Rooms, Subscriptions, Tasks, Users } from '../../../models/client';
+import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks/server';
 import { promises } from '../../../promises/server';
-import { updateTask, sendTask } from '../../../lib/server/functions';
+import { updateTask, sendTask, deleteTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
@@ -286,5 +286,34 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 		Tasks.removeThreadFollowerByThreadId({ tmid: task.tmid || task.id }, uid);
 
 		return API.v1.success(true);
+	},
+});
+
+API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
+	post() {
+		const { taskId } = this.bodyParams;
+
+		const uid = Meteor.userId();
+
+		if (!uid) {
+			API.v1.failure('Invalid user id');
+		}
+
+		const originalTask = Tasks.findOneById(taskId, {
+			fields: {
+				u: 1,
+				rid: 1,
+				file: 1,
+				ts: 1,
+			},
+		});
+
+		if (!originalTask || !canDeleteTask(uid, originalTask)) {
+			API.v1.failure('Not allowed to follow in this room');
+		}
+
+		const resp = Promise.await(deleteTask(originalTask, Meteor.user()));
+
+		return resp;
 	},
 });

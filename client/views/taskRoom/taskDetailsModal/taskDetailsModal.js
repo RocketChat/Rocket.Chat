@@ -11,6 +11,7 @@ const TaskDetailsModal = ({
 	onClose,
 	onChangeAssignee,
 	onUpdate,
+	onDelete,
 }) => {
 	const canSave = useMemo(() => hasUnsavedChanges, [hasUnsavedChanges]);
 	const t = useTranslation();
@@ -51,7 +52,7 @@ const TaskDetailsModal = ({
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
-					<Button onClick={onUpdate} primary danger>
+					<Button onClick={onDelete} primary danger>
 						{t('Delete')}
 					</Button>
 					<Button onClick={onClose}>{t('Cancel')}</Button>

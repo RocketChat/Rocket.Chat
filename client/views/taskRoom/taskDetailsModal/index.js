@@ -11,6 +11,7 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 	const t = useTranslation();
 
 	const updateTask = useEndpointActionExperimental('POST', 'taskRoom.taskUpdate');
+	const deleteTask = useEndpointActionExperimental('POST', 'taskRoom.deleteTask');
 
 	const initialValues = {
 		taskTitle: task.title ? task.title : '',
@@ -52,6 +53,21 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 		onClose();
 	}, [taskTitle, taskDescription, taskAssignee, taskStatus, onClose, updateTask, task._id, t]);
 
+	const onDelete = useCallback(async () => {
+		const params = {
+			taskId: task._id,
+		};
+
+		const data = await deleteTask(params);
+
+		if (data.success) {
+			toastr.success(t('Saved'));
+			onClose();
+		}
+
+		onClose();
+	}, [onClose, deleteTask, task._id, t]);
+
 	return (
 		<TaskDetailsModal
 			taskTitle={task.title}
@@ -63,6 +79,7 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 			hasUnsavedChanges={hasUnsavedChanges}
 			onClose={onClose}
 			onChangeAssignee={onChangeAssignee}
+			onDelete={onDelete}
 			onUpdate={onUpdate}
 			{...props}
 		/>
