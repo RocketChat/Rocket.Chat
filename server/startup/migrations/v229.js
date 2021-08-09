@@ -22,7 +22,7 @@ Migrations.add({
 		for (const app of apps) {
 			console.log(`Migrating app ${app.info.name}@${app.info.version}'s source to GridFS`);
 			const packageName = `${ app.info.nameSlug }-${ app.info.version }.package`;
-			const fileId = Promise.await(createGridFSFileFromSource(packageName, app.zip, bucket));
+			const fileId = Promise.await(createGridFSFileFromSource(packageName, Buffer.from(app.zip, 'base64'), bucket));
 			Promise.await(updateAppSourcePath(appsCollection, app._id, fileId));
 		}
 	}
