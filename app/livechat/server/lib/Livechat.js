@@ -1021,7 +1021,7 @@ export const Livechat = {
 		} else {
 			fromEmail = settings.get('From_Email');
 		}
-		console.log(html);
+
 		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
 		this.sendEmail(fromEmail, email, fromEmail, mailSubject, html);
