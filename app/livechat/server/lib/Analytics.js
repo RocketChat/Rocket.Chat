@@ -76,9 +76,9 @@ export const Analytics = {
 	},
 
 	getAnalyticsOverviewData(options) {
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
-		const { departmentId } = options;
+		const { departmentId, daterange: { from: fDate, to: tDate } = {} } = options;
+		const from = moment(fDate);
+		const to = moment(tDate);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.log('livechat:getAnalyticsOverviewData => Invalid dates');

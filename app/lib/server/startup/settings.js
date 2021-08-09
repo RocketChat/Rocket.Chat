@@ -1,5 +1,4 @@
 import { Random } from 'meteor/random';
-import moment from 'moment-timezone';
 
 import { settings } from '../../../settings/server';
 import './email';
@@ -1087,8 +1086,7 @@ settings.addGroup('General', function() {
 			}],
 		});
 		this.add('Default_Custom_Timezone', '', {
-			type: 'select',
-			values: moment.tz.names().map((key) => ({ key, i18nLabel: key })),
+			type: 'timezone',
 			enableQuery: {
 				_id: 'Default_Timezone_For_Reporting',
 				value: 'custom',
