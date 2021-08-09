@@ -31,18 +31,19 @@ API.v1.addRoute('livechat/room', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		let room;
+		let room;		
+		let agent;
+		let newRoom = false;
+		const agentObj = agentId && findAgent(agentId);
+		if (agentObj) {
+			const { username } = agentObj;
+			agent = { agentId, username };
+		}
+
 		if (!roomId) {
 			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
 			if (room) {
-				return API.v1.success({ room, newRoom: false });
-			}
-
-			let agent;
-			const agentObj = agentId && findAgent(agentId);
-			if (agentObj) {
-				const { username } = agentObj;
-				agent = { agentId, username };
+				return API.v1.success({ room, newRoom });
 			}
 
 			const rid = Random.id();
@@ -51,11 +52,20 @@ API.v1.addRoute('livechat/room', {
 		}
 
 		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+
+		if (!room) {
+			const rid = roomId || Random.id();
+			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			if (room) {
+				newRoom = true
+			}
+		}
+		
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		return API.v1.success({ room, newRoom: false });
+		return API.v1.success({ room, newRoom });
 	},
 });
 
