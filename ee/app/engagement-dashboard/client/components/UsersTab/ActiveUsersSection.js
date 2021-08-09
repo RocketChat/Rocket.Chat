@@ -115,19 +115,6 @@ const ActiveUsersSection = ({ timezone }) => {
 			...values,
 		];
 		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
-
-		const dataStats = [
-			['DAU', 'Diff. DAU', 'WAU', 'Diff. WAU', 'MAU', 'Diff. MAU'],
-			[
-				countDailyActiveUsers,
-				diffDailyActiveUsers,
-				countWeeklyActiveUsers,
-				diffWeeklyActiveUsers,
-				countMonthlyActiveUsers,
-				diffMonthlyActiveUsers,
-			],
-		];
-		downloadCsvAs(dataStats, `ActiveUsersSection_stats_start_${ params.start }_end_${ params.end }`);
 	};
 
 
