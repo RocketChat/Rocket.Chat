@@ -151,8 +151,10 @@ export const RoomManager = new function() {
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 
 							if (room.taskRoomId) {
+								console.log('steam task');
 								RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
 								taskStream.on(record.rid, async (task) => {
+									console.log(task);
 									// Should not send task to room if room has not loaded all the current task
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;

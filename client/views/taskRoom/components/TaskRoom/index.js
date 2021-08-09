@@ -6,7 +6,7 @@ import TaskRoom from './TaskRoom';
 
 export default function WithData({ rid }) {
 	const [tasks, setTasks] = useState([]);
-
+	const [loading, setLoading] = useState(false);
 	useEffect(() => {
 		const query = {
 			rid,
@@ -20,12 +20,13 @@ export default function WithData({ rid }) {
 		};
 
 		const computation = Tracker.autorun(async (computation) => {
+			setLoading(true);
 			const tasks = ChatTask.find(query, options).fetch();
 
 			if (!tasks || computation.stopped) {
 				return;
 			}
-
+			setLoading(false);
 			setTasks(tasks);
 		});
 
@@ -34,5 +35,5 @@ export default function WithData({ rid }) {
 		};
 	}, [tasks._id, rid]);
 
-	return <TaskRoom rid={rid} tasks={tasks} setTasks={setTasks} />;
+	return <TaskRoom rid={rid} tasks={tasks} loading={loading} setTasks={setTasks} />;
 }

@@ -6,13 +6,10 @@ import { Match, check } from 'meteor/check';
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
-import toastr from 'toastr';
 
 import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
 import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks/server';
-import { promises } from '../../../promises/server';
 import { updateTask, sendTask, deleteTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
@@ -55,9 +52,9 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 		// permission
 
-		const messageDetails = Promise.await(Tasks.findOne({ _id: taskId }));
+		const taskDetails = Promise.await(Tasks.findOne({ _id: taskId }));
 
-		return API.v1.success({ message: messageDetails });
+		return API.v1.success({ task: taskDetails });
 	},
 });
 
@@ -77,16 +74,16 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			return;
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', task.rid);
+		const _hasPermission = hasPermission(this.userId, 'edit-task', task.rid);
 
 		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = task.u && task.u._id === Meteor.userId();
+		const editOwn = task.u && task.u._id === this.userId;
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'updateMessage', action: 'Message_editing' });
+			API.v1.failure('An error occured while updating a task');
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Task_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let taskTs;
@@ -99,12 +96,17 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			}
 
 			if (currentTsDiff > blockEditInMinutes) {
-				throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', { method: 'updateMessage' });
+				API.v1.failure('An error occured while updating a task');
 			}
 		}
-
-		const user = this.userId;
-		// canSendMessage(task.rid, { uid: user._id, ...user });
+		const uid = this.userId;
+		const user = Users.findOneById(uid, {
+			fields: {
+				username: 1,
+				type: 1,
+			},
+		});
+		canSendMessage(task.rid, { uid: user._id, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (task.attachments && task.attachments.length > 0 && task.attachments[0].description !== undefined) {
@@ -154,11 +156,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		if (task.ts) {
 			const tsDiff = Math.abs(moment(task.ts).diff());
 			if (tsDiff > 60000) {
-				throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-					method: 'sendMessage',
-					taskTs: task.ts,
-					serverTs: new Date().getTime(),
-				});
+				API.v1.failure('error-task-ts-out-of-sync');
 			} else if (tsDiff > 10000) {
 				task.ts = new Date();
 			}

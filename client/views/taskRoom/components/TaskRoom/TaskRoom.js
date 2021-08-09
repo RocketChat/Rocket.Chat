@@ -67,10 +67,10 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 				<Button ghost info onClick={() => sortTasks('Creator')}>
 					{'Sort by Creator'}
 				</Button>
-				<Button info onClick={() => sortTasks('Date')}>
+				<Button ghost info onClick={() => sortTasks('Date')}>
 					{'Sort by Date'}
 				</Button>
-				<Button small onClick={() => sortTasks('Status')}>
+				<Button ghost info onClick={() => sortTasks('Status')}>
 					{'Sort by Status'}
 				</Button>
 				<Button primary onClick={handleCreate}>
@@ -85,7 +85,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 			>
 				<Flex.Container className='taskRoom_tasksContainer' style={{ overflowY: 'auto' }}>
 					{tasks !== undefined &&
-						tasks.length &&
+						tasks[0] &&
 						tasks.map((task) => (
 							<Task
 								handleTaskDetails={() => handleTaskDetails(task)}

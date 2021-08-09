@@ -33,7 +33,7 @@ Meteor.methods({
 		}
 		task = callbacks.run('beforeSaveMessage', task);
 		promises.run('onClientMessageReceived', task).then(function(task) {
-			ChatTask.insert(task);
+			// ChatTask.insert(task);
 			return callbacks.run('afterTaskMessage', task);
 		});
 	},

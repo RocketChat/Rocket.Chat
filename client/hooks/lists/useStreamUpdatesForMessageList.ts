@@ -2,12 +2,16 @@ import { useEffect } from 'react';
 
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
+import { ITask } from '../../../definition/ITask';
 import { IUser } from '../../../definition/IUser';
 import { useStream } from '../../contexts/ServerContext';
 import { MessageList } from '../../lib/lists/MessageList';
+import { TaskList } from '../../lib/lists/TaskList';
 import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';
 
 type RoomMessagesRidEvent = IMessage;
+
+type RoomTasksRidEvent = ITask;
 
 type NotifyRoomRidDeleteMessageEvent = { _id: IMessage['_id'] };
 
@@ -40,6 +44,7 @@ const createDeleteCriteria = (
 
 export const useStreamUpdatesForMessageList = (
 	messageList: MessageList,
+	taskList: TaskList,
 	uid: IUser['_id'] | null,
 	rid: IRoom['_id'] | null,
 ): void => {
@@ -60,8 +65,8 @@ export const useStreamUpdatesForMessageList = (
 			},
 		);
 
-		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomMessagesRidEvent>(rid, (task) => {
-			messageList.handle(task);
+		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomTasksRidEvent>(rid, (task) => {
+			taskList.handle(task);
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
@@ -85,5 +90,13 @@ export const useStreamUpdatesForMessageList = (
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList, subscribeToRoomTasks]);
+	}, [
+		subscribeToRoomMessages,
+		subscribeToNotifyRoom,
+		uid,
+		rid,
+		messageList,
+		subscribeToRoomTasks,
+		taskList,
+	]);
 };
