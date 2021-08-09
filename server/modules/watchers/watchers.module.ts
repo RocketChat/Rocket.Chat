@@ -6,6 +6,7 @@ import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
+import { UploadRaw } from '../../../app/models/server/raw/Upload';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
@@ -34,7 +35,7 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
-// import { FileUpload } from '../../../app/file-upload/server';
+
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -52,6 +53,7 @@ interface IModelsParam {
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
 	EmailInbox: EmailInboxRaw;
+	Uploads: UploadRaw;
 }
 
 interface IChange<T> {
@@ -84,6 +86,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		Uploads,
 	} = models;
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
@@ -123,9 +126,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			case 'removed': {
 				const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1, file: 1 } });
 				const message = trash || { _id: id };
-				const room = trash.rid ? await Rooms.findOneById(trash.rid, { projection: roomFields }) : undefined;
+				const room = trash?.rid ? await Rooms.findOneById(trash.rid, { projection: roomFields }) : undefined;
+				if (message.file) {
+					Uploads.deleteOneById(message.file._id);
+				}
 				Messages.trashFindByIdAndRemove(id);
-				if (room.t === 'e') { broadcast('watch.messages', { clientAction, message }); }
+				if (room?.t === 'e') { broadcast('watch.messages', { clientAction, message }); }
 				break;
 			}
 		}
@@ -289,6 +295,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 
 	watch<IRoom>(Rooms, async ({ clientAction, id, data }) => {
 		if (clientAction === 'removed') {
+			Messages.deleteByRoomId(id);
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
 			return;
 		}

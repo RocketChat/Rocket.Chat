@@ -1218,7 +1218,7 @@ export class Subscriptions extends Base {
 			subscription.prid = room.prid;
 		}
 
-		const result = this.insert(subscription);
+		const result = extraData.ephemeralTime ? this.insertEphemeral(subscription) : this.insert(subscription);
 
 		Rooms.incUsersCountById(room._id);
 

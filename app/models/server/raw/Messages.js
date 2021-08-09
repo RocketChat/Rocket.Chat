@@ -121,6 +121,12 @@ export class MessagesRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
+	deleteByRoomId(id) {
+		return this.col.deleteMany({
+			rid: id,
+		});
+	}
+
 	getTotalOfMessagesSentByDate({ start, end, options = {} }) {
 		const params = [
 			{ $match: { t: { $exists: false }, ts: { $gte: start, $lte: end } } },

@@ -68,13 +68,22 @@ addAction('uploaded-files-list', {
 	order: 7,
 });
 
-addAction('ephemeral-time', {
-	groups: ['ephemeral'],
-	id: 'ephemeral-time',
-	title: 'Ephemeral_time',
-	icon: 'clock',
-	template: lazy(() => import('../../contextualBar/EphemeralTime')),
-	order: 7,
+addAction('ephemeral-time', ({ room }) => {
+	const hasPermission = usePermission('view-broadcast-member-list', room._id);
+	return useMemo(
+		() =>
+			room.ephemeralTime
+				? {
+						groups: ['ephemeral'],
+						id: 'ephemeral-time',
+						title: 'Ephemeral_time',
+						icon: 'clock',
+						template: lazy(() => import('../../contextualBar/EphemeralTime')),
+						order: 5,
+				  }
+				: null,
+		[room.ephemeralTime],
+	);
 });
 
 addAction('keyboard-shortcut-list', {

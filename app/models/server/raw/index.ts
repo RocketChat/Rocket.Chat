@@ -1,5 +1,7 @@
 import PermissionsModel from '../models/Permissions';
 import { PermissionsRaw } from './Permissions';
+import UploadModel from '../models/Uploads';
+import { UploadRaw } from './Upload';
 import RolesModel from '../models/Roles';
 import { RolesRaw } from './Roles';
 import SubscriptionsModel from '../models/Subscriptions';
@@ -106,10 +108,12 @@ export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), tra
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 export const EmailInbox = new EmailInboxRaw(EmailInboxModel.model.rawCollection(), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
+export const Uploads = new UploadRaw(UploadModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,
+	[Uploads.col.collectionName]: UploadModel,
 	[Subscriptions.col.collectionName]: SubscriptionsModel,
 	[Settings.col.collectionName]: SettingsModel,
 	[Roles.col.collectionName]: RolesModel,
@@ -142,6 +146,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		Uploads,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

@@ -10,15 +10,6 @@ Meteor.methods({
 		check(rid, String);
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
-		if (newEphemeralTime) {
-			newEphemeralTime = convertEphemeralTime(newEphemeralTime);
-			const updated = Rooms.setEphemeralTime(rid, newEphemeralTime);
-			const messages = Messages.setEphemeralTime(rid, newEphemeralTime);
-			const subscriptions = Subscriptions.setEphemeralTime(rid, newEphemeralTime);
-			if (updated && messages && subscriptions) {
-				Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_ephemeral_time', rid, newEphemeralTime, user);
-			}
-		}
 		if (newMsgEphemeralTime) {
 			const msgs = Messages.findByRoomId(rid).fetch();
 			const rooms = Rooms.setMsgEphemeralTime(rid, newMsgEphemeralTime);
@@ -35,6 +26,15 @@ Meteor.methods({
 						Messages.setEphemeralTimeById(msg._id, newMsgEphemeralTime);
 					}
 				});
+			}
+		}
+		if (newEphemeralTime) {
+			newEphemeralTime = convertEphemeralTime(newEphemeralTime);
+			const updated = Rooms.setEphemeralTime(rid, newEphemeralTime);
+			if (!room.msgEphemeralTime && newMsgEphemeralTime) { Messages.setEphemeralTime(rid, newEphemeralTime); }
+			const subscriptions = Subscriptions.setEphemeralTime(rid, newEphemeralTime);
+			if (updated && subscriptions) {
+				Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_ephemeral_time', rid, newEphemeralTime, user);
 			}
 		}
 		return true;
