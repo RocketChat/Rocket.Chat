@@ -66,17 +66,16 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			return API.v1.failure('task-does-not-exist');
 		}
 
-		// TO DO: permissions
-
 		const task = Tasks.findOneById(id);
+
+		const _hasPermission = hasPermission(this.userId, 'edit-task', task.rid);
 
 		if (!task || !task._id) {
 			return;
 		}
 
-		const _hasPermission = hasPermission(this.userId, 'edit-task', task.rid);
 
-		const editAllowed = settings.get('Message_AllowEditing');
+		const editAllowed = settings.get('Task_AllowEditing');
 		const editOwn = task.u && task.u._id === this.userId;
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
@@ -204,7 +203,7 @@ API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
 		const hideSettings = {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
-		const hideMessagesOfType = new Set(settingValues.reduce((array: any, value: string) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
+		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
 		const query = {
 			rid,
 			_hidden: { $ne: true },

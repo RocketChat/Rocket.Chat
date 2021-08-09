@@ -5,15 +5,14 @@ type TaskRoomNameInputProps = TextInputProps & {
 	private: boolean;
 };
 
-const TaskRoomNameInput = forwardRef<HTMLElement, TaskRoomNameInputProps>(function TeamNameInput(
-	{ private: _private = true, ...props },
-	ref,
-) {
-	const addon = useMemo(() => <Icon name={_private ? 'team-lock' : 'team'} size='x20' />, [
-		_private,
-	]);
+const TaskRoomNameInput = forwardRef<HTMLElement, TaskRoomNameInputProps>(
+	function TaskRoomNameInput({ private: _private = true, ...props }, ref) {
+		const addon = useMemo(() => <Icon name={_private ? 'team-lock' : 'team'} size='x20' />, [
+			_private,
+		]);
 
-	return <TextInput ref={ref} {...props} addon={addon} />;
-});
+		return <TextInput ref={ref} {...props} addon={addon} />;
+	},
+);
 
 export default TaskRoomNameInput;

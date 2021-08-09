@@ -18,6 +18,8 @@ const CREATE_TEAM_PERMISSIONS = ['create-team'];
 
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
 
+const CREATE_TASKROOM_PERMISSIONS = ['create-taskRoom'];
+
 const style = {
 	textTransform: 'uppercase',
 };
@@ -62,6 +64,7 @@ function CreateRoomList() {
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
+	const canCreateTaskRoom = useAtLeastOnePermission(CREATE_TASKROOM_PERMISSIONS);
 	const canCreateDirectMessages = usePermission('create-d');
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
@@ -93,8 +96,9 @@ function CreateRoomList() {
 							action={createDirectMessage}
 						/>
 					)}
-					{/* Permission_taskRoom */}
-					{<CreateRoomListItem icon='team' text={t('Task')} action={createTaskRoom} />}
+					{canCreateTaskRoom && (
+						<CreateRoomListItem icon='team' text={t('TaskRoom')} action={createTaskRoom} />
+					)}
 					{discussionEnabled && canCreateDiscussion && (
 						<CreateRoomListItem
 							icon='discussion'

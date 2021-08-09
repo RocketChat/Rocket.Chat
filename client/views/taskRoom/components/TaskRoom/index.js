@@ -7,6 +7,7 @@ import TaskRoom from './TaskRoom';
 export default function WithData({ rid }) {
 	const [tasks, setTasks] = useState([]);
 	const [loading, setLoading] = useState(false);
+
 	useEffect(() => {
 		const query = {
 			rid,
@@ -22,7 +23,7 @@ export default function WithData({ rid }) {
 		const computation = Tracker.autorun(async (computation) => {
 			setLoading(true);
 			const tasks = ChatTask.find(query, options).fetch();
-
+			console.log('fetch takss');
 			if (!tasks || computation.stopped) {
 				return;
 			}

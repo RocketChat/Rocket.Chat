@@ -1,7 +1,7 @@
-import { Collection, FindOneOptions, Cursor, UpdateWriteOpResult, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
+import { Collection, FindOneOptions, Cursor, DeleteWriteOpResultObject, FilterQuery } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { ITaskRoom, TASKRoomType } from '../../../../definition/ITaskRoom';
+import { ITaskRoom } from '../../../../definition/ITaskRoom';
 
 type T = ITaskRoom;
 export class TaskRoom extends BaseRaw<T> {
@@ -34,35 +34,12 @@ export class TaskRoom extends BaseRaw<T> {
 		return this.col.find({ type }, options);
 	}
 
-	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options?: FindOneOptions<T>): Cursor<T> {
-		return this.col.find({
-			name,
-			$or: [{
-				type: 0,
-			}, {
-				_id: {
-					$in: teamIds,
-				},
-			}],
-		}, options);
-	}
-
 	findOneByName(name: string | RegExp, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ name }, options);
 	}
 
 	findOneByMainRoomId(roomId: string, options?: FindOneOptions<T>): Promise<T | null> {
 		return this.col.findOne({ roomId }, options);
-	}
-
-	updateMainRoomForTeam(id: string, roomId: string): Promise<UpdateWriteOpResult> {
-		return this.col.updateOne({
-			_id: id,
-		}, {
-			$set: {
-				roomId,
-			},
-		});
 	}
 
 	deleteOneById(id: string): Promise<DeleteWriteOpResultObject> {
@@ -73,25 +50,5 @@ export class TaskRoom extends BaseRaw<T> {
 
 	deleteOneByName(name: string): Promise<DeleteWriteOpResultObject> {
 		return this.col.deleteOne({ name });
-	}
-
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TASKRoomType }): Promise < UpdateWriteOpResult > {
-		const query = {
-			_id: teamId,
-		};
-
-		const update = {
-			$set: {},
-		};
-
-		if (nameAndType.name) {
-			Object.assign(update.$set, { name: nameAndType.name });
-		}
-
-		if (typeof nameAndType.type !== 'undefined') {
-			Object.assign(update.$set, { type: nameAndType.type });
-		}
-
-		return this.col.updateOne(query, update);
 	}
 }

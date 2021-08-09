@@ -3849,6 +3849,7 @@
   "Target user not allowed to receive messages": "Target user not allowed to receive messages",
   "TargetRoom": "Target Room",
   "TargetRoom_Description": "The room where messages will be sent which are a result of this event being fired. Only one target room is allowed and it must exist.",
+  "TaskRoom_Errors_room_name": "You can't use \"__name__\" as a task room name",
   "Team_Add_existing_channels": "Add Existing Channels",
   "Team_Add_existing": "Add Existing",
   "Team_Auto-join": "Auto-join",
