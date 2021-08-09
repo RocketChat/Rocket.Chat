@@ -36,7 +36,18 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string): Promise<number> {
+	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options: FindOneOptions<T> = {}): Cursor<T> {
+		const query = {
+			rid: roomId,
+			'servedBy._id': {
+				$ne: userId,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
