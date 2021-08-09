@@ -14,6 +14,7 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { callbacks } from '../../../callbacks/server';
 import {
 	Users,
@@ -40,30 +41,6 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { validateEmailDomain } from '../../../lib/server';
-
-const padOffset = (offset) => {
-	const numberOffset = Number(offset);
-	const absOffset = Math.abs(numberOffset);
-	const isNegative = !(numberOffset === absOffset);
-
-	return `${ isNegative ? '-' : '+' }${ absOffset < 10 ? `0${ absOffset }` : absOffset }:00`;
-};
-
-const guessTimezoneFromOffset = (offset) => moment.tz.names()
-	.find((tz) => padOffset(offset) === moment.tz(tz).format('Z').toString()) || moment.tz.guess();
-
-const getTimezone = (user) => {
-	const timezone = settings.get('Default_Timezone_For_Reporting');
-
-	switch (timezone) {
-		case 'custom':
-			return settings.get('Default_Custom_Timezone');
-		case 'user':
-			return guessTimezoneFromOffset(user.utcOffset);
-		default:
-			return moment.tz.guess();
-	}
-};
 
 export const Livechat = {
 	Analytics,

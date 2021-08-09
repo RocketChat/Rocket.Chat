@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
+import { settings } from '../../../../settings';
 import { Livechat } from '../Livechat';
 import { secondsToHHMMSS } from '../../../../utils/server';
 import {
@@ -31,6 +32,7 @@ const getProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
+	user = {},
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -44,6 +46,8 @@ const getProductivityMetricsAsync = async ({
 			name: 'Productivity',
 		},
 		departmentId,
+		utcOffset: user.utcOffset,
+		language: user.language || settings.get('Language') || 'en',
 	});
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start,
@@ -71,6 +75,7 @@ const getAgentsProductivityMetricsAsync = async ({
 	start,
 	end,
 	departmentId = undefined,
+	user = {},
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -93,6 +98,8 @@ const getAgentsProductivityMetricsAsync = async ({
 			name: 'Conversations',
 		},
 		departmentId,
+		utcOffset: user.utcOffset,
+		language: user.language || settings.get('Language') || 'en',
 	});
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
@@ -169,6 +176,7 @@ const getConversationsMetricsAsync = async ({
 	start,
 	end,
 	departmentId,
+	user = {},
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -182,6 +190,8 @@ const getConversationsMetricsAsync = async ({
 			name: 'Conversations',
 		},
 		...departmentId && departmentId !== 'undefined' && { departmentId },
+		utcOffset: user.utcOffset,
+		language: user.language || settings.get('Language') || 'en',
 	});
 	const metrics = ['Total_conversations', 'Open_conversations', 'Total_messages'];
 	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end, department: departmentId }).count();
