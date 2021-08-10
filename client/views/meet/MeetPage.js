@@ -1,5 +1,4 @@
 import { Button, Box, Icon } from '@rocket.chat/fuselage';
-import { NAME_LOOKUP_PATH } from 'blockstack/lib/auth/authConstants';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 

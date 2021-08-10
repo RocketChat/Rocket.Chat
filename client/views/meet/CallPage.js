@@ -95,7 +95,6 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 							</Box>
 							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
 								{'Calling...'}
-								
 							</p>
 							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
 								{visitorName}
