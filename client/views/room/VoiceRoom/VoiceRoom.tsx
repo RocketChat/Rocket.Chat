@@ -101,7 +101,12 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 	console.log(state);
 
 	return (
-		<Box display='flex' flexDirection='column' height='full' justifyContent='space-between'>
+		<Box
+			display={!room.voice ? 'none' : 'flex'}
+			flexDirection='column'
+			height='full'
+			justifyContent='space-between'
+		>
 			{showCallout && (
 				<Callout type='danger' title='Error connecting to voice channel. Please try again' />
 			)}
@@ -110,7 +115,7 @@ const VoiceRoom: FC<IVoiceRoom> = ({ rid, room }): ReactElement => {
 				<VoicePeersList peers={wsPeers} globalDeafen={globalDeafen} />
 			)}
 
-			{isMediasoupState(state) && state.rid === rid && (
+			{isMediasoupState(state) && (
 				<Box display={state.rid !== rid ? 'none' : 'block'}>
 					<VoicePeersList peers={mediasoupPeers} globalDeafen={globalDeafen} />
 				</Box>
