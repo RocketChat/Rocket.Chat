@@ -2,7 +2,7 @@ import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatDepartment } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 
-callbacks.add('livechat.applySimultaneousChatRestrictions', ({ departmentId }: { departmentId?: string }) => {
+callbacks.add('livechat.applySimultaneousChatRestrictions', (_: any, { departmentId }: { departmentId?: string }) => {
 	if (departmentId) {
 		const departmentLimit = LivechatDepartment.findOneById(departmentId)?.maxNumberSimultaneousChat || 0;
 		if (departmentLimit > 0) {
