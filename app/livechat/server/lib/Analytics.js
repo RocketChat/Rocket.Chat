@@ -5,6 +5,8 @@ import { LivechatRooms } from '../../../models';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
+const HOURS_IN_DAY = 24;
+
 export const Analytics = {
 	getAgentOverviewData(options) {
 		const { departmentId, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
@@ -39,9 +41,10 @@ export const Analytics = {
 			return;
 		}
 
-		const from = moment.utc(fDate, 'YYYY-MM-DD');
-		const to = moment.utc(tDate, 'YYYY-MM-DD');
 		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
+		const isSameDay = from.diff(to, 'days') === 0;
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.error('livechat:getAnalyticsChartData => Invalid dates');
@@ -55,9 +58,9 @@ export const Analytics = {
 			dataPoints: [],
 		};
 
-		if (from.diff(to) === 0) {	// data for single day
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'hours')) {
-				const hour = m.format('H');
+		if (isSameDay) {	// data for single day
+			for (let m = moment(from), currentHour = 0; currentHour < HOURS_IN_DAY; currentHour++) {
+				const hour = m.add(currentHour ? 1 : 0, 'hour').format('H');
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
 					to: moment.utc().set({ hour }).add(1, 'hour').tz(timezone).format('hA'),
@@ -95,8 +98,9 @@ export const Analytics = {
 			daterange: { from: fDate, to: tDate } = {},
 			analyticsOptions: { name } = {},
 		} = options;
-		const from = moment.utc(fDate, 'YYYY-MM-DD');
-		const to = moment.utc(tDate, 'YYYY-MM-DD');
+		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.error('livechat:getAnalyticsOverviewData => Invalid dates');
@@ -108,7 +112,6 @@ export const Analytics = {
 			return;
 		}
 
-		const timezone = getTimezone({ utcOffset });
 		const t = (s) => TAPi18n.__(s, { lng: language });
 
 		return this.OverviewData[name](from, to, departmentId, timezone, t);
@@ -264,6 +267,7 @@ export const Analytics = {
 		 * @returns {Array[Object]}
 		 */
 		Conversations(from, to, departmentId, timezone, t = (v) => v) {
+			// TODO: most calls to db here can be done in one single call instead of one per day/hour
 			let totalConversations = 0; // Total conversations
 			let openConversations = 0; // open conversations
 			let totalMessages = 0; // total msgs
@@ -281,10 +285,10 @@ export const Analytics = {
 				totalMessagesOnWeekday.set(weekday, totalMessagesOnWeekday.has(weekday) ? totalMessagesOnWeekday.get(weekday) + msgs : msgs);
 			};
 
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+			for (let m = moment(from), daysProcessed = 0; daysProcessed < days; daysProcessed++) {
 				const date = {
-					gte: m,
-					lt: moment(m).add(1, 'days'),
+					gte: m.clone(),
+					lt: m.add(1, 'days'),
 				};
 
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
@@ -295,14 +299,17 @@ export const Analytics = {
 
 			const busiestDay = this.getKeyHavingMaxValue(totalMessagesOnWeekday, '-'); // returns key with max value
 
+			// TODO: this code assumes the busiest day is the same every week, which may not be true
+			// This means that for periods larger than 1 week, the busiest hour won't be the "busiest hour"
+			// on the period, but the busiest hour on the busiest day. (sorry for busiest excess)
 			// iterate through all busiestDay in given date-range and find busiest hour
-			for (let m = moment(from).day(busiestDay); m <= to; m.add(7, 'days')) {
+			for (let m = moment.tz(from, timezone).day(busiestDay).startOf('day').utc(); m <= to; m.add(7, 'days')) {
 				if (m < from) { continue; }
 
-				for (let h = moment(m); h.diff(m, 'days') <= 0; h.add(1, 'hours')) {
+				for (let h = moment(m), currentHour = 0; currentHour < 24; currentHour++) {
 					const date = {
-						gte: h,
-						lt: moment(h).add(1, 'hours'),
+						gte: h.clone(),
+						lt: h.add(1, 'hours'),
 					};
 					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({
 						msgs,
@@ -315,8 +322,8 @@ export const Analytics = {
 
 			const utcBusiestHour = this.getKeyHavingMaxValue(totalMessagesInHour, -1);
 			const busiestHour = {
-				from: utcBusiestHour > 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
-				to: utcBusiestHour > 0 ? moment.utc().set({ hour: utcBusiestHour }).add(1, 'hour').tz(timezone).format('hA') : '',
+				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
+				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).add(1, 'hour').tz(timezone).format('hA') : '',
 			};
 
 			const data = [{

@@ -274,9 +274,9 @@ const findAllResponseTimeMetricsAsync = async ({
 };
 
 export const findAllChatsStatus = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatsStatusAsync({ start, end, departmentId }));
-export const getProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId }));
-export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId }));
-export const getConversationsMetrics = ({ start, end, departmentId = undefined }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId }));
+export const getProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getProductivityMetricsAsync({ start, end, departmentId, user }));
+export const getAgentsProductivityMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getAgentsProductivityMetricsAsync({ start, end, departmentId, user }));
+export const getConversationsMetrics = ({ start, end, departmentId = undefined, user = {} }) => Promise.await(getConversationsMetricsAsync({ start, end, departmentId, user }));
 export const findAllChatMetricsByAgent = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByAgentAsync({ start, end, departmentId }));
 export const findAllChatMetricsByDepartment = ({ start, end, departmentId = undefined }) => Promise.await(findAllChatMetricsByDepartmentAsync({ start, end, departmentId }));
 export const findAllResponseTimeMetrics = ({ start, end, departmentId = undefined }) => Promise.await(findAllResponseTimeMetricsAsync({ start, end, departmentId }));
