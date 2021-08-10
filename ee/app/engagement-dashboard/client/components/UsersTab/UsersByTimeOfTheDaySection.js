@@ -25,31 +25,31 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 			case 'last 7 days':
 				return {
 					start: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days')
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
+						? moment.utc().startOf('day').subtract(7, 'days')
+						: moment().startOf('day').subtract(8, 'days'),
 					end: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 
 			case 'last 30 days':
 				return {
 					start: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days')
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+						? moment.utc().startOf('day').subtract(30, 'days')
+						: moment().startOf('day').subtract(31, 'days'),
 					end: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 
 			case 'last 90 days':
 				return {
 					start: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days')
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
+						? moment.utc().startOf('day').subtract(90, 'days')
+						: moment().startOf('day').subtract(91, 'days'),
 					end: utc
-						? moment.utc().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1)
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 		}
 	}, [periodId, utc]);
@@ -61,7 +61,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', useMemo(() => params, [params]));
 
 	const [
 		dates,
@@ -71,8 +71,10 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 			return [];
 		}
 
-		const dates = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 },
-			(_, i) => moment(period.start).add(i, 'days'));
+		const dates = Array.from({ length: utc
+			? moment(period.end).diff(period.start, 'days') + 1
+			: moment(period.end).diff(period.start, 'days') - 1 },
+		(_, i) => moment(period.start).endOf('day').add(utc ? i : i + 1, 'days'));
 
 		const values = Array.from({ length: 24 }, (_, hour) => ({
 			hour: String(hour),
@@ -80,11 +82,16 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 				.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
 		}));
 
+		const timezoneOffset = moment().utcOffset() / 60;
+
 		for (const { users, hour, day, month, year } of data.week) {
 			const date = utc
-				? moment.utc([year, month - 1, day, 0, 0, 0, 0]).toISOString()
-				: moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
-			values[hour][date] += users;
+				? moment.utc([year, month - 1, day, hour])
+				: moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
+
+			if (utc || (!date.isSame(period.end) && !date.clone().startOf('day').isSame(period.start))) {
+				values[date.hour()][date.endOf('day').toISOString()] += users;
+			}
 		}
 
 		return [
