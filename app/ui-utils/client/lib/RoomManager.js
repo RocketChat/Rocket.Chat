@@ -114,6 +114,8 @@ export const RoomManager = new function() {
 					const room = roomTypes.findRoom(type, name, user);
 					if (room != null) {
 						if (record.streamActive !== true) {
+							console.log(room.taskRoomId);
+
 							record.rid = room._id;
 							record.streamActive = true;
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
