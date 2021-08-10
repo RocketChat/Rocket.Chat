@@ -3,11 +3,41 @@ import { Tracker } from 'meteor/tracker';
 import React, { useEffect, useState } from 'react';
 
 import { ChatTask } from '../../../../../app/models/client';
+import { useEndpoint } from '../../../../contexts/ServerContext';
 import TaskRoom from './TaskRoom';
+
+const useTasks = (rid) => {
+	const [tasks, setTasks] = useState(() =>
+		Tracker.nonreactive(() => ChatTask.find({ rid }).fetch()),
+	);
+	const getTasks = useEndpoint('GET', 'taskRoom.taskHistory');
+
+	useEffect(() => {
+		const computation = Tracker.autorun(async (computation) => {
+			const options = {
+				sort: {
+					ts: 1,
+				},
+			};
+			const tasks = ChatTask.find({ rid }, options).fetch() || (await getTasks({ rid }));
+
+			if (!tasks || computation.stopped) {
+				return;
+			}
+
+			setTasks(tasks);
+		});
+
+		return () => {
+			computation.stop();
+		};
+	}, [getTasks, rid]);
+
+	return tasks;
+};
 
 export default function WithData({ rid }) {
 	// const [tasks, setTasks] = useState([]);
-	const [loading, setLoading] = useState(false);
 
 	// useEffect(() => {
 	const query = {
@@ -37,8 +67,8 @@ export default function WithData({ rid }) {
 	// 		computation.stop();
 	// 	};
 	// }, [tasks._id, rid, tasks.tcount, tasks.editedAt]);
-
+	// const tasks = useTasks(rid);
 	const tasks = useTracker(() => ChatTask.find(query, options).fetch());
 
-	return <TaskRoom rid={rid} tasks={tasks} loading={loading} setTasks={setTasks} />;
+	return <TaskRoom rid={rid} tasks={tasks} setTasks={() => console.log('ef')} />;
 }
