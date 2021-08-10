@@ -65,7 +65,6 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 
 	switch (status) {
 		case 'ringing':
-			// Todo Deepak
 			return (
 				<Flex.Container direction='column' justifyContent='center'>
 					<Box
@@ -89,9 +88,9 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 								<UserAvatar username={agentName} className='rcx-message__avatar' size='x32' />
 							</div>
 						</Box>
-						<div style={{ marginTop: 20, padding: 20 }}>
+						<div style={{ marginTop: -180, padding: 20 }}>
 							<Box display='flex' align='center' justifyContent='center'>
-								<UserAvatar username={visitorName} className='rcx-message__avatar' size='x200' />
+								<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
 							</Box>
 							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
 								{'Calling...'}
@@ -100,7 +99,6 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 								{visitorName}
 							</p>
 						</div>
-						);
 					</Box>
 				</Flex.Container>
 			);
