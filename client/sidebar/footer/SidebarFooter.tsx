@@ -14,6 +14,7 @@ const SidebarFooter = (): ReactElement => {
 
 		& a:any-link {
 			color: ${colors.n600};
+			color: var(--rc-color-primary-light, ${colors.n600});
 		}
 	`;
 
