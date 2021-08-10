@@ -1,4 +1,4 @@
-import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
+import { Button, Box, Icon } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
@@ -29,6 +29,7 @@ function MeetPage() {
 
 	const setupCallForAgent = useCallback(async () => {
 		const room = await APIClient.v1.get(`/rooms.info?roomId=${roomId}`);
+		console.log('test', room);
 		setVisitorName(room.room.fname);
 		setAgentName(room.room.responseBy.username);
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
@@ -54,47 +55,22 @@ function MeetPage() {
 	};
 	if (status === 'ended') {
 		return (
-			<Flex.Container direction='column' justifyContent='center'>
-				<Box
-					width='full'
-					minHeight='sh'
-					textAlign='center'
-					backgroundColor='neutral-900'
-					overflow='hidden'
-					position='relative'
-				>
-					<Box
-						position='absolute'
-						zIndex='1'
-						style={{
-							top: '5%',
-							right: '2%',
-						}}
-						w='x200'
-					>
-						<div style={{ border: '1px solid black', padding: '30px' }}>
-							<UserAvatar username={agentName} className='rcx-message__avatar' size='x32' />
-						</div>
-					</Box>
-					<div style={{ marginTop: 250, padding: 20 }}>
-						<Box display='flex' align='center' justifyContent='center'>
-							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
-						</Box>
-						<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
-							{'Call Ended!'}
-						</p>
-						<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
-							{visitorName}
-						</p>
-						<Box display='flex' align='center' justifyContent='center' margin='x200'>
-							<Button title='Close Window' onClick={closeCallTab}>
-								<Icon name='cross' size='x16' />
-							</Button>
-						</Box>
-					</div>
-					);
+			<div style={{ marginTop: 150, padding: 20 }}>
+				<Box display='flex' align='center' justifyContent='center'>
+					<UserAvatar username={visitorName} className='rcx-message__avatar' size='x200' />
 				</Box>
-			</Flex.Container>
+				<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
+					{'Call Ended!'}
+				</p>
+				<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+					{visitorName}
+				</p>
+				<Box display='flex' align='center' justifyContent='center' margin='x124'>
+					<Button title='Close Window' onClick={closeCallTab}>
+						<Icon name='cross' size='x16' />
+					</Button>
+				</Box>
+			</div>
 		);
 	}
 	return (
