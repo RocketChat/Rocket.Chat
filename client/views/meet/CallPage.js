@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
+function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorName, agentName }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const t = useTranslation();
 	useEffect(() => {
@@ -66,9 +67,43 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 		case 'ringing':
 			// Todo Deepak
 			return (
-				<h1 style={{ color: 'white', textAlign: 'center', marginTop: 250 }}>
-					Waiting for the visitor to join ...
-				</h1>
+				<Flex.Container direction='column' justifyContent='center'>
+					<Box
+						width='full'
+						minHeight='sh'
+						textAlign='center'
+						backgroundColor='neutral-900'
+						overflow='hidden'
+						position='relative'
+					>
+						<Box
+							position='absolute'
+							zIndex='1'
+							style={{
+								top: '5%',
+								right: '2%',
+							}}
+							w='x200'
+						>
+							<div style={{ border: '1px solid black', padding: '30px' }}>
+								<UserAvatar username={agentName} className='rcx-message__avatar' size='x32' />
+							</div>
+						</Box>
+						<div style={{ marginTop: 20, padding: 20 }}>
+							<Box display='flex' align='center' justifyContent='center'>
+								<UserAvatar username={visitorName} className='rcx-message__avatar' size='x200' />
+							</Box>
+							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
+								{'Calling...'}
+								
+							</p>
+							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+								{visitorName}
+							</p>
+						</div>
+						);
+					</Box>
+				</Flex.Container>
 			);
 		case 'declined':
 			return (

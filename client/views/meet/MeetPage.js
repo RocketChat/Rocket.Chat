@@ -1,7 +1,10 @@
+import { Button, Box, Icon } from '@rocket.chat/fuselage';
+import { NAME_LOOKUP_PATH } from 'blockstack/lib/auth/authConstants';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { APIClient } from '../../../app/utils/client';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import { useRouteParameter, useQueryStringParameter } from '../../contexts/RouterContext';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
@@ -11,6 +14,8 @@ function MeetPage() {
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
+	const [visitorName, setVisitorName] = useState('');
+	const [agentName, setAgentName] = useState('');
 	const roomId = useRouteParameter('rid');
 	const visitorToken = useQueryStringParameter('token');
 
@@ -25,6 +30,9 @@ function MeetPage() {
 
 	const setupCallForAgent = useCallback(async () => {
 		const room = await APIClient.v1.get(`/rooms.info?roomId=${roomId}`);
+		console.log('test', room);
+		setVisitorName(room.room.fname);
+		setAgentName(room.room.responseBy.username);
 		if (room?.room?.servedBy?._id === Meteor.userId()) {
 			setStatus(room?.room?.callStatus || 'ended');
 			return setIsRoomMember(true);
@@ -43,8 +51,28 @@ function MeetPage() {
 	if (!isRoomMember) {
 		return <NotFoundPage></NotFoundPage>;
 	}
+	const closeCallTab = () => {
+		window.close();
+	};
 	if (status === 'ended') {
-		return <h1 style={{ color: 'white', textAlign: 'center', marginTop: 250 }}>Ended!</h1>;
+		return (
+			<div style={{ marginTop: 150, padding: 20 }}>
+				<Box display='flex' align='center' justifyContent='center'>
+					<UserAvatar username={visitorName} className='rcx-message__avatar' size='x200' />
+				</Box>
+				<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
+					{'Call Ended!'}
+				</p>
+				<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+					{visitorName}
+				</p>
+				<Box display='flex' align='center' justifyContent='center' margin='x124'>
+					<Button title='Close Window' onClick={closeCallTab}>
+						<Icon name='cross' size='x16' />
+					</Button>
+				</Box>
+			</div>
+		);
 	}
 	return (
 		<CallPage
@@ -53,6 +81,8 @@ function MeetPage() {
 			visitorToken={visitorToken}
 			visitorId={visitorId}
 			setStatus={setStatus}
+			visitorName={visitorName}
+			agentName={agentName}
 		></CallPage>
 	);
 }
