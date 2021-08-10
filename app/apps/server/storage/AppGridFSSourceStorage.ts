@@ -43,7 +43,8 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 			const writeStream: GridFSBucketWriteStream = this.bucket.openUploadStream(fileId)
 				.on('finish', () => {
 					resolve(this.idToPath(writeStream.id));
-					this.remove(item);
+					// eslint-disable-next-line @typescript-eslint/no-empty-function
+					this.remove(item).catch(() => {});
 				})
 
 				.on('error', (error) => reject(error));

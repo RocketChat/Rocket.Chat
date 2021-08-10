@@ -27,6 +27,10 @@ export class AppServerOrchestrator {
 	}
 
 	initialize() {
+		if (this._isInitialized) {
+			return;
+		}
+
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.create('manage-apps', ['admin']);
 
