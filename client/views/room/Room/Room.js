@@ -1,6 +1,10 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useDebugValue, useMemo } from 'react';
 
+import {
+	isMediasoupState,
+	useVoiceChannel,
+} from '../../../../app/voice-channel/client/VoiceChannelManager';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';
@@ -40,15 +44,18 @@ const Room = () => {
 	useDebugValue(room);
 	useDebugValue(tab);
 
+	const voiceRoomState = useVoiceChannel();
+
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>
 			<RoomTemplate.Header>
 				<Header room={room} rid={room._id} />
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
-				{room.voice ? (
+				{(room.voice || isMediasoupState(voiceRoomState)) && (
 					<VoiceRoom room={room} rid={room._id} />
-				) : (
+				)}
+				{!room.voice && (
 					<BlazeTemplate
 						onClick={hideFlexTab ? close : undefined}
 						name='roomOld'
