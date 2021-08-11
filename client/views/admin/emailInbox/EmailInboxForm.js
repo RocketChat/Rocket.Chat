@@ -184,7 +184,17 @@ function EmailInboxForm({ id, data }) {
 			password: imapPassword,
 			secure: imapSecure,
 		};
-		const payload = { active, name, email, description, senderInfo, department, smtp, imap };
+		const departmentValue = department.value;
+		const payload = {
+			active,
+			name,
+			email,
+			description,
+			senderInfo,
+			department: departmentValue,
+			smtp,
+			imap,
+		};
 		if (id) {
 			payload._id = id;
 		}
@@ -208,7 +218,6 @@ function EmailInboxForm({ id, data }) {
 		}
 		setEmailError(t('Email_already_exists'));
 	});
-
 	const canSave =
 		hasUnsavedChanges &&
 		name &&

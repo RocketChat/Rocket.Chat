@@ -18,12 +18,9 @@ import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { isEmail } from '../../../../app/utils/client';
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
-import CannedResponsesRouter from '../../../../ee/client/omnichannel/cannedResponses';
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter, useCurrentRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -42,7 +39,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const initialAgents = useRef((data && data.agents) || []);
 
 	const router = useRoute('omnichannel-departments');
-	const [, params] = useCurrentRoute();
 
 	const {
 		useEeNumberInput = () => {},
@@ -261,20 +257,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const formId = useUniqueId();
 
-	const tab = useRouteParameter('tab');
-	const hasCannedResponsesLicense = useHasLicense('canned-responses');
-	const cannedResponsesEnabled = useSetting('Canned_Responses_Enable');
-	const showCanned =
-		hasCannedResponsesLicense && cannedResponsesEnabled && tab === 'canned-responses';
-
-	const handleOpenCannedResponses = useMutableCallback(() => {
-		router.push({ ...params, tab: 'canned-responses' });
-	});
-
-	const handleCloseCannedResponses = useMutableCallback(() => {
-		router.push({ ...params, tab: '' });
-	});
-
 	const hasNewAgent = useMemo(
 		() => data.agents.length === agentList.length,
 		[data.agents, agentList],
@@ -285,11 +267,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						{id && hasCannedResponsesLicense && cannedResponsesEnabled && (
-							<Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}>
-								<Icon name='baloon-exclamation' size='x16' />
-							</Button>
-						)}
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
@@ -494,9 +471,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 					</FieldGroup>
 				</Page.ScrollableContentWithShadow>
 			</Page>
-			{showCanned && (
-				<CannedResponsesRouter departmentId={id} onClose={handleCloseCannedResponses} />
-			)}
 		</Page>
 	);
 }
