@@ -120,7 +120,7 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: "4.0"
+        mongoDBVersion: "4.2"
 
     - run: meteor npm run testunit
 
@@ -192,7 +192,7 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
+        mongodb-version: ["3.6", "4.0", "4.2", "4.4"]
 
     steps:
     - name: Launch MongoDB
