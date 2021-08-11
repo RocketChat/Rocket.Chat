@@ -72,7 +72,7 @@ Meteor.startup(function() {
 
 		// Deprecation
 		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.2.0')) {
-			msg = [`YOUR CURRENT MONGODB VERSION (${ mongoVersion }) IS DEPRECATED.`, 'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 4.0.0 AND GREATER,', 'PLEASE UPGRADE MONGODB TO VERSION 4.2 OR GREATER'].join('\n');
+			msg = [`YOUR CURRENT MONGODB VERSION (${ mongoVersion }) IS DEPRECATED.`, 'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 5.0.0 AND GREATER,', 'PLEASE UPGRADE MONGODB TO VERSION 4.2 OR GREATER'].join('\n');
 			SystemLogger.deprecation_box(msg, 'DEPRECATION');
 
 			const id = `mongodbDeprecation_${ mongoVersion.replace(/[^0-9]/g, '_') }`;
