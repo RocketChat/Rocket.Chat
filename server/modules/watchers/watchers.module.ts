@@ -148,14 +148,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				}
 				break;
 			case 'removed': {
-				const trash = await Messages.trashFindOneById(id, { projection: { u: 1, rid: 1, file: 1 } });
-				const message = trash || { _id: id };
-				const room = trash?.rid ? await Rooms.findOneById(trash.rid, { projection: roomFields }) : undefined;
-				if (message.file) {
+				const trash = await Messages.trashFindOneById<Pick<IMessage, 'u' | 'rid' | 'file'>>(id, { projection: { u: 1, rid: 1, file: 1 } });
+				const message = trash;
+				const room = trash?.rid ? await Rooms.findOneById<IRoom>(trash.rid, { projection: roomFields }) : undefined;
+				if (message?.file) {
 					Uploads.deleteOneById(message.file._id);
 				}
 				Messages.trashFindByIdAndRemove(id);
-				if (room?.t === 'e') { broadcast('watch.messages', { clientAction, message }); }
+				if (room?.t === 'e' && message) { broadcast('watch.messages', { clientAction, message }); }
 				break;
 			}
 		}
