@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
 export function useQuery(
-	searchTags = [],
 	{ text, itemsPerPage, current },
 	[column, direction],
 	type,
+	searchTags = '',
 	workspace = 'local',
 ) {
 	return useMemo(

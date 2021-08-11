@@ -37,7 +37,7 @@ function ChannelsTable(props) {
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
-	const query = useQuery(searchTags, params, sort, 'onlyChannels');
+	const query = useQuery(params, sort, 'onlyChannels', searchTags);
 
 	const discoveryEnabled = useSetting('Discovery_Enabled');
 	const discoveryTags = useSetting('Discovery_Tags');

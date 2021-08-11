@@ -22,14 +22,14 @@ const style = {
 	overflow: 'hidden',
 };
 
-function ChannelsTable() {
+function RecommendedTable() {
 	const t = useTranslation();
 	const refAutoFocus = useAutoFocus(true);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
-	const query = useQuery([], params, ['name', 'asc'], 'recommendedChannels');
+	const query = useQuery(params, ['name', 'asc'], 'recommendedChannels');
 
 	const header = useMemo(
 		() =>
@@ -180,4 +180,4 @@ function ChannelsTable() {
 	);
 }
 
-export default ChannelsTable;
+export default RecommendedTable;

@@ -246,10 +246,6 @@ API.v1.addRoute('discovery', { authRequired: true }, {
 			limit: Math.max(0, count),
 		}));
 
-		// if (type === 'recommendedChannels' && !result.results.length) {
-		// 	throw new Meteor.Error('error-no-user-tags', 'Set tags in preferences to recommend', { route: 'discovery' });
-		// }
-
 		if (!result) {
 			return API.v1.failure('Please verify the parameters');
 		}

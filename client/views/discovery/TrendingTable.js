@@ -22,14 +22,14 @@ const style = {
 	overflow: 'hidden',
 };
 
-function ChannelsTable() {
+function TrendingTable() {
 	const t = useTranslation();
 	const refAutoFocus = useAutoFocus(true);
 	const [params, setParams] = useState({ current: 0, itemsPerPage: 25 });
 
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 
-	const query = useQuery([], params, ['name', 'asc'], 'trendingChannels');
+	const query = useQuery(params, ['name', 'asc'], 'trendingChannels');
 
 	const header = useMemo(
 		() =>
@@ -180,4 +180,4 @@ function ChannelsTable() {
 	);
 }
 
-export default ChannelsTable;
+export default TrendingTable;
