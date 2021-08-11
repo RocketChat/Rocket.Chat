@@ -86,4 +86,17 @@ Meteor.startup(() => {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'update_msg_ephemeral_time',
+		system: true,
+		message: 'update_msg_ephemeral_time',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				user_by: message.u && message.u.username,
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				room_time: message.msg,
+			};
+		},
+	});
 });

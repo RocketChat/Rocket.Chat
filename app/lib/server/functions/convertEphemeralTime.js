@@ -22,5 +22,6 @@ export const convertEphemeralTime = function(time, curr) {
 			time = moment(now).add(24, 'hour').toDate();
 			break;
 	}
+	// time = moment(time).subtract(30, 'seconds').toDate();
 	return time;
 };

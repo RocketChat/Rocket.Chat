@@ -122,7 +122,6 @@ const CreateChannelWithData = ({ onClose, teamId = '', reload }) => {
 
 		if (type || ephemeral) {
 			roomData = await createPrivateChannel(params);
-			console.log({ roomData });
 			!teamId && goToRoom(roomData.group._id);
 		} else {
 			roomData = await createChannel(params);

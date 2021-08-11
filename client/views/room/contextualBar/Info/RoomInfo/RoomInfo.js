@@ -66,20 +66,22 @@ function RoomInfo({
 					action: onClickDelete,
 				},
 			}),
-			...(onClickMoveToTeam && {
-				move: {
-					label: t('Teams_move_channel_to_team'),
-					icon: 'team-arrow-right',
-					action: onClickMoveToTeam,
-				},
-			}),
-			...(onClickConvertToTeam && {
-				convert: {
-					label: t('Teams_convert_channel_to_team'),
-					icon: 'team',
-					action: onClickConvertToTeam,
-				},
-			}),
+			...(onClickMoveToTeam &&
+				!ephemeralTime && {
+					move: {
+						label: t('Teams_move_channel_to_team'),
+						icon: 'team-arrow-right',
+						action: onClickMoveToTeam,
+					},
+				}),
+			...(onClickConvertToTeam &&
+				!ephemeralTime && {
+					convert: {
+						label: t('Teams_convert_channel_to_team'),
+						icon: 'team',
+						action: onClickConvertToTeam,
+					},
+				}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
@@ -104,6 +106,7 @@ function RoomInfo({
 			onClickHide,
 			onClickLeave,
 			onClickEnterRoom,
+			ephemeralTime,
 		],
 	);
 

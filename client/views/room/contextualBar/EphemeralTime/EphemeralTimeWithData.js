@@ -1,4 +1,4 @@
-import { Box, Field, ToggleSwitch, Select, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Field, Select, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback } from 'react';
 
@@ -26,7 +26,7 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 	const handleClose = useMutableCallback(() => tabBar && tabBar.close());
 	const t = useTranslation();
 	const room = useUserRoom(rid);
-	const canEdit = usePermission('edit-room', rid);
+	const canEdit = usePermission('edit-ephemeral-room', rid);
 	const formatDateAndTime = useFormatDateAndTime();
 	const updateEphemeralRoom = useEndpointActionExperimental(
 		'POST',
@@ -35,7 +35,7 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 	);
 	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room));
 	const { updateRoomEphemeral, newEphemeralTime, newMsgEphemeralTime } = values;
-	const { handleUpdateRoomEphemeral, handleNewEphemeralTime, handleNewMsgEphemeralTime } = handlers;
+	const { handleNewEphemeralTime, handleNewMsgEphemeralTime } = handlers;
 	const timeOptions = [
 		['5mins', t('5_mins')],
 		['15mins', t('15_mins')],
@@ -62,29 +62,27 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 			<VerticalBar.ScrollableContent>
 				<Box pbe='x16'>
 					<Box fontScale='p2' fontWeight='700' mb='x2'>
-						Room Ephemeral Time
+						{t('Room_Ephemeral_time')}
 					</Box>
-					<Box>{formatDateAndTime(room.ephemeralTime)}</Box>
+					<Box>{room.ephemeralTime ? formatDateAndTime(room.ephemeralTime) : t('None')}</Box>
 				</Box>
-				<Box pbe='x16'>
-					<Box fontScale='p2' fontWeight='700' mb='x2'>
-						{t('Msg_Ephemeral_time')}
+				{room.msgEphemeralTime && (
+					<Box pbe='x16'>
+						<Box fontScale='p2' fontWeight='700' mb='x2'>
+							{t('Msg_Ephemeral_time')}
+						</Box>
+						<Box>{room.msgEphemeralTime ? t(room.msgEphemeralTime) : t('None')}</Box>
 					</Box>
-					<Box>{room.msgEphemeralTime}</Box>
-				</Box>
+				)}
 				{canEdit && (
 					<Field pbe='x16'>
 						<Box display='flex' flexDirection='row' justifyContent='space-between' flexGrow={1}>
 							<Field.Label>{t('Update_Room_Ephemeral')}</Field.Label>
-							<Field.Row>
-								<ToggleSwitch checked={updateRoomEphemeral} onChange={handleUpdateRoomEphemeral} />
-							</Field.Row>
 						</Box>
 						<Field.Row>
 							<Select
 								maxWidth='100%'
 								options={timeOptions}
-								disabled={!updateRoomEphemeral}
 								value={newEphemeralTime}
 								onChange={handleNewEphemeralTime}
 								placeholder={t('Select_an_option')}

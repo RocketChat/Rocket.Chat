@@ -209,7 +209,7 @@ Meteor.startup(async function() {
 				.trigger('dataChange');
 		},
 		condition({ subscription, room }) {
-			if (subscription == null) {
+			if (subscription == null || room.t === 'e') {
 				return false;
 			}
 			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);

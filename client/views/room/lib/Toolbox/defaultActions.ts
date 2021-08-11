@@ -69,10 +69,10 @@ addAction('uploaded-files-list', {
 });
 
 addAction('ephemeral-time', ({ room }) => {
-	const hasPermission = usePermission('view-broadcast-member-list', room._id);
+	const hasPermission = usePermission('edit-ephemeral-room', room._id);
 	return useMemo(
 		() =>
-			room.ephemeralTime
+			room.t === 'e' && hasPermission
 				? {
 						groups: ['ephemeral'],
 						id: 'ephemeral-time',
@@ -82,7 +82,7 @@ addAction('ephemeral-time', ({ room }) => {
 						order: 5,
 				  }
 				: null,
-		[room.ephemeralTime],
+		[room.t, hasPermission],
 	);
 });
 
