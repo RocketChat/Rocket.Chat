@@ -33,7 +33,7 @@ const EphemeralTimeModal = ({ rid, tabBar }) => {
 		'rooms.updateEphemeral',
 		t('Room_updated_successfully'),
 	);
-	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(useInitialValues(room));
+	const { values, handlers, hasUnsavedChanges } = useForm(useInitialValues(room));
 	const { updateRoomEphemeral, newEphemeralTime, newMsgEphemeralTime } = values;
 	const { handleNewEphemeralTime, handleNewMsgEphemeralTime } = handlers;
 	const timeOptions = [
