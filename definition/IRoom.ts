@@ -26,6 +26,7 @@ export interface IRoom extends IRocketChatRecord {
 	topic: any;
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	uids: Array<string>;
 
 	lastMessage?: IMessage;
 	lm?: Date;
@@ -58,6 +59,9 @@ export interface IRoom extends IRocketChatRecord {
 	unread?: number;
 	alert?: boolean;
 	hideUnreadStatus?: boolean;
+
+	sysMes?: string[];
+	muted?: string[];
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {

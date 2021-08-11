@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import GenericModal from '../../../../client/components/GenericModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
@@ -38,7 +38,14 @@ function RemovePriorityButton({ _id, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteAgent} onCancel={() => setModal()} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteAgent}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return (

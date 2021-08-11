@@ -28,6 +28,8 @@ import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import GenericModal from '../../../../client/components/GenericModal';
 
 
 const messageBoxState = {
@@ -69,6 +71,10 @@ callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority
 const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
 
 export class ChatMessages {
+	constructor(collection = ChatMessage) {
+		this.collection = collection;
+	}
+
 	editing = {}
 
 	records = {}
@@ -113,7 +119,7 @@ export class ChatMessages {
 	}
 
 	recordInputAsDraft() {
-		const message = ChatMessage.findOne(this.editing.id);
+		const message = this.collection.findOne(this.editing.id);
 		const record = this.records[this.editing.id] || {};
 		const draft = this.input.value;
 
@@ -133,7 +139,7 @@ export class ChatMessages {
 	}
 
 	resetToDraft(id) {
-		const message = ChatMessage.findOne(id);
+		const message = this.collection.findOne(id);
 		const oldValue = this.input.value;
 		messageBoxState.set(this.input, message.msg);
 		return oldValue !== message.msg;
@@ -176,7 +182,7 @@ export class ChatMessages {
 	}
 
 	edit(element, isEditingTheNextOne) {
-		const message = ChatMessage.findOne(element.dataset.id);
+		const message = this.collection.findOne(element.dataset.id);
 
 		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
@@ -270,7 +276,7 @@ export class ChatMessages {
 		}
 
 		// don't add tmid or tshow if the message isn't part of a thread (it can happen if editing the main message of a thread)
-		const originalMessage = ChatMessage.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
+		const originalMessage = this.collection.findOne({ _id: this.editing.id }, { fields: { tmid: 1 }, reactive: false });
 		if (originalMessage && tmid && !originalMessage.tmid) {
 			tmid = undefined;
 			tshow = undefined;
@@ -298,7 +304,7 @@ export class ChatMessages {
 		}
 
 		if (this.editing.id) {
-			const message = ChatMessage.findOne(this.editing.id);
+			const message = this.collection.findOne(this.editing.id);
 			const isDescription = message.attachments && message.attachments[0] && message.attachments[0].description;
 
 			try {
@@ -352,7 +358,7 @@ export class ChatMessages {
 			return false;
 		}
 
-		const lastMessage = ChatMessage.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
+		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
 		await call('setReaction', reaction, lastMessage._id);
 		return true;
 	}
@@ -440,7 +446,7 @@ export class ChatMessages {
 						private: true,
 					};
 
-					ChatMessage.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
+					this.collection.upsert({ _id: invalidCommandMsg._id }, invalidCommandMsg);
 					return true;
 				}
 			}
@@ -459,24 +465,7 @@ export class ChatMessages {
 			prid: { $exists: true },
 		});
 
-		modal.open({
-			title: t('Are_you_sure'),
-			text: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
-			type: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#DD6B55',
-			confirmButtonText: t('Yes_delete_it'),
-			cancelButtonText: t('Cancel'),
-			html: false,
-		}, () => {
-			modal.open({
-				title: t('Deleted'),
-				text: t('Your_entry_has_been_deleted'),
-				type: 'success',
-				timer: 1000,
-				showConfirmButton: false,
-			});
-
+		const onConfirm = () => {
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
@@ -485,12 +474,31 @@ export class ChatMessages {
 
 			this.$input.focus();
 			done();
-		}, () => {
+
+			imperativeModal.close();
+			toastr.success(t('Your_entry_has_been_deleted'));
+		};
+
+		const onCloseModal = () => {
+			imperativeModal.close();
 			if (this.editing.id === message._id) {
 				this.clearEditing();
 			}
 			this.$input.focus();
 			done();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Are_you_sure'),
+				children: room ? t('The_message_is_a_discussion_you_will_not_be_able_to_recover') : t('You_will_not_be_able_to_recover'),
+				variant: 'danger',
+				confirmText: t('Yes_delete_it'),
+				onConfirm,
+				onClose: onCloseModal,
+				onCancel: onCloseModal,
+			},
 		});
 	}
 

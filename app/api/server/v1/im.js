@@ -176,17 +176,17 @@ API.v1.addRoute(['dm.history', 'im.history'], { authRequired: true }, {
 
 		const unreads = this.queryParams.unreads || false;
 
-		let result;
-		Meteor.runAsUser(this.userId, () => {
-			result = Meteor.call('getChannelHistory', {
-				rid: findResult.room._id,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-			});
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = Meteor.call('getChannelHistory', {
+			rid: findResult.room._id,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
 		});
 
 		if (!result) {

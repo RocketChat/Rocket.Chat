@@ -1,7 +1,7 @@
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import DeleteFileWarning from '../../../../components/DeleteFileWarning';
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -47,7 +47,16 @@ const RoomFilesWithData = ({ rid }) => {
 			closeModal();
 		};
 
-		setModal(<DeleteFileWarning onConfirm={onConfirm} onCancel={closeModal} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={closeModal}
+				confirmText={t('Delete')}
+			>
+				{t('Delete_File_Warning')}
+			</GenericModal>,
+		);
 	}, []);
 
 	const isDeletionAllowed = useMessageDeletionIsAllowed(rid, uid);

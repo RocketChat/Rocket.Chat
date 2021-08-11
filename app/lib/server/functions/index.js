@@ -23,6 +23,7 @@ export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
 export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
 export { saveUser } from './saveUser';
+export { saveUserIdentity } from './saveUserIdentity';
 export { sendMessage } from './sendMessage';
 export { setEmail } from './setEmail';
 export { setRealName, _setRealName } from './setRealName';

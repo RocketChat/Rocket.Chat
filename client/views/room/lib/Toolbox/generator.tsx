@@ -6,9 +6,7 @@ export type Events<T> = {
 	change: Store<T>;
 };
 
-export const generator = function generator<T>(
-	name?: string,
-): {
+export const generator = function generator<T>(name?: string): {
 	store: Store<T>;
 	add: (id: string, action: T) => Store<T>;
 	remove: (id: string) => boolean;

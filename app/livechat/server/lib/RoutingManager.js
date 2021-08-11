@@ -45,7 +45,7 @@ export const RoutingManager = {
 
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUsername(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 
@@ -101,8 +101,8 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
-			removeAgentFromSubscription(rid, servedBy);
 			LivechatRooms.removeAgentByRoomId(rid);
+			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -169,6 +169,18 @@ export const RoutingManager = {
 
 		dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
+	},
+
+	removeAllRoomSubscriptions(room, ignoreUser) {
+		const { _id: roomId } = room;
+
+		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		subscriptions?.forEach(({ u }) => {
+			if (ignoreUser && ignoreUser._id === u._id) {
+				return;
+			}
+			removeAgentFromSubscription(roomId, u);
+		});
 	},
 };
 

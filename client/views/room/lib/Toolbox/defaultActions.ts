@@ -47,15 +47,15 @@ addAction('members-list', ({ room }) => {
 		() =>
 			!room.broadcast || hasPermission
 				? {
-						groups: ['channel', 'group', 'ephemeral'],
+						groups: ['channel', 'group', 'team', 'ephemeral'],
 						id: 'members-list',
-						title: 'Members',
+						title: room.teamMain ? 'Teams_members' : 'Members',
 						icon: 'members',
 						template: lazy(() => import('../../MemberListRouter')),
 						order: 5,
 				  }
 				: null,
-		[hasPermission, room.broadcast],
+		[hasPermission, room.broadcast, room.teamMain],
 	);
 });
 

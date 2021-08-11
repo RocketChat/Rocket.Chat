@@ -6,6 +6,7 @@ import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import DeploymentCard from './DeploymentCard';
+import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
 // import InstancesCard from './InstancesCard';
@@ -22,10 +23,8 @@ const InformationPage = memo(function InformationPage({
 }) {
 	const t = useTranslation();
 
-	const {
-		ref,
-		contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {},
-	} = useResizeObserver();
+	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } =
+		useResizeObserver();
 
 	const isSmall = inlineSize < DOUBLE_COLUMN_CARD_WIDTH;
 
@@ -100,6 +99,7 @@ const InformationPage = memo(function InformationPage({
 							/>
 							<LicenseCard statistics={statistics} isLoading={isLoading} />
 							<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading} />
+							<FederationCard />
 							{/* {!!instances.length && <InstancesCard instances={instances}/>} */}
 							{/* <PushCard /> */}
 						</Margins>

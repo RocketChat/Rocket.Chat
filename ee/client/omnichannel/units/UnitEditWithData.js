@@ -7,7 +7,7 @@ import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import UnitEdit from './UnitEdit';
 
-function UnitEditWithData({ unitId, reload }) {
+function UnitEditWithData({ unitId, reload, title }) {
 	const query = useMemo(() => ({ unitId }), [unitId]);
 	const { value: data, phase: state, error } = useEndpointData('livechat/units.getOne', query);
 	const {
@@ -38,6 +38,7 @@ function UnitEditWithData({ unitId, reload }) {
 
 	return (
 		<UnitEdit
+			title={title}
 			unitId={unitId}
 			data={data}
 			unitMonitors={unitMonitors}

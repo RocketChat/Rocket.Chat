@@ -1144,6 +1144,7 @@
   "Favorites": "Obľúbené",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "Táto funkcia závisí od toho, že má byť povolená možnosť \"Posielať históriu navigácie návštevníka ako správu\".",
   "Features_Enabled": "Funkcie povolené",
+  "Federation_Domain": "Doména",
   "FEDERATION_Domain": "Doména",
   "FEDERATION_Status": "Postavenie",
   "Field": "Lúka",

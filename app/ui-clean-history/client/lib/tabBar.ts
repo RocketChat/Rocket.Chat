@@ -9,7 +9,7 @@ const template = lazy(() => import('../../../../client/views/room/contextualBar/
 addAction('clean-history', ({ room }) => {
 	const hasPermission = usePermission('clean-channel-history', room._id);
 	return useMemo(() => (hasPermission ? {
-		groups: ['channel', 'group', 'team', 'direct'],
+		groups: ['channel', 'group', 'team', 'direct_multiple', 'direct'],
 		id: 'clean-history',
 		full: true,
 		title: 'Prune_Messages',

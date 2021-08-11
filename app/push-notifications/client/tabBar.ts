@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('push-notifications', {
-	groups: ['channel', 'group', 'direct', 'team'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
 	id: 'push-notifications',
 	title: 'Notifications_Preferences',
 	icon: 'bell',

@@ -4,6 +4,7 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
+import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
 
@@ -111,12 +112,7 @@ export class BaseDb extends EventEmitter {
 		// 	}
 		// }
 
-		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date();
-		} else {
-			record._updatedAt = new Date();
-		}
+		setUpdatedAt(record);
 
 		return record;
 	}

@@ -82,9 +82,10 @@ const CustomSelect = ({
 	const t = useTranslation();
 	const [selectError, setSelectError] = useState('');
 
-	const mappedOptions = useMemo(() => Object.values(options).map((value) => [value, value]), [
-		options,
-	]);
+	const mappedOptions = useMemo(
+		() => Object.values(options).map((value) => [value, value]),
+		[options],
+	);
 	const verify = useMemo(
 		() => (!state.length && required ? t('The_field_is_required', label || name) : ''),
 		[name, label, required, state.length, t],

@@ -323,58 +323,14 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestampInclusive(roomId, timestamp, options) {
+	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$lte: timestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestamps(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
+				[inclusive ? '$lte' : '$lt']: timestamp,
 			},
 			...!showThreadMessages && {
 				$or: [{
@@ -392,15 +348,15 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true) {
+	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, afterTimestamp, beforeTimestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
 				$ne: true,
 			},
 			rid: roomId,
 			ts: {
-				$gt: afterTimestamp,
-				$lt: beforeTimestamp,
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
 			},
 			...!showThreadMessages && {
 				$or: [{
@@ -499,6 +455,15 @@ export class Messages extends Base {
 		const query = { slackTs };
 
 		return this.findOne(query);
+	}
+
+	findOneByRoomIdAndMessageId(rid, messageId, options) {
+		const query = {
+			rid,
+			_id: messageId,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findByRoomIdAndType(roomId, type, options) {

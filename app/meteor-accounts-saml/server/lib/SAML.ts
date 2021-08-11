@@ -11,13 +11,12 @@ import { settings } from '../../../settings/server';
 import { Users, Rooms, CredentialTokens } from '../../../models/server';
 import { IUser } from '../../../../definition/IUser';
 import { IIncomingMessage } from '../../../../definition/IIncomingMessage';
-import { _setUsername, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
+import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
-
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -107,10 +106,12 @@ export class SAML {
 
 		let { username } = userObject;
 
+		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
+
 		if (!user) {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
-				active: true,
+				active,
 				globalRoles,
 				emails,
 				services: {
@@ -197,7 +198,7 @@ export class SAML {
 		});
 
 		if (username && username !== user.username) {
-			_setUsername(user._id, username);
+			saveUserIdentity({ _id: user._id, username });
 		}
 
 		// sending token along with the userId
