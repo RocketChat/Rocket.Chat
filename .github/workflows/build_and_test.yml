@@ -120,7 +120,7 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: "4.0"
+        mongoDBVersion: "5.0"
 
     - run: meteor npm run testunit
 
