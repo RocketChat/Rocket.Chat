@@ -31,7 +31,6 @@ export const readMessage = new class extends Emitter {
 			return;
 		}
 
-
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
@@ -67,10 +66,23 @@ export const readMessage = new class extends Emitter {
 	}
 
 	readNow(rid = Session.get('openedRoom')) {
+		const unread = Session.get('unread');
+
 		if (rid == null) {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
+
+		const subscription = ChatSubscription.findOne({ rid });
+		if (subscription == null) {
+			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
+			return;
+		}
+
+		if ((unread != null) && unread !== '') {
+			return;
+		}
+
 		return Meteor.call('readMessages', rid, () => {
 			RoomHistoryManager.getRoom(rid).unreadNotLoaded.set(0);
 			return this.emit(rid);
@@ -109,8 +121,7 @@ export const readMessage = new class extends Emitter {
 		}
 
 		if (!subscription.alert && (subscription.unread === 0)) {
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
 			room.unreadSince.set(undefined);
 			return;
 		}
@@ -153,9 +164,8 @@ export const readMessage = new class extends Emitter {
 
 		if (firstUnreadRecord) {
 			room.unreadFirstId = firstUnreadRecord._id;
-			const roomDom = $(room.dom);
-			roomDom.find('.message.first-unread').removeClass('first-unread');
-			roomDom.find(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
+			$('.message.first-unread').removeClass('first-unread');
+			$(`.message#${ firstUnreadRecord._id }`).addClass('first-unread');
 		}
 	}
 }();

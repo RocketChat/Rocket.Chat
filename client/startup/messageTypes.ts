@@ -1,9 +1,9 @@
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../app/ui-utils/client';
 import { t } from '../../app/utils/client';
 import { IMessage } from '../../definition/IMessage';
-import { escapeHTML } from '../../lib/escapeHTML';
 
 Meteor.startup(() => {
 	MessageTypes.registerType({

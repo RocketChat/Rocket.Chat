@@ -6,7 +6,7 @@ import UserAvatar from '../../components/avatar/UserAvatar';
 import Condensed from './Condensed';
 
 export default {
-	title: 'Sidebar/condensed',
+	title: 'Sidebar/Condensed',
 	component: Condensed,
 };
 

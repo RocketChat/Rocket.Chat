@@ -1,7 +1,8 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { findGuest, settings, online, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
+import { Livechat } from '../../lib/Livechat';
+import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
 API.v1.addRoute('livechat/config', {
 	get() {
@@ -10,28 +11,23 @@ API.v1.addRoute('livechat/config', {
 				token: Match.Maybe(String),
 				department: Match.Maybe(String),
 			});
+			const enabled = Livechat.enabled();
 
-			const config = settings();
-			if (!config.enabled) {
+			if (!enabled) {
 				return API.v1.success({ config: { enabled: false } });
 			}
 
+			const config = settings();
+
 			const { token, department } = this.queryParams;
-			const status = online(department);
-			const guest = token && findGuest(token);
+			const status = Livechat.online(department);
+			const guest = token && Livechat.findGuest(token);
 
-			let room;
-			let agent;
+			const room = guest && findOpenRoom(token);
+			const agent = guest && room && room.servedBy && findAgent(room.servedBy._id);
 
-			if (guest) {
-				room = findOpenRoom(token);
-				agent = room && room.servedBy && findAgent(room.servedBy._id);
-			}
 			const extra = Promise.await(getExtraConfigInfo(room));
-			const { config: extraConfig = {} } = extra || {};
-			Object.assign(config, { online: status, guest, room, agent }, { ...extraConfig });
-
-			return API.v1.success({ config });
+			return API.v1.success({ config: { ...config, online: status, guest, room, agent, ...extra } });
 		} catch (e) {
 			return API.v1.failure(e);
 		}

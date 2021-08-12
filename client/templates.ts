@@ -24,6 +24,8 @@ createTemplateForComponent(
 	},
 );
 
+createTemplateForComponent('MessageBody', () => import('./components/Message/Body'));
+
 createTemplateForComponent(
 	'BroadCastMetric',
 	() => import('./components/Message/Metrics/Broadcast'),
@@ -57,7 +59,10 @@ createTemplateForComponent('messageLocation', () => import('./views/location/Mes
 createTemplateForComponent('sidebarHeader', () => import('./sidebar/header'));
 
 createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/index'), {
-	attachment: 'at-parent',
+	renderContainerView: () =>
+		HTML.DIV({
+			style: 'display: flex; flex: 1 1 100%;',
+		}),
 });
 
 createTemplateForComponent(
@@ -238,3 +243,12 @@ createTemplateForComponent(
 );
 
 createTemplateForComponent('UserDropdown', () => import('./sidebar/header/UserDropdown'));
+
+createTemplateForComponent('StatusMessage', () => import('./components/Message/StatusMessage'), {
+	renderContainerView: () =>
+		HTML.DIV({
+			class: 'message-custom-status',
+		}),
+});
+
+createTemplateForComponent('sidebarFooter', () => import('./sidebar/footer'));

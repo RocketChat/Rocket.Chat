@@ -4,7 +4,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import AddUsers from './AddUsers';
 
 export default {
-	title: 'components/RoomMembers/AddUsers',
+	title: 'room/contextualBar/RoomMembers/AddUsers',
 	component: AddUsers,
 };
 

@@ -1,4 +1,4 @@
-import { escapeHTML } from '../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) => `${ prefix }<a class="${ className }" data-${ type }="${ mention }"${ title ? ` title="${ title }"` : '' }>${ label }</a>`;
 const roomTemplateDefault = ({ prefix, reference, mention }) => `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;

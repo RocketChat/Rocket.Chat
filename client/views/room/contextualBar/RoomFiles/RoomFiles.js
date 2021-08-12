@@ -82,11 +82,19 @@ function RoomFiles({
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{!loading && filesItems.length <= 0 && <Box p='x12'>{t('No_results_found')}</Box>}
+
+				{!loading && filesItems.length <= 0 && (
+					<Box textAlign='center' p='x12' color='neutral-600'>
+						{t('No_files_found')}
+					</Box>
+				)}
 
 				<Box w='full' h='full' flexShrink={1} overflow='hidden'>
 					<Virtuoso
-						style={{ height: '100%', width: '100%' }}
+						style={{
+							height: '100%',
+							width: '100%',
+						}}
 						totalCount={total}
 						endReached={
 							loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))

@@ -10,6 +10,7 @@ import { LivechatDepartmentAgentsRaw } from '../../../../../app/models/server/ra
 import { LivechatDepartment, LivechatDepartmentAgents } from '../../../../../app/models/server/raw';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
+import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;
@@ -89,7 +90,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onAddAgentToDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
-		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		const department = await this.DepartmentsRepository.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, { projection: { businessHourId: 1 } });
 		if (!department || !agentsId.length) {
 			return options;
 		}
@@ -115,7 +116,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onRemoveAgentFromDepartment(options: Record<string, any> = {}): Promise<any> {
 		const { departmentId, agentsId } = options;
-		const department = await this.DepartmentsRepository.findOneById(departmentId, { fields: { businessHourId: 1 } });
+		const department = await this.DepartmentsRepository.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(departmentId, { fields: { businessHourId: 1 } });
 		if (!department || !agentsId.length) {
 			return options;
 		}

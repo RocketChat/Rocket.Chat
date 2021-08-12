@@ -34,6 +34,7 @@ const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	isTeam,
 	reload,
 }) => {
 	const t = useTranslation();
@@ -54,7 +55,7 @@ const RoomMembers = ({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
+				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
@@ -87,35 +88,25 @@ const RoomMembers = ({
 				)}
 
 				{error && (
-					<Box pi='x24' pb='x12'>
+					<Box pi='x12' pb='x12'>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
 
 				{!loading && members.length <= 0 && (
-					<Box pi='x24' pb='x12'>
-						{t('No_results_found')}
+					<Box textAlign='center' p='x12' color='neutral-600'>
+						{t('No_members_found')}
 					</Box>
 				)}
 
 				{!loading && members.length > 0 && (
 					<Box pi='x18' pb='x12'>
 						<Box is='span' color='info' fontScale='p1'>
-							{t('Showing')}:{' '}
-							<Box is='span' color='default' fontScale='p2'>
-								{members.length}
-							</Box>
+							{t('Showing')}: {members.length}
 						</Box>
 
-						{/* <Box is='span' color='info' fontScale='p1' mis='x8'>
-							{t('Online')}: <Box is='span' color='default' fontScale='p2'>{members.length}</Box>
-						</Box> */}
-
 						<Box is='span' color='info' fontScale='p1' mis='x8'>
-							{t('Total')}:{' '}
-							<Box is='span' color='default' fontScale='p2'>
-								{total}
-							</Box>
+							{t('Total')}: {total}
 						</Box>
 					</Box>
 				)}
@@ -139,27 +130,24 @@ const RoomMembers = ({
 					)}
 				</Box>
 			</VerticalBar.Content>
-
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{onClickInvite && (
-						<Button onClick={onClickInvite} width='50%'>
-							<Box is='span' mie='x4'>
-								<Icon name='link' size='x20' />
-							</Box>
-							{t('Invite_Link')}
-						</Button>
-					)}
-					{onClickAdd && (
-						<Button onClick={onClickAdd} width='50%' primary>
-							<Box is='span' mie='x4'>
-								<Icon name='user-plus' size='x20' />
-							</Box>
-							{t('Add_users')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{(onClickInvite || onClickAdd) && (
+				<VerticalBar.Footer>
+					<ButtonGroup stretch>
+						{onClickInvite && (
+							<Button onClick={onClickInvite} width='50%'>
+								<Icon name='link' size='x20' mie='x4' />
+								{t('Invite_Link')}
+							</Button>
+						)}
+						{onClickAdd && (
+							<Button onClick={onClickAdd} width='50%' primary>
+								<Icon name='user-plus' size='x20' mie='x4' />
+								{t('Add')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };

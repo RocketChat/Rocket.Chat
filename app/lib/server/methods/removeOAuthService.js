@@ -1,6 +1,6 @@
+import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
@@ -18,7 +18,7 @@ Meteor.methods({
 		}
 
 		name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
-		name = s.capitalize(name);
+		name = capitalize(name);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-url`);
 		settings.removeById(`Accounts_OAuth_Custom-${ name }-token_path`);

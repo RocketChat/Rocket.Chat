@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import Busboy from 'busboy';
 
 import { API } from '../../../api/server';
+import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
+import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -21,24 +22,6 @@ export class AppsRestApi {
 		this._orch = orch;
 		this._manager = manager;
 		this.loadAPI();
-	}
-
-	_handleMultipartFormData(request) {
-		const busboy = new Busboy({ headers: request.headers });
-		return Meteor.wrapAsync((callback) => {
-			const formFields = {};
-			busboy.on('file', Meteor.bindEnvironment((fieldname, file) => {
-				const fileData = [];
-				file.on('data', Meteor.bindEnvironment((data) => {
-					fileData.push(data);
-				}));
-
-				file.on('end', Meteor.bindEnvironment(() => { formFields[fieldname] = Buffer.concat(fileData); }));
-			}));
-			busboy.on('field', (fieldname, val) => { formFields[fieldname] = val; });
-			busboy.on('finish', Meteor.bindEnvironment(() => callback(undefined, formFields)));
-			request.pipe(busboy);
-		})();
 	}
 
 	async loadAPI() {
@@ -55,7 +38,6 @@ export class AppsRestApi {
 	addManagementRoutes() {
 		const orchestrator = this._orch;
 		const manager = this._manager;
-		const multipartFormDataHandler = this._handleMultipartFormData;
 
 		const handleError = (message, e) => {
 			// when there is no `response` field in the error, it means the request
@@ -155,13 +137,7 @@ export class AppsRestApi {
 					});
 				}
 
-				const apps = manager.get().map((prl) => {
-					const info = prl.getInfo();
-					info.languages = prl.getStorageItem().languageContent;
-					info.status = prl.getStatus();
-
-					return info;
-				});
+				const apps = manager.get().map(formatAppInstanceForRest);
 
 				return API.v1.success({ apps });
 			},
@@ -244,8 +220,10 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
-					const formData = multipartFormDataHandler(this.request);
-					buff = formData?.app;
+					const formData = Promise.await(getUploadFormData({
+						request: this.request,
+					}));
+					buff = formData?.app?.fileBuffer;
 					permissionsGranted = (() => {
 						try {
 							const permissions = JSON.parse(formData?.permissions || '');
@@ -407,24 +385,19 @@ export class AppsRestApi {
 					return API.v1.success({ app: result.data });
 				}
 
-				const prl = manager.getOneById(this.urlParams.id);
+				const app = manager.getOneById(this.urlParams.id);
 
-				if (prl) {
-					const info = prl.getInfo();
-
-					return API.v1.success({
-						app: {
-							...info,
-							status: prl.getStatus(),
-							licenseValidation: prl.getLatestLicenseValidationResult(),
-						},
-					});
+				if (!app) {
+					return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
 				}
 
-				return API.v1.notFound(`No App found by the id of: ${ this.urlParams.id }`);
+				return API.v1.success({
+					app: formatAppInstanceForRest(app),
+				});
 			},
 			post() {
 				let buff;
+				let permissionsGranted;
 
 				if (this.bodyParams.url) {
 					if (settings.get('Apps_Framework_Development_Mode') !== true) {
@@ -470,14 +443,25 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 
-					buff = multipartFormDataHandler(this.request)?.app;
+					const formData = Promise.await(getUploadFormData({
+						request: this.request,
+					}));
+					buff = formData?.app?.fileBuffer;
+					permissionsGranted = (() => {
+						try {
+							const permissions = JSON.parse(formData?.permissions || '');
+							return permissions.length ? permissions : undefined;
+						} catch {
+							return undefined;
+						}
+					})();
 				}
 
 				if (!buff) {
 					return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 				}
 
-				const aff = Promise.await(manager.update(buff, this.bodyParams.permissionsGranted));
+				const aff = Promise.await(manager.update(buff, permissionsGranted));
 				const info = aff.getAppInfo();
 
 				if (aff.hasStorageError()) {

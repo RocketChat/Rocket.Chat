@@ -1,6 +1,7 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export async function findUsersToAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-outside-room')) {

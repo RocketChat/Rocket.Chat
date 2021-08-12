@@ -1,5 +1,6 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatPriority from '../../../../models/server/raw/LivechatPriority';
 
 export async function findPriorities({ userId, text, pagination: { offset, count, sort } }) {

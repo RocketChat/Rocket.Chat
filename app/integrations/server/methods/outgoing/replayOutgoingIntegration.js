@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../authorization';
 import { Integrations, IntegrationHistory } from '../../../../models';
-import { integrations } from '../../../lib/rocketchat';
+import { triggerHandler } from '../../lib/triggerHandler';
 
 Meteor.methods({
 	replayOutgoingIntegration({ integrationId, historyId }) {
@@ -26,7 +26,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-integration-history', 'Invalid Integration History', { method: 'replayOutgoingIntegration' });
 		}
 
-		integrations.triggerHandler.replay(integration, history);
+		triggerHandler.replay(integration, history);
 
 		return true;
 	},

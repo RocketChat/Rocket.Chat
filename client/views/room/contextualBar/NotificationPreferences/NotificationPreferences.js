@@ -17,6 +17,7 @@ const NotificationPreferences = ({
 	handleSaveButton,
 }) => {
 	const t = useTranslation();
+
 	return (
 		<>
 			<VerticalBar.Header>
@@ -28,42 +29,42 @@ const NotificationPreferences = ({
 				<NotificationToogle
 					label={t('Turn_ON')}
 					description={t('Receive_alerts')}
-					onChange={formHandlers.handleTurnOn}
-					defaultChecked={formValues.turnOn}
+					onChange={formHandlers?.handleTurnOn}
+					defaultChecked={formValues?.turnOn}
 				/>
 				<NotificationToogle
 					label={t('Mute_Group_Mentions')}
-					onChange={formHandlers.handleMuteGroupMentions}
-					defaultChecked={formValues.muteGroupMentions}
+					onChange={formHandlers?.handleMuteGroupMentions}
+					defaultChecked={formValues?.muteGroupMentions}
 				/>
 				<NotificationToogle
 					label={t('Show_counter')}
 					description={t('Display_unread_counter')}
-					onChange={formHandlers.handleShowCounter}
-					defaultChecked={formValues.showCounter}
+					onChange={formHandlers?.handleShowCounter}
+					defaultChecked={formValues?.showCounter}
 				/>
 				<FieldGroup>
 					<NotificationByDevice device={t('Desktop')} icon={'computer'}>
 						<Preferences
 							id={'DesktopAlert'}
-							onChange={formHandlers.handleDesktopAlert}
+							onChange={formHandlers?.handleDesktopAlert}
 							name={t('Alerts')}
 							options={handleOptions.alerts}
-							optionDefault={formValues.desktopAlert}
+							optionDefault={formValues?.desktopAlert}
 						/>
 						<Preferences
 							id={'DesktopAudio'}
-							onChange={formHandlers.handleDesktopAudio}
+							onChange={formHandlers?.handleDesktopAudio}
 							name={t('Audio')}
 							options={handleOptions.audio}
-							optionDefault={formValues.desktopAudio}
+							optionDefault={formValues?.desktopAudio}
 						/>
 						<Preferences
 							id={'DesktopSound'}
-							onChange={formHandlers.handleDesktopSound}
+							onChange={formHandlers?.handleDesktopSound}
 							name={t('Sound')}
 							options={handleOptions.sound}
-							optionDefault={formValues.desktopSound}
+							optionDefault={formValues?.desktopSound}
 						>
 							<Button mis='x4' square ghost onClick={handlePlaySound}>
 								<Icon name='play' size='x18' />
@@ -73,19 +74,19 @@ const NotificationPreferences = ({
 					<NotificationByDevice device={t('Mobile')} icon={'mobile'}>
 						<Preferences
 							id={'MobileAlert'}
-							onChange={formHandlers.handleMobileAlert}
+							onChange={formHandlers?.handleMobileAlert}
 							name={t('Alerts')}
 							options={handleOptions.alerts}
-							optionDefault={formValues.mobileAlert}
+							optionDefault={formValues?.mobileAlert}
 						/>
 					</NotificationByDevice>
 					<NotificationByDevice device={t('Email')} icon={'mail'}>
 						<Preferences
 							id={'EmailAlert'}
-							onChange={formHandlers.handleEmailAlert}
+							onChange={formHandlers?.handleEmailAlert}
 							name={t('Alerts')}
 							options={handleOptions.alerts}
-							optionDefault={formValues.emailAlert}
+							optionDefault={formValues?.emailAlert}
 						/>
 					</NotificationByDevice>
 				</FieldGroup>

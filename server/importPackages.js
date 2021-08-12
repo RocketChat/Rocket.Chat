@@ -27,6 +27,7 @@ import '../app/file';
 import '../app/file-upload';
 import '../app/github-enterprise/server';
 import '../app/gitlab/server';
+import '../app/google-oauth/server';
 import '../app/google-vision/server';
 import '../app/iframe-login/server';
 import '../app/importer/server';

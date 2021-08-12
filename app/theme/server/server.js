@@ -8,8 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
-import { getURL } from '../../utils/lib/getURL';
-import { injectIntoHead } from '../../ui-master/server';
+import { addStyle } from '../../ui-master/server/inject';
 
 const logger = new Logger('rocketchat:theme', {
 	methods: {
@@ -140,7 +139,7 @@ Meteor.startup(() => {
 	settings.get('css', (key, value = '') => {
 		currentHash = crypto.createHash('sha1').update(value).digest('hex');
 		currentSize = value.length;
-		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+		addStyle('css-theme', value);
 	});
 });
 

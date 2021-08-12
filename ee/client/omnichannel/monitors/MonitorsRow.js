@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
-import DeleteWarningModal from '../../../../client/components/DeleteWarningModal';
+import GenericModal from '../../../../client/components/GenericModal';
 import { useSetModal } from '../../../../client/contexts/ModalContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
@@ -31,7 +31,14 @@ function MonitorsRow(props) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onDeleteMonitor} onCancel={() => setModal()} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onDeleteMonitor}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return (

@@ -279,9 +279,9 @@ class Administration extends Page {
 
 	get accountsHideFlexTabReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsHideAvatars() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatars() { return browser.element('[data-qa-setting-id="displayAvatars"]'); }
 
-	get accountsHideAvatarsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatarsReset() { return browser.element('[data-qa-reset-setting-id="displayAvatars"]'); }
 
 	get accountsMergeChannels() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 

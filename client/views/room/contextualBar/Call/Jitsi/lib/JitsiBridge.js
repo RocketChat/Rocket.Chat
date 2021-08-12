@@ -17,9 +17,17 @@ export class JitsiBridge extends Emitter {
 		this.desktopSharingChromeExtId = desktopSharingChromeExtId;
 		this.name = name;
 		this.heartbeat = heartbeat;
+		this.window = undefined;
+		this.needsStart = false;
 	}
 
 	start(domTarget) {
+		if (!this.needsStart) {
+			return;
+		}
+
+		this.needsStart = false;
+
 		const heartbeatTimer = setInterval(() => this.emit('HEARTBEAT', true), this.heartbeat);
 		this.once('dispose', () => clearTimeout(heartbeatTimer));
 
@@ -59,12 +67,13 @@ export class JitsiBridge extends Emitter {
 			}, 1000);
 
 			this.once('dispose', () => clearTimeout(timer));
-
+			this.window = newWindow;
 			return newWindow.focus();
 		}
 
 		const width = 'auto';
 		const height = 500;
+
 		const api = new JitsiMeetExternalAPI(
 			domain,
 			jitsiRoomName,

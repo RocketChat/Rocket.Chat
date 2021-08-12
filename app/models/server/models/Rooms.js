@@ -1,11 +1,11 @@
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -552,38 +552,40 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndTypeIncludingTeamRooms(name, type, teamIds, options) {
+	findByNameOrFNameAndRoomIdsIncludingTeamRooms(text, teamIds, roomIds, options) {
+		const searchTerm = text && new RegExp(text, 'i');
+
 		const query = {
-			t: type,
-			teamMain: {
-				$exists: false,
-			},
 			$and: [
+				{ teamMain: { $exists: false } },
+				{ prid: { $exists: false } },
 				{
 					$or: [
 						{
-							teamId: {
-								$exists: false,
-							},
+							t: 'c',
+							teamId: { $exists: false },
 						},
 						{
-							teamId: {
-								$in: teamIds,
-							},
+							t: 'c',
+							teamId: { $in: teamIds },
 						},
+						...roomIds?.length > 0 ? [{
+							_id: {
+								$in: roomIds,
+							},
+						}] : [],
 					],
 				},
-				{
+				...searchTerm ? [{
 					$or: [{
-						name,
+						name: searchTerm,
 					}, {
-						fname: name,
+						fname: searchTerm,
 					}],
-				},
+				}] : [],
 			],
 		};
 
-		// do not use cache
 		return this._db.find(query, options);
 	}
 
@@ -603,7 +605,7 @@ export class Rooms extends Base {
 		};
 
 		if (text) {
-			const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+			const regex = new RegExp(text, 'i');
 
 			query.$and.push({
 				$or: [{
@@ -1264,7 +1266,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	updateGroupDMsRemovingUsernamesByUsername(username) {
+	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
 		const query = {
 			t: 'd',
 			usernames: username,
@@ -1274,6 +1276,7 @@ export class Rooms extends Base {
 		const update = {
 			$pull: {
 				usernames: username,
+				uids: userId,
 			},
 		};
 

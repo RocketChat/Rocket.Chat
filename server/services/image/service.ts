@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import stream, { Readable } from 'stream';
 
 import fileType from 'file-type';
 import sharp from 'sharp';
@@ -6,6 +6,11 @@ import isSvg from 'is-svg';
 
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
+
+/* eslint-disable  @typescript-eslint/no-var-requires */
+const ExifTransformer = require('exif-be-gone');
+/* eslint-enable  @typescript-eslint/no-var-requires */
+
 
 export class MediaService extends ServiceClass implements IMediaService {
 	protected name = 'media';
@@ -32,27 +37,11 @@ export class MediaService extends ServiceClass implements IMediaService {
 	]);
 
 	async resizeFromBuffer(input: Buffer, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
-		const transformer = sharp(input)
-			.resize({ width, height, fit, withoutEnlargement: !enlarge });
-
-		if (!keepType) {
-			transformer.jpeg();
-		}
-
-		if (blur) {
-			transformer.blur();
-		}
-
-		const { data, info: { width: widthInfo, height: heightInfo } } = await transformer.toBuffer({ resolveWithObject: true });
-
-		return {
-			data,
-			width: widthInfo,
-			height: heightInfo,
-		};
+		const stream = this.bufferToStream(input);
+		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
 	}
 
-	async resizeFromStream(input: Readable, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
+	async resizeFromStream(input: stream.Stream, width: number, height: number, keepType: boolean, blur: boolean, enlarge: boolean, fit?: keyof sharp.FitEnum | undefined): Promise<ResizeResult> {
 		const transformer = sharp()
 			.resize({ width, height, fit, withoutEnlargement: !enlarge });
 
@@ -85,5 +74,28 @@ export class MediaService extends ServiceClass implements IMediaService {
 
 	isSvgImage(buff: Buffer): boolean {
 		return isSvg(buff);
+	}
+
+	stripExifFromBuffer(buffer: Buffer): Promise<Buffer> {
+		return this.streamToBuffer(this.stripExifFromImageStream(this.bufferToStream(buffer)));
+	}
+
+	stripExifFromImageStream(stream: stream.Stream): Readable {
+		return stream.pipe(new ExifTransformer());
+	}
+
+	private bufferToStream(buffer: Buffer): stream.PassThrough {
+		const bufferStream = new stream.PassThrough();
+		bufferStream.end(buffer);
+		return bufferStream;
+	}
+
+	private streamToBuffer(stream: stream.Stream): Promise<Buffer> {
+		return new Promise((resolve) => {
+			const chunks: Array<Buffer> = [];
+			stream
+				.on('data', (data) => chunks.push(data))
+				.on('end', () => resolve(Buffer.concat(chunks)));
+		});
 	}
 }

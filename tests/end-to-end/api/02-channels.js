@@ -183,19 +183,99 @@ describe('[Channels]', function() {
 		});
 	});
 
-	it('/channels.online', (done) => {
-		request.get(api('channels.online'))
-			.set(credentials)
-			.query({
-				query: '{ "_id": "GENERAL" }',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('online').and.to.be.an('array');
-			})
-			.end(done);
+	describe('[/channels.online]', () => {
+		const createUserAndChannel = async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			await request.post(api('users.setStatus'))
+				.set(testUserCredentials)
+				.send({
+					message: '',
+					status: 'online',
+				});
+
+			const roomName = `group-test-${ Date.now() }`;
+
+			const roomResponse = await createRoom({ name: roomName, type: 'c', members: [testUser.username] });
+
+			return {
+				testUser,
+				testUserCredentials,
+				room: roomResponse.body.channel,
+			};
+		};
+
+		it('should return an error if no query', () =>
+			request.get(api('channels.online'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an error if passing an empty query', () =>
+			request.get(api('channels.online'))
+				.set(credentials)
+				.query('query={}')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an array with online members', async () => {
+			const {
+				testUser,
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('channels.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
+
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
+
+		it('should return an empty array if requesting user is not in channel', async () => {
+			const outsider = await createUser();
+			const outsiderCredentials = await login(outsider.username, password);
+
+			const {
+				testUser,
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('channels.online'))
+				.set(outsiderCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
+
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
 	});
 
 	describe('[/channels.files]', () => {
@@ -1596,6 +1676,63 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.a.property('success', false);
 				})
 				.end(done);
+		});
+	});
+
+	describe.skip('/channels.setAutojoin', () => {
+		// let testTeam;
+		let testChannel;
+		// let testUser1;
+		// let testUser2;
+		before(async () => {
+			const teamCreateRes = await request.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `team-${ Date.now() }` });
+
+			const { team } = teamCreateRes.body;
+
+			const user1 = await createUser();
+			const user2 = await createUser();
+
+			const channelCreateRes = await request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `team-channel-${ Date.now() }`,
+					extraData: {
+						teamId: team._id,
+					},
+				});
+
+			const { channel } = channelCreateRes.body;
+
+			// testTeam = team;
+			testChannel = channel;
+			// testUser1 = user1;
+			// testUser2 = user2;
+
+			await request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					name: team.name,
+					members: [{ userId: user1._id }, { userId: user2._id }],
+				});
+		});
+
+		it('should add all existing team members', async () => {
+			const resAutojoin = await request.post(api('channels.setAutojoin'))
+				.set(credentials)
+				.send({ roomName: testChannel.name, autojoin: true })
+				.expect(200);
+			expect(resAutojoin.body).to.have.a.property('success', true);
+
+			const channelInfoResponse = await request.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: testChannel._id });
+			const { channel } = channelInfoResponse.body;
+
+			console.log('channel: ', channel);
+
+			return expect(channel.usersCount).to.be.equals(3);
 		});
 	});
 });

@@ -1,7 +1,7 @@
 import { Field, Button } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../../../../components/UserAutoCompleteMultiple';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 

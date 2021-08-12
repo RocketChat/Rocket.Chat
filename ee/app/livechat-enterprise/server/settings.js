@@ -176,4 +176,5 @@ export const createSettings = () => {
 	});
 
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
+	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Rotation', i18nLabel: 'Load_Rotation' });
 };

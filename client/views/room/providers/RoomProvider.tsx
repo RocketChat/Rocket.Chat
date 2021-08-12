@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useMemo, memo, useEffect } from 'react';
+import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
@@ -43,6 +43,4 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		</RoomContext.Provider>
 	);
 };
-
-export const useRoom = (): undefined | IRoom => useContext(RoomContext)?.room;
 export default memo(RoomProvider);
