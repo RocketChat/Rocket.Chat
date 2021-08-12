@@ -13,6 +13,7 @@ function MeetPage() {
 	const [visitorId, setVisitorId] = useState(null);
 	const roomId = useRouteParameter('rid');
 	const visitorToken = useQueryStringParameter('token');
+	const layout = useQueryStringParameter('layout');
 
 	const setupCallForVisitor = useCallback(async () => {
 		const room = await APIClient.v1.get(`/livechat/room?token=${visitorToken}&rid=${roomId}`);
@@ -53,6 +54,7 @@ function MeetPage() {
 			visitorToken={visitorToken}
 			visitorId={visitorId}
 			setStatus={setStatus}
+			layout={layout}
 		></CallPage>
 	);
 }

@@ -145,8 +145,8 @@ class WebRTCClass {
 		this.remoteItems = new ReactiveVar([]);
 		this.remoteItemsById = new ReactiveVar({});
 		this.callInProgress = new ReactiveVar(false);
-		this.audioEnabled = new ReactiveVar(true);
-		this.videoEnabled = new ReactiveVar(true);
+		this.audioEnabled = new ReactiveVar(false);
+		this.videoEnabled = new ReactiveVar(false);
 		this.overlayEnabled = new ReactiveVar(false);
 		this.screenShareEnabled = new ReactiveVar(false);
 		this.localUrl = new ReactiveVar();
@@ -169,7 +169,7 @@ class WebRTCClass {
 
 		this.screenShareAvailable = ['chrome', 'firefox', 'electron'].includes(this.navigator);
 		this.media = {
-			video: false,
+			video: true,
 			audio: true,
 		};
 		this.transport = new this.TransportClass(this);
@@ -498,9 +498,9 @@ class WebRTCClass {
 		}
 		const onSuccess = (stream) => {
 			this.localStream = stream;
+			!this.audioEnabled.get() && this.disableAudio();
+			!this.videoEnabled.get() && this.disableVideo();
 			this.localUrl.set(stream);
-			this.videoEnabled.set(this.media.video === true);
-			this.audioEnabled.set(this.media.audio === true);
 			const { peerConnections } = this;
 			Object.entries(peerConnections).forEach(([, peerConnection]) => peerConnection.addStream(stream));
 			document.querySelector('video#localVideo').srcObject = stream;
@@ -538,19 +538,10 @@ class WebRTCClass {
 
 	setAudioEnabled(enabled = true) {
 		if (this.localStream != null) {
-			if (enabled === true && this.media.audio !== true) {
-				delete this.localStream;
-				this.media.audio = true;
-				this.getLocalUserMedia(() => {
-					this.stopAllPeerConnections();
-					this.joinCall();
-				});
-			} else {
-				this.localStream.getAudioTracks().forEach(function(audio) {
-					audio.enabled = enabled;
-				});
-				this.audioEnabled.set(enabled);
-			}
+			this.localStream.getAudioTracks().forEach(function(audio) {
+				audio.enabled = enabled;
+			});
+			this.audioEnabled.set(enabled);
 		}
 	}
 
@@ -562,21 +553,19 @@ class WebRTCClass {
 		this.setAudioEnabled(true);
 	}
 
+	toggleAudio() {
+		if (this.audioEnabled.get()) {
+			return this.disableAudio();
+		}
+		return this.enableAudio();
+	}
+
 	setVideoEnabled(enabled = true) {
 		if (this.localStream != null) {
-			if (enabled === true && this.media.video !== true) {
-				delete this.localStream;
-				this.media.video = true;
-				this.getLocalUserMedia(() => {
-					this.stopAllPeerConnections();
-					this.joinCall();
-				});
-			} else {
-				this.localStream.getVideoTracks().forEach(function(video) {
-					video.enabled = enabled;
-				});
-				this.videoEnabled.set(enabled);
-			}
+			this.localStream.getVideoTracks().forEach(function(video) {
+				video.enabled = enabled;
+			});
+			this.videoEnabled.set(enabled);
 		}
 	}
 
@@ -609,6 +598,13 @@ class WebRTCClass {
 
 	enableVideo() {
 		this.setVideoEnabled(true);
+	}
+
+	toggleVideo() {
+		if (this.videoEnabled.get()) {
+			return this.disableVideo();
+		}
+		return this.enableVideo();
 	}
 
 	stop() {
@@ -735,12 +731,6 @@ class WebRTCClass {
    */
 
 	joinCall(data = {}, ...args) {
-		if (data.media && data.media.audio) {
-			this.media.audio = data.media.audio;
-		}
-		if (data.media && data.media.video) {
-			this.media.video = data.media.video;
-		}
 		data.media = this.media;
 		this.log('joinCall', [data, ...args]);
 		this.getLocalUserMedia(() => {
