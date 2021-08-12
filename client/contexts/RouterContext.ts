@@ -101,12 +101,10 @@ export const useRoutePath = (
 	const { queryRoutePath } = useContext(RouterContext);
 
 	return useSubscription(
-		useMemo(() => queryRoutePath(name, parameters, queryStringParameters), [
-			queryRoutePath,
-			name,
-			parameters,
-			queryStringParameters,
-		]),
+		useMemo(
+			() => queryRoutePath(name, parameters, queryStringParameters),
+			[queryRoutePath, name, parameters, queryStringParameters],
+		),
 	);
 };
 
@@ -118,12 +116,10 @@ export const useRouteUrl = (
 	const { queryRouteUrl } = useContext(RouterContext);
 
 	return useSubscription(
-		useMemo(() => queryRouteUrl(name, parameters, queryStringParameters), [
-			queryRouteUrl,
-			name,
-			parameters,
-			queryStringParameters,
-		]),
+		useMemo(
+			() => queryRouteUrl(name, parameters, queryStringParameters),
+			[queryRouteUrl, name, parameters, queryStringParameters],
+		),
 	);
 };
 

@@ -151,8 +151,8 @@ const fields = {};
 export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T> => {
 	const { resolve, update, ...state } = useAsyncState<T>();
 	const uid = useUserId();
-	const subscription = (useUserSubscription(rid, fields) as unknown) as T;
-	const _room = (useUserRoom(rid, fields) as unknown) as T;
+	const subscription = useUserSubscription(rid, fields) as unknown as T;
+	const _room = useUserRoom(rid, fields) as unknown as T;
 
 	const room = uid ? subscription || _room : _room;
 

@@ -1,7 +1,7 @@
 import React, { memo, FC, useState, useMemo } from 'react';
 
+import { Dimensions } from '../../../../../definition/IMessage/MessageAttachment/Files/Dimensions';
 import { useAttachmentDimensions } from '../context/AttachmentContext';
-import { Dimensions } from './Dimensions';
 import ImageBox from './ImageBox';
 import Load from './Load';
 import Retry from './Retry';

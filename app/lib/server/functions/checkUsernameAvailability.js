@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
+import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings';
@@ -19,7 +20,7 @@ const usernameIsBlocked = (username, usernameBlackList) => usernameBlackList.len
 
 export const checkUsernameAvailability = function(username) {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
-		return false;
+		throw new Meteor.Error('error-blocked-username', `${ _.escape(username) } is blocked and can't be used!`, { method: 'checkUsernameAvailability', field: username });
 	}
 
 	// Make sure no users are using this username

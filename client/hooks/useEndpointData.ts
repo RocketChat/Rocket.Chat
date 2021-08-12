@@ -18,7 +18,7 @@ type ServerGetEndpointPaths = {
 
 export const useEndpointData = <
 	_T,
-	Path extends ServerGetEndpointPaths[keyof ServerGetEndpointPaths]
+	Path extends ServerGetEndpointPaths[keyof ServerGetEndpointPaths],
 >(
 	endpoint: Path,
 	params: ServerEndpointRequestPayload<'GET', Path> = defaultParams,
@@ -26,9 +26,8 @@ export const useEndpointData = <
 		| ServerEndpointResponsePayload<'GET', Path>
 		| (() => ServerEndpointResponsePayload<'GET', Path>),
 ): AsyncState<ServerEndpointResponsePayload<'GET', Path>> & { reload: () => void } => {
-	const { resolve, reject, reset, ...state } = useAsyncState<
-		ServerEndpointResponsePayload<'GET', Path>
-	>(initialValue);
+	const { resolve, reject, reset, ...state } =
+		useAsyncState<ServerEndpointResponsePayload<'GET', Path>>(initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getData = useEndpoint('GET', endpoint);
 

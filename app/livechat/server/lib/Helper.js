@@ -122,6 +122,11 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		username: String,
 	}));
 
+	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
+	if (existingSubscription?._id) {
+		return existingSubscription;
+	}
+
 	const { _id, username, token, status = 'online' } = guest;
 
 	const subscriptionData = {
@@ -306,7 +311,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			removeAgentFromSubscription(rid, oldServedBy);
+			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 
@@ -393,7 +398,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		removeAgentFromSubscription(rid, oldServedBy);
+		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);

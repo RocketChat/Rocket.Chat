@@ -10,4 +10,4 @@ export const ModalContext = createContext<ModalContextValue>({
 
 export const useModal = (): ModalContextValue => useContext(ModalContext);
 
-export const useSetModal = (): ((modal: ReactNode) => void) => useContext(ModalContext).setModal;
+export const useSetModal = (): ((modal?: ReactNode) => void) => useContext(ModalContext).setModal;

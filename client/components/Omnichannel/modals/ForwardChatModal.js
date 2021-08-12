@@ -94,6 +94,7 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 					<Field.Label>{t('Forward_to_department')}</Field.Label>
 					<Field.Row>
 						<PaginatedSelectFiltered
+							withTitle
 							filter={departmentsFilter}
 							setFilter={setDepartmentsFilter}
 							options={departmentsItems}
