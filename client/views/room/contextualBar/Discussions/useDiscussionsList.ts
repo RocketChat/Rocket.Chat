@@ -17,12 +17,6 @@ export const useDiscussionsList = (
 } => {
 	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
-	useEffect(() => {
-		if (discussionsList.options !== options) {
-			discussionsList.updateFilters(options);
-		}
-	}, [discussionsList, options]);
-
 	const getDiscussions = useEndpoint('GET', 'chat.getDiscussions');
 
 	const fetchMessages = useCallback(
