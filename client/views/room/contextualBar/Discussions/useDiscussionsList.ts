@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { IUser } from '../../../../../definition/IUser';
