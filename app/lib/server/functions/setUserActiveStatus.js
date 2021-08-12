@@ -42,10 +42,10 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 	// Users without username can't do anything, so there is no need to check for owned rooms
 	if (user.username != null && !active) {
 		const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+		// give omnichannel rooms a special treatment :)
 		const chatSubscribedRooms = subscribedRooms.filter(({ t }) => t !== 'l');
 		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');
 
-		console.log({ subscribedRooms, chatSubscribedRooms, livechatSubscribedRooms, confirmRelinquish });
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
 			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms);
 			throw new Meteor.Error('user-last-owner', '', rooms);
