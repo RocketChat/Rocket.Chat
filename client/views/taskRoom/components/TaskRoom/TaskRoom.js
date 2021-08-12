@@ -6,7 +6,7 @@ import TaskDetailsModal from '../../taskDetailsModal';
 import CreateTaskModal from '../CreateTaskModal';
 import Task from '../Task/Task';
 
-export default function TaskRoom({ rid, tasks, setTasks }) {
+export default function TaskRoom({ rid, tasks, userId }) {
 	const [sort, setSort] = useState(['', 'asc']);
 
 	const setModal = useSetModal();
@@ -40,7 +40,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 			sortedTasks.sort((a, b) => a.taskStatus > b.taskStatus)) ||
 			(sort[0] !== id && sortedTasks.sort((a, b) => a.taskStatus < b.taskStatus));
 		setSort([id, 'asc']);
-		setTasks(sortedTasks);
+		// setTasks(sortedTasks);
 	};
 
 	const handleTaskDetails = (task) => {
@@ -90,6 +90,7 @@ export default function TaskRoom({ rid, tasks, setTasks }) {
 							<Task
 								handleTaskDetails={() => handleTaskDetails(task)}
 								rid={rid}
+								following={task.replies && task.replies.includes(userId)}
 								title={task.title}
 								username={task.u && task.u.username}
 								taskId={task._id}

@@ -65,7 +65,6 @@ export default memo(function Task({
 			<MessageTemplate.Container mb='neg-x2'>
 				<UserAvatar username={username} className='rcx-message__avatar' size='x28' />
 			</MessageTemplate.Container>
-			{/* <button onClick={(e) => thred(e)}>Test</button> */}
 			<MessageTemplate.Container width='1px' mb='neg-x4' flexGrow={1}>
 				<MessageTemplate.Header>
 					<MessageTemplate.Username title={username}>{name}</MessageTemplate.Username>
@@ -76,7 +75,7 @@ export default memo(function Task({
 				</MessageTemplate.BodyClamp>
 			</MessageTemplate.Container>
 			<MessageTemplate.Container alignItems='center'>
-				{/* <Button
+				<Button
 					className={anchor}
 					small
 					square
@@ -89,7 +88,12 @@ export default memo(function Task({
 					aria-label={actionLabel}
 				>
 					<Icon name={button} size='x20' />
-				</Button> */}
+				</Button>
+				{(mention && <NotificationStatus.Me t={t} mb='x24' />) ||
+					(all && <NotificationStatus.All t={t} mb='x24' />) ||
+					(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
+			</MessageTemplate.Container>
+			<MessageTemplate.Container alignItems='center'>
 				<Button
 					className={anchor}
 					small
@@ -103,9 +107,6 @@ export default memo(function Task({
 				>
 					Details
 				</Button>
-				{(mention && <NotificationStatus.Me t={t} mb='x24' />) ||
-					(all && <NotificationStatus.All t={t} mb='x24' />) ||
-					(unread && <NotificationStatus.Unread t={t} mb='x24' />)}
 			</MessageTemplate.Container>
 			<Reply small ghost className={anchor} data-rid={rid} data-mid={taskId} onClick={thread}>
 				{t('Reply')}

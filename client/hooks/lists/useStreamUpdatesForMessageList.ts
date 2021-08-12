@@ -44,9 +44,9 @@ const createDeleteCriteria = (
 
 export const useStreamUpdatesForMessageList = (
 	messageList: MessageList,
-	taskList: TaskList,
 	uid: IUser['_id'] | null,
 	rid: IRoom['_id'] | null,
+	taskList?: TaskList,
 ): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToRoomTasks = useStream('room-tasks');
@@ -66,7 +66,7 @@ export const useStreamUpdatesForMessageList = (
 		);
 
 		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomTasksRidEvent>(rid, (task) => {
-			taskList.handle(task);
+			taskList?.handle(task);
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
