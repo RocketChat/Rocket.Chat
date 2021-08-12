@@ -8,10 +8,6 @@ import { Livechat } from '../../../livechat/server/lib/Livechat';
 type SubscribedRooms = {
 	rid: string;
 	t: string;
-	shouldBeRemoved: boolean;
-	shouldChangeOwner: boolean;
-	userIsLastOwner: boolean;
-	newOwner: any;
 }
 
 export const closeOmnichannelConversations = (user: IUser, subscribedRooms: SubscribedRooms[]): void => {
