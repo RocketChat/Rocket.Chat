@@ -17,7 +17,12 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
+    strategy:
+      matrix:
+        node-version: ["12.22.1"]
+        mongodb-version: ["3.6", "4.0", "4.2", "4.4","5.0"]
+    
     steps:
 
     - name: Github Info
@@ -118,9 +123,10 @@ jobs:
     - run: meteor npm run translation-check
 
     - name: Launch MongoDB
-      uses: wbari/start-mongoDB@v0.2
+      uses: wbari/start-mongoDB@v0.2w
       with:
-        mongoDBVersion: "5.0"
+        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=rs0
+
 
     - run: meteor npm run testunit
 
