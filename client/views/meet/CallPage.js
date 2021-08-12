@@ -6,6 +6,7 @@ import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { CallTime } from './CallTime';
 
 function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorName, agentName }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
@@ -56,6 +57,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 								},
 							});
 					}
+					status;
 					setStatus(data.callStatus);
 				}
 			});
@@ -74,6 +76,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 						backgroundColor='neutral-900'
 						overflow='hidden'
 						position='relative'
+						backgroundColor='#181B20'
 					>
 						<Box
 							position='absolute'
@@ -83,22 +86,21 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 								right: '2%',
 							}}
 							w='x200'
+							border='1px solid black'
+							padding='30px'
+							backgroundColor='#2F343D'
 						>
-							<div style={{ border: '1px solid black', padding: '30px' }}>
-								<UserAvatar username={agentName} className='rcx-message__avatar' size='x32' />
-							</div>
+							<UserAvatar username={agentName} className='rcx-message__avatar' size='x32' />
 						</Box>
-						<div style={{ marginTop: -180, padding: 20 }}>
-							<Box display='flex' align='center' justifyContent='center'>
-								<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
-							</Box>
+						<Box position='absolute' zIndex='1' style={{ top: '20%', right: '45%' }}>
+							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
 							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
 								{'Calling...'}
 							</p>
 							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
 								{visitorName}
 							</p>
-						</div>
+						</Box>
 					</Box>
 				</Flex.Container>
 			);
@@ -126,6 +128,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, visitorN
 						overflow='hidden'
 						position='relative'
 					>
+						<CallTime />
 						<Box
 							position='absolute'
 							zIndex='1'
