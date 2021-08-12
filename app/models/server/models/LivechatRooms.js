@@ -451,7 +451,7 @@ export class LivechatRooms extends Base {
 									$eq: ['$$roomId', '$rid'],
 								}, {
 									// this is similar to do { $exists: false }
-									$eq: ['$t', undefined],
+									$lte: ['$t', null],
 								}],
 							},
 						},
@@ -475,7 +475,7 @@ export class LivechatRooms extends Base {
 						servedBy: '$servedBy',
 						metrics: '$metrics',
 					},
-					messages: {
+					messagesCount: {
 						$sum: 1,
 					},
 				},
@@ -488,10 +488,9 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: '$messages',
+					msgs: '$messagesCount',
 				},
 			},
-
 		]);
 	}
 
