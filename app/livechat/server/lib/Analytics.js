@@ -4,8 +4,10 @@ import moment from 'moment';
 import { LivechatRooms } from '../../../models';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { Logger } from '../../../logger';
 
 const HOURS_IN_DAY = 24;
+const logger = new Logger('OmnichannelAnalytics');
 
 export const Analytics = {
 	getAgentOverviewData(options) {
@@ -14,13 +16,15 @@ export const Analytics = {
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 
+		logger.debug(`getAgentOverviewData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
+
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.error('livechat:getAgentOverviewData => Invalid dates');
+			logger.error('livechat:getAgentOverviewData => Invalid dates');
 			return;
 		}
 
 		if (!this.AgentOverviewData[name]) {
-			console.error(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ name } does NOT exist`);
+			logger.error(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ name } does NOT exist`);
 			return;
 		}
 
@@ -38,7 +42,7 @@ export const Analytics = {
 
 		// Check if function exists, prevent server error in case property altered
 		if (!this.ChartData[name]) {
-			console.error(`Method RocketChat.Livechat.Analytics.ChartData.${ name } does NOT exist`);
+			logger.error(`Method RocketChat.Livechat.Analytics.ChartData.${ name } does NOT exist`);
 			return;
 		}
 
@@ -47,8 +51,10 @@ export const Analytics = {
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 		const isSameDay = from.diff(to, 'days') === 0;
 
+		logger.debug(`getAnalyticsChartData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
+
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.error('livechat:getAnalyticsChartData => Invalid dates');
+			logger.error('livechat:getAnalyticsChartData => Invalid dates');
 			return;
 		}
 
@@ -103,13 +109,15 @@ export const Analytics = {
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
 		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 
+		logger.debug(`getAnalyticsOverviewData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
+
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.error('livechat:getAnalyticsOverviewData => Invalid dates');
+			logger.error('livechat:getAnalyticsOverviewData => Invalid dates');
 			return;
 		}
 
 		if (!this.OverviewData[name]) {
-			console.error(`Method RocketChat.Livechat.Analytics.OverviewData.${ name } does NOT exist`);
+			logger.error(`Method RocketChat.Livechat.Analytics.OverviewData.${ name } does NOT exist`);
 			return;
 		}
 
