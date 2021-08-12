@@ -132,7 +132,7 @@ jobs:
     - name: Launch MongoDB
       uses: wbari/start-mongoDB@v0.2
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version }} --replSet=mongo
+        mongoDBVersion: ${{ matrix.mongodb-version }}
 
 
     - run: meteor npm run testunit
