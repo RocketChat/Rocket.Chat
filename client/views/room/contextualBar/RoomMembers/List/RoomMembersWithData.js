@@ -20,6 +20,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const [state, setState] = useState({});
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
+	const isTeam = room.teamMain;
 
 	room.type = room.t;
 	room.rid = rid;
@@ -30,12 +31,10 @@ const RoomMembersWithData = ({ rid }) => {
 	const debouncedText = useDebouncedValue(text, 800);
 
 	const { membersList, loadMoreItems, reload } = useMembersList(
-		useMemo(() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }), [
-			rid,
-			type,
-			debouncedText,
-			room.t,
-		]),
+		useMemo(
+			() => ({ rid, type, limit: 50, debouncedText, roomType: room.t }),
+			[rid, type, debouncedText, room.t],
+		),
 	);
 
 	const { phase, items, itemCount: total } = useRecordList(membersList);
@@ -100,6 +99,7 @@ const RoomMembersWithData = ({ rid }) => {
 	return (
 		<RoomMembers
 			rid={rid}
+			isTeam={isTeam}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}

@@ -1,7 +1,5 @@
 export type LivechatRoomOnHoldEndpoint = {
-	POST: (
-		roomId: string,
-	) => {
+	POST: (roomId: string) => {
 		success: boolean;
 	};
 };

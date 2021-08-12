@@ -12,9 +12,10 @@ const TimeRangeFieldsAssembler = ({ onChange, daysOpen, daysTime, className }) =
 		onChange({ ...daysTime, [day]: { start, finish } });
 
 	const stableDaysOpen = useStableArray(daysOpen);
-	const daysList = useMemo(() => DAYS_OF_WEEK.filter((day) => stableDaysOpen.includes(day)), [
-		stableDaysOpen,
-	]);
+	const daysList = useMemo(
+		() => DAYS_OF_WEEK.filter((day) => stableDaysOpen.includes(day)),
+		[stableDaysOpen],
+	);
 
 	return (
 		<>

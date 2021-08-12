@@ -95,9 +95,10 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				: t('Passwords_do_not_match'),
 		[t, password, confirmationPassword],
 	);
-	const emailError = useMemo(() => (isEmail(email) ? undefined : 'error-invalid-email-address'), [
-		email,
-	]);
+	const emailError = useMemo(
+		() => (isEmail(email) ? undefined : 'error-invalid-email-address'),
+		[email],
+	);
 	const checkUsername = useDebouncedCallback(
 		async (username) => {
 			if (user.username === username) {

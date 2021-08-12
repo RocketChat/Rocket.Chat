@@ -5,7 +5,7 @@ import { settings } from '../../settings';
 Meteor.startup(function() {
 	settings.addGroup('Omnichannel');
 
-	settings.add('Livechat_enabled', false, {
+	settings.add('Livechat_enabled', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		public: true,

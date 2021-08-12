@@ -20,17 +20,17 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {
+	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | null> {
 		if (!id) {
-			return;
+			return null;
 		}
 
 		const businessHour = await this.BusinessHourRepository.findOneById(id);
 		if (!businessHour) {
-			return;
+			return null;
 		}
 
-		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { name: 1 } }).toArray();
+		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { projection: { name: 1 } }).toArray();
 		return businessHour;
 	}
 

@@ -332,10 +332,6 @@ Meteor.methods({
 			callbacks.run('afterSaveRoomSettings', room);
 		});
 
-		if (settings.hasOwnProperty('systemMessages')) {
-			Rooms.resetLastMessageById(rid);
-		}
-
 		return {
 			result: true,
 			rid: room._id,

@@ -55,11 +55,12 @@ function PrioritiesRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		prioritiesRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			prioritiesRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/priorities.list', query);

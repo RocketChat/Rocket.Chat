@@ -94,7 +94,9 @@ export const AuditPageBase = ({
 							{type === 'u' && (
 								<UsersTab errors={errors} users={users} onChangeUsers={onChangeUsers} />
 							)}
-							{type === 'd' && <DirectTab />}
+							{type === 'd' && (
+								<DirectTab errors={errors} users={users} onChangeUsers={onChangeUsers} />
+							)}
 							{type === 'l' && (
 								<VisitorsTab
 									errors={errors}
