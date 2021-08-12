@@ -285,16 +285,16 @@ export const Analytics = {
 				totalMessagesOnWeekday.set(weekday, totalMessagesOnWeekday.has(weekday) ? totalMessagesOnWeekday.get(weekday) + msgs : msgs);
 			};
 
-			for (let m = moment(from), daysProcessed = 0; daysProcessed < days; daysProcessed++) {
+			for (let m = moment.tz(from, timezone).startOf('day').utc(), daysProcessed = 0; daysProcessed < days; daysProcessed++) {
+				const clonedDate = m.clone();
 				const date = {
-					gte: m.clone(),
+					gte: clonedDate,
 					lt: m.add(1, 'days'),
 				};
-
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
 				totalConversations += result.length;
 
-				result.forEach(summarize(m));
+				result.forEach(summarize(clonedDate));
 			}
 
 			const busiestDay = this.getKeyHavingMaxValue(totalMessagesOnWeekday, '-'); // returns key with max value
@@ -305,7 +305,6 @@ export const Analytics = {
 			// iterate through all busiestDay in given date-range and find busiest hour
 			for (let m = moment.tz(from, timezone).day(busiestDay).startOf('day').utc(); m <= to; m.add(7, 'days')) {
 				if (m < from) { continue; }
-
 				for (let h = moment(m), currentHour = 0; currentHour < 24; currentHour++) {
 					const date = {
 						gte: h.clone(),
@@ -322,8 +321,8 @@ export const Analytics = {
 
 			const utcBusiestHour = this.getKeyHavingMaxValue(totalMessagesInHour, -1);
 			const busiestHour = {
-				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
-				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).add(1, 'hour').tz(timezone).format('hA') : '',
+				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
+				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
 
 			const data = [{

@@ -438,11 +438,24 @@ export class LivechatRooms extends Base {
 					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
+			{ $addFields: { roomId: '$_id' } },
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: '_id',
-					foreignField: 'rid',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+									// this is similar to do { $exists: false }
+									$eq: ['$t', undefined],
+								}],
+							},
+						},
+					}],
 					as: 'messages',
 				},
 			},
@@ -461,16 +474,9 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
-						msgs: '$msgs',
 					},
 					messages: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $ifNull: ['$messages.t', false] },
-								],
-							}, 1, 0],
-						},
+						$sum: 1,
 					},
 				},
 			},
@@ -482,7 +488,7 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+					msgs: '$messages',
 				},
 			},
 
