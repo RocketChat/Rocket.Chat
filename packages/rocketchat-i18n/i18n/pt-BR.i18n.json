@@ -2721,6 +2721,7 @@
   "Query": "Query",
   "Query_description": "Condições adicionais para determinar para quais usuários enviar e-mail. Usuários não inscritos são automaticamente removidos a partir da consulta. Deve ser um JSON válido. Exemplo: `{\"createdAt\": {\"$gt\": {\"$date\": \"2015-01-01T00: 00: 00.000Z\"}}}`",
   "Queue": "Fila",
+  "Queued": "Na Fila",
   "Queue_Time": "Tempo na fila",
   "quote": "citação",
   "Quote": "Citar",

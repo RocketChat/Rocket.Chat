@@ -3284,6 +3284,7 @@
   "Query_description": "Condiciones adicionales para determinar a que usuarios enviar el correo electrónico. Los usuarios que optaron por cancelar su suscripción serán eliminados de la consulta. Debe ser JSON valido. Ejemplo: \"{\"createdAt\":{\"$gt\":{\"$date\": \"2015-01-01T00:00:00.000Z\"}}}\"",
   "Query_is_not_valid_JSON": "La consulta no es JSON válido",
   "Queue": "Cola",
+  "Queued": "En Cola",
   "Queue_Time": "Tiempo de cola",
   "quote": "cita",
   "Quote": "Cita",
