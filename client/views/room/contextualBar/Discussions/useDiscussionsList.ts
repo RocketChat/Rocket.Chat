@@ -15,7 +15,7 @@ export const useDiscussionsList = (
 	initialItemCount: number;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const [discussionsList] = useState(() => new DiscussionsList(options));
+	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
 	useEffect(() => {
 		if (discussionsList.options !== options) {
