@@ -9,9 +9,10 @@ const HOURS_IN_DAY = 24;
 
 export const Analytics = {
 	getAgentOverviewData(options) {
-		const { departmentId, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
-		const from = moment.utc(fDate, 'YYYY-MM-DD');
-		const to = moment.utc(tDate, 'YYYY-MM-DD');
+		const { departmentId, utcOffset, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
+		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
 			console.error('livechat:getAgentOverviewData => Invalid dates');
@@ -146,10 +147,14 @@ export const Analytics = {
 		Total_messages(date, departmentId) {
 			let total = 0;
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ msgs }) => {
+			// we don't want to count visitor messages
+			const extraFilter = { $lte: ['$token', null] };
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray());
+			allConversations.map(({ msgs }) => {
 				if (msgs) {
 					total += msgs;
 				}
+				return null;
 			});
 
 			return total;
@@ -448,13 +453,13 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({
-				servedBy,
-			}) => {
-				if (servedBy) {
-					this.updateMap(agentConversations, servedBy.username, 1);
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }).toArray());
+			allConversations.map((room) => {
+				if (room.servedBy) {
+					this.updateMap(agentConversations, room.servedBy.username, 1);
 					total++;
 				}
+				return null;
 			});
 
 			agentConversations.forEach((value, key) => {	// calculate percentage
@@ -558,13 +563,17 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({
+			// we don't want to count visitor messages
+			const extraFilter = { $lte: ['$token', null] };
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray());
+			allConversations.map(({
 				servedBy,
 				msgs,
 			}) => {
 				if (servedBy) {
 					this.updateMap(agentMessages, servedBy.username, msgs);
 				}
+				return null;
 			});
 
 			agentMessages.forEach((value, key) => {	// calculate percentage
