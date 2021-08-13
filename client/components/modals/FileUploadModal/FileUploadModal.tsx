@@ -81,7 +81,7 @@ const FilePreviewModal = ({
 
 	return (
 		<Modal>
-			<form onSubmit={handleSubmit}>
+			<Box is='form' display='flex' flexDirection='column' height='100%' onSubmit={handleSubmit}>
 				<Modal.Header>
 					<Modal.Title>{t('FileUpload')}</Modal.Title>
 					<Modal.Close onClick={onClose} />
@@ -130,7 +130,7 @@ const FilePreviewModal = ({
 						</Button>
 					</ButtonGroup>
 				</Modal.Footer>
-			</form>
+			</Box>
 		</Modal>
 	);
 };
