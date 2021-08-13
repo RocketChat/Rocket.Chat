@@ -186,27 +186,27 @@ const CreateChannel = ({
 									: 'Tags increase visibility of Public Channels'}
 							</Field.Description>
 							{/* <PaginatedMultiSelectFiltered
-						filter={tagsFilter}
-						setFilter={setTagsFilter}
-						options={[
-							{
-								value: 'cooking',
-								label: 'cooking',
-							},
-							{
-								value: 'sports',
-								label: 'sports',
-							},
-							{
-								value: 'action',
-								label: 'action',
-							},
-						]}
-						value={values.tags}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={onChangeTags}
-					/>*/}
+								filter={tagsFilter}
+								setFilter={setTagsFilter}
+								options={[
+									{
+										value: 'cooking',
+										label: 'cooking',
+									},
+									{
+										value: 'sports',
+										label: 'sports',
+									},
+									{
+										value: 'action',
+									label: 'action',
+									},
+								]}
+								value={values.tags}
+								maxWidth='100%'
+								placeholder={t('Select_an_option')}
+								onChange={onChangeTags}
+							/> */}
 							<MultiSelect
 								options={tagsAvailable}
 								value={values.tags}
