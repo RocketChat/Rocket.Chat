@@ -1,10 +1,7 @@
-import { FilterQuery } from 'mongodb';
-import { TimeSync } from 'meteor/mizzao:timesync';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
-import { Match, check } from 'meteor/check';
+import { Match } from 'meteor/check';
 import s from 'underscore.string';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
 import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
@@ -13,7 +10,7 @@ import { settings } from '../../../settings';
 import { updateTask, sendTask, deleteTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
-import { hasAtLeastOnePermission, hasPermission, canSendMessage } from '../../../authorization/server';
+import { hasPermission, canSendMessage } from '../../../authorization/server';
 
 
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {
@@ -163,16 +160,6 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			task.ts = new Date();
 		}
 
-		// if (task.title) {
-		// 	const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(task.title);
-
-		// 	if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-		// 		throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-		// 			method: 'sendMessage',
-		// 		});
-		// 	}
-		// }
-
 		const user = Users.findOneById(uid, {
 			fields: {
 				username: 1,
@@ -237,8 +224,7 @@ API.v1.addRoute('taskRoom.followTask', { authRequired: true }, {
 			API.v1.failure('Not allowed');
 		}
 
-		const task = Tasks.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
-
+		const task = Promise.await(Tasks.findOneById(mid, { fields: { rid: 1, tmid: 1 } }));
 		if (!task) {
 			API.v1.failure('Invalid task');
 		}
@@ -248,9 +234,9 @@ API.v1.addRoute('taskRoom.followTask', { authRequired: true }, {
 			API.v1.failure('Not allowed to follow in this room');
 		}
 
-		Tasks.addThreadFollowerByThreadId({ tmid: task.tmid || task.id }, uid);
+		Tasks.addThreadFollowerByThreadId(task._id, uid);
 
-		return API.v1.success(true);
+		return API.v1.success(task);
 	},
 });
 
@@ -267,7 +253,7 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 			API.v1.failure('Not allowed');
 		}
 
-		const task = Tasks.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
+		const task = Promise.await(Tasks.findOneById(mid, { fields: { rid: 1, tmid: 1 } }));
 
 		if (!task) {
 			API.v1.failure('Invalid task');
@@ -278,11 +264,11 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 			API.v1.failure('Not allowed to follow in this room');
 		}
 
-		Subscriptions.removeUnreadThreadByRoomIdAndUserId({ rid: task.rid }, uid, { tmid: task.tmid || task.id });
+		Subscriptions.removeUnreadThreadByRoomIdAndUserId(task.rid, uid, task._id || task.tmid);
 
-		Tasks.removeThreadFollowerByThreadId({ tmid: task.tmid || task.id }, uid);
+		Tasks.removeThreadFollowerByThreadId(task.tmid || task._id, uid);
 
-		return API.v1.success(true);
+		return API.v1.success(task);
 	},
 });
 

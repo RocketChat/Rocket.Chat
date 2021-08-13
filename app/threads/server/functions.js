@@ -54,13 +54,11 @@ export const undoReply = ({ tmid }) => {
 	return Messages.updateThreadLastMessageAndCountByThreadId(tmid, ts, -1);
 };
 
-export const follow = ({ tmid, uid, task = false }) => {
+export const follow = ({ tmid, uid }) => {
 	if (!tmid || !uid) {
 		return false;
 	}
-	if (task) {
-		Tasks.addThreadFollowerByThreadId(tmid, uid);
-	}
+
 	Messages.addThreadFollowerByThreadId(tmid, uid);
 };
 

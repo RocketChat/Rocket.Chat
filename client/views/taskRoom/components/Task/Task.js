@@ -25,8 +25,6 @@ export default memo(function Task({
 	name = username,
 	ts,
 	replies,
-	participants,
-	handleFollowButton,
 	unread,
 	mention,
 	all,
@@ -34,11 +32,11 @@ export default memo(function Task({
 	rid,
 	title,
 	status,
+	setFollowing,
 	handleTaskDetails,
 	taskAssignee = [],
 	t = (e) => e,
 	formatDate = (e) => e,
-	tlm,
 	className = [],
 	...props
 }) {
@@ -83,7 +81,7 @@ export default memo(function Task({
 					ghost
 					data-following={following}
 					data-id={taskId}
-					onClick={handleTaskDetails}
+					onClick={() => setFollowing(following, taskId)}
 					title={actionLabel}
 					aria-label={actionLabel}
 				>
@@ -99,7 +97,6 @@ export default memo(function Task({
 					small
 					// flexShrink={0}
 					ghost
-					data-following={following}
 					data-id={taskId}
 					onClick={handleTaskDetails}
 					title={actionLabel}

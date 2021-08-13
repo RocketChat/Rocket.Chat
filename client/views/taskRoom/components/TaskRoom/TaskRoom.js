@@ -1,7 +1,9 @@
 import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 
 import { useSetModal } from '../../../../contexts/ModalContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import TaskDetailsModal from '../../taskDetailsModal';
 import CreateTaskModal from '../CreateTaskModal';
 import Task from '../Task/Task';
@@ -9,7 +11,31 @@ import Task from '../Task/Task';
 export default function TaskRoom({ rid, tasks, userId }) {
 	const [sort, setSort] = useState(['', 'asc']);
 
+	const followTask = useEndpointActionExperimental('POST', 'taskRoom.followTask');
+	const unfollowTask = useEndpointActionExperimental('POST', 'taskRoom.unfollowTask');
+
 	const setModal = useSetModal();
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const setFollowing = useCallback(
+		async (following, mid) => {
+			console.log(following);
+			try {
+				if (following) {
+					await unfollowTask({ mid });
+					return;
+				}
+
+				await followTask({ mid });
+			} catch (error) {
+				dispatchToastMessage({
+					type: 'error',
+					message: error,
+				});
+			}
+		},
+		[dispatchToastMessage, unfollowTask, followTask],
+	);
 
 	const handleCreate = () => {
 		setModal(
@@ -90,7 +116,8 @@ export default function TaskRoom({ rid, tasks, userId }) {
 							<Task
 								handleTaskDetails={() => handleTaskDetails(task)}
 								rid={rid}
-								following={task.replies && task.replies.includes(userId)}
+								following={!!(task.replies && task.replies.includes(userId))}
+								setFollowing={setFollowing}
 								title={task.title}
 								username={task.u && task.u.username}
 								taskId={task._id}
