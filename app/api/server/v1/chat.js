@@ -715,7 +715,6 @@ API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 				sort,
 			},
 		}));
-		console.log('REAL messages: ', messages);
 		return API.v1.success(messages);
 	},
 });
