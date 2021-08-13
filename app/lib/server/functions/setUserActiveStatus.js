@@ -51,7 +51,7 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
-		closeOmnichannelConversations(user._id, livechatSubscribedRooms);
+		closeOmnichannelConversations(user, livechatSubscribedRooms);
 		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
 	}
 
