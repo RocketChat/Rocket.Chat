@@ -247,12 +247,12 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 	return (
 		<Modal>
 			<Modal.Header>
-				<Modal.Title>{'TaskRoom_New_Title'}</Modal.Title>
+				<Modal.Title>{t('TaskRoom_New_Title')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='x24'>
-					<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
+					<Field.Label>{t('TaskRoom_New_Name_Label')}</Field.Label>
 					<Field.Row>
 						<TaskRoomNameInput
 							ref={focusRef}
@@ -266,14 +266,14 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24'>
 					<Field.Label>
-						{t('Teams_New_Description_Label')}{' '}
+						{t('TaskRoom_New_Description_Label')}{' '}
 						<Box is='span' color='neutral-600'>
 							({t('optional')})
 						</Box>
 					</Field.Label>
 					<Field.Row>
 						<TextInput
-							placeholder={t('Teams_New_Description_Placeholder')}
+							placeholder={t('TaskRoom_New_Description_Placeholder')}
 							value={description}
 							onChange={onChangeDescription}
 						/>
@@ -282,11 +282,11 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Teams_New_Private_Label')}</Field.Label>
+							<Field.Label>{t('Private')}</Field.Label>
 							<Field.Description>
 								{type
-									? t('Teams_New_Private_Description_Enabled')
-									: t('Teams_New_Private_Description_Disabled')}
+									? t('TaskRoom_New_Private_Description_Enabled')
+									: t('TaskRoom_New_Private_Description_Disabled')}
 							</Field.Description>
 						</Box>
 						<ToggleSwitch checked={type} onChange={onChangeType} />
@@ -295,8 +295,8 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 				<Field mbe='x24' disabled={!canChangeReadOnly}>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
-							<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
+							<Field.Label>{t('Read_only')}</Field.Label>
+							<Field.Description>{t('TaskRoom_New_Read_only_Description')}</Field.Description>
 						</Box>
 						<ToggleSwitch
 							checked={readOnly}
@@ -311,8 +311,8 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 							<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
 							<Field.Description>
 								{type
-									? t('Teams_New_Encrypted_Description_Enabled')
-									: t('Teams_New_Encrypted_Description_Disabled')}
+									? t('TaskRoom_New_Encrypted_Description_Enabled')
+									: t('TaskRoom_New_Encrypted_Description_Disabled')}
 							</Field.Description>
 						</Box>
 						<ToggleSwitch
@@ -325,15 +325,15 @@ const CreateTaskRoomModal: FC<CreateTaskRoomModalProps> = ({ onClose }) => {
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
 						<Box display='flex' flexDirection='column'>
-							<Field.Label>{t('Teams_New_Broadcast_Label')}</Field.Label>
-							<Field.Description>{t('Teams_New_Broadcast_Description')}</Field.Description>
+							<Field.Label>{t('TaskRoom_New_Broadcast_Label')}</Field.Label>
+							<Field.Description>{t('TaskRoom_New_Broadcast_Description')}</Field.Description>
 						</Box>
 						<ToggleSwitch checked={broadcast} onChange={onChangeBroadcast} />
 					</Box>
 				</Field>
 				<Field mbe='x24'>
 					<Field.Label>
-						{t('Teams_New_Add_members_Label')}{' '}
+						{t('Add_members')}{' '}
 						<Box is='span' color='neutral-600'>
 							({t('optional')})
 						</Box>
