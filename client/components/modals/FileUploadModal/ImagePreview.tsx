@@ -26,17 +26,15 @@ const ImagePreview = ({ url, file }: ImagePreviewProps): ReactElement => {
 	return (
 		<>
 			{loading && <PreviewSkeleton />}
-			{!loading && (
-				<Box
-					is='img'
-					src={url}
-					maxWidth='full'
-					style={{ objectFit: 'contain' }}
-					onLoad={handleLoad}
-					onError={handleError}
-					display={loading ? 'none' : 'initial'}
-				/>
-			)}
+			<Box
+				is='img'
+				src={url}
+				maxWidth='full'
+				style={{ objectFit: 'contain' }}
+				onLoad={handleLoad}
+				onError={handleError}
+				display={loading ? 'none' : 'initial'}
+			/>
 		</>
 	);
 };
