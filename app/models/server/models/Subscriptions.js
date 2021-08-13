@@ -1312,7 +1312,6 @@ export class Subscriptions extends Base {
 	}
 
 	removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert = false) {
-		console.log(tmid);
 		const update = {
 			$pull: {
 				tunread: tmid,

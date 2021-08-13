@@ -109,13 +109,14 @@ export const RoomManager = new function() {
 				const user = Meteor.user();
 				Tracker.nonreactive(() => Object.entries(openedRooms).forEach(([typeName, record]) => {
 					if (record.active !== true || record.ready === true) { return; }
+
 					const type = typeName.substr(0, 1);
 					const name = typeName.substr(1);
+
 					const room = roomTypes.findRoom(type, name, user);
+
 					if (room != null) {
 						if (record.streamActive !== true) {
-							console.log(room.taskRoomId);
-
 							record.rid = room._id;
 							record.streamActive = true;
 							RoomHistoryManager.getMoreIfIsEmpty(room._id);
@@ -153,10 +154,8 @@ export const RoomManager = new function() {
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 
 							if (room.taskRoomId) {
-								console.log('steam task');
 								RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
 								taskStream.on(record.rid, async (task) => {
-									console.log(task);
 									// Should not send task to room if room has not loaded all the current task
 									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 										return;
@@ -264,6 +263,7 @@ export const RoomManager = new function() {
 					unreadSince: new ReactiveVar(undefined),
 				};
 			}
+
 			openedRooms[typeName].lastSeen = new Date();
 
 			if (openedRooms[typeName].ready) {

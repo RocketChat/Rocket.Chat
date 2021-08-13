@@ -8,6 +8,7 @@ import * as NotificationStatus from '../../../../components/Message/Notification
 import { followStyle, anchor } from '../../../../components/Message/helpers/followSyle';
 import RawText from '../../../../components/RawText';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { renderMessageBody } from '../../../../lib/renderMessageBody';
 import * as MessageTemplate from '../../../room/components/MessageTemplate';
 
 function isIterable(obj) {

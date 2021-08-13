@@ -35,7 +35,6 @@ export function withData(Component) {
 		);
 
 		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(options, userId);
-		console.log(initialItemCount);
 		const { phase, error, items: threads, itemCount: totalItemCount } = useRecordList(threadsList);
 
 		const handleTextChange = useCallback((event) => {

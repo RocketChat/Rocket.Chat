@@ -1,5 +1,7 @@
 import { Flex, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import toastr from 'toastr';
 
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
@@ -19,14 +21,15 @@ export default function TaskRoom({ rid, tasks, userId }) {
 
 	const setFollowing = useCallback(
 		async (following, mid) => {
-			console.log(following);
 			try {
 				if (following) {
 					await unfollowTask({ mid });
+					toastr.success(TAPi18n.__('You_unfollowed_this_task'));
 					return;
 				}
 
 				await followTask({ mid });
+				toastr.success(TAPi18n.__('You_followed_this_task'));
 			} catch (error) {
 				dispatchToastMessage({
 					type: 'error',

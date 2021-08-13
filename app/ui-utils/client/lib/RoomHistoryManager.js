@@ -96,6 +96,7 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 			},
 		}, { multi: true });
 	}
+
 	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
@@ -249,6 +250,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
+
 		this.unqueue();
 
 		let previousHeight;
@@ -386,6 +388,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		if (room.hasMoreNext.curValue !== true) {
 			return;
 		}
+
 		await this.queue();
 		const instance = Blaze.getView($('.messages-box .wrapper')[0]).templateInstance();
 		instance.atBottom = false;
@@ -517,6 +520,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	getMoreIfIsEmpty(rid) {
 		const room = this.getRoom(rid);
+
 		if (room.loaded === undefined) {
 			return this.getMore(rid);
 		}

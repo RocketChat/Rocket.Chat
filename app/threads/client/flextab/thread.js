@@ -46,7 +46,6 @@ Template.thread.helpers({
 	mainMessage() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
-
 		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
@@ -55,6 +54,7 @@ Template.thread.helpers({
 	messages() {
 		const { Threads, state } = Template.instance();
 		const tmid = state.get('tmid');
+
 		return Threads.find({ tmid, _id: { $ne: tmid } }, { sort });
 	},
 	messageContext() {
@@ -239,6 +239,7 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
+
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
