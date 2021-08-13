@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { Rooms } from '../../app/models';
+import { Rooms, Messages } from '../../app/models';
 
 Meteor.methods({
 	removeOldTags(tags) {
@@ -13,8 +13,14 @@ Meteor.methods({
 			});
 		}
 
-		const result = Rooms.unsetTagsByName(tags);
+		const user = Meteor.user();
 
-		return result;
+		const cursor = Rooms.findRoomsWithSpecifiedTags(tags);
+		const rooms = cursor.fetch();
+
+		for (const room of rooms) {
+			Rooms.unsetTagsById(room._id, tags);
+			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('server_tags_updated', room._id, room.tags.filter((tag) => !tags.includes(tag)), user);
+		}
 	},
 });

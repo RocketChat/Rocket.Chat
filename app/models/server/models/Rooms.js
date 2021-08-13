@@ -1140,6 +1140,18 @@ export class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
+	unsetAllTagsById(_id) {
+		const query = { _id };
+
+		const update = {
+			$unset: {
+				tags: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	unsetTagsByName(tags) {
 		const query = {
 			$and: [
@@ -1155,6 +1167,40 @@ export class Rooms extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	unsetTagsById(_id, tags) {
+		const query = { _id };
+
+		const update = {
+			$pullAll: {
+				tags,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	findRoomsWithTags() {
+		const query = {
+			$and: [
+				{ t: 'c' },
+				{ tags: { $exists: true } },
+			],
+		};
+
+		return this.find(query);
+	}
+
+	findRoomsWithSpecifiedTags(tags) {
+		const query = {
+			$and: [
+				{ t: 'c' },
+				{ tags: { $in: tags } },
+			],
+		};
+
+		return this.find(query);
 	}
 
 	setAnnouncementById(_id, announcement, announcementDetails) {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../app/models';
+import { Rooms, Messages } from '../../app/models';
 
 Meteor.methods({
 	removeTags() {
@@ -10,8 +10,14 @@ Meteor.methods({
 			});
 		}
 
-		const result = Rooms.unsetAllTags();
+		const user = Meteor.user();
 
-		return result;
+		const cursor = Rooms.findRoomsWithTags();
+		const rooms = cursor.fetch();
+
+		for (const room of rooms) {
+			Rooms.unsetAllTagsById(room._id);
+			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('server_discovery_disabled', room._id, '', user);
+		}
 	},
 });

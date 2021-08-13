@@ -87,6 +87,24 @@ Meteor.startup(() => {
 	});
 
 	MessageTypes.registerType({
+		id: 'server_discovery_disabled',
+		system: true,
+		message: 'server_discovery_disabled',
+	});
+
+	MessageTypes.registerType({
+		id: 'server_tags_updated',
+		system: true,
+		message: 'server_tags_updated',
+		data(message: IMessage) {
+			return {
+				// eslint-disable-next-line @typescript-eslint/camelcase
+				room_tags: escapeHTML(message.msg || `(${t('None').toLowerCase()})`),
+			};
+		},
+	});
+
+	MessageTypes.registerType({
 		id: 'room_changed_description',
 		system: true,
 		message: 'room_changed_description',
