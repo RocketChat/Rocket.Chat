@@ -53,7 +53,7 @@ const FilePreviewModal = ({
 		e.preventDefault();
 		if (!name) {
 			return dispatchToastMessage({
-				type: 'success',
+				type: 'error',
 				message: t('error-the-field-is-required', { field: t('Name') }),
 			});
 		}
