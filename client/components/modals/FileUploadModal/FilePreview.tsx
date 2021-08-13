@@ -11,6 +11,9 @@ export enum FilePreviewType {
 }
 
 const getFileType = (fileType: File['type']): FilePreviewType | undefined => {
+	if (!fileType) {
+		return;
+	}
 	for (const type of Object.values(FilePreviewType)) {
 		if (fileType.indexOf(type) > -1) {
 			return type;
