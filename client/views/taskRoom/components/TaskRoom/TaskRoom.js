@@ -11,7 +11,7 @@ import CreateTaskModal from '../CreateTaskModal';
 import Task from '../Task/Task';
 
 export default function TaskRoom({ rid, tasks, userId }) {
-	const [sort, setSort] = useState(['', 'asc']);
+	const [sortType, setSortType] = useState('');
 
 	const followTask = useEndpointActionExperimental('POST', 'taskRoom.followTask');
 	const unfollowTask = useEndpointActionExperimental('POST', 'taskRoom.unfollowTask');
@@ -54,23 +54,47 @@ export default function TaskRoom({ rid, tasks, userId }) {
 
 	useEffect(() => {
 		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
-	});
+	}, [tasks.id]);
 
-	const sortTasks = (id) => {
-		const sortedTasks = [...tasks];
-		(id === 'Date' && sort[0] === id && sortedTasks.sort((a, b) => a.ts > b.ts)) ||
-			(sort[0] !== id && sortedTasks.sort((a, b) => a.ts < b.ts));
-		(id === 'Creator' &&
-			sort[0] === id &&
-			sortedTasks.sort((a, b) => a.u.username > b.u.username)) ||
-			(sort[0] !== id && sortedTasks.sort((a, b) => a.u.username < b.u.username));
-		(id === 'Status' &&
-			sort[0] === id &&
-			sortedTasks.sort((a, b) => a.taskStatus > b.taskStatus)) ||
-			(sort[0] !== id && sortedTasks.sort((a, b) => a.taskStatus < b.taskStatus));
-		setSort([id, 'asc']);
-		// setTasks(sortedTasks);
+	const sortTasks = () => {
+		const sortByDate = () => {
+			if (sortType === 'date') {
+				tasks.sort((a, b) => a.ts < b.ts);
+				setSortType('');
+			} else {
+				tasks.sort((a, b) => a.ts > b.ts);
+				setSortType('date');
+			}
+		};
+
+		const sortByStatus = () => {
+			if (sortType === 'status') {
+				tasks.sort((a, b) => a.taskStatus < b.taskStatus);
+				setSortType('');
+			} else {
+				tasks.sort((a, b) => a.taskStatus > b.taskStatus);
+				setSortType('status');
+			}
+		};
+
+		const sortByUser = () => {
+			if (sortType === 'user') {
+				tasks.sort((a, b) => a.u.username < b.u.username);
+				setSortType('');
+			} else {
+				tasks.sort((a, b) => a.u.username > b.u.username);
+				setSortType('user');
+			}
+		};
+
+		return {
+			sortByDate,
+			sortByStatus,
+			sortByUser,
+		};
 	};
+
+	const { sortByDate, sortByStatus, sortByUser } = sortTasks();
 
 	const handleTaskDetails = (task) => {
 		setModal(
@@ -93,13 +117,13 @@ export default function TaskRoom({ rid, tasks, userId }) {
 	return (
 		<div className='wrapper'>
 			<ButtonGroup align='center'>
-				<Button ghost info onClick={() => sortTasks('Creator')}>
+				<Button ghost info onClick={sortByUser}>
 					{'Sort by Creator'}
 				</Button>
-				<Button ghost info onClick={() => sortTasks('Date')}>
+				<Button ghost info onClick={sortByDate}>
 					{'Sort by Date'}
 				</Button>
-				<Button ghost info onClick={() => sortTasks('Status')}>
+				<Button ghost info onClick={sortByStatus}>
 					{'Sort by Status'}
 				</Button>
 				<Button primary onClick={handleCreate}>
