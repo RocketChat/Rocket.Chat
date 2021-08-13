@@ -26,7 +26,7 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 		return false;
 	}
 	// Avoid preview if file size bigger than 10mb
-	if (file.size > 10 * 1000000) {
+	if (file.size > 10000000) {
 		return false;
 	}
 	if (!Object.values(FilePreviewType).includes(fileType)) {
