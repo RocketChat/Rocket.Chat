@@ -22,7 +22,7 @@ addAction('bbb_video', ({ room }) => {
 	const enabledTeams = useSetting('bigbluebutton_enable_teams');
 
 	const groups = useStableArray([
-		enabledDirect && 'direct',
+		enabledDirect && 'direct', 'direct_multiple',
 		enabledGroup && 'group',
 		enabledTeams && 'team',
 		enabledChannel && 'channel',
