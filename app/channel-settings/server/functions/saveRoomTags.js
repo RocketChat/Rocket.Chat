@@ -10,6 +10,12 @@ export const saveRoomTags = function(rid, roomTags, user, sendMessage = true) {
 		});
 	}
 
+	if (!Match.test(roomTags, [String])) {
+		throw new Meteor.Error('invalid-tags', 'Invalid tags', {
+			function: 'RocketChat.saveRoomTags',
+		});
+	}
+
 	const update = Rooms.setTagsById(rid, roomTags);
 	if (update && sendMessage) {
 		if (roomTags.length) {
