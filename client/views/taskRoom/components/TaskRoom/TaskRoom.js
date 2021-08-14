@@ -54,7 +54,7 @@ export default function TaskRoom({ rid, tasks, userId }) {
 
 	useEffect(() => {
 		tasksWrapper.current.scrollTo(30, tasksWrapper.current.scrollHeight);
-	}, [tasks.id]);
+	}, [tasks.id, tasks.length]);
 
 	const sortTasks = () => {
 		const sortByDate = () => {

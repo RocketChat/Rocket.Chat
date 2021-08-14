@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
-import { Random } from 'meteor/random';
 import s from 'underscore.string';
 import toastr from 'toastr';
 
-import { ChatMessage, ChatTask } from '../../../models';
+import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
@@ -32,11 +31,6 @@ Meteor.methods({
 		if (settings.get('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
-		console.log(message);
-		const temp = message._id;
-		message._id = Random.id();
-		ChatTask.update({ _id: message.tmid }, { $set: { tcount: Math.random() } });
-		message._id = temp;
 		message = callbacks.run('beforeSaveMessage', message);
 		promises.run('onClientMessageReceived', message).then(function(message) {
 			ChatMessage.insert(message);
