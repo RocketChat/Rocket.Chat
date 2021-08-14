@@ -23,6 +23,8 @@ function CallPage({
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [isCameraOn, setIsCameraOn] = useState(false);
 	const [isRemoteMobileDevice, setIsRemoteMobileDevice] = useState(false);
+	const [isRemoteCameraOn, setIsRemoteCameraOn] = useState(false);
+
 	const t = useTranslation();
 	useEffect(() => {
 		if (visitorToken) {
@@ -58,6 +60,8 @@ function CallPage({
 					Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
 						isMobileDevice: isMobileDevice(),
 					});
+				} else if (type === 'cameraStatus') {
+					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
 			Notifications.notifyRoom(roomId, 'webrtc', 'deviceType', {
@@ -94,6 +98,8 @@ function CallPage({
 					setStatus(data.callStatus);
 				} else if (type === 'deviceType' && data.isMobileDevice) {
 					setIsRemoteMobileDevice(true);
+				} else if (type === 'cameraStatus') {
+					setIsRemoteCameraOn(data.isCameraOn);
 				}
 			});
 			setIsAgentActive(true);
@@ -107,6 +113,7 @@ function CallPage({
 		}
 		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
 		setIsCameraOn(!isCameraOn);
+		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
 	const closeWindow = () => {
@@ -289,7 +296,6 @@ function CallPage({
 								<Icon name='phone-off' size={iconSize} color='white' />
 							</Button>
 						</ButtonGroup>
-						<OngoingCallDuration />
 						<video
 							id='remoteVideo'
 							autoPlay
@@ -297,8 +303,22 @@ function CallPage({
 							style={{
 								width: isRemoteMobileDevice ? '45%' : '100%',
 								transform: 'scaleX(-1)',
+								display: isRemoteCameraOn ? 'block' : 'none',
 							}}
 						></video>
+						<Box
+							position='absolute'
+							zIndex='1'
+							style={{ top: '20%', right: '45%', display: isRemoteCameraOn ? 'none' : 'block' }}
+						>
+							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
+							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
+								<OngoingCallDuration />
+							</p>
+							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+								{visitorName}
+							</p>
+						</Box>
 					</Box>
 				</Flex.Container>
 			);
