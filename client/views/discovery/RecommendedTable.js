@@ -5,6 +5,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { roomTypes } from '../../../app/utils/client';
 import FilterByText from '../../components/FilterByText';
 import GenericTable from '../../components/GenericTable';
+import NoResults from '../../components/GenericTable/NoResults';
 import MarkdownText from '../../components/MarkdownText';
 import TagMenu from '../../components/TagCard/TagCard';
 import { useRoute } from '../../contexts/RouterContext';
@@ -66,6 +67,7 @@ function RecommendedTable() {
 
 	const channelRoute = useRoute('channel');
 	const discoveryRoute = useRoute('discovery');
+	const accountRoute = useRoute('account');
 
 	const { value: data = {} } = useEndpointData('discovery', query);
 
@@ -160,8 +162,17 @@ function RecommendedTable() {
 		},
 		[formatDate, mediaQuery, onClick, onClickTag],
 	);
+	console.log(data.result);
 
-	return (
+	return data.result !== undefined && !data.result.length ? (
+		<NoResults
+			icon='hash'
+			title={t('No_Channels_To_Recommend')}
+			description={t('No_Channels_To_Recommend-description')}
+			buttonTitle={t('Set_Tags_In_Preferences')}
+			buttonAction={() => accountRoute.push({ group: 'preferences' })}
+		></NoResults>
+	) : (
 		<GenericTable
 			header={header}
 			renderFilter={({ onChange, ...props }) => (
