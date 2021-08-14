@@ -104,7 +104,6 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		});
 		canSendMessage(task.rid, { uid: user._id, ...user });
 
-		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (task.attachments && task.attachments.length > 0 && task.attachments[0].description !== undefined) {
 			task.attachments = task.attachments;
 			task.attachments[0].description = task.title;
@@ -174,7 +173,8 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		try {
 			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-			sendTask(user, task, room, false);
+			// sendTask(user, task, room, false);
+			const task = Meteor.call('sendTask', task);
 		} catch (error) {
 			return API.v1.failure('An error occured while creating a task');
 		}
