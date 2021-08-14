@@ -138,7 +138,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		const uid = this.userId;
 
 		if (!uid || s.trim(task.title) === '') {
-			return false;
+			return API.v1.failure('task title is missing');
 		}
 		if (task.tshow && !task.tmid) {
 			return API.v1.failure('tshow provided but missing tmid');

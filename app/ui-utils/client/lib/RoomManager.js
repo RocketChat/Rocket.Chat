@@ -119,7 +119,7 @@ export const RoomManager = new function() {
 						if (record.streamActive !== true) {
 							record.rid = room._id;
 							record.streamActive = true;
-							RoomHistoryManager.getMoreIfIsEmpty(room._id);
+							!room.taskRoomId && RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							msgStream.on(record.rid, async (msg) => {
 								// Should not send message to room if room has not loaded all the current messages
 								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
