@@ -4,10 +4,21 @@ import React, { useEffect, useState } from 'react';
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
+import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import './CallPage.css';
+import { OngoingCallDuration } from './OngoingCallDuration';
 
-function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }) {
+function CallPage({
+	roomId,
+	visitorToken,
+	visitorId,
+	status,
+	setStatus,
+	layout,
+	visitorName,
+	agentName,
+}) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [isCameraOn, setIsCameraOn] = useState(false);
@@ -114,11 +125,51 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }
 
 	switch (status) {
 		case 'ringing':
-			// Todo Deepak
 			return (
-				<h1 style={{ color: 'white', textAlign: 'center', marginTop: 250 }}>
-					Waiting for the visitor to join ...
-				</h1>
+				<Flex.Container direction='column' justifyContent='center'>
+					<Box
+						width='full'
+						minHeight='sh'
+						textAlign='center'
+						backgroundColor='neutral-900'
+						overflow='hidden'
+						position='relative'
+						backgroundColor='#181B20'
+					>
+						<Box
+							position='absolute'
+							zIndex='1'
+							style={{
+								top: '5%',
+								right: '2%',
+							}}
+							w='x200'
+							backgroundColor='#2F343D'
+						>
+							<UserAvatar
+								style={{
+									width: '100%',
+									height: '130px',
+									paddingTop: '20%',
+									paddingLeft: '35%',
+									paddingRight: '20%',
+								}}
+								username={agentName}
+								className='rcx-message__avatar'
+								size='x48'
+							/>
+						</Box>
+						<Box position='absolute' zIndex='1' style={{ top: '20%', right: '45%' }}>
+							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
+							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
+								{'Calling...'}
+							</p>
+							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+								{visitorName}
+							</p>
+						</Box>
+					</Box>
+				</Flex.Container>
 			);
 		case 'declined':
 			return (
@@ -152,6 +203,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }
 								right: '2%',
 							}}
 							className='Self_Video'
+							backgroundColor='#2F343D'
 						>
 							<video
 								id='localVideo'
@@ -161,8 +213,23 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }
 								style={{
 									width: '100%',
 									transform: 'scaleX(-1)',
+									display: isCameraOn ? 'block' : 'none',
 								}}
 							></video>
+							<UserAvatar
+								style={{
+									width: '100%',
+									height: '130px',
+									paddingTop: '20%',
+									paddingLeft: '35%',
+									paddingRight: '20%',
+									display: isCameraOn ? 'none' : 'block',
+								}}
+								alignItems='center'
+								username={agentName}
+								className='rcx-message__avatar'
+								size='x48'
+							/>
 						</Box>
 						<ButtonGroup
 							position='absolute'
@@ -222,6 +289,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }
 								<Icon name='phone-off' size={iconSize} color='white' />
 							</Button>
 						</ButtonGroup>
+						<OngoingCallDuration />
 						<video
 							id='remoteVideo'
 							autoPlay
