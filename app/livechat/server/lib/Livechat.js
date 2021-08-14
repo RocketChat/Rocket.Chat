@@ -1200,10 +1200,13 @@ export const Livechat = {
 		};
 		LivechatVisitors.updateById(contactId, updateUser);
 	},
-	updateCallStatus(callId, rid, status, user = null) {
+	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' && user) {
-			return updateMessage({ _id: callId, msg: '', actionLinks: [], endTs: new Date() }, user);
+			return updateMessage({ _id: callId, msg: 'ended', actionLinks: [], endTs: new Date() }, user);
+		}
+		if (status === 'declined') {
+			return updateMessage({ _id: callId, msg: 'declined', actionLinks: [], endTs: new Date() }, user);
 		}
 	},
 };
