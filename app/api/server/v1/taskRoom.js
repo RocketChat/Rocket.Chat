@@ -19,7 +19,7 @@ API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'create-taskRoom')) {
 			return API.v1.unauthorized();
 		}
-		const { name, type, members, room, owner } = this.bodyParams;
+		const { name, type, members, room } = this.bodyParams;
 
 		if (!name) {
 			return API.v1.failure('Body param "name" is required');
@@ -32,7 +32,6 @@ API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 			},
 			room,
 			members,
-			owner,
 		}));
 
 		return API.v1.success({ taskRoom });
@@ -44,7 +43,7 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 		const { taskId } = this.queryParams;
 
 		if (!taskId) {
-			return API.v1.failure('task-does-not-exist');
+			return API.v1.failure('Missing id for the task');
 		}
 
 		// permission

@@ -1,22 +1,14 @@
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper.js';
-import { createUser, login } from '../../data/users.helper';
 import { password } from '../../data/user';
 
-describe('[Teams]', () => {
+describe('[TaskRoom]', () => {
 	before((done) => getCredentials(done));
 
 	const community = `community${ Date.now() }`;
-	const publicTeam = null;
-	let privateTeam = null;
-	const publicRoom = null;
-	const publicRoom2 = null;
-	const privateRoom = null;
-	const privateRoom2 = null;
 	let testUser;
-	let testUser2;
 	const testUserCredentials = {};
 
 	before('Create test users', (done) => {
@@ -33,8 +25,7 @@ describe('[Teams]', () => {
 				request.post(api('users.create'))
 					.set(credentials)
 					.send({ email, name: username, username, password: username })
-					.end((err, res) => {
-						testUser2 = res.body.user;
+					.end(() => {
 						done();
 					});
 			});
@@ -84,7 +75,6 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('taskRoomId');
-					privateTeam = res.body.team;
 				})
 				.then(() => done())
 				.catch(done);
@@ -116,7 +106,7 @@ describe('[Teams]', () => {
 				.send({
 					task: {
 						title: 'Test title',
-						description: 'Test description',
+						taskDescription: 'Test description',
 						taskAssignee: '@UserTest',
 						taskStatus: 'Team A',
 					},
@@ -126,6 +116,30 @@ describe('[Teams]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'The \'rid\' property on the task object is missing.');
+					expect(res.body).to.have.nested.property('task.title', 'Test title');
+					expect(res.body).to.have.nested.property('task.taskDescription', 'Test description');
+					expect(res.body).to.have.nested.property('task.taskAssignee', '@UserTest');
+					expect(res.body).to.have.nested.property('task.taskStatus', 'Team A');
+				})
+				.end(done);
+		});
+
+		it('should throw an error when the required param \'title\' is not sent', (done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					task: {
+						title: '',
+						description: 'Test description',
+						taskAssignee: '@UserTest',
+						taskStatus: 'Team A',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'task title is missing');
 				})
 				.end(done);
 		});
@@ -180,11 +194,13 @@ describe('[Teams]', () => {
 			});
 
 			it('Creating a read-only channel', (done) => {
-				request.post(api('channels.create'))
+				request.post(api('taskRoom.create'))
 					.set(credentials)
 					.send({
 						name: `readonlychannel${ +new Date() }`,
-						readOnly: true,
+						room: {
+							readOnly: true,
+						},
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -194,20 +210,20 @@ describe('[Teams]', () => {
 					})
 					.end(done);
 			});
-			it('should send a message when the user is the owner of a readonly channel', (done) => {
-				request.post(api('chat.sendMessage'))
+			it('should create a task when the user is the owner of a readonly channel', (done) => {
+				request.post(api('taskRoom.createTask'))
 					.set(credentials)
 					.send({
-						message: {
+						task: {
 							rid: readOnlyChannel._id,
-							msg: 'Sample message',
+							title: 'Test title',
 						},
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').and.to.be.an('object');
+						expect(res.body).to.have.property('task').and.to.be.an('object');
 					})
 					.end(done);
 			});
@@ -228,13 +244,13 @@ describe('[Teams]', () => {
 					});
 			});
 
-			it('should fail to send message when the user lacks permission', (done) => {
-				request.post(api('chat.sendMessage'))
+			it('should fail to create a task when the user lacks permission', (done) => {
+				request.post(api('taskRoom.createTask'))
 					.set(userCredentials)
 					.send({
-						message: {
+						task: {
 							rid: readOnlyChannel._id,
-							msg: 'Sample blocked message',
+							title: 'Test title',
 						},
 					})
 					.expect('Content-Type', 'application/json')
@@ -246,64 +262,82 @@ describe('[Teams]', () => {
 					.end(done);
 			});
 
-			it('should send a message when the user has permission to send messages on readonly channels', async () => {
+			it('should create a task when the user has permission to send messages on readonly channels', async () => {
 				await updatePermission('post-readonly', ['user']);
 
-				await request.post(api('chat.sendMessage'))
+				await request.post(api('taskRoom.createTask'))
 					.set(userCredentials)
 					.send({
-						message: {
+						task: {
 							rid: readOnlyChannel._id,
-							msg: 'Sample message overwriting readonly status',
+							title: 'Test Title',
 						},
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').and.to.be.an('object');
+						expect(res.body).to.have.property('task').and.to.be.an('object');
 					});
 
 				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
 			});
 		});
 
-		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
-			request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						rid: 'GENERAL',
-						msg: 'Sample message',
-						alias: 'Gruggy',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Not enough permission');
-				})
-				.end(done);
-		});
+		describe('Follow and unfollow task', () => {
+			const task = {};
+			task._id = `id-${ Date.now() }`;
+			before((done) => {
+				request.post(api('taskRoom.createTask'))
+					.set(credentials)
+					.send({
+						task: {
+							_id: task._id,
+							rid: 'GENERAL',
+							title: 'Test title',
+							taskDescription: 'Test Descr',
+							taskAssignee: '@TestUser',
+							taskStatus: 'Urgent',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
 
-		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
-			request.post(api('chat.sendMessage'))
-				.set(credentials)
-				.send({
-					message: {
-						rid: 'GENERAL',
-						msg: 'Sample message',
-						avatar: 'http://site.com/logo.png',
-					},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Not enough permission');
-				})
-				.end(done);
+			it('should follow a task', (done) => {
+				request.post(api('taskRoom.followTask'))
+					.set(credentials)
+					.send({
+						mid: task._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('task').and.to.be.an('object');
+					})
+					.end(done);
+			});
+			it('should unfollow a task', (done) => {
+				request.post(api('taskRoom.unfollowTask'))
+					.set(credentials)
+					.send({
+						task: {
+							mid: task._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('task').and.to.be.an('object');
+					})
+					.end(done);
+			});
 		});
 	});
 });
