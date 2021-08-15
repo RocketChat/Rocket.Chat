@@ -23,13 +23,13 @@ const TaskDetailsModal = ({
 			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Title')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Title')}</Field.Label>
 					<Field.Row>
 						<TextInput value={values.taskTitle} onChange={handlers.handleTaskTitle} />
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Task_Description')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Description')}</Field.Label>
 					<Field.Row>
 						<TextAreaInput
 							rows={3}
@@ -40,11 +40,11 @@ const TaskDetailsModal = ({
 					</Field.Row>
 				</Field>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Assignee')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Assignee')}</Field.Label>
 					<UserAutoCompleteMultiple value={values.taskAssignee} onChange={onChangeAssignee} />
 				</Field>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Status')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Status')}</Field.Label>
 					<Field.Row>
 						<TextInput value={values.taskStatus} onChange={handlers.handleTaskStatus} />
 					</Field.Row>

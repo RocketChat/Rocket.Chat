@@ -22,7 +22,7 @@ const CreateTaskModal = ({
 			</Modal.Header>
 			<Modal.Content>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Title')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Title')}</Field.Label>
 					<Field.Description>
 						{t("Put a title so you know what it's about at a glance")}
 					</Field.Description>
@@ -31,7 +31,7 @@ const CreateTaskModal = ({
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Task_Description')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Description')}</Field.Label>
 					<Field.Description>
 						{t('A description that explains precisely what is to be done')}
 					</Field.Description>
@@ -46,14 +46,14 @@ const CreateTaskModal = ({
 					</Field.Row>
 				</Field>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Assignee')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Assignee')}</Field.Label>
 					<Field.Description>
 						{t('Who is/are the person(s) responsible for carrying out this task')}
 					</Field.Description>
 					<UserAutoCompleteMultiple value={values.taskAssignee} onChange={onChangeAssignee} />
 				</Field>
 				<Field mbe='x24'>
-					<Field.Label>{t('Task_Status')}</Field.Label>
+					<Field.Label>{t('TaskRoom_Task_Status')}</Field.Label>
 					<Field.Description>
 						{t(
 							'What the task status is. This is a category of the task, which will allow you to group them by',
