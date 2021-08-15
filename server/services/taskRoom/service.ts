@@ -35,7 +35,7 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 		this.TasksModel = new TasksRaw(db.collection('rocketchat_task'));
 	}
 
-	async create(uid: string, { taskRoom, room = { name: taskRoom.name, extraData: {} }, members, owner }: ITaskRoomCreateParams): Promise<ITaskRoom> {
+	async create(uid: string, { taskRoom, room = { name: taskRoom.name, extraData: {} }, members }: ITaskRoomCreateParams): Promise<ITaskRoom> {
 		const existingRoom = await this.RoomsModel.findOneByName(taskRoom.name, { projection: { _id: 1 } });
 		if (existingRoom && existingRoom._id !== room.id) {
 			throw new Error('room-name-already-exists');
@@ -74,7 +74,7 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 				},
 			};
 
-			const createdRoom = await Room.create(owner || uid, newRoom);
+			const createdRoom = await Room.create(uid, newRoom);
 			const roomId = createdRoom._id;
 
 			taskRoomData.roomId = roomId;
