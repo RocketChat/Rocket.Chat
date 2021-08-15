@@ -45,8 +45,6 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 
 const onDeleteTaskStream = (task) => {
 	ChatTask.remove({ _id: task._id });
-
-	// remove thread refenrece from deleted message
 	ChatTask.update({ tmid: task._id }, { $unset: { tmid: 1 } }, { multi: true });
 };
 
@@ -61,7 +59,7 @@ const onDeleteTaskBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, user
 	if (users && users.length) {
 		query['u.username'] = { $in: users };
 	}
-	ChatMessage.remove(query);
+	ChatTask.remove(query);
 };
 
 export const RoomManager = new function() {

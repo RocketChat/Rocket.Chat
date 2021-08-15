@@ -478,7 +478,6 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 
 		let cursor;
 		if (room.taskRoomId) {
-			console.log('here');
 			cursor = Tasks.find(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
