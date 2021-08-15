@@ -173,12 +173,12 @@ const CreateChannel = ({
 							<ToggleSwitch checked={values.broadcast} onChange={onChangeBroadcast} />
 						</Box>
 					</Field>
-					<Field mbe='x24'>
+					<Field>
 						<Field.Label>{`${t('Add_members')} (${t('optional')})`}</Field.Label>
 						<UserAutoCompleteMultiple value={values.users} onChange={onChangeUsers} />
 					</Field>
 					{discoveryEnabled && (
-						<Field mbe='x24'>
+						<Field>
 							<Field.Label>{`${t('Add Tags')} (${t('optional')})`}</Field.Label>
 							<Field.Description>
 								{values.type
