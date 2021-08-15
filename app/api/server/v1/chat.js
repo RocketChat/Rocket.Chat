@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Messages } from '../../../models';
+import { Messages, Tasks } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
@@ -458,7 +458,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
-		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1 } });
+		const room = Rooms.findOneById(rid, { fields: { t: 1, _id: 1, taskRoomId: 1 } });
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
@@ -475,13 +475,24 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		};
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
-		const cursor = Messages.find(threadQuery, {
-			sort: sort || { tlm: -1 },
-			skip: offset,
-			limit: count,
-			fields,
-		});
 
+		let cursor;
+		if (room.taskRoomId) {
+			console.log('here');
+			cursor = Tasks.find(threadQuery, {
+				sort: sort || { tlm: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			});
+		} else {
+			cursor = Messages.find(threadQuery, {
+				sort: sort || { tlm: -1 },
+				skip: offset,
+				limit: count,
+				fields,
+			});
+		}
 		const total = cursor.count();
 
 		const threads = cursor.fetch();
