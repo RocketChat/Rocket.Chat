@@ -6,7 +6,6 @@ import {
 	MultiSelect,
 	/** @ts-ignore */
 	RadioButton,
-	InputBox,
 	Divider,
 	TextAreaInput,
 	Button,
@@ -14,19 +13,20 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useMemo } from 'react';
 
-import { ISubscription } from '../../../definition/ISubscription';
-import Page from '../../components/Page/Page';
-import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
-import { useEndpointData } from '../../hooks/useEndpointData';
-import { useForm } from '../../hooks/useForm';
+import { ISubscription } from '../../../../definition/ISubscription';
+import Page from '../../../components/Page/Page';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useForm } from '../../../hooks/useForm';
+import DateTimeRow from './DateTimeRow';
 
 interface IEndpointSubscriptionsGet {
 	value?: { update: Array<ISubscription> };
 }
 
-interface IFormValues {
+interface IReceivedFormValues {
 	isEnabled: boolean;
 	customMessage: string;
 	startDate: string;
@@ -34,43 +34,74 @@ interface IFormValues {
 	roomIds: string[];
 }
 
-const defaultFormValues: IFormValues = {
-	isEnabled: false,
-	customMessage: '',
-	startDate: '',
-	endDate: '',
-	roomIds: [],
-};
+interface IFormValues {
+	isEnabled: boolean;
+	customMessage: string;
+	startDateString: string;
+	startTimeString: string;
+	endDateString: string;
+	endTimeString: string;
+	roomIds: string[];
+}
 
-function getInitialFormValues(receivedFormValues: IFormValues): IFormValues {
-	if (!receivedFormValues) {
-		return { ...defaultFormValues };
-	}
-	const formattedStartDate = receivedFormValues.startDate
+function getISODateStringFromDateAndTime(date: string, time: string): string {
+	const dateArray = date.split('-').map((d) => parseInt(d, 10));
+	const timeArray =
+		time.split(':').length > 1 ? time.split(':').map((t) => parseInt(t, 10)) : [0, 0];
+
+	const dateObject = new Date(
+		dateArray[0],
+		dateArray[1] - 1,
+		dateArray[2],
+		timeArray[0],
+		timeArray[1],
+	);
+
+	return !isNaN(dateObject as any) ? dateObject.toISOString() : new Date().toISOString();
+}
+
+function getInitialFormValues(receivedFormValues: IReceivedFormValues): IFormValues {
+	const startDateObject = receivedFormValues.startDate
 		? new Date(receivedFormValues.startDate)
 		: new Date();
-	formattedStartDate.setMinutes(
-		formattedStartDate.getMinutes() - formattedStartDate.getTimezoneOffset(),
-	);
-	const formattedEndDate = receivedFormValues.endDate
+
+	const startDateString = startDateObject.toISOString().substr(0, 10);
+	const startTimeString = startDateObject.toTimeString().substr(0, 5);
+
+	const endDateObject = receivedFormValues.endDate
 		? new Date(receivedFormValues.endDate)
 		: new Date();
-	formattedEndDate.setMinutes(formattedEndDate.getMinutes() - formattedEndDate.getTimezoneOffset());
+
+	const endDateString = endDateObject.toISOString().substr(0, 10);
+	const endTimeString = endDateObject.toTimeString().substr(0, 5);
+
+	if (!receivedFormValues) {
+		return {
+			isEnabled: false,
+			startDateString,
+			startTimeString,
+			endDateString,
+			endTimeString,
+			customMessage: '',
+			roomIds: [],
+		};
+	}
 
 	return {
-		...defaultFormValues,
 		isEnabled: !!receivedFormValues.isEnabled,
 		customMessage: receivedFormValues.customMessage,
 		roomIds: receivedFormValues.roomIds ?? [],
-		startDate: formattedStartDate.toISOString().slice(0, 16) ?? '',
-		endDate: formattedEndDate.toISOString().slice(0, 16) ?? '',
+		startDateString,
+		startTimeString,
+		endDateString,
+		endTimeString,
 	};
 }
 
 function OutOfOfficeForm({
 	receivedOutOfOfficeValues,
 }: {
-	receivedOutOfOfficeValues: IFormValues;
+	receivedOutOfOfficeValues: IReceivedFormValues;
 }): JSX.Element {
 	const t = useTranslation() as any;
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -79,10 +110,25 @@ function OutOfOfficeForm({
 		getInitialFormValues(receivedOutOfOfficeValues) as any,
 	);
 
-	const { isEnabled, roomIds, customMessage, startDate, endDate }: IFormValues = values as any;
+	const {
+		isEnabled,
+		roomIds,
+		customMessage,
+		startDateString,
+		startTimeString,
+		endDateString,
+		endTimeString,
+	}: IFormValues = values as any;
 
-	const { handleIsEnabled, handleCustomMessage, handleStartDate, handleEndDate, handleRoomIds } =
-		handlers;
+	const {
+		handleIsEnabled,
+		handleCustomMessage,
+		handleStartDateString,
+		handleStartTimeString,
+		handleEndDateString,
+		handleEndTimeString,
+		handleRoomIds,
+	} = handlers;
 
 	const toggleOutOfOffice = useEndpointAction(
 		'POST',
@@ -92,10 +138,18 @@ function OutOfOfficeForm({
 				isEnabled,
 				roomIds,
 				customMessage,
-				startDate: new Date(startDate).toISOString(),
-				endDate: new Date(endDate).toISOString(),
+				startDate: getISODateStringFromDateAndTime(startDateString, startTimeString),
+				endDate: getISODateStringFromDateAndTime(endDateString, endTimeString),
 			}),
-			[roomIds, customMessage, startDate, endDate, isEnabled],
+			[
+				roomIds,
+				customMessage,
+				isEnabled,
+				startDateString,
+				startTimeString,
+				endDateString,
+				endTimeString,
+			],
 		),
 	);
 
@@ -159,32 +213,17 @@ function OutOfOfficeForm({
 						<>
 							<Divider />
 							<FieldGroup>
-								<Field>
-									<Field.Label>{t('Start Date')}</Field.Label>
-									<Field.Row>
-										<InputBox
-											type='datetime-local'
-											flexGrow={1}
-											h='x20'
-											value={startDate}
-											onChange={handleStartDate}
-										/>
-									</Field.Row>
-									<Field.Hint>{t('The date when Out of Office will be enabled.')}</Field.Hint>
-								</Field>
-								<Field>
-									<Field.Label>{t('End Date')}</Field.Label>
-									<Field.Row>
-										<InputBox
-											type='datetime-local'
-											flexGrow={1}
-											h='x20'
-											value={endDate}
-											onChange={handleEndDate}
-										/>
-									</Field.Row>
-									<Field.Hint>{t('The date when Out of Office will be disabled.')}</Field.Hint>
-								</Field>
+								<DateTimeRow
+									label={t('Start Date')}
+									dateTime={{ date: startDateString, time: startTimeString }}
+									handleDateTime={{ date: handleStartDateString, time: handleStartTimeString }}
+								/>
+
+								<DateTimeRow
+									label={t('End Date')}
+									dateTime={{ date: endDateString, time: endTimeString }}
+									handleDateTime={{ date: handleEndDateString, time: handleEndTimeString }}
+								/>
 							</FieldGroup>
 							<FieldGroup marginBlock='x16'>
 								<Field>

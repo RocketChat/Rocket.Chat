@@ -26,6 +26,9 @@ async function handlePostMessage(
 	const foundOutOfOfficeRoom: { userIds: string[]; _id: string } = OutOfOfficeRooms.findOne({ roomId: room._id }, { fields: { userIds: 1 } });
 
 	if (!foundOutOfOfficeRoom || foundOutOfOfficeRoom.userIds.length === 0) {
+		if (foundOutOfOfficeRoom?._id) {
+			OutOfOfficeRooms.removeById(foundOutOfOfficeRoom._id);
+		}
 		return message;
 	}
 

@@ -47,5 +47,6 @@ export const {
 		pathGroup: 'outofoffice',
 		i18nLabel: 'Out of Office',
 		icon: 'customize',
+		permissionGranted: () => settings.get('Out_Of_Office_Enabled'),
 	},
 ]);

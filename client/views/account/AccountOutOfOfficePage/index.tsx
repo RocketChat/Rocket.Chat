@@ -1,8 +1,8 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import React, { ReactNode } from 'react';
 
-import { useEndpointData } from '../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../lib/asyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import OutOfOfficeForm from './AccountOutOfOfficeForm';
 
 function OutOfOfficePage(): ReactNode {
