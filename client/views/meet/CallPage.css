@@ -1,0 +1,11 @@
+.Off {
+	color: #ffffff !important;
+	border-color: #2f343d !important;
+	background-color: #2f343d !important;
+}
+
+.On {
+	color: #000000 !important;
+	border-color: #ffffff !important;
+	background-color: #ffffff !important;
+}
