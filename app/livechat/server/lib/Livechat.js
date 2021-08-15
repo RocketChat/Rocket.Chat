@@ -1202,11 +1202,8 @@ export const Livechat = {
 	},
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
-		if (status === 'ended' && user) {
-			return updateMessage({ _id: callId, msg: 'ended', actionLinks: [], endTs: new Date() }, user);
-		}
-		if (status === 'declined') {
-			return updateMessage({ _id: callId, msg: 'declined', actionLinks: [], endTs: new Date() }, user);
+		if (status === 'ended' || status === 'declined') {
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], endTs: new Date() }, user);
 		}
 	},
 };
