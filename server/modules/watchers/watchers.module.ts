@@ -151,10 +151,10 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 				const trash = await Messages.trashFindOneById<Pick<IMessage, 'u' | 'rid' | 'file'>>(id, { projection: { u: 1, rid: 1, file: 1 } });
 				const message = trash;
 				const room = trash?.rid ? await Rooms.findOneById<IRoom>(trash.rid, { projection: roomFields }) : undefined;
-				if (message?.file) {
+				if (room?.t === 'e' && message?.file) {
 					Uploads.deleteOneById(message.file._id);
 				}
-				Messages.trashFindByIdAndRemove(id);
+				if (room?.t === 'e') { Messages.trashFindByIdAndRemove(id); }
 				if (room?.t === 'e' && message) { broadcast('watch.messages', { clientAction, message }); }
 				break;
 			}
