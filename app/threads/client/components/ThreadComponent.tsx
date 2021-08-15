@@ -20,7 +20,7 @@ import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/T
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
+const useThreadMessage = (tmid: string, room: IRoom): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
 	const getMessageParsed = useCallback<(params: Parameters<typeof getMessage>[0]) => Promise<IMessage>>(async (params) => {
@@ -33,7 +33,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid });
+			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid, taskRoomId: room.taskRoomId || '' });
 
 			if (!msg || computation.stopped) {
 				return;
@@ -51,7 +51,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 		return (): void => {
 			computation.stop();
 		};
-	}, [getMessageParsed, tmid]);
+	}, [getMessageParsed, tmid, room]);
 
 	return message;
 };
@@ -69,7 +69,7 @@ const ThreadComponent: FC<{
 }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
-	const threadMessage = useThreadMessage(mid);
+	const threadMessage = useThreadMessage(mid, room);
 
 	const followTask = useEndpointActionExperimental('POST', 'taskRoom.followTask');
 	const unfollowTask = useEndpointActionExperimental('POST', 'taskRoom.unfollowTask');

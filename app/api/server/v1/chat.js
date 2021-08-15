@@ -86,12 +86,13 @@ API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 			return API.v1.failure('The "msgId" query parameter must be provided.');
 		}
 
-		if (this.queryParams.msgId.includes('taskId:')) {
+		const { taskRoomId } = this.queryParams;
+
+		if (taskRoomId) {
 			let task;
-			const taskId = this.queryParams.msgId.split(':')[1];
 
 			Meteor.runAsUser(this.userId, () => {
-				task = Meteor.call('getSingleTask', taskId);
+				task = Meteor.call('getSingleTask', this.queryParams.msgId);
 			});
 
 			if (!task) {

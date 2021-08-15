@@ -47,7 +47,7 @@ export default memo(function Task({
 		e.stopPropagation();
 		FlowRouter.setParams({
 			tab: 'thread',
-			context: `taskId:${taskId}`,
+			context: taskId,
 		});
 	};
 
