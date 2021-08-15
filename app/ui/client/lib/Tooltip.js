@@ -45,11 +45,11 @@ document.body.addEventListener('mouseover', (() => {
 		timeout = setTimeout(() => {
 			const element = e.target.title || e.dataset?.title ? e.target : e.target.closest('[title], [data-title]');
 			if (element) {
-				element.dataset.title = element.dataset.title || element.title;
+				element.dataset.title = element.title || element.dataset.title;
 				element.removeAttribute('title');
 				openToolTip(element.dataset.title, element);
 			}
-		}, 1000);
+		}, 300);
 		closeTooltip();
 	};
 })());

@@ -51,9 +51,11 @@ function ContactNewEdit({ id, data, close }) {
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
-		getInitialValues(data),
-	);
+	const {
+		values,
+		handlers,
+		hasUnsavedChanges: hasUnsavedChangesContact,
+	} = useForm(getInitialValues(data));
 
 	const eeForms = useSubscription(formsSubscription);
 

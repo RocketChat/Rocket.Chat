@@ -1,9 +1,9 @@
 import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import DepartmentAutoComplete from '../DepartmentAutoComplete';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -31,7 +31,7 @@ const useOptions = (type) => {
 const AnalyticsPage = () => {
 	const t = useTranslation();
 	const [type, setType] = useState('Conversations');
-	const [departmentId, setDepartmentId] = useState(null);
+	const [department, setDepartment] = useState(null);
 	const [dateRange, setDateRange] = useState({ start: null, end: null });
 	const [chartName, setChartName] = useState();
 
@@ -59,19 +59,20 @@ const AnalyticsPage = () => {
 							<Label mb='x4'>{t('Type')}</Label>
 							<Select flexShrink={0} options={typeOptions} value={type} onChange={setType} />
 						</Box>
-						<Box display='flex' mi='x4' flexGrow={1} flexDirection='column'>
+						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
-							<DepartmentAutoComplete
-								flexShrink={0}
+							<AutoCompleteDepartment
+								value={department}
+								onChange={setDepartment}
 								placeholder={t('All')}
-								value={departmentId}
-								onChange={setDepartmentId}
+								label={t('All')}
+								onlyMyDepartments
 							/>
 						</Box>
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
 					<Box>
-						<Overview type={type} dateRange={dateRange} departmentId={departmentId} />
+						<Overview type={type} dateRange={dateRange} departmentId={department?.value} />
 					</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inline='x2'>
@@ -89,7 +90,7 @@ const AnalyticsPage = () => {
 							w='66%'
 							h='100%'
 							chartName={chartName}
-							departmentId={departmentId}
+							departmentId={department?.value}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
@@ -101,7 +102,7 @@ const AnalyticsPage = () => {
 							p='x10'
 							mis='x4'
 						>
-							<AgentOverview type={chartName} dateRange={dateRange} departmentId={departmentId} />
+							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department} />
 						</Box>
 					</Box>
 				</Margins>

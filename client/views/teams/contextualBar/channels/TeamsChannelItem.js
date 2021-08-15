@@ -16,8 +16,8 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 
 	const [showButton, setShowButton] = useState();
 
-	const canRemoveTeamChannel = usePermission('remove-team-channel');
-	const canEditTeamChannel = usePermission('edit-team-channel');
+	const canRemoveTeamChannel = usePermission('remove-team-channel', rid);
+	const canEditTeamChannel = usePermission('edit-team-channel', rid);
 	const canDeleteTeamChannel = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();

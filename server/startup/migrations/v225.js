@@ -4,8 +4,8 @@ import { Settings, Users } from '../../../app/models/server';
 Migrations.add({
 	version: 225,
 	up() {
-		const hideAvatarsSetting = Settings.findById('Accounts_Default_User_Preferences_hideAvatars');
-		const hideAvatarsSidebarSetting = Settings.findById('Accounts_Default_User_Preferences_sidebarHideAvatar');
+		const hideAvatarsSetting = Settings.findOneById('Accounts_Default_User_Preferences_hideAvatars');
+		const hideAvatarsSidebarSetting = Settings.findOneById('Accounts_Default_User_Preferences_sidebarHideAvatar');
 
 		Settings.removeById('Accounts_Default_User_Preferences_sidebarShowDiscussion');
 

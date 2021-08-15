@@ -136,6 +136,163 @@ describe('[Teams]', () => {
 		});
 	});
 
+	describe('/teams.convertToChannel', () => {
+		let testTeam;
+		let channelToEraseId;
+		let channelToKeepId;
+		const teamName = `test-team-convert-to-channel-${ Date.now() }`;
+		const channelToEraseName = `${ teamName }-channelToErase`;
+		const channelToKeepName = `${ teamName }-channelToKeep`;
+		before('Create test team', (done) => {
+			request.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 1,
+				})
+				.end((err, res) => {
+					testTeam = res.body.team;
+					done();
+				});
+		});
+
+		before('create channel (to erase after its team is converted to a channel)', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channelToEraseName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channelToEraseId = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channelToEraseName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				})
+				.then(() => done());
+		});
+
+		before('add first channel to team', (done) => {
+			request.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channelToEraseId],
+					teamId: testTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				})
+				.then(() => done())
+				.catch(done);
+		});
+
+		before('create channel (to keep after its team is converted to a channel)', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: channelToKeepName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					channelToKeepId = res.body.channel._id;
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', channelToKeepName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				})
+				.then(() => done());
+		});
+
+		before('add second channel to team', (done) => {
+			request.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({
+					rooms: [channelToKeepId],
+					teamId: testTeam._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms');
+					expect(res.body.rooms[0]).to.have.property('teamId', testTeam._id);
+					expect(res.body.rooms[0]).to.not.have.property('teamDefault');
+				})
+				.then(() => done());
+		});
+
+		it('should convert the team to a channel, delete the specified room and move the other back to the workspace', (done) => {
+			request.post(api('teams.convertToChannel'))
+				.set(credentials)
+				.send({
+					teamName,
+					roomsToRemove: [channelToEraseId],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.then(() => {
+					request.get(api('channels.info'))
+						.set(credentials)
+						.query({
+							roomId: channelToEraseId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', false);
+							expect(response.body).to.have.property('error');
+							expect(response.body.error).to.include('[error-room-not-found]');
+						});
+				})
+				.then(() => {
+					request.get(api('channels.info'))
+						.set(credentials)
+						.query({
+							roomId: channelToKeepId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('channel');
+							expect(response.body.channel).to.have.property('_id', channelToKeepId);
+							expect(response.body.channel).to.not.have.property('teamId');
+						});
+				})
+				.then(() => {
+					request.get(api('channels.info'))
+						.set(credentials)
+						.query({
+							roomId: testTeam.roomId,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((response) => {
+							expect(response.body).to.have.property('success', true);
+							expect(response.body).to.have.property('channel');
+							expect(response.body.channel).to.have.property('_id', testTeam.roomId);
+							expect(response.body.channel).to.not.have.property('teamId');
+							expect(response.body.channel).to.not.have.property('teamMain');
+						});
+				})
+				.then(() => done())
+				.catch(done);
+		});
+	});
+
 	describe('/teams.addMembers', () => {
 		let testTeam;
 		before('Create test team', (done) => {

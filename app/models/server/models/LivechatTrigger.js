@@ -6,6 +6,8 @@ import { Base } from './_Base';
 export class LivechatTrigger extends Base {
 	constructor() {
 		super('livechat_trigger');
+
+		this.tryEnsureIndex({ enabled: 1 });
 	}
 
 	updateById(_id, data) {

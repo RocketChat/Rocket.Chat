@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import RemoveUsersFirstStep from './RemoveUsersFirstStep';
@@ -20,35 +20,30 @@ const BaseRemoveUsersModal = ({
 }) => {
 	const [step, setStep] = useState(currentStep);
 
-	const [deletedRooms, setDeletedRooms] = useState({});
-	const [keptRooms, setKeptRooms] = useState({});
+	const [selectedRooms, setSelectedRooms] = useState({});
 
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_DELETE));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));
 
 	const canViewUserRooms = usePermission('view-all-team-channels');
 
-	const onChangeRoomSelection = useMutableCallback((room) => {
-		if (deletedRooms[room._id]) {
-			setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: undefined }));
-			return;
-		}
-		setDeletedRooms((deletedRooms) => ({ ...deletedRooms, [room._id]: room }));
-	});
+	const eligibleRooms = rooms.filter(({ isLastOwner }) => !isLastOwner);
+
+	const onChangeRoomSelection = useCallback((room) => {
+		setSelectedRooms((selectedRooms) => {
+			if (selectedRooms[room._id]) {
+				delete selectedRooms[room._id];
+				return { ...selectedRooms };
+			}
+			return { ...selectedRooms, [room._id]: room };
+		});
+	}, []);
 
 	const onToggleAllRooms = useMutableCallback(() => {
-		if (Object.values(deletedRooms).filter(Boolean).length === 0) {
-			return setDeletedRooms(Object.fromEntries(rooms.map((room) => [room._id, room])));
+		if (Object.values(selectedRooms).filter(Boolean).length === 0) {
+			return setSelectedRooms(Object.fromEntries(eligibleRooms.map((room) => [room._id, room])));
 		}
-		setDeletedRooms({});
-	});
-
-	const onSelectRooms = useMutableCallback(() => {
-		const keptRooms = Object.fromEntries(
-			rooms.filter((room) => !deletedRooms[room._id]).map((room) => [room._id, room]),
-		);
-		setKeptRooms(keptRooms);
-		onContinue();
+		setSelectedRooms({});
 	});
 
 	if (step === STEPS.CONFIRM_DELETE || !canViewUserRooms) {
@@ -57,9 +52,8 @@ const BaseRemoveUsersModal = ({
 				onConfirm={onConfirm}
 				onClose={onClose}
 				onCancel={rooms?.length > 0 ? onReturn : onCancel}
-				deletedRooms={deletedRooms}
+				deletedRooms={selectedRooms}
 				rooms={rooms}
-				keptRooms={keptRooms}
 				username={username}
 			/>
 		);
@@ -67,16 +61,16 @@ const BaseRemoveUsersModal = ({
 
 	return (
 		<RemoveUsersFirstStep
-			onConfirm={onSelectRooms}
+			onConfirm={onContinue}
 			onClose={onClose}
 			onCancel={onCancel}
 			rooms={rooms}
 			params={{}}
-			selectedRooms={deletedRooms}
+			selectedRooms={selectedRooms}
 			onToggleAllRooms={onToggleAllRooms}
 			// onChangeParams={(...args) => console.log(args)}
 			onChangeRoomSelection={onChangeRoomSelection}
-			eligibleRoomsLength={rooms?.length}
+			eligibleRoomsLength={eligibleRooms.length}
 		/>
 	);
 };

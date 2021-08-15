@@ -4,17 +4,22 @@ import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 
-const query = (term = '', enabled = false) => ({
-	selector: JSON.stringify({ term, ...(enabled && { conditions: { enabled } }) }),
+const query = (term = '', enabled = false, onlyMyDepartments = false) => ({
+	selector: JSON.stringify({
+		term,
+		...(enabled && { conditions: { enabled } }),
+	}),
+	onlyMyDepartments,
 });
 
 const DepartmentAutoComplete = (props) => {
-	const { enabled } = props;
+	const { enabled, onlyMyDepartments = false } = props;
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'livechat/department.autocomplete',
-		useMemo(() => query(filter, enabled), [enabled, filter]),
+		useMemo(() => query(filter, enabled, onlyMyDepartments), [onlyMyDepartments, enabled, filter]),
 	);
+
 	const options = useMemo(
 		() =>
 			(data &&

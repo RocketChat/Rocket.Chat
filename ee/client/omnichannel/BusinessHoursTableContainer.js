@@ -10,7 +10,11 @@ const BusinessHoursTableContainer = () => {
 	const t = useTranslation();
 	const [params, setParams] = useState(() => ({ current: 0, itemsPerPage: 25, text: '' }));
 
-	const { value: data, phase: state, reload } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData(
 		`livechat/business-hours.list?count=${params.itemsPerPage}&offset=${params.current}&name=${params.text}`,
 	);
 

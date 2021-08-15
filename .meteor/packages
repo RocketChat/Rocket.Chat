@@ -17,8 +17,8 @@ check@1.3.1
 ddp-rate-limiter@1.0.9
 ddp-common@1.4.0
 dynamic-import@0.6.0
-ecmascript@0.15.0
-typescript@4.1.2
+ecmascript@0.15.1
+typescript@4.2.2
 ejson@1.1.1
 email@2.0.0
 fastclick@1.0.13
@@ -26,7 +26,7 @@ http@1.4.2
 logging@1.2.0
 meteor-base@1.4.0
 mobile-experience@1.1.0
-mongo@1.10.1
+mongo@1.11.0
 random@1.2.0
 rate-limit@1.0.9
 reactive-dict@1.3.0
@@ -62,16 +62,16 @@ pauli:accounts-linkedin
 raix:handlebar-helpers
 raix:ui-dropped-event
 
-rocketchat:tap-i18n
+rocketchat:tap-i18n@1.10.1
 underscore@1.0.10
 littledata:synced-cron
 
 edgee:slingshot
 jalik:ufs-local@1.0.2
-accounts-base@1.8.0
+accounts-base@1.9.0
 accounts-oauth@1.2.0
 autoupdate@1.7.0
-babel-compiler@7.6.0
+babel-compiler@7.6.1
 google-oauth@1.3.0
 htmljs
 less
@@ -82,7 +82,7 @@ oauth2@1.3.0
 routepolicy@1.1.0
 sha@1.0.9
 templating
-webapp@1.10.0
+webapp@1.10.1
 webapp-hashing@1.1.0
 rocketchat:oauth2-server
 rocketchat:i18n

@@ -153,6 +153,12 @@ const restart = (): void => {
 
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
 	new Promise((resolve) => {
+		const user = store.has(uid) && store.get(uid);
+
+		if (user) {
+			return resolve(user);
+		}
+
 		const callback: EventHandlerOf<ExternalEvents, UserPresence['_id']> = (args): void => {
 			resolve(args);
 			stop(uid, callback);

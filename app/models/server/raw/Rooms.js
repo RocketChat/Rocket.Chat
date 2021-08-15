@@ -183,6 +183,35 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: roomIds,
+				},
+			}],
+			prid: { $exists: false },
+		};
+
+		return this.find(query, options);
+	}
+
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
@@ -207,6 +236,7 @@ export class RoomsRaw extends BaseRaw {
 			$unset: {
 				teamId: '',
 				teamDefault: '',
+				teamMain: '',
 			},
 		};
 

@@ -41,7 +41,8 @@
 	},
 	"exclude": [
 		"./.meteor/**",
-		"./packages/**"
+		"./packages/**",
+		"./imports/client",
 		// "./ee/server/services/**"
 		// "node_modules"
 	]

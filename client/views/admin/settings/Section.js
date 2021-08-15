@@ -21,9 +21,10 @@ function Section({ children, groupId, hasReset = true, help, sectionName, solo }
 		),
 	);
 
-	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [
-		editableSettings,
-	]);
+	const changed = useMemo(
+		() => editableSettings.some(({ changed }) => changed),
+		[editableSettings],
+	);
 
 	const canReset = useMemo(
 		() =>

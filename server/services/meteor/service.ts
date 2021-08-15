@@ -4,6 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
+import { metrics } from '../../../app/metrics';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
@@ -16,7 +17,7 @@ import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager'
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { IUser } from '../../../definition/IUser';
 import { matrixBroadCastActions } from '../../stream/streamBroadcast';
-import { integrations } from '../../../app/integrations/server/lib/triggerHandler';
+import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
@@ -219,17 +220,17 @@ export class MeteorService extends ServiceClass implements IMeteor {
 			switch (clientAction) {
 				case 'inserted':
 					if (data.type === 'webhook-outgoing') {
-						integrations.triggerHandler.addIntegration(data);
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
 					if (data.type === 'webhook-outgoing') {
-						integrations.triggerHandler.removeIntegration(data);
-						integrations.triggerHandler.addIntegration(data);
+						triggerHandler.removeIntegration(data);
+						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'removed':
-					integrations.triggerHandler.removeIntegration({ _id: id });
+					triggerHandler.removeIntegration({ _id: id });
 					break;
 			}
 		});
@@ -237,6 +238,14 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		this.onEvent('watch.emailInbox', async () => {
 			configureEmailInboxes();
 		});
+
+		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+			this.onEvent('watch.messages', ({ message }) => {
+				if (message?._updatedAt) {
+					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+				}
+			});
+		}
 	}
 
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {

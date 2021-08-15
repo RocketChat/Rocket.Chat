@@ -215,7 +215,7 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const { _id: rid } = room;
+	const { _id: rid, departmentId: department } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid, { fields: { _id: 1, status: 1 } });
 	if (!inquiry) {
 		return null;
@@ -226,7 +226,7 @@ export const getLivechatQueueInfo = async (room) => {
 		return null;
 	}
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
 
 	if (!inq) {
 		return null;

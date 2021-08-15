@@ -71,12 +71,10 @@ function AdminUserInformationStep({ step, title, active }) {
 	const [isUsernameValid, validateUsername] = useState(true);
 	const [isEmailValid, validateEmail] = useState(true);
 
-	const isContinueEnabled = useMemo(() => name && username && email && password, [
-		name,
-		username,
-		email,
-		password,
-	]);
+	const isContinueEnabled = useMemo(
+		() => name && username && email && password,
+		[name, username, email, password],
+	);
 
 	const [commiting, setCommiting] = useState(false);
 

@@ -6,8 +6,9 @@ import { BannersRaw } from '../../../app/models/server/raw/Banners';
 import { BannersDismissRaw } from '../../../app/models/server/raw/BannersDismiss';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IBannerService } from '../../sdk/types/IBannerService';
-import { BannerPlatform, IBanner } from '../../../definition/IBanner';
+import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
 import { api } from '../../sdk/api';
+import { IUser } from '../../../definition/IUser';
 
 export class BannerService extends ServiceClass implements IBannerService {
 	protected name = 'banner';
@@ -61,13 +62,15 @@ export class BannerService extends ServiceClass implements IBannerService {
 	}
 
 	async getNewBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
-		const { roles } = await this.Users.findOneById(userId, { projection: { roles: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
+
+		const { roles } = user || { roles: [] };
 
 		const banners = await this.Banners.findActiveByRoleOrId(roles, platform, bannerId).toArray();
 
 		const bannerIds = banners.map(({ _id }) => _id);
 
-		const result = await this.BannersDismiss.findByUserIdAndBannerId(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
+		const result = await this.BannersDismiss.findByUserIdAndBannerId<Pick<IBannerDismiss, 'bannerId'>>(userId, bannerIds, { projection: { bannerId: 1, _id: 0 } }).toArray();
 
 		const dismissed = new Set(result.map(({ bannerId }) => bannerId));
 
@@ -84,7 +87,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 			throw new Error('Banner not found');
 		}
 
-		const user = await this.Users.findOneById(userId, { projection: { username: 1 } });
+		const user = await this.Users.findOneById<Pick<IUser, 'username' | '_id'>>(userId, { projection: { username: 1 } });
 		if (!user) {
 			throw new Error('User not found');
 		}

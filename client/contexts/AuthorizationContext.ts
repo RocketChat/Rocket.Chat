@@ -54,11 +54,10 @@ export const usePermission = (
 	scope?: string | Mongo.ObjectID,
 ): boolean => {
 	const { queryPermission } = useContext(AuthorizationContext);
-	const subscription = useMemo(() => queryPermission(permission, scope), [
-		queryPermission,
-		permission,
-		scope,
-	]);
+	const subscription = useMemo(
+		() => queryPermission(permission, scope),
+		[queryPermission, permission, scope],
+	);
 	return useSubscription(subscription);
 };
 
@@ -67,11 +66,10 @@ export const useAtLeastOnePermission = (
 	scope?: string | Mongo.ObjectID,
 ): boolean => {
 	const { queryAtLeastOnePermission } = useContext(AuthorizationContext);
-	const subscription = useMemo(() => queryAtLeastOnePermission(permissions, scope), [
-		queryAtLeastOnePermission,
-		permissions,
-		scope,
-	]);
+	const subscription = useMemo(
+		() => queryAtLeastOnePermission(permissions, scope),
+		[queryAtLeastOnePermission, permissions, scope],
+	);
 	return useSubscription(subscription);
 };
 
@@ -80,11 +78,10 @@ export const useAllPermissions = (
 	scope?: string | Mongo.ObjectID,
 ): boolean => {
 	const { queryAllPermissions } = useContext(AuthorizationContext);
-	const subscription = useMemo(() => queryAllPermissions(permissions, scope), [
-		queryAllPermissions,
-		permissions,
-		scope,
-	]);
+	const subscription = useMemo(
+		() => queryAllPermissions(permissions, scope),
+		[queryAllPermissions, permissions, scope],
+	);
 	return useSubscription(subscription);
 };
 
