@@ -105,12 +105,8 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }
 		return window.close();
 	};
 
-	let iconSize = 'x21';
-	let buttonSize = 'x40';
-	if (layout === 'embedded') {
-		iconSize = 'x19';
-		buttonSize = 'x35';
-	}
+	const iconSize = layout === 'embedded' ? 'x19' : 'x21';
+	const buttonSize = layout === 'embedded' ? 'x35' : 'x40';
 
 	switch (status) {
 		case 'ringing':
