@@ -1,13 +1,16 @@
-import { Box, Flex } from '@rocket.chat/fuselage';
+import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 import { useTranslation } from '../../contexts/TranslationContext';
+import './CallPage.css';
 
-function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
+function CallPage({ roomId, visitorToken, visitorId, status, setStatus, layout }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
+	const [isMicOn, setIsMicOn] = useState(false);
+	const [isCameraOn, setIsCameraOn] = useState(false);
 	const t = useTranslation();
 	useEffect(() => {
 		if (visitorToken) {
@@ -62,6 +65,22 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 		}
 	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken]);
 
+	const toggleButton = (control) => {
+		if (control === 'mic') {
+			WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleAudio();
+			return setIsMicOn(!isMicOn);
+		}
+		WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleVideo();
+		setIsCameraOn(!isCameraOn);
+	};
+
+	const closeWindow = () => {
+		if (layout === 'embedded') {
+			return parent.handleIframeClose();
+		}
+		return window.close();
+	};
+
 	switch (status) {
 		case 'ringing':
 			// Todo Deepak
@@ -89,7 +108,7 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 					<Box
 						width='full'
 						minHeight='sh'
-						textAlign='center'
+						alignItems='center'
 						backgroundColor='neutral-900'
 						overflow='hidden'
 						position='relative'
@@ -114,11 +133,54 @@ function CallPage({ roomId, visitorToken, visitorId, status, setStatus }) {
 								}}
 							></video>
 						</Box>
+						<ButtonGroup
+							position='absolute'
+							zIndex='1'
+							style={{
+								bottom: '5%',
+							}}
+						>
+							<Button
+								id='mic'
+								square
+								data-title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
+								onClick={() => toggleButton('mic')}
+								className={isMicOn ? 'On' : 'Off'}
+							>
+								{isMicOn ? <Icon name='mic' size='x21' /> : <Icon name='mic-off' size='x21' />}
+							</Button>
+							<Button
+								id='camera'
+								square
+								data-title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
+								onClick={() => toggleButton('camera')}
+								className={isCameraOn ? 'On' : 'Off'}
+							>
+								{isCameraOn ? (
+									<Icon name='video' size='x21' />
+								) : (
+									<Icon name='video-off' size='x21' />
+								)}
+							</Button>
+							{layout === 'embedded' && (
+								<Button
+									square
+									backgroundColor='#2F343D'
+									borderColor='#2F343D'
+									data-title={t('Expand_view')}
+									onClick={() => parent.expandCall()}
+								>
+									<Icon name='arrow-expand' size='x21' color='white' />
+								</Button>
+							)}
+							<Button square primary danger data-title={t('End_call')} onClick={closeWindow}>
+								<Icon name='phone-off' size='x21' color='white' />
+							</Button>
+						</ButtonGroup>
 						<video
 							id='remoteVideo'
 							autoPlay
 							playsInline
-							muted
 							style={{
 								width: '100%',
 								transform: 'scaleX(-1)',
