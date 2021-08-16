@@ -85,7 +85,7 @@ MessageTypes.registerType({
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
 	render(message) {
-		if (message.endTs) {
+		if (message.msg === 'ended' && message.endTs) {
 			const hh = parseInt(Math.abs(message.endTs - message.ts) / 36e5);
 			const mm = parseInt(Math.abs(message.endTs - message.ts) / 6e4) % 60;
 			const ss = parseInt(Math.abs(message.endTs - message.ts) / 1000) % 60;
@@ -98,6 +98,9 @@ MessageTypes.registerType({
 				callDuration += `${ ss } seconds.`;
 			}
 			return TAPi18n.__('WebRTC_call_ended_message', { callDuration, endTime: moment(message.endTs).format('h:mm A') });
+		}
+		if (message.msg === 'declined' && message.endTs) {
+			return TAPi18n.__('WebRTC_call_declined_message');
 		}
 		return message.msg;
 	},
