@@ -171,6 +171,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		try {
 			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+			Meteor.call('sendTask', task);
 			sendTask(user, task, room, false);
 		} catch (error) {
 			return API.v1.failure('An error occured while creating a task');

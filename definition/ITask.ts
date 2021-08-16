@@ -32,5 +32,5 @@ export interface ITask extends IRocketChatRecord {
 	taskTitle: string;
 	taskAssignee?: Pick<IUser, '_id' | 'username' | 'name'>;
 	taskDescription?: string;
-	taskStatus: {_id: string}[];
+	taskStatus?: {_id: string}[];
 }
