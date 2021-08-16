@@ -11,8 +11,10 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		const allowBadWordsFilter = settings.get('AllowBadWordsFilter');
 
+		callbacks.remove('beforeSaveMessage', 'filterBadWords');
+
 		if (!allowBadWordsFilter) {
-			return callbacks.remove('beforeSaveMessage', 'filterBadWords');
+			return;
 		}
 
 		const badWordsList = settings.get('Message_BadWordsFilterList') as string | undefined;
