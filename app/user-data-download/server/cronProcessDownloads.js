@@ -281,6 +281,31 @@ export const sendEmail = function(userData, subject, body) {
 	});
 };
 
+export const copyFileSync = function(attachmentData, assetsPath) {
+	const file = Uploads.findOneById(attachmentData._id);
+	if (!file) {
+		return;
+	}
+
+	return new Promise((resolve, reject) => {
+		const out = fs.createWriteStream(path.join(assetsPath, `${ attachmentData._id }-${ attachmentData.name }`));
+
+		out.on('warning', function(err) {
+			if (err.code === 'ENOENT') {
+				console.log(err);
+			} else {
+				// throw error
+				console.log(err);
+			}
+		});
+
+		out.on('error', (err) => reject(err));
+		out.on('close', () => resolve('copyFileSync: done!'));
+
+		FileUpload.copyWithStream(file, out);
+	});
+};
+
 export const makeZipFile = function(folderToZip, targetFile) {
 	return new Promise((resolve, reject) => {
 		const output = fs.createWriteStream(targetFile);
