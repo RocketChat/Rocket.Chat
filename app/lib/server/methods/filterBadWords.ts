@@ -9,7 +9,7 @@ import { IMessage } from '../../../../definition/IMessage';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const allowBadWordsFilter = settings.get('AllowBadWordsFilter');
+		const allowBadWordsFilter = settings.get('Message_AllowBadWordsFilter');
 
 		callbacks.remove('beforeSaveMessage', 'filterBadWords');
 
