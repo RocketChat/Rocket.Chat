@@ -48,7 +48,7 @@ Meteor.startup(function() {
 		msg = msg.join('\n');
 
 		if (!process.env.DISABLE_DB_WATCH && !oplogEnabled) {
-			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://go.rocket.chat/i/oplog-required'].join('\n');
+			msg += ['', '', 'OPLOG / REPLICASET IS REQUIRED TO RUN ROCKET.CHAT, MORE INFORMATION AT:', 'https://docs.rocket.chat/installation/manual-installation/mongo-replicas'].join('\n');
 			SystemLogger.error_box(msg, 'SERVER ERROR');
 
 			exitIfNotBypassed(process.env.BYPASS_OPLOG_VALIDATION);
