@@ -138,7 +138,6 @@ function CallPage({
 						width='full'
 						minHeight='sh'
 						textAlign='center'
-						backgroundColor='neutral-900'
 						overflow='hidden'
 						position='relative'
 						backgroundColor='#181B20'
