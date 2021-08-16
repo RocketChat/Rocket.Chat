@@ -301,6 +301,7 @@
   "Agent_messages": "Mensajes del agente",
   "Agent_Name_Placeholder": "Por favor, introduzca el nombre de un agente...",
   "Agent_removed": "Agente eliminado",
+  "Agent_deactivated": "Agente desactivado",
   "Agents": "Agentes",
   "Alerts": "Alertas",
   "Alias": "Alias",
