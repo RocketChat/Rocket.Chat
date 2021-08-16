@@ -4,6 +4,7 @@ import Filter from 'bad-words';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
+import { IMessage } from '../../../../definition/IMessage';
 
 
 Meteor.startup(() => {
@@ -34,7 +35,7 @@ Meteor.startup(() => {
 			filter.removeWords(...whiteList.split(',').map((word) => word.trim()));
 		}
 
-		callbacks.add('beforeSaveMessage', function(message) {
+		callbacks.add('beforeSaveMessage', function(message: IMessage) {
 			if (!message.msg) {
 				return message;
 			}
