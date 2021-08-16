@@ -12,12 +12,10 @@ import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
 import { StreamerCentral } from '../modules/streamer/streamer.module';
+import { isPresenceMonitorEnabled } from '../lib/isPresenceMonitorEnabled';
 
 process.env.PORT = String(process.env.PORT).trim();
 process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
-
-const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
-	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 const connections = {};
 this.connections = connections;
@@ -61,7 +59,7 @@ const cache = new Map();
 const originalSetDefaultStatus = UserPresence.setDefaultStatus;
 export let matrixBroadCastActions;
 function startMatrixBroadcast() {
-	if (!startMonitor) {
+	if (!isPresenceMonitorEnabled()) {
 		UserPresence.setDefaultStatus = originalSetDefaultStatus;
 	}
 
@@ -155,7 +153,7 @@ function startStreamCastBroadcast(value) {
 
 	logger.connection.info('connecting in', instance, value);
 
-	if (!startMonitor) {
+	if (!isPresenceMonitorEnabled()) {
 		UserPresence.setDefaultStatus = (id, status) => {
 			Users.updateDefaultStatus(id, status);
 		};

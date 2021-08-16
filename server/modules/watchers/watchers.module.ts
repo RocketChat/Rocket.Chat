@@ -32,6 +32,7 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
+import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -63,9 +64,6 @@ interface IChange<T> {
 type Watcher = <T extends IBaseData>(model: IBaseRaw<T>, fn: (event: IChange<T>) => void) => void;
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
-
-const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
-	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
@@ -160,12 +158,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	});
 
-	if (startMonitor) {
-		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data }) => {
+	if (isPresenceMonitorEnabled()) {
+		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
 			switch (clientAction) {
 				case 'inserted':
 				case 'updated':
-					data = data ?? await UsersSessions.findOneById(id);
+					const data = eventData ?? await UsersSessions.findOneById(id);
 					if (!data) {
 						return;
 					}
