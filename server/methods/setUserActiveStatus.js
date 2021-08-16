@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
+import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
@@ -21,8 +22,25 @@ Meteor.methods({
 			});
 		}
 
-		setUserActiveStatus(userId, active, confirmRelenquish);
+		const userAdmin = Users.findOneAdmin(userId.count);
 
+		if (userAdmin) {
+			const adminCount = Meteor.users.find({
+				roles: {
+					$in: ['admin'],
+				},
+				active: true,
+			}).count();
+
+			if (adminCount === 1) {
+				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+					method: 'removeUserFromRole',
+					action: 'Remove_last_admin',
+				});
+			}
+		}
+
+		setUserActiveStatus(userId, active, confirmRelenquish);
 		return true;
 	},
 });
