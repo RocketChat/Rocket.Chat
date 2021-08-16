@@ -281,7 +281,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Private_Label')}</Field.Label>
 							<Field.Description>
 								{type
@@ -294,7 +294,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24' disabled={!canChangeReadOnly}>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
 							<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
 						</Box>
@@ -307,7 +307,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field disabled={!canChangeEncrypted} mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
 							<Field.Description>
 								{type
@@ -324,7 +324,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Broadcast_Label')}</Field.Label>
 							<Field.Description>{t('Teams_New_Broadcast_Description')}</Field.Description>
 						</Box>

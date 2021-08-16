@@ -127,6 +127,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			email: '',
 			connectionData: undefined,
 			phone: {},
+			id: visitor.id,
 		};
 
 		if (visitor.visitorEmails && visitor.visitorEmails.length) {

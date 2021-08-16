@@ -8,8 +8,9 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-const UsersByTimeOfTheDaySection = () => {
+const UsersByTimeOfTheDaySection = ({ timezone }) => {
 	const t = useTranslation();
+	const utc = timezone === 'utc';
 
 	const periodOptions = useMemo(() => [
 		['last 7 days', t('Last_7_days')],
@@ -23,23 +24,35 @@ const UsersByTimeOfTheDaySection = () => {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().startOf('day').subtract(7, 'days')
+						: moment().startOf('day').subtract(8, 'days'),
+					end: utc
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().startOf('day').subtract(30, 'days')
+						: moment().startOf('day').subtract(31, 'days'),
+					end: utc
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment.utc().startOf('day').subtract(90, 'days')
+						: moment().startOf('day').subtract(91, 'days'),
+					end: utc
+						? moment.utc().endOf('day').subtract(1, 'days')
+						: moment().endOf('day'),
 				};
 		}
-	}, [periodId]);
+	}, [periodId, utc]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
@@ -48,7 +61,7 @@ const UsersByTimeOfTheDaySection = () => {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', useMemo(() => params, [params]));
 
 	const [
 		dates,
@@ -58,8 +71,10 @@ const UsersByTimeOfTheDaySection = () => {
 			return [];
 		}
 
-		const dates = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 },
-			(_, i) => moment(period.start).add(i, 'days'));
+		const dates = Array.from({ length: utc
+			? moment(period.end).diff(period.start, 'days') + 1
+			: moment(period.end).diff(period.start, 'days') - 1 },
+		(_, i) => moment(period.start).endOf('day').add(utc ? i : i + 1, 'days'));
 
 		const values = Array.from({ length: 24 }, (_, hour) => ({
 			hour: String(hour),
@@ -67,16 +82,23 @@ const UsersByTimeOfTheDaySection = () => {
 				.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
 		}));
 
+		const timezoneOffset = moment().utcOffset() / 60;
+
 		for (const { users, hour, day, month, year } of data.week) {
-			const date = moment([year, month - 1, day, 0, 0, 0, 0]).toISOString();
-			values[hour][date] += users;
+			const date = utc
+				? moment.utc([year, month - 1, day, hour])
+				: moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
+
+			if (utc || (!date.isSame(period.end) && !date.clone().startOf('day').isSame(period.start))) {
+				values[date.hour()][date.endOf('day').toISOString()] += users;
+			}
 		}
 
 		return [
 			dates.map((date) => date.toISOString()),
 			values,
 		];
-	}, [data, period.end, period.start]);
+	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
 		const _data = data.week.map(({
