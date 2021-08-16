@@ -63650,6 +63650,77 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.17.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22871",
+          "title": "[FIX] \"Click to Join\" button is not working if there are no muted users in the room",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add check to `room.muted` array so as to cover the case in which it is `undefined`;",
+          "milestone": "3.17.1",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22856",
+          "title": "[FIX] Message update not working in some cases",
+          "userLogin": "murtaza98",
+          "milestone": "3.17.1",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22835",
+          "title": "[FIX] Use correct param on saveBusinessHour method",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22882",
+          "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
+          "userLogin": "thassiov",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "milestone": "3.17.1",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22917",
+          "title": "[FIX] Close omnichannel conversations when agent is deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
