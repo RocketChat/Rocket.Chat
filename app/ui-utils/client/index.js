@@ -3,7 +3,6 @@ export { SideNav } from './lib/SideNav';
 export { AccountBox } from './lib/AccountBox';
 export { menu } from './lib/menu';
 export { call } from './lib/callMethod';
-export { erase, hide, leave } from './lib/ChannelActions';
 export { MessageAction } from './lib/MessageAction';
 export { messageBox } from './lib/messageBox';
 export { popover } from './lib/popover';
