@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
 import { createRoom } from '../functions';
+import { settings } from '../../../settings';
 
 Meteor.methods({
 	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
@@ -14,6 +15,9 @@ Meteor.methods({
 		}
 
 		if (!hasPermission(Meteor.userId(), 'create-p')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
+		}
+		if (extraData.ephemeral && !settings.get('Accounts_AllowEphemeralChannels')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 

@@ -38,6 +38,7 @@ const CreateChannel = ({
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const ephemeralAllowed = useSetting('Accounts_AllowEphemeralChannels');
 	const channelNameExists = useMethod('roomNameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -127,20 +128,22 @@ const CreateChannel = ({
 							/>
 						</Box>
 					</Field>
-					<Field mbe='x24'>
-						<Box display='flex' justifyContent='space-between' alignItems='start'>
-							<Box display='flex' flexDirection='column'>
-								<Field.Label>{'Ephemeral'}</Field.Label>
-								<Field.Description>{'Channel will self destruct'}</Field.Description>
+					{ephemeralAllowed && (
+						<Field mbe='x24'>
+							<Box display='flex' justifyContent='space-between' alignItems='start'>
+								<Box display='flex' flexDirection='column'>
+									<Field.Label>{'Ephemeral'}</Field.Label>
+									<Field.Description>{'Channel will self destruct'}</Field.Description>
+								</Box>
+								<ToggleSwitch
+									checked={values.ephemeral}
+									// disabled={!!canOnlyCreateOneType}
+									onChange={onChangeEphemeral}
+								/>
 							</Box>
-							<ToggleSwitch
-								checked={values.ephemeral}
-								// disabled={!!canOnlyCreateOneType}
-								onChange={onChangeEphemeral}
-							/>
-						</Box>
-					</Field>
-					{values.ephemeral && (
+						</Field>
+					)}
+					{ephemeralAllowed && values.ephemeral && (
 						<Field mbe='x24'>
 							<Box display='flex' flexDirection='column'>
 								<Field.Label>{'Ephemeral Time'}</Field.Label>
@@ -148,7 +151,7 @@ const CreateChannel = ({
 							<Select onChange={onChangeEphemeralTime} options={options} />
 						</Field>
 					)}
-					{values.ephemeral && values.ephemeralTime && (
+					{ephemeralAllowed && values.ephemeral && values.ephemeralTime && (
 						<Field mbe='x24'>
 							<Box display='flex' flexDirection='column'>
 								<Field.Label>{'Message Ephemeral Time'}</Field.Label>
