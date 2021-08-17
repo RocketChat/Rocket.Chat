@@ -48,6 +48,7 @@ Template.thread.helpers({
 		const { room } = Template.currentData();
 
 		const tmid = state.get('tmid');
+
 		if (room.taskRoomId) {
 			return TaskHeader.findOne({ _id: tmid });
 		}
@@ -75,12 +76,12 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription, room } = Template.currentData();
+		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
 		let thread;
 		let following;
 
-		if (room.taskRoomId) {
+		if (subscription.taskRoomId) {
 			thread = instance.TaskHeader.findOne({ _id: tmid }, { fields: { replies: 1 } });
 			following = thread?.replies?.includes(Meteor.userId());
 		} else {
@@ -136,7 +137,7 @@ Template.thread.helpers({
 
 
 Template.thread.onRendered(function() {
-	const { room } = Template.currentData();
+	const { subscription } = Template.currentData();
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
@@ -201,8 +202,7 @@ Template.thread.onRendered(function() {
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
-
-		if (room.taskRoomId) {
+		if (subscription.taskRoomId) {
 			this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
 				changed: ({ _id, ...task }) => {
 					this.TaskHeader.update({ _id }, task);
@@ -264,8 +264,7 @@ Template.thread.onRendered(function() {
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 	this.TaskHeader = new Mongo.Collection(null);
-	const { room } = Template.currentData();
-
+	const { subscription } = Template.currentData();
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
@@ -281,8 +280,7 @@ Template.thread.onCreated(async function() {
 
 		const messages = await call('getThreadMessages', { tmid, rid });
 		upsertMessageBulk({ msgs: messages }, this.Threads);
-
-		if (room.taskRoomId) {
+		if (subscription.taskRoomId) {
 			const taskHeader = await call('getSingleTask', tmid);
 			upsertTask({ task: taskHeader }, this.TaskHeader);
 		}

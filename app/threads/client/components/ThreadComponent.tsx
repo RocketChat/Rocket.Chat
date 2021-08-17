@@ -51,7 +51,8 @@ const useThreadMessage = (tmid: string, room: IRoom): IMessage => {
 		return (): void => {
 			computation.stop();
 		};
-	}, [getMessageParsed, tmid, room]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [getMessageParsed, tmid]);
 
 	return message;
 };

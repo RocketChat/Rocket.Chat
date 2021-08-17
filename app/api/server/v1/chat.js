@@ -88,7 +88,7 @@ API.v1.addRoute('chat.getMessage', { authRequired: true }, {
 
 		const { taskRoomId } = this.queryParams;
 
-		if (taskRoomId) {
+		if (taskRoomId.length) {
 			let task;
 
 			Meteor.runAsUser(this.userId, () => {
