@@ -37,6 +37,10 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
+	getQueuedInquiries(options) {
+		return this.find({ status: 'queued' }, options);
+	}
+
 	/*
 	* mark the inquiry as taken
 	*/
@@ -45,7 +49,7 @@ export class LivechatInquiry extends Base {
 			_id: inquiryId,
 		}, {
 			$set: { status: 'taken' },
-			$unset: { defaultAgent: 1 },
+			$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
 		});
 	}
 
@@ -227,6 +231,30 @@ export class LivechatInquiry extends Base {
 		};
 
 		this.remove(query);
+	}
+
+	getAbandonedQueuedItems(date) {
+		const query = {
+			status: 'queued',
+			estimatedInactivityCloseTimeAt: { $lte: new Date(date) },
+		};
+		return this.find(query);
+	}
+
+	setEstimatedInactivityCloseTime(_id, date) {
+		return this.update({ _id }, {
+			$set: {
+				estimatedInactivityCloseTimeAt: new Date(date),
+			},
+		});
+	}
+
+	unsetEstimatedInactivityCloseTime() {
+		return this.update({ status: 'queued' }, {
+			$unset: {
+				estimatedInactivityCloseTimeAt: 1,
+			},
+		}, { multi: true });
 	}
 }
 

@@ -86,6 +86,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 	const { _id, username, token, department, status = 'online' } = guest;
 	const { msg } = message;
 	const ts = new Date();
+	const maxQueueWaitTimeMinutes = settings.get('Livechat_max_queue_wait_time');
 
 	const inquiry = Object.assign({
 		rid,
@@ -104,6 +105,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 		queueOrder: 1,
 		estimatedWaitingTimeQueue: 0,
 		estimatedServiceTimeAt: ts,
+		estimatedInactivityCloseTimeAt: new Date(ts.getTime() + maxQueueWaitTimeMinutes * 60000),
 	}, extraInquiryInfo);
 
 	return LivechatInquiry.insert(inquiry);
