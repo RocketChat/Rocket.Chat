@@ -95,7 +95,6 @@ export default memo(function Task({
 				<Button
 					className={anchor}
 					small
-					// flexShrink={0}
 					ghost
 					data-id={taskId}
 					onClick={handleTaskDetails}

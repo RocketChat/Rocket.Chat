@@ -4,7 +4,7 @@ import { Match } from 'meteor/check';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import { Rooms, Subscriptions, Tasks, Users } from '../../../models/server';
+import { Subscriptions, Tasks, Users } from '../../../models/server';
 import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
 import { updateTask, sendTask, deleteTask } from '../../../lib/server/functions';
@@ -185,18 +185,31 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 	get() {
 		const { rid } = this.queryParams;
-		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
-		const hideSettings = {};
-		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
-		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
+
+		if (!rid) {
+			return API.v1.failure('Missing rid params');
+		}
+
+		if (!this.userId && settings.get('Accounts_AllowAnonymousRead') === false) {
+			return API.v1.failure('Invalid user');
+		}
+
+		const room = Meteor.call('canAccessRoom', rid, this.userId);
+
+		if (!room) {
+			return false;
+		}
+
+		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
+		const canPreview = hasPermission(this.userId, 'preview-c-room');
+
+		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { fields: { _id: 1 } })) {
+			return false;
+		}
 		const query = {
 			rid,
 			_hidden: { $ne: true },
 		};
-
-		if (hideMessagesOfType.size) {
-			query.t = { $nin: Array.from(hideMessagesOfType.values()) };
-		}
 
 		const options = {
 			sort: {
@@ -273,6 +286,10 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
 	post() {
 		const { taskId } = this.bodyParams;
+
+		if (!taskId) {
+			API.v1.failure('Invalid taskId');
+		}
 
 		const uid = Meteor.userId();
 

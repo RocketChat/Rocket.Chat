@@ -2,7 +2,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Tasks, Uploads, Rooms } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
-
+import { callbacks } from '../../../callbacks';
 
 export const deleteTask = function(task, user) {
 	const deletedTask = Tasks.findOneById(task._id);
@@ -41,12 +41,11 @@ export const deleteTask = function(task, user) {
 	}
 
 	const room = Rooms.findOneById(task.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
-	// callbacks.run('afterDeleteMessage', deletedTask, room, user);
+	callbacks.run('afterDeleteMessage', deletedTask, room, user);
 
-	// update last task
 	if (settings.get('Store_Last_Message')) {
 		if (!room.lastMessage || room.lastMessage._id === task._id) {
-			Rooms.resetLastMessageById(task.rid, task._id);
+			Rooms.resetLastTaskByIds(task.rid, task._id);
 		}
 	}
 

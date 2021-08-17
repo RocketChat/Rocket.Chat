@@ -107,13 +107,6 @@ export const upsertTask = async ({ task, subscription, uid = Tracker.nonreactive
 		task.ignored = true;
 	}
 
-	// const roles = [
-	// 	(userId && UserRoles.findOne(userId, { fields: { roles: 1 } })) || {},
-	// 	(userId && RoomRoles.findOne({ rid: msg.rid, 'u._id': userId })) || {},
-	// ].map((e) => e.roles);
-	// msg.roles = _.union.apply(_.union, roles);
-
-
 	if (task.t === 'e2e' && !task.file) {
 		task.e2e = 'pending';
 	}
@@ -312,9 +305,7 @@ export const RoomHistoryManager = new class extends Emitter {
 
 		await this.queue();
 
-		// ScrollListener.setLoader true
 		const lastTask = ChatTask.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
-		// lastMessage ?= ChatMessage.findOne({rid: rid}, {sort: {ts: 1}})
 
 		if (lastTask) {
 			({ ts } = lastTask);
