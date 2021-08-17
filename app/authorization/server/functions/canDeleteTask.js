@@ -29,7 +29,7 @@ export const canDeleteTaskAsync = async (uid, { u, rid, ts }) => {
 	if (!allowed) {
 		return false;
 	}
-	const blockDeleteInMinutes = await getValue('Task_AllowDeleting_BlockDeleteInMinutes');
+	const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
 
 	if (blockDeleteInMinutes) {
 		const timeElapsedForMessage = elapsedTime(ts);

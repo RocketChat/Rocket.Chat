@@ -77,7 +77,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			API.v1.failure('An error occured while updating a task');
 		}
 
-		const blockEditInMinutes = settings.get('Task_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
 		if (Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff;
 			let taskTs;
@@ -197,7 +197,7 @@ API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 		const room = Meteor.call('canAccessRoom', rid, this.userId);
 
 		if (!room) {
-			return false;
+			return API.v1.failure('Not allowed to access this room');
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');

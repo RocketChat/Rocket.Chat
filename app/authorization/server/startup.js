@@ -138,10 +138,8 @@ Meteor.startup(function() {
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'create-taskRoom',         roles: ['admin', 'user'] },
 		{ _id: 'delete-taskRoom',         roles: ['admin', 'owner'] },
-		{ _id: 'add-taskRoom-member',     roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'edit-taskRoom-member',    roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'create-task',    roles: ['admin', 'owner', 'user'] },
-		{ _id: 'update-task',    roles: ['admin', 'owner', 'user'] },
+		{ _id: 'edit-task',    roles: ['admin', 'owner', 'user'] },
 		{ _id: 'delete-task',    roles: ['admin', 'owner', 'user'] },
 	];
 
