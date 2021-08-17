@@ -61,7 +61,9 @@ const ActiveUsersSection = ({ timezone }) => {
 		const prevMauValue = createPoint(-1);
 
 		const usersListsMap = data.month.reduce((map, dayData) => {
-			const date = moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day });
+			const date = utc
+				? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
+				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
 			const dateOffset = date.diff(period.start, 'days');
 			if (dateOffset >= 0) {
 				map[dateOffset] = dayData.usersList;
@@ -99,20 +101,19 @@ const ActiveUsersSection = ({ timezone }) => {
 			wauValues,
 			mauValues,
 		];
-	}, [period, data]);
+	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
-		const data = [{
-			countDailyActiveUsers,
-			diffDailyActiveUsers,
-			countWeeklyActiveUsers,
-			diffWeeklyActiveUsers,
-			countMonthlyActiveUsers,
-			diffMonthlyActiveUsers,
-			dauValues,
-			wauValues,
-			mauValues,
-		}];
+		const values = [];
+
+		for (let i = 0; i < 30; i++) {
+			values.push([moment(dauValues[i].x).format('YYYY-MM-DD'), dauValues[i].y, wauValues[i].y, mauValues[i].y]);
+		}
+
+		const data = [
+			['Date', 'DAU', 'WAU', 'MAU'],
+			...values,
+		];
 		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
