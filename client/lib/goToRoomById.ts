@@ -3,7 +3,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../app/models/client';
 import { call } from '../../app/ui-utils/client';
-import { roomTypes, waitUntilFind } from '../../app/utils/client';
+import { roomTypes } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';
 
 const getRoomById = memoize((rid: IRoom['_id']) => call('getRoomById', rid));
@@ -13,7 +13,7 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 		return;
 	}
 
-	const subscription = await waitUntilFind(() => ChatSubscription.findOne({ rid }));
+	const subscription = ChatSubscription.findOne({ rid });
 
 	if (subscription) {
 		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
@@ -21,5 +21,5 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 	}
 
 	const room = await getRoomById(rid);
-	roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+	roomTypes.openRouteLink(room.t, { rid: room._id, ...room }, FlowRouter.current().queryParams);
 };
