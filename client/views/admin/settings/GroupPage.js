@@ -80,7 +80,7 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 					.filter(({ _id }) => _id === 'Discovery_Tags')
 					.shift()
 					.value.split(',')
-					.map((item) => item.trim())
+					.map((item) => item.toLowerCase().trim())
 					.sort();
 				const removedTags = oldTags.filter((tag) => !updatedTags.includes(tag));
 				setDiscoveryTags(updatedTags.join(', '));

@@ -169,6 +169,13 @@ export class RoomsRaw extends BaseRaw {
 					prid: 1,
 					tags: 1,
 					msgs: 1,
+					tagsExist: {
+						$cond: [
+							{ $ifNull: ['$tags', false] },
+							1,
+							0,
+						],
+					},
 					tagsCount: {
 						$size: {
 							$ifNull: [
@@ -181,10 +188,11 @@ export class RoomsRaw extends BaseRaw {
 			},
 			{
 				$sort: {
-					tagsCount: -1,
+					tagsExist: -1,
 					msgs: -1,
 					usersCount: -1,
 					lastMessage: -1,
+					tagsCount: -1,
 					ts: -1,
 				},
 			},
