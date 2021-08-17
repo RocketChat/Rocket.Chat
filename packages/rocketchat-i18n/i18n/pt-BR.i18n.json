@@ -1659,6 +1659,8 @@
   "Full_Screen": "Tela cheia",
   "Gaming": "Jogos",
   "General": "Geral",
+  "General_Default": "Manter a sala geral no servidor",
+  "General_Default_Description": "Recriar a sala geral na renicialização do servidor se esta sala for excluída.",
   "Generate_new_key": "Gerar uma nova chave",
   "Generate_New_Link": "Gerar Novo Link",
   "Generating_key": "Gerando chave",
