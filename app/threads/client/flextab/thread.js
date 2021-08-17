@@ -131,6 +131,7 @@ Template.thread.helpers({
 
 
 Template.thread.onRendered(function() {
+	const { subscription } = Template.currentData();
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
@@ -196,12 +197,15 @@ Template.thread.onRendered(function() {
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
 
-		this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
-			changed: ({ _id, ...task }) => {
-				this.TaskHeader.update({ _id }, task);
-			},
-			removed: ({ _id }) => this.TaskHeader.remove(_id),
-		});
+		if (subscription.taskRoomId) {
+			this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
+				changed: ({ _id, ...task }) => {
+					this.TaskHeader.update({ _id }, task);
+				},
+				removed: ({ _id }) => this.TaskHeader.remove(_id),
+			});
+		}
+
 
 		this.loadMore();
 	});
@@ -255,6 +259,8 @@ Template.thread.onRendered(function() {
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 	this.TaskHeader = new Mongo.Collection(null);
+	const { subscription } = Template.currentData();
+
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
@@ -269,12 +275,12 @@ Template.thread.onCreated(async function() {
 		this.state.set('loading', true);
 
 		const messages = await call('getThreadMessages', { tmid, rid });
-
-		const taskHeader = await call('getSingleTask', tmid);
+		if (subscription.taskRoomId) {
+			const taskHeader = await call('getSingleTask', tmid);
+			upsertTask({ task: taskHeader }, this.TaskHeader);
+		}
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
-
-		upsertTask({ task: taskHeader }, this.TaskHeader);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
