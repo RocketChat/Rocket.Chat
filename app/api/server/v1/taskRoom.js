@@ -142,10 +142,6 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			return API.v1.failure('tshow provided but missing tmid');
 		}
 
-		if (task.tmid && !settings.get('Threads_enabled')) {
-			return API.v1.failure('not-allowed');
-		}
-
 		if (task.ts) {
 			const tsDiff = Math.abs(moment(task.ts).diff());
 			if (tsDiff > 60000) {
@@ -171,7 +167,7 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		try {
 			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-			Meteor.call('sendTask', task);
+			// Meteor.call('sendTask', task);
 			sendTask(user, task, room, false);
 		} catch (error) {
 			return API.v1.failure('An error occured while creating a task');

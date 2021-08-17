@@ -45,7 +45,7 @@ export const deleteTask = function(task, user) {
 
 	if (settings.get('Store_Last_Message')) {
 		if (!room.lastMessage || room.lastMessage._id === task._id) {
-			Rooms.resetLastTaskByIds(task.rid, task._id);
+			Rooms.resetLastTaskById(task.rid, task._id);
 		}
 	}
 

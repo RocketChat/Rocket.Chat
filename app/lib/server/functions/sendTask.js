@@ -100,9 +100,6 @@ export const sendTask = function(user, task, room, upsert = false) {
 		// 	Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
 		// }
 
-		/*
-		Defer other updates as their return is not interesting to the user
-		*/
 		// Execute all callbacks
 		callbacks.runAsync('afterSaveTask', task, room, user._id);
 		return task;

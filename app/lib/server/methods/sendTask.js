@@ -4,52 +4,33 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { metrics } from '../../../metrics';
-import { settings } from '../../../settings';
-import { messageProperties } from '../../../ui-utils';
-import { Users, Messages } from '../../../models';
-import { sendMessage } from '../functions';
+import { Users } from '../../../models';
+import { sendTask } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 import { api } from '../../../../server/sdk/api';
 
-export function executeSendMessage(uid, message) {
-	if (message.tshow && !message.tmid) {
+export function executeSendMessage(uid, task) {
+	if (task.tshow && !task.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
-			method: 'sendMessage',
+			method: 'sendTask',
 		});
 	}
 
-	if (message.tmid && !settings.get('Threads_enabled')) {
-		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
-			method: 'sendMessage',
-		});
-	}
-
-	if (message.ts) {
-		const tsDiff = Math.abs(moment(message.ts).diff());
+	if (task.ts) {
+		const tsDiff = Math.abs(moment(task.ts).diff());
 		if (tsDiff > 60000) {
-			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
-				method: 'sendMessage',
-				message_ts: message.ts,
+			throw new Meteor.Error('error-task-ts-out-of-sync', 'Task timestamp is out of sync', {
+				method: 'sendTask',
+				task_ts: task.ts,
 				server_ts: new Date().getTime(),
 			});
 		} else if (tsDiff > 10000) {
-			message.ts = new Date();
+			task.ts = new Date();
 		}
 	} else {
-		message.ts = new Date();
-	}
-
-	if (message.msg) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
-
-		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
-				method: 'sendMessage',
-			});
-		}
+		task.ts = new Date();
 	}
 
 	const user = Users.findOneById(uid, {
@@ -58,14 +39,8 @@ export function executeSendMessage(uid, message) {
 			type: 1,
 		},
 	});
-	let { rid } = message;
+	const { rid } = task;
 
-	// do not allow nested threads
-	if (message.tmid) {
-		const parentMessage = Messages.findOneById(message.tmid);
-		message.tmid = (parentMessage && parentMessage.tmid) || message.tmid;
-		rid = (parentMessage && parentMessage.rid) || message.rid;
-	}
 
 	if (!rid) {
 		throw new Error('The \'rid\' property on the message object is missing.');
@@ -73,14 +48,12 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-
-		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false);
+		return sendTask(user, task, room, false);
 	} catch (error) {
 		SystemLogger.error('Error sending message:', error);
 
 		const errorMessage = typeof error === 'string' ? error : error.error || error.message;
-		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
+		api.broadcast('notify.ephemeralMessage', uid, task.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 
