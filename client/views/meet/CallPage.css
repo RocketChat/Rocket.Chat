@@ -9,3 +9,32 @@
 	border-color: #ffffff !important;
 	background-color: #ffffff !important;
 }
+
+.Self_Video {
+	width: 15%;
+}
+
+@media (max-width: 1200px) {
+	.Self_Video {
+		width: 20%;
+	}
+}
+
+@media (max-width: 900px) {
+	.Self_Video {
+		width: 30%;
+	}
+}
+
+@media (max-width: 900px) and (min-height: 500px) {
+	.Self_Video {
+		width: 30%;
+		height: 20%;
+	}
+}
+
+@media (max-width: 900px) and (max-height: 619px) {
+	.remoteAvatar {
+		left: 46%;
+	}
+}

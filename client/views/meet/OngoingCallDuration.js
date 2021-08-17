@@ -8,7 +8,7 @@ export const OngoingCallDuration = () => {
 
 	return (
 		<div style={{ color: '#E4E7EA', fontSize: 15, textAlign: 'center', margin: 15 }}>
-			<div> {new Date(counter * 1000).toISOString().substr(11, 8)}</div>
+			{new Date(counter * 1000).toISOString().substr(11, 8)}
 		</div>
 	);
 };
