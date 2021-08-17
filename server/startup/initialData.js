@@ -11,7 +11,7 @@ import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/l
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
-		if (!Rooms.findOneById('GENERAL')) {
+		if (!Rooms.findOneById('GENERAL') && settings.get('General_Default')) {
 			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
 			});
