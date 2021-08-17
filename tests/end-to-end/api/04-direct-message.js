@@ -10,6 +10,7 @@ import {
 	apiEmail,
 } from '../../data/api-data.js';
 import { password, adminUsername } from '../../data/user.js';
+import { deleteRoom } from '../../data/rooms.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 
@@ -481,11 +482,14 @@ describe('[Direct Messages]', function() {
 
 	describe('/im.create', () => {
 		let otherUser;
+		let roomId;
+
 		before(async () => {
 			otherUser = await createUser();
 		});
 
 		after(async () => {
+			await deleteRoom({ type: 'd', roomId });
 			await deleteUser(otherUser);
 			otherUser = undefined;
 		});
@@ -502,6 +506,7 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername, 'rocket.cat', otherUser.username]);
+					roomId = res.body.room._id;
 				})
 				.end(done);
 		});
@@ -519,6 +524,7 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members(['rocket.cat', otherUser.username]);
+					roomId = res.body.room._id;
 				})
 				.end(done);
 		});
@@ -550,7 +556,6 @@ describe('[Direct Messages]', function() {
 				.expect(200)
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
-					console.log(res.body);
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
@@ -608,7 +613,6 @@ describe('[Direct Messages]', function() {
 					.expect(403)
 					.expect('Content-Type', 'application/json')
 					.expect((res) => {
-						console.log(res.body);
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);

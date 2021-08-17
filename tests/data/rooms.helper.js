@@ -24,6 +24,28 @@ export const createRoom = ({ name, type, username, members = [] }) => {
 		});
 };
 
+export const deleteRoom = ({ type, roomId }) => {
+	if (!type) {
+		throw new Error('"type" is required in "deleteRoom" test helper');
+	}
+	if (!roomId) {
+		throw new Error('"roomId" is required in "deleteRoom" test helper');
+	}
+	const endpoints = {
+		c: 'channels.delete',
+		p: 'groups.delete',
+		d: 'im.delete',
+	};
+	return new Promise((resolve) => {
+		request.post(api(endpoints[type]))
+			.set(credentials)
+			.send({
+				roomId,
+			})
+			.end(resolve);
+	});
+};
+
 export const closeRoom = ({ type, roomId }) => {
 	if (!type) {
 		throw new Error('"type" is required in "closeRoom" test helper');
