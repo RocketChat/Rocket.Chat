@@ -47,6 +47,7 @@ export const useStreamUpdatesForMessageList = (
 	uid: IUser['_id'] | null,
 	rid: IRoom['_id'] | null,
 	taskList?: TaskList,
+	taskRoom?: boolean,
 ): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToRoomTasks = useStream('room-tasks');
@@ -65,8 +66,8 @@ export const useStreamUpdatesForMessageList = (
 			},
 		);
 
-		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomTasksRidEvent>(rid, (task) => {
-			taskList?.handle(task);
+		const unsubscribeFromRoomTasks = subscribeToRoomTasks<RoomTasksRidEvent>(rid, (message) => {
+			messageList.handle(message);
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom<NotifyRoomRidDeleteMessageEvent>(
@@ -86,7 +87,7 @@ export const useStreamUpdatesForMessageList = (
 
 		return (): void => {
 			unsubscribeFromRoomMessages();
-			unsubscribeFromRoomTasks();
+			// taskRoom && unsubscribeFromRoomTasks();
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
@@ -98,5 +99,6 @@ export const useStreamUpdatesForMessageList = (
 		messageList,
 		subscribeToRoomTasks,
 		taskList,
+		taskRoom,
 	]);
 };
