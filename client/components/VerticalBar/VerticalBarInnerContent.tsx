@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { ReactElement, memo, ComponentProps } from 'react';
 
-const VerticalBarInnerContent: FC = (props) => (
+const VerticalBarInnerContent = (props: ComponentProps<typeof Box>): ReactElement => (
 	<Box
 		rcx-vertical-bar--inner-content
 		position='absolute'

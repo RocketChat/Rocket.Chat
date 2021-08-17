@@ -1,7 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps, memo } from 'react';
+import React, { ReactElement, ComponentProps, memo } from 'react';
 
-const VerticalBarIcon: FC<ComponentProps<typeof Icon>> = (props) => (
+const VerticalBarIcon = (props: ComponentProps<typeof Icon>): ReactElement => (
 	<Icon {...props} pi='x2' size='x24' />
 );
 

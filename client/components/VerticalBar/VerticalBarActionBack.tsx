@@ -1,7 +1,9 @@
-import React, { FC, memo } from 'react';
+import React, { ReactElement, memo, ComponentProps } from 'react';
 
 import VerticalBarAction from './VerticalBarAction';
 
-const VerticalBarActionBack: FC = (props) => <VerticalBarAction {...props} name='arrow-back' />;
+const VerticalBarActionBack = (props: ComponentProps<typeof VerticalBarAction>): ReactElement => (
+	<VerticalBarAction {...props} name='arrow-back' />
+);
 
 export default memo(VerticalBarActionBack);

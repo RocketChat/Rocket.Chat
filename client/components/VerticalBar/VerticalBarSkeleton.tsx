@@ -1,10 +1,10 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import React, { FC, ComponentProps, memo } from 'react';
+import React, { ReactElement, ComponentProps, memo } from 'react';
 
 import VerticalBar from './VerticalBar';
 import VerticalBarHeader from './VerticalBarHeader';
 
-const VerticalBarSkeleton: FC<ComponentProps<typeof Box>> = (props) => (
+const VerticalBarSkeleton = (props: ComponentProps<typeof Box>): ReactElement => (
 	<VerticalBar {...props} width='100%'>
 		<VerticalBarHeader>
 			<Skeleton width='100%' />

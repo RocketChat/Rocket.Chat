@@ -1,10 +1,13 @@
 import { ActionButton } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { ReactElement, memo, MouseEventHandler } from 'react';
 
-const VerticalBarAction: FC<{
+const VerticalBarAction = ({
+	name,
+	...props
+}: {
 	name: string;
 	title?: string;
-	onClick?: () => void;
-}> = ({ name, ...props }) => <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;
+	onClick?: MouseEventHandler<HTMLOrSVGElement>;
+}): ReactElement => <ActionButton flexShrink={0} icon={name} ghost {...props} tiny />;
 
 export default memo(VerticalBarAction);

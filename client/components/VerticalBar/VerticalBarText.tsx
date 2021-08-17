@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { ReactElement, memo, ComponentProps } from 'react';
 
-const VerticalBarText: FC<{ children?: string; dangerouslySetInnerHTML?: { __html: string } }> = (
-	props,
-) => <Box flexShrink={1} flexGrow={1} withTruncatedText {...props} />;
+const VerticalBarText = (props: ComponentProps<typeof Box>): ReactElement => (
+	<Box flexShrink={1} flexGrow={1} withTruncatedText {...props} />
+);
 
 export default memo(VerticalBarText);

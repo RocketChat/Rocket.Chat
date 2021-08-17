@@ -1,9 +1,11 @@
-import React, { FC, memo } from 'react';
+import React, { memo, ComponentProps, ReactElement } from 'react';
 
 import { useTranslation } from '../../contexts/TranslationContext';
 import VerticalBarAction from './VerticalBarAction';
 
-const VerticalBarClose: FC<{ onClick?: () => void }> = (props) => {
+type VerticalBarCloseProps = Partial<ComponentProps<typeof VerticalBarAction>>;
+
+const VerticalBarClose = (props: VerticalBarCloseProps): ReactElement => {
 	const t = useTranslation();
 	return <VerticalBarAction {...props} title={t('Close')} name='cross' />;
 };

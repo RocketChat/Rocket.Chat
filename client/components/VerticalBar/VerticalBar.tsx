@@ -8,7 +8,7 @@ const VerticalBar: FC<ComponentProps<typeof Box>> = ({ children, ...props }) => 
 	const position = useLayoutContextualBarPosition();
 	return (
 		<Box
-			rcx-vertical-barReactChildrenq
+			rcx-vertical-bar
 			backgroundColor='surface'
 			display='flex'
 			flexDirection='column'

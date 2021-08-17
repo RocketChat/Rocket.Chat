@@ -1,7 +1,7 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import React, { FC, memo } from 'react';
+import React, { memo, ReactElement, ComponentProps } from 'react';
 
-const VerticalBarActions: FC<{ children: React.ReactNode }> = (props) => (
+const VerticalBarActions = (props: ComponentProps<typeof ButtonGroup>): ReactElement => (
 	<ButtonGroup medium {...props} />
 );
 

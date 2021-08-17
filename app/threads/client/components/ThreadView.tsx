@@ -1,4 +1,4 @@
-import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
+import React, { ComponentProps, useCallback, useMemo, forwardRef, MouseEventHandler } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
@@ -11,7 +11,7 @@ type ThreadViewProps = ComponentProps<typeof Box> & {
 	following: boolean;
 	onToggleExpand: (expanded: boolean) => void;
 	onToggleFollow: (following: boolean) => void;
-	onClose: () => void;
+	onClose: MouseEventHandler<HTMLOrSVGElement>;
 	onClickBack: () => void;
 };
 
