@@ -17,12 +17,12 @@ function _callProcessor(processor: Function): (job: { attrs?: { data: object } }
 		// This field is for internal use, no need to leak to app processor
 		delete (data as any).appId;
 
-		processor(data);
+		return processor(data);
 	};
 }
 
 /**
- * Provides the Apps Engine with task scheduling capabilities
+ * Provides the Apps Engine with task scheduling capabilities.
  * It uses {@link agenda:github.com/agenda/agenda} as backend
  */
 export class AppSchedulerBridge extends SchedulerBridge {
@@ -43,7 +43,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	}
 
 	/**
-	 * Entity that will be run in a job
+	 * Entity that will be run in a job.
 	 * @typedef {Object} Processor
 	 * @property {string} id The processor's identifier
 	 * @property {function} processor The function that will be run on a given schedule
@@ -127,7 +127,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	}
 
 	/**
-	 * Schedules a registered processor to run recurrently according to a given interval
+	 * Schedules a registered processor to run recurrently according to a given interval.
 	 *
 	 * @param {Object} job
 	 * @param {string} job.id The processor's id
