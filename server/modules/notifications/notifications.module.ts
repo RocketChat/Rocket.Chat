@@ -52,6 +52,8 @@ export class NotificationsModule {
 
 	public readonly streamLocal: IStreamer;
 
+	public readonly streamPresence: IStreamer;
+
 	constructor(
 		private Streamer: IStreamerConstructor,
 	) {
@@ -69,6 +71,8 @@ export class NotificationsModule {
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
 		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
+
+		this.streamPresence = new this.Streamer('user-presence');
 
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
@@ -161,6 +165,9 @@ export class NotificationsModule {
 
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
+
+		this.streamPresence.allowWrite('none');
+		this.streamPresence.allowRead('logged');
 
 		this.streamRoom.allowRead(async function(eventName, extraData): Promise<boolean> {
 			const [rid] = eventName.split('/');
@@ -443,6 +450,13 @@ export class NotificationsModule {
 			console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		}
 		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
+	}
+
+	sendPresence(userId: string, status: string): void {
+		// if (this.debug === true) {
+		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
+		// }
+		return this.streamPresence.emitWithoutBroadcast(userId, status);
 	}
 
 	progressUpdated(progress: {rate: number}): void {

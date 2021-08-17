@@ -87,6 +87,10 @@ export class ListenersModule {
 			}
 
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
+
+			if (_id) {
+				notifications.sendPresence(_id, status);
+			}
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {

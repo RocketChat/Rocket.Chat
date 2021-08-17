@@ -1,5 +1,6 @@
 import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
 
+import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
@@ -57,6 +58,9 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	const fetch = (delay = 250): void => {
 		timer && clearTimeout(timer);
 		timer = setTimeout(async () => {
+			if (uids.size === 0) {
+				return;
+			}
 			const currentUids = new Set(uids);
 			uids.clear();
 			try {
@@ -90,6 +94,10 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	};
 
 	const get = (uid: UserPresence['_id']): void => {
+		Notifications.onUserPresence(uid, (status: UserPresence['status']) => {
+			notify({ _id: uid, status });
+		});
+
 		uids.add(uid);
 		fetch();
 	};
