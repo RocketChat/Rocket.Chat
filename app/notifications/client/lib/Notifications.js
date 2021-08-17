@@ -100,6 +100,10 @@ class Notifications {
 	onUserPresence(uid, callback) {
 		return this.streamPresence.on(uid, callback);
 	}
+
+	unUserPresence(uid, callback) {
+		return this.streamPresence.removeListener(uid, callback);
+	}
 }
 
 export default new Notifications();

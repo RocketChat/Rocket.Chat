@@ -5,6 +5,8 @@ import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
 
+const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
+
 type InternalEvents = {
 	remove: IUser['_id'];
 	reset: undefined;
@@ -52,6 +54,8 @@ const notify = (presence: UserPresence): void => {
 	}
 };
 
+const subStream = new Map<string, Function>();
+
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
 
@@ -94,12 +98,19 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	};
 
 	const get = (uid: UserPresence['_id']): void => {
-		Notifications.onUserPresence(uid, (status: UserPresence['status']) => {
-			notify({ _id: uid, status });
-		});
-
 		uids.add(uid);
 		fetch();
+
+		if (!subStream.has(uid)) {
+			subStream.set(
+				uid,
+				([username, status, statusText]: [IUser['username'], number, IUser['statusText']]) => {
+					notify({ _id: uid, username, status: STATUS_MAP[status], statusText });
+				},
+			);
+
+			Notifications.onUserPresence(uid, subStream.get(uid));
+		}
 	};
 
 	emitter.on('remove', (uid) => {
@@ -108,6 +119,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 		}
 
 		store.delete(uid);
+		Notifications.unUserPresence(uid, subStream.get(uid));
 	});
 
 	emitter.on('reset', () => {

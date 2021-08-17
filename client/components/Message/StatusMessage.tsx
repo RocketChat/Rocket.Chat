@@ -1,10 +1,10 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement, memo } from 'react';
 
-import { useUserData } from '../../hooks/useUserData';
+import { usePresence } from '../../hooks/usePresence';
 
 const StatusMessage = ({ uid }: { uid: string }): ReactElement | null => {
-	const data = useUserData(uid);
+	const data = usePresence(uid);
 
 	if (!data || !data.statusText) {
 		return null;
