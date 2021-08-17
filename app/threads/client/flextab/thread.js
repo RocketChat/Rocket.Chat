@@ -10,8 +10,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { chatMessages, ChatMessages } from '../../../ui';
 import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
-import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { Messages } from '../../../models';
+import { upsertMessageBulk, upsertTask } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { Messages, Tasks } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
@@ -72,9 +72,16 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
-		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		let thread;
+		let following;
 
-		const following = thread?.replies?.includes(Meteor.userId());
+		if (subscription.taskRoomId) {
+			thread = instance.TaskHeader.findOne({ _id: tmid }, { fields: { replies: 1 } });
+			following = thread?.replies?.includes(Meteor.userId());
+		} else {
+			thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+			following = thread?.replies?.includes(Meteor.userId());
+		}
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
@@ -171,6 +178,7 @@ Template.thread.onRendered(function() {
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
+		this.taskHeaderObserve && this.taskHeaderObserve.stop();
 
 		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
 			fields: {
@@ -186,6 +194,13 @@ Template.thread.onRendered(function() {
 				this.Threads.update({ _id }, message);
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
+		});
+
+		this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
+			changed: ({ _id, ...task }) => {
+				this.TaskHeader.update({ _id }, task);
+			},
+			removed: ({ _id }) => this.TaskHeader.remove(_id),
 		});
 
 		this.loadMore();
@@ -239,7 +254,7 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
-
+	this.TaskHeader = new Mongo.Collection(null);
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
@@ -255,7 +270,11 @@ Template.thread.onCreated(async function() {
 
 		const messages = await call('getThreadMessages', { tmid, rid });
 
+		const taskHeader = await call('getSingleTask', tmid);
+
 		upsertMessageBulk({ msgs: messages }, this.Threads);
+
+		upsertTask({ task: taskHeader }, this.TaskHeader);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
@@ -264,10 +283,10 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove, state } = this;
+	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
-
+	taskHeaderObserve && taskHeaderObserve.stop();
 	callbackRemove && callbackRemove();
 
 	const tmid = state.get('tmid');

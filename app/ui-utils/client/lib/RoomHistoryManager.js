@@ -101,6 +101,9 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 };
 
 export const upsertTask = async ({ task, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatTask) => {
+	if (!task) {
+		return;
+	}
 	const userId = task.u && task.u._id;
 
 	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
