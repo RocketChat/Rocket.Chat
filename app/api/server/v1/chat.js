@@ -476,9 +476,9 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		};
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };
-
 		let cursor;
 		if (room.taskRoomId) {
+			console.log(room.taskRoomId);
 			cursor = Tasks.find(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,

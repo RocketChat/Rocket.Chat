@@ -44,8 +44,13 @@ Template.thread.events({
 Template.thread.helpers({
 	...dropzoneHelpers,
 	mainMessage() {
-		const { Threads, state } = Template.instance();
+		const { Threads, TaskHeader, state } = Template.instance();
+		const { room } = Template.currentData();
+
 		const tmid = state.get('tmid');
+		if (room.taskRoomId) {
+			return TaskHeader.findOne({ _id: tmid });
+		}
 		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
@@ -70,12 +75,12 @@ Template.thread.helpers({
 	},
 	messageBoxData() {
 		const instance = Template.instance();
-		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
+		const { mainMessage: { rid, _id: tmid }, subscription, room } = Template.currentData();
 
 		let thread;
 		let following;
 
-		if (subscription.taskRoomId) {
+		if (room.taskRoomId) {
 			thread = instance.TaskHeader.findOne({ _id: tmid }, { fields: { replies: 1 } });
 			following = thread?.replies?.includes(Meteor.userId());
 		} else {
@@ -131,7 +136,7 @@ Template.thread.helpers({
 
 
 Template.thread.onRendered(function() {
-	const { subscription } = Template.currentData();
+	const { room } = Template.currentData();
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
@@ -197,7 +202,7 @@ Template.thread.onRendered(function() {
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
 
-		if (subscription.taskRoomId) {
+		if (room.taskRoomId) {
 			this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
 				changed: ({ _id, ...task }) => {
 					this.TaskHeader.update({ _id }, task);
@@ -259,7 +264,7 @@ Template.thread.onRendered(function() {
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
 	this.TaskHeader = new Mongo.Collection(null);
-	const { subscription } = Template.currentData();
+	const { room } = Template.currentData();
 
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
@@ -275,12 +280,12 @@ Template.thread.onCreated(async function() {
 		this.state.set('loading', true);
 
 		const messages = await call('getThreadMessages', { tmid, rid });
-		if (subscription.taskRoomId) {
+		upsertMessageBulk({ msgs: messages }, this.Threads);
+
+		if (room.taskRoomId) {
 			const taskHeader = await call('getSingleTask', tmid);
 			upsertTask({ task: taskHeader }, this.TaskHeader);
 		}
-
-		upsertMessageBulk({ msgs: messages }, this.Threads);
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
@@ -289,8 +294,9 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve } = this;
+	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve, TaskHeader } = this;
 	Threads.remove({});
+	TaskHeader && TaskHeader.remove({});
 	threadsObserve && threadsObserve.stop();
 	taskHeaderObserve && taskHeaderObserve.stop();
 	callbackRemove && callbackRemove();
