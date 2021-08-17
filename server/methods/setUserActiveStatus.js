@@ -5,14 +5,12 @@ import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
-const getAdminCount = () => {
-	return Meteor.users.find({
-				roles: {
-					$in: ['admin'],
-				},
-				active: true,
-			}).count();
-}
+const getAdminCount = () => Meteor.users.find({
+	roles: {
+		$in: ['admin'],
+	},
+	active: true,
+}).count();
 
 Meteor.methods({
 	setUserActiveStatus(userId, active, confirmRelenquish) {
@@ -39,7 +37,7 @@ Meteor.methods({
 				action: 'Remove_last_admin',
 			});
 		}
-		
+
 		setUserActiveStatus(userId, active, confirmRelenquish);
 		return true;
 	},
