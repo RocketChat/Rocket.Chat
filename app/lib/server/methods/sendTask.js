@@ -11,7 +11,7 @@ import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../logger/server';
 import { api } from '../../../../server/sdk/api';
 
-export function executeSendMessage(uid, task) {
+export function executeSendTask(uid, task) {
 	if (task.tshow && !task.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendTask',
@@ -77,7 +77,7 @@ Meteor.methods({
 		}
 
 		try {
-			return executeSendMessage(uid, task);
+			return executeSendTask(uid, task);
 		} catch (error) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

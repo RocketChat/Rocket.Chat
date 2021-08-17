@@ -3,11 +3,12 @@ import { Promise } from 'meteor/promise';
 import { Match } from 'meteor/check';
 import s from 'underscore.string';
 import moment from 'moment';
+import { Random } from 'meteor/random';
 
 import { Subscriptions, Tasks, Users } from '../../../models/server';
 import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
-import { updateTask, sendTask, deleteTask } from '../../../lib/server/functions';
+import { updateTask, deleteTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasPermission, canSendMessage } from '../../../authorization/server';
@@ -135,6 +136,12 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		const uid = this.userId;
 
+		const _hasPermission = hasPermission(this.userId, 'create-task', task.rid);
+
+		if (!_hasPermission) {
+			return API.v1.failure('Not authorized');
+		}
+
 		if (!uid || s.trim(task.title) === '') {
 			return API.v1.failure('task title is missing');
 		}
@@ -153,22 +160,16 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			task.ts = new Date();
 		}
 
-		const user = Users.findOneById(uid, {
-			fields: {
-				username: 1,
-				type: 1,
-			},
-		});
 		const { rid } = task;
 
 		if (!rid) {
 			return API.v1.failure('the rid property is missing');
 		}
 
+		task._id = Random.id();
+
 		try {
-			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-			// Meteor.call('sendTask', task);
-			sendTask(user, task, room, false);
+			Meteor.call('sendTask', task);
 		} catch (error) {
 			return API.v1.failure('An error occured while creating a task');
 		}

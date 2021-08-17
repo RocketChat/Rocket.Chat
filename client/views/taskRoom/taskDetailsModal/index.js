@@ -2,7 +2,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback } from 'react';
 import toastr from 'toastr';
 
-import { ChatTask } from '../../../../app/models/client';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
@@ -60,9 +59,8 @@ const TaskDetailsModalWithInfo = ({ taskId, task, onCreate, onClose, ...props })
 		};
 
 		const data = await deleteTask(params);
-		ChatTask.remove(params);
 		if (data.success) {
-			toastr.success(t('Saved'));
+			toastr.success(t('Deleted'));
 			onClose();
 		}
 
