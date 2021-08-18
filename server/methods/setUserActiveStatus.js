@@ -33,15 +33,11 @@ Meteor.methods({
 
 		const userAdmin = Users.findOneAdmin(userId.count);
 
-		if (userAdmin) {
-			const adminCount = getAdminCount();
-
-			if (adminCount === 1) {
-				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
-					method: 'removeUserFromRole',
-					action: 'Remove_last_admin',
-				});
-			}
+		if (userAdmin && getAdminCount() === 1) {
+			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+				method: 'removeUserFromRole',
+				action: 'Remove_last_admin',
+			});
 		}
 
 		setUserActiveStatus(userId, active, confirmRelenquish);
