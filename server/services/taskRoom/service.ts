@@ -1,7 +1,6 @@
 import { Db } from 'mongodb';
 import { Random } from 'meteor/random';
 
-import { TasksRaw } from '../../../app/models/server/raw/Tasks';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { IRoom } from '../../../definition/IRoom';
@@ -16,8 +15,6 @@ import {
 } from '../../sdk/types/ITaskRoomService';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 
-import { ITask } from '/definition/ITask';
-
 export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 	protected name = 'taskRoom';
 
@@ -25,14 +22,11 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 
 	private Users: UsersRaw;
 
-	private TasksModel: TasksRaw;
-
 	constructor(db: Db) {
 		super();
 
 		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
 		this.Users = new UsersRaw(db.collection('users'));
-		this.TasksModel = new TasksRaw(db.collection('rocketchat_task'));
 	}
 
 	async create(uid: string, { taskRoom, room = { name: taskRoom.name, extraData: {} }, members }: ITaskRoomCreateParams): Promise<ITaskRoom> {
@@ -45,8 +39,6 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 		if (!createdBy) {
 			throw new Error('invalid-user');
 		}
-
-		// TODO add validations to `data` and `members`
 
 		const membersResult = await this.Users.findActiveByIds(members, { projection: { username: 1, _id: 0 } }).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
@@ -81,17 +73,11 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 
 			return {
 				_id: taskRoomId,
+				taskRoomId,
 				...taskRoomData,
 			};
 		} catch (e) {
 			throw new Error('error-team-creation');
 		}
-	}
-
-	async findByMessageId(id: string): Promise<ITask> {
-		const [taskDetails] = await Promise.all([
-			this.TasksModel.find({ id }).fetch(),
-		]);
-		return taskDetails;
 	}
 }
