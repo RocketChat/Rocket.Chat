@@ -257,7 +257,9 @@ export class LivechatInquiry extends Base {
 		}, { multi: true });
 	}
 
-	updateEstimatedInactivityCloseTime(milisecondsToAdd) {
+	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
+	// leaving this here for when the time comes
+	/* updateEstimatedInactivityCloseTime(milisecondsToAdd) {
 		return this.model.rawCollection().updateMany(
 			{ status: 'queued' },
 			[{
@@ -271,7 +273,7 @@ export class LivechatInquiry extends Base {
 				},
 			}],
 		);
-	}
+	} */
 }
 
 export default new LivechatInquiry();
