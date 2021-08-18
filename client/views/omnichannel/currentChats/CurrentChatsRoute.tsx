@@ -9,6 +9,7 @@ import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import CurrentChatsPage from './CurrentChatsPage';
 import RemoveChatButton from './RemoveChatButton';
 
@@ -145,7 +146,7 @@ const CurrentChatsRoute: FC = () => {
 		// livechatRoomRoute.push({ id: _id });
 	});
 
-	const { value: data, reload } = useEndpointData('livechat/rooms', query);
+	const { value: data, reload, phase } = useEndpointData('livechat/rooms', query);
 
 	const header = useMemo(
 		() =>
@@ -240,7 +241,9 @@ const CurrentChatsRoute: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return (
+	return phase === AsyncStatePhase.LOADING || data === undefined ? (
+		<></>
+	) : (
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}
