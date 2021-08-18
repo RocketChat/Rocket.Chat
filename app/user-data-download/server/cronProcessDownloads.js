@@ -462,9 +462,9 @@ function spliceByFileSize(fileList, size) {
 	let fileCounter = 0;
 	let sizeCounter = 0;
 
-	for (let i = 0; i < fileList.length; i++) {
+	for (const file of fileList) {
 		fileCounter++;
-		sizeCounter += fileList[i].size;
+		sizeCounter += file.size;
 
 		if (sizeCounter > size) {
 			return fileList.splice(0, fileCounter);
