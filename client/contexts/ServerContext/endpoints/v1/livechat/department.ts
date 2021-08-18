@@ -9,7 +9,9 @@ export type LivechatDepartment = {
 		sort?: string;
 		onlyMyDepartments?: boolean;
 	}) => {
-		departments: ObjectFromApi<ILivechatDepartment>[];
+		departments: ObjectFromApi<ILivechatDepartment[]>;
 		total: number;
+		count: number;
+		offset: number;
 	};
 };

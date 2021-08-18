@@ -8,6 +8,7 @@ import UserCard from '../../../../../components/UserCard/UserCard';
 import { UserStatus } from '../../../../../components/UserStatus';
 import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { useOmnichannelCustomFields } from '../../../../../contexts/OmnichannelContext/OmnichannelCustomFieldsContext';
 import { useCurrentRoute, useRoute } from '../../../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -24,8 +25,7 @@ const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } =
-		useEndpointData('livechat/custom-fields');
+	const allCustomFields = useOmnichannelCustomFields();
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -57,10 +57,10 @@ const ContactInfo = ({ id, rid, route }) => {
 
 	useEffect(() => {
 		if (allCustomFields) {
-			const { customFields: customFieldsAPI } = allCustomFields;
+			const customFieldsAPI = allCustomFields;
 			setCustomFields(customFieldsAPI);
 		}
-	}, [allCustomFields, stateCustomFields]);
+	}, [allCustomFields]);
 
 	const {
 		value: data,

@@ -1,0 +1,1 @@
+export { OmnichannelProvider } from './OmnichannelProvider';

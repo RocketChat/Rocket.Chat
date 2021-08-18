@@ -1,11 +1,12 @@
 import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
 import { roomTypes } from '../../../../app/utils/client';
-import { IRoom } from '../../../../definition/IRoom';
+import { IRoom, isOmnichannelRoom } from '../../../../definition/IRoom';
 import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
 import { RoomContext } from '../contexts/RoomContext';
+import OmnichannelRoomProvider from './OmnichannelRoomProvider';
 import ToolboxProvider from './ToolboxProvider';
 
 export type Props = {
@@ -39,7 +40,13 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 
 	return (
 		<RoomContext.Provider value={context}>
-			<ToolboxProvider room={room}>{children}</ToolboxProvider>
+			{isOmnichannelRoom(room) ? (
+				<OmnichannelRoomProvider room={room}>
+					<ToolboxProvider room={room}>{children}</ToolboxProvider>
+				</OmnichannelRoomProvider>
+			) : (
+				<ToolboxProvider room={room}>{children}</ToolboxProvider>
+			)}
 		</RoomContext.Provider>
 	);
 };

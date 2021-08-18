@@ -7,7 +7,7 @@ import {
 	useOmnichannelAgentAvailable,
 	useOmnichannelQueueLink,
 	useOmnichannelDirectoryLink,
-} from '../../contexts/OmnichannelContext';
+} from '../../contexts/OmnichannelContext/OmnichannelContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
