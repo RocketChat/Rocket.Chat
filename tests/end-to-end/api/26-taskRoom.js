@@ -338,6 +338,7 @@ describe('[TaskRoom]', () => {
 
 	describe('Udpate a task', () => {
 		const task = {};
+
 		before((done) => {
 			request.post(api('taskRoom.createTask'))
 				.set(credentials)

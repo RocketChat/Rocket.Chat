@@ -8,10 +8,10 @@ import { Random } from 'meteor/random';
 import { Subscriptions, Tasks, Users } from '../../../models/server';
 import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
-import { updateTask, deleteTask } from '../../../lib/server/functions';
+import { updateTask, deleteTask, sendTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
-import { hasPermission, canSendMessage } from '../../../authorization/server';
+import { hasPermission, canSendMessage, canAccessRoom } from '../../../authorization/server';
 
 
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {
@@ -46,9 +46,16 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 			return API.v1.failure('Missing id for the task');
 		}
 
-		// permission
+		const uid = this.userId;
 
 		const taskDetails = Promise.await(Tasks.findOne({ _id: taskId }));
+
+		const room = Meteor.call('canAccessRoom', taskDetails.rid, uid);
+
+		if (!canAccessRoom(room, uid)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
 
 		return API.v1.success({ task: taskDetails });
 	},
@@ -100,7 +107,12 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 				type: 1,
 			},
 		});
-		canSendMessage(task.rid, { uid: user._id, ...user });
+
+		try {
+			canSendMessage(task.rid, { uid: user._id, ...user });
+		} catch (error) {
+			return API.v1.failure(error.message);
+		}
 
 		if (task.attachments && task.attachments.length > 0 && task.attachments[0].description !== undefined) {
 			task.attachments = task.attachments;
@@ -167,7 +179,20 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		task._id = Random.id();
 
-		Meteor.call('sendTask', task);
+		const user = Users.findOneById(uid, {
+			fields: {
+				username: 1,
+				type: 1,
+			},
+		});
+
+		try {
+			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+			sendTask(user, task, room, false);
+		} catch (error) {
+			return API.v1.failure(error.message);
+		}
+
 
 		return API.v1.success({ task });
 	},
