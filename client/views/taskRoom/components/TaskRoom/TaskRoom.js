@@ -3,7 +3,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import toastr from 'toastr';
 
-import { NewTaskRoom } from '../../../../../app/ui/client/lib/taskRoomUtils.js';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
@@ -118,7 +117,7 @@ export default function TaskRoom({ rid, tasks, userId }) {
 	return (
 		<div className='wrapper'>
 			<ButtonGroup align='center'>
-				<Button ghost info onClick={() => NewTaskRoom.createTask(rid)}>
+				<Button ghost info onClick={sortByUser}>
 					{'Sort by Creator'}
 				</Button>
 				<Button ghost info onClick={sortByDate}>

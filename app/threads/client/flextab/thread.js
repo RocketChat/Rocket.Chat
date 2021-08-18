@@ -271,7 +271,7 @@ Template.thread.onCreated(async function() {
 
 	this.loadMore = async () => {
 		const { tmid, rid } = Tracker.nonreactive(() => this.state.all());
-		console.log('loadmore threads');
+
 		if (!tmid) {
 			return;
 		}
