@@ -58,7 +58,7 @@ import './methods/saveSetting';
 import './methods/saveSettings';
 import './methods/sendInvitationEmail';
 import './methods/sendMessage';
-// import './methods/sendTask';
+import './methods/sendTask';
 import './methods/sendSMTPTestEmail';
 import './methods/setAdminStatus';
 import './methods/setEmail';
