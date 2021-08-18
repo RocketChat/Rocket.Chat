@@ -163,10 +163,7 @@ export const updateQueueInactivityTimeout = () => {
 	}
 
 	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
-	LivechatInquiry.getQueuedInquiries().forEach((inq) => {
-		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
-		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
-	});
+	LivechatInquiry.updateEstimatedInactivityCloseTime(queueTimeout * 60000);
 };
 
 export const updateRoomPriorityHistory = (rid, user, priority) => {

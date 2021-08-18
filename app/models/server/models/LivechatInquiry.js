@@ -256,6 +256,22 @@ export class LivechatInquiry extends Base {
 			},
 		}, { multi: true });
 	}
+
+	updateEstimatedInactivityCloseTime(milisecondsToAdd) {
+		return this.model.rawCollection().updateMany(
+			{ status: 'queued' },
+			[{
+				// in case this field doesn't exists, set at the last time the item was modified (updatedAt)
+				$set: { estimatedInactivityCloseTimeAt: '$_updatedAt' },
+			}, {
+				$set: {
+					estimatedInactivityCloseTimeAt: {
+						$add: ['$estimatedInactivityCloseTimeAt', milisecondsToAdd],
+					},
+				},
+			}],
+		);
+	}
 }
 
 export default new LivechatInquiry();

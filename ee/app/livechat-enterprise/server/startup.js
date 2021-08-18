@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../app/settings';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
-import { QueueInactivityMonitor } from './lib/QueueInactivityMonitor';
+import { OmnichannelQueueInactivityMonitor } from './lib/QueueInactivityMonitor';
 import './lib/query.helper';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
@@ -11,7 +11,6 @@ import { businessHourManager } from '../../../../app/livechat/server/business-ho
 import { resetDefaultBusinessHourIfNeeded } from './business-hour/Helper';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
-const queueInactivityMonitor = new QueueInactivityMonitor();
 const businessHours = {
 	Multiple: new MultipleBusinessHoursBehavior(),
 	Single: new SingleBusinessHourBehavior(),
@@ -37,13 +36,17 @@ Meteor.startup(async function() {
 	settings.onload('Livechat_max_queue_wait_time_action', function(_, value) {
 		updateQueueInactivityTimeout();
 		if (!value || value === 'Nothing') {
-			return queueInactivityMonitor.stop();
+			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
-		return queueInactivityMonitor.start();
+		return Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
-	settings.onload('Livechat_max_queue_wait_time', function() {
+	settings.onload('Livechat_max_queue_wait_time', function(_, value) {
+		if (value <= 0) {
+			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
+		}
 		updateQueueInactivityTimeout();
+		Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
 	await resetDefaultBusinessHourIfNeeded();
