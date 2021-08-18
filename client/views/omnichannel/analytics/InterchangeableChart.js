@@ -43,7 +43,6 @@ const InterchangeableChart = ({ departmentId, dateRange, chartName, ...props }) 
 
 	const draw = useMutableCallback(async (params) => {
 		try {
-			console.log(chartName);
 			const tooltipCallbacks = getChartTooltips(chartName);
 			if (!params?.daterange?.from || !params?.daterange?.to) {
 				return;
