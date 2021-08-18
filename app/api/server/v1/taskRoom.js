@@ -59,7 +59,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		const { id, taskTitle, taskAssignee, taskDescription, taskStatus } = this.bodyParams;
 
 		if (!id) {
-			return API.v1.failure('task-does-not-exist');
+			return API.v1.failure('Id is missing');
 		}
 
 		const task = Tasks.findOneById(id);
@@ -69,7 +69,6 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		if (!task || !task._id) {
 			return;
 		}
-
 
 		const editAllowed = settings.get('Task_AllowEditing');
 		const editOwn = task.u && task.u._id === this.userId;
@@ -125,8 +124,8 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		}
 
 		updateTask(task, Meteor.user());
-
-		return API.v1.success();
+		console.log(task);
+		return API.v1.success({ task });
 	},
 });
 

@@ -8,6 +8,7 @@ describe('[TaskRoom]', () => {
 	before((done) => getCredentials(done));
 
 	const community = `community${ Date.now() }`;
+	let roomTest;
 	let testUser;
 	const testUserCredentials = {};
 
@@ -59,6 +60,7 @@ describe('[TaskRoom]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('taskRoom.taskRoomId');
+					roomTest = res.body.taskRoom;
 				})
 				.end(done);
 		});
@@ -328,6 +330,51 @@ describe('[TaskRoom]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+		});
+
+		describe('Udpate a task', () => {
+			const task = {};
+			before((done) => {
+				request.post(api('taskRoom.createTask'))
+					.set(credentials)
+					.send({
+						rid: roomTest.roomId,
+						title: 'Test title',
+						taskDescription: 'Test Descr',
+						taskAssignee: '@TestUser',
+						taskStatus: 'Urgent',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						task._id = res.body.task._id;
+					})
+					.end(done);
+			});
+
+			it('Update the title, description, assignee, status of the task', (done) => {
+				request.post(api('taskRoom.taskUpdate'))
+					.set(credentials)
+					.send({
+						id: task._id,
+						taskTitle: 'New Title',
+						taskDescription: 'New Descr',
+						taskAssignee: '@TestUser2',
+						taskStatus: 'Not Urgent',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('task').and.to.be.an('object');
+						expect(res.body).to.have.nested.property('task.title', 'New Title');
+						expect(res.body).to.have.nested.property('task.taskDescription', 'New Descr');
+						expect(res.body).to.have.nested.property('task.taskAssignee', '@TestUser2');
+						expect(res.body).to.have.nested.property('task.taskStatus', 'Not Urgent');
 					})
 					.end(done);
 			});
