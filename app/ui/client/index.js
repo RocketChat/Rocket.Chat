@@ -47,6 +47,7 @@ import './components/tooltip';
 import './lib/Tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
+export { NewTaskRoom } from './lib/taskRoomUtils';
 export { fileUpload } from './lib/fileUpload';
 export { MsgTyping } from './lib/msgTyping';
 export { KonchatNotification } from './lib/notification';

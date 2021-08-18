@@ -8,7 +8,7 @@ import { Random } from 'meteor/random';
 import { Subscriptions, Tasks, Users } from '../../../models/server';
 import { canDeleteTask } from '../../../authorization/server/functions/canDeleteTask';
 import { settings } from '../../../settings';
-import { updateTask, deleteTask } from '../../../lib/server/functions';
+import { updateTask, deleteTask, sendTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
 import { hasPermission, canSendMessage } from '../../../authorization/server';
@@ -160,6 +160,13 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			task.ts = new Date();
 		}
 
+		const user = Users.findOneById(uid, {
+			fields: {
+				username: 1,
+				type: 1,
+			},
+		});
+
 		const { rid } = task;
 
 		if (!rid) {
@@ -169,7 +176,8 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 		task._id = Random.id();
 
 		try {
-			Meteor.call('sendTask', task);
+			const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+			sendTask(user, task, room, false);
 		} catch (error) {
 			return API.v1.failure('An error occured while creating a task');
 		}

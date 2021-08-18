@@ -95,7 +95,6 @@ export function executeSendMessage(uid, message) {
 Meteor.methods({
 	sendMessage(message) {
 		check(message, Object);
-
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
