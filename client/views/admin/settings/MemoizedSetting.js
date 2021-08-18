@@ -15,6 +15,7 @@ import PasswordSettingInput from './inputs/PasswordSettingInput';
 import RelativeUrlSettingInput from './inputs/RelativeUrlSettingInput';
 import RoomPickSettingInput from './inputs/RoomPickSettingInput';
 import SelectSettingInput from './inputs/SelectSettingInput';
+import SelectTimezoneSettingInput from './inputs/SelectTimezoneSettingInput';
 import StringSettingInput from './inputs/StringSettingInput';
 
 const MemoizedSetting = ({
@@ -44,6 +45,7 @@ const MemoizedSetting = ({
 			action: ActionSettingInput,
 			asset: AssetSettingInput,
 			roomPick: RoomPickSettingInput,
+			timezone: SelectTimezoneSettingInput,
 		}[type] || GenericSettingInput;
 
 	return (
