@@ -15,7 +15,7 @@ type ReactionsProps = {
 const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 	return (
-		<Box display='flex' flexDirection='column' minHeight='25vh'>
+		<Box display='flex' flexDirection='column' minHeight='x48'>
 			<ScrollableContentWrapper>
 				{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (
 					<Box key={reaction}>
