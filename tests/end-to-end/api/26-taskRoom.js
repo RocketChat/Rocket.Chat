@@ -200,7 +200,8 @@ describe('[TaskRoom]', () => {
 					})
 					.end(done);
 			});
-			it('should create a task when the user is the owner of a readonly channel', (done) => {
+			it('should create a task when the user is the owner of a readonly channel', async () => {
+				await updatePermission('post-readonly', ['owner, user']);
 				request.post(api('taskRoom.createTask'))
 					.set(credentials)
 					.send({
@@ -212,8 +213,7 @@ describe('[TaskRoom]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('task').and.to.be.an('object');
-					})
-					.end(done);
+					});
 			});
 			it('Inviting regular user to read-only channel', (done) => {
 				request.post(api('channels.invite'))
@@ -232,7 +232,7 @@ describe('[TaskRoom]', () => {
 					});
 			});
 
-			it('should fail to create a task when the user lacks permission', async (done) => {
+			it('should fail to create a task when the user lacks permission', async () => {
 				await updatePermission('post-readonly', ['bot']);
 				request.post(api('taskRoom.createTask'))
 					.set(userCredentials)
@@ -245,8 +245,7 @@ describe('[TaskRoom]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error');
-					})
-					.end(done);
+					});
 			});
 
 			it('should create a task when the user has permission to send messages on readonly channels', async () => {
@@ -272,13 +271,26 @@ describe('[TaskRoom]', () => {
 
 		describe('Follow and unfollow task', () => {
 			const task = {};
-			task._id = `id-${ Date.now() }`;
+			let channel;
+			before((done) => {
+				request.post(api('taskRoom.create'))
+					.set(credentials)
+					.send({
+						name: `readonlychannel${ +new Date() }`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						channel = res.body.taskRoom;
+					})
+					.end(done);
+			});
 			before((done) => {
 				request.post(api('taskRoom.createTask'))
 					.set(credentials)
 					.send({
-						_id: task._id,
-						rid: 'GENERAL',
+						rid: channel.roomId,
 						title: 'Test title',
 						taskDescription: 'Test Descr',
 						taskAssignee: '@TestUser',
@@ -288,6 +300,7 @@ describe('[TaskRoom]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+						task._id = res.body.task._id;
 					})
 					.end(done);
 			});
@@ -302,7 +315,6 @@ describe('[TaskRoom]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('task').and.to.be.an('object');
 					})
 					.end(done);
 			});
@@ -310,15 +322,12 @@ describe('[TaskRoom]', () => {
 				request.post(api('taskRoom.unfollowTask'))
 					.set(credentials)
 					.send({
-						task: {
-							mid: task._id,
-						},
+						mid: task._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('task').and.to.be.an('object');
 					})
 					.end(done);
 			});

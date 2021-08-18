@@ -25,11 +25,16 @@ const CreateTaskModalWithInfo = ({ onCreate, onClose, rid, ...props }) => {
 	const { taskAssignee } = values;
 
 	const handleSave = useMutableCallback(async () => {
-		const data = await createTask(values);
-		await Meteor.call('sendTask', data.task);
-		if (data.success) {
-			toastr.success(t('Saved'));
+		try {
+			const data = await createTask(values);
+			if (data.success) {
+				await Meteor.call('sendTask', data.task);
+				toastr.success(t('Saved'));
+			}
+		} catch (error) {
+			toastr.success(error.message);
 		}
+
 		onCreate();
 	});
 
