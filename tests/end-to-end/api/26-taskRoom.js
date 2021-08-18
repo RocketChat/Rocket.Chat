@@ -58,7 +58,7 @@ describe('[TaskRoom]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('taskRoomId');
+					expect(res.body).to.have.nested.property('taskRoom.taskRoomId');
 				})
 				.end(done);
 		});
@@ -74,7 +74,7 @@ describe('[TaskRoom]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('taskRoomId');
+					expect(res.body).to.have.nested.property('taskRoom.taskRoomId');
 				})
 				.then(() => done())
 				.catch(done);
@@ -92,7 +92,7 @@ describe('[TaskRoom]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.be.equal('taskRoom-name-already-exists');
+					expect(res.body.error).to.be.equal('room-name-already-exists');
 				})
 				.end(done);
 		});
@@ -104,22 +104,16 @@ describe('[TaskRoom]', () => {
 			request.post(api('taskRoom.createTask'))
 				.set(credentials)
 				.send({
-					task: {
-						title: 'Test title',
-						taskDescription: 'Test description',
-						taskAssignee: '@UserTest',
-						taskStatus: 'Team A',
-					},
+					title: 'Test title',
+					taskDescription: 'Test description',
+					taskAssignee: '@UserTest',
+					taskStatus: 'Team A',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The \'rid\' property on the task object is missing.');
-					expect(res.body).to.have.nested.property('task.title', 'Test title');
-					expect(res.body).to.have.nested.property('task.taskDescription', 'Test description');
-					expect(res.body).to.have.nested.property('task.taskAssignee', '@UserTest');
-					expect(res.body).to.have.nested.property('task.taskStatus', 'Team A');
+					expect(res.body).to.have.property('error', 'the rid property is missing');
 				})
 				.end(done);
 		});
@@ -128,12 +122,11 @@ describe('[TaskRoom]', () => {
 			request.post(api('taskRoom.createTask'))
 				.set(credentials)
 				.send({
-					task: {
-						title: '',
-						description: 'Test description',
-						taskAssignee: '@UserTest',
-						taskStatus: 'Team A',
-					},
+					rid: 'GENERAL',
+					title: '',
+					description: 'Test description',
+					taskAssignee: '@UserTest',
+					taskStatus: 'Team A',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -150,11 +143,8 @@ describe('[TaskRoom]', () => {
 			request.post(api('taskRoom.createTask'))
 				.set(credentials)
 				.send({
-					task: {
-						_id: task._id,
-						rid: 'GENERAL',
-						title: 'Test title',
-					},
+					rid: 'GENERAL',
+					title: 'Test title',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -206,7 +196,7 @@ describe('[TaskRoom]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						readOnlyChannel = res.body.channel;
+						readOnlyChannel = res.body.taskRoom;
 					})
 					.end(done);
 			});
@@ -214,10 +204,8 @@ describe('[TaskRoom]', () => {
 				request.post(api('taskRoom.createTask'))
 					.set(credentials)
 					.send({
-						task: {
-							rid: readOnlyChannel._id,
-							title: 'Test title',
-						},
+						rid: readOnlyChannel.roomId,
+						title: 'Test title',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -231,7 +219,7 @@ describe('[TaskRoom]', () => {
 				request.post(api('channels.invite'))
 					.set(credentials)
 					.send({
-						roomId: readOnlyChannel._id,
+						roomId: readOnlyChannel.roomId,
 						userId: user._id,
 					})
 					.expect('Content-Type', 'application/json')
@@ -244,14 +232,13 @@ describe('[TaskRoom]', () => {
 					});
 			});
 
-			it('should fail to create a task when the user lacks permission', (done) => {
+			it('should fail to create a task when the user lacks permission', async (done) => {
+				await updatePermission('post-readonly', ['bot']);
 				request.post(api('taskRoom.createTask'))
 					.set(userCredentials)
 					.send({
-						task: {
-							rid: readOnlyChannel._id,
-							title: 'Test title',
-						},
+						rid: readOnlyChannel.roomId,
+						title: 'Test title',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -268,16 +255,15 @@ describe('[TaskRoom]', () => {
 				await request.post(api('taskRoom.createTask'))
 					.set(userCredentials)
 					.send({
-						task: {
-							rid: readOnlyChannel._id,
-							title: 'Test Title',
-						},
+						rid: readOnlyChannel.roomId,
+						title: 'Test Title',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('task').and.to.be.an('object');
+						expect(res.body).to.have.nested.property('task.title', 'Test Title');
 					});
 
 				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
@@ -291,14 +277,12 @@ describe('[TaskRoom]', () => {
 				request.post(api('taskRoom.createTask'))
 					.set(credentials)
 					.send({
-						task: {
-							_id: task._id,
-							rid: 'GENERAL',
-							title: 'Test title',
-							taskDescription: 'Test Descr',
-							taskAssignee: '@TestUser',
-							taskStatus: 'Urgent',
-						},
+						_id: task._id,
+						rid: 'GENERAL',
+						title: 'Test title',
+						taskDescription: 'Test Descr',
+						taskAssignee: '@TestUser',
+						taskStatus: 'Urgent',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)

@@ -136,15 +136,21 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		const uid = this.userId;
 
+		if (!uid || s.trim(task.title) === '') {
+			return API.v1.failure('task title is missing');
+		}
+		const { rid } = task;
+
+		if (!rid) {
+			return API.v1.failure('the rid property is missing');
+		}
+
 		const _hasPermission = hasPermission(this.userId, 'create-task', task.rid);
 
 		if (!_hasPermission) {
 			return API.v1.failure('Not authorized');
 		}
 
-		if (!uid || s.trim(task.title) === '') {
-			return API.v1.failure('task title is missing');
-		}
 		if (task.tshow && !task.tmid) {
 			return API.v1.failure('tshow provided but missing tmid');
 		}
@@ -158,12 +164,6 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 			}
 		} else {
 			task.ts = new Date();
-		}
-
-		const { rid } = task;
-
-		if (!rid) {
-			return API.v1.failure('the rid property is missing');
 		}
 
 		task._id = Random.id();
