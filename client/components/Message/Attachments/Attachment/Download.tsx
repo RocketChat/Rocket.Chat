@@ -3,11 +3,9 @@ import React, { ComponentProps, FC } from 'react';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import Action from './Action';
 
-const Download: FC<Omit<ComponentProps<typeof Action>, 'icon'> & { href: string }> = ({
-	title,
-	href,
-	...props
-}) => {
+const Download: FC<
+	Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string }
+> = ({ title, href, ...props }) => {
 	const t = useTranslation();
 	return (
 		<Action

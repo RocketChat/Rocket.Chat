@@ -7,6 +7,14 @@ import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
 import { AppServerOrchestrator } from '../orchestrator';
 
+
+const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
+	if (details.visitorToken) {
+		const { userId, ...result } = details;
+		return result;
+	}
+	return details;
+};
 export class AppUploadBridge extends UploadBridge {
 	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -42,20 +50,13 @@ export class AppUploadBridge extends UploadBridge {
 			throw new Error('Missing user to perform the upload operation');
 		}
 
-		if (details.visitorToken) {
-			delete details.userId;
-		}
-
 		const fileStore = FileUpload.getStore('Uploads');
-		const insertSync = details.userId
-			? (...args: any[]): Function => Meteor.runAsUser(details.userId, () => fileStore.insertSync(...args))
-			: Meteor.wrapAsync(fileStore.insert.bind(fileStore));
 
-		details.type = determineFileType(buffer, details);
+		details.type = determineFileType(buffer, details.name);
 
 		return new Promise(Meteor.bindEnvironment((resolve, reject) => {
 			try {
-				const uploadedFile = insertSync(details, buffer);
+				const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
 
 				if (details.visitorToken) {
 					Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);

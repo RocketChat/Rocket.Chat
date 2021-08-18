@@ -22,7 +22,7 @@ const init = (canvas, context, t) =>
 			t('Longest_response_time'),
 		],
 		labels,
-		[initialData, initialData, initialData, initialData],
+		[initialData, initialData.slice(), initialData.slice(), initialData.slice()],
 		{ legends: true, anim: true, smallTicks: true },
 	);
 
@@ -39,10 +39,11 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/timings',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.responseTimesChart = reload;
 

@@ -70,7 +70,7 @@ const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 
 	useEffect(() => {
 		getVisitorEmail();
-	}, [room, getVisitorEmail]);
+	}, [visitorRoomId, getVisitorEmail]);
 
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 

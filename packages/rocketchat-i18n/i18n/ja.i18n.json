@@ -427,7 +427,6 @@
   "Apps_Framework_enabled": "Appフレームワークを有効にする",
   "Apps_Game_Center": "ゲームセンター",
   "Apps_Game_Center_Back": "ゲームセンターに戻る",
-  "Apps_Game_Center_enabled": "ゲームセンターを有効にする",
   "Apps_Game_Center_Invite_Friends": "友達を招待する",
   "Apps_Game_Center_Play_Game_Together": "@here __name__を一緒に遊ぼう！",
   "Apps_Interface_IPostExternalComponentClosed": "外部コンポーネントが閉じられた後に発生するイベント",

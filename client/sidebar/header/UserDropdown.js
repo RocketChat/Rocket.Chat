@@ -1,7 +1,6 @@
 import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 
 import { callbacks } from '../../../app/callbacks/client';
@@ -14,6 +13,7 @@ import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 
 const ADMIN_PERMISSIONS = [
@@ -47,9 +47,10 @@ const getItems = () => AccountBox.getItems();
 
 const UserDropdown = ({ user, onClose }) => {
 	const t = useTranslation();
-	const homeRoute = useRoute('home');
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
+
+	const logout = useLogout();
 
 	const { name, username, avatarETag, status, statusText } = user;
 
@@ -78,15 +79,6 @@ const UserDropdown = ({ user, onClose }) => {
 		onClose();
 	});
 
-	const handleLogout = useMutableCallback(() => {
-		Meteor.logout(() => {
-			callbacks.run('afterLogoutCleanUp', user);
-			Meteor.call('logoutCleanUp', user);
-			homeRoute.push({});
-			popover.close();
-		});
-	});
-
 	const handleMyAccount = useMutableCallback(() => {
 		accountRoute.push({});
 		popover.close();
@@ -94,6 +86,11 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
+		popover.close();
+	});
+
+	const handleLogout = useMutableCallback(() => {
+		logout();
 		popover.close();
 	});
 

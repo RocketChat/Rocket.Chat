@@ -13,3 +13,14 @@ export type LivechatCustomFields = {
 		offset: number;
 	};
 };
+
+export type LivechatCustomFieldsEndpoint = {
+	GET: (params: {}) => {
+		customFields: [
+			{
+				_id: string;
+				label: string;
+			},
+		];
+	};
+};

@@ -420,7 +420,6 @@
   "Apps_Framework_enabled": "启用应用框架",
   "Apps_Game_Center": "游戏中心",
   "Apps_Game_Center_Back": "返回游戏中心",
-  "Apps_Game_Center_enabled": "启用游戏中心",
   "Apps_Game_Center_Invite_Friends": "邀请您的朋友加入",
   "Apps_Game_Center_Play_Game_Together": "@here 来一起玩 __name__ 吧！",
   "Apps_Interface_IPostExternalComponentClosed": "外部组件关闭后事件",

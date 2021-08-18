@@ -35,8 +35,7 @@ hasLicense('livechat-enterprise').then((enabled) => {
 			useMemo(() => lazy(() => import('./BusinessHoursTimeZone')), []),
 	});
 	registerForm({
-		useContactManager: () =>
-			useMemo(() => lazy(() => import('../additionalForms/ContactManager')), []),
+		useContactManager: () => useMemo(() => lazy(() => import('./ContactManager')), []),
 	});
 	registerForm({
 		useCurrentChatTags: () => useMemo(() => lazy(() => import('../tags/CurrentChatTags')), []),

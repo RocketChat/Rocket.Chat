@@ -13,10 +13,10 @@ export const StepTwo = ({ onConfirm, onCancel, onClose }) => {
 			variant='danger'
 			title={t('Confirmation')}
 			onConfirm={onConfirm}
-			onCancel={onCancel}
+			onCancel={onCancel || onClose}
 			onClose={onClose}
 			confirmText={t('Leave')}
-			cancelText={t('Back')}
+			cancelText={onCancel ? t('Back') : t('Cancel')}
 		>
 			{t('Teams_leaving_team')}
 		</GenericModal>
