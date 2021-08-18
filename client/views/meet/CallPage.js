@@ -18,8 +18,6 @@ function CallPage({
 	layout,
 	visitorName,
 	agentName,
-	isAgentRemote,
-	isAgentLocal,
 }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
@@ -377,9 +375,7 @@ function CallPage({
 		case 'inProgress':
 			return (
 				<Flex.Container direction='column' justifyContent='center'>
-					{isAgentLocal && !isAgentRemote
-						? showAvatar(agentName, visitorName)
-						: showAvatar(visitorName, agentName)}
+					{visitorToken ? showAvatar(agentName, visitorName) : showAvatar(visitorName, agentName)}
 				</Flex.Container>
 			);
 	}

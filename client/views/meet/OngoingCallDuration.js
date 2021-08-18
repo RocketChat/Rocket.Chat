@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import React, { useEffect, useState } from 'react';
 
 export const OngoingCallDuration = () => {
@@ -7,8 +8,8 @@ export const OngoingCallDuration = () => {
 	}, [counter]);
 
 	return (
-		<div style={{ color: '#E4E7EA', fontSize: 15, textAlign: 'center', margin: 15 }}>
+		<Box style={{ color: '#E4E7EA', fontSize: 15, textAlign: 'center', margin: 15 }}>
 			{new Date(counter * 1000).toISOString().substr(11, 8)}
-		</div>
+		</Box>
 	);
 };

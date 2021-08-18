@@ -18,8 +18,6 @@ function MeetPage() {
 	const layout = useQueryStringParameter('layout');
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
-	const [isAgentRemote, setIsAgentRemote] = useState('false');
-	const [isAgentLocal, setIsAgentLocal] = useState('false');
 
 	const setupCallForVisitor = useCallback(async () => {
 		const room = await APIClient.v1.get(`/livechat/room?token=${visitorToken}&rid=${roomId}`);
@@ -30,8 +28,6 @@ function MeetPage() {
 				? setAgentName(room.room.responseBy.username)
 				: setAgentName(room.room.servedBy.username);
 			setStatus(room?.room?.callStatus || 'ended');
-			setIsAgentRemote(true);
-			setIsAgentLocal(false);
 			return setIsRoomMember(true);
 		}
 	}, [visitorToken, roomId]);
@@ -44,8 +40,6 @@ function MeetPage() {
 				? setAgentName(room.room.responseBy.username)
 				: setAgentName(room.room.servedBy.username);
 			setStatus(room?.room?.callStatus || 'ended');
-			setIsAgentRemote(false);
-			setIsAgentLocal(true);
 			return setIsRoomMember(true);
 		}
 	}, [roomId]);
@@ -68,7 +62,7 @@ function MeetPage() {
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>
-				{isAgentLocal && !isAgentRemote ? (
+				{visitorToken ? (
 					<Box
 						width='full'
 						minHeight='sh'
@@ -186,8 +180,6 @@ function MeetPage() {
 			setStatus={setStatus}
 			visitorName={visitorName}
 			agentName={agentName}
-			isAgentRemote={isAgentRemote}
-			isAgentLocal={isAgentLocal}
 			layout={layout}
 		></CallPage>
 	);
