@@ -17,7 +17,6 @@ import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointA
 import WarningModal from '../../../../admin/apps/WarningModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
-import ConvertToTeamModal from '../ConvertToTeamModal';
 import RoomInfo from './RoomInfo';
 
 const retentionPolicyMaxAge = {
@@ -39,7 +38,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
-	const { type, fname, broadcast, archived, joined = true } = room; // TODO implement joined
+
+	const { type, fname, prid, broadcast, archived, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -180,7 +180,18 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			}
 		};
 
-		setModal(<ConvertToTeamModal onClose={closeModal} onConfirm={onConfirm} />);
+		setModal(
+			<GenericModal
+				title={t('Confirmation')}
+				variant='warning'
+				onClose={closeModal}
+				onCancel={closeModal}
+				onConfirm={onConfirm}
+				confirmText={t('Convert')}
+			>
+				{t('Converting_channel_to_a_team')}
+			</GenericModal>,
+		);
 	});
 
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
@@ -197,8 +208,10 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickDelete={canDelete && handleDelete}
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
-			onClickMoveToTeam={!room.teamId && canEdit && onMoveToTeam}
-			onClickConvertToTeam={!room.teamId && canConvertRoomToTeam && canEdit && onConvertToTeam}
+			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
+			onClickConvertToTeam={
+				!room.teamId && !prid && canConvertRoomToTeam && canEdit && onConvertToTeam
+			}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 			{...room}
 			announcement={

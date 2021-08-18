@@ -53,7 +53,8 @@ type ModalDescriptor = BlazeModalDescriptor | ReactModalDescriptor | null;
 
 class ImperativeModalSubscription
 	extends Emitter<{ update: void }>
-	implements Subscription<ModalDescriptor> {
+	implements Subscription<ModalDescriptor>
+{
 	private descriptor: ModalDescriptor = null;
 
 	getCurrentValue = (): ModalDescriptor => this.descriptor;

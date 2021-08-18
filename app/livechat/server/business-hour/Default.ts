@@ -10,7 +10,7 @@ interface IExtraProperties {
 export class DefaultBusinessHour extends AbstractBusinessHourType implements IBusinessHourType {
 	name = LivechatBusinessHourTypes.DEFAULT;
 
-	getBusinessHour(): Promise<ILivechatBusinessHour | undefined> {
+	getBusinessHour(): Promise<ILivechatBusinessHour | null> {
 		return this.BusinessHourRepository.findOneDefaultBusinessHour();
 	}
 

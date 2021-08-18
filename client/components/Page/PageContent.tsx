@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { forwardRef, ComponentProps, Ref } from 'react';
+import React, { ComponentProps, forwardRef } from 'react';
 
-type PageContentProps = ComponentProps<typeof Box>;
-
-const PageContent = forwardRef(function PageContent(props: PageContentProps, ref: Ref<Element>) {
+const PageContent = forwardRef<HTMLElement, ComponentProps<typeof Box>>(function PageContent(
+	props,
+	ref,
+) {
 	return (
 		<Box
 			ref={ref}

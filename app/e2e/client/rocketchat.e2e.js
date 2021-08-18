@@ -21,11 +21,14 @@ import {
 } from './helper';
 import * as banners from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models';
-import { call, modal } from '../../ui-utils';
+import { call } from '../../ui-utils';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from './waitUntilFind';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import SaveE2EPasswordModal from './SaveE2EPasswordModal';
+import EnterE2EPasswordModal from './EnterE2EPasswordModal';
 
 let failedToDecodeKey = false;
 
@@ -145,26 +148,26 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_your_encryption_password'),
+				title: TAPi18n.__('Save_Your_Encryption_Password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
 				action: () => {
-					modal.open({
-						title: TAPi18n.__('Save_your_encryption_password'),
-						html: true,
-						text: `<div>${ passwordRevealText }</div>`,
-						showConfirmButton: true,
-						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('I_saved_my_password_close_this_message'),
-						cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
-					}, (confirm) => {
-						if (!confirm) {
-							return;
-						}
-						Meteor._localStorage.removeItem('e2e.randomPassword');
-						this.closeAlert();
+					imperativeModal.open({ component: SaveE2EPasswordModal,
+						props: {
+							passwordRevealText,
+							onClose: imperativeModal.close,
+							onCancel: () => {
+								this.closeAlert();
+								imperativeModal.close();
+							},
+							onConfirm: () => {
+								Meteor._localStorage.removeItem('e2e.randomPassword');
+								this.closeAlert();
+								imperativeModal.close();
+							},
+						},
 					});
 				},
 			});
@@ -295,24 +298,20 @@ class E2E extends Emitter {
 	async requestPassword() {
 		return new Promise((resolve) => {
 			const showModal = () => {
-				modal.open({
-					title: TAPi18n.__('Enter_E2E_password_to_decode_your_key'),
-					type: 'input',
-					inputType: 'password',
-					html: true,
-					text: `<div>${ TAPi18n.__('E2E_password_request_text') }</div>`,
-					showConfirmButton: true,
-					showCancelButton: true,
-					confirmButtonText: TAPi18n.__('Decode_Key'),
-					cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
-				}, (password) => {
-					if (password) {
-						this.closeAlert();
-						resolve(password);
-					}
-				}, () => {
-					failedToDecodeKey = false;
-					this.closeAlert();
+				imperativeModal.open({ component: EnterE2EPasswordModal,
+					props: {
+						onClose: imperativeModal.close,
+						onCancel: () => {
+							failedToDecodeKey = false;
+							this.closeAlert();
+							imperativeModal.close();
+						},
+						onConfirm: (password) => {
+							resolve(password);
+							this.closeAlert();
+							imperativeModal.close();
+						},
+					},
 				});
 			};
 

@@ -44,10 +44,10 @@ function PriorityEdit({ data, isNew, priorityId, reload, ...props }) {
 		reload();
 	});
 
-	const canSave = useMemo(() => !nameError && !dueTimeInMinutesError, [
-		nameError,
-		dueTimeInMinutesError,
-	]);
+	const canSave = useMemo(
+		() => !nameError && !dueTimeInMinutesError,
+		[nameError, dueTimeInMinutesError],
+	);
 
 	const handleSave = useMutableCallback(async () => {
 		const payload = { name, description, dueTimeInMinutes: `${dueTimeInMinutes}` };

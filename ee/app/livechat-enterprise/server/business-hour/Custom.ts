@@ -20,30 +20,34 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 	private DepartmentsAgentsRepository: LivechatDepartmentAgentsRaw = LivechatDepartmentAgents;
 
-	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | undefined> {
+	async getBusinessHour(id: string): Promise<ILivechatBusinessHour | null> {
 		if (!id) {
-			return;
+			return null;
 		}
 
 		const businessHour = await this.BusinessHourRepository.findOneById(id);
 		if (!businessHour) {
-			return;
+			return null;
 		}
 
-		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { fields: { name: 1 } }).toArray();
+		businessHour.departments = await this.DepartmentsRepository.findByBusinessHourId(businessHour._id, { projection: { name: 1 } }).toArray();
 		return businessHour;
 	}
 
 	async saveBusinessHour(businessHour: ILivechatBusinessHour & IBusinessHoursExtraProperties): Promise<ILivechatBusinessHour> {
+		const existingBusinessHour = await this.BusinessHourRepository.findOne({ name: businessHour.name }, { projection: { _id: 1 } }) as ILivechatBusinessHour;
+		if (existingBusinessHour && existingBusinessHour._id !== businessHour._id) {
+			throw new Error('error-business-hour-name-already-in-use');
+		}
 		const { timezoneName, departmentsToApplyBusinessHour, ...businessHourData } = businessHour;
 		businessHourData.timezone = {
 			name: timezoneName,
 			utc: this.getUTCFromTimezone(timezoneName),
 		};
 		const departments = departmentsToApplyBusinessHour?.split(',').filter(Boolean) || [];
-		const businessHourToReturn = { ...businessHourData };
+		const businessHourToReturn = { ...businessHourData, departmentsToApplyBusinessHour };
 		delete businessHourData.departments;
-		const businessHourId = await this.baseSaveBusinessHour(businessHour);
+		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
 		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
 		const toRemove = [...currentDepartments.filter((dept: string) => !departments.includes(dept))];
 		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
