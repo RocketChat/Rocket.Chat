@@ -168,14 +168,6 @@ API.v1.addRoute('taskRoom.createTask', { authRequired: true }, {
 
 		task._id = Random.id();
 
-		const user = Users.findOneById(uid, {
-			fields: {
-				username: 1,
-				type: 1,
-			},
-		});
-
-		// canSendMessage(rid, { uid: user._id, ...user });
 		Meteor.call('sendTask', task);
 
 		return API.v1.success({ task });
