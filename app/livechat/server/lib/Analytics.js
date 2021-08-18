@@ -1,63 +1,85 @@
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { LivechatRooms } from '../../../models';
 import { secondsToHHMMSS } from '../../../utils/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { Logger } from '../../../logger';
+
+const HOURS_IN_DAY = 24;
+const logger = new Logger('OmnichannelAnalytics');
 
 export const Analytics = {
 	getAgentOverviewData(options) {
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
+		const { departmentId, utcOffset, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
+		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
+
+		logger.debug(`getAgentOverviewData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.log('livechat:getAgentOverviewData => Invalid dates');
+			logger.error('livechat:getAgentOverviewData => Invalid dates');
 			return;
 		}
 
-		if (!this.AgentOverviewData[options.chartOptions.name]) {
-			console.log(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ options.chartOptions.name } does NOT exist`);
+		if (!this.AgentOverviewData[name]) {
+			logger.error(`Method RocketChat.Livechat.Analytics.AgentOverviewData.${ name } does NOT exist`);
 			return;
 		}
 
-		const { departmentId } = options;
-
-		return this.AgentOverviewData[options.chartOptions.name](from, to, departmentId);
+		return this.AgentOverviewData[name](from, to, departmentId);
 	},
 
 	getAnalyticsChartData(options) {
+		const {
+			utcOffset,
+			departmentId,
+			daterange: { from: fDate, to: tDate } = {},
+			chartOptions: { name: chartLabel },
+			chartOptions: { name } = {},
+		} = options;
+
 		// Check if function exists, prevent server error in case property altered
-		if (!this.ChartData[options.chartOptions.name]) {
-			console.log(`Method RocketChat.Livechat.Analytics.ChartData.${ options.chartOptions.name } does NOT exist`);
+		if (!this.ChartData[name]) {
+			logger.error(`Method RocketChat.Livechat.Analytics.ChartData.${ name } does NOT exist`);
 			return;
 		}
 
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
+		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
+		const isSameDay = from.diff(to, 'days') === 0;
+
+		logger.debug(`getAnalyticsChartData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.log('livechat:getAnalyticsChartData => Invalid dates');
+			logger.error('livechat:getAnalyticsChartData => Invalid dates');
 			return;
 		}
 
 
 		const data = {
-			chartLabel: options.chartOptions.name,
+			chartLabel,
 			dataLabels: [],
 			dataPoints: [],
 		};
 
-		const { departmentId } = options;
-
-		if (from.diff(to) === 0) {	// data for single day
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'hours')) {
-				const hour = m.format('H');
-				data.dataLabels.push(`${ moment(hour, ['H']).format('hA') }-${ moment((parseInt(hour) + 1) % 24, ['H']).format('hA') }`);
+		if (isSameDay) {	// data for single day
+			for (let m = moment(from), currentHour = 0; currentHour < HOURS_IN_DAY; currentHour++) {
+				const hour = m.add(currentHour ? 1 : 0, 'hour').format('H');
+				const label = {
+					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
+					to: moment.utc().set({ hour }).add(1, 'hour').tz(timezone).format('hA'),
+				};
+				data.dataLabels.push(`${ label.from }-${ label.to }`);
 
 				const date = {
 					gte: m,
 					lt: moment(m).add(1, 'hours'),
 				};
 
-				data.dataPoints.push(this.ChartData[options.chartOptions.name](date, departmentId));
+				data.dataPoints.push(this.ChartData[name](date, departmentId));
 			}
 		} else {
 			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
@@ -68,7 +90,7 @@ export const Analytics = {
 					lt: moment(m).add(1, 'days'),
 				};
 
-				data.dataPoints.push(this.ChartData[options.chartOptions.name](date, departmentId));
+				data.dataPoints.push(this.ChartData[name](date, departmentId));
 			}
 		}
 
@@ -76,21 +98,32 @@ export const Analytics = {
 	},
 
 	getAnalyticsOverviewData(options) {
-		const from = moment(options.daterange.from);
-		const to = moment(options.daterange.to);
-		const { departmentId } = options;
+		const {
+			departmentId,
+			utcOffset = 0,
+			language,
+			daterange: { from: fDate, to: tDate } = {},
+			analyticsOptions: { name } = {},
+		} = options;
+		const timezone = getTimezone({ utcOffset });
+		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
+		const to = moment.tz(tDate, 'YYYY-MM-DD', timezone).endOf('day').utc();
+
+		logger.debug(`getAnalyticsOverviewData[${ name }] -> Using timezone ${ timezone } with date range ${ from } - ${ to }`);
 
 		if (!(moment(from).isValid() && moment(to).isValid())) {
-			console.log('livechat:getAnalyticsOverviewData => Invalid dates');
+			logger.error('livechat:getAnalyticsOverviewData => Invalid dates');
 			return;
 		}
 
-		if (!this.OverviewData[options.analyticsOptions.name]) {
-			console.log(`Method RocketChat.Livechat.Analytics.OverviewData.${ options.analyticsOptions.name } does NOT exist`);
+		if (!this.OverviewData[name]) {
+			logger.error(`Method RocketChat.Livechat.Analytics.OverviewData.${ name } does NOT exist`);
 			return;
 		}
 
-		return this.OverviewData[options.analyticsOptions.name](from, to, departmentId);
+		const t = (s) => TAPi18n.__(s, { lng: language });
+
+		return this.OverviewData[name](from, to, departmentId, timezone, t);
 	},
 
 	ChartData: {
@@ -122,10 +155,14 @@ export const Analytics = {
 		Total_messages(date, departmentId) {
 			let total = 0;
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ msgs }) => {
+			// we don't want to count visitor messages
+			const extraFilter = { $lte: ['$token', null] };
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray());
+			allConversations.map(({ msgs }) => {
 				if (msgs) {
 					total += msgs;
 				}
+				return null;
 			});
 
 			return total;
@@ -242,7 +279,8 @@ export const Analytics = {
 		 *
 		 * @returns {Array[Object]}
 		 */
-		Conversations(from, to, departmentId) {
+		Conversations(from, to, departmentId, timezone, t = (v) => v) {
+			// TODO: most calls to db here can be done in one single call instead of one per day/hour
 			let totalConversations = 0; // Total conversations
 			let openConversations = 0; // open conversations
 			let totalMessages = 0; // total msgs
@@ -260,28 +298,30 @@ export const Analytics = {
 				totalMessagesOnWeekday.set(weekday, totalMessagesOnWeekday.has(weekday) ? totalMessagesOnWeekday.get(weekday) + msgs : msgs);
 			};
 
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+			for (let m = moment.tz(from, timezone).startOf('day').utc(), daysProcessed = 0; daysProcessed < days; daysProcessed++) {
+				const clonedDate = m.clone();
 				const date = {
-					gte: m,
-					lt: moment(m).add(1, 'days'),
+					gte: clonedDate,
+					lt: m.add(1, 'days'),
 				};
-
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
 				totalConversations += result.length;
 
-				result.forEach(summarize(m));
+				result.forEach(summarize(clonedDate));
 			}
 
 			const busiestDay = this.getKeyHavingMaxValue(totalMessagesOnWeekday, '-'); // returns key with max value
 
+			// TODO: this code assumes the busiest day is the same every week, which may not be true
+			// This means that for periods larger than 1 week, the busiest hour won't be the "busiest hour"
+			// on the period, but the busiest hour on the busiest day. (sorry for busiest excess)
 			// iterate through all busiestDay in given date-range and find busiest hour
-			for (let m = moment(from).day(busiestDay); m <= to; m.add(7, 'days')) {
+			for (let m = moment.tz(from, timezone).day(busiestDay).startOf('day').utc(); m <= to; m.add(7, 'days')) {
 				if (m < from) { continue; }
-
-				for (let h = moment(m); h.diff(m, 'days') <= 0; h.add(1, 'hours')) {
+				for (let h = moment(m), currentHour = 0; currentHour < 24; currentHour++) {
 					const date = {
-						gte: h,
-						lt: moment(h).add(1, 'hours'),
+						gte: h.clone(),
+						lt: h.add(1, 'hours'),
 					};
 					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({
 						msgs,
@@ -292,7 +332,11 @@ export const Analytics = {
 				}
 			}
 
-			const busiestHour = this.getKeyHavingMaxValue(totalMessagesInHour, -1);
+			const utcBusiestHour = this.getKeyHavingMaxValue(totalMessagesInHour, -1);
+			const busiestHour = {
+				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
+				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
+			};
 
 			const data = [{
 				title: 'Total_conversations',
@@ -305,13 +349,13 @@ export const Analytics = {
 				value: totalMessages,
 			}, {
 				title: 'Busiest_day',
-				value: busiestDay,
+				value: t(busiestDay),
 			}, {
 				title: 'Conversations_per_day',
 				value: (totalConversations / days).toFixed(2),
 			}, {
 				title: 'Busiest_time',
-				value: busiestHour > 0 ? `${ moment(busiestHour, ['H']).format('hA') }-${ moment((parseInt(busiestHour) + 1) % 24, ['H']).format('hA') }` : '-',
+				value: `${ busiestHour.from }${ busiestHour.to ? `- ${ busiestHour.to }` : '' }`,
 			}];
 
 			return data;
@@ -417,13 +461,13 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({
-				servedBy,
-			}) => {
-				if (servedBy) {
-					this.updateMap(agentConversations, servedBy.username, 1);
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }).toArray());
+			allConversations.map((room) => {
+				if (room.servedBy) {
+					this.updateMap(agentConversations, room.servedBy.username, 1);
 					total++;
 				}
+				return null;
 			});
 
 			agentConversations.forEach((value, key) => {	// calculate percentage
@@ -527,13 +571,17 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({
+			// we don't want to count visitor messages
+			const extraFilter = { $lte: ['$token', null] };
+			const allConversations = Promise.await(LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray());
+			allConversations.map(({
 				servedBy,
 				msgs,
 			}) => {
 				if (servedBy) {
 					this.updateMap(agentMessages, servedBy.username, msgs);
 				}
+				return null;
 			});
 
 			agentMessages.forEach((value, key) => {	// calculate percentage
