@@ -108,13 +108,17 @@ export default function TaskRoom({ rid, tasks, userId }) {
 	};
 
 	const handleLoadMore = (e) => {
-		e.target.scrollTop === 0;
+		const top = e.target.scrollTop === 0;
+		if (!top) {
+			return;
+		}
+		console.log('loadmoreTaskRoom');
 	};
 
 	return (
 		<div className='wrapper'>
 			<ButtonGroup align='center'>
-				<Button ghost info onClick={sortByUser}>
+				<Button ghost info onClick={() => NewTaskRoom.createTask(rid)}>
 					{'Sort by Creator'}
 				</Button>
 				<Button ghost info onClick={sortByDate}>

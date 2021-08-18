@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import toastr from 'toastr';
 
-import { NewTaskRoom } from '../../../../../app/ui/client/lib/taskRoomUtils.js';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
 import { useForm } from '../../../../hooks/useForm';
@@ -26,9 +25,8 @@ const CreateTaskModalWithInfo = ({ onCreate, onClose, rid, ...props }) => {
 	const { taskAssignee } = values;
 
 	const handleSave = useMutableCallback(async () => {
-		const task = await NewTaskRoom.createTask(rid, values);
-		const data = await createTask(task);
-		// await Meteor.call('sendTask', data.task);
+		const data = await createTask(values);
+		await Meteor.call('sendTask', data.task);
 		if (data.success) {
 			toastr.success(t('Saved'));
 		}

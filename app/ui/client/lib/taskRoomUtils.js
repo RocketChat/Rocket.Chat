@@ -33,38 +33,11 @@ import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 
 
 // Front-end
-const processCreateTask = async (task) => {
-	if (!Meteor.userId() || s.trim(task.title) === '') {
-		return false;
-	}
-	const taskAlreadyExist = task._id && ChatTask.findOne({ _id: task._id });
-	if (taskAlreadyExist) {
-		return toastr.error(t('Task_Already_Sent'));
-	}
-	const user = Meteor.user();
-	task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
-	task.u = {
-		_id: Meteor.userId(),
-		username: user.username,
-	};
-	if (settings.get('UI_Use_Real_Name')) {
-		task.u.name = user.name;
-	}
-	task.temp = true;
-	if (settings.get('Message_Read_Receipt_Enabled')) {
-		task.unread = true;
-	}
-	task._id = Random.id();
-	task = callbacks.run('beforeSaveMessage', task);
+const processCreateTask = () => {
 
-	promises.run('onClientMessageReceived', task).then(function(task) {
-		ChatTask.insert(task);
-		return callbacks.run('afterSaveTask', task);
-	});
-	return task;
 };
 // Back-end
-const createNewTask = (task) => {
+const sendTask = () => {
 
 };
 
@@ -85,15 +58,10 @@ const deleteTask = () => {
 };
 
 export const NewTaskRoom = {
-	async createTask(rid, task, done = () => {}) {
-		const sub = ChatSubscription.findOne({ rid });
-		task._id = Random.id();
-		if (!sub) {
-			await call('joinRoom', rid);
-		}
-		const t = await processCreateTask(task);
-		return t;
-		// createNewTask(task);
+	async createTask(rid, cb) {
+		// Permissions
+		processCreateTask();
+		sendTask();
 	},
 
 	updateTask(cb) {
