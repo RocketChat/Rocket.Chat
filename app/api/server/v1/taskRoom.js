@@ -64,7 +64,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 
 		const task = Tasks.findOneById(id);
 
-		const _hasPermission = hasPermission(this.userId, 'edit-task', task.rid);
+		const editPermission = hasPermission(this.userId, 'edit-task', task.rid);
 
 		if (!task || !task._id) {
 			return;
@@ -73,8 +73,8 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		const editAllowed = settings.get('Task_AllowEditing');
 		const editOwn = task.u && task.u._id === this.userId;
 
-		if (!_hasPermission && (!editAllowed || !editOwn)) {
-			API.v1.failure('An error occured while updating a task');
+		if (!editPermission && (!editAllowed || !editOwn)) {
+			return API.v1.failure('An error occured while updating a task');
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
@@ -90,7 +90,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			}
 
 			if (currentTsDiff > blockEditInMinutes) {
-				API.v1.failure('An error occured while updating a task');
+				return API.v1.failure('An error occured while updating a task');
 			}
 		}
 		const uid = this.userId;
@@ -124,7 +124,7 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 		}
 
 		updateTask(task, Meteor.user());
-		console.log(task);
+
 		return API.v1.success({ task });
 	},
 });
@@ -286,7 +286,7 @@ API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
 		const uid = Meteor.userId();
 
 		if (!uid) {
-			API.v1.failure('Invalid user id');
+			return API.v1.failure('Invalid user id');
 		}
 
 		const originalTask = Tasks.findOneById(taskId, {
@@ -299,7 +299,7 @@ API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
 		});
 
 		if (!originalTask || !canDeleteTask(uid, originalTask)) {
-			API.v1.failure('Not allowed to follow in this room');
+			return API.v1.failure('Not allowed to follow in this room');
 		}
 
 		const resp = Promise.await(deleteTask(originalTask, Meteor.user()));

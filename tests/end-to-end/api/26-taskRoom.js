@@ -156,228 +156,248 @@ describe('[TaskRoom]', () => {
 				})
 				.end(done);
 		});
+	});
 
-		describe('Read only channel', () => {
-			let readOnlyChannel;
+	describe('Read only channel', () => {
+		let readOnlyChannel;
 
-			const userCredentials = {};
-			let user;
-			before((done) => {
-				const username = `user.test.readonly.${ Date.now() }`;
-				const email = `${ username }@rocket.chat`;
-				request.post(api('users.create'))
-					.set(credentials)
-					.send({ email, name: username, username, password })
-					.end((err, res) => {
-						user = res.body.user;
-						request.post(api('login'))
-							.send({
-								user: username,
-								password,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								userCredentials['X-Auth-Token'] = res.body.data.authToken;
-								userCredentials['X-User-Id'] = res.body.data.userId;
-							})
-							.end(done);
-					});
-			});
-
-			it('Creating a read-only channel', (done) => {
-				request.post(api('taskRoom.create'))
-					.set(credentials)
-					.send({
-						name: `readonlychannel${ +new Date() }`,
-						room: {
-							readOnly: true,
-						},
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						readOnlyChannel = res.body.taskRoom;
-					})
-					.end(done);
-			});
-			it('should create a task when the user is the owner of a readonly channel', async () => {
-				await updatePermission('post-readonly', ['owner, user']);
-				request.post(api('taskRoom.createTask'))
-					.set(credentials)
-					.send({
-						rid: readOnlyChannel.roomId,
-						title: 'Test title',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('task').and.to.be.an('object');
-					});
-			});
-			it('Inviting regular user to read-only channel', (done) => {
-				request.post(api('channels.invite'))
-					.set(credentials)
-					.send({
-						roomId: readOnlyChannel.roomId,
-						userId: user._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(() => {
-						done();
-					});
-			});
-
-			it('should fail to create a task when the user lacks permission', async () => {
-				await updatePermission('post-readonly', ['bot']);
-				request.post(api('taskRoom.createTask'))
-					.set(userCredentials)
-					.send({
-						rid: readOnlyChannel.roomId,
-						title: 'Test title',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					});
-			});
-
-			it('should create a task when the user has permission to send messages on readonly channels', async () => {
-				await updatePermission('post-readonly', ['user']);
-
-				await request.post(api('taskRoom.createTask'))
-					.set(userCredentials)
-					.send({
-						rid: readOnlyChannel.roomId,
-						title: 'Test Title',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('task').and.to.be.an('object');
-						expect(res.body).to.have.nested.property('task.title', 'Test Title');
-					});
-
-				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
-			});
+		const userCredentials = {};
+		let user;
+		before((done) => {
+			const username = `user.test.readonly.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					user = res.body.user;
+					request.post(api('login'))
+						.send({
+							user: username,
+							password,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							userCredentials['X-Auth-Token'] = res.body.data.authToken;
+							userCredentials['X-User-Id'] = res.body.data.userId;
+						})
+						.end(done);
+				});
 		});
 
-		describe('Follow and unfollow task', () => {
-			const task = {};
-			let channel;
-			before((done) => {
-				request.post(api('taskRoom.create'))
-					.set(credentials)
-					.send({
-						name: `readonlychannel${ +new Date() }`,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						channel = res.body.taskRoom;
-					})
-					.end(done);
-			});
-			before((done) => {
-				request.post(api('taskRoom.createTask'))
-					.set(credentials)
-					.send({
-						rid: channel.roomId,
-						title: 'Test title',
-						taskDescription: 'Test Descr',
-						taskAssignee: '@TestUser',
-						taskStatus: 'Urgent',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						task._id = res.body.task._id;
-					})
-					.end(done);
-			});
-
-			it('should follow a task', (done) => {
-				request.post(api('taskRoom.followTask'))
-					.set(credentials)
-					.send({
-						mid: task._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
-			it('should unfollow a task', (done) => {
-				request.post(api('taskRoom.unfollowTask'))
-					.set(credentials)
-					.send({
-						mid: task._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+		it('Creating a read-only channel', (done) => {
+			request.post(api('taskRoom.create'))
+				.set(credentials)
+				.send({
+					name: `readonlychannel${ +new Date() }`,
+					room: {
+						readOnly: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					readOnlyChannel = res.body.taskRoom;
+				})
+				.end(done);
+		});
+		it('should create a task when the user is the owner of a readonly channel', async () => {
+			await updatePermission('post-readonly', ['owner, user']);
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: readOnlyChannel.roomId,
+					title: 'Test title',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('task').and.to.be.an('object');
+				});
+		});
+		it('Inviting regular user to read-only channel', (done) => {
+			request.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: readOnlyChannel.roomId,
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(() => {
+					done();
+				});
 		});
 
-		describe('Udpate a task', () => {
-			const task = {};
-			before((done) => {
-				request.post(api('taskRoom.createTask'))
-					.set(credentials)
-					.send({
-						rid: roomTest.roomId,
-						title: 'Test title',
-						taskDescription: 'Test Descr',
-						taskAssignee: '@TestUser',
-						taskStatus: 'Urgent',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						task._id = res.body.task._id;
-					})
-					.end(done);
-			});
+		it('should fail to create a task when the user lacks permission', async () => {
+			await updatePermission('post-readonly', ['bot']);
+			request.post(api('taskRoom.createTask'))
+				.set(userCredentials)
+				.send({
+					rid: readOnlyChannel.roomId,
+					title: 'Test title',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
 
-			it('Update the title, description, assignee, status of the task', (done) => {
-				request.post(api('taskRoom.taskUpdate'))
-					.set(credentials)
-					.send({
-						id: task._id,
-						taskTitle: 'New Title',
-						taskDescription: 'New Descr',
-						taskAssignee: '@TestUser2',
-						taskStatus: 'Not Urgent',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('task').and.to.be.an('object');
-						expect(res.body).to.have.nested.property('task.title', 'New Title');
-						expect(res.body).to.have.nested.property('task.taskDescription', 'New Descr');
-						expect(res.body).to.have.nested.property('task.taskAssignee', '@TestUser2');
-						expect(res.body).to.have.nested.property('task.taskStatus', 'Not Urgent');
-					})
-					.end(done);
-			});
+		it('should create a task when the user has permission to send messages on readonly channels', async () => {
+			await updatePermission('post-readonly', ['user']);
+
+			await request.post(api('taskRoom.createTask'))
+				.set(userCredentials)
+				.send({
+					rid: readOnlyChannel.roomId,
+					title: 'Test Title',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('task').and.to.be.an('object');
+					expect(res.body).to.have.nested.property('task.title', 'Test Title');
+				});
+
+			await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
+		});
+	});
+
+	describe('Follow and unfollow task', () => {
+		const task = {};
+		let channel;
+		before((done) => {
+			request.post(api('taskRoom.create'))
+				.set(credentials)
+				.send({
+					name: `readonlychannel${ +new Date() }`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					channel = res.body.taskRoom;
+				})
+				.end(done);
+		});
+		before((done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: channel.roomId,
+					title: 'Test title',
+					taskDescription: 'Test Descr',
+					taskAssignee: '@TestUser',
+					taskStatus: 'Urgent',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					task._id = res.body.task._id;
+				})
+				.end(done);
+		});
+
+		it('should follow a task', (done) => {
+			request.post(api('taskRoom.followTask'))
+				.set(credentials)
+				.send({
+					mid: task._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should unfollow a task', (done) => {
+			request.post(api('taskRoom.unfollowTask'))
+				.set(credentials)
+				.send({
+					mid: task._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+	});
+
+	describe('Udpate a task', () => {
+		const task = {};
+		before((done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: roomTest.roomId,
+					title: 'Test title',
+					taskDescription: 'Test Descr',
+					taskAssignee: '@TestUser',
+					taskStatus: 'Urgent',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					task._id = res.body.task._id;
+				})
+				.end(done);
+		});
+
+		it('Update the title, description, assignee, status of the task', (done) => {
+			request.post(api('taskRoom.taskUpdate'))
+				.set(credentials)
+				.send({
+					id: task._id,
+					taskTitle: 'New Title',
+					taskDescription: 'New Descr',
+					taskAssignee: '@TestUser2',
+					taskStatus: 'Not Urgent',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('task').and.to.be.an('object');
+					expect(res.body).to.have.nested.property('task.title', 'New Title');
+					expect(res.body).to.have.nested.property('task.taskDescription', 'New Descr');
+					expect(res.body).to.have.nested.property('task.taskAssignee', '@TestUser2');
+					expect(res.body).to.have.nested.property('task.taskStatus', 'Not Urgent');
+				})
+				.end(done);
+		});
+
+		it('This should fail if the user does not have the right permissions', async () => {
+			await updatePermission('edit-task', ['']);
+			request.post(api('taskRoom.taskUpdate'))
+				.set(credentials)
+				.send({
+					id: task._id,
+					taskTitle: 'Title',
+					taskDescription: 'New Descr',
+					taskAssignee: '@TestUser2',
+					taskStatus: 'Not Urgent',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+			await updatePermission('edit-task', ['admin', 'moderator', 'owner']);
 		});
 	});
 });

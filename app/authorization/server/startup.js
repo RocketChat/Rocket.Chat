@@ -136,11 +136,11 @@ Meteor.startup(function() {
 		{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-all-team-channels', roles: ['admin', 'owner'] },
 		{ _id: 'view-all-teams', roles: ['admin'] },
-		{ _id: 'create-taskRoom',         roles: ['admin', 'user'] },
-		{ _id: 'delete-taskRoom',         roles: ['admin', 'owner'] },
-		{ _id: 'create-task',    roles: ['admin', 'owner', 'user'] },
-		{ _id: 'edit-task',    roles: ['admin', 'owner', 'user'] },
-		{ _id: 'delete-task',    roles: ['admin', 'owner', 'user'] },
+		{ _id: 'create-taskRoom',         roles: ['admin', 'moderator', 'user'] },
+		{ _id: 'delete-taskRoom',         roles: ['admin', 'moderator', 'owner'] },
+		{ _id: 'create-task',    roles: ['admin', 'moderator', 'owner', 'user'] },
+		{ _id: 'edit-task',    roles: ['admin', 'moderator', 'owner'] },
+		{ _id: 'delete-task',    roles: ['admin', 'moderator', 'owner', 'user'] },
 	];
 
 	for (const permission of permissions) {
