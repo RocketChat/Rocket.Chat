@@ -4,9 +4,8 @@ import { OmnichannelDepartmentContext } from '../../contexts/OmnichannelContext/
 import { useEndpointData } from '../../hooks/useEndpointData';
 
 export const OmnichannelDepartmentProvider: FC = ({ children }) => {
-	const { value = { departments: [] } /* phase, reload */ } = useEndpointData(
-		'livechat/department',
-	);
+	const { value = { departments: [] } /* phase, reload */ } =
+		useEndpointData('livechat/department');
 
 	const context = useMemo(() => ({ departments: value.departments }), [value.departments]);
 

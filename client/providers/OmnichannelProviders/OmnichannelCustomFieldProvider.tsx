@@ -4,9 +4,8 @@ import { OmnichannelCustomFieldContext } from '../../contexts/OmnichannelContext
 import { useEndpointData } from '../../hooks/useEndpointData';
 
 export const OmnichannelCustomFieldProvider: FC = ({ children }) => {
-	const { value = { customFields: [] } /* phase, reload */ } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value = { customFields: [] } /* phase, reload */ } =
+		useEndpointData('livechat/custom-fields');
 
 	const context = useMemo(() => ({ customFields: value.customFields }), [value.customFields]);
 
