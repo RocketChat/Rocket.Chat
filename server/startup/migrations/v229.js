@@ -2,7 +2,7 @@ import { Settings } from '../../../app/models/server';
 import { Migrations } from '../../../app/migrations';
 
 Migrations.add({
-	version: 226,
+	version: 229,
 	up() {
 		const oldNamesValidationSetting = Settings.findById(
 			'UTF8_Names_Validation',
