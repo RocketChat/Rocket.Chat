@@ -41,7 +41,7 @@ function CallPage({
 						audio: true,
 						video: {
 							width: { ideal: 440 },
-							height: { ideal: 580 },
+							height: { ideal: 680 },
 						},
 					};
 					return true;
@@ -170,17 +170,15 @@ function CallPage({
 					<UserAvatar
 						id='localAvatar'
 						style={{
-							width: '100%',
-							height: callInIframe ? '20%' : '80%',
-							paddingTop: callInIframe ? '4%' : '20%',
-							paddingLeft: '33%',
-							paddingRight: '20%',
-							paddingBottom: callInIframe ? '4%' : '20%',
+							width: callInIframe ? '30%' : '100%',
+							height: callInIframe ? '20%' : '60%',
+							padding: callInIframe ? '0' : '20% 20% 20% 35%',
+							margin: callInIframe ? '10% 10% 10% 30%' : '0',
 							display: isCameraOn ? 'none' : 'block',
 						}}
 						username={localAvatar}
 						className='rcx-message__avatar'
-						size={isRemoteMobileDevice || callInIframe ? 'x2' : 'x48'}
+						size={isRemoteMobileDevice || callInIframe ? 'x32' : 'x48'}
 					/>
 				</Box>
 				<ButtonGroup
@@ -256,8 +254,8 @@ function CallPage({
 					position='absolute'
 					zIndex='1'
 					style={{
-						top: isLocalMobileDevice ? '45%' : '20%',
-						right: isLocalMobileDevice ? '75%' : '45%',
+						top: isLocalMobileDevice ? '30%' : '20%',
+						right: isLocalMobileDevice ? '35%' : '45%',
 						display: isRemoteCameraOn ? 'none' : 'block',
 					}}
 				>
@@ -276,6 +274,7 @@ function CallPage({
 							color: 'white',
 							fontSize: isLocalMobileDevice || callInIframe ? 15 : 35,
 							textAlign: 'center',
+							marginLeft: isLocalMobileDevice || callInIframe ? '-15%' : '0',
 						}}
 					>
 						{remoteAvatar}
@@ -375,7 +374,7 @@ function CallPage({
 		case 'inProgress':
 			return (
 				<Flex.Container direction='column' justifyContent='center'>
-					{visitorToken ? showAvatar(agentName, visitorName) : showAvatar(visitorName, agentName)}
+					{visitorToken ? showAvatar(visitorName, agentName) : showAvatar(agentName, visitorName)}
 				</Flex.Container>
 			);
 	}

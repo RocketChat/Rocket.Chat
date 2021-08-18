@@ -8,6 +8,7 @@ import { useRouteParameter, useQueryStringParameter } from '../../contexts/Route
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
+import './CallPage.css';
 
 function MeetPage() {
 	const [isRoomMember, setIsRoomMember] = useState(false);
@@ -18,6 +19,13 @@ function MeetPage() {
 	const layout = useQueryStringParameter('layout');
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
+
+	const ismobiledevice = () => {
+		if (window.innerWidth <= 450 && window.innerHeight >= 620) {
+			return true;
+		}
+		return false;
+	};
 
 	const setupCallForVisitor = useCallback(async () => {
 		const room = await APIClient.v1.get(`/livechat/room?token=${visitorToken}&rid=${roomId}`);
@@ -66,10 +74,10 @@ function MeetPage() {
 					<Box
 						width='full'
 						minHeight='sh'
-						textAlign='center'
+						alignItems='center'
+						backgroundColor='neutral-900'
 						overflow='hidden'
 						position='relative'
-						backgroundColor='#181B20'
 					>
 						<Box
 							position='absolute'
@@ -78,50 +86,60 @@ function MeetPage() {
 								top: '5%',
 								right: '2%',
 							}}
-							w='x200'
+							className='Self_Video'
 							backgroundColor='#2F343D'
 						>
 							<UserAvatar
+								id='localAvatar'
 								style={{
 									width: '100%',
-									height: '130px',
-									paddingTop: '20%',
-									paddingLeft: '35%',
-									paddingRight: '20%',
+									height: '60%',
+									padding: '20% 20% 20% 35%',
+									display: 'block',
 								}}
-								username={agentName}
+								username={visitorName}
 								className='rcx-message__avatar'
-								size='x48'
+								size={ismobiledevice() ? 'x32' : 'x48'}
 							/>
 						</Box>
-						<Box position='absolute' zIndex='1' style={{ top: '20%', right: '45%' }}>
-							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
-							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
-								{'Call Ended'}
+						<Box
+							className='remoteAvatar'
+							position='absolute'
+							zIndex='1'
+							style={{
+								top: ismobiledevice() ? '30%' : '20%',
+								right: ismobiledevice() ? '35%' : '45%',
+								display: 'block',
+							}}
+						>
+							<UserAvatar
+								username={agentName}
+								className='rcx-message__avatar'
+								size={ismobiledevice() ? 'x32' : 'x124'}
+							/>
+							<p style={{ color: 'white', fontSize: 16, textAlign: 'center', margin: 15 }}>
+								{'Call Ended!'}
 							</p>
-							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
-								{visitorName}
-							</p>
-						</Box>
-						<Box position='absolute' zIndex='1' style={{ top: '80%', right: '48%' }}>
-							<Button
-								title='Close Window'
-								onClick={closeCallTab}
-								backgroundColor='#2F343D'
-								borderColor='#2F343D'
+							<p
+								style={{
+									color: 'white',
+									fontSize: ismobiledevice() ? 15 : 35,
+									textAlign: 'center',
+									marginLeft: ismobiledevice() ? '20%' : '0',
+								}}
 							>
-								<Icon name='cross' size='x16' color='white' />
-							</Button>
+								{agentName}
+							</p>
 						</Box>
 					</Box>
 				) : (
 					<Box
 						width='full'
 						minHeight='sh'
-						textAlign='center'
+						alignItems='center'
+						backgroundColor='neutral-900'
 						overflow='hidden'
 						position='relative'
-						backgroundColor='#181B20'
 					>
 						<Box
 							position='absolute'
@@ -130,43 +148,64 @@ function MeetPage() {
 								top: '5%',
 								right: '2%',
 							}}
-							w='x200'
+							className='Self_Video'
 							backgroundColor='#2F343D'
 						>
 							<UserAvatar
+								id='localAvatar'
 								style={{
 									width: '100%',
-									height: '130px',
-									paddingTop: '20%',
-									paddingLeft: '35%',
-									paddingRight: '20%',
+									height: '60%',
+									padding: '20% 20% 20% 35%',
+									display: 'block',
 								}}
-								username={visitorName}
+								username={agentName}
 								className='rcx-message__avatar'
-								size='x48'
+								size={ismobiledevice() ? 'x32' : 'x48'}
 							/>
 						</Box>
-						<Box position='absolute' zIndex='1' style={{ top: '20%', right: '45%' }}>
-							<UserAvatar username={agentName} className='rcx-message__avatar' size='x124' />
-							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
-								{'Call Ended'}
+
+						<Box
+							className='remoteAvatar'
+							position='absolute'
+							zIndex='1'
+							style={{
+								top: ismobiledevice() ? '30%' : '20%',
+								right: ismobiledevice() ? '35%' : '45%',
+								display: 'block',
+							}}
+						>
+							<UserAvatar
+								username={visitorName}
+								className='rcx-message__avatar'
+								size={ismobiledevice() ? 'x32' : 'x124'}
+							/>
+							<p style={{ color: 'white', fontSize: 16, textAlign: 'center', margin: 15 }}>
+								{'Call Ended!'}
 							</p>
-							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
-								{agentName}
-							</p>
-						</Box>
-						<Box position='absolute' zIndex='1' style={{ top: '80%', right: '48%' }}>
-							<Button
-								title='Close Window'
-								onClick={closeCallTab}
-								backgroundColor='#2F343D'
-								borderColor='#2F343D'
+							<p
+								style={{
+									color: 'white',
+									fontSize: ismobiledevice() ? 15 : 35,
+									textAlign: 'center',
+									marginLeft: ismobiledevice() ? '20%' : '0',
+								}}
 							>
-								<Icon name='cross' size='x16' color='white' />
-							</Button>
+								{visitorName}
+							</p>
 						</Box>
 					</Box>
 				)}
+				<Box position='absolute' zIndex='1' style={{ top: '80%', right: '48%' }}>
+					<Button
+						title='Close Window'
+						onClick={closeCallTab}
+						backgroundColor='#2F343D'
+						borderColor='#2F343D'
+					>
+						<Icon name='cross' size='x16' color='white' />
+					</Button>
+				</Box>
 			</Flex.Container>
 		);
 	}
