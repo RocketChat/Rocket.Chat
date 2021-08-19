@@ -1,5 +1,6 @@
 import './streamer.js';
-import { LoggerManager, Logger, SystemLogger } from './server';
+import { LoggerManager, SystemLogger } from './server';
+import { Logger } from '../../../server/lib/logger';
 
 export {
 	LoggerManager,
