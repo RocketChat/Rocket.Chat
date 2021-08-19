@@ -1884,7 +1884,7 @@
   "Nothing": "Nimic",
   "Nothing_found": "Nu s-a găsit nimic",
   "Notification_Desktop_Default_For": "Afișați notificările desktop pentru",
-  "Notification_Mobile_Default_For": "Împingeți notificările mobile pentru",
+  "Notification_Push_Default_For": "Împingeți notificările mobile pentru",
   "Notifications": "notificările",
   "Notifications_Max_Room_Members": "Membrii camerei maximă înainte de a dezactiva toate notificările mesajelor",
   "Notifications_Max_Room_Members_Description": "Numărul maxim de membri în cameră, când notificările pentru toate mesajele sunt dezactivate. Utilizatorii pot schimba în continuare setările camerei pentru a primi toate notificările în mod individual. (0 pentru a dezactiva)",

@@ -2731,7 +2731,7 @@
   "Nothing": "Nic",
   "Nothing_found": "Nic nalezeno",
   "Notification_Desktop_Default_For": "Zobrazit oznámení na ploše",
-  "Notification_Mobile_Default_For": "Zasílat mobilní notifikace",
+  "Notification_Push_Default_For": "Zasílat mobilní notifikace",
   "Notification_RequireInteraction": "Vyžadovat potvrzení u oznámení na ploše",
   "Notification_RequireInteraction_Description": "Funguje pouze v prohlížeči Chrome verze >50. Využívá parametru <i>requireInteraction</i>, aby se oznámení na ploše zobrazovalo nepřetržitě dokud jej uživatel neoznačí jako přečtené.",
   "Notifications": "Oznámení",

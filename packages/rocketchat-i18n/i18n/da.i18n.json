@@ -2746,7 +2746,7 @@
   "Nothing": "Ikke noget",
   "Nothing_found": "Intet fundet",
   "Notification_Desktop_Default_For": "Vis skrivebordsmeddelelser for",
-  "Notification_Mobile_Default_For": "Skub mobile meddelelser til",
+  "Notification_Push_Default_For": "Skub mobile meddelelser til",
   "Notification_RequireInteraction": "Kræv interaktion for at afvise skrivebordsmeddelelse",
   "Notification_RequireInteraction_Description": "Fungerer kun med Chrome-browserversioner > 50. Anvend bruger-parameteren <i>requiredInteraction</i> til at vise skrivebordsmeddelelsen til ubestemt tid indtil brugeren interagerer med den.",
   "Notifications": "Meddelelser",

@@ -1914,7 +1914,7 @@
   "Nothing": "لا شيء",
   "Nothing_found": "لا يوجد شيء",
   "Notification_Desktop_Default_For": "عرض الإخطارات سطح المكتب ل",
-  "Notification_Mobile_Default_For": "دفع الإخطارات موبايل ل",
+  "Notification_Push_Default_For": "دفع الإخطارات موبايل ل",
   "Notifications": "الإشعارات",
   "Notifications_Max_Room_Members": "أقصى أعضاء الغرفة قبل تعطيل جميع الإخطارات رسالة",
   "Notifications_Max_Room_Members_Description": "الحد الأقصى لعدد الأعضاء في الغرفة عند تعطيل الإشعارات لجميع الرسائل. يمكن للمستخدمين لا يزال تغيير في إعداد غرفة لتلقي جميع الإخطارات على أساس فردي. (0 لتعطيل)",

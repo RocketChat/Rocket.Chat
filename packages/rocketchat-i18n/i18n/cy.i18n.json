@@ -1883,7 +1883,7 @@
   "Nothing": "Dim byd",
   "Nothing_found": "Ni ddarganfuwyd dim",
   "Notification_Desktop_Default_For": "Dangos Hysbysiadau Pen-desg Ar",
-  "Notification_Mobile_Default_For": "Gwthio Hysbysiadau Symudol I",
+  "Notification_Push_Default_For": "Gwthio Hysbysiadau Symudol I",
   "Notifications": "Hysbysiadau",
   "Notifications_Max_Room_Members": "Aelodau'r Ystafell Fawr Cyn Analluogi Pob Hysbysiad Neges",
   "Notifications_Max_Room_Members_Description": "Nifer o aelodau yn yr ystafell pan fydd hysbysiadau ar gyfer pob neges yn cael eu hanabledd. Gall defnyddwyr barhau i newid fesul ystafell i dderbyn pob hysbysiad yn unigol. (0 i analluogi)",

@@ -2975,7 +2975,7 @@
   "Nothing_found": "沒有找到",
   "Notification_Desktop_Default_For": "顯示桌面通知",
   "Notification_Desktop_Audio_Default_For": "播放桌面通知音效",
-  "Notification_Mobile_Default_For": "推送手機通知",
+  "Notification_Push_Default_For": "推送手機通知",
   "Notification_RequireInteraction": "需要回應才能關閉桌面通知",
   "Notification_RequireInteraction_Description": "僅適用於 Chrome 瀏覽器版本>50。使用參數<i>requireInteraction </i> 將桌面通知無限期顯示直到使用者與其互動。",
   "Notifications": "通知",

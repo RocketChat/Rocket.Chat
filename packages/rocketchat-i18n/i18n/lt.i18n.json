@@ -1886,7 +1886,7 @@
   "Nothing": "Nieko",
   "Nothing_found": "Nieko nerasta",
   "Notification_Desktop_Default_For": "Rodyti pranešimus darbalaukyje",
-  "Notification_Mobile_Default_For": "Paspauskite \"Mobile\" pranešimus",
+  "Notification_Push_Default_For": "Paspauskite \"Mobile\" pranešimus",
   "Notifications": "Pranešimai",
   "Notifications_Max_Room_Members": "Didžiausio kambario nariai prieš išjungiant visus pranešimus",
   "Notifications_Max_Room_Members_Description": "Maksimalus narių skaičius kambaryje, kai pranešimai apie visus pranešimus išjungiami. Vartotojai vis dar gali pakeisti kambario nustatymą, kad gautų visus pranešimus atskirai. (Išjungti 0)",

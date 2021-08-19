@@ -1897,7 +1897,7 @@
   "Nothing": "Nekas",
   "Nothing_found": "Nekas nav atrasts",
   "Notification_Desktop_Default_For": "Parādīt darbvirsmas paziņojumus par",
-  "Notification_Mobile_Default_For": "Push mobilā tālruņa paziņojumi par",
+  "Notification_Push_Default_For": "Push mobilā tālruņa paziņojumi par",
   "Notifications": "Paziņojumi",
   "Notifications_Max_Room_Members": "Maksimālais istabas biedru skaits pirms atspējot visus paziņojumus par ziņojumiem",
   "Notifications_Max_Room_Members_Description": "Maksimālais dalībnieku skaits istabā, kad paziņojumi par visiem ziņojumiem tiek atspējoti. Lietotāji joprojām var mainīt istabas iestatījumus, lai saņemtu visus paziņojumus individuāli. (0 lai atspējotu)",

@@ -1876,7 +1876,7 @@
   "Nothing": "Nič",
   "Nothing_found": "Brez zadetkov",
   "Notification_Desktop_Default_For": "Prikaži namizna obvestila za",
-  "Notification_Mobile_Default_For": "Potisni mobilna obvestila za",
+  "Notification_Push_Default_For": "Potisni mobilna obvestila za",
   "Notifications": "Obvestila",
   "Notifications_Max_Room_Members": "Največje število uporabnikov v sobi preden so onemogočena vsa obvestila o sporočilih",
   "Notifications_Max_Room_Members_Description": "Največje število uporabnikov v sobi, ko se obvestila za vsa sporočila onemogočijo. Uporabnik lahko še vedno spremeni nastavitve posamezne sobe, da prejme vsa obvestila posamezno. (0 za onemogoči)",

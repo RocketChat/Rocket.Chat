@@ -3005,7 +3005,7 @@
   "Nothing_found": "Nic nie znaleziono",
   "Notification_Desktop_Default_For": "Pokaż powiadomienia na pulpicie dla",
   "Notification_Desktop_Audio_Default_For": "Odtwarzanie powiadomień audio z pulpitu dla",
-  "Notification_Mobile_Default_For": "Prześlij powiadomienia mobilne dla",
+  "Notification_Push_Default_For": "Prześlij powiadomienia mobilne dla",
   "Notification_RequireInteraction": "Wymagaj interakcji aby odwołać powiadomienie desktop",
   "Notification_RequireInteraction_Description": "Działa tylko z przeglądarkami Chrome w wersjach > 50. Wykorzystuje parametr <i>requireInteraction</i> do wyświetlania powiadomienia pulpitu na czas nieokreślony, dopóki użytkownik nie wejdzie z nim w interakcję.",
   "Notifications": "Powiadomienia",

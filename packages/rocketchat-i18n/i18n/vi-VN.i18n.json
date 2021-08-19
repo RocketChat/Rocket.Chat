@@ -1883,7 +1883,7 @@
   "Nothing": "Không có gì",
   "Nothing_found": "Không kết quả",
   "Notification_Desktop_Default_For": "Hiển thị Thông báo dành cho máy tính để bàn",
-  "Notification_Mobile_Default_For": "Push notification Di động cho",
+  "Notification_Push_Default_For": "Push notification Di động cho",
   "Notifications": "Thông báo",
   "Notifications_Max_Room_Members": "Thành viên kênh tối đa trước khi vô hiệu hoá tất cả thông báo",
   "Notifications_Max_Room_Members_Description": "Số thành viên tối đa trong phòng khi thông báo cho tất cả các tin nhắn bị tắt. Người dùng vẫn có thể thay đổi cài đặt mỗi phòng để nhận tất cả các thông báo trên cơ sở cá nhân. (0 để vô hiệu hóa)",

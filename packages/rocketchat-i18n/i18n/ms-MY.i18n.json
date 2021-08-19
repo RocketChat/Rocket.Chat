@@ -1889,7 +1889,7 @@
   "Nothing": "Tiada apa-apa",
   "Nothing_found": "Tiada apa Dijumpai",
   "Notification_Desktop_Default_For": "Tunjukkan Pemberitahuan Desktop Untuk",
-  "Notification_Mobile_Default_For": "Tolak Pemberitahuan Bergerak Untuk",
+  "Notification_Push_Default_For": "Tolak Pemberitahuan Bergerak Untuk",
   "Notifications": "Pemberitahuan",
   "Notifications_Max_Room_Members": "Ahli Bilik Maks sebelum Melumpuhkan Semua Pemberitahuan Mesej",
   "Notifications_Max_Room_Members_Description": "Bilangan ahli dalam bilik apabila pemberitahuan untuk semua mesej menjadi kurang upaya. Pengguna masih boleh menukar tetapan bilik untuk menerima semua pemberitahuan secara individu. (0 untuk melumpuhkan)",

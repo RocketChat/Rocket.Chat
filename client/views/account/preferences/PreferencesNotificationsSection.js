@@ -194,7 +194,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Notification_Mobile_Default_For')}</Field.Label>
+					<Field.Label>{t('Notification_Push_Default_For')}</Field.Label>
 					<Field.Row>
 						<Select
 							value={mobileNotifications}

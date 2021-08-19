@@ -1883,7 +1883,7 @@
   "Nothing": "asgjë",
   "Nothing_found": "Asgjë për të gjetur",
   "Notification_Desktop_Default_For": "Shfaq Njoftimet në Desktop për",
-  "Notification_Mobile_Default_For": "Push Njoftimet Mobile për",
+  "Notification_Push_Default_For": "Push Njoftimet Mobile për",
   "Notifications": "Njoftime",
   "Notifications_Max_Room_Members": "Anëtarët e Dhomës Maksimale para çaktivizimit të të gjitha njoftimeve të mesazhit",
   "Notifications_Max_Room_Members_Description": "Numri maksimal i anëtarëve në dhomë kur njoftimet për të gjitha mesazhet çaktivizohen. Përdoruesit mund të ndryshojnë ende për vendosjen e dhomës për të marrë të gjitha njoftimet në baza individuale. (0 për të çaktivizuar)",

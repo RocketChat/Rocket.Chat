@@ -1888,7 +1888,7 @@
   "Nothing": "Nichts",
   "Nothing_found": "Es wurde nichts gefunden.",
   "Notification_Desktop_Default_For": "Desktop-Benachrichtigungen anzeigen für",
-  "Notification_Mobile_Default_For": "Push Push-Benachrichtigungen für",
+  "Notification_Push_Default_For": "Push Push-Benachrichtigungen für",
   "Notifications": "Benachrichtigungen",
   "Notifications_Max_Room_Members": "Max Room-Mitglieder vor dem Deaktivieren aller Nachrichtenbenachrichtigungen",
   "Notifications_Max_Room_Members_Description": "Maximale Anzahl von Mitgliedern im Raum, wenn Benachrichtigungen für alle Nachrichten deaktiviert werden. Benutzer können die Einstellung pro Zimmer ändern, um alle Benachrichtigungen auf individueller Basis zu erhalten. (0 zum Deaktivieren)",

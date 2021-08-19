@@ -1886,7 +1886,7 @@
   "Nothing": "Heç bir şey yoxdur",
   "Nothing_found": "Heç nə tapılmadı",
   "Notification_Desktop_Default_For": "Masaüstü Bildirişləri Göstər",
-  "Notification_Mobile_Default_For": "Üçün Mobil Uyarıları Push",
+  "Notification_Push_Default_For": "Üçün Mobil Uyarıları Push",
   "Notifications": "Bildirişlər",
   "Notifications_Max_Room_Members": "Bütün mesaj bildirişlərini aradan qaldırmadan əvvəl Max Otaq üzvləri",
   "Notifications_Max_Room_Members_Description": "Bütün mesajlar üçün bildirişlər çıxdıqda otaqda maksimum üzv sayı. İstifadəçilər fərdi şəkildə bütün bildirişləri qəbul etmək üçün hələ otaq qəbulu üçün dəyişə bilərlər. (Aradan qaldırılması üçün 0)",

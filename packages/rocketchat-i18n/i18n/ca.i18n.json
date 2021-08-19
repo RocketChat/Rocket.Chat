@@ -3067,7 +3067,7 @@
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Recordeu que els Channels públics seran públics i visibles per a tothom.",
   "Notification_Desktop_Default_For": "Mostra notificacions d'escriptori per",
   "Notification_Desktop_Audio_Default_For": "Reproduir àudio de notificacions d'escriptori per",
-  "Notification_Mobile_Default_For": "Notificacions push mòbil per",
+  "Notification_Push_Default_For": "Notificacions push mòbil per",
   "Notification_RequireInteraction": "Requerir interacció per descartar la notificació d'escriptori",
   "Notification_RequireInteraction_Description": "Funciona només amb versions de el navegador Chrome> 50. Utilitza el paràmetre <i> requireInteraction </i> per mostrar la notificació d'escriptori de forma indefinida fins que l'usuari interactuï amb ella.",
   "Notifications": "Notificacions",

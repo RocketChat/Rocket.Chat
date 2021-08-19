@@ -2184,7 +2184,7 @@
   "Nothing": "هیچ چیز",
   "Nothing_found": "چیزی پیدا نشد",
   "Notification_Desktop_Default_For": "نمایش اعلان های دسکتاپ برای",
-  "Notification_Mobile_Default_For": "push notification های تلفن همراه برای",
+  "Notification_Push_Default_For": "push notification های تلفن همراه برای",
   "Notifications": "اعلانات",
   "Notifications_Max_Room_Members": "کاربران حداکثر اتاق قبل از غیر فعال کردن همه پیام های پیام",
   "Notifications_Max_Room_Members_Description": "حداکثر تعداد اعضا در اتاق زمانی که اعلان برای همه پیامها غیرفعال می شود. کاربران هنوز هم می توانند در هر اتاق تنظیمات را تغییر دهند تا همه اعلان ها را به صورت فردی دریافت کنند. (0 برای غیر فعال کردن)",

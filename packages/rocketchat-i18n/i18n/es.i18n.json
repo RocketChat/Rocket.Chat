@@ -3068,7 +3068,7 @@
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Tenga en cuenta que los Channels públicos serán públicos y visibles para todos.",
   "Notification_Desktop_Default_For": "Mostrar notificaciones de escritorio para",
   "Notification_Desktop_Audio_Default_For": "Reproducir audio de notificaciones de escritorio para",
-  "Notification_Mobile_Default_For": "Notificaciones móviles push para",
+  "Notification_Push_Default_For": "Notificaciones móviles push para",
   "Notification_RequireInteraction": "Requerir interacción para descartar la notificación de escritorio",
   "Notification_RequireInteraction_Description": "Funciona solo con versiones de Google Chrome > 50. Utilice el parámetro  Utilizes the <i>requireInteraction</i> para mostrar la notificación de escritorio de forma indefinida hasta que el usuario interactúe con ella.",
   "Notifications": "Notificaciones",

@@ -2017,7 +2017,7 @@
   "Nothing": "Ništa",
   "Nothing_found": "Ništa nije nađeno",
   "Notification_Desktop_Default_For": "Prikaži Obavijesti za stolna računala",
-  "Notification_Mobile_Default_For": "Push mobilnih obavijesti za",
+  "Notification_Push_Default_For": "Push mobilnih obavijesti za",
   "Notifications": "Obavijesti",
   "Notifications_Max_Room_Members": "Članovi Max soba prije onemogućavanja svih obavijesti o poruci",
   "Notifications_Max_Room_Members_Description": "Maksimalni broj članova u sobi kada se obavijesti o svim porukama onemogućuju. Korisnici se i dalje mogu mijenjati po postavkama sobe kako bi primile sve obavijesti na pojedinačnoj osnovi. (0 za onemogućavanje)",

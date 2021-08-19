@@ -3072,7 +3072,7 @@
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Merk op dat openbare kanalen openbaar zijn en voor iedereen zichtbaar zijn.",
   "Notification_Desktop_Default_For": "Bureaubladmeldingen weergeven voor",
   "Notification_Desktop_Audio_Default_For": "Speel desktop audiomeldingen voor",
-  "Notification_Mobile_Default_For": "Mobiele pushmeldingen voor",
+  "Notification_Push_Default_For": "Mobiele pushmeldingen voor",
   "Notification_RequireInteraction": "Interactie vereisen om bureaubladmelding te sluiten",
   "Notification_RequireInteraction_Description": "Werkt alleen met Chrome-browserversies > 50. Gebruikt de parameter <i>requireInteraction</i> om de bureaubladmelding voor onbepaalde tijd weer te geven totdat de gebruiker er interactie mee heeft.",
   "Notifications": "Meldingen",

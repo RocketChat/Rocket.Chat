@@ -2875,7 +2875,7 @@
   "Nothing_found": "Es wurde nichts gefunden",
   "Notification_Desktop_Default_For": "Desktop-Benachrichtigungen anzeigen für",
   "Notification_Desktop_Audio_Default_For": "Desktop-Benachrichtigungen Audio abspielen für",
-  "Notification_Mobile_Default_For": "Push-Benachrichtigungen anzeigen für",
+  "Notification_Push_Default_For": "Push-Benachrichtigungen anzeigen für",
   "Notification_RequireInteraction": "Benutzerinteraktion notwendig um Benachrichtigung auszublenden",
   "Notification_RequireInteraction_Description": "Verwendung nur mit Chrome Browser Version > 50 möglich. Verwendet den Parameter <i>requireInteraction</i> um die Anzeigedauer der Desktop-Benachrichtigung bis zur Benutzerinteraktion zu verlängern.",
   "Notifications": "Benachrichtigungen",

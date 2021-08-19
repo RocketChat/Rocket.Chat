@@ -1880,7 +1880,7 @@
   "Nothing": "ไม่มีอะไร",
   "Nothing_found": "ไม่มีอะไรพบ",
   "Notification_Desktop_Default_For": "แสดงการแจ้งเตือนบนเดสก์ท็อปสำหรับ",
-  "Notification_Mobile_Default_For": "Push Mobile Notifications สำหรับ",
+  "Notification_Push_Default_For": "Push Mobile Notifications สำหรับ",
   "Notifications": "การแจ้งเตือน",
   "Notifications_Max_Room_Members": "สมาชิกห้องพักสูงสุดก่อนปิดใช้งานการแจ้งเตือนข้อความทั้งหมด",
   "Notifications_Max_Room_Members_Description": "จำนวนสมาชิกในห้องเมื่อการแจ้งเตือนสำหรับข้อความทั้งหมดถูกปิดใช้งาน ผู้ใช้ยังคงสามารถเปลี่ยนการตั้งค่าห้องต่อเพื่อรับการแจ้งเตือนทั้งหมดตามแต่ละบุคคล (0 เพื่อปิดการใช้งาน)",

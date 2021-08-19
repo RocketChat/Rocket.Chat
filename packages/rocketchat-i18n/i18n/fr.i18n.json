@@ -3072,7 +3072,7 @@
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Notez que les canaux publics seront publics et visibles de tous.",
   "Notification_Desktop_Default_For": "Afficher les notifications de bureau pour",
   "Notification_Desktop_Audio_Default_For": "Lire les notifications audio de bureau pendant",
-  "Notification_Mobile_Default_For": "Notifications mobiles push pour",
+  "Notification_Push_Default_For": "Notifications mobiles push pour",
   "Notification_RequireInteraction": "Exiger une interaction pour ignorer la notification de bureau",
   "Notification_RequireInteraction_Description": "Fonctionne uniquement avec les versions de navigateur Chrome > 50. Utilise le paramètre <i>requireInteraction</i> pour afficher la notification de bureau pour une durée indéfinie jusqu'à ce que l'utilisateur interagisse avec lui.",
   "Notifications": "Notifications",

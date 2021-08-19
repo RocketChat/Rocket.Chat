@@ -1908,7 +1908,7 @@
   "Nothing": "没有",
   "Nothing_found": "没有找到",
   "Notification_Desktop_Default_For": "显示桌面通知",
-  "Notification_Mobile_Default_For": "推送移动通知",
+  "Notification_Push_Default_For": "推送移动通知",
   "Notifications": "通知",
   "Notifications_Max_Room_Members": "最大房间成员禁用所有消息通知之前",
   "Notifications_Max_Room_Members_Description": "当所有消息的通知被禁用时，房间内的最大成员数量。用户仍然可以更改每个房间的设置，以单独接收所有通知。 （0禁用）",

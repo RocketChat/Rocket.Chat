@@ -2850,7 +2850,7 @@
   "Nothing": "なし",
   "Nothing_found": "何も見つかりませんでした",
   "Notification_Desktop_Default_For": "デスクトップ通知のタイミング",
-  "Notification_Mobile_Default_For": "モバイルプッシュ通知のタイミング",
+  "Notification_Push_Default_For": "モバイルプッシュ通知のタイミング",
   "Notification_RequireInteraction": "デスクトップ通知を消すために操作が必要",
   "Notification_RequireInteraction_Description": "Chromeブラウザバージョン50以上でのみ動作します。パラメーター <i>requireInteraction</i> を使用して、ユーザーが操作するまでデスクトップ通知を無期限に表示します。",
   "Notifications": "通知",

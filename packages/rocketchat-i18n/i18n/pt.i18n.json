@@ -2193,7 +2193,7 @@
   "Nothing": "Nada",
   "Nothing_found": "Nada encontrado",
   "Notification_Desktop_Default_For": "Mostrar Notificações de área de trabalho para",
-  "Notification_Mobile_Default_For": "Pressione notificações móveis para",
+  "Notification_Push_Default_For": "Pressione notificações móveis para",
   "Notifications": "Notificações",
   "Notifications_Max_Room_Members": "Máximo de membros na sala antes de desactivar todas as notificações de mensagens",
   "Notifications_Max_Room_Members_Description": "Número máximo de membros na sala quando as notificações para todas as mensagens são desabilitadas. Os utilizadores ainda podem alterar a configuração por sala para receber todas as notificações de forma individual. (0 para desactivar)",

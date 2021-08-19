@@ -1886,7 +1886,7 @@
   "Nothing": "Ei mitään",
   "Nothing_found": "Ei löytynyt",
   "Notification_Desktop_Default_For": "Näytä työpöytäilmoituksia",
-  "Notification_Mobile_Default_For": "Push mobiiliviestit",
+  "Notification_Push_Default_For": "Push mobiiliviestit",
   "Notifications": "Ilmoitukset",
   "Notifications_Max_Room_Members": "Max Room Members Ennen kaikkien viestiviestien käytöstäpoistoa",
   "Notifications_Max_Room_Members_Description": "Maksimi jäsenmäärä huoneessa, kun kaikkien viestien ilmoitukset poistetaan käytöstä. Käyttäjät voivat silti muuttaa huoneen asetusta kohti vastaanottaa kaikki ilmoitukset yksilöllisesti. (0 poista käytöstä)",

@@ -2274,7 +2274,7 @@
   "Nothing": "Semmi",
   "Nothing_found": "Nem találtam semmit",
   "Notification_Desktop_Default_For": "Asztali értesítések megjelenítése",
-  "Notification_Mobile_Default_For": "Értesítések továbbítása mobilra",
+  "Notification_Push_Default_For": "Értesítések továbbítása mobilra",
   "Notifications": "Értesítések",
   "Notifications_Max_Room_Members": "A Max Room tagjai minden üzenet értesítés letiltása előtt",
   "Notifications_Max_Room_Members_Description": "A tagok maximális száma a szobában, amikor az összes üzenet értesítései le vannak tiltva. A felhasználók szobaházonként bármikor módosíthatják az összes értesítést. (0 letiltani)",

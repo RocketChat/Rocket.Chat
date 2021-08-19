@@ -1939,7 +1939,7 @@
   "Nothing": "Niente",
   "Nothing_found": "Non abbiamo trovato nulla",
   "Notification_Desktop_Default_For": "Mostra notifiche desktop per",
-  "Notification_Mobile_Default_For": "Spingere le notifiche mobili per",
+  "Notification_Push_Default_For": "Spingere le notifiche mobili per",
   "Notifications": "Notifiche",
   "Notifications_Max_Room_Members": "Membri della stanza massima prima di disabilitare tutte le notifiche dei messaggi",
   "Notifications_Max_Room_Members_Description": "Numero massimo di membri nella stanza quando le notifiche per tutti i messaggi vengono disabilitate. Gli utenti possono comunque modificare l'impostazione di ogni stanza per ricevere tutte le notifiche su base individuale. (0 per disabilitare)",

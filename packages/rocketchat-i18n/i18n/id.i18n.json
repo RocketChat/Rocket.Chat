@@ -1894,7 +1894,7 @@
   "Nothing": "Tidak ada",
   "Nothing_found": "Tidak ada yang ditemukan",
   "Notification_Desktop_Default_For": "Tampilkan Pemberitahuan Desktop Untuk",
-  "Notification_Mobile_Default_For": "Pemberitahuan Push Mobile Untuk",
+  "Notification_Push_Default_For": "Pemberitahuan Push Mobile Untuk",
   "Notifications": "pemberitahuan",
   "Notifications_Max_Room_Members": "Anggota Ruang Maksimal Sebelum Menonaktifkan Semua Pemberitahuan Pesan",
   "Notifications_Max_Room_Members_Description": "Jumlah anggota maksimal di ruangan saat pemberitahuan untuk semua pesan dinonaktifkan. Pengguna tetap dapat mengubah setelan per kamar untuk menerima semua notifikasi secara individual. (0 untuk menonaktifkan)",

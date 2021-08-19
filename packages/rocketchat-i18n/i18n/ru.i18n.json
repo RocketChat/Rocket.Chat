@@ -3065,7 +3065,7 @@
   "Notice_that_public_channels_will_be_public_and_visible_to_everyone": "Обратите внимание, что публичные чаты будут публичными и видимыми для всех.",
   "Notification_Desktop_Default_For": "Отображать уведомления для",
   "Notification_Desktop_Audio_Default_For": "Воспроизведение аудио уведомлений на рабочем столе для",
-  "Notification_Mobile_Default_For": "Включить push уведомления для",
+  "Notification_Push_Default_For": "Включить push уведомления для",
   "Notification_RequireInteraction": "Требовать взаимодействия для отклонения уведомления на рабочем столе",
   "Notification_RequireInteraction_Description": "Работает только с версиями браузера Chrome > 50. Использует параметр <i>requireInteraction</i> для отображения уведомления рабочего стола на неопределенное время до тех пор, пока пользователь не будет взаимодействовать с ним.",
   "Notifications": "Уведомления",

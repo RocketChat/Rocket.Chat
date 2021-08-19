@@ -2577,7 +2577,7 @@
   "Nothing": "არაფერი",
   "Nothing_found": "არაფერი არ მოიძებნა",
   "Notification_Desktop_Default_For": "აჩვენეთ სამუშაო მაგიდის შეტყობინებები  __-სთვის",
-  "Notification_Mobile_Default_For": "Push მობილური შეტყობინებები __-სთვის",
+  "Notification_Push_Default_For": "Push მობილური შეტყობინებები __-სთვის",
   "Notification_RequireInteraction": "საჭიროა მოქმედება დესკტოპ შეტყობინებების გასათიშად",
   "Notification_RequireInteraction_Description": "მუშაობს მხოლოდ Chrome ბრაუზერის ვერსიებში> 50. გამოიყენებს პარამეტრს <i> მოითხოვს ურთიერთქმედებას </i>, რომ გამოცნდეს დესკტოპის შეტყობინება განუსაზღვრავი დროით, სანამ მომხმარებელის მოქმედება არ დაფიქსირდება .",
   "Notifications": "შეტყობინებები",

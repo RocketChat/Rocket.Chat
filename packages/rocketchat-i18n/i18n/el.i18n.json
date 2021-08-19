@@ -1892,7 +1892,7 @@
   "Nothing": "Τίποτα",
   "Nothing_found": "Τίποτα δεν βρέθηκε",
   "Notification_Desktop_Default_For": "Εμφάνιση ειδοποιήσεων επιφάνειας εργασίας για",
-  "Notification_Mobile_Default_For": "Push Κινητά ειδοποιήσεις για",
+  "Notification_Push_Default_For": "Push Κινητά ειδοποιήσεις για",
   "Notifications": "Ειδοποιήσεις",
   "Notifications_Max_Room_Members": "Μέλη Max Room πριν απενεργοποιήσετε όλες τις ειδοποιήσεις μηνυμάτων",
   "Notifications_Max_Room_Members_Description": "Μέγιστος αριθμός μελών στο δωμάτιο, όταν οι ειδοποιήσεις για όλα τα μηνύματα αποκλείονται. Οι χρήστες μπορούν ακόμα να αλλάξουν ανά ρύθμιση δωματίου για να λάβουν όλες τις ειδοποιήσεις σε ατομική βάση. (0 για απενεργοποίηση)",

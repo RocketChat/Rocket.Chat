@@ -2245,7 +2245,7 @@
   "Nothing": "Hiçbir şey",
   "Nothing_found": "Bulunamadı",
   "Notification_Desktop_Default_For": "Masaüstü Bildirimlerinin Gösterileceği Durumlar",
-  "Notification_Mobile_Default_For": "Mobil Anlık Bildirimlerin Gösterileceği Durumlar",
+  "Notification_Push_Default_For": "Mobil Anlık Bildirimlerin Gösterileceği Durumlar",
   "Notifications": "Bildirimler",
   "Notifications_Max_Room_Members": "Tüm İleti Bildirimlerini Devre Dışı Bırakmadan Önce Maksimum Oda Üyesi",
   "Notifications_Max_Room_Members_Description": "Tüm mesajlar için bildirimler devre dışı bırakıldığında odanın azami üye sayısı. Kullanıcılar, tüm bildirimleri tek tek almak üzere oda başına ayarlarını değiştirebilir. (Devre dışı bırakmak için 0)",

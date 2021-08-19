@@ -1896,7 +1896,7 @@
   "Nothing": "nič",
   "Nothing_found": "Nič nebolo nájdené",
   "Notification_Desktop_Default_For": "Zobraziť upozornenia na pracovnej ploche pre",
-  "Notification_Mobile_Default_For": "Push Mobile oznámenia pre",
+  "Notification_Push_Default_For": "Push Mobile oznámenia pre",
   "Notifications": "oznámenia",
   "Notifications_Max_Room_Members": "Max. Členovia izby pred vypnutím všetkých upozornení správ",
   "Notifications_Max_Room_Members_Description": "Maximálny počet členov v miestnosti, kedy sú upozornenia na všetky správy zakázané. Užívatelia sa môžu stále meniť za každé nastavenie miestnosti, aby dostali všetky upozornenia na individuálnom základe. (0 pre vypnutie)",

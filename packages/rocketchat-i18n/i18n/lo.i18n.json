@@ -1922,7 +1922,7 @@
   "Nothing": "ບໍ່ມີຫຍັງ",
   "Nothing_found": "ບໍ່ມີພົບ",
   "Notification_Desktop_Default_For": "ສະແດງ Desktop Notifications For",
-  "Notification_Mobile_Default_For": "ຊຸກຍູ້ການແຈ້ງເຕືອນໂທລະສັບມືຖືສໍາລັບ",
+  "Notification_Push_Default_For": "ຊຸກຍູ້ການແຈ້ງເຕືອນໂທລະສັບມືຖືສໍາລັບ",
   "Notifications": "ການແຈ້ງເຕືອນ",
   "Notifications_Max_Room_Members": "ສະມາຊິກຫ້ອງການສູງສຸດກ່ອນທີ່ຈະປິດການແຈ້ງເຕືອນຂໍ້ຄວາມທັງຫມົດ",
   "Notifications_Max_Room_Members_Description": "ຈໍານວນສະມາຊິກສູງສຸດໃນຫ້ອງເມື່ອແຈ້ງເຕືອນສໍາລັບຂໍ້ຄວາມທັງຫມົດຖືກປິດປະຕິບັດ. ຜູ້ໃຊ້ຍັງສາມາດປ່ຽນແປງຕໍ່ການຕັ້ງຄ່າຫ້ອງເພື່ອຮັບການແຈ້ງເຕືອນທັງຫມົດໃນແຕ່ລະພື້ນຖານ. (0 ເພື່ອປິດການໃຊ້ງານ)",
