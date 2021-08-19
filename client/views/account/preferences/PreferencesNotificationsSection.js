@@ -46,7 +46,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		'Accounts_Default_User_Preferences_audioNotifications',
 	);
 	const defaultMobileNotifications = useSetting(
-		'Accounts_Default_User_Preferences_mobileNotifications',
+		'Accounts_Default_User_Preferences_pushNotifications',
 	);
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
