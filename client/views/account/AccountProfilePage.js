@@ -188,8 +188,35 @@ const AccountProfilePage = () => {
 		setLoggingOut(false);
 	}, [logoutOtherClients, dispatchToastMessage, t]);
 
+	const handleConfirmOwnerChange = useCallback(
+		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
+			const handleConfirm = async () => {
+				try {
+					await deleteOwnAccount(SHA256(passwordOrUsername), true);
+					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+					closeModal();
+					logout();
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			};
+
+			return setModal(() => (
+				<ConfirmOwnerChangeWarningModal
+					onConfirm={handleConfirm}
+					onCancel={closeModal}
+					contentTitle={t(`Delete_User_Warning_${erasureType}`)}
+					confirmLabel={t('Delete')}
+					shouldChangeOwner={shouldChangeOwner}
+					shouldBeRemoved={shouldBeRemoved}
+				/>
+			));
+		},
+		[closeModal, erasureType, setModal, t, deleteOwnAccount, dispatchToastMessage, logout],
+	);
+
 	const handleDeleteOwnAccount = useCallback(async () => {
-		const save = async (passwordOrUsername) => {
+		const handleConfirm = async (passwordOrUsername) => {
 			try {
 				await deleteOwnAccount(SHA256(passwordOrUsername));
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
@@ -197,53 +224,29 @@ const AccountProfilePage = () => {
 			} catch (error) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
-					return setModal(() => (
-						<ConfirmOwnerChangeWarningModal
-							onConfirm={() => {
-								deleteOwnAccount(SHA256(passwordOrUsername), true);
-							}}
-							onCancel={closeModal}
-							contentTitle={t(`Delete_User_Warning_${erasureType}`)}
-							confirmLabel={t('Continue')}
-							shouldChangeOwner={shouldChangeOwner}
-							shouldBeRemoved={shouldBeRemoved}
-						/>
-					));
+					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};
 
-		const title = t('Are_you_sure_you_want_to_delete_your_account');
-		if (localPassword) {
-			return setModal(() => (
-				<ActionConfirmModal
-					onSave={save}
-					onCancel={closeModal}
-					title={title}
-					text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
-					isPassword
-				/>
-			));
-		}
 		return setModal(() => (
 			<ActionConfirmModal
-				onSave={save}
+				onConfirm={handleConfirm}
 				onCancel={closeModal}
-				title={title}
-				text={t('If_you_are_sure_type_in_your_username')}
+				isPassword={localPassword}
 			/>
 		));
 	}, [
 		closeModal,
-		deleteOwnAccount,
 		dispatchToastMessage,
-		erasureType,
 		localPassword,
-		t,
-		logout,
 		setModal,
+		handleConfirmOwnerChange,
+		deleteOwnAccount,
+		logout,
+		t,
 	]);
 
 	return (
