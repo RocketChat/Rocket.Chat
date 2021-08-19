@@ -20,7 +20,6 @@ Meteor.methods({
 		}
 
 		const message = Messages.findOneById(mid, { fields: { rid: 1, tmid: 1 } });
-
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', { method: 'followMessage' });
 		}

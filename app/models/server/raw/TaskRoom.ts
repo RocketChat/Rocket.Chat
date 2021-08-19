@@ -12,10 +12,6 @@ export class TaskRoom extends BaseRaw<T> {
 		super(col, trash);
 
 		this.col.createIndex({ name: 1 }, { unique: true });
-
-		// this.col.createIndexes([
-		// 	{ key: { status: 1, expireAt: 1 } },
-		// ]);
 	}
 
 	findByNames(names: Array<string>, options?: FindOneOptions<T>): Cursor<T> {

@@ -19,6 +19,7 @@ Meteor.methods({
 			return toastr.error(t('Task_Already_Sent'));
 		}
 		const user = Meteor.user();
+
 		task.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());
 		task.u = {
 			_id: Meteor.userId(),

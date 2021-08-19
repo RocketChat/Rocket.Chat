@@ -20,7 +20,6 @@ import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { call } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 
-
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
 
 const onDeleteMessageStream = (msg) => {

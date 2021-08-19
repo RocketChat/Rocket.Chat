@@ -45,9 +45,7 @@ Template.thread.helpers({
 	...dropzoneHelpers,
 	mainMessage() {
 		const { Threads, state } = Template.instance();
-
 		const tmid = state.get('tmid');
-
 		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
@@ -75,6 +73,7 @@ Template.thread.helpers({
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
 		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+
 		const following = thread?.replies?.includes(Meteor.userId());
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
@@ -251,6 +250,7 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
+
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
@@ -265,6 +265,7 @@ Template.thread.onCreated(async function() {
 		this.state.set('loading', true);
 
 		const messages = await call('getThreadMessages', { tmid, rid });
+
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 
 		Tracker.afterFlush(() => {

@@ -49,7 +49,7 @@ const Room = () => {
 			</RoomTemplate.Header>
 			<RoomTemplate.Body>
 				{room.taskRoomId ? (
-					<TaskRoom tabBar={tabBar} rid={room._id} _id={room._id} style={{ overflowY: 'auto' }} />
+					<TaskRoom tabBar={tabBar} rid={room._id} _id={room._id} />
 				) : (
 					<BlazeTemplate
 						onClick={hideFlexTab ? close : undefined}

@@ -126,7 +126,7 @@ export default memo(function Task({
 			{status && (
 				<MessageTemplate.Container alignItems='center'>
 					<Metrics.Item>
-						<Metrics.Item.Icon name='warning' />
+						<Metrics.Item.Icon name='hash' />
 						<Metrics.Item.Label>{status}</Metrics.Item.Label>
 					</Metrics.Item>
 				</MessageTemplate.Container>

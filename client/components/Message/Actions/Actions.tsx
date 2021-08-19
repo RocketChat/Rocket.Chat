@@ -22,8 +22,9 @@ const Actions: FC<{ actions: Array<ActionOptions>; runAction: RunAction; mid: st
 }) => (
 	<Content width='full' justifyContent='center'>
 		<ButtonGroup align='center'>
-			{actions &&
-				actions.map((action) => <Action runAction={runAction} key={action.id} {...action} />)}
+			{actions.map((action) => (
+				<Action runAction={runAction} key={action.id} {...action} />
+			))}
 		</ButtonGroup>
 	</Content>
 );
