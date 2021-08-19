@@ -4,7 +4,6 @@ import React, { ReactElement } from 'react';
 import { IUser } from '../../../../definition/IUser';
 import { useSetting } from '../../../contexts/SettingsContext';
 import Emoji from '../../Emoji';
-import ScrollableContentWrapper from '../../ScrollableContentWrapper';
 import ReactionUserTag from './ReactionUserTag';
 
 type ReactionsProps = {
@@ -15,26 +14,29 @@ type ReactionsProps = {
 const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 	return (
-		<Box display='flex' flexDirection='column' minHeight='x48'>
-			<ScrollableContentWrapper>
-				{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (
-					<Box key={reaction}>
-						<Box display='flex' alignItems='center' flexDirection='row' overflowX='hidden' mb='x8'>
-							<Emoji emojiHandle={reaction} />
-							<Box display='flex' flexWrap='wrap' paddingBlock='x4' mis='x4'>
-								{usernames.map((username: IUser['username'], i: number) => (
-									<ReactionUserTag
-										key={username}
-										displayName={useRealName ? names[i] || username : username}
-										username={username}
-										onClick={onClick}
-									/>
-								))}
-							</Box>
-						</Box>
+		<Box display='flex' flexDirection='column'>
+			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (
+				<Box
+					key={reaction}
+					display='flex'
+					alignItems='center'
+					flexDirection='row'
+					overflowX='hidden'
+					mb='x8'
+				>
+					<Emoji emojiHandle={reaction} />
+					<Box display='flex' flexWrap='wrap' paddingBlock='x4' mis='x4'>
+						{usernames.map((username: IUser['username'], i: number) => (
+							<ReactionUserTag
+								key={username}
+								displayName={useRealName ? names[i] || username : username}
+								username={username}
+								onClick={onClick}
+							/>
+						))}
 					</Box>
-				))}
-			</ScrollableContentWrapper>
+				</Box>
+			))}
 		</Box>
 	);
 };
