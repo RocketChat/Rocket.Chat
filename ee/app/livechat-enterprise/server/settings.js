@@ -140,6 +140,7 @@ export const createSettings = () => {
 				group: 'Omnichannel',
 				section: 'Queue_management',
 				i18nLabel: 'Livechat_maximum_queue_wait_time',
+				i18nDescription: 'Time_in_minutes',
 				enableQuery: { _id: 'Livechat_max_queue_wait_time_action', value: 'Close_chat' },
 				enterprise: true,
 				invalidValue: 0,
