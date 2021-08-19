@@ -27,7 +27,7 @@ type CurrentChatsPageDataParams = {
 };
 
 const CurrentChatsPage: FC<{
-	data: CurrentChatsPageData;
+	data?: CurrentChatsPageData;
 	header: ReactNode;
 	setParams: Dispatch<SetStateAction<CurrentChatsPageDataParams>>;
 	params: CurrentChatsPageDataParams;

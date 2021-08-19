@@ -241,9 +241,7 @@ const CurrentChatsRoute: FC = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	return phase === AsyncStatePhase.LOADING || data === undefined ? (
-		<></>
-	) : (
+	return (
 		<CurrentChatsPage
 			setParams={setParams}
 			params={params}
