@@ -466,5 +466,66 @@ describe('[TaskRoom]', () => {
 				})
 				.end(done);
 		});
+		it('Should not find the task', (done) => {
+			request.get(api('taskRoom.taskDetails'))
+				.set(credentials)
+				.query({
+					taskId: task._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('Task not found');
+				})
+				.end(done);
+		});
+	});
+	describe('/taskRoom.taskDetails', () => {
+		const task = {};
+		before((done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: roomTest.roomId,
+					title: 'New Task to find',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					task._id = res.body.task._id;
+				})
+				.end(done);
+		});
+		it('Should revieve the task details', (done) => {
+			request.get(api('taskRoom.taskDetails'))
+				.set(credentials)
+				.query({
+					taskId: task._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('title', 'New Task to find');
+					expect(res.body).to.have.property('rid', roomTest.roomId);
+				})
+				.end(done);
+		});
+		it('Should return an error if there is no taskId', (done) => {
+			request.get(api('taskRoom.taskDetails'))
+				.set(credentials)
+				.query()
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error).to.be.equal('Missing id for the task');
+				})
+				.end(done);
+		});
 	});
 });

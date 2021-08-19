@@ -141,6 +141,7 @@ Meteor.startup(function() {
 		{ _id: 'create-task',    roles: ['admin', 'moderator', 'owner', 'user'] },
 		{ _id: 'edit-task',    roles: ['admin', 'moderator', 'owner'] },
 		{ _id: 'delete-task',    roles: ['admin', 'moderator', 'owner', 'user'] },
+		{ _id: 'delete-own-task',    roles: ['admin', 'moderator', 'owner', 'user'] },
 	];
 
 	for (const permission of permissions) {

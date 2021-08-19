@@ -58,13 +58,17 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 		const taskDetails = Promise.await(Tasks.findOne({ _id: taskId }));
 
+		if (!taskDetails) {
+			return API.v1.failure('Task not found');
+		}
+
 		const room = Meteor.call('canAccessRoom', taskDetails.rid, uid);
 
 		if (!room) {
 			return API.v1.failure('Not allowed to follow in this room');
 		}
 
-		return API.v1.success({ task: taskDetails });
+		return API.v1.success(taskDetails);
 	},
 });
 
@@ -331,12 +335,11 @@ API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
 				ts: 1,
 			},
 		});
-
 		if (!originalTask || !canDeleteTask(uid, originalTask)) {
-			return API.v1.failure('Not allowed to follow in this room');
+			return API.v1.failure('Not allowed to delete tasks in this room');
 		}
 
-		Promise.await(deleteTask(originalTask, Meteor.user()));
+		deleteTask(originalTask, Meteor.user());
 
 		return API.v1.success();
 	},
