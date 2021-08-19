@@ -4,7 +4,6 @@ import { check } from 'meteor/check';
 import { hasPermission } from '../../app/authorization';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
-
 Meteor.methods({
 	setUserActiveStatus(userId, active, confirmRelenquish) {
 		check(userId, String);
