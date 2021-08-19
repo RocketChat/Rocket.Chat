@@ -13,18 +13,23 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
+import { Logger } from '../../../logger';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
+
+const logger = new Logger('RoutingManager');
 
 export const RoutingManager = {
 	methodName: null,
 	methods: {},
 
 	setMethodName(name) {
+		logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
 		this.methodName = name;
 	},
 
 	registerMethod(name, Method) {
+		logger.debug(`Registering new routing method with name ${ name }`);
 		this.methods[name] = new Method();
 	},
 
@@ -40,19 +45,23 @@ export const RoutingManager = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
+		logger.debug(`Getting next available agent with method ${ this.name }`);
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
+		logger.debug(`Attempting to delegate inquiry ${ inquiry._id }`);
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			agent = await this.getNextAgent(department);
 		}
 
 		if (!agent) {
+			logger.debug(`No agents available. Unable to delegate inquiry ${ inquiry._id }`);
 			return LivechatRooms.findOneById(rid);
 		}
 
+		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent._id }`);
 		return this.takeInquiry(inquiry, agent, options);
 	},
 
@@ -122,18 +131,23 @@ export const RoutingManager = {
 			status: String,
 		}));
 
+		logger.debug(`Attempting to take Inquiry ${ inquiry._id } [Agent ${ agent.agentId }] `);
+
 		const { _id, rid } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 		if (!room || !room.open) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Room is closed`);
 			return room;
 		}
 
 		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Already taken by agent ${ room.servedBy._id }`);
 			return room;
 		}
 
 		agent = await callbacks.run('livechat.checkAgentBeforeTakeInquiry', { agent, inquiry, options });
 		if (!agent) {
+			logger.debug(`Cannot take Inquiry ${ inquiry._id }: Precondition failed for agent`);
 			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 		}
 
@@ -143,6 +157,7 @@ export const RoutingManager = {
 
 		LivechatInquiry.takeInquiry(_id);
 		const inq = this.assignAgent(inquiry, agent);
+		logger.debug(`Inquiry ${ inquiry._id } taken by agent ${ agent.agentId }`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
@@ -150,23 +165,30 @@ export const RoutingManager = {
 	},
 
 	async transferRoom(room, guest, transferData) {
+		logger.debug(`Transfering room ${ room._id } by ${ transferData.transferredBy._id }`);
 		if (transferData.departmentId) {
+			logger.debug(`Transfering room ${ room._id } to department ${ transferData.departmentId }`);
 			return forwardRoomToDepartment(room, guest, transferData);
 		}
 
 		if (transferData.userId) {
+			logger.debug(`Transfering room ${ room._id } to user ${ transferData.userId }`);
 			return forwardRoomToAgent(room, transferData);
 		}
 
+		logger.debug(`Unable to transfer room ${ room._id }: No target provided`);
 		return false;
 	},
 
 	delegateAgent(agent, inquiry) {
+		logger.debug(`Delegating Inquiry ${ inquiry._id }`);
 		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', { agent, department: inquiry?.department });
 		if (defaultAgent) {
+			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent._id }`);
 			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 		}
 
+		logger.debug(`Queueing inquiry ${ inquiry._id }`);
 		dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
 	},

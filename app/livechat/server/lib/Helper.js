@@ -8,12 +8,15 @@ import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, 
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
+import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry } from './QueueManager';
+
+const logger = new Logger('LivechatHelper');
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -35,6 +38,8 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+
+	logger.debug(`Creating livechat room for visitor ${ _id }`);
 
 	const room = Object.assign({
 		_id: rid,
@@ -87,6 +92,8 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 	const { msg } = message;
 	const ts = new Date();
 
+	logger.debug(`Creating livechat inquiry for visitor ${ _id }`);
+
 	const inquiry = Object.assign({
 		rid,
 		name,
@@ -106,7 +113,10 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 		estimatedServiceTimeAt: ts,
 	}, extraInquiryInfo);
 
-	return LivechatInquiry.insert(inquiry);
+	const result = LivechatInquiry.insert(inquiry);
+	logger.debug(`Inquiry ${ result } created for visitor ${ _id }`);
+
+	return result;
 };
 
 export const createLivechatSubscription = (rid, name, guest, agent, department) => {
@@ -223,6 +233,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 	if (!inquiry?._id) {
 		return;
 	}
+	logger.debug(`Notifying agents of new inquiry ${ inquiry._id } queued`);
 
 	const { department, rid, v } = inquiry;
 	const room = LivechatRooms.findOneById(rid);
@@ -238,6 +249,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
+	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
 
 	const notificationUserName = v && (v.name || v.username);
 
@@ -279,15 +291,19 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		return false;
 	}
 
+	logger.debug(`Forwarding room ${ room._id } to agent ${ transferData.userId }`);
+
 	const { userId: agentId, clientAction } = transferData;
 	const user = Users.findOneOnlineAgentById(agentId);
 	if (!user) {
+		logger.debug(`Agent ${ agentId } is offline. Cannot forward`);
 		throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
+		logger.debug(`No inquiries found for room ${ room._id }. Cannot forward`);
 		throw new Meteor.Error('error-invalid-inquiry', 'Invalid inquiry', { function: 'forwardRoomToAgent' });
 	}
 
@@ -301,8 +317,10 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	inquiry.department = undefined;
 	// There are some Enterprise features that may interrupt the forwarding process
 	// Due to that we need to check whether the agent has been changed or not
+	logger.debug(`Forwarding inquiry ${ inquiry._id } to agent ${ agent._id }`);
 	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, { ...clientAction && { clientAction } });
 	if (!roomTaken) {
+		logger.debug(`Cannot forward inquiry ${ inquiry._id }`);
 		return false;
 	}
 
@@ -325,6 +343,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		});
 	}
 
+	logger.debug(`Inquiry ${ inquiry._id } taken by agent ${ agent._id }`);
 	callbacks.run('livechat.afterForwardChatToAgent', { rid, servedBy, oldServedBy });
 	return true;
 };
@@ -350,12 +369,15 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (!room || !room.open) {
 		return false;
 	}
+	logger.debug(`Attempting to forward room ${ room._id } to department ${ transferData.departmentId }`);
+
 	callbacks.run('livechat.beforeForwardRoomToDepartment', { room, transferData });
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
 	const inquiry = LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
+		logger.debug(`Cannot forward room ${ room._id }. No inquiries found`);
 		throw new Meteor.Error('error-transferring-inquiry');
 	}
 
@@ -366,6 +388,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
+		logger.debug(`Forwarding room ${ room._id } to department ${ departmentId } (to user ${ agentId })`);
 		let user = Users.findOneOnlineAgentById(agentId);
 		if (!user) {
 			throw new Meteor.Error('error-user-is-offline', 'User is offline', { function: 'forwardRoomToAgent' });
@@ -379,6 +402,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	if (!RoutingManager.getConfig().autoAssignAgent) {
+		logger.debug(`Routing algorithm doesn't support auto assignment (using ${ RoutingManager.methodName }). Chat will be on department queue`);
 		Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
@@ -388,11 +412,13 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	inquiry.department = departmentId;
 	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, { forwardingToDepartment: { oldDepartmentId }, ...clientAction && { clientAction } });
 	if (!roomTaken) {
+		logger.debug(`Cannot forward room ${ room._id }. Unable to delegate inquiry`);
 		return false;
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+		logger.debug(`Cannot forward room ${ room._id }. Chat is assigned to previous agent`);
 		return false;
 	}
 
@@ -407,13 +433,17 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
 
 	if (chatQueued) {
+		logger.debug(`Forwarding succesful. Marking inquiry ${ inquiry._id } as ready`);
 		LivechatInquiry.readyInquiry(inquiry._id);
 		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
+
+		logger.debug(`Inquiry ${ inquiry._id } queued succesfully`);
 	}
 
 	const { token } = guest;
 	Livechat.setDepartmentForGuest({ token, department: departmentId });
+	logger.debug(`Department for visitor with token ${ token } was updated to ${ departmentId }`);
 
 	return true;
 };
