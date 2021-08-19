@@ -23,6 +23,7 @@ Meteor.methods({
 		}
 
 		setUserActiveStatus(userId, active, confirmRelenquish);
+
 		return true;
 	},
 });

@@ -30,7 +30,6 @@ function reactivateDirectConversations(userId) {
 }
 
 export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
-	console.log('set user');
 	check(userId, String);
 	check(active, Boolean);
 
