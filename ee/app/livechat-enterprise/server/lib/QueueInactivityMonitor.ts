@@ -36,7 +36,8 @@ export class OmnichannelQueueInactivityMonitorClass {
 			defaultConcurrency: 1,
 		});
 		this.user = Users.findOneById('rocket.cat');
-		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long');
+		const language = settings.get('Language') || 'en';
+		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
 	}
 
 	start(): void {
@@ -79,11 +80,11 @@ export class OmnichannelQueueInactivityMonitorClass {
 			return;
 		}
 
-		LivechatInquiry.getAbandonedQueuedItems(moment().utc()).forEach((inquiry: any) => {
+		LivechatInquiry.getUnnatendedQueueItems(moment().utc()).forEach((inquiry: any) => {
 			switch (action) {
 				case 'Close_chat': {
 					counter++;
-					this.closeRooms(LivechatRooms.findOneByIdOrName(inquiry.rid));
+					this.closeRooms(LivechatRooms.findById(inquiry.rid));
 					break;
 				}
 			}

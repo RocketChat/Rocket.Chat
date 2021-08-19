@@ -233,7 +233,7 @@ export class LivechatInquiry extends Base {
 		this.remove(query);
 	}
 
-	getAbandonedQueuedItems(date) {
+	getUnnatendedQueueItems(date) {
 		const query = {
 			status: 'queued',
 			estimatedInactivityCloseTimeAt: { $lte: new Date(date) },
