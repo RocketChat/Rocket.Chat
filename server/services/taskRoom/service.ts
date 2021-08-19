@@ -8,7 +8,7 @@ import {
 	ITaskRoom,
 	TASKRoomType,
 } from '../../../definition/ITaskRoom';
-import { Room } from '../../sdk';
+import { Room, Authorization } from '../../sdk';
 import {
 	ITaskRoomCreateParams,
 	ITaskRoomService,
@@ -35,6 +35,10 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 			throw new Error('room-name-already-exists');
 		}
 
+		const hasPermission = await Authorization.hasPermission(uid, `create-${ taskRoom.type === 1 ? 'p' : 'c' }`);
+		if (!hasPermission) {
+			throw new Error('no-permission');
+		}
 		const createdBy = await this.Users.findOneById(uid, { projection: { username: 1 } });
 		if (!createdBy) {
 			throw new Error('invalid-user');

@@ -272,7 +272,7 @@ describe('[TaskRoom]', () => {
 		});
 	});
 
-	describe('Follow and unfollow task', () => {
+	describe('/taskRoom.follow and /taskRoom.unfollow', () => {
 		const task = {};
 		let channel;
 		before((done) => {
@@ -336,7 +336,7 @@ describe('[TaskRoom]', () => {
 		});
 	});
 
-	describe('Udpate a task', () => {
+	describe('/taskRoom.taskUpdate', () => {
 		const task = {};
 
 		before((done) => {
@@ -399,6 +399,72 @@ describe('[TaskRoom]', () => {
 					expect(res.body).to.have.property('error');
 				});
 			await updatePermission('edit-task', ['admin', 'moderator', 'owner']);
+		});
+	});
+
+	describe('/taskRoom.taskHistory', () => {
+		before((done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: roomTest.roomId,
+					title: 'New Task',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('Should return an array with 2 tasks', (done) => {
+			request.get(api('taskRoom.taskHistory'))
+				.set(credentials)
+				.query({
+					rid: roomTest.roomId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.be.an('array');
+					expect(res.body[0]).to.have.property('title', 'New Title');
+					expect(res.body[0]).to.have.property('rid', roomTest.roomId);
+					expect(res.body[1]).to.have.property('title', 'New Task');
+					expect(res.body[1]).to.have.property('rid', roomTest.roomId);
+				})
+				.end(done);
+		});
+	});
+
+	describe('/taskRoom.deleteTask', () => {
+		const task = {};
+		before((done) => {
+			request.post(api('taskRoom.createTask'))
+				.set(credentials)
+				.send({
+					rid: roomTest.roomId,
+					title: 'New Task to delete',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					task._id = res.body.task._id;
+				})
+				.end(done);
+		});
+		it('Should delete the task', (done) => {
+			request.post(api('taskRoom.deleteTask'))
+				.set(credentials)
+				.send({
+					taskId: task._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
 		});
 	});
 });

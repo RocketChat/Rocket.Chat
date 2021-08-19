@@ -11,7 +11,7 @@ import { settings } from '../../../settings';
 import { updateTask, deleteTask, sendTask } from '../../../lib/server/functions';
 import { API } from '../api';
 import { TaskRoom } from '../../../../server/sdk';
-import { hasPermission, canSendMessage, canAccessRoom } from '../../../authorization/server';
+import { hasPermission, canSendMessage } from '../../../authorization/server';
 
 
 API.v1.addRoute('taskRoom.create', { authRequired: true }, {
@@ -23,6 +23,14 @@ API.v1.addRoute('taskRoom.create', { authRequired: true }, {
 
 		if (!name) {
 			return API.v1.failure('Body param "name" is required');
+		}
+
+		if (type === 0 && !hasPermission(this.userId, 'create-c')) {
+			return API.v1.unauthorized();
+		}
+
+		if (type === 1 && !hasPermission(this.userId, 'create-p')) {
+			return API.v1.unauthorized();
 		}
 
 		const taskRoom = Promise.await(TaskRoom.create(this.userId, {
@@ -52,10 +60,9 @@ API.v1.addRoute('taskRoom.taskDetails', { authRequired: true }, {
 
 		const room = Meteor.call('canAccessRoom', taskDetails.rid, uid);
 
-		if (!canAccessRoom(room, uid)) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		if (!room) {
+			return API.v1.failure('Not allowed to follow in this room');
 		}
-
 
 		return API.v1.success({ task: taskDetails });
 	},
@@ -214,7 +221,7 @@ API.v1.addRoute('taskRoom.taskHistory', { authRequired: true }, {
 		const room = Meteor.call('canAccessRoom', rid, this.userId);
 
 		if (!room) {
-			return API.v1.failure('Not allowed to access this room');
+			return API.v1.failure('Invalid permissions');
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
@@ -258,8 +265,9 @@ API.v1.addRoute('taskRoom.followTask', { authRequired: true }, {
 		}
 
 		const room = Meteor.call('canAccessRoom', task.rid, uid);
+
 		if (!room) {
-			API.v1.failure('Not allowed to follow in this room');
+			return API.v1.failure('Not allowed to follow in this room');
 		}
 
 		Tasks.addThreadFollowerByThreadId(task._id, uid);
@@ -288,8 +296,9 @@ API.v1.addRoute('taskRoom.unfollowTask', { authRequired: true }, {
 		}
 
 		const room = Meteor.call('canAccessRoom', task.rid, uid);
+
 		if (!room) {
-			API.v1.failure('Not allowed to follow in this room');
+			return API.v1.failure('Not allowed to unfollow in this room');
 		}
 
 		Subscriptions.removeUnreadThreadByRoomIdAndUserId(task.rid, uid, task._id || task.tmid);
@@ -327,8 +336,8 @@ API.v1.addRoute('taskRoom.deleteTask', { authRequired: true }, {
 			return API.v1.failure('Not allowed to follow in this room');
 		}
 
-		const resp = Promise.await(deleteTask(originalTask, Meteor.user()));
+		Promise.await(deleteTask(originalTask, Meteor.user()));
 
-		return resp;
+		return API.v1.success();
 	},
 });
