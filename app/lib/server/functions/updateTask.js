@@ -13,7 +13,7 @@ export const updateTask = function(task, user, originalTask) {
 		originalTask = Tasks.findOneById(task._id);
 	}
 
-	// If we keep history of edits, insert a new message to store history information
+	// If we keep history of edits, insert a new task to store history information
 	if (settings.get('Message_KeepHistory')) {
 		Tasks.cloneAndSaveAsHistoryById(task._id, user);
 	}

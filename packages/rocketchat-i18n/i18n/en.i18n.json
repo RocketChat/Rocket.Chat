@@ -3866,6 +3866,7 @@
   "TaskRoom_Task_Description": "Task description",
   "TaskRoom_Task_Assignee": "Task assignee",
   "TaskRoom_Task_Status": "Task status",
+  "TaskRoom_Errors_team_name": "You can't use \"__name__\" as a task room name.",
   "Team_Add_existing_channels": "Add Existing Channels",
   "Team_Add_existing": "Add Existing",
   "Team_Auto-join": "Auto-join",

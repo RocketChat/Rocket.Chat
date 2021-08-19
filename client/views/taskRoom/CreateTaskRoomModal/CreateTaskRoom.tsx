@@ -22,8 +22,8 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/goToRoomById';
+import UsersInput from '../../teams/CreateTeamModal/UsersInput';
 import TaskRoomNameInput from './TaskRoomNameInput';
-import UsersInput from './UsersInput';
 
 type CreateTaskRoomModalState = {
 	name: any;
@@ -110,7 +110,7 @@ const useCreateTaskModalState = (onClose: () => void): CreateTaskRoomModalState 
 
 			const isNotAvailable = await roomNameExists(name);
 			if (isNotAvailable) {
-				setNameError(t('Teams_Errors_team_name', { name }));
+				setNameError(t('TaskRoom_Errors_team_name', { name }));
 			}
 		},
 		230,
