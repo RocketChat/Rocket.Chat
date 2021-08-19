@@ -6,9 +6,13 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { IMessage } from '../../../../definition/IMessage';
 
-
+const Dep = new Tracker.Dependency();
 Meteor.startup(() => {
+	settings.get(/Message_AllowBadWordsFilter|Message_BadWordsFilterList|Message_BadWordsWhitelist/, () => {
+		Dep.changed();
+	});
 	Tracker.autorun(() => {
+		Dep.depend();
 		const allowBadWordsFilter = settings.get('Message_AllowBadWordsFilter');
 
 		callbacks.remove('beforeSaveMessage', 'filterBadWords');
@@ -41,7 +45,12 @@ Meteor.startup(() => {
 			if (!message.msg) {
 				return message;
 			}
-			message.msg = filter.clean(message.msg);
+			try {
+				message.msg = filter.clean(message.msg);
+			} finally {
+				// eslint-disable-next-line no-unsafe-finally
+				return message;
+			}
 		}, callbacks.priority.HIGH, 'filterBadWords');
 	});
 });
