@@ -6,15 +6,18 @@ import { Messages, Uploads, Rooms } from '../../../models/server';
 import { Notifications } from '../../../notifications/server';
 import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../apps/server';
+import { IMessage } from '../../../../definition/IMessage';
+import { IUser } from '../../../../definition/IUser';
 
-export const deleteMessage = function(message, user) {
+export const deleteMessage = function(message: IMessage, user: IUser): void {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
+	const bridges = Apps && Apps.isLoaded() && Apps.getBridges();
 
-	if (deletedMsg && Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
+	if (deletedMsg && bridges) {
+		const prevent = Promise.await(bridges.getListenerBridge().messageEvent('IPreMessageDeletePrevent', deletedMsg));
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
@@ -24,6 +27,8 @@ export const deleteMessage = function(message, user) {
 		Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
+	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
+
 	if (keepHistory) {
 		if (showDeletedStatus) {
 			Messages.cloneAndSaveAsHistoryById(message._id, user);
@@ -31,28 +36,21 @@ export const deleteMessage = function(message, user) {
 			Messages.setHiddenById(message._id, true);
 		}
 
-		if (message.file && message.file._id) {
-			if (message.file.thumbId) {
-				Uploads.update({ _id: { $in: [message.file._id, message.file.thumbId] } }, { $set: { _hidden: true } });
-			} else {
-				Uploads.update(message.file._id, { $set: { _hidden: true } });
-			}
-		}
+		files.forEach((file) => {
+			file?._id && Uploads.update(file._id, { $set: { _hidden: true } });
+		});
 	} else {
 		if (!showDeletedStatus) {
 			Messages.removeById(message._id);
 		}
 
-		if (message.file && message.file._id) {
-			FileUpload.getStore('Uploads').deleteById(message.file._id);
-			if (message.file.thumbId) {
-				FileUpload.getStore('Uploads').deleteById(message.file.thumbId);
-			}
-		}
+		files.forEach((file) => {
+			file?._id && FileUpload.getStore('Uploads').deleteById(file._id);
+		});
 	}
 
 	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1 } });
-	callbacks.run('afterDeleteMessage', deletedMsg, room, user);
+	callbacks.run('afterDeleteMessage', deletedMsg, room);
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {
@@ -70,7 +68,7 @@ export const deleteMessage = function(message, user) {
 		Notifications.notifyRoom(message.rid, 'deleteMessage', { _id: message._id });
 	}
 
-	if (Apps && Apps.isLoaded()) {
-		Apps.getBridges().getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
+	if (bridges) {
+		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg);
 	}
 };
