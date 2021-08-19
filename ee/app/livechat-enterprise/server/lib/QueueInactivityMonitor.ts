@@ -84,7 +84,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 			switch (action) {
 				case 'Close_chat': {
 					counter++;
-					this.closeRooms(LivechatRooms.findById(inquiry.rid));
+					this.closeRooms(LivechatRooms.findOneById(inquiry.rid));
 					break;
 				}
 			}
