@@ -16,6 +16,7 @@ import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/file
 import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
 import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { ImMembersEndpoint } from './endpoints/v1/im/members';
+import { LicensesGetEndpoint } from './endpoints/v1/licenses/licensesGet';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
@@ -32,6 +33,7 @@ import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedRespon
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
 import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
+import { StatisticsEndpoint } from './endpoints/v1/statistics/statistics';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
 import { ListRoomsOfUserEndpoint } from './endpoints/v1/teams/listRoomsOfUser';
@@ -78,6 +80,8 @@ export type ServerEndpoints = {
 	'livechat/users/agent': LivechatUsersAgentEndpoint;
 	'canned-responses': CannedResponsesEndpoint;
 	'canned-responses/${string}': CannedResponseEndpoint;
+	'licenses.get': LicensesGetEndpoint;
+	'statistics': StatisticsEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;
