@@ -7,13 +7,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { callbacks } from '../../../callbacks/server';
 import {
 	Users,
@@ -39,6 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { validateEmailDomain } from '../../../lib/server';
 
 export const Livechat = {
 	Analytics,
@@ -220,69 +222,63 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ id, token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
+		check(id, Match.Maybe(String));
 
 		let userId;
 		const updateUser = {
 			$set: {
 				token,
+				...phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {},
+				...name ? { name } : {},
 			},
 		};
 
-		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
-
-		if (user) {
-			userId = user._id;
-		} else {
-			if (!username) {
-				username = LivechatVisitors.getNextVisitorUsername();
-			}
-
-			let existingUser = null;
-
-			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
-				userId = existingUser._id;
-			} else {
-				const userData = {
-					username,
-					ts: new Date(),
-				};
-
-				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-					const connection = this.connection || connectionData;
-					if (connection && connection.httpHeaders) {
-						userData.userAgent = connection.httpHeaders['user-agent'];
-						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-						userData.host = connection.httpHeaders.host;
-					}
-				}
-
-				userId = LivechatVisitors.insert(userData);
-			}
-		}
-
-		if (phone?.number) {
-			updateUser.$set.phone = [
-				{ phoneNumber: phone.number },
-			];
-		}
-
-		if (email && email.trim() !== '') {
+		if (email) {
+			email = email.trim();
+			validateEmailDomain(email);
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
 		}
 
-		if (name) {
-			updateUser.$set.name = name;
+		if (department) {
+			const dep = LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
+			}
+			updateUser.$set.department = dep._id;
 		}
 
-		if (!department) {
-			Object.assign(updateUser, { $unset: { department: 1 } });
+		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		let existingUser = null;
+
+		if (user) {
+			userId = user._id;
+		} else if (email && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			userId = existingUser._id;
 		} else {
-			const dep = LivechatDepartment.findOneByIdOrName(department);
-			updateUser.$set.department = dep && dep._id;
+			if (!username) {
+				username = LivechatVisitors.getNextVisitorUsername();
+			}
+
+			const userData = {
+				username,
+				ts: new Date(),
+				...id && { _id: id },
+			};
+
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+				const connection = this.connection || connectionData;
+				if (connection && connection.httpHeaders) {
+					userData.userAgent = connection.httpHeaders['user-agent'];
+					userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+					userData.host = connection.httpHeaders.host;
+				}
+			}
+
+			userId = LivechatVisitors.insert(userData);
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -988,6 +984,7 @@ export const Livechat = {
 
 		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
+		const timezone = getTimezone(user);
 
 		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
@@ -1007,7 +1004,7 @@ export const Livechat = {
 				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
-			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 			const singleMessage = `
 				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
 				<p>${ message.msg }</p>
@@ -1050,6 +1047,7 @@ export const Livechat = {
 		check(user, Match.ObjectIncluding({
 			_id: String,
 			username: String,
+			utcOffset: Number,
 			name: Match.Maybe(String),
 		}));
 
@@ -1063,13 +1061,14 @@ export const Livechat = {
 			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
 		}
 
-		const { _id, username, name } = user;
+		const { _id, username, name, utcOffset } = user;
 		const transcriptRequest = {
 			requestedAt: new Date(),
 			requestedBy: {
 				_id,
 				username,
 				name,
+				utcOffset,
 			},
 			email,
 			subject,

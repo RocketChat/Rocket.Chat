@@ -238,6 +238,10 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 		const actualSort = sort && sort.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
 
+		const limit = count !== 0 ? [{
+			$limit: count,
+		}] : [];
+
 		const result = Promise.await(
 			UsersRaw.col
 				.aggregate([
@@ -260,9 +264,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 								$sort: actualSort,
 							}, {
 								$skip: offset,
-							}, {
-								$limit: count,
-							}],
+							}, ...limit],
 							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
@@ -930,6 +932,25 @@ API.v1.addRoute('users.listTeams', { authRequired: true }, {
 
 		return API.v1.success({
 			teams,
+		});
+	},
+});
+
+API.v1.addRoute('users.logout', { authRequired: true }, {
+	post() {
+		const userId = this.bodyParams.userId || this.userId;
+
+		if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
+			return API.v1.unauthorized();
+		}
+
+		// this method logs the user out automatically, if successful returns 1, otherwise 0
+		if (!Users.removeResumeService(userId)) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		return API.v1.success({
+			message: `User ${ userId } has been logged out!`,
 		});
 	},
 });

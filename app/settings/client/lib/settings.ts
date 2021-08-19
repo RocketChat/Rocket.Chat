@@ -12,7 +12,10 @@ class Settings extends SettingsBase {
 
 	dict = new ReactiveDict('settings');
 
-	get(_id: string): any {
+	get(_id: string | RegExp): any {
+		if (_id instanceof RegExp) {
+			throw new Error('RegExp Settings.get(RegExp)');
+		}
 		return this.dict.get(_id);
 	}
 

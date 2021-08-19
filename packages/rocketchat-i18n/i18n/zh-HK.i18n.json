@@ -1152,6 +1152,7 @@
   "Favorites": "收藏",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "此功能取决于“发送访客导航历史记录为消息”以启用。",
   "Features_Enabled": "功能已启用",
+  "Federation_Domain": "域",
   "FEDERATION_Domain": "域",
   "FEDERATION_Status": "状态",
   "Field": "领域",

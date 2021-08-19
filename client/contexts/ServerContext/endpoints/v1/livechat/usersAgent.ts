@@ -1,5 +1,5 @@
 export type LivechatUsersAgentEndpoint = {
-	GET: (params?: { text?: string; offset: number; count: number; sort: string }) => {
+	GET: (params?: { text?: string; offset?: number; count?: number; sort?: string }) => {
 		users: {
 			_id: string;
 			emails: {

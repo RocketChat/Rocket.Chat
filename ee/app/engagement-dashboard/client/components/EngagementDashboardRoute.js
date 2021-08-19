@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 
-import { useCurrentRoute, useRoute, useRouteParameter } from '../../../../../client/contexts/RouterContext';
+import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import { EngagementDashboardPage } from './EngagementDashboardPage';
 
 export function EngagementDashboardRoute() {
 	const engagementDashboardRoute = useRoute('engagement-dashboard');
-	const [routeName] = useCurrentRoute();
-	const tab = useRouteParameter('tab');
+	const [routeName, { tab }] = useCurrentRoute();
 
 	useEffect(() => {
 		if (routeName !== 'engagement-dashboard') {
