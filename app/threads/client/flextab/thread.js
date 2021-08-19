@@ -10,7 +10,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { chatMessages, ChatMessages } from '../../../ui';
 import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
-import { upsertMessageBulk, upsertTask } from '../../../ui-utils/client/lib/RoomHistoryManager';
+import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages, Tasks } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
@@ -44,14 +44,10 @@ Template.thread.events({
 Template.thread.helpers({
 	...dropzoneHelpers,
 	mainMessage() {
-		const { Threads, TaskHeader, state } = Template.instance();
-		const { room } = Template.currentData();
+		const { Threads, state } = Template.instance();
 
 		const tmid = state.get('tmid');
 
-		if (room.taskRoomId) {
-			return TaskHeader.findOne({ _id: tmid });
-		}
 		return Threads.findOne({ _id: tmid });
 	},
 	isLoading() {
@@ -78,16 +74,8 @@ Template.thread.helpers({
 		const instance = Template.instance();
 		const { mainMessage: { rid, _id: tmid }, subscription } = Template.currentData();
 
-		let thread;
-		let following;
-
-		if (subscription.taskRoomId) {
-			thread = instance.TaskHeader.findOne({ _id: tmid }, { fields: { replies: 1 } });
-			following = thread?.replies?.includes(Meteor.userId());
-		} else {
-			thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
-			following = thread?.replies?.includes(Meteor.userId());
-		}
+		const thread = instance.Threads.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		const following = thread?.replies?.includes(Meteor.userId());
 
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 		return {
@@ -205,9 +193,9 @@ Template.thread.onRendered(function() {
 		if (subscription.taskRoomId) {
 			this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
 				changed: ({ _id, ...task }) => {
-					this.TaskHeader.update({ _id }, task);
+					this.Threads.update({ _id }, task);
 				},
-				removed: ({ _id }) => this.TaskHeader.remove(_id),
+				removed: ({ _id }) => this.Threads.remove(_id),
 			});
 		}
 
@@ -263,8 +251,6 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
-	this.TaskHeader = new Mongo.Collection(null);
-	const { subscription } = Template.currentData();
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
@@ -280,10 +266,6 @@ Template.thread.onCreated(async function() {
 
 		const messages = await call('getThreadMessages', { tmid, rid });
 		upsertMessageBulk({ msgs: messages }, this.Threads);
-		if (subscription.taskRoomId) {
-			const taskHeader = await call('getSingleTask', tmid);
-			upsertTask({ task: taskHeader }, this.TaskHeader);
-		}
 
 		Tracker.afterFlush(() => {
 			this.state.set('loading', false);
@@ -292,9 +274,8 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve, TaskHeader } = this;
+	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve } = this;
 	Threads.remove({});
-	TaskHeader && TaskHeader.remove({});
 	threadsObserve && threadsObserve.stop();
 	taskHeaderObserve && taskHeaderObserve.stop();
 	callbackRemove && callbackRemove();
