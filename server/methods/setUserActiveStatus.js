@@ -5,14 +5,6 @@ import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
-const getAdminCount = () => {
-	Meteor.users.find({
-		roles: {
-			$in: ['admin'],
-		},
-		active: true,
-	}).count();
-};
 
 Meteor.methods({
 	setUserActiveStatus(userId, active, confirmRelenquish) {
@@ -32,8 +24,9 @@ Meteor.methods({
 		}
 
 		const userAdmin = Users.findOneAdmin(userId.count);
+		const countAdmins = () => Users.findUsersInRoles(['admin']).count();
 
-		if (userAdmin && getAdminCount() === 1) {
+		if (userAdmin && countAdmins() === 1) {
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
 				method: 'removeUserFromRole',
 				action: 'Remove_last_admin',
