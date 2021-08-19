@@ -62,6 +62,14 @@ export const follow = ({ tmid, uid }) => {
 	Messages.addThreadFollowerByThreadId(tmid, uid);
 };
 
+export const followTask = ({ tmid, uid }) => {
+	if (!tmid || !uid) {
+		return false;
+	}
+
+	Tasks.addThreadFollowerByThreadId(tmid, uid);
+};
+
 export const unfollow = ({ tmid, rid, uid }) => {
 	if (!tmid || !uid) {
 		return false;

@@ -34,6 +34,7 @@ const useThreadMessage = (tmid: string, room: IRoom): IMessage => {
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
 			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid, taskRoomId: room.taskRoomId || '' });
+
 			if (!msg || computation.stopped) {
 				return;
 			}

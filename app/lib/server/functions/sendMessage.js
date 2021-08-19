@@ -137,6 +137,7 @@ export const validateMessage = (message, room, user) => {
 		title: String,
 		taskDescription: String,
 		taskStatus: String,
+		taskAssignee: String,
 		text: String,
 		alias: String,
 		emoji: String,
