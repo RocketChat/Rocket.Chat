@@ -2033,19 +2033,28 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.getThreadsList]', () => {
+		const messageText = 'Message to create thread';
 		let testChannel;
 		let threadMessage;
+		const messageWords = [
+			...messageText.split(' '),
+			...messageText.toUpperCase().split(' '),
+			...messageText.toLowerCase().split(' '),
+			messageText,
+			messageText.charAt(0),
+			' ',
+		];
 		before((done) => {
 			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
 				.end((err, channel) => {
 					testChannel = channel.body.channel;
 					sendSimpleMessage({
 						roomId: testChannel._id,
-						text: 'Message to create thread',
+						msg: 'Message to create thread',
 					}).end((err, message) => {
 						sendSimpleMessage({
 							roomId: testChannel._id,
-							text: 'Thread Message',
+							msg: 'Thread Message',
 							tmid: message.body.message._id,
 						}).end((err, res) => {
 							threadMessage = res.body.message;
@@ -2114,6 +2123,56 @@ describe('Threads', () => {
 						expect(res.body).to.have.property('count');
 						expect(res.body.threads).to.have.lengthOf(1);
 						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+		});
+
+		function filterThreadsByText(text) {
+			it(`should return the room's thread list filtered by the text '${ text }'`, (done) => {
+				console.log('RID: ', testChannel._id);
+				request.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(1);
+						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+		}
+	
+		messageWords.forEach((text) => {
+			filterThreadsByText(text);
+		});
+
+		it('should return an empty thread list', (done) => {
+			updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				request.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						text: 'missing',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(0);
 					})
 					.end(done);
 			});
