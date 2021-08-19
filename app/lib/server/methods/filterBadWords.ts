@@ -25,7 +25,7 @@ Meteor.startup(() => {
 		const whiteList = settings.get('Message_BadWordsWhitelist') as string | undefined;
 
 		const options = {
-			list: badWordsList?.split(',').map((word) => word.trim()) || [],
+			list: badWordsList?.split(',').map((word) => word.trim()).filter(Boolean) || [],
 			// library definition does not allow optional definition
 			exclude: undefined,
 			splitRegex: undefined,
