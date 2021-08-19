@@ -24,6 +24,7 @@ export const Users = {
 
 		return this.find(query, options);
 	},
+
 };
 
 // overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket

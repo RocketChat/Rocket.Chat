@@ -30,6 +30,7 @@ function reactivateDirectConversations(userId) {
 }
 
 export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
+	console.log('set user');
 	check(userId, String);
 	check(active, Boolean);
 
@@ -37,6 +38,15 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 
 	if (!user) {
 		return false;
+	}
+
+	const userAdmin = Users.findOneAdmin(userId.count);
+	const countAdmins = () => Users.findActiveUsersInRoles(['admin']).count();
+	if (userAdmin && countAdmins() === 1) {
+		throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+			method: 'removeUserFromRole',
+			action: 'Remove_last_admin',
+		});
 	}
 
 	// Users without username can't do anything, so there is no need to check for owned rooms
