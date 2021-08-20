@@ -4,10 +4,10 @@ import { Migrations } from '../../../app/migrations';
 Migrations.add({
 	version: 229,
 	up() {
-		const oldNamesValidationSetting = Settings.findById(
+		const oldNamesValidationSetting = Settings.findOneById(
 			'UTF8_Names_Validation',
 		);
-		const oldNamesValidationSettingValue =			oldNamesValidationSetting.value || '[0-9a-zA-Z-_.]+';
+		const oldNamesValidationSettingValue = oldNamesValidationSetting?.value || '[0-9a-zA-Z-_.]+';
 
 		Settings.upsert(
 			{
