@@ -5,7 +5,7 @@ import { IMessage } from '../../definition/IMessage';
 import { ITask } from '../../definition/ITask';
 
 export const renderMessageBody = <
-	T extends Partial<ITask & IMessage> & { html?: string; title?: string }
+	T extends Partial<ITask & IMessage> & { html?: string; title?: string },
 >(
 	message: T,
 ): string => {

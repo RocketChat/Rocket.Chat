@@ -1,7 +1,7 @@
 import { Modal, ButtonGroup, Button, TextInput, Field, TextAreaInput } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple/index.ts';
 
 const CreateTaskModal = ({
 	values,
