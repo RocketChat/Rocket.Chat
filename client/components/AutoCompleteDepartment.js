@@ -43,8 +43,9 @@ const AutoCompleteDepartment = (props) => {
 		return 0;
 	});
 
+	const findValue = value !== undefined && value !== null ? value : '';
 	const department = sortedByName.find(
-		(dep) => dep._id === (typeof value === 'string' ? value : value.value),
+		(dep) => dep._id === (typeof findValue !== 'object' && findValue ? findValue : findValue.value),
 	)?.value;
 
 	return (
