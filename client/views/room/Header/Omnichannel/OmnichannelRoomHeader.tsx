@@ -4,6 +4,7 @@ import TemplateHeader from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
+import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import Burger from '../Burger';
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
@@ -36,10 +37,10 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 			value={useMemo(
 				() => ({
 					...context,
-					actions: {
-						...context.actions,
-						...Object.fromEntries(visible.map((action) => [action.id, action])),
-					},
+					actions: new Map([
+						...Object.entries(context.actions),
+						...(visible.map((action) => [action.id, action]) as [string, ToolboxActionConfig][]),
+					]),
 				}),
 				[context, visible],
 			)}

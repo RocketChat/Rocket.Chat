@@ -1,7 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import React, { useContext, useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import toastr from 'toastr';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
@@ -22,7 +22,7 @@ import { useSetting } from '../../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../../contexts/UserContext';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
-import { QuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
+import { useToolboxContext } from '../../../../lib/Toolbox/ToolboxContext';
 
 export const useQuickActions = (
 	room: IOmnichannelRoom,
@@ -30,8 +30,8 @@ export const useQuickActions = (
 	const setModal = useSetModal();
 	const { isMobile } = useLayout();
 	const t = useTranslation();
-	const { actions: mapActions } = useContext(QuickActionsContext);
-	const actions = (Array.from(mapActions.values()) as QuickActionsActionConfig[]).sort(
+	const context = useToolboxContext();
+	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort(
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);
 	const visibleActions = isMobile ? [] : actions.slice(0, 6);
