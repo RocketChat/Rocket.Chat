@@ -29,5 +29,18 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', (_: any, { departmen
 		}
 		: {};
 
-	return { $match: { $or: [agentFilter, globalFilter] } };
+	return [
+		// we need to use this value to know when to apply global/agent filters
+		{ $addFields: { maxChatsPerSetting } },
+		{ $match: {
+			$and: [
+				{ $or: [agentFilter, globalFilter] },
+				// when both settings are set at 0 means there's no limit, so agent is "available"
+				{ $and: [
+					{ 'livechat.maxNumberSimultaneousChat': { $gt: 0 } },
+					{ maxChatsPerSetting: { $gt: 0 } },
+				],
+				}],
+		} },
+	];
 }, callbacks.priority.HIGH, 'livechat-apply-simultaneous-restrictions');
