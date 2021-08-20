@@ -1,8 +1,7 @@
 import { Promise } from 'meteor/promise';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { BlockType } from '@rocket.chat/ui-kit';
-import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit';
+import { TextObjectType, BlockType } from '@rocket.chat/apps-engine/definition/uikit';
 
 import { API } from '../api';
 import { Banner } from '../../../../server/sdk';
@@ -74,7 +73,7 @@ API.v1.addRoute('banners', { authRequired: true }, {
 		return API.v1.success({ banners });
 	},
 	...process.env.NODE_ENV !== 'production' && {
-		post() {
+		post(): {} {
 			check(this.bodyParams, Match.ObjectIncluding({
 				platform: Match.Maybe(String),
 				bid: String,
@@ -120,7 +119,7 @@ API.v1.addRoute('banners', { authRequired: true }, {
 
 			return API.v1.success({ banners });
 		},
-		delete() {
+		delete(): {} {
 			check(this.bodyParams, Match.ObjectIncluding({
 				bid: String,
 			}));
@@ -132,7 +131,7 @@ API.v1.addRoute('banners', { authRequired: true }, {
 			return API.v1.success();
 		},
 
-		patch() {
+		patch(): {} {
 			check(this.bodyParams, Match.ObjectIncluding({
 				bid: String,
 			}));
