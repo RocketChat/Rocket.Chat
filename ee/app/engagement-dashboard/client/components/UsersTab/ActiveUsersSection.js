@@ -104,16 +104,17 @@ const ActiveUsersSection = ({ timezone }) => {
 	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
-		const values = [];
-
-		for (let i = 0; i < 30; i++) {
-			values.push([moment(dauValues[i].x).format('YYYY-MM-DD'), dauValues[i].y, wauValues[i].y, mauValues[i].y]);
-		}
-
-		const data = [
-			['Date', 'DAU', 'WAU', 'MAU'],
-			...values,
-		];
+		const data = [{
+			countDailyActiveUsers,
+			diffDailyActiveUsers,
+			countWeeklyActiveUsers,
+			diffWeeklyActiveUsers,
+			countMonthlyActiveUsers,
+			diffMonthlyActiveUsers,
+			dauValues,
+			wauValues,
+			mauValues,
+		}];
 		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 

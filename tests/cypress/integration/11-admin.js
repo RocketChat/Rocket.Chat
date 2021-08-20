@@ -643,8 +643,12 @@ describe('[Administration]', () => {
 					admin.generalUTF8Regex.scrollIntoView();
 				});
 
-				it('it should show the utf8 regex field', () => {
-					admin.generalUTF8Regex.should('be.visible');
+				it('it should show the usernames utf8 regex field', () => {
+					admin.generalUTF8UsernamesRegex.should('be.visible');
+				});
+
+				it('it should show the channels utf8 regex field', () => {
+					admin.generalUTF8ChannelsRegex.should('be.visible');
 				});
 
 				it('it should show the utf8 names slug checkboxes', () => {
