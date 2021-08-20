@@ -421,6 +421,6 @@ settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
 		callbacks.remove('afterSaveTask', 'sendNotificationsOnMessage');
 		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
 	}
-	callbacks.add('afterSaveTask', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
+	callbacks.add('afterSaveTask', (task, room) => Promise.await(sendAllNotifications(task, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
 	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
 });
