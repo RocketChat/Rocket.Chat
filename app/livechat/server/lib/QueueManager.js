@@ -9,6 +9,11 @@ import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueMananger');
 
+export const saveQueueInquiry = (inquiry) => {
+	LivechatInquiry.queueInquiry(inquiry._id);
+	callbacks.run('livechat.afterInquiryQueued', inquiry);
+};
+
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
 	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${ inquiry._id } to agent ${ defaultAgent?._id }`);

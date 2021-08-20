@@ -158,6 +158,21 @@ export const updatePredictedVisitorAbandonment = () => {
 	}
 };
 
+export const updateQueueInactivityTimeout = () => {
+	const queueAction = settings.get('Livechat_max_queue_wait_time_action');
+	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
+	if (!queueAction || queueAction === 'Nothing') {
+		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
+		return LivechatInquiry.unsetEstimatedInactivityCloseTime();
+	}
+
+	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
+	LivechatInquiry.getQueuedInquiries().forEach((inq) => {
+		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
+		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
+	});
+};
+
 export const updateRoomPriorityHistory = (rid, user, priority) => {
 	const history = {
 		priorityData: {
