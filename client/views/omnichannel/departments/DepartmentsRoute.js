@@ -33,6 +33,7 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction], onlyMyDe
 function DepartmentsRoute() {
 	const t = useTranslation();
 	const canViewDepartments = usePermission('manage-livechat-departments');
+	const canRemoveDepartments = usePermission('remove-livechat-department');
 
 	const [params, setParams] = useState({
 		text: '',
@@ -59,11 +60,12 @@ function DepartmentsRoute() {
 		setSort([id, 'asc']);
 	});
 
-	const onRowClick = useMutableCallback((id) => () =>
-		departmentsRoute.push({
-			context: 'edit',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			departmentsRoute.push({
+				context: 'edit',
+				id,
+			}),
 	);
 
 	const { value: data = {}, reload } = useEndpointData('livechat/department', query);
@@ -116,11 +118,13 @@ function DepartmentsRoute() {
 				>
 					{t('Show_on_registration_page')}
 				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'remove'} w='x60'>
-					{t('Remove')}
-				</GenericTable.HeaderCell>,
+				canRemoveDepartments && (
+					<GenericTable.HeaderCell key={'remove'} w='x60'>
+						{t('Remove')}
+					</GenericTable.HeaderCell>
+				),
 			].filter(Boolean),
-		[sort, onHeaderClick, t],
+		[sort, onHeaderClick, t, canRemoveDepartments],
 	);
 
 	const renderRow = useCallback(
@@ -138,10 +142,10 @@ function DepartmentsRoute() {
 				<Table.Cell withTruncatedText>{numAgents || '0'}</Table.Cell>
 				<Table.Cell withTruncatedText>{enabled ? t('Yes') : t('No')}</Table.Cell>
 				<Table.Cell withTruncatedText>{showOnRegistration ? t('Yes') : t('No')}</Table.Cell>
-				<RemoveDepartmentButton _id={_id} reload={reload} />
+				{canRemoveDepartments && <RemoveDepartmentButton _id={_id} reload={reload} />}
 			</Table.Row>
 		),
-		[onRowClick, t, reload],
+		[canRemoveDepartments, onRowClick, t, reload],
 	);
 
 	if (!canViewDepartments) {

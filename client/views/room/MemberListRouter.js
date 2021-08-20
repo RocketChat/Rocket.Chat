@@ -15,7 +15,7 @@ const getUid = (room, ownUserId) => {
 
 	// Self DMs used to be created with the userId duplicated.
 	// Sometimes rooms can have 2 equal uids, but it's a self DM.
-	return uid ? room.uids[0] : undefined;
+	return uid || room.uids[0];
 };
 
 const MemberListRouter = ({ rid }) => {

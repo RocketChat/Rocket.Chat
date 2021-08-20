@@ -18,6 +18,7 @@ import {
 } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 
 
 Accounts.config({
@@ -209,10 +210,12 @@ Accounts.onCreateUser(function(options, user = {}) {
 });
 
 Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, options, user) {
-	let roles = [];
+	const noRoles = !user?.hasOwnProperty('globalRoles');
+
+	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
-		roles = roles.concat(user.globalRoles);
+		globalRoles.push(...user.globalRoles);
 	}
 
 	delete user.globalRoles;
@@ -220,9 +223,11 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	if (user.services && !user.services.password) {
 		const defaultAuthServiceRoles = String(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
-			roles = roles.concat(defaultAuthServiceRoles.map((s) => s.trim()));
+			globalRoles.push(...defaultAuthServiceRoles.map((s) => s.trim()));
 		}
 	}
+
+	const roles = getNewUserRoles(globalRoles);
 
 	if (!user.type) {
 		user.type = 'user';
@@ -270,7 +275,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		}
 	}
 
-	if (roles.length === 0) {
+	if (noRoles || roles.length === 0) {
 		const hasAdmin = Users.findOne({
 			roles: 'admin',
 			type: 'user',

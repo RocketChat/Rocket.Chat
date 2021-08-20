@@ -60,7 +60,7 @@ const NewBusinessHoursPage = () => {
 
 		const mappedForm = mapBusinessHoursForm(form, defaultBusinessHour);
 
-		const departmentsToApplyBusinessHour = departments?.join(',') || '';
+		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
 			const payload = {

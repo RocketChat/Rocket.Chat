@@ -18,12 +18,9 @@ import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { isEmail } from '../../../../app/utils/client';
-import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
-import CannedResponsesRouter from '../../../../ee/client/omnichannel/cannedResponses';
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter, useCurrentRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
-import { useSetting } from '../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
@@ -35,14 +32,13 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
-function EditDepartment({ data, id, title, reload }) {
+function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const t = useTranslation();
 	const agentsRoute = useRoute('omnichannel-departments');
 	const eeForms = useSubscription(formsSubscription);
 	const initialAgents = useRef((data && data.agents) || []);
 
 	const router = useRoute('omnichannel-departments');
-	const [, params] = useCurrentRoute();
 
 	const {
 		useEeNumberInput = () => {},
@@ -80,7 +76,11 @@ function EditDepartment({ data, id, title, reload }) {
 		visitorInactivityTimeoutInSeconds:
 			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
 		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
-		departmentsAllowedToForward: (department && department.departmentsAllowedToForward) || [],
+		departmentsAllowedToForward:
+			(allowedToForwardData &&
+				allowedToForwardData.departments &&
+				allowedToForwardData.departments.map((dep) => ({ label: dep.name, value: dep._id }))) ||
+			[],
 	});
 	const {
 		handleName,
@@ -211,7 +211,7 @@ function EditDepartment({ data, id, title, reload }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.join(),
+				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.value).join(),
 		};
 
 		const agentListPayload = {
@@ -257,35 +257,16 @@ function EditDepartment({ data, id, title, reload }) {
 
 	const formId = useUniqueId();
 
-	const tab = useRouteParameter('tab');
-	const hasCannedResponsesLicense = useHasLicense('canned-responses');
-	const cannedResponsesEnabled = useSetting('Canned_Responses_Enable');
-	const showCanned =
-		hasCannedResponsesLicense && cannedResponsesEnabled && tab === 'canned-responses';
-
-	const handleOpenCannedResponses = useMutableCallback(() => {
-		router.push({ ...params, tab: 'canned-responses' });
-	});
-
-	const handleCloseCannedResponses = useMutableCallback(() => {
-		router.push({ ...params, tab: '' });
-	});
-
-	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [
-		data.agents,
-		agentList,
-	]);
+	const hasNewAgent = useMemo(
+		() => data.agents.length === agentList.length,
+		[data.agents, agentList],
+	);
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={title}>
 					<ButtonGroup>
-						{id && hasCannedResponsesLicense && cannedResponsesEnabled && (
-							<Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}>
-								<Icon name='baloon-exclamation' size='x16' />
-							</Button>
-						)}
 						<Button onClick={handleReturn}>
 							<Icon name='back' /> {t('Back')}
 						</Button>
@@ -490,9 +471,6 @@ function EditDepartment({ data, id, title, reload }) {
 					</FieldGroup>
 				</Page.ScrollableContentWithShadow>
 			</Page>
-			{showCanned && (
-				<CannedResponsesRouter departmentId={id} onClose={handleCloseCannedResponses} />
-			)}
 		</Page>
 	);
 }

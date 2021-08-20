@@ -7,14 +7,15 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import s from 'underscore.string';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { settings } from '../../../settings/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { callbacks } from '../../../callbacks/server';
 import {
 	Users,
 	LivechatRooms,
@@ -27,7 +28,7 @@ import {
 	LivechatCustomField,
 	LivechatVisitors,
 	LivechatInquiry,
-} from '../../../models';
+} from '../../../models/server';
 import { Logger } from '../../../logger';
 import { addUserRoles, hasPermission, hasRole, removeUserFromRoles, canAccessRoom } from '../../../authorization';
 import * as Mailer from '../../../mailer';
@@ -39,6 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { validateEmailDomain } from '../../../lib/server';
 
 export const Livechat = {
 	Analytics,
@@ -50,6 +52,19 @@ export const Livechat = {
 		},
 	}),
 
+
+	findGuest(token) {
+		return LivechatVisitors.getVisitorByToken(token, {
+			fields: {
+				name: 1,
+				username: 1,
+				token: 1,
+				visitorEmails: 1,
+				department: 1,
+			},
+		});
+	},
+
 	online(department) {
 		if (settings.get('Livechat_accept_chats_with_no_agents')) {
 			return true;
@@ -57,13 +72,12 @@ export const Livechat = {
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			const botAgents = Livechat.getBotAgents(department);
-			if (botAgents && botAgents.count() > 0) {
+			if (botAgents.count() > 0) {
 				return true;
 			}
 		}
 
-		const onlineAgents = Livechat.getOnlineAgents(department);
-		return onlineAgents && onlineAgents.count() > 0;
+		return Livechat.checkOnlineAgents(department);
 	},
 
 	getNextAgent(department) {
@@ -87,6 +101,18 @@ export const Livechat = {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
+	},
+
+	checkOnlineAgents(department, agent) {
+		if (agent?.agentId) {
+			return Users.checkOnlineAgents(agent.agentId);
+		}
+
+		if (department) {
+			return LivechatDepartmentAgents.checkOnlineForDepartment(department);
+		}
+
+		return Users.checkOnlineAgents();
 	},
 
 	getBotAgents(department) {
@@ -196,69 +222,63 @@ export const Livechat = {
 		return true;
 	},
 
-	registerGuest({ token, name, email, department, phone, username, connectionData } = {}) {
+	registerGuest({ id, token, name, email, department, phone, username, connectionData } = {}) {
 		check(token, String);
+		check(id, Match.Maybe(String));
 
 		let userId;
 		const updateUser = {
 			$set: {
 				token,
+				...phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {},
+				...name ? { name } : {},
 			},
 		};
 
-		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
-
-		if (user) {
-			userId = user._id;
-		} else {
-			if (!username) {
-				username = LivechatVisitors.getNextVisitorUsername();
-			}
-
-			let existingUser = null;
-
-			if (s.trim(email) !== '' && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
-				userId = existingUser._id;
-			} else {
-				const userData = {
-					username,
-					ts: new Date(),
-				};
-
-				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-					const connection = this.connection || connectionData;
-					if (connection && connection.httpHeaders) {
-						userData.userAgent = connection.httpHeaders['user-agent'];
-						userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-						userData.host = connection.httpHeaders.host;
-					}
-				}
-
-				userId = LivechatVisitors.insert(userData);
-			}
-		}
-
-		if (phone) {
-			updateUser.$set.phone = [
-				{ phoneNumber: phone.number },
-			];
-		}
-
-		if (email && email.trim() !== '') {
+		if (email) {
+			email = email.trim();
+			validateEmailDomain(email);
 			updateUser.$set.visitorEmails = [
 				{ address: email },
 			];
 		}
 
-		if (name) {
-			updateUser.$set.name = name;
+		if (department) {
+			const dep = LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', { method: 'registerGuest' });
+			}
+			updateUser.$set.department = dep._id;
 		}
 
-		if (!department) {
-			Object.assign(updateUser, { $unset: { department: 1 } });
+		const user = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1 } });
+		let existingUser = null;
+
+		if (user) {
+			userId = user._id;
+		} else if (email && (existingUser = LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			userId = existingUser._id;
 		} else {
-			const dep = LivechatDepartment.findOneByIdOrName(department);
-			updateUser.$set.department = dep && dep._id;
+			if (!username) {
+				username = LivechatVisitors.getNextVisitorUsername();
+			}
+
+			const userData = {
+				username,
+				ts: new Date(),
+				...id && { _id: id },
+			};
+
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+				const connection = this.connection || connectionData;
+				if (connection && connection.httpHeaders) {
+					userData.userAgent = connection.httpHeaders['user-agent'];
+					userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+					userData.host = connection.httpHeaders.host;
+				}
+			}
+
+			userId = LivechatVisitors.insert(userData);
 		}
 
 		LivechatVisitors.updateById(userId, updateUser);
@@ -383,8 +403,8 @@ export const Livechat = {
 			 */
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
 			Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
-			callbacks.runAsync('livechat.closeRoom', room);
 		});
+		callbacks.runAsync('livechat.closeRoom', room);
 
 		return true;
 	},
@@ -427,6 +447,10 @@ export const Livechat = {
 		return LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 	},
 
+	enabled() {
+		return settings.get('Livechat_enabled');
+	},
+
 	getInitSettings() {
 		const rcSettings = {};
 
@@ -464,9 +488,7 @@ export const Livechat = {
 			rcSettings[setting._id] = setting.value;
 		});
 
-		settings.get('Livechat_history_monitor_type', (key, value) => {
-			rcSettings[key] = value;
-		});
+		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
@@ -501,8 +523,8 @@ export const Livechat = {
 
 		Meteor.defer(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
-			callbacks.run('livechat.saveRoom', roomData);
 		});
+		callbacks.runAsync('livechat.saveRoom', roomData);
 
 		if (!_.isEmpty(guestData.name)) {
 			const { _id: rid } = roomData;
@@ -533,30 +555,31 @@ export const Livechat = {
 	},
 
 	savePageHistory(token, roomId, pageInfo) {
-		if (pageInfo.change === Livechat.historyMonitorType) {
-			const user = Users.findOneById('rocket.cat');
-
-			const pageTitle = pageInfo.title;
-			const pageUrl = pageInfo.location.href;
-			const extraData = {
-				navigation: {
-					page: pageInfo,
-					token,
-				},
-			};
-
-			if (!roomId) {
-				// keep history of unregistered visitors for 1 month
-				const keepHistoryMiliseconds = 2592000000;
-				extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
-			}
-
-			if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
-				extraData._hidden = true;
-			}
-
-			return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
+		if (pageInfo.change !== Livechat.historyMonitorType) {
+			return;
 		}
+		const user = Users.findOneById('rocket.cat');
+
+		const pageTitle = pageInfo.title;
+		const pageUrl = pageInfo.location.href;
+		const extraData = {
+			navigation: {
+				page: pageInfo,
+				token,
+			},
+		};
+
+		if (!roomId) {
+			// keep history of unregistered visitors for 1 month
+			const keepHistoryMiliseconds = 2592000000;
+			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+		}
+
+		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
+			extraData._hidden = true;
+		}
+
+		return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${ pageTitle } - ${ pageUrl }`, user, extraData);
 	},
 
 	saveTransferHistory(room, transferData) {
@@ -638,31 +661,27 @@ export const Livechat = {
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterReturnRoomAsInquiry', { room });
-		});
+		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
 	},
 
-	sendRequest(postData, callback, trying = 1) {
+	sendRequest(postData, callback, attempts = 10) {
+		if (!attempts) {
+			return;
+		}
+		const secretToken = settings.get('Livechat_secret_token');
+		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
+		const options = { data: postData, ...secretToken !== '' && secretToken !== undefined && { headers } };
 		try {
-			const options = { data: postData };
-			const secretToken = settings.get('Livechat_secret_token');
-			if (secretToken !== '' && secretToken !== undefined) {
-				Object.assign(options, { headers: { 'X-RocketChat-Livechat-Token': secretToken } });
-			}
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			Livechat.logger.webhook.error(`Response error on ${ trying } try ->`, e);
+			Livechat.logger.webhook.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
-			if (trying < 10) {
-				Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
-				trying++;
-				setTimeout(Meteor.bindEnvironment(() => {
-					Livechat.sendRequest(postData, callback, trying);
-				}), 10000);
-			}
+			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+			setTimeout(Meteor.bindEnvironment(function() {
+				Livechat.sendRequest(postData, callback, attempts--);
+			}), 10000);
 		}
 	},
 
@@ -965,6 +984,7 @@ export const Livechat = {
 
 		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
 		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
+		const timezone = getTimezone(user);
 
 		// allow to only user to send transcripts from their own chats
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
@@ -984,7 +1004,7 @@ export const Livechat = {
 				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
 			}
 
-			const datetime = moment(message.ts).locale(userLanguage).format('LLL');
+			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 			const singleMessage = `
 				<p><strong>${ author }</strong>  <em>${ datetime }</em></p>
 				<p>${ message.msg }</p>
@@ -1027,6 +1047,7 @@ export const Livechat = {
 		check(user, Match.ObjectIncluding({
 			_id: String,
 			username: String,
+			utcOffset: Number,
 			name: Match.Maybe(String),
 		}));
 
@@ -1040,13 +1061,14 @@ export const Livechat = {
 			throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
 		}
 
-		const { _id, username, name } = user;
+		const { _id, username, name, utcOffset } = user;
 		const transcriptRequest = {
 			requestedAt: new Date(),
 			requestedBy: {
 				_id,
 				username,
 				name,
+				utcOffset,
 			},
 			email,
 			subject,

@@ -92,12 +92,14 @@ function SetupWizardState() {
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { loaded, settings, canDeclineServerRegistration } = useParameters();
 
-	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [
-		setCurrentStep,
-	]);
-	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [
-		setCurrentStep,
-	]);
+	const goToPreviousStep = useCallback(
+		() => setCurrentStep((currentStep) => currentStep - 1),
+		[setCurrentStep],
+	);
+	const goToNextStep = useCallback(
+		() => setCurrentStep((currentStep) => currentStep + 1),
+		[setCurrentStep],
+	);
 	const goToFinalStep = useCallback(() => setCurrentStep(finalStep), [setCurrentStep]);
 
 	const value = useMemo(

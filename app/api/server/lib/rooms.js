@@ -95,9 +95,6 @@ export async function findAdminRoom({ uid, rid }) {
 }
 
 export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
-	if (!await hasPermissionAsync(uid, 'view-other-user-channels')) {
-		return { items: [] };
-	}
 	const options = {
 		fields: {
 			_id: 1,
@@ -111,11 +108,12 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 			name: 1,
 		},
 	};
-	const userRooms = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
+
+	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
 		.fetch()
 		.map((item) => item.rid);
 
-	const rooms = await Rooms.findChannelAndPrivateByNameStarting(selector.name, userRooms, options).toArray();
+	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
 	return {
 		items: rooms,

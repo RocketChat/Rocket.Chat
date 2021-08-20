@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi8/nodejs-12
 
-ENV RC_VERSION 3.16.0-develop
+ENV RC_VERSION 3.18.0-develop
 
 MAINTAINER buildmaster@rocket.chat
 
@@ -18,7 +18,7 @@ RUN dnf install -y python38 && rm -rf /var/cache /var/log/dnf* /var/log/yum.*
 USER default
 
 RUN set -x \
- && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104 \
+ && gpg --keyserver keys.openpgp.org --recv-keys 0E163286C20D07B9787EBE9FD7F9D0414FD08104 \
  && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/download" -o rocket.chat.tgz \
  && curl -SLf "https://releases.rocket.chat/${RC_VERSION}/asc" -o rocket.chat.tgz.asc \
  && gpg --verify rocket.chat.tgz.asc \

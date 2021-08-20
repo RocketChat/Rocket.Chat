@@ -13,7 +13,7 @@ import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { queueInquiry } from './QueueManager';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -122,6 +122,11 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		username: String,
 	}));
 
+	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
+	if (existingSubscription?._id) {
+		return existingSubscription;
+	}
+
 	const { _id, username, token, status = 'online' } = guest;
 
 	const subscriptionData = {
@@ -228,14 +233,11 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 	}
 
 	if (!agent || !allowAgentSkipQueue(agent)) {
-		LivechatInquiry.queueInquiry(inquiry._id);
+		saveQueueInquiry(inquiry);
 	}
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
-	if (!onlineAgents?.length) {
-		return;
-	}
 
 	const notificationUserName = v && (v.name || v.username);
 
@@ -309,7 +311,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			removeAgentFromSubscription(rid, oldServedBy);
+			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, { _id: servedBy._id, username: servedBy.username });
 
@@ -396,7 +398,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		removeAgentFromSubscription(rid, oldServedBy);
+		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);

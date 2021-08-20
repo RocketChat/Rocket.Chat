@@ -66,7 +66,7 @@ const DeploymentCard = memo(function DeploymentCard({ info, statistics, instance
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>
-						{t('HEAD')}: ({s(() => commit.hash.slice(0, 9))}) <br />
+						{t('HEAD')}: ({s(() => (commit.hash ? commit.hash.slice(0, 9) : ''))}) <br />
 						{t('Branch')}: {s(() => commit.branch)}
 					</Card.Col.Section>
 					<Card.Col.Section>

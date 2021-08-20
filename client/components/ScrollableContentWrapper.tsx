@@ -28,9 +28,10 @@ export type CustomScrollbarsProps = {
 
 const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(
 	function WrappedComponent({ children, style, onScroll, overflowX, renderView }, ref) {
-		const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [
-			style,
-		]) as CSSProperties;
+		const scrollbarsStyle = useMemo(
+			() => ({ ...style, ...styleDefault }),
+			[style],
+		) as CSSProperties;
 
 		return (
 			<Scrollbars

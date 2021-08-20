@@ -25,6 +25,7 @@ export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
 export { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';
 export { saveUser } from './saveUser';
+export { saveUserIdentity } from './saveUserIdentity';
 export { sendMessage } from './sendMessage';
 export { sendTask } from './sendTask';
 export { setEmail } from './setEmail';

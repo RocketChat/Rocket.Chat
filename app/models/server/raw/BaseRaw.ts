@@ -15,8 +15,11 @@ import {
 	UpdateQuery,
 	UpdateWriteOpResult,
 	WithId,
+	WithoutProjection,
 	WriteOpResult,
 } from 'mongodb';
+
+import { setUpdatedAt } from '../lib/setUpdatedAt';
 
 // [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
 type EnhancedOmit<T, K> = string | number extends keyof T
@@ -35,19 +38,25 @@ type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defin
 	: ObjectId;
 
 type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
-
-interface ITrash {
-	__collection__: string;
-}
+// InsertionModel forces both _id and _updatedAt to be optional, regardless of how they are declared in T
+export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & { _updatedAt?: Date };
 
 export interface IBaseRaw<T> {
 	col: Collection<T>;
 }
 
 const baseName = 'rocketchat_';
+const isWithoutProjection = <T>(props: T): props is WithoutProjection<T> => !('projection' in props) && !('fields' in props);
 
-export class BaseRaw<T> implements IBaseRaw<T> {
-	public defaultFields?: Record<string, 1 | 0>;
+type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
+type ResultFields<Base, Defaults> = Defaults extends void ? Base : Defaults[keyof Defaults] extends 1 ? Pick<Defaults, keyof Defaults> : Omit<Defaults, keyof Defaults>;
+
+const warnFields = process.env.NODE_ENV !== 'production'
+	? (...rest: any): void => { console.warn(...rest, new Error().stack); }
+	: new Function();
+
+export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
+	public readonly defaultFields: C;
 
 	protected name: string;
 
@@ -58,68 +67,90 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		this.name = this.col.collectionName.replace(baseName, '');
 	}
 
-	_ensureDefaultFields<T>(options: FindOneOptions<T>): FindOneOptions<T> {
-		if (!this.defaultFields) {
+	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
+
+	private ensureDefaultFields(options: WithoutProjection<FindOneOptions<T>>): WithoutProjection<FindOneOptions<T>>;
+
+	private ensureDefaultFields<P>(options: FindOneOptions<P>): FindOneOptions<P>;
+
+	private ensureDefaultFields<P>(options?: any): FindOneOptions<P> | undefined | WithoutProjection<FindOneOptions<T>> {
+		if (this.defaultFields === undefined) {
 			return options;
 		}
 
-		if (!options) {
-			return { projection: this.defaultFields };
-		}
+		const { fields, ...rest } = options || {};
 
-		// TODO: change all places using "fields" for raw models and remove the additional condition here
-		if ((options.projection != null && Object.keys(options.projection).length > 0)
-		|| (options.fields != null && Object.keys(options.fields).length > 0)) {
-			return options;
+		if (fields) {
+			warnFields('Using \'fields\' in models is deprecated.', options);
 		}
 
 		return {
-			...options,
 			projection: this.defaultFields,
+			...fields && { projection: fields },
+			...rest,
 		};
 	}
 
-	async findOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
-		return this.findOne({ _id }, options);
+	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
+
+	async findOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+
+	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
+		const query = { _id } as FilterQuery<T>;
+		const optionsDef = this.ensureDefaultFields(options);
+		return this.col.findOne(query, optionsDef);
 	}
 
-	async findOne(query = {}, options: FindOneOptions<T> = {}): Promise<T | undefined> {
-		const optionsDef = this._ensureDefaultFields<T>(options);
+	async findOne(query?: FilterQuery<T> | string, options?: undefined): Promise<T | null>;
 
-		if (typeof query === 'string') {
-			return this.findOneById(query, options);
-		}
+	async findOne(query: FilterQuery<T> | string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
 
-		return await this.col.findOne<T>(query, optionsDef) ?? undefined;
+	async findOne<P>(query: FilterQuery<T> | string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+
+	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
+		const q = typeof query === 'string' ? { _id: query } as FilterQuery<T> : query;
+
+		const optionsDef = this.ensureDefaultFields(options);
+		return this.col.findOne(q, optionsDef);
 	}
 
 	findUsersInRoles(): void {
 		throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
 	}
 
-	find(query = {}, options: FindOneOptions<T> = {}): Cursor<T> {
-		const optionsDef = this._ensureDefaultFields(options);
+	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
+
+	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
+
+	find<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
+
+	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
+		const optionsDef = this.ensureDefaultFields(options);
 		return this.col.find(query, optionsDef);
 	}
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.update(filter, update, options);
 	}
 
 	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.updateOne(filter, update, options);
 	}
 
 	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
+		setUpdatedAt(update);
 		return this.col.updateMany(filter, update, options);
 	}
 
-	insertMany(docs: Array<ModelOptionalId<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
+	insertMany(docs: Array<InsertionModel<T>>, options?: CollectionInsertOneOptions): Promise<InsertWriteOpResult<WithId<T>>> {
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectID();
 				return { _id: oid.toHexString(), ...doc };
 			}
+			setUpdatedAt(doc);
 			return doc;
 		});
 
@@ -127,11 +158,13 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 		return this.col.insertMany(docs as unknown as Array<OptionalId<T>>, options);
 	}
 
-	insertOne(doc: ModelOptionalId<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
+	insertOne(doc: InsertionModel<T>, options?: CollectionInsertOneOptions): Promise<InsertOneWriteOpResult<WithId<T>>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectID();
 			doc = { _id: oid.toHexString(), ...doc };
 		}
+
+		setUpdatedAt(doc);
 
 		// TODO reavaluate following type casting
 		return this.col.insertOne(doc as unknown as OptionalId<T>, options);
@@ -143,19 +176,42 @@ export class BaseRaw<T> implements IBaseRaw<T> {
 	}
 
 	// Trash
-	trashFind(query: FilterQuery<T & ITrash>, options: FindOneOptions<T>): Cursor<T> | undefined {
-		return this.trash?.find<T>({
+	trashFind<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P> | undefined {
+		if (!this.trash) {
+			return undefined;
+		}
+		const { trash } = this;
+
+		return trash.find({
 			__collection__: this.name,
 			...query,
 		}, options);
 	}
 
-	async trashFindOneById(_id: string, options: FindOneOptions<T> = {}): Promise<T | undefined> {
-		const query: object = {
+
+	trashFindOneById(_id: string): Promise<T | null>;
+
+	trashFindOneById(_id: string, options: WithoutProjection<FindOneOptions<T>>): Promise<T | null>;
+
+	trashFindOneById<P>(_id: string, options: FindOneOptions<P extends T ? T : P>): Promise<P | null>;
+
+	async trashFindOneById<P extends T>(_id: string, options?: undefined | WithoutProjection<FindOneOptions<T>> | FindOneOptions<P extends T ? T : P>): Promise<T | P | null> {
+		const query = {
 			_id,
 			__collection__: this.name,
-		};
+		} as FilterQuery<T>;
 
-		return await this.trash?.findOne<T>(query, options) ?? undefined;
+		if (!this.trash) {
+			return null;
+		}
+		const { trash } = this;
+
+		if (options === undefined) {
+			return trash.findOne(query);
+		}
+		if (isWithoutProjection(options)) {
+			return trash.findOne(query, options);
+		}
+		return trash.findOne(query, options);
 	}
 }

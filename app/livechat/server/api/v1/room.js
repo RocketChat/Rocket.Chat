@@ -22,30 +22,40 @@ API.v1.addRoute('livechat/room', {
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 
-		try {
-			check(this.queryParams, extraCheckParams);
+		check(this.queryParams, extraCheckParams);
 
-			const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
 
-			const guest = findGuest(token);
-			if (!guest) {
-				throw new Meteor.Error('invalid-token');
+		const guest = findGuest(token);
+		if (!guest) {
+			throw new Meteor.Error('invalid-token');
+		}
+
+		let room;
+		if (!roomId) {
+			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+			if (room) {
+				return API.v1.success({ room, newRoom: false });
 			}
 
 			let agent;
 			const agentObj = agentId && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
-				agent = Object.assign({}, { agentId, username });
+				agent = { agentId, username };
 			}
 
-			const rid = roomId || Random.id();
-			const room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
-
+			const rid = Random.id();
+			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
 			return API.v1.success(room);
-		} catch (e) {
-			return API.v1.failure(e);
 		}
+
+		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		if (!room) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		return API.v1.success({ room, newRoom: false });
 	},
 });
 
@@ -199,12 +209,12 @@ API.v1.addRoute('livechat/room.visitor', { authRequired: true }, {
 				throw new Meteor.Error('invalid-visitor');
 			}
 
-			let room = LivechatRooms.findOneById(rid, { _id: 1 });
+			let room = LivechatRooms.findOneById(rid, { _id: 1 }); // TODO: check _id
 			if (!room) {
 				throw new Meteor.Error('invalid-room');
 			}
 
-			const { v: { _id: roomVisitorId } = {} } = room;
+			const { v: { _id: roomVisitorId } = {} } = room; // TODO: v it will be undefined
 			if (roomVisitorId !== oldVisitorId) {
 				throw new Meteor.Error('invalid-room-visitor');
 			}
