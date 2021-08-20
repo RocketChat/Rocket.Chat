@@ -1972,6 +1972,36 @@ describe('[Chat]', function() {
 	});
 
 	describe('[/chat.getDiscussions]', () => {
+		const messageText = 'Message to create discussion';
+		let testChannel;
+		let discussionRoom;
+		const messageWords = [
+			...messageText.split(' '),
+			...messageText.toUpperCase().split(' '),
+			...messageText.toLowerCase().split(' '),
+			messageText,
+			messageText.charAt(0),
+			' ',
+		];
+		before((done) => {
+			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+				.end((err, room) => {
+					testChannel = room.body.channel;
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannel._id,
+							t_name: 'Message to create discussion',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end((err, res) => {
+							discussionRoom = res.body.discussion;
+							done();
+						});
+				});
+		});
+
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request.get(api('chat.getDiscussions'))
 				.set(credentials)
@@ -2011,6 +2041,33 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		function filterDiscussionsByText(text) {
+			it(`should return the room's discussion list filtered by the text '${ text }'`, (done) => {
+				request.get(api('chat.getDiscussions'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.messages).to.have.lengthOf(1);
+						expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
+					})
+					.end(done);
+			});
+		}
+
+		messageWords.forEach((text) => {
+			filterDiscussionsByText(text);
+		});
+
 		it('should return an error when the messageId is invalid', (done) => {
 			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
 				.set(credentials)
@@ -2046,21 +2103,36 @@ describe('Threads', () => {
 		];
 		before((done) => {
 			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
-				.end((err, channel) => {
-					testChannel = channel.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						msg: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							msg: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
-						});
-					});
+				.end((err, room) => {
+					testChannel = room.body.channel;
+					request.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Message to create thread',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.then((response) => {
+							request.post(api('chat.sendMessage'))
+								.set(credentials)
+								.send({
+									message: {
+										rid: testChannel._id,
+										msg: 'Message to create thread',
+										tmid: response.body.message._id,
+									},
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.end((err, res) => {
+									threadMessage = res.body.message;
+								});
+						})
+						.then(() => done())
+						.catch(done);
 				});
 		});
 
@@ -2130,7 +2202,6 @@ describe('Threads', () => {
 
 		function filterThreadsByText(text) {
 			it(`should return the room's thread list filtered by the text '${ text }'`, (done) => {
-				console.log('RID: ', testChannel._id);
 				request.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2151,7 +2222,7 @@ describe('Threads', () => {
 					.end(done);
 			});
 		}
-	
+
 		messageWords.forEach((text) => {
 			filterThreadsByText(text);
 		});
