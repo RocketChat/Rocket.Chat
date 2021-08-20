@@ -34,7 +34,7 @@ export function withData(Component) {
 			[rid, debouncedText, type, subscription, userId],
 		);
 
-		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(options, userId, room);
+		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(options, userId);
 		const { phase, error, items: threads, itemCount: totalItemCount } = useRecordList(threadsList);
 
 		const handleTextChange = useCallback((event) => {
