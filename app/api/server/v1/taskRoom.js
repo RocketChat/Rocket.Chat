@@ -82,11 +82,11 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 
 		const task = Tasks.findOneById(id);
 
-		const editPermission = hasPermission(this.userId, 'edit-task', task.rid);
-
 		if (!task || !task._id) {
-			return;
+			return API.v1.failure('Task not found');
 		}
+
+		const editPermission = hasPermission(this.userId, 'edit-task', task.rid);
 
 		const editAllowed = settings.get('Task_AllowEditing');
 		const editOwn = task.u && task.u._id === this.userId;
