@@ -35,6 +35,7 @@ const RoomMembers = ({
 	renderRow: Row = DefaultRow,
 	rid,
 	isTeam,
+	isDirect,
 	reload,
 }) => {
 	const t = useTranslation();
@@ -130,7 +131,7 @@ const RoomMembers = ({
 					)}
 				</Box>
 			</VerticalBar.Content>
-			{(onClickInvite || onClickAdd) && (
+			{!isDirect && (onClickInvite || onClickAdd) && (
 				<VerticalBar.Footer>
 					<ButtonGroup stretch>
 						{onClickInvite && (
