@@ -189,7 +189,6 @@ export const Livechat = {
 
 	async sendMessage({ guest, message, roomInfo, agent }) {
 		const { room, newRoom } = await this.getRoom(guest, message, roomInfo, agent);
-		Livechat.logger.debug(`Attempting to send a message by visitor ${ guest._id } on room ${ room._id }`);
 		if (guest.name) {
 			message.alias = guest.name;
 		}
@@ -197,7 +196,6 @@ export const Livechat = {
 	},
 
 	updateMessage({ guest, message }) {
-		Livechat.logger.debug(`Attempting to update a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const originalMessage = Messages.findOneById(message._id);
@@ -209,7 +207,6 @@ export const Livechat = {
 		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
 
 		if (!editAllowed || !editOwn) {
-			Livechat.logger.debug('Cannot update message: not allowed');
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', { method: 'livechatUpdateMessage' });
 		}
 

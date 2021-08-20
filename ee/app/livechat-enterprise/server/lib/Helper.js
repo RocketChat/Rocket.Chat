@@ -14,6 +14,7 @@ import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { logger } from './logger';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -92,6 +93,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
+	logger.helper.debug(`Updating statuses for queue ${ department || 'Public' }`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
 	const queueInfo = await getQueueInfo(department);
 	queue.forEach((inquiry) => {
@@ -100,11 +102,15 @@ export const dispatchWaitingQueueStatus = async (department) => {
 };
 
 export const processWaitingQueue = async (department) => {
+	const queue = department || 'Public';
+	logger.helper.debug(`Processing items on queue ${ queue }`);
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
+		logger.helper.debug(`No items to process on queue ${ queue }`);
 		return;
 	}
 
+	logger.helper.debug(`Processing inquiry ${ inquiry._id } from queue ${ queue }`);
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
@@ -114,6 +120,7 @@ export const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
+		logger.helper.debug(`Inquiry ${ inquiry._id } taken succesfully by agent ${ agentId }. Notifying`);
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);

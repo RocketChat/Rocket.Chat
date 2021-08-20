@@ -279,6 +279,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 			hasMentionToAll: true, // consider all agents to be in the room
 			hasMentionToHere: false,
 			message: Object.assign({}, { u: v }),
+			// we should use server's language for this type of messages instead of user's
 			notificationMessage: TAPi18n.__('User_started_a_new_conversation', { username: notificationUserName }, language),
 			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 			mentionIds: [],

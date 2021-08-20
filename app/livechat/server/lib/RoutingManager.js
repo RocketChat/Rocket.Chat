@@ -53,6 +53,7 @@ export const RoutingManager = {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${ inquiry._id }`);
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${ inquiry._id }`);
 			agent = await this.getNextAgent(department);
 		}
 
@@ -71,8 +72,11 @@ export const RoutingManager = {
 			username: String,
 		}));
 
+		logger.debug(`Assigning agent ${ agent.agentId } to inquiry ${ inquiry._id }`);
+
 		const { rid, name, v, department } = inquiry;
 		if (!createLivechatSubscription(rid, name, v, agent, department)) {
+			logger.debug(`Cannot assign agent to inquiry ${ inquiry._id }: Cannot create subscription`);
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
@@ -84,6 +88,7 @@ export const RoutingManager = {
 
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
+		logger.debug(`Agent ${ agent.agentId } assigned to inquriy ${ inquiry._id }. Instances notified`);
 
 		Apps.getBridges().getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
 		return inquiry;
@@ -93,11 +98,14 @@ export const RoutingManager = {
 		const { rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 
+		logger.debug(`Removing assignations of inquiry ${ inquiry._id }`);
 		if (!room || !room.open) {
+			logger.debug(`Cannot unassign agent from inquiry ${ inquiry._id }: Room already closed`);
 			return false;
 		}
 
 		if (departmentId && departmentId !== department) {
+			logger.debug(`Switching department for inquiry ${ inquiry._id } [Current: ${ department } | Next: ${ departmentId }]`);
 			updateChatDepartment({
 				rid,
 				newDepartmentId: departmentId,
@@ -110,6 +118,7 @@ export const RoutingManager = {
 		const { servedBy } = room;
 
 		if (servedBy) {
+			logger.debug(`Unassigning current agent for inquiry ${ inquiry._id }`);
 			LivechatRooms.removeAgentByRoomId(rid);
 			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
@@ -152,6 +161,7 @@ export const RoutingManager = {
 		}
 
 		if (room.onHold) {
+			logger.debug(`Room ${ room._id } is on hold. Remove current assignments before routing`);
 			Subscriptions.removeByRoomIdAndUserId(room._id, agent.agentId);
 		}
 
