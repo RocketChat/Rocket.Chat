@@ -81,10 +81,10 @@ Meteor.methods({
 						type: thumbnail.type,
 					});
 				}
-				attachments.push(attachment);
 			} catch (e) {
 				console.error(e);
 			}
+			attachments.push(attachment);
 		} else if (/^audio\/.+/.test(file.type)) {
 			const attachment: FileAttachmentProps = {
 				title: file.name,
