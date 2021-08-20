@@ -46,22 +46,13 @@ function CreateRoomList() {
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
-
-  const canCreateTaskRoom = useAtLeastOnePermission(CREATE_TASKROOM_PERMISSIONS);
-	
-  const canCreateDirectMessages = usePermission('create-d');
+	const canCreateTaskRoom = useAtLeastOnePermission(CREATE_TASKROOM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
-
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
 	const createChannel = useReactModal(CreateChannelWithData);
 	const createTeam = useReactModal(CreateTeamModal);
-
 	const createTaskRoom = useReactModal(CreateTaskRoomModal);
-	
-  const createDirectMessage = useAction(t('Direct_Messages'), 'CreateDirectMessage');
-	const createDiscussion = useAction(t('Discussion_title'), 'CreateDiscussion');
-  
 	const createDiscussion = useReactModal(CreateDiscussion);
 	const createDirectMessage = useReactModal(CreateDirectMessage);
 
