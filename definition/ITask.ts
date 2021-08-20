@@ -29,7 +29,7 @@ export interface ITask extends IRocketChatRecord {
 	t?: string;
 	e2e?: 'pending';
 
-	taskTitle: string;
+	title: string;
 	taskAssignee?: Pick<IUser, '_id' | 'username' | 'name'>;
 	taskDescription?: string;
 	taskStatus?: {_id: string}[];
