@@ -3,7 +3,7 @@ import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
 import { Users, LivechatDepartmentAgents } from '../../../models';
 
-callbacks.add('livechat.beforeDelegateAgent', (agent, department) => {
+callbacks.add('livechat.beforeDelegateAgent', (agent, { department }) => {
 	if (agent) {
 		return agent;
 	}
