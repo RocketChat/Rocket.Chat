@@ -60,6 +60,7 @@
 		"@storybook/addons": "^6.3.6",
 		"@storybook/react": "^6.3.6",
 		"@types/agenda": "^2.0.9",
+		"@types/bad-words": "^3.0.1",
 		"@types/bcrypt": "^5.0.0",
 		"@types/body-parser": "^1.19.0",
 		"@types/chai": "^4.2.19",
