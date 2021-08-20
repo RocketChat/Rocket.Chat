@@ -125,11 +125,6 @@ API.v1.addRoute('taskRoom.taskUpdate', { authRequired: true }, {
 			return API.v1.failure(error.message);
 		}
 
-		if (task.attachments && task.attachments.length > 0 && task.attachments[0].description !== undefined) {
-			task.attachments = task.attachments;
-			task.attachments[0].description = task.title;
-		}
-
 		if (taskStatus) {
 			task.taskStatus = taskStatus;
 		}
