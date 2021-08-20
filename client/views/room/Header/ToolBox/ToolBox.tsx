@@ -29,6 +29,7 @@ const ToolBox: FC<ToolBoxProps> = ({ className }) => {
 	const hiddenActionRenderers = useRef<{ [key: string]: OptionRenderer }>({});
 
 	const { actions: mapActions } = useToolboxContext();
+
 	const actions = (Array.from(mapActions.values()) as ToolboxActionConfig[]).sort(
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);

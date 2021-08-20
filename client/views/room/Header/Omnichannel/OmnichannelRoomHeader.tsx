@@ -28,7 +28,7 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 					{name === 'omnichannel-directory' && <BackButton />}
 				</TemplateHeader.ToolBox>
 			),
-			insideContent: <QuickActions room={room} />,
+			...(!isMobile && { insideContent: <QuickActions room={room} /> }),
 		}),
 		[isMobile, name, parentSlot, room],
 	);
@@ -38,11 +38,16 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 				() => ({
 					...context,
 					actions: new Map([
-						...Object.entries(context.actions),
-						...(visible.map((action) => [action.id, action]) as [string, ToolboxActionConfig][]),
+						...(isMobile
+							? (visible.map((action) => [action.id, { ...action, order: action.order - 10 }]) as [
+									string,
+									ToolboxActionConfig,
+							  ][])
+							: []),
+						...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][]),
 					]),
 				}),
-				[context, visible],
+				[context, visible, isMobile],
 			)}
 		>
 			<RoomHeader slots={slots} room={room} />

@@ -14,7 +14,6 @@ import ForwardChatModal from '../../../../../../components/Omnichannel/modals/Fo
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
 import { usePermission, useRole } from '../../../../../../contexts/AuthorizationContext';
-import { useLayout } from '../../../../../../contexts/LayoutContext';
 import { useSetModal } from '../../../../../../contexts/ModalContext';
 import { useOmnichannelRouteConfig } from '../../../../../../contexts/OmnichannelContext';
 import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext';
@@ -22,19 +21,18 @@ import { useSetting } from '../../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../../contexts/UserContext';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
-import { useToolboxContext } from '../../../../lib/Toolbox/ToolboxContext';
+import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 
 export const useQuickActions = (
 	room: IOmnichannelRoom,
-): [QuickActionsActionConfig[], (e: unknown) => void, (id: string) => boolean] => {
+): [QuickActionsActionConfig[], (e: unknown) => void] => {
 	const setModal = useSetModal();
-	const { isMobile } = useLayout();
+
 	const t = useTranslation();
-	const context = useToolboxContext();
+	const context = useQuickActionsContext();
 	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort(
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);
-	const visibleActions = isMobile ? [] : actions.slice(0, 6);
 	const [email, setEmail] = useState('');
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
@@ -255,10 +253,9 @@ export const useQuickActions = (
 
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 
-	const canPlaceChatOnHold = (!room.onHold &&
-		room.u &&
-		!(room as any).lastMessage?.token &&
-		manualOnHoldAllowed) as boolean;
+	const canPlaceChatOnHold = Boolean(
+		!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed,
+	);
 
 	const hasPermissionButtons = (id: string): boolean => {
 		switch (id) {
@@ -277,9 +274,7 @@ export const useQuickActions = (
 		}
 		return false;
 	};
-	return [
-		visibleActions.filter(({ id }) => hasPermissionButtons(id)),
-		actionDefault,
-		hasPermissionButtons,
-	];
+
+	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
+	return [visibleActions, actionDefault];
 };
