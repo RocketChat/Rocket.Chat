@@ -6,6 +6,10 @@ import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from '.
 import { callbacks } from '../../../callbacks/server';
 import { RoutingManager } from './RoutingManager';
 
+export const saveQueueInquiry = (inquiry) => {
+	LivechatInquiry.queueInquiry(inquiry._id);
+	callbacks.run('livechat.afterInquiryQueued', inquiry);
+};
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
 	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
