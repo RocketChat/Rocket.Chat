@@ -164,7 +164,7 @@ Template.thread.onRendered(function() {
 			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 				return;
 			}
-			Meteor.call('readThreads', tmid);
+			Meteor.call('readThreads', tmid, !!subscription?.taskRoomId);
 		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
 	});
 
