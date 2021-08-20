@@ -14,7 +14,6 @@ export interface ITaskRoom extends IRocketChatRecord {
 	name: string;
 	type: TASKRoomType;
 	roomId: string;
-	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
 	taskRoomId: string;
 }

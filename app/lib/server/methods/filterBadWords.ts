@@ -48,7 +48,6 @@ Meteor.startup(() => {
 					message.title = filter.clean(message.title);
 					message.taskDescription && (message.taskDescription = filter.clean(message.taskDescription));
 					message.taskStatus && (message.taskStatus = filter.clean(message.taskStatus));
-					message.taskAssignee && (message.taskAssignee = filter.clean(message.taskAssignee));
 				} finally {
 					// eslint-disable-next-line no-unsafe-finally
 					return message;

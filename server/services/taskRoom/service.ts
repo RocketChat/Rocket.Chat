@@ -81,7 +81,7 @@ export class TaskRoomService extends ServiceClass implements ITaskRoomService {
 				...taskRoomData,
 			};
 		} catch (e) {
-			throw new Error('error-team-creation');
+			throw new Error('error-taskRoom-creation');
 		}
 	}
 }
