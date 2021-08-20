@@ -8,12 +8,7 @@ import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
 
-export const updateTask = function(task, user, originalTask) {
-	if (!originalTask) {
-		originalTask = Tasks.findOneById(task._id);
-	}
-
-	// If we keep history of edits, insert a new task to store history information
+export const updateTask = function(task, user) {
 	if (settings.get('Message_KeepHistory')) {
 		Tasks.cloneAndSaveAsHistoryById(task._id, user);
 	}
