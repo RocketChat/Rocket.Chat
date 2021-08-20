@@ -10,11 +10,13 @@ export class SlackAPI {
 
 		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
-				token: this.apiToken,
 				types: 'public_channel',
 				exclude_archived: true,
 				limit: 1000,
 				cursor,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + this.apiToken
 			},
 		});
 
@@ -33,11 +35,13 @@ export class SlackAPI {
 		let groups = [];
 		const response = HTTP.get('https://slack.com/api/conversations.list', {
 			params: {
-				token: this.apiToken,
 				types: 'private_channel',
 				exclude_archived: true,
 				limit: 1000,
 				cursor,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + this.apiToken
 			},
 		});
 
@@ -55,9 +59,11 @@ export class SlackAPI {
 	getRoomInfo(roomId) {
 		const response = HTTP.get('https://slack.com/api/conversations.info', {
 			params: {
-				token: this.apiToken,
 				channel: roomId,
 				include_num_members: true,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + this.apiToken
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.channel;
@@ -71,10 +77,12 @@ export class SlackAPI {
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
 			const response = HTTP.get('https://slack.com/api/conversations.members', {
 				params: {
-					token: this.apiToken,
 					channel: channelId,
 					limit: MAX_MEMBERS_PER_CALL,
 					cursor: currentCursor,
+				},
+				headers: {
+					'Authorization': 'Bearer ' + this.apiToken
 				},
 			});
 			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
@@ -120,8 +128,10 @@ export class SlackAPI {
 	getPins(channelId) {
 		const response = HTTP.get('https://slack.com/api/pins.list', {
 			params: {
-				token: this.apiToken,
 				channel: channelId,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + this.apiToken
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.items;
@@ -130,8 +140,10 @@ export class SlackAPI {
 	getUser(userId) {
 		const response = HTTP.get('https://slack.com/api/users.info', {
 			params: {
-				token: this.apiToken,
 				user: userId,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + this.apiToken
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.user;

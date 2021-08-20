@@ -276,7 +276,7 @@ export default class RocketAdapter {
 					return;
 				}
 
-				const rocketRoom = Rooms.findOneByName(slackChannel.name);
+				const rocketRoom = Rooms.findOneByDisplayName(slackChannel.name);
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
