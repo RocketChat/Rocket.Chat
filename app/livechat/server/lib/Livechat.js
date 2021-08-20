@@ -1038,6 +1038,19 @@ export const Livechat = {
 		return true;
 	},
 
+	getRoomMessages({ rid }) {
+		check(rid, String);
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
+		const messageCursor = Promise.await(Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }));
+
+    const messages = [];
+
+		messageCursor.forEach(message => messages.push(message));
+
+    return messages;
+	},
+
 	requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
