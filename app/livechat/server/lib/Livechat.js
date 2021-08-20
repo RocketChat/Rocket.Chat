@@ -1045,7 +1045,7 @@ export const Livechat = {
 
 		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
 
-		if(!isLivechat) {
+		if (!isLivechat) {
 			return [];
 		}
 
@@ -1054,7 +1054,7 @@ export const Livechat = {
 
 		const messages = [];
 
-		messageCursor.forEach(message => messages.push(message));
+		messageCursor.forEach((message) => messages.push(message));
 
 		return messages;
 	},

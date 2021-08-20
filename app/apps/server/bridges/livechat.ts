@@ -224,12 +224,12 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
-		this.orch.debugLog(`The App ${ appId } is getting the transcript for livechat room ${roomId}.`);
+		this.orch.debugLog(`The App ${ appId } is getting the transcript for livechat room ${ roomId }.`);
 		const messages = Livechat.getRoomMessages({ rid: roomId });
 
 		const result = [];
 
-		for await(const message of messages) {
+		for await (const message of messages) {
 			const res = await this.orch.getConverters()?.get('messages').convertMessage(message);
 			result.push(res);
 		}
