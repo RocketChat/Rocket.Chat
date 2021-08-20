@@ -387,7 +387,7 @@ Template.message.helpers({
 	},
 	isEphemeral() {
 		const { room } = this;
-		return room.t === 'e';
+		return room?.t === 'e';
 	},
 	roomIcon() {
 		const { room } = this;

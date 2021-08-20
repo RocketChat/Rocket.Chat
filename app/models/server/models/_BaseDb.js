@@ -289,13 +289,12 @@ export class BaseDb extends EventEmitter {
 
 		record._id = result;
 		const query = { _id: result };
-		const records = this.model.find(query).fetch();
-		for (const record of records) {
-			record._deletedAt = new Date();
-			record.__collection__ = this.name;
+		const records = this.model.findOne(query);
+		records._deletedAt = new Date();
+		records.__collection__ = this.name;
 
-			trash.upsert({ _id: record._id }, _.omit(record, '_id'));
-		}
+		trash.upsert({ _id: records._id }, _.omit(records, '_id'));
+
 
 		return result;
 	}

@@ -846,27 +846,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setEphemeralTime(_id, time) {
-		if (!_id) { return; }
-		const query = { _id };
-		const update = {
-			$set: {
-				ephemeralTime: time,
-			},
-		};
-		return this.update(query, update);
-	}
-
-	setMsgEphemeralTime(_id, time) {
-		if (!_id) { return; }
-		const query = { _id };
-		const update = {
-			$set: {
-				msgEphemeralTime: time,
-			},
-		};
-		return this.update(query, update);
-	}
 
 	setNameById(_id, name, fname) {
 		const query = { _id };
@@ -1347,7 +1326,7 @@ export class Rooms extends Base {
 	createWithFullRoomData(room) {
 		delete room._id;
 
-		room._id = this.insert(room);
+		room._id = room.t === 'e' ? this.insertEphemeral(room) : this.insert(room);
 		return room;
 	}
 

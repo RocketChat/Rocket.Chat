@@ -580,7 +580,9 @@ export class Messages extends Base {
 	}
 
 	setEphemeralTime(rid, time) {
-		if (!rid) { return; }
+		if (!rid) {
+			return;
+		}
 		const query = { rid };
 		const update = {
 			$set: {
@@ -748,9 +750,6 @@ export class Messages extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	// insertEphemeral(record, ...args) {
-	// 	this.insertEphemeral(record, ...args);
-	// }
 
 	// INSERT
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {

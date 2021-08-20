@@ -31,7 +31,9 @@ Meteor.methods({
 				}],
 			}),
 		}));
-		if (extraData.ephemeral) { return createRoom('e', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData }); }
+		if (extraData.ephemeral) {
+			return createRoom('e', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
+		}
 		return createRoom('p', name, Meteor.user() && Meteor.user().username, members, readOnly, { customFields, ...extraData });
 	},
 });
