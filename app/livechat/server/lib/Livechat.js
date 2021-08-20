@@ -1043,6 +1043,12 @@ export const Livechat = {
 	getRoomMessages({ rid }) {
 		check(rid, String);
 
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+
+		if(!isLivechat) {
+			return [];
+		}
+
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 		const messageCursor = Promise.await(Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }));
 

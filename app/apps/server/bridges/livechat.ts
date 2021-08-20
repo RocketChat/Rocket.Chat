@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/apps-engine/definition/livechat';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 
+import { IMessage } from '../../../../definition/IMessage';
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import {
@@ -18,7 +19,6 @@ import {
 	LivechatRooms,
 } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
-import { IMessage } from '/definition/IMessage';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
