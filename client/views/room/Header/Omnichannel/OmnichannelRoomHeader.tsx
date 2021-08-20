@@ -4,15 +4,20 @@ import TemplateHeader from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
+import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
 import Burger from '../Burger';
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
 import BackButton from './BackButton';
 import QuickActions from './QuickActions';
+import { useQuickActions } from './QuickActions/hooks/useQuickActions';
 
 const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 	const [name] = useCurrentRoute();
 	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
+	const [visible] = useQuickActions(room);
+	const context = useToolboxContext();
+
 	const slots = useMemo(
 		() => ({
 			...parentSlot,
@@ -26,7 +31,22 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 		}),
 		[isMobile, name, parentSlot, room],
 	);
-	return <RoomHeader slots={slots} room={room} />;
+	return (
+		<ToolboxContext.Provider
+			value={useMemo(
+				() => ({
+					...context,
+					actions: {
+						...context.actions,
+						...Object.fromEntries(visible.map((action) => [action.id, action])),
+					},
+				}),
+				[context, visible],
+			)}
+		>
+			<RoomHeader slots={slots} room={room} />
+		</ToolboxContext.Provider>
+	);
 };
 
 export default OmnichannelRoomHeader;
