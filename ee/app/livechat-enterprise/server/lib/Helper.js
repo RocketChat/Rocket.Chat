@@ -14,6 +14,9 @@ import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { Logger } from '../../../../../app/logger';
+
+const logger = new Logger('LivechatEnterpriseHelper');
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -149,6 +152,21 @@ export const updatePredictedVisitorAbandonment = () => {
 	} else {
 		LivechatRooms.findLivechat({ open: true }).forEach((room) => setPredictedVisitorAbandonmentTime(room));
 	}
+};
+
+export const updateQueueInactivityTimeout = () => {
+	const queueAction = settings.get('Livechat_max_queue_wait_time_action');
+	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
+	if (!queueAction || queueAction === 'Nothing') {
+		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
+		return LivechatInquiry.unsetEstimatedInactivityCloseTime();
+	}
+
+	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
+	LivechatInquiry.getQueuedInquiries().forEach((inq) => {
+		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
+		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
+	});
 };
 
 export const updateRoomPriorityHistory = (rid, user, priority) => {

@@ -13,7 +13,7 @@ import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { queueInquiry } from './QueueManager';
+import { queueInquiry, saveQueueInquiry } from './QueueManager';
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -233,7 +233,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 	}
 
 	if (!agent || !allowAgentSkipQueue(agent)) {
-		LivechatInquiry.queueInquiry(inquiry._id);
+		saveQueueInquiry(inquiry);
 	}
 
 	// Alert only the online agents of the queued request
