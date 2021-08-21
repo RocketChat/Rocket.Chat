@@ -15,7 +15,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:sendTranscript' });
 		}
 
-		const user = Users.findOneById(Meteor.userId(), { fields: { _id: 1, username: 1, name: 1 } });
+		const user = Users.findOneById(Meteor.userId(), { fields: { _id: 1, username: 1, name: 1, utcOffset: 1 } });
 		return Livechat.sendTranscript({ token, rid, email, subject, user });
 	},
 });

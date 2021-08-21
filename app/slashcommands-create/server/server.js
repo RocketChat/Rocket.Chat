@@ -21,7 +21,7 @@ function Create(command, params, item) {
 		return result;
 	}
 
-	const regexp = new RegExp(settings.get('UTF8_Names_Validation'));
+	const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation'));
 
 	if (command !== 'create' || !Match.test(params, String)) {
 		return;
