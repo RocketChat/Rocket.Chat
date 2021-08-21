@@ -16,10 +16,11 @@ Meteor.methods({
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
-		const room = Rooms.findOneById(rid);
-		let thread;
 
-		if (room.taskRoomId) {
+		let room = rid ? Rooms.findOneById(rid) : false;
+
+		let thread;
+		if (room && room.taskRoomId) {
 			thread = Tasks.findOneById(tmid);
 			thread.msg = thread.title;
 		} else {
@@ -31,7 +32,7 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-
+		room = Rooms.findOneById(thread.rid);
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
@@ -41,6 +42,6 @@ Meteor.methods({
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, { ...skip && { skip }, ...limit && { limit }, sort: { ts: -1 } }).fetch();
 
-		return room.taskRoomId ? [thread, ...result] : [...result];
+		return [thread, ...result];
 	},
 });

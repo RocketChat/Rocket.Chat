@@ -12,7 +12,7 @@ module.exports = {
 	bail: true,
 	file: 'tests/end-to-end/teardown.js',
 	spec: [
-		'tests/end-to-end/api/*.js',
+		'tests/end-to-end/api/24-methods.js',
 		'tests/end-to-end/apps/*.js',
 	],
 };
