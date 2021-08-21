@@ -7,7 +7,6 @@ import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import './CallPage.css';
-import { OngoingCallDuration } from './OngoingCallDuration';
 
 function CallPage({
 	roomId,
@@ -24,27 +23,39 @@ function CallPage({
 	const [isCameraOn, setIsCameraOn] = useState(false);
 	const [isRemoteMobileDevice, setIsRemoteMobileDevice] = useState(false);
 	const [callInIframe, setCallInIframe] = useState(false);
+	const [callInBigIframe, setCallInBigIframe] = useState(false);
 	const [isRemoteCameraOn, setIsRemoteCameraOn] = useState(false);
 	const [isLocalMobileDevice, setIsLocalMobileDevice] = useState(false);
+
+	let iconSize = 'x21';
+	let buttonSize = 'x40';
+	const avatarSize = 'x48';
+	if (layout === 'embedded') {
+		iconSize = 'x19';
+		buttonSize = 'x35';
+	}
 
 	const t = useTranslation();
 	useEffect(() => {
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = () => {
-				if (window.innerWidth < 450 && window.innerHeight < 620) {
+				if (window.innerWidth < 450 && window.innerHeight < 628) {
 					setCallInIframe(true);
 				}
-				if (window.innerWidth <= 450 && window.innerHeight >= 620) {
+				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
 					setIsLocalMobileDevice(true);
 					webrtcInstance.media = {
 						audio: true,
 						video: {
 							width: { ideal: 440 },
-							height: { ideal: 680 },
+							height: { ideal: 580 },
 						},
 					};
 					return true;
+				}
+				if (window.innerWidth > 900 && window.innerWidth <= 1300 && window.innerHeight <= 500) {
+					setCallInBigIframe(true);
 				}
 				return false;
 			};
@@ -129,13 +140,6 @@ function CallPage({
 		return window.close();
 	};
 
-	let iconSize = 'x21';
-	let buttonSize = 'x40';
-	if (layout === 'embedded') {
-		iconSize = 'x19';
-		buttonSize = 'x35';
-	}
-
 	const showAvatar = (localAvatar, remoteAvatar) => (
 		<Flex.Container direction='column' justifyContent='center'>
 			<Box
@@ -150,10 +154,11 @@ function CallPage({
 					position='absolute'
 					zIndex='1'
 					style={{
-						top: callInIframe ? '2%' : '5%',
+						top: '5%',
 						right: '2%',
 					}}
 					className='Self_Video'
+					alignItems='center'
 					backgroundColor='#2F343D'
 				>
 					<video
@@ -168,17 +173,13 @@ function CallPage({
 						}}
 					></video>
 					<UserAvatar
-						id='localAvatar'
 						style={{
-							width: callInIframe ? '30%' : '100%',
-							height: callInIframe ? '20%' : '60%',
-							padding: callInIframe ? '0' : '20% 20% 20% 35%',
-							margin: callInIframe ? '10% 10% 10% 30%' : '0',
 							display: isCameraOn ? 'none' : 'block',
+							margin: 'auto',
 						}}
 						username={localAvatar}
 						className='rcx-message__avatar'
-						size={isRemoteMobileDevice || callInIframe ? 'x32' : 'x48'}
+						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x48'}
 					/>
 				</Box>
 				<ButtonGroup
@@ -244,37 +245,36 @@ function CallPage({
 					autoPlay
 					playsInline
 					style={{
-						width: isLocalMobileDevice ? '45%' : '100%',
+						width: isRemoteMobileDevice ? '45%' : '100%',
 						transform: 'scaleX(-1)',
 						display: isRemoteCameraOn ? 'block' : 'none',
 					}}
 				></video>
 				<Box
-					className='remoteAvatar'
 					position='absolute'
 					zIndex='1'
 					style={{
-						top: isLocalMobileDevice ? '30%' : '20%',
-						right: isLocalMobileDevice ? '35%' : '45%',
-						display: isRemoteCameraOn ? 'none' : 'block',
+						display: isRemoteCameraOn ? 'none' : 'flex',
+						top: isRemoteMobileDevice || isLocalMobileDevice ? '30%' : '20%',
+						justifyContent: 'center',
+						flexDirection: 'column',
 					}}
+					alignItems='center'
 				>
 					<UserAvatar
+						style={{
+							display: 'block',
+							margin: 'auto',
+						}}
 						username={remoteAvatar}
 						className='rcx-message__avatar'
-						size={isLocalMobileDevice || callInIframe ? 'x32' : 'x124'}
+						size={!callInIframe && !callInBigIframe ? 'x124' : avatarSize}
 					/>
-					{!callInIframe ? (
-						<p style={{ color: 'white', fontSize: 12, textAlign: 'center', margin: 15 }}>
-							<OngoingCallDuration />
-						</p>
-					) : null}
 					<p
 						style={{
 							color: 'white',
-							fontSize: isLocalMobileDevice || callInIframe ? 15 : 35,
-							textAlign: 'center',
-							marginLeft: isLocalMobileDevice || callInIframe ? '-15%' : '0',
+							fontSize: callInIframe ? 8 : 22,
+							margin: callInIframe ? 5 : 9,
 						}}
 					>
 						{remoteAvatar}
@@ -305,52 +305,45 @@ function CallPage({
 							}}
 							className='Self_Video'
 							backgroundColor='#2F343D'
+							alignItems='center'
 						>
-							<video
-								id='localVideo'
-								autoPlay
-								playsInline
-								muted
-								style={{
-									width: '100%',
-									transform: 'scaleX(-1)',
-									display: isCameraOn ? 'block' : 'none',
-								}}
-							></video>
 							<UserAvatar
 								style={{
-									width: '100%',
-									height: '130px',
-									paddingTop: '20%',
-									paddingLeft: '35%',
-									paddingRight: '20%',
-									display: isCameraOn ? 'none' : 'block',
+									display: 'block',
+									margin: 'auto',
 								}}
 								username={agentName}
 								className='rcx-message__avatar'
-								size='x48'
+								size={isLocalMobileDevice ? 'x32' : 'x48'}
 							/>
 						</Box>
-						<video
-							id='remoteVideo'
-							autoPlay
-							playsInline
-							style={{
-								width: isRemoteMobileDevice ? '45%' : '100%',
-								transform: 'scaleX(-1)',
-								display: 'block',
-							}}
-						></video>
 						<Box
 							position='absolute'
 							zIndex='1'
-							style={{ top: '20%', right: '45%', display: 'block' }}
+							style={{
+								top: '20%',
+								display: 'flex',
+								justifyContent: 'center',
+								flexDirection: 'column',
+							}}
+							alignItems='center'
 						>
-							<UserAvatar username={visitorName} className='rcx-message__avatar' size='x124' />
-							<p style={{ color: 'white', fontSize: 15, textAlign: 'center', margin: 15 }}>
-								{'Calling....'}
-							</p>
-							<p style={{ color: 'white', fontSize: 35, textAlign: 'center', margin: 15 }}>
+							<UserAvatar
+								style={{
+									display: 'block',
+									margin: 'auto',
+								}}
+								username={visitorName}
+								className='rcx-message__avatar'
+								size='x124'
+							/>
+							<p style={{ color: 'white', fontSize: 16, margin: 15 }}>{'Calling...'}</p>
+							<p
+								style={{
+									color: 'white',
+									fontSize: isLocalMobileDevice ? 15 : 35,
+								}}
+							>
 								{visitorName}
 							</p>
 						</Box>
