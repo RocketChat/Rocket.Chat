@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics';
-import { settings } from '../../app/settings';
+import { statistics } from '../../app/statistics/server';
+import { settings } from '../../app/settings/server';
 
 function generateStatistics(logger) {
 	const cronStatistics = statistics.save();

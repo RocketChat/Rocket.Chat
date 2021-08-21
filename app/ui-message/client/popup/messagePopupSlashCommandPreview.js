@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { slashCommands } from '../../../utils';
-import { hasAtLeastOnePermission } from '../../../authorization';
+import { slashCommands } from '../../../utils/client';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {

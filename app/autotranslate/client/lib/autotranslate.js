@@ -3,8 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 import mem from 'mem';
 
-import { Subscriptions, Messages } from '../../../models';
-import { hasPermission } from '../../../authorization';
+import { Subscriptions, Messages } from '../../../models/client';
+import { hasPermission } from '../../../authorization/client';
 import { call } from '../../../ui-utils/client';
 
 let userLanguage = 'en';
