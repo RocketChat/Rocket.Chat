@@ -1,7 +1,7 @@
 name: "JS file preventer"
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, synchronize]
 jobs:
   build:
     runs-on: ubuntu-latest
