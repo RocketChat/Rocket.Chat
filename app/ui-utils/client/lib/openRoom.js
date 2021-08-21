@@ -19,18 +19,6 @@ window.currentTracker = undefined;
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-
-export const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
-	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom(type, rid, Meteor.user());
-		if (room) {
-			c.stop();
-			return resolve(room);
-		}
-	});
-});
-
-
 NewRoomManager.on('changed', (rid) => {
 	Session.set('openedRoom', rid);
 	RoomManager.openedRoom = rid;

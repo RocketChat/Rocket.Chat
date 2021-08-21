@@ -1,8 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { RoomTypeConfig, roomTypes, getUserPreference } from '../../utils/server';
+import type { SettingValue } from '../../../definition/ISetting';
 
 export class DiscussionRoomType extends RoomTypeConfig {
+	customTemplate: string;
+
 	constructor() {
 		super({
 			identifier: 't',
@@ -14,7 +17,7 @@ export class DiscussionRoomType extends RoomTypeConfig {
 		this.customTemplate = 'DiscussionList';
 	}
 
-	condition() {
+	condition(): SettingValue {
 		return getUserPreference(Meteor.userId(), 'sidebarShowDiscussion');
 	}
 }
