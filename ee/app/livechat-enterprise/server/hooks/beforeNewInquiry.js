@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks';
+import { settings } from '../../../../../app/settings';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
@@ -22,3 +23,15 @@ callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 
 	return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');
+
+callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
+	const queueInactivityAction = settings.get('Livechat_max_queue_wait_time_action');
+	if (!queueInactivityAction || queueInactivityAction === 'Nothing') {
+		return extraData;
+	}
+
+	const maxQueueWaitTimeMinutes = settings.get('Livechat_max_queue_wait_time');
+	const estimatedInactivityCloseTimeAt = new Date(new Date().getTime() + maxQueueWaitTimeMinutes * 60000);
+
+	return Object.assign(extraData, { estimatedInactivityCloseTimeAt });
+}, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry-append-queue-timer');

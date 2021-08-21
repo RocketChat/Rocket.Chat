@@ -87,7 +87,7 @@ export const processDirectEmail = function(email) {
 			return false;
 		}
 
-		if ((room.muted || []).includes(user.username)) {
+		if (room?.muted?.includes(user.username)) {
 			// user is muted
 			return false;
 		}
