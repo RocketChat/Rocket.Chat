@@ -1,4 +1,4 @@
-import '../lib/messageType';
+import './messageType';
 import './settings';
 import './methods/jitsiSetTimeout';
 import './methods/jitsiGenerateToken';
