@@ -12,12 +12,14 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 	if (!rid) {
 		return;
 	}
+
 	const subscription = ChatSubscription.findOne({ rid });
+
 	if (subscription) {
 		roomTypes.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
 		return;
 	}
 
 	const room = await getRoomById(rid);
-	roomTypes.openRouteLink(room.t, room, FlowRouter.current().queryParams);
+	roomTypes.openRouteLink(room.t, { rid: room._id, ...room }, FlowRouter.current().queryParams);
 };
