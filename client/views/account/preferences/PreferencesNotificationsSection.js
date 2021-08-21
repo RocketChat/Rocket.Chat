@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
-import { KonchatNotification } from '../../../../app/ui';
+import { KonchatNotification } from '../../../../app/ui/client';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUserPreference } from '../../../contexts/UserContext';

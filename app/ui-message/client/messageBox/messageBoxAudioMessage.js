@@ -1,9 +1,9 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload } from '../../../ui';
-import { t } from '../../../utils';
+import { settings } from '../../../settings/client';
+import { AudioRecorder, fileUpload } from '../../../ui/client';
+import { t } from '../../../utils/client';
 import './messageBoxAudioMessage.html';
 
 const startRecording = () => new Promise((resolve, reject) =>

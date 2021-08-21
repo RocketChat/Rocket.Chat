@@ -6,7 +6,7 @@ import _ from 'underscore';
 import toastr from 'toastr';
 
 import { settings } from '../../../settings';
-import { Button } from '../../../ui';
+import { Button } from '../../../ui/client';
 import { t } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 

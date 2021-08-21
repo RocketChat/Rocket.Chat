@@ -7,7 +7,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { chatMessages, ChatMessages } from '../../../ui';
+import { chatMessages, ChatMessages } from '../../../ui/client';
 import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
