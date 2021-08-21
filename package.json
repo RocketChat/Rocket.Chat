@@ -12,6 +12,7 @@
 		"chat"
 	],
 	"scripts": {
+		"prepare": "husky install",
 		"start": "meteor",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
@@ -119,7 +120,7 @@
 		"eslint-plugin-react": "^7.24.0",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fast-glob": "^3.2.5",
-		"husky": "^6.0.0",
+		"husky": "^7.0.1",
 		"i18next": "^20.3.2",
 		"jsdom-global": "3.0.2",
 		"less-loader": "^5.0.0",
@@ -301,11 +302,6 @@
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.js"
-		}
-	},
-	"husky": {
-		"hooks": {
-			"pre-push": "meteor npm run lint && meteor npm run testunit -- --exclude app/models/server/models/Sessions.tests.js"
 		}
 	},
 	"houston": {
