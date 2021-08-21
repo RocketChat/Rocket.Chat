@@ -82,7 +82,6 @@ Template.thread.helpers({
 			tmid,
 			onSend: (...args) => {
 				instance.sendToBottom();
-				instance.state.set('sendToChannel', false);
 				return instance.chatMessages && instance.chatMessages.send.apply(instance.chatMessages, args);
 			},
 			onKeyUp: (...args) => instance.chatMessages && instance.chatMessages.keyup.apply(instance.chatMessages, args),
@@ -234,7 +233,7 @@ Template.thread.onCreated(async function() {
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
-
+	this.state.set('sendToChannel', getUserPreference(Meteor.userId(), 'showMessageInMainThread'));
 	this.loadMore = async () => {
 		const { tmid } = Tracker.nonreactive(() => this.state.all());
 		if (!tmid) {
