@@ -97,6 +97,7 @@ export function settings() {
 		settings: {
 			registrationForm: initSettings.Livechat_registration_form,
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
+			allowAccessibleMode: initSettings.Livechat_accessible_mode,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,

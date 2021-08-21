@@ -501,6 +501,7 @@ export const Livechat = {
 			'Livechat_enabled',
 			'Livechat_registration_form',
 			'Livechat_allow_switching_departments',
+			'Livechat_accessible_mode',
 			'Livechat_offline_title',
 			'Livechat_offline_title_color',
 			'Livechat_offline_message',

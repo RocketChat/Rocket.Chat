@@ -16,6 +16,7 @@ Meteor.methods({
 			triggers: [],
 			departments: [],
 			allowSwitchingDepartments: null,
+			allowAccessibleMode: false,
 			online: true,
 			offlineColor: null,
 			offlineMessage: null,
@@ -85,7 +86,7 @@ Meteor.methods({
 		info.emailFieldRegistrationForm = initSettings.Livechat_email_field_registration_form;
 		info.registrationFormMessage = initSettings.Livechat_registration_form_message;
 		info.showConnecting = initSettings.Livechat_Show_Connecting;
-
+		info.allowAccessibleMode = initSettings.Livechat_accessible_mode;
 		info.agentData = room && room[0] && room[0].servedBy && Users.getAgentInfo(room[0].servedBy._id);
 
 		LivechatTrigger.findEnabled().forEach((trigger) => {
