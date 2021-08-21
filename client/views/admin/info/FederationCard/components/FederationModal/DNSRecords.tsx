@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import _ from 'lodash';
 import React, { FC } from 'react';
 
+import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { SectionStatus } from '../Section';
 import { DNSRecordItem } from './DNSRecordItem';
 import { DNSText } from './DNSText';
@@ -24,6 +25,8 @@ export const DNSRecords: FC<{
 	resolvedEntries,
 	legacy,
 }) => {
+	const t = useTranslation();
+
 	function buildDNSRecord(
 		type: DNSRecordType,
 		name: DNSRecordName | TXTRecordValue,
@@ -167,28 +170,38 @@ export const DNSRecords: FC<{
 
 	return (
 		<>
-			<DNSText text='You must add the following DNS records on your server:' />
-			<DNSText text='SRV Record (2.0.0 or newer)' />
-			<Box style={{ marginTop: 10 }}>
-				{srvDNSRecords.map((record: DNSRecord) => (
-					<DNSRecordItem key={record.title} record={record} />
-				))}
+			<DNSText text={t('Federation_Must_add_records')} />
+			<Box mbs='x16'>
+				<DNSText text={t('Federation_SRV_records_200')} />
+				<Box mbs='x8'>
+					{srvDNSRecords.map((record: DNSRecord) => (
+						<DNSRecordItem key={record.title} record={record} />
+					))}
+				</Box>
 			</Box>
-			<DNSText text='Public Key TXT Record' />
-			<Box style={{ marginTop: 10 }}>
-				{txtDNSRecords.map((record: DNSRecord) => (
-					<DNSRecordItem key={record.title} record={record} />
-				))}
+			<Box mbs='x16'>
+				<DNSText text={t('Federation_Public_key_TXT_record')} />
+				<Box mbs='x8'>
+					{txtDNSRecords.map((record: DNSRecord) => (
+						<DNSRecordItem key={record.title} record={record} />
+					))}
+				</Box>
 			</Box>
+			{!legacy && (
+				<Box mbs='x16' p='x16' bg='disabled' fontSize='x12'>
+					<Box fontWeight='c2'>{t('Federation_HTTP_instead_HTTPS')}</Box>
+					{t('Federation_HTTP_instead_HTTPS_details')}
+				</Box>
+			)}
 			{legacy && (
-				<>
-					<DNSText text='Protocol TXT Record' />
-					<Box style={{ marginTop: 10 }}>
+				<Box mbs='x16'>
+					<DNSText text={t('Federation_Protocol_TXT_record')} />
+					<Box mbs='x8'>
 						{legacyTxtDNSRecords.map((record: DNSRecord) => (
 							<DNSRecordItem key={record.title} record={record} />
 						))}
 					</Box>
-				</>
+				</Box>
 			)}
 		</>
 	);

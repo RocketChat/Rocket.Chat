@@ -1,3 +1,5 @@
+import { IOmnichannelRoom } from '../../../../../../definition/IRoom';
+
 export type LivechatRoomsEndpoint = {
 	GET: (params: {
 		guest: string;
@@ -11,5 +13,10 @@ export type LivechatRoomsEndpoint = {
 		current: number;
 		itemsPerPage: number;
 		tags: string[];
-	}) => { value: any; reload: () => void };
+	}) => {
+		rooms: IOmnichannelRoom[];
+		count: number;
+		offset: number;
+		total: number;
+	};
 };

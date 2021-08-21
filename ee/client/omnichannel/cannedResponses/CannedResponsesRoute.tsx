@@ -8,6 +8,7 @@ import PageSkeleton from '../../../../client/components/PageSkeleton';
 import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRouteParameter, useRoute } from '../../../../client/contexts/RouterContext';
+import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
 import { useForm } from '../../../../client/hooks/useForm';
@@ -21,8 +22,10 @@ import RemoveCannedResponseButton from './RemoveCannedResponseButton';
 
 const CannedResponsesRoute: FC = () => {
 	const t = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 	const canViewCannedResponses = usePermission('manage-livechat-canned-responses');
 	const isMonitor = usePermission('save-department-canned-responses');
+	const isManager = usePermission('save-all-canned-responses');
 
 	type CannedResponseFilterValues = {
 		sharing: string;
@@ -81,12 +84,17 @@ const CannedResponsesRoute: FC = () => {
 	});
 
 	const onRowClick = useMutableCallback((id, scope) => (): void => {
-		if (!(scope === 'global' && isMonitor)) {
-			cannedResponsesRoute.push({
-				context: 'edit',
-				id,
+		if (scope === 'global' && isMonitor && !isManager) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Not_authorized'),
 			});
+			return;
 		}
+		cannedResponsesRoute.push({
+			context: 'edit',
+			id,
+		});
 	});
 
 	const defaultOptions = useMemo(
@@ -188,12 +196,12 @@ const CannedResponsesRoute: FC = () => {
 				</Table.Cell>
 				<Table.Cell withTruncatedText>{getTime(createdAt)}</Table.Cell>
 				<Table.Cell withTruncatedText>{tags.join(', ')}</Table.Cell>
-				{!(scope === 'global' && isMonitor) && (
+				{!(scope === 'global' && isMonitor && !isManager) && (
 					<RemoveCannedResponseButton _id={_id} reload={reload} totalDataReload={totalDataReload} />
 				)}
 			</Table.Row>
 		),
-		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor],
+		[getTime, onRowClick, reload, totalDataReload, defaultOptions, isMonitor, isManager],
 	);
 
 	if (context === 'edit' && id) {

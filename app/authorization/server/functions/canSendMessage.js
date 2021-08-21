@@ -33,7 +33,7 @@ export const validateRoomMessagePermissionsAsync = async (room, { uid, username,
 		}
 	}
 
-	if ((room.muted || []).includes(username)) {
+	if (room?.muted?.includes(username)) {
 		throw new Error('You_have_been_muted');
 	}
 };
