@@ -8,7 +8,7 @@ import { readThread } from '../functions';
 const MAX_LIMIT = 100;
 
 Meteor.methods({
-	getThreadMessages({ tmid, rid, limit, skip }) {
+	getThreadMessages({ tmid, limit, skip, taskRoom = false }) {
 		if (limit > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${ MAX_LIMIT }`, { method: 'getThreadMessages' });
 		}
@@ -17,14 +17,12 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadMessages' });
 		}
 
-		let room = rid ? Rooms.findOneById(rid) : false;
-
 		let thread;
-		if (room && room.taskRoomId) {
+		if (!taskRoom) {
+			thread = Messages.findOneById(tmid);
+		} else {
 			thread = Tasks.findOneById(tmid);
 			thread.msg = thread.title;
-		} else {
-			thread = Messages.findOneById(tmid);
 		}
 
 		if (!thread) {
@@ -32,7 +30,7 @@ Meteor.methods({
 		}
 
 		const user = Meteor.user();
-		room = Rooms.findOneById(thread.rid);
+		const room = Rooms.findOneById(thread.rid);
 
 		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });

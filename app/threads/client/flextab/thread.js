@@ -241,13 +241,13 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
-
+	const { subscription } = Template.currentData();
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
 
 	this.loadMore = async () => {
-		const { tmid, rid } = Tracker.nonreactive(() => this.state.all());
+		const { tmid } = Tracker.nonreactive(() => this.state.all());
 
 		if (!tmid) {
 			return;
@@ -255,7 +255,7 @@ Template.thread.onCreated(async function() {
 
 		this.state.set('loading', true);
 
-		const messages = await call('getThreadMessages', { tmid, rid });
+		const messages = await call('getThreadMessages', { tmid, taskRoom: !!subscription.taskRoomId });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 
