@@ -2,21 +2,17 @@ import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 
 const filterStarred = (task, uid) => {
-	// only return starred field if user has it starred
 	if (task.starred && Array.isArray(task.starred)) {
 		task.starred = task.starred.filter((star) => star._id === uid);
 	}
 	return task;
 };
 
-// TODO: we should let clients get user names on demand instead of doing this
-
 function getNameOfUsername(users, username) {
 	return users.get(username) || username;
 }
 
 export const normalizeTasksForUsers = (tasks, uid) => {
-	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return tasks.map((tasks) => filterStarred(tasks, uid));
 	}
