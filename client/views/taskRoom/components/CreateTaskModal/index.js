@@ -1,5 +1,4 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import toastr from 'toastr';
 
@@ -28,7 +27,7 @@ const CreateTaskModalWithInfo = ({ onCreate, onClose, rid, ...props }) => {
 		try {
 			const data = await createTask(values);
 			if (data.success) {
-				await Meteor.call('sendTask', data.task);
+				// await Meteor.call('sendTask', data.task);
 				toastr.success(t('Saved'));
 			}
 		} catch (error) {
