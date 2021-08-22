@@ -1,4 +1,5 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
@@ -6,6 +7,7 @@ import { WebRTC } from '../../../app/webrtc/client';
 import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
+import OngoingCallDuration from './OngoingCallDuration';
 import './CallPage.css';
 
 function CallPage({
@@ -17,13 +19,13 @@ function CallPage({
 	layout,
 	visitorName,
 	agentName,
+	callStartTime,
 }) {
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [isCameraOn, setIsCameraOn] = useState(false);
 	const [isRemoteMobileDevice, setIsRemoteMobileDevice] = useState(false);
 	const [callInIframe, setCallInIframe] = useState(false);
-	const [callInBigIframe, setCallInBigIframe] = useState(false);
 	const [isRemoteCameraOn, setIsRemoteCameraOn] = useState(false);
 	const [isLocalMobileDevice, setIsLocalMobileDevice] = useState(false);
 
@@ -40,7 +42,7 @@ function CallPage({
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
 			const isMobileDevice = () => {
-				if (window.innerWidth < 450 && window.innerHeight < 628) {
+				if (layout === 'embedded') {
 					setCallInIframe(true);
 				}
 				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
@@ -53,9 +55,6 @@ function CallPage({
 						},
 					};
 					return true;
-				}
-				if (window.innerWidth > 900 && window.innerWidth <= 1300 && window.innerHeight <= 500) {
-					setCallInBigIframe(true);
 				}
 				return false;
 			};
@@ -121,7 +120,7 @@ function CallPage({
 			});
 			setIsAgentActive(true);
 		}
-	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken]);
+	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, layout]);
 
 	const toggleButton = (control) => {
 		if (control === 'mic') {
@@ -140,7 +139,10 @@ function CallPage({
 		return window.close();
 	};
 
-	const showAvatar = (localAvatar, remoteAvatar) => (
+	const getCallDuration = (callStartTime) =>
+		moment.duration(moment(new Date()).diff(moment(callStartTime))).asSeconds();
+
+	const showCallPage = (localAvatar, remoteAvatar) => (
 		<Flex.Container direction='column' justifyContent='center'>
 			<Box
 				width='full'
@@ -153,6 +155,8 @@ function CallPage({
 				<Box
 					position='absolute'
 					zIndex='1'
+					top='5%'
+					right='2%'
 					style={{
 						top: '5%',
 						right: '2%',
@@ -253,12 +257,10 @@ function CallPage({
 				<Box
 					position='absolute'
 					zIndex='1'
-					style={{
-						display: isRemoteCameraOn ? 'none' : 'flex',
-						top: isRemoteMobileDevice || isLocalMobileDevice ? '30%' : '20%',
-						justifyContent: 'center',
-						flexDirection: 'column',
-					}}
+					display={isRemoteCameraOn ? 'none' : 'flex'}
+					top={isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%'}
+					justifyContent='center'
+					flexDirection='column'
 					alignItems='center'
 				>
 					<UserAvatar
@@ -268,17 +270,21 @@ function CallPage({
 						}}
 						username={remoteAvatar}
 						className='rcx-message__avatar'
-						size={!callInIframe && !callInBigIframe ? 'x124' : avatarSize}
+						size={!callInIframe ? 'x124' : avatarSize}
 					/>
-					<p
+					<Box color='white' fontSize={callInIframe ? 12 : 18} textAlign='center' margin={3}>
+						<OngoingCallDuration counter={getCallDuration(callStartTime)} />
+					</Box>
+					<Box
 						style={{
 							color: 'white',
-							fontSize: callInIframe ? 8 : 22,
+							fontSize: callInIframe ? 12 : 22,
 							margin: callInIframe ? 5 : 9,
+							...(callInIframe && { marginTop: 0 }),
 						}}
 					>
 						{remoteAvatar}
-					</p>
+					</Box>
 				</Box>
 			</Box>
 		</Flex.Container>
@@ -337,15 +343,17 @@ function CallPage({
 								className='rcx-message__avatar'
 								size='x124'
 							/>
-							<p style={{ color: 'white', fontSize: 16, margin: 15 }}>{'Calling...'}</p>
-							<p
+							<Box color='white' fontSize={16} margin={15}>
+								{'Calling...'}
+							</Box>
+							<Box
 								style={{
 									color: 'white',
 									fontSize: isLocalMobileDevice ? 15 : 35,
 								}}
 							>
 								{visitorName}
-							</p>
+							</Box>
 						</Box>
 					</Box>
 				</Flex.Container>
@@ -367,7 +375,9 @@ function CallPage({
 		case 'inProgress':
 			return (
 				<Flex.Container direction='column' justifyContent='center'>
-					{visitorToken ? showAvatar(visitorName, agentName) : showAvatar(agentName, visitorName)}
+					{visitorToken
+						? showCallPage(visitorName, agentName)
+						: showCallPage(agentName, visitorName)}
 				</Flex.Container>
 			);
 	}
