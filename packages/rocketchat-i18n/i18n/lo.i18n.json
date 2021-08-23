@@ -2743,8 +2743,6 @@
   "Users_added": "ຜູ້ໃຊ້ໄດ້ຖືກເພີ່ມ",
   "Users_in_role": "ຜູ້ຊົມໃຊ້ໃນພາລະບົດບາດ",
   "UTF8_Names_Slugify": "UTF8 Names Slugify",
-  "UTF8_Names_Validation": "UTF8 ຊື່ທີ່ຖືກຕ້ອງ",
-  "UTF8_Names_Validation_Description": "ບໍ່ອະນຸຍາດໃຫ້ລັກສະນະພິເສດແລະສະຖານທີ່. ທ່ານສາມາດນໍາໃຊ້ - _ ແລະ. ແຕ່ບໍ່ໄດ້ຢູ່ໃນຕອນທ້າຍຂອງຊື່ໄດ້",
   "Validate_email_address": "ຢືນຢັນທີ່ຢູ່ອີເມວ",
   "Verification": "ການຢັ້ງຢືນ",
   "Verification_Description": "ທ່ານອາດຈະນໍາໃຊ້ບ່ອນວາງສະຖານດັ່ງຕໍ່ໄປນີ້: <br/><ul><li>[Verification_Url] ສໍາລັບ URL ການຢືນຢັນ.</li><li>[ຊື່], [fname], [lname] ສໍາລັບຊື່ເຕັມ, ຊື່ຫຼືນາມສະກຸນຂອງຜູ້ໃຊ້.</li><li>[ອີເມວ] ສໍາລັບອີເມວຂອງຜູ້ໃຊ້.</li><li>[Site_Name] ແລະ [Site_URL] ສໍາລັບຊື່ແອັບຯແລະ URL ຕາມລໍາດັບ.</li></ul>",
