@@ -489,7 +489,9 @@ describe('[Direct Messages]', function() {
 		});
 
 		after(async () => {
-			await deleteRoom({ type: 'd', roomId });
+			if (roomId) {
+				await deleteRoom({ type: 'd', roomId });
+			}
 			await deleteUser(otherUser);
 			otherUser = undefined;
 		});
@@ -525,6 +527,22 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('room').and.to.be.an('object');
 					expect(res.body.room).to.have.property('usernames').and.to.have.members(['rocket.cat', otherUser.username]);
 					roomId = res.body.room._id;
+				})
+				.end(done);
+		});
+
+		it('should create a self-DM', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: adminUsername,
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername]);
 				})
 				.end(done);
 		});
