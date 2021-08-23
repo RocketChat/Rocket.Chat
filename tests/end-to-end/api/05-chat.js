@@ -2131,7 +2131,7 @@ describe('Threads', () => {
 									threadMessage = res.body.message;
 									done();
 								});
-						})
+						});
 				});
 		});
 
@@ -2195,7 +2195,7 @@ describe('Threads', () => {
 						expect(res.body.threads).to.have.lengthOf(1);
 						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 					})
-					.end(done)
+					.end(done);
 			});
 		});
 
