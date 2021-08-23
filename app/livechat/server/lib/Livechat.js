@@ -154,6 +154,11 @@ export const Livechat = {
 			room = null;
 		}
 
+		if (guest.department && !LivechatDepartment.findOneById(guest.department)) {
+			LivechatVisitors.removeDepartmentById(guest._id);
+			guest = LivechatVisitors.findOneById(guest._id);
+		}
+
 		if (room == null) {
 			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first

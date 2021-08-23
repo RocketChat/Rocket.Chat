@@ -4035,8 +4035,6 @@
   "Uses": "使用",
   "Uses_left": "残り",
   "UTF8_Names_Slugify": "UTF8形式名をスラグ化する",
-  "UTF8_Names_Validation": "UTF8形式名の検証パターン",
-  "UTF8_Names_Validation_Description": "特殊文字と空はを許可しないでください。半角記号(マイナス・アンダーバー・ドット)を使えますが、名前の最後には使えません",
   "Validate_email_address": "電子メールアドレスの検証",
   "Validation": "検証",
   "Value_messages": "__value__ メッセージ",

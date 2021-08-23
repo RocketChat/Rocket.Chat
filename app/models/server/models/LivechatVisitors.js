@@ -243,6 +243,10 @@ export class LivechatVisitors extends Base {
 	}
 
 	// REMOVE
+	removeDepartmentById(_id) {
+		return this.update({ _id }, { $unset: { department: 1 } });
+	}
+
 	removeById(_id) {
 		const query = { _id };
 		return this.remove(query);
