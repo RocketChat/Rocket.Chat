@@ -70,20 +70,45 @@ Meteor.methods({
 				return;
 			}
 
+			if (settings.get('bigbluebutton_meeting_start_notification_Enabled') && doc.response.messageKey[0] !== 'duplicateWarning') {
+				const meeting_start_notification = TAPi18n.__(settings.get('bigbluebutton_meeting_start_notification'), {}, user.language);
+				if(meeting_start_notification) {
+					const msgObject = {
+						_id: Random.id(),
+						rid,
+						msg: meeting_start_notification
+					};
+					Meteor.call('sendMessage', msgObject);
+				}
+			}
+
 			saveStreamingOptions(rid, {
 				type: 'call',
 			});
 
+			const bigbluebutton_userdata = settings.get('bigbluebutton_userdata').trim();
+			let bigbluebutton_userdata_obj = {};
+			if(bigbluebutton_userdata) {
+				bigbluebutton_userdata_obj = JSON.parse(bigbluebutton_userdata);
+			}
+
 			return {
-				url: api.urlFor('join', {
-					password: 'mp', // mp if moderator ap if attendee
-					meetingID,
-					fullName: user.username,
-					userID: user._id,
-					joinViaHtml5: true,
-					avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
-					// clientURL: `${ url }/html5client/join`,
-				}),
+				url: api.urlFor('join', Object.keys(bigbluebutton_userdata_obj)
+					.filter(key => key.startsWith('userdata-bbb'))
+					.reduce((obj, key) => {
+						return {
+							...obj,
+							['custom_' + key]: bigbluebutton_userdata_obj[key]
+						};
+					}, {
+						password: 'mp', // mp if moderator ap if attendee
+						meetingID,
+						fullName: user.username,
+						userID: user._id,
+						joinViaHtml5: true,
+						avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
+						// clientURL: `${ url }/html5client/join`,
+					})),
 			};
 		}
 	},
