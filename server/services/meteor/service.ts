@@ -4,6 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
 
+import { metrics } from '../../../app/metrics';
 import { ServiceClass } from '../../sdk/types/ServiceClass';
 import { IMeteor, AutoUpdateRecord } from '../../sdk/types/IMeteor';
 import { api } from '../../sdk/api';
@@ -20,7 +21,7 @@ import { triggerHandler } from '../../../app/integrations/server/lib/triggerHand
 import { ListenersModule, minimongoChangeMap } from '../../modules/listeners/listeners.module';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
-
+import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 const autoUpdateRecords = new Map<string, AutoUpdateRecord>();
 
@@ -134,18 +135,20 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		});
 
 		// TODO: May need to merge with https://github.com/RocketChat/Rocket.Chat/blob/0ddc2831baf8340cbbbc432f88fc2cb97be70e9b/ee/server/services/Presence/Presence.ts#L28
-		this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
-			if (clientAction === 'removed') {
-				UserPresenceMonitor.processUserSession({
-					_id: userSession._id,
-					connections: [{
-						fake: true,
-					}],
-				}, 'removed');
-			}
+		if (isPresenceMonitorEnabled()) {
+			this.onEvent('watch.userSessions', async ({ clientAction, userSession }): Promise<void> => {
+				if (clientAction === 'removed') {
+					UserPresenceMonitor.processUserSession({
+						_id: userSession._id,
+						connections: [{
+							fake: true,
+						}],
+					}, 'removed');
+				}
 
-			UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
-		});
+				UserPresenceMonitor.processUserSession(userSession, minimongoChangeMap[clientAction]);
+			});
+		}
 
 		this.onEvent('watch.instanceStatus', async ({ clientAction, id, data }): Promise<void> => {
 			if (clientAction === 'removed') {
@@ -237,6 +240,14 @@ export class MeteorService extends ServiceClass implements IMeteor {
 		this.onEvent('watch.emailInbox', async () => {
 			configureEmailInboxes();
 		});
+
+		if (!process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING) {
+			this.onEvent('watch.messages', ({ message }) => {
+				if (message?._updatedAt) {
+					metrics.messageRoundtripTime.set(Date.now() - message._updatedAt.getDate());
+				}
+			});
+		}
 	}
 
 	async getLastAutoUpdateClientVersions(): Promise<AutoUpdateRecord[]> {

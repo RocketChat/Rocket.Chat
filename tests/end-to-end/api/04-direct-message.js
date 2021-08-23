@@ -10,6 +10,8 @@ import {
 	apiEmail,
 } from '../../data/api-data.js';
 import { password, adminUsername } from '../../data/user.js';
+import { deleteRoom } from '../../data/rooms.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 
 
@@ -209,7 +211,6 @@ describe('[Direct Messages]', function() {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -423,6 +424,7 @@ describe('[Direct Messages]', function() {
 				.end(done);
 		});
 	});
+
 	describe('/im.members', () => {
 		it('should return and array with two members', (done) => {
 			request.get(api('im.members'))
@@ -475,6 +477,146 @@ describe('[Direct Messages]', function() {
 					expect(res.body).to.have.property('members').and.to.have.lengthOf(1);
 				})
 				.end(done);
+		});
+	});
+
+	describe('/im.create', () => {
+		let otherUser;
+		let roomId;
+
+		before(async () => {
+			otherUser = await createUser();
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'd', roomId });
+			await deleteUser(otherUser);
+			otherUser = undefined;
+		});
+
+		it('creates a DM between two other parties (including self)', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					usernames: ['rocket.cat', otherUser.username].join(','),
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername, 'rocket.cat', otherUser.username]);
+					roomId = res.body.room._id;
+				})
+				.end(done);
+		});
+
+		it('creates a DM between two other parties (excluding self)', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					usernames: ['rocket.cat', otherUser.username].join(','),
+					excludeSelf: true,
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.have.property('usernames').and.to.have.members(['rocket.cat', otherUser.username]);
+					roomId = res.body.room._id;
+				})
+				.end(done);
+		});
+	});
+
+	describe('/im.delete', () => {
+		let testDM;
+
+		it('/im.create', (done) => {
+			request.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: 'rocket.cat',
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					testDM = res.body.room;
+				})
+				.end(done);
+		});
+
+		it('/im.delete', (done) => {
+			request.post(api('im.delete'))
+				.set(credentials)
+				.send({
+					username: 'rocket.cat',
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('/im.open', (done) => {
+			request.post(api('im.open'))
+				.set(credentials)
+				.send({
+					roomId: testDM._id,
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-channel');
+				})
+				.end(done);
+		});
+
+		context('when authenticated as a non-admin user', () => {
+			let otherUser;
+			let otherCredentials;
+
+			before(async () => {
+				otherUser = await createUser();
+				otherCredentials = await login(otherUser.username, password);
+			});
+
+			after(async () => {
+				await deleteUser(otherUser);
+				otherUser = undefined;
+			});
+
+			it('/im.create', (done) => {
+				request.post(api('im.create'))
+					.set(credentials)
+					.send({
+						username: otherUser.username,
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						testDM = res.body.room;
+					})
+					.end(done);
+			});
+
+			it('/im.delete', (done) => {
+				request.post(api('im.delete'))
+					.set(otherCredentials)
+					.send({
+						roomId: testDM._id,
+					})
+					.expect(403)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
+			});
 		});
 	});
 });

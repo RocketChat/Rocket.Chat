@@ -37,7 +37,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 export class CROWD {
 	constructor() {
-		const AtlassianCrowd = require('atlassian-crowd');
+		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get('CROWD_URL');
 
 		this.options = {

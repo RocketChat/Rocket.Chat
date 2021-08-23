@@ -34,6 +34,7 @@ import { IntegrationsRaw } from '../../../app/models/server/raw/Integrations';
 import { EventSignatures } from '../../sdk/lib/Events';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
+import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
@@ -80,9 +81,6 @@ const hasKeys = (requiredKeys: string[]): (data?: Record<string, any>) => boolea
 
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
-
-const startMonitor = typeof process.env.DISABLE_PRESENCE_MONITOR === 'undefined'
-	|| !['true', 'yes'].includes(String(process.env.DISABLE_PRESENCE_MONITOR).toLowerCase());
 
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
@@ -192,7 +190,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		});
 	});
 
-	if (startMonitor) {
+	if (isPresenceMonitorEnabled()) {
 		watch<IUserSession>(UsersSessions, async ({ clientAction, id, data: eventData }) => {
 			switch (clientAction) {
 				case 'inserted':

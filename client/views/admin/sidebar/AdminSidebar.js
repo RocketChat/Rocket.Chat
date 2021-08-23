@@ -35,7 +35,7 @@ function AdminSidebar() {
 
 	useEffect(() => {
 		if (currentRouteGroupName !== 'admin') {
-			SideNav.closeFlex();
+			SideNav.toggleFlex(-1);
 		}
 	}, [currentRouteGroupName]);
 
