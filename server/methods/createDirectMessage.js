@@ -1,26 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 
-import { settings } from '../../app/settings';
-import { hasPermission } from '../../app/authorization';
-import { Users, Rooms } from '../../app/models';
-import { RateLimiter } from '../../app/lib';
+import { settings } from '../../app/settings/server';
+import { hasPermission } from '../../app/authorization/server';
+import { Users, Rooms } from '../../app/models/server';
+import { createRoom, RateLimiter } from '../../app/lib/server';
 import { addUser } from '../../app/federation/server/functions/addUser';
-import { createRoom } from '../../app/lib/server';
 
-export function createDirectMessage(usernames, excludeSelf) {
+export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	check(usernames, [String]);
+	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
 
-	if (!Meteor.userId()) {
+	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const me = Meteor.user();
-
-	if (!me.username) {
+	const me = Users.findOneById(userId, { fields: { username: 1 } });
+	if (!me?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
@@ -50,15 +49,16 @@ export function createDirectMessage(usernames, excludeSelf) {
 
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
-	if (roomUsers.length === 1) {
+	// allow self-DMs
+	if (roomUsers.length === 1 && roomUsers[0]._id !== me._id) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	if (!hasPermission(Meteor.userId(), 'create-d')) {
+	if (!hasPermission(userId, 'create-d')) {
 		// If the user can't create DMs but can access already existing ones
-		if (hasPermission(Meteor.userId(), 'view-d-room')) {
+		if (hasPermission(userId, 'view-d-room')) {
 			// Check if the direct room already exists, then return it
 			const uids = roomUsers.map(({ _id }) => _id).sort();
 			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
@@ -91,7 +91,7 @@ export function createDirectMessage(usernames, excludeSelf) {
 
 Meteor.methods({
 	createDirectMessage(...usernames) {
-		return createDirectMessage(usernames, false);
+		return createDirectMessage(usernames, Meteor.userId());
 	},
 });
 
