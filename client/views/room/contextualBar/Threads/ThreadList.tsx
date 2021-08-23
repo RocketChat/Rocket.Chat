@@ -1,9 +1,12 @@
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
+import { IMessage } from '../../../../../definition/IMessage';
+import { IRoom } from '../../../../../definition/IRoom';
+import { IUser } from '../../../../../definition/IUser';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import {
@@ -17,28 +20,57 @@ import { useTabContext } from '../../providers/ToolboxProvider';
 import Row from './Row';
 import { withData } from './withData';
 
-function ThreadList({
+export type ThreadListProps = {
+	total: number;
+	threads: IMessage[];
+	room: IRoom;
+	unread?: string[];
+	unreadUser?: string[];
+	unreadGroup?: string[];
+	userId?: IUser['_id'] | null;
+
+	type: 'all' | 'following' | 'unread';
+	setType: (type: string) => void;
+
+	loading: boolean;
+
+	error?: Error;
+
+	text: string;
+	setText: (text: string) => void;
+
+	onClose: () => void;
+
+	loadMoreItems: (min: number, max: number) => void;
+};
+
+export const ThreadList: FC<ThreadListProps> = function ThreadList({
 	total = 10,
 	threads = [],
 	room,
 	unread = [],
 	unreadUser = [],
 	unreadGroup = [],
+	text,
 	type,
 	setType,
 	loadMoreItems,
 	loading,
 	onClose,
 	error,
-	userId,
-	text,
+	userId = '',
 	setText,
 }) {
-	const showRealNames = useSetting('UI_Use_Real_Name');
+	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 	const [name] = useCurrentRoute();
+
+	if (!name) {
+		throw new Error('No route name');
+	}
+
 	const channelRoute = useRoute(name);
 	const onClick = useMutableCallback((e) => {
 		const { id: context } = e.currentTarget.dataset;
@@ -46,11 +78,11 @@ function ThreadList({
 			tab: 'thread',
 			context,
 			rid: room._id,
-			name: room.name,
+			...(room.name && { name: room.name }),
 		});
 	});
 
-	const options = useMemo(
+	const options: [string, string][] = useMemo(
 		() => [
 			['all', t('All')],
 			['following', t('Following')],
@@ -89,7 +121,7 @@ function ThreadList({
 							<TextInput
 								placeholder={t('Search_Messages')}
 								value={text}
-								onChange={setText}
+								onChange={setText as any}
 								addon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
@@ -131,34 +163,38 @@ function ThreadList({
 							}}
 							totalCount={total}
 							endReached={
-								loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))
+								loading
+									? (): void => undefined
+									: (start): unknown => loadMoreItems(start, Math.min(50, total - start))
 							}
 							overscan={25}
 							data={threads}
-							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => (
-								<Row
-									thread={data}
-									showRealNames={showRealNames}
-									unread={unread}
-									unreadUser={unreadUser}
-									unreadGroup={unreadGroup}
-									userId={userId}
-									onClick={onClick}
-								/>
-							)}
+							components={{ Scroller: ScrollableContentWrapper as any }}
+							itemContent={(_index, data: IMessage): FC<IMessage> =>
+								(
+									<Row
+										thread={data}
+										showRealNames={showRealNames}
+										unread={unread}
+										unreadUser={unreadUser}
+										unreadGroup={unreadGroup}
+										userId={userId || ''}
+										onClick={onClick}
+									/>
+								) as unknown as FC<IMessage>
+							}
 						/>
 					)}
 				</Box>
 			</VerticalBar.Content>
 
-			{mid && (
+			{typeof mid === 'string' && (
 				<VerticalBar.InnerContent>
 					<ThreadComponent onClickBack={onClick} mid={mid} jump={jump} room={room} />
 				</VerticalBar.InnerContent>
 			)}
 		</>
 	);
-}
+};
 
 export default withData(ThreadList);

@@ -7,16 +7,13 @@ import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
 import { useUserRoom } from '../../hooks/useUserRoom';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { ThreadListProps } from './ThreadList';
 import { useThreadsList } from './useThreadsList';
 
 const subscriptionFields = { tunread: true, tunreadUser: true, tunreadGroup: true };
 const roomFields = { t: 1, name: 1 };
 
-export function withData(
-	Component: FC<{
-		[k: string]: unknown;
-	}>,
-): FC<{ rid: string }> {
+export function withData(Component: FC<ThreadListProps>): FC<{ rid: string }> {
 	const WrappedComponent: FC<{ rid: string }> = ({ rid, ...props }) => {
 		const userId = useUserId();
 		const onClose = useTabBarClose();
@@ -30,38 +27,37 @@ export function withData(
 
 		const [text, setText] = useState('');
 		const debouncedText = useDebouncedValue(text, 400);
-
-		const options: ThreadsListOptions = useMemo(() => {
-			if (type === 'all' || !subscription || !userId) {
-				return {
-					rid,
-					text: debouncedText,
-					type: 'all',
-				};
-			}
-			switch (type) {
-				case 'following':
+		const options: ThreadsListOptions = useDebouncedValue(
+			useMemo(() => {
+				if (type === 'all' || !subscription || !userId) {
 					return {
 						rid,
 						text: debouncedText,
-						type,
-						uid: userId,
+						type: 'all',
 					};
-				case 'unread':
-					return {
-						rid,
-						text: debouncedText,
-						type,
-						tunread: subscription?.tunread,
-					};
-			}
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [rid, debouncedText, type, subscription?.tunread?.sort().join(), userId]);
-
-		const { threadsList, initialItemCount, loadMoreItems } = useThreadsList(
-			options,
-			userId as string,
+				}
+				switch (type) {
+					case 'following':
+						return {
+							rid,
+							text: debouncedText,
+							type,
+							uid: userId,
+						};
+					case 'unread':
+						return {
+							rid,
+							text: debouncedText,
+							type,
+							tunread: subscription?.tunread,
+						};
+				}
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+			}, [rid, debouncedText, type, subscription?.tunread?.sort().join(), userId]),
+			300,
 		);
+
+		const { threadsList, loadMoreItems } = useThreadsList(options, userId as string);
 		const { phase, error, items: threads, itemCount: totalItemCount } = useRecordList(threadsList);
 
 		const handleTextChange = useCallback((event) => {
@@ -78,15 +74,14 @@ export function withData(
 				error={error}
 				threads={threads}
 				total={totalItemCount}
-				initial={initialItemCount}
 				loading={phase === AsyncStatePhase.LOADING}
 				loadMoreItems={loadMoreItems}
 				room={room}
 				text={text}
 				setText={handleTextChange}
 				type={type}
-				setType={setType}
-				onClose={onClose}
+				setType={setType as any}
+				onClose={onClose as any}
 			/>
 		);
 	};
