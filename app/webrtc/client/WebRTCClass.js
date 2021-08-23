@@ -930,7 +930,7 @@ const WebRTC = new class {
 		} else {
 			enabled = settings.get('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled &&= settings.get('WebRTC_Enabled');
+		enabled = enabled && settings.get('WebRTC_Enabled');
 		if (enabled === false) {
 			return;
 		}
