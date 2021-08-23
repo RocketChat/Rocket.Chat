@@ -89,7 +89,17 @@ Meteor.methods({
 			const bigbluebutton_userdata = settings.get('bigbluebutton_userdata').trim();
 			let bigbluebutton_userdata_obj = {};
 			if(bigbluebutton_userdata) {
-				bigbluebutton_userdata_obj = JSON.parse(bigbluebutton_userdata);
+				try {
+					bigbluebutton_userdata_obj = JSON.parse(bigbluebutton_userdata);
+				} catch (err) {
+					console.log(`Unexpected error : ${ err.message }`);
+					return;
+				}
+			}
+
+			let fullName = user.username;
+			if(user[settings.get('bigbluebutton_fullname')]) {
+				fullName = user[settings.get('bigbluebutton_fullname')];
 			}
 
 			return {
@@ -103,7 +113,7 @@ Meteor.methods({
 					}, {
 						password: 'mp', // mp if moderator ap if attendee
 						meetingID,
-						fullName: user[settings.get('bigbluebutton_fullname')],
+						fullName: fullName,
 						userID: user._id,
 						joinViaHtml5: true,
 						avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
