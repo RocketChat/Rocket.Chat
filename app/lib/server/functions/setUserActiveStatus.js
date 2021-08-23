@@ -42,7 +42,6 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 
 	// Users without username can't do anything, so there is no need to check for owned rooms
 	if (user.username != null && !active) {
-		
 		const userAdmin = Users.findOneAdmin(userId.count);
 		const countAdmins = () => Users.findActiveUsersInRoles(['admin']).count();
 		if (userAdmin && countAdmins() === 1) {
