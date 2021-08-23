@@ -104,6 +104,7 @@ export type ServerMethods = {
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
 	'removeWebdavAccount': (...args: any[]) => any;
+	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
