@@ -1000,10 +1000,15 @@ settings.addGroup('General', function() {
 		alert: 'This_feature_is_currently_in_alpha',
 	});
 	this.section('UTF8', function() {
-		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
+		this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
 			public: true,
-			i18nDescription: 'UTF8_Names_Validation_Description',
+			i18nDescription: 'UTF8_User_Names_Validation_Description',
+		});
+		this.add('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+', {
+			type: 'string',
+			public: true,
+			i18nDescription: 'UTF8_Channel_Names_Validation_Description',
 		});
 		return this.add('UTF8_Names_Slugify', true, {
 			type: 'boolean',
@@ -1069,6 +1074,28 @@ settings.addGroup('General', function() {
 	this.section('NPS', function() {
 		this.add('NPS_survey_enabled', true, {
 			type: 'boolean',
+		});
+	});
+	this.section('Timezone', function() {
+		this.add('Default_Timezone_For_Reporting', 'server', {
+			type: 'select',
+			values: [{
+				key: 'server',
+				i18nLabel: 'Default_Server_Timezone',
+			}, {
+				key: 'custom',
+				i18nLabel: 'Default_Custom_Timezone',
+			}, {
+				key: 'user',
+				i18nLabel: 'Default_User_Timezone',
+			}],
+		});
+		this.add('Default_Custom_Timezone', '', {
+			type: 'timezone',
+			enableQuery: {
+				_id: 'Default_Timezone_For_Reporting',
+				value: 'custom',
+			},
 		});
 	});
 });
