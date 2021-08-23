@@ -1,30 +1,19 @@
 import { ProgressBar, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useUsageLabel } from './useUsageLabel';
 
-type MemberCapUsageProps = {
+type SeatsCapUsageProps = {
 	limit: number;
 	members: number;
 };
 
-const useLabel = (percentage: number): string => {
-	const fixedPercentage = percentage.toFixed(0);
-	const t = useTranslation();
-
-	if (percentage >= 100) {
-		return t('Out_of_seats');
-	}
-
-	return `${fixedPercentage}% ${t('Usage')}`;
-};
-
-const MemberCapUsage = ({ limit, members }: MemberCapUsageProps): ReactElement => {
+const SeatsCapUsage = ({ limit, members }: SeatsCapUsageProps): ReactElement => {
 	const percentage = Math.max(0, Math.min((100 / limit) * members, 100));
 	const closeToLimit = percentage >= 80;
 	const reachedLimit = percentage >= 100;
 	const color = closeToLimit ? 'danger-500' : 'success-500';
-	const label = useLabel(percentage);
+	const label = useUsageLabel(percentage);
 
 	return (
 		<Box display='flex' flexDirection='column' minWidth='x180'>
@@ -51,4 +40,4 @@ const MemberCapUsage = ({ limit, members }: MemberCapUsageProps): ReactElement =
 	);
 };
 
-export default MemberCapUsage;
+export default SeatsCapUsage;

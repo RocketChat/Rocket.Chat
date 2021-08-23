@@ -3,9 +3,9 @@ import React, { ReactElement, ComponentProps } from 'react';
 
 import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import MemberCapUsage from './MemberCapUsage';
+import MemberCapUsage from './SeatsCapUsage';
 
-type CloseToLimitModalProps = {
+type CloseToSeatsCapModalProps = {
 	members: number;
 	limit: number;
 	title: string;
@@ -16,7 +16,7 @@ type CloseToLimitModalProps = {
 	onClose: () => void;
 };
 
-const CloseToLimitModal = ({
+const CloseToSeatsCapModal = ({
 	members,
 	limit,
 	title,
@@ -25,7 +25,7 @@ const CloseToLimitModal = ({
 	onConfirm,
 	onClose,
 	requestSeatsLink,
-}: CloseToLimitModalProps): ReactElement => {
+}: CloseToSeatsCapModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal>
@@ -53,4 +53,4 @@ const CloseToLimitModal = ({
 	);
 };
 
-export default CloseToLimitModal;
+export default CloseToSeatsCapModal;

@@ -2,21 +2,21 @@ import { Icon, Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import MemberCapUsage from './MemberCapUsage';
+import SeatsCapUsage from './SeatsCapUsage';
 
-type ReachedLimitModalProps = {
+type ReachedSeatsCapModalProps = {
 	members: number;
 	limit: number;
 	requestSeatsLink: string;
 	onClose: () => void;
 };
 
-const ReachedLimitModal = ({
+const ReachedSeatsCapModal = ({
 	members,
 	limit,
 	onClose,
 	requestSeatsLink,
-}: ReachedLimitModalProps): ReactElement => {
+}: ReachedSeatsCapModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal>
@@ -31,7 +31,7 @@ const ReachedLimitModal = ({
 				<Box is='p' mbe='x24'>
 					{t('Request_more_seats_sales_team')}
 				</Box>
-				<MemberCapUsage members={members} limit={limit} />
+				<SeatsCapUsage members={members} limit={limit} />
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
@@ -46,4 +46,4 @@ const ReachedLimitModal = ({
 	);
 };
 
-export default ReachedLimitModal;
+export default ReachedSeatsCapModal;

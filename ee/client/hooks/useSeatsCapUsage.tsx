@@ -4,8 +4,8 @@ import React, { useMemo } from 'react';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useTranslation } from '../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../client/hooks/useEndpointData';
-import CloseToLimitModal from '../views/admin/users/CloseToLimitModal';
-import ReachedLimitModal from '../views/admin/users/ReachedLimitModal';
+import CloseToSeatsCapModal from '../views/admin/users/CloseToSeatsCapModal';
+import ReachedSeatsCapModal from '../views/admin/users/ReachedSeatsCapModal';
 
 type UseSeatsLimitReturn = {
 	shouldShowVerticalBar: boolean;
@@ -14,7 +14,7 @@ type UseSeatsLimitReturn = {
 	limit: number;
 };
 
-export const useSeatsLimit = (context: string): UseSeatsLimitReturn => {
+export const useSeatsCapUsage = (context: string): UseSeatsLimitReturn => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -46,7 +46,7 @@ export const useSeatsLimit = (context: string): UseSeatsLimitReturn => {
 
 			if (reachedLimit) {
 				return setModal(
-					<ReachedLimitModal
+					<ReachedSeatsCapModal
 						members={activeUsers}
 						limit={limit}
 						onClose={closeModal}
@@ -58,7 +58,7 @@ export const useSeatsLimit = (context: string): UseSeatsLimitReturn => {
 			if (closeToLimit) {
 				if (actionType === 'add') {
 					return setModal(
-						<CloseToLimitModal
+						<CloseToSeatsCapModal
 							members={activeUsers}
 							limit={limit}
 							title={t('Create_new_members')}
@@ -77,7 +77,7 @@ export const useSeatsLimit = (context: string): UseSeatsLimitReturn => {
 					);
 				}
 				setModal(
-					<CloseToLimitModal
+					<CloseToSeatsCapModal
 						members={activeUsers}
 						limit={limit}
 						title={t('Invite_Users')}

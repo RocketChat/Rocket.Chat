@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { useSeatsLimit } from '../../../../ee/client/hooks/useSeatsLimit';
-import MemberCapUsage from '../../../../ee/client/views/admin/users/MemberCapUsage';
+import { useSeatsCapUsage } from '../../../../ee/client/hooks/useSeatsCapUsage';
+import SeatsCapUsage from '../../../../ee/client/views/admin/users/SeatsCapUsage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
@@ -24,7 +24,7 @@ function UsersPage() {
 
 	const [, { context, id }] = useCurrentRoute();
 
-	const { shouldShowVerticalBar, handleLimitModal, members, limit } = useSeatsLimit();
+	const { shouldShowVerticalBar, handleLimitModal, members, limit } = useSeatsCapUsage();
 
 	const handleNewButtonClick = () => {
 		handleLimitModal(() => usersRoute.push({ context: 'new' }), 'add');
@@ -43,7 +43,7 @@ function UsersPage() {
 			<Page>
 				<Page.Header title={t('Users')}>
 					<ButtonGroup>
-						{limit !== 0 && <MemberCapUsage members={members} limit={limit} />}
+						{limit !== 0 && <SeatsCapUsage members={members} limit={limit} />}
 						<Button onClick={handleNewButtonClick}>
 							<Icon size='x20' name='user-plus' /> {t('New')}
 						</Button>
