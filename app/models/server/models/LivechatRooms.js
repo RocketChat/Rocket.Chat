@@ -441,11 +441,11 @@ export class LivechatRooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
-					t: 'l',
+					t,
 					ts: {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
@@ -453,11 +453,24 @@ export class LivechatRooms extends Base {
 					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
+			{ $addFields: { roomId: '$_id' } },
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: '_id',
-					foreignField: 'rid',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+								// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}, ...extraQuery ? [extraQuery] : []],
+							},
+						},
+					}],
 					as: 'messages',
 				},
 			},
@@ -476,16 +489,9 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
-						msgs: '$msgs',
 					},
-					messages: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $ifNull: ['$messages.t', false] },
-								],
-							}, 1, 0],
-						},
+					messagesCount: {
+						$sum: 1,
 					},
 				},
 			},
@@ -497,10 +503,76 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+					msgs: '$messagesCount',
+				},
+			}]);
+	}
+
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
-
+			{ $addFields: { roomId: '$_id' } },
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+									// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}],
+							},
+						},
+					}],
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+					},
+					messagesCount: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: '$messagesCount',
+				},
+			},
 		]);
 	}
 

@@ -25,16 +25,18 @@ type FilePreviewModalProps = {
 	onClose: () => void;
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
+	fileName: string;
 	isValidContentType: boolean;
 };
 
 const FilePreviewModal = ({
 	onClose,
 	file,
+	fileName,
 	onSubmit,
 	isValidContentType,
 }: FilePreviewModalProps): ReactElement => {
-	const [name, setName] = useState<string>(file.name);
+	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -86,7 +88,7 @@ const FilePreviewModal = ({
 					<Modal.Title>{t('FileUpload')}</Modal.Title>
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
-				<Modal.Content>
+				<Modal.Content overflow='hidden'>
 					<Box
 						display='flex'
 						maxHeight='x360'
