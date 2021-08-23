@@ -125,7 +125,7 @@ describe('miscellaneous', function() {
 					'unreadAlert',
 					'notificationsSoundVolume',
 					'desktopNotifications',
-					'mobileNotifications',
+					'pushNotifications',
 					'enableAutoAway',
 					'enableMessageParserEarlyAdoption',
 					// 'highlights',
