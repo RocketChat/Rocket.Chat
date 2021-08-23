@@ -226,12 +226,6 @@ export const useQuickActions = (
 		}
 	});
 
-	const actionDefault = useMutableCallback((e) => {
-		const index = e.currentTarget.getAttribute('data-quick-actions');
-		const { id } = actions[index];
-		openModal(id);
-	});
-
 	const omnichannelRouteConfig = useOmnichannelRouteConfig();
 
 	const manualOnHoldAllowed = useSetting('Livechat_allow_manual_on_hold');
@@ -276,5 +270,12 @@ export const useQuickActions = (
 	};
 
 	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
+
+	const actionDefault = useMutableCallback((e) => {
+		const index = e.currentTarget.getAttribute('data-quick-actions');
+		const { id } = visibleActions[index];
+		openModal(id);
+	});
+
 	return [visibleActions, actionDefault];
 };
