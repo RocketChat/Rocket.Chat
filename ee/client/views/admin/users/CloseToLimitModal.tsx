@@ -1,8 +1,8 @@
 import { Icon, Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement, ComponentProps } from 'react';
 
-import ExternalLink from '../../../components/ExternalLink';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import ExternalLink from '../../../../../client/components/ExternalLink';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import MemberCapUsage from './MemberCapUsage';
 
 type CloseToLimitModalProps = {

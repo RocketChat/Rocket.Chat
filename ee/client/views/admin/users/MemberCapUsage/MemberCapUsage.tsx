@@ -1,7 +1,7 @@
 import { ProgressBar, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 
 type MemberCapUsageProps = {
 	limit: number;
@@ -25,6 +25,7 @@ const MemberCapUsage = ({ limit, members }: MemberCapUsageProps): ReactElement =
 	const reachedLimit = percentage >= 100;
 	const color = closeToLimit ? 'danger-500' : 'success-500';
 	const label = useLabel(percentage);
+
 	return (
 		<Box display='flex' flexDirection='column' minWidth='x180'>
 			<Box
@@ -43,6 +44,7 @@ const MemberCapUsage = ({ limit, members }: MemberCapUsageProps): ReactElement =
 				overflow='hidden'
 				percentage={percentage}
 				barColor={color}
+				animated={false}
 				w='full'
 			/>
 		</Box>

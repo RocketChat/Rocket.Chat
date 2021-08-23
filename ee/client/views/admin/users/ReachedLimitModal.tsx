@@ -1,26 +1,22 @@
 import { Icon, Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps } from 'react';
+import React, { ReactElement } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import MemberCapUsage from './MemberCapUsage';
 
-type CloseToLimitModalProps = {
+type ReachedLimitModalProps = {
 	members: number;
 	limit: number;
-	title: string;
-	confirmText: string;
-	confirmIcon: ComponentProps<typeof Icon>['name'];
 	requestSeatsLink: string;
-	onConfirm: () => void;
 	onClose: () => void;
 };
 
-const CloseToLimitModal = ({
+const ReachedLimitModal = ({
 	members,
 	limit,
 	onClose,
 	requestSeatsLink,
-}: CloseToLimitModalProps): ReactElement => {
+}: ReachedLimitModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
 		<Modal>
@@ -50,4 +46,4 @@ const CloseToLimitModal = ({
 	);
 };
 
-export default CloseToLimitModal;
+export default ReachedLimitModal;

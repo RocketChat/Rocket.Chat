@@ -1,20 +1,17 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useSeatsLimit } from '../../../../ee/client/hooks/useSeatsLimit';
+import MemberCapUsage from '../../../../ee/client/views/admin/users/MemberCapUsage';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AddUser } from './AddUser';
-import CloseToLimitModal from './CloseToLimitModal';
 import EditUserWithData from './EditUserWithData';
 import { InviteUsers } from './InviteUsers';
-import MemberCapUsage from './MemberCapUsage';
-import ReachedLimitModal from './ReachedLimitModal';
 import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
-import { useSeatsData } from './useSeatsData';
 
 function UsersPage() {
 	const t = useTranslation();
@@ -25,78 +22,21 @@ function UsersPage() {
 		usersRoute.push({});
 	};
 
-	const setModal = useSetModal();
-
 	const [, { context, id }] = useCurrentRoute();
 
-	const { members, limit } = useSeatsData();
-
-	const percentage = (100 / limit) * members;
-
-	const closeToLimit = percentage >= 80;
-	const reachedLimit = percentage >= 100;
-
-	const closeModal = () => setModal();
-
-	const handleLimitModal = (action, actionType = 'add') => {
-		if (reachedLimit) {
-			return setModal(<ReachedLimitModal members={members} limit={limit} onClose={closeModal} />);
-		}
-		if (closeToLimit) {
-			if (actionType === 'add') {
-				return setModal(
-					<CloseToLimitModal
-						members={members}
-						limit={limit}
-						title={t('Create_new_members')}
-						confirmText={t('Create')}
-						confirmIcon={'user-plus'}
-						onConfirm={action}
-						onClose={closeModal}
-					/>,
-				);
-			}
-			setModal(
-				<CloseToLimitModal
-					members={members}
-					limit={limit}
-					title={t('Invite_Users')}
-					confirmText={t('Invite')}
-					confirmIcon={'mail'}
-					onConfirm={action}
-					onClose={closeModal}
-				/>,
-			);
-		}
-	};
+	const { shouldShowVerticalBar, handleLimitModal, members, limit } = useSeatsLimit();
 
 	const handleNewButtonClick = () => {
-		const action = () => usersRoute.push({ context: 'new' });
-		if (closeToLimit) {
-			return handleLimitModal(() => {
-				action();
-				closeModal();
-			});
-		}
-		action();
+		handleLimitModal(() => usersRoute.push({ context: 'new' }), 'add');
 	};
 
 	const handleInviteButtonClick = () => {
-		const action = usersRoute.push({ context: 'invite' });
-		if (closeToLimit) {
-			return handleLimitModal(() => {
-				action();
-				closeModal();
-			}, 'invite');
-		}
-		action();
+		handleLimitModal(() => usersRoute.push({ context: 'invite' }), 'invite');
 	};
 
 	const handleRequestSeats = () => {
 		console.log('request seats');
 	};
-
-	const shouldShowVerticalBar = !reachedLimit || context !== 'new' || context !== 'invite';
 
 	return (
 		<Page flexDirection='row'>
