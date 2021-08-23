@@ -39,10 +39,10 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 					...context,
 					actions: new Map([
 						...(isMobile
-							? (visible.map((action) => [action.id, { ...action, order: action.order - 10 }]) as [
-									string,
-									ToolboxActionConfig,
-							  ][])
+							? (visible.map((action) => [
+									action.id,
+									{ ...action, order: (action.order || 0) - 10 },
+							  ]) as [string, ToolboxActionConfig][])
 							: []),
 						...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][]),
 					]),
