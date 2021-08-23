@@ -14,6 +14,20 @@ const stopRecording = () => new Promise((resolve) => AudioRecorder.stop(resolve)
 const recordingInterval = new ReactiveVar(null);
 const recordingRoomId = new ReactiveVar(null);
 
+const cancelRecording = (instance) => new Promise(async () => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+		recordingRoomId.set(null);
+	}
+
+	instance.time.set('00:00');
+
+	await stopRecording();
+
+	instance.state.set(null);
+});
+
 Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
@@ -44,6 +58,12 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 		}
 	} catch (error) {
 		console.warn(error);
+	}
+});
+
+Template.messageBoxAudioMessage.onDestroyed(async function() {
+	if (this.state.get() === 'recording') {
+		await cancelRecording(this);
 	}
 });
 
@@ -105,17 +125,7 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-			recordingRoomId.set(null);
-		}
-
-		instance.time.set('00:00');
-
-		await stopRecording();
-
-		instance.state.set(null);
+		await cancelRecording(instance);
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {

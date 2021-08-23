@@ -13,6 +13,7 @@ import {
 	getAgentsProductivityMetrics,
 	getChatsMetrics,
 } from '../../../server/lib/analytics/dashboards';
+import { Users } from '../../../../models';
 
 API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authRequired: true }, {
 	get() {
@@ -36,7 +37,9 @@ API.v1.addRoute('livechat/analytics/dashboards/conversation-totalizers', { authR
 		}
 		end = new Date(end);
 
-		const totalizers = getConversationsMetrics({ start, end, departmentId });
+		const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+
+		const totalizers = getConversationsMetrics({ start, end, departmentId, user });
 		return API.v1.success(totalizers);
 	},
 });
@@ -63,7 +66,9 @@ API.v1.addRoute('livechat/analytics/dashboards/agents-productivity-totalizers', 
 		}
 		end = new Date(end);
 
-		const totalizers = getAgentsProductivityMetrics({ start, end, departmentId });
+		const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+
+		const totalizers = getAgentsProductivityMetrics({ start, end, departmentId, user });
 		return API.v1.success(totalizers);
 	},
 });
@@ -117,7 +122,9 @@ API.v1.addRoute('livechat/analytics/dashboards/productivity-totalizers', { authR
 		}
 		end = new Date(end);
 
-		const totalizers = getProductivityMetrics({ start, end, departmentId });
+		const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+
+		const totalizers = getProductivityMetrics({ start, end, departmentId, user });
 
 		return API.v1.success(totalizers);
 	},
