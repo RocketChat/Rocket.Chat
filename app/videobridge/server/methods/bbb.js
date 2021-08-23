@@ -103,7 +103,7 @@ Meteor.methods({
 					}, {
 						password: 'mp', // mp if moderator ap if attendee
 						meetingID,
-						fullName: user.username,
+						fullName: user[settings.get('bigbluebutton_fullname')],
 						userID: user._id,
 						joinViaHtml5: true,
 						avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
