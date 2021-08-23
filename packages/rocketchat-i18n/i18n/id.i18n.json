@@ -2715,8 +2715,6 @@
   "Users_added": "Pengguna telah ditambahkan",
   "Users_in_role": "Pengguna dalam peran",
   "UTF8_Names_Slugify": "UTF8 Nama slugify",
-  "UTF8_Names_Validation": "UTF8 Nama Validasi",
-  "UTF8_Names_Validation_Description": "Jangan biarkan karakter khusus dan ruang. Anda dapat menggunakan - _ dan. tetapi tidak pada akhir nama",
   "Validate_email_address": "Validasi alamat email",
   "Verification": "Verifikasi",
   "Verification_Description": "Anda dapat menggunakan placeholder berikut: <br/><ul><li>[Verification_Url] untuk URL verifikasi.</li><li>[nama], [fname], [lname] untuk nama lengkap pengguna, nama depan, atau nama belakang masing-masing.</li><li>[email] untuk email pengguna.</li><li>[Site_Name] dan [Site_URL] untuk Nama Aplikasi dan URL masing-masing.</li></ul>",

@@ -2708,8 +2708,6 @@
   "Users_added": "İstifadəçilər əlavə edildi",
   "Users_in_role": "İstifadəçi rolu",
   "UTF8_Names_Slugify": "UTF8 adları Slugify",
-  "UTF8_Names_Validation": "UTF8 Adların Təsdiqlənməsi",
-  "UTF8_Names_Validation_Description": "İstifadəçi adlarını və kanal adlarını doğrulamak üçün istifadə ediləcək RegExp",
   "Validate_email_address": "E-poçt ünvanı təsdiqləyin",
   "Verification": "Doğrulama",
   "Verification_Description": "Aşağıdakı yer tutuculardan istifadə edə bilərsiniz: Doğrulama URL'si üçün <br/><ul><li>[Verification_Url].</li><li>[ad], [fname], [lname] istifadəçinin tam adı, soyadı və soyadı üçün müvafiq olaraq. Istifadəçinin e-poçtu üçün</li><li>[email].</li><li>[Site_Name] və [Site_URL] üçün ərizə adı və URL sırasıyla.</li></ul>",
