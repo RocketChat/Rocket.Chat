@@ -28,6 +28,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxActiveUsers = 0;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -189,6 +190,10 @@ class LicenseClass {
 				maxGuestUsers = license.maxGuestUsers;
 			}
 
+			if (license.maxActiveUsers > maxActiveUsers) {
+				maxActiveUsers = license.maxActiveUsers;
+			}
+
 			this._validModules(license.modules);
 
 			this._addTags(license);
@@ -201,6 +206,14 @@ class LicenseClass {
 
 		EnterpriseLicenses.emit('validate');
 		this.showLicenses();
+	}
+
+	canAddNewUser(): boolean {
+		if (!maxActiveUsers) {
+			return true;
+		}
+
+		return maxActiveUsers > Users.getActiveLocalUserCount();
 	}
 
 	showLicenses(): void {
@@ -296,6 +309,10 @@ export function getModules(): string[] {
 
 export function getTags(): ILicenseTag[] {
 	return License.getTags();
+}
+
+export function canAddNewUser(): boolean {
+	return License.canAddNewUser();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {
