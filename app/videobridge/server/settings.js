@@ -81,6 +81,53 @@ Meteor.startup(function() {
 				},
 				public: true,
 			});
+			
+			this.add('bigbluebutton_fullname', 'username', {
+				type: 'select',
+				values: [{ key: 'username', i18nLabel: 'Username' }, { key: 'name', i18nLabel: 'Name' }, { key: 'nickname', i18nLabel: 'Nickname' }],
+				i18nLabel: 'BBB_Fullname',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+				public: true,
+			});
+
+			this.add('bigbluebutton_userdata', '', {
+				type: 'code',
+				i18nLabel: 'BBB_Userdata',
+				i18nDescription: 'BBB_Userdata_Description',
+				multiline: true,
+				public: false,
+				code: 'application/json',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('bigbluebutton_meeting_start_notification_Enabled', false, {
+				type: 'boolean',
+				i18nLabel: 'BBB_Meeting_Start_Notification_Enabled',
+				public: true,
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+			});
+
+			this.add('bigbluebutton_meeting_start_notification', 'BBB_Meeting_Start_Notification_Text', {
+				type: 'string',
+				i18nLabel: 'BBB_Meeting_Start_Notification',
+				i18nDescription: 'BBB_Meeting_Start_Notification_Description',
+				enableQuery: [{
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},{
+					_id: 'bigbluebutton_meeting_start_notification_Enabled',
+					value: true,
+				}],
+			});
 		});
 
 		this.section('Jitsi', function() {
