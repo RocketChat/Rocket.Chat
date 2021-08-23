@@ -25,7 +25,6 @@ export const useSeatsData = (): SeatsData => {
 				const stats = await getStatistics();
 				const { licenses } = await getLicenseData();
 
-				console.log({ stats, licenses });
 				if (discard) {
 					return;
 				}
