@@ -16,7 +16,7 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 	const [name] = useCurrentRoute();
 	const { isMobile } = useLayout();
 	const room = useOmnichannelRoom();
-	const [visible] = useQuickActions(room);
+	const { visibleActions, getAction } = useQuickActions(room);
 	const context = useToolboxContext();
 
 	const slots = useMemo(
@@ -39,15 +39,19 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 					...context,
 					actions: new Map([
 						...(isMobile
-							? (visible.map((action) => [
+							? (visibleActions.map((action) => [
 									action.id,
-									{ ...action, order: (action.order || 0) - 10 },
+									{
+										...action,
+										action: (): unknown => getAction(action.id),
+										order: (action.order || 0) - 10,
+									},
 							  ]) as [string, ToolboxActionConfig][])
 							: []),
 						...(Array.from(context.actions.entries()) as [string, ToolboxActionConfig][]),
 					]),
 				}),
-				[context, visible, isMobile],
+				[context, isMobile, visibleActions, getAction],
 			)}
 		>
 			<RoomHeader slots={slots} room={room} />

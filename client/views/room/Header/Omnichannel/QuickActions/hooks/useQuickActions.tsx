@@ -25,7 +25,11 @@ import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickAction
 
 export const useQuickActions = (
 	room: IOmnichannelRoom,
-): [QuickActionsActionConfig[], (e: unknown) => void] => {
+): {
+	visibleActions: QuickActionsActionConfig[];
+	actionDefault: (e: unknown) => void;
+	getAction: (id: string) => void;
+} => {
 	const setModal = useSetModal();
 
 	const t = useTranslation();
@@ -277,5 +281,9 @@ export const useQuickActions = (
 		openModal(id);
 	});
 
-	return [visibleActions, actionDefault];
+	const getAction = useMutableCallback((id) => {
+		openModal(id);
+	});
+
+	return { visibleActions, actionDefault, getAction };
 };

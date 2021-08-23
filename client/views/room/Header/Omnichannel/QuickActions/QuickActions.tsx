@@ -13,7 +13,7 @@ type QuickActionsProps = {
 
 const QuickActions: FC<QuickActionsProps> = ({ room, className }) => {
 	const t = useTranslation();
-	const [visibleActions, actionDefault] = useQuickActions(room);
+	const { visibleActions, actionDefault } = useQuickActions(room);
 
 	return (
 		<ButtonGroup mi='x4' medium>
