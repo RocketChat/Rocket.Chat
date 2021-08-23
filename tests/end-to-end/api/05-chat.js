@@ -2121,7 +2121,7 @@ describe('Threads', () => {
 								.send({
 									message: {
 										rid: testChannel._id,
-										msg: 'Message to create thread',
+										msg: 'Thread message',
 										tmid: response.body.message._id,
 									},
 								})
