@@ -81,7 +81,7 @@ Meteor.startup(function() {
 				},
 				public: true,
 			});
-			
+
 			this.add('bigbluebutton_fullname', 'username', {
 				type: 'select',
 				values: [{ key: 'username', i18nLabel: 'Username' }, { key: 'name', i18nLabel: 'Name' }, { key: 'nickname', i18nLabel: 'Nickname' }],
@@ -123,7 +123,7 @@ Meteor.startup(function() {
 				enableQuery: [{
 					_id: 'bigbluebutton_Enabled',
 					value: true,
-				},{
+				}, {
 					_id: 'bigbluebutton_meeting_start_notification_Enabled',
 					value: true,
 				}],

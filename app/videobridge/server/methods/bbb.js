@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import xml2js from 'xml2js';
 
 import BigBlueButtonApi from '../../../bigbluebutton/server';
@@ -72,11 +74,11 @@ Meteor.methods({
 
 			if (settings.get('bigbluebutton_meeting_start_notification_Enabled') && doc.response.messageKey[0] !== 'duplicateWarning') {
 				const meeting_start_notification = TAPi18n.__(settings.get('bigbluebutton_meeting_start_notification'), {}, user.language);
-				if(meeting_start_notification) {
+				if (meeting_start_notification) {
 					const msgObject = {
 						_id: Random.id(),
 						rid,
-						msg: meeting_start_notification
+						msg: meeting_start_notification,
 					};
 					Meteor.call('sendMessage', msgObject);
 				}
@@ -88,7 +90,7 @@ Meteor.methods({
 
 			const bigbluebutton_userdata = settings.get('bigbluebutton_userdata').trim();
 			let bigbluebutton_userdata_obj = {};
-			if(bigbluebutton_userdata) {
+			if (bigbluebutton_userdata) {
 				try {
 					bigbluebutton_userdata_obj = JSON.parse(bigbluebutton_userdata);
 				} catch (err) {
@@ -97,23 +99,23 @@ Meteor.methods({
 				}
 			}
 
-			let fullName = user.username;
-			if(user[settings.get('bigbluebutton_fullname')]) {
-				fullName = user[settings.get('bigbluebutton_fullname')];
+			let bigbluebutton_fullName = user.username;
+			if (user[settings.get('bigbluebutton_fullname')]) {
+				bigbluebutton_fullName = user[settings.get('bigbluebutton_fullname')];
 			}
 
 			return {
 				url: api.urlFor('join', Object.keys(bigbluebutton_userdata_obj)
-					.filter(key => key.startsWith('userdata-bbb'))
-					.reduce((obj, key) => {
-						return {
+					.filter((key) => key.startsWith('userdata-bbb'))
+					.reduce((obj, key) => (
+						{
 							...obj,
-							['custom_' + key]: bigbluebutton_userdata_obj[key]
-						};
-					}, {
+							[`custom_${ key }`]: bigbluebutton_userdata_obj[key],
+						}
+					), {
 						password: 'mp', // mp if moderator ap if attendee
 						meetingID,
-						fullName: fullName,
+						fullName: bigbluebutton_fullName,
 						userID: user._id,
 						joinViaHtml5: true,
 						avatarURL: Meteor.absoluteUrl(`avatar/${ user.username }`),
