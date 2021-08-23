@@ -2129,10 +2129,9 @@ describe('Threads', () => {
 								.expect(200)
 								.end((err, res) => {
 									threadMessage = res.body.message;
+									done();
 								});
 						})
-						.then(() => done())
-						.catch(done);
 				});
 		});
 
@@ -2196,7 +2195,7 @@ describe('Threads', () => {
 						expect(res.body.threads).to.have.lengthOf(1);
 						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 					})
-					.end(done);
+					.end(done)
 			});
 		});
 
