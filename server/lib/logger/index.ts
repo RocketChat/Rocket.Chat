@@ -49,6 +49,7 @@ export class Logger {
 		this.logger = pino({
 			name: loggerLabel,
 			hooks: { logMethod },
+			timestamp: pino.stdTimeFunctions.isoTime,
 		});
 
 
