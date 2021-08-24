@@ -1,4 +1,5 @@
 import Agenda from 'agenda';
+import { ObjectID } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 import {
 	StartupType,
@@ -9,7 +10,6 @@ import {
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
 import { AppServerOrchestrator } from '../orchestrator';
-import { ObjectID } from 'bson';
 
 function _callProcessor(processor: Function): (job: { attrs?: { data: object } }) => void {
 	return (job): void => {
@@ -169,8 +169,8 @@ export class AppSchedulerBridge extends SchedulerBridge {
 			cancelQuery = {
 				$or: [
 					{ name: jobId },
-					{ _id: jobDocumentId }
-				]
+					{ _id: jobDocumentId },
+				],
 			};
 		} catch (jobDocIdError) {
 			// it is not a valid objectid, so it won't try to cancel by document id
