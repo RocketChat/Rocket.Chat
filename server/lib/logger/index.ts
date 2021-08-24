@@ -26,10 +26,10 @@ import { settings } from '../../../app/settings/server';
 
 const getLevel = (level: string): string => {
 	switch (level) {
-		case '0': return 'error';
+		case '0': return 'warn';
 		case '1': return 'info';
 		case '2': return 'debug';
-		default: return 'error';
+		default: return 'warn';
 	}
 };
 
@@ -46,7 +46,10 @@ export class Logger {
 	private logger: P.Logger;
 
 	constructor(loggerLabel: string) {
-		this.logger = pino({ name: loggerLabel, hooks: { logMethod } });
+		this.logger = pino({
+			name: loggerLabel,
+			hooks: { logMethod },
+		});
 
 
 		// TODO evaluate replacing this by an event emitter (since this callback is probably costly than an event emitter)
@@ -95,5 +98,11 @@ export class Logger {
 
 	warn(msg: string, ...args: any[]): void {
 		this.logger.warn(msg, ...args);
+	}
+
+	error<T extends object>(obj: T, ...args: any[]): void;
+
+	error(msg: string, ...args: any[]): void {
+		this.logger.error(msg, ...args);
 	}
 }
