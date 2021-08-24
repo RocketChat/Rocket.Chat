@@ -115,7 +115,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.startScheduler();
 			const job = await this.scheduler.schedule(when, id, this.decorateJobData(data, appId));
-      return job.attrs._id.toString();
+			return job.attrs._id.toString();
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
 		}
@@ -145,7 +145,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		try {
 			await this.startScheduler();
 			const job = await this.scheduler.every(interval, id, this.decorateJobData(data, appId), { skipImmediate });
-      return job.attrs._id.toString();
+			return job.attrs._id.toString();
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
 		}
@@ -163,22 +163,22 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		this.orch.debugLog(`The App ${ appId } is canceling a job`, jobId);
 		await this.startScheduler();
 
-    let cancelQuery;
-    try {
-      const jobDocumentId = new ObjectID(jobId.split('_')[0]);
-      cancelQuery = {
-        $or: [
-          { name: jobId },
-          { _id: jobDocumentId }
-        ]
-      };
-    } catch (jobDocIdError) {
-      // it is not a valid objectid, so it won't try to cancel by document id
-      cancelQuery = { name: jobId };
-    }
+		let cancelQuery;
+		try {
+			const jobDocumentId = new ObjectID(jobId.split('_')[0]);
+			cancelQuery = {
+				$or: [
+					{ name: jobId },
+					{ _id: jobDocumentId }
+				]
+			};
+		} catch (jobDocIdError) {
+			// it is not a valid objectid, so it won't try to cancel by document id
+			cancelQuery = { name: jobId };
+		}
 
 		try {
-      await this.scheduler.cancel(cancelQuery);
+			await this.scheduler.cancel(cancelQuery);
 		} catch (e) {
 			this.orch.getRocketChatLogger().error(e);
 		}
