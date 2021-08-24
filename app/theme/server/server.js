@@ -10,13 +10,7 @@ import { settings } from '../../settings';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
 
-const logger = new Logger('rocketchat:theme', {
-	methods: {
-		stop_rendering: {
-			type: 'info',
-		},
-	},
-});
+const logger = new Logger('rocketchat:theme');
 
 let currentHash = '';
 let currentSize = 0;
@@ -69,7 +63,7 @@ export const theme = new class {
 		};
 		const start = Date.now();
 		return less.render(content, options, function(err, data) {
-			logger.stop_rendering(Date.now() - start);
+			logger.info({ stop_rendering: Date.now() - start });
 			if (err != null) {
 				return console.log(err);
 			}

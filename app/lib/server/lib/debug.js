@@ -7,16 +7,7 @@ import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { Logger } from '../../../logger';
 
-const logger = new Logger('Meteor', {
-	methods: {
-		method: {
-			type: 'debug',
-		},
-		publish: {
-			type: 'debug',
-		},
-	},
-});
+const logger = new Logger('Meteor');
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
@@ -72,7 +63,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
-		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
+		logger.debug({ method: name, userId: Meteor.userId(), arguments: omitKeyArgs(args, name) });
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;
@@ -93,7 +84,7 @@ const originalMeteorPublish = Meteor.publish;
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function(...args) {
 		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
-		logger.publish(() => `${ name } -> userId: ${ this.userId }, arguments: ${ JSON.stringify(omitKeyArgs(args)) }`);
+		logger.debug({ publish: name, userId: this.userId, arguments: omitKeyArgs(args) });
 		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
 
 		const originalReady = this.ready;

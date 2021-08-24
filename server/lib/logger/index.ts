@@ -70,16 +70,6 @@ export class Logger {
 		this.logger.info(...args);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/camelcase
-	success_box(...args: any[]): void {
-		this.logger.info(...args);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/camelcase
-	oauth_updated(...args: any[]): void {
-		this.logger.info(...args);
-	}
-
 	debug(...args: any[]): void {
 		this.logger.debug(...args);
 	}
@@ -94,10 +84,5 @@ export class Logger {
 
 	warn(...args: any[]): void {
 		this.logger.warn(...args);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/camelcase
-	stop_rendering(...args: any[]): void {
-		this.logger.info(...args);
 	}
 }
