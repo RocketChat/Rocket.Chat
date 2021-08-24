@@ -1,11 +1,12 @@
 import { LivechatRooms } from '../../../../../app/models/server/models/LivechatRooms';
-import { logger } from '../../../livechat-enterprise/server/lib/logger';
+import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import { addQueryRestrictionsToRoomsModel } from '../../../livechat-enterprise/server/lib/query.helper';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
 	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	logger.queries.debug(() => `LivechatRooms.${ method } - ${ JSON.stringify(query) }`);
+	// TODO Logger: convert to JSON
+	queriesLogger.debug(`LivechatRooms.${ method } - ${ JSON.stringify(query) }`);
 	return originalFn.call(this, query, ...args);
 };
 

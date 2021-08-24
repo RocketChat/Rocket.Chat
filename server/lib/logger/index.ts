@@ -1,4 +1,5 @@
-import { pino, P } from 'pino';
+import { pino } from 'pino';
+import type { P } from 'pino';
 
 import { settings } from '../../../app/settings/server';
 
@@ -34,7 +35,7 @@ const getLevel = (level: string): string => {
 
 // add support to multiple params on the log commands, i.e.:
 // logger.info('user', Meteor.user()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
-function logMethod(args: unknown[], method: any): void {
+function logMethod(this: P.Logger, args: unknown[], method: any): void {
 	if (args.length > 1) {
 		args[0] = `${ args[0] }${ ' %j'.repeat(args.length - 1) }`;
 	}
@@ -44,15 +45,11 @@ function logMethod(args: unknown[], method: any): void {
 export class Logger {
 	private logger: P.Logger;
 
-	constructor(loggerLabel: string, { sections }: { sections?: Record<string, string> } = {}) {
+	constructor(loggerLabel: string) {
 		this.logger = pino({ name: loggerLabel, hooks: { logMethod } });
 
-		if (sections) {
-			Object.keys(sections).forEach((section) => {
-				this[section as any] = this.logger.child({ section: sections[section] });
-			});
-		}
 
+		// TODO evaluate replacing this by an event emitter (since this callback is probably costly than an event emitter)
 		settings.get('Log_Level', (_key, value) => {
 			if (value != null) {
 				this.logger.level = getLevel(String(value));
@@ -62,27 +59,41 @@ export class Logger {
 		// this.logger.info('a', { c: 'b' }, 'd');
 	}
 
+	section(name: string): P.Logger {
+		return this.logger.child({ section: name });
+	}
+
 	level(newLevel: string): void {
 		this.logger.level = newLevel;
 	}
 
-	log(...args: any[]): void {
-		this.logger.info(...args);
+	log<T extends object>(obj: T, ...args: any[]): void;
+
+	log(msg: string, ...args: any[]): void {
+		this.logger.info(msg, ...args);
 	}
 
-	debug(...args: any[]): void {
-		this.logger.debug(...args);
+	debug<T extends object>(obj: T, ...args: any[]): void;
+
+	debug(msg: string, ...args: any[]): void {
+		this.logger.debug(msg, ...args);
 	}
 
-	info(...args: any[]): void {
-		this.logger.info(...args);
+	info<T extends object>(obj: T, ...args: any[]): void;
+
+	info(msg: string, ...args: any[]): void {
+		this.logger.info(msg, ...args);
 	}
 
-	success(...args: any[]): void {
-		this.logger.info(...args);
+	success<T extends object>(obj: T, ...args: any[]): void;
+
+	success(msg: string, ...args: any[]): void {
+		this.logger.info(msg, ...args);
 	}
 
-	warn(...args: any[]): void {
-		this.logger.warn(...args);
+	warn<T extends object>(obj: T, ...args: any[]): void;
+
+	warn(msg: string, ...args: any[]): void {
+		this.logger.warn(msg, ...args);
 	}
 }

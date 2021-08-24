@@ -1,4 +1,4 @@
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { FederationRoomEvents, Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
@@ -7,7 +7,8 @@ import { dispatchEvents } from '../handler';
 import { isFullyQualified } from '../functions/helpers';
 
 async function afterCreateDirectRoom(room, extras) {
-	logger.client.debug(() => `afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
+	// TODO Logger: convert to JSON
+	clientLogger.debug(`afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
 
 	// If the room is federated, ignore
 	if (room.federation) { return room; }
@@ -45,7 +46,7 @@ async function afterCreateDirectRoom(room, extras) {
 	} catch (err) {
 		await deleteRoom(room._id);
 
-		logger.client.error('afterCreateDirectRoom => Could not create federated room:', err);
+		clientLogger.error('afterCreateDirectRoom => Could not create federated room:', err);
 	}
 
 	return room;

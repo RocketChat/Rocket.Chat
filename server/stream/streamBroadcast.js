@@ -19,24 +19,22 @@ process.env.INSTANCE_IP = String(process.env.INSTANCE_IP).trim();
 const connections = {};
 this.connections = connections;
 
-const logger = new Logger('StreamBroadcast', {
-	sections: {
-		connection: 'Connection',
-		auth: 'Auth',
-		stream: 'Stream',
-	},
-});
+const logger = new Logger('StreamBroadcast');
+
+export const connLogger = logger.section('Connection');
+export const authLogger = logger.section('Auth');
+export const streamLogger = logger.section('Stream');
 
 function _authorizeConnection(instance) {
-	logger.auth.info(`Authorizing with ${ instance }`);
+	authLogger.info(`Authorizing with ${ instance }`);
 
 	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function(err, ok) {
 		if (err != null) {
-			return logger.auth.error(`broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err);
+			return authLogger.error(`broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err);
 		}
 
 		connections[instance].broadcastAuth = ok;
-		return logger.auth.info(`broadcastAuth with ${ instance }`, ok);
+		return authLogger.info(`broadcastAuth with ${ instance }`, ok);
 	});
 }
 
@@ -70,7 +68,7 @@ function startMatrixBroadcast() {
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
 			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
-				logger.auth.info('prevent self connect', instance);
+				authLogger.info('prevent self connect', instance);
 				return;
 			}
 
@@ -87,7 +85,7 @@ function startMatrixBroadcast() {
 				}
 			}
 
-			logger.connection.info('connecting in', instance);
+			connLogger.info('connecting in', instance);
 
 			connections[instance] = DDP.connect(instance, {
 				_dontPrintErrors: LoggerManager.logLevel < 2,
@@ -124,7 +122,7 @@ function startMatrixBroadcast() {
 			};
 
 			if (connections[instance] && !InstanceStatus.getCollection().findOne(query)) {
-				logger.connection.info('disconnecting from', instance);
+				connLogger.info('disconnecting from', instance);
 				connections[instance].disconnect();
 				return delete connections[instance];
 			}
@@ -150,7 +148,7 @@ function startMatrixBroadcast() {
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
 
-	logger.connection.info('connecting in', instance, value);
+	connLogger.info('connecting in', instance, value);
 
 	if (!isPresenceMonitorEnabled()) {
 		UserPresence.setDefaultStatus = (id, status) => {
@@ -236,21 +234,21 @@ export function startStreamBroadcast() {
 
 					switch (response) {
 						case 'self-not-authorized':
-							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`.red);
-							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							logger.stream.debug('    -> connection status'.red, connection.status());
-							return logger.stream.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`.red);
+							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
+							streamLogger.debug('    -> connection status'.red, connection.status());
+							return streamLogger.debug('    -> arguments'.red, eventName, args);
 						case 'not-authorized':
-							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`.red);
-							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							logger.stream.debug('    -> connection status'.red, connection.status());
-							logger.stream.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`.red);
+							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
+							streamLogger.debug('    -> connection status'.red, connection.status());
+							streamLogger.debug('    -> arguments'.red, eventName, args);
 							return authorizeConnection(instance);
 						case 'stream-not-exists':
-							logger.stream.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`.red);
-							logger.stream.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							logger.stream.debug('    -> connection status'.red, connection.status());
-							return logger.stream.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`.red);
+							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
+							streamLogger.debug('    -> connection status'.red, connection.status());
+							return streamLogger.debug('    -> arguments'.red, eventName, args);
 					}
 				});
 			}

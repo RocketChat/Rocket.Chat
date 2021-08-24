@@ -1,7 +1,7 @@
 import qs from 'querystring';
 
 import { disabled } from '../functions/errors';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { federationRequestToPeer } from '../lib/http';
 
@@ -10,7 +10,8 @@ export function federationSearchUsers(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	logger.client.debug(() => `searchUsers => query=${ query }`);
+	// TODO Logger: convert to JSON
+	clientLogger.debug(`searchUsers => query=${ query }`);
 
 	const [username, peerDomain] = query.split('@');
 
@@ -26,7 +27,8 @@ export function getUserByUsername(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	logger.client.debug(() => `getUserByUsername => query=${ query }`);
+	// TODO Logger: convert to JSON
+	clientLogger.debug(`getUserByUsername => query=${ query }`);
 
 	const [username, peerDomain] = query.split('@');
 
@@ -42,7 +44,8 @@ export function requestEventsFromLatest(domain, fromDomain, contextType, context
 		throw disabled('client.requestEventsFromLatest');
 	}
 
-	logger.client.debug(() => `requestEventsFromLatest => domain=${ domain } contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+	// TODO Logger: convert to JSON
+	clientLogger.debug(`requestEventsFromLatest => domain=${ domain } contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
 
 	const uri = '/api/v1/federation.events.requestFromLatest';
 
@@ -57,7 +60,8 @@ export function dispatchEvents(domains, events) {
 
 	domains = [...new Set(domains)];
 
-	logger.client.debug(() => `dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+	// TODO Logger: convert to JSON
+	clientLogger.debug(`dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
 
 	const uri = '/api/v1/federation.events.dispatch';
 
