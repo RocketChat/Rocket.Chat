@@ -16,7 +16,7 @@ import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom, saveUserIdentity } from '../../lib/server/functions';
 import { api } from '../../../server/sdk/api';
 
-export const logger = new Logger('LDAPSync', {});
+export const logger = new Logger('LDAPSync');
 
 export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();

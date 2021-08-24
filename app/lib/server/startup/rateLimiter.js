@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { Logger } from '../../../logger';
 
-const logger = new Logger('RateLimiter', {});
+const logger = new Logger('RateLimiter');
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())

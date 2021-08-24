@@ -4,7 +4,7 @@ let logger;
 
 if (Meteor.isServer) {
 	const { Logger } = require('../../logger/server/server');
-	logger = new Logger('TemplateVarHandler', {});
+	logger = new Logger('TemplateVarHandler');
 }
 
 export const templateVarHandler = function(variable, object) {

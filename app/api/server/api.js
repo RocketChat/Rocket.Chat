@@ -15,7 +15,7 @@ import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUse
 import { checkCodeForUser } from '../../2fa/server/code';
 
 
-const logger = new Logger('API', {});
+const logger = new Logger('API');
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
