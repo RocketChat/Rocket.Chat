@@ -36,6 +36,13 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		onChange();
 	}, [setModal, onChange]);
 
+	const handleDeletedUser = useCallback(() => {
+		setModal();
+		userRoute.push({});
+		onChange();
+	}, [setModal, onChange]);
+
+
 	const confirmOwnerChanges =
 		(action, modalProps = {}) =>
 		async () => {
@@ -79,7 +86,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			const result = await deleteUserEndpoint(deleteUserQuery);
 			if (result.success) {
 				setModal(
-					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					<GenericModal variant='success' onClose={handleDeletedUser} onConfirm={handleDeletedUser}>
 						{t('User_has_been_deleted')}
 					</GenericModal>,
 				);
