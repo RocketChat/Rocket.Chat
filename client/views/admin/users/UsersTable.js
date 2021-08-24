@@ -8,53 +8,14 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import UserRow from './UserRow';
 
-const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const useQuery = ({ text, itemsPerPage, current }, sortFields) =>
-	useMemo(
-		() => ({
-			fields: JSON.stringify({
-				name: 1,
-				username: 1,
-				emails: 1,
-				roles: 1,
-				status: 1,
-				avatarETag: 1,
-				active: 1,
-			}),
-			query: JSON.stringify({
-				$or: [
-					{ 'emails.address': { $regex: text || '', $options: 'i' } },
-					{ username: { $regex: text || '', $options: 'i' } },
-					{ name: { $regex: text || '', $options: 'i' } },
-				],
-			}),
-			sort: JSON.stringify(
-				sortFields.reduce((agg, [column, direction]) => {
-					agg[column] = sortDir(direction);
-					return agg;
-				}, {}),
-			),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
-		}),
-		[text, itemsPerPage, current, sortFields],
-	);
-
-function UsersTable() {
+function UsersTable(props) {
 	const t = useTranslation();
-
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort, setSort] = useState([
 		['name', 'asc'],
 		['usernames', 'asc'],
 	]);
-
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
-
-	const { value: data = {} } = useEndpointData('users.list', query);
 
 	const usersRoute = useRoute('admin-users');
 
@@ -159,8 +120,8 @@ function UsersTable() {
 					</GenericTable.HeaderCell>
 				</>
 			}
-			results={data.users}
-			total={data.total}
+			results={props.users}
+			total={props.total}
 			setParams={setParams}
 			params={params}
 			renderFilter={({ onChange, ...props }) => (
