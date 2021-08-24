@@ -1,65 +1,56 @@
-import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { useSeatsCapUsage } from '../../../../ee/client/hooks/useSeatsCapUsage';
-import SeatsCapUsage from '../../../../ee/client/views/admin/users/SeatsCapUsage';
+import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
+import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
+import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AddUser } from './AddUser';
 import EditUserWithData from './EditUserWithData';
 import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
+import UserPageHeaderContent from './UserPageHeaderContent';
 import UsersTable from './UsersTable';
 
 function UsersPage() {
-	const t = useTranslation();
-
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id');
+	const seatsCap = useSeatsCap();
 	const usersRoute = useRoute('admin-users');
+
+	useEffect(() => {
+		if (!context || !seatsCap) {
+			return;
+		}
+
+		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers) {
+			usersRoute.push({});
+		}
+	}, [context, seatsCap, usersRoute]);
+
+	const t = useTranslation();
 
 	const handleVerticalBarCloseButtonClick = () => {
 		usersRoute.push({});
-	};
-
-	const [, { context, id }] = useCurrentRoute();
-
-	const { shouldShowVerticalBar, handleLimitModal, members, limit } = useSeatsCapUsage();
-
-	const handleNewButtonClick = () => {
-		handleLimitModal(() => usersRoute.push({ context: 'new' }), 'add');
-	};
-
-	const handleInviteButtonClick = () => {
-		handleLimitModal(() => usersRoute.push({ context: 'invite' }), 'invite');
-	};
-
-	const handleRequestSeats = () => {
-		console.log('request seats');
 	};
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Users')}>
-					<ButtonGroup>
-						{limit !== 0 && <SeatsCapUsage members={members} limit={limit} />}
-						<Button onClick={handleNewButtonClick}>
-							<Icon size='x20' name='user-plus' /> {t('New')}
-						</Button>
-						<Button onClick={handleInviteButtonClick}>
-							<Icon size='x20' name='mail' /> {t('Invite')}
-						</Button>
-						<Button onClick={handleRequestSeats}>
-							<Icon size='x20' name='new-window' /> {t('Request_seats')}
-						</Button>
-					</ButtonGroup>
+					{seatsCap &&
+						(seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
+							<UserPageHeaderContentWithSeatsCap {...seatsCap} />
+						) : (
+							<UserPageHeaderContent />
+						))}
 				</Page.Header>
 				<Page.Content>
 					<UsersTable />
 				</Page.Content>
 			</Page>
-			{context && shouldShowVerticalBar && (
+			{context && (
 				<VerticalBar>
 					<VerticalBar.Header>
 						{context === 'info' && t('User_Info')}
