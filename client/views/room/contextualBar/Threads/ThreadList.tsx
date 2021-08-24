@@ -1,6 +1,6 @@
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadComponent from '../../../../../app/threads/client/components/ThreadComponent';
