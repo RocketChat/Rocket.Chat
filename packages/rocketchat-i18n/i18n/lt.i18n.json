@@ -2708,8 +2708,6 @@
   "Users_added": "Naudotojams buvo pridėta",
   "Users_in_role": "Vartotojai vaidmenyje",
   "UTF8_Names_Slugify": "UTF8 vardai Slugify",
-  "UTF8_Names_Validation": "UTF8 vardų patvirtinimas",
-  "UTF8_Names_Validation_Description": "RegExp, kuris bus naudojamas patvirtinti naudotojų vardus ir kanalų pavadinimus",
   "Validate_email_address": "Patvirtinkite el. Pašto adresą",
   "Verification": "Patvirtinimas",
   "Verification_Description": "Galite naudoti šiuos užpildytojus: <br/><ul><li>> [Verification_Url], jei norite patvirtinimo URL.</li><li>[vardas], [fname], [lname] atitinkamai vartotojo vardas, pavardė arba vardas.</li><li>[el. Paštas] naudotojo el. Laiškui.</li><li>> [Site_Name] ir [Site_URL] atitinkamai programos pavadinimui ir URL.</li></ul>",
