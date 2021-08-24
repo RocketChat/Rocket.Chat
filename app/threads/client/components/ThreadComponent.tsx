@@ -59,7 +59,7 @@ const ThreadComponent: FC<{
 	mid: string;
 	jump: unknown;
 	room: IRoom;
-	onClickBack: (e: unknown) => void;
+	onClickBack: () => void;
 }> = ({
 	mid,
 	jump,
