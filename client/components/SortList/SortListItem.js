@@ -14,7 +14,7 @@ function SortListItem({ text, icon, input }) {
 						</Flex.Item>
 						<Margins inline='x8'>
 							<Flex.Item grow={1}>
-								<Box is='span' fontScale='p2'>
+								<Box is='span' fontScale='p2' pie='x24'>
 									{text}
 								</Box>
 							</Flex.Item>

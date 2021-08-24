@@ -5,7 +5,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import KeyboardShortcutsWithClose from './KeyboardShortcutsWithClose';
 
 export default {
-	title: 'components/KeyboardShortcut',
+	title: 'room/contextualBar/KeyboardShortcut',
 	component: KeyboardShortcutsWithClose,
 };
 

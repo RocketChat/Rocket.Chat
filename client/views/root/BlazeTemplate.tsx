@@ -1,11 +1,12 @@
 import { Blaze } from 'meteor/blaze';
+import { EJSONable } from 'meteor/ejson';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Template } from 'meteor/templating';
 import React, { FC, useEffect, useRef } from 'react';
 
 type BlazeTemplateProps = {
 	template: keyof typeof Template;
-	data?: Record<string, unknown>;
+	data?: EJSONable;
 };
 
 const hiddenStyle = { display: 'none' } as const;

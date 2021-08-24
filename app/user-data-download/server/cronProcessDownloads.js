@@ -7,6 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
@@ -157,6 +158,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 				break;
 			case 'ul':
 				messageObject.msg = TAPi18n.__('User_left');
+				break;
+			case 'ult':
+				messageObject.msg = TAPi18n.__('User_left_team');
 				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
@@ -504,12 +508,14 @@ const continueExportOperation = async function(exportOperation) {
 			}
 		}
 
+		const generatedFileName = uuidv4();
+
 		if (exportOperation.status === 'downloading') {
 			exportOperation.fileList.forEach((attachmentData) => {
 				copyFile(attachmentData, exportOperation.assetsPath);
 			});
 
-			const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+			const targetFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (await fsExists(targetFile)) {
 				await fsUnlink(targetFile);
 			}
@@ -520,7 +526,7 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'compressing') {
 			createDir(zipFolder);
 
-			exportOperation.generatedFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+			exportOperation.generatedFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (!await fsExists(exportOperation.generatedFile)) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}

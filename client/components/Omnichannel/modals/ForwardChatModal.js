@@ -1,44 +1,61 @@
-import { Field, Button, TextAreaInput, Icon, ButtonGroup, Modal, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import {
+	Field,
+	Button,
+	TextAreaInput,
+	Icon,
+	ButtonGroup,
+	Modal,
+	Box,
+	PaginatedSelectFiltered,
+} from '@rocket.chat/fuselage';
+import { useMutableCallback, useAutoFocus, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useRecordList } from '../../../hooks/lists/useRecordList';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useForm } from '../../../hooks/useForm';
-import DepartmentAutoComplete from '../../../views/omnichannel/DepartmentAutoComplete';
 import ModalSeparator from '../../ModalSeparator';
 import UserAutoComplete from '../../UserAutoComplete';
+import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
 const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 	const t = useTranslation();
 
 	const inputRef = useAutoFocus(true);
 
-	const { values, handlers } = useForm({ departmentName: '', username: '', comment: '' });
-	const { departmentName, username, comment } = values;
+	const { values, handlers } = useForm({
+		username: '',
+		comment: '',
+		department: {},
+	});
+	const { username, comment, department } = values;
 	const [userId, setUserId] = useState('');
 
-	const { handleDepartmentName, handleUsername, handleComment } = handlers;
+	const { handleUsername, handleComment, handleDepartment } = handlers;
 	const getUserData = useEndpoint('GET', `users.info?username=${username}`);
-	const { value: departmentsData = {} } = useEndpointData(
-		'livechat/department',
-		useMemo(() => ({ enabled: true }), []),
+
+	const [departmentsFilter, setDepartmentsFilter] = useState('');
+
+	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
+
+	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
+		useMemo(() => ({ filter: debouncedDepartmentsFilter }), [debouncedDepartmentsFilter]),
 	);
 
-	const handleSend = useMutableCallback(() => {
-		onForward(departmentName, userId, comment);
-	}, [onForward, departmentName, userId, comment]);
+	const {
+		phase: departmentsPhase,
+		items: departmentsItems,
+		itemCount: departmentsTotal,
+	} = useRecordList(departmentsList);
 
-	const onChangeDepartment = useMutableCallback((departmentId) => {
-		handleDepartmentName(departmentId);
-		handleUsername('');
-		setUserId('');
-	});
+	const handleSend = useMutableCallback(() => {
+		onForward(department?.value, userId, comment);
+	}, [onForward, department.value, userId, comment]);
 
 	const onChangeUsername = useMutableCallback((username) => {
 		handleUsername(username);
-		handleDepartmentName('');
 	});
 
 	useEffect(() => {
@@ -53,9 +70,9 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [username]);
 
-	const canForward = departmentName || username;
+	const canForward = department || username;
 
-	const { departments } = departmentsData;
+	const departments = departmentsItems;
 
 	const hasDepartments = departments && departments.length > 0;
 
@@ -73,23 +90,28 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }) => {
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p1'>
-				{hasDepartments && (
-					<>
-						<Field mbe={'x30'}>
-							<Field.Label>{t('Forward_to_department')}</Field.Label>
-							<Field.Row>
-								<DepartmentAutoComplete
-									enabled={true}
-									value={departmentName}
-									onChange={onChangeDepartment}
-									flexShrink={1}
-									placeholder={t('Department_name')}
-								/>
-							</Field.Row>
-						</Field>
-						<ModalSeparator text={t('or')} />
-					</>
-				)}
+				<Field mbe={'x30'}>
+					<Field.Label>{t('Forward_to_department')}</Field.Label>
+					<Field.Row>
+						<PaginatedSelectFiltered
+							withTitle
+							filter={departmentsFilter}
+							setFilter={setDepartmentsFilter}
+							options={departmentsItems}
+							value={department}
+							maxWidth='100%'
+							placeholder={t('Select_an_option')}
+							onChange={handleDepartment}
+							flexGrow={1}
+							endReached={
+								departmentsPhase === AsyncStatePhase.LOADING
+									? () => {}
+									: (start) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+							}
+						/>
+					</Field.Row>
+				</Field>
+				<ModalSeparator text={t('or')} />
 				<Field mbs={hasDepartments && 'x30'}>
 					<Field.Label>{t('Forward_to_user')}</Field.Label>
 					<Field.Row>

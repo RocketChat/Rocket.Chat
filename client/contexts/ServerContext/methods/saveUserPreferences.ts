@@ -19,7 +19,7 @@ type UserPreferences = {
 	messageViewMode: number;
 	hideUsernames: boolean;
 	hideRoles: boolean;
-	hideAvatars: boolean;
+	displayAvatars: boolean;
 	hideFlexTab: boolean;
 	sendOnEnter: string;
 	idleTimeLimit: number;
@@ -27,9 +27,8 @@ type UserPreferences = {
 	sidebarShowUnread: boolean;
 	sidebarSortby: string;
 	sidebarViewMode: string;
-	sidebarHideAvatar: boolean;
+	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
-	sidebarShowDiscussion: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 };

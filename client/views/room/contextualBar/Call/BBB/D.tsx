@@ -6,7 +6,7 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
-import { useRoom } from '../../../providers/RoomProvider';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import CallBBB from './CallBBB';
 

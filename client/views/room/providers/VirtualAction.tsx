@@ -12,11 +12,16 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
+	const group = groupsDict[room.t];
 	if (room.teamMain) {
 		return 'team';
 	}
 
-	return groupsDict[room.t];
+	if (group === groupsDict.d && room.uids.length > 2) {
+		return 'direct_multiple';
+	}
+
+	return group;
 };
 
 const VirtualAction = ({

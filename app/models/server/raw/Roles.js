@@ -16,7 +16,7 @@ export class RolesRaw extends BaseRaw {
 			const roleName = roles[i];
 
 			// eslint-disable-next-line no-await-in-loop
-			const role = await this.findOne({ _id: roleName }, { scope: 1 });
+			const role = await this.findOne({ name: roleName }, { scope: 1 });
 			const roleScope = (role && role.scope) || 'Users';
 			const model = this.models[roleScope];
 

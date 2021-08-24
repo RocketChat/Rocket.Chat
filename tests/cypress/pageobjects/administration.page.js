@@ -210,9 +210,12 @@ class Administration extends Page {
 
 	get generalStreamCastAdressReset() { return browser.element('[data-qa-reset-setting-id="Stream_Cast_Address"]'); }
 
-	get generalUTF8Regex() { return browser.element('[data-qa-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8UsernamesRegex() { return browser.element('[data-qa-setting-id="UTF8_User_Names_Validation"]'); }
 
-	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8ChannelsRegex() { return browser.element('[data-qa-setting-id="UTF8_Channel_Names_Validation"]'); }
+
+	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_User_Names_Validation"]'); }
+
 
 	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
@@ -279,9 +282,9 @@ class Administration extends Page {
 
 	get accountsHideFlexTabReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideFlexTab"]'); }
 
-	get accountsHideAvatars() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatars() { return browser.element('[data-qa-setting-id="displayAvatars"]'); }
 
-	get accountsHideAvatarsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_hideAvatars"]'); }
+	get DisplayAvatarsReset() { return browser.element('[data-qa-reset-setting-id="displayAvatars"]'); }
 
 	get accountsMergeChannels() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mergeChannels"]'); }
 

@@ -33,13 +33,12 @@ Meteor.methods({
 			throw new Meteor.Error('room-closed', 'Room is not OnHold', { method: 'livechat:resumeOnHold' });
 		}
 
-		const { servedBy: { _id: agentId, username } } = room;
-
 		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', { method: 'livechat:resumeOnHold' });
 		}
 
+		const { servedBy: { _id: agentId, username } } = room;
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
 		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');

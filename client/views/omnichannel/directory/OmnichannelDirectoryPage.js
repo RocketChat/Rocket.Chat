@@ -12,7 +12,7 @@ const OmnichannelDirectoryPage = () => {
 	const defaultTab = 'contacts';
 
 	const [routeName] = useCurrentRoute();
-	const tab = useRouteParameter('tab');
+	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	useEffect(() => {
@@ -21,7 +21,7 @@ const OmnichannelDirectoryPage = () => {
 		}
 
 		if (!tab) {
-			return directoryRoute.replace({ tab: defaultTab });
+			return directoryRoute.replace({ page: defaultTab });
 		}
 	}, [routeName, directoryRoute, tab, defaultTab]);
 

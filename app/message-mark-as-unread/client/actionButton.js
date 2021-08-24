@@ -5,6 +5,7 @@ import { RoomManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
+import { roomTypes } from '../../utils/client';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -28,7 +29,11 @@ Meteor.startup(() => {
 				return FlowRouter.go('home');
 			});
 		},
-		condition({ msg, u }) {
+		condition({ msg, u, room }) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return msg.u._id !== u._id;
 		},
 		order: 10,

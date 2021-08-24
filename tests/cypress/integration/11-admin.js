@@ -643,8 +643,12 @@ describe('[Administration]', () => {
 					admin.generalUTF8Regex.scrollIntoView();
 				});
 
-				it('it should show the utf8 regex field', () => {
-					admin.generalUTF8Regex.should('be.visible');
+				it('it should show the usernames utf8 regex field', () => {
+					admin.generalUTF8UsernamesRegex.should('be.visible');
+				});
+
+				it('it should show the channels utf8 regex field', () => {
+					admin.generalUTF8ChannelsRegex.should('be.visible');
 				});
 
 				it('it should show the utf8 names slug checkboxes', () => {
@@ -791,13 +795,13 @@ describe('[Administration]', () => {
 					admin.accountsHideFlexTab.should('not.be.checked');
 				});
 
-				it('it should show the hide avatars field', () => {
-					admin.accountsHideAvatars.parent().scrollIntoView();
-					admin.accountsHideAvatars.parent().should('be.visible');
+				it('it should show the display avatars field', () => {
+					admin.accountsDisplayAvatars.parent().scrollIntoView();
+					admin.accountsDisplayAvatars.parent().should('be.visible');
 				});
 
-				it('the hide avatars field value should be false', () => {
-					admin.accountsHideAvatars.should('not.be.checked');
+				it('the display avatars field value should be true', () => {
+					admin.accountsDisplayAvatars.should('be.checked');
 				});
 
 				it('it should show the enter key behavior field', () => {

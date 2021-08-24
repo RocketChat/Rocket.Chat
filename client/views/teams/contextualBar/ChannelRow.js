@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 
-const ChannelRow = ({ onChange, selected, room, lastOwnerWarning = '', formatDate }) => {
+const ChannelRow = ({ onChange, selected, room, lastOwnerWarning, formatDate }) => {
 	const { name, fname, ts, isLastOwner } = room;
 
 	const handleChange = useMutableCallback(() => onChange(room));
@@ -12,11 +12,15 @@ const ChannelRow = ({ onChange, selected, room, lastOwnerWarning = '', formatDat
 	return (
 		<Table.Row action>
 			<Table.Cell maxWidth='x300' withTruncatedText>
-				<CheckBox checked={selected} onChange={handleChange} disabled={isLastOwner} />
+				<CheckBox
+					checked={selected}
+					onChange={handleChange}
+					disabled={lastOwnerWarning && isLastOwner}
+				/>
 				<Margins inline='x8'>
 					<Icon size='x16' {...useRoomIcon(room)} />
 					{fname ?? name}
-					{isLastOwner && (
+					{lastOwnerWarning && isLastOwner && (
 						<Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />
 					)}
 				</Margins>

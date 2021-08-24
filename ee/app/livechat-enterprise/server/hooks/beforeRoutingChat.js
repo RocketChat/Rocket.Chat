@@ -3,6 +3,7 @@ import { settings } from '../../../../../app/settings';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
+import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 
 callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 	if (!settings.get('Livechat_waiting_queue')) {
@@ -13,7 +14,7 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 		return inquiry;
 	}
 
-	const { _id, status } = inquiry;
+	const { _id, status, department } = inquiry;
 
 	if (status !== 'ready') {
 		return inquiry;
@@ -23,9 +24,9 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 		return inquiry;
 	}
 
-	LivechatInquiry.queueInquiry(_id);
+	saveQueueInquiry(inquiry);
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id });
+	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
 	if (inq) {
 		dispatchInquiryPosition(inq);
 	}

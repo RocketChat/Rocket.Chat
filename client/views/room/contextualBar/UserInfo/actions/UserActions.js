@@ -5,9 +5,9 @@ import UserInfo from '..';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useUserInfoActions } from '../../../hooks/useUserInfoActions';
 
-const UserActions = ({ user, rid }) => {
+const UserActions = ({ user, rid, backToList }) => {
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(
-		useUserInfoActions(user, rid),
+		useUserInfoActions(user, rid, backToList),
 	);
 
 	const menu = useMemo(() => {

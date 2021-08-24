@@ -19,24 +19,12 @@ window.currentTracker = undefined;
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-
-const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
-	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom(type, rid, Meteor.user());
-		if (room) {
-			c.stop();
-			return resolve(room);
-		}
-	});
-});
-
-
 NewRoomManager.on('changed', (rid) => {
 	Session.set('openedRoom', rid);
 	RoomManager.openedRoom = rid;
 });
 
-export const openRoom = async function(type, name) {
+export const openRoom = async function(type, name, render = true) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
@@ -61,7 +49,7 @@ export const openRoom = async function(type, name) {
 
 			RoomManager.open(type + name);
 
-			appLayout.render('main', { center: 'room' });
+			render && appLayout.render('main', { center: 'room' });
 
 
 			c.stop();
@@ -102,9 +90,9 @@ export const openRoom = async function(type, name) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await call('createDirectMessage', ...name.split(', ')).then((result) => waitUntilRoomBeInserted(type, result.rid)).catch(() => {});
+				const result = await call('createDirectMessage', ...name.split(', '));
 				if (result) {
-					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
+					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });

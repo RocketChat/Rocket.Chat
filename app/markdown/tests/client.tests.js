@@ -3,10 +3,11 @@ import 'babel-polyfill';
 import assert from 'assert';
 
 import './client.mocks.js';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import { original } from '../lib/parser/original/original';
 import { filtered } from '../lib/parser/filtered/filtered';
 import { Markdown } from '../lib/markdown';
-import { escapeHTML } from '../../../lib/escapeHTML';
 
 const wrapper = (text, tag) => `<span class="copyonly">${ tag }</span>${ text }<span class="copyonly">${ tag }</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${ text }</strong>`, '*');
@@ -14,7 +15,7 @@ const italicWrapper = (text) => wrapper(`<em>${ text }</em>`, '_');
 const strikeWrapper = (text) => wrapper(`<strike>${ text }</strike>`, '~');
 const headerWrapper = (text, level) => `<h${ level }>${ text }</h${ level }>`;
 const quoteWrapper = (text) => `<blockquote class="background-transparent-darker-before"><span class="copyonly">&gt;</span>${ text }</blockquote>`;
-const linkWrapped = (link, title) => `<a href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
+const linkWrapped = (link, title) => `<a data-title="${ link }" href="${ link }" target="_blank" rel="noopener noreferrer">${ title }</a>`;
 const inlinecodeWrapper = (text) => wrapper(`<span><code class="code-colors inline">${ text }</code></span>`, '`');
 const codeWrapper = (text, lang) => `<pre><code class='code-colors hljs ${ lang }'><span class='copyonly'>\`\`\`<br></span>${ text }<span class='copyonly'><br>\`\`\`</span></code></pre>`;
 

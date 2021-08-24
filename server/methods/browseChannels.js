@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import s from 'underscore.string';
 import mem from 'mem';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Users, Subscriptions } from '../../app/models/server';
@@ -10,7 +11,6 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
-import { escapeRegExp } from '../../lib/escapeRegExp';
 import { Team } from '../sdk';
 
 const sortChannels = function(field, direction) {
@@ -44,15 +44,18 @@ const sortUsers = function(field, direction) {
 	}
 };
 
-const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
+const getChannelsAndGroups = (user, canViewAnon, searchTerm, sort, pagination) => {
 	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
 		return;
 	}
 
 	const teams = Promise.await(Team.getAllPublicTeams());
-	const teamIds = teams.map(({ _id }) => _id);
+	const publicTeamIds = teams.map(({ _id }) => _id);
 
-	const result = Rooms.findByNameOrFNameAndTypeIncludingTeamRooms(searchTerm, 'c', teamIds, {
+	const userTeamsIds = Promise.await(Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+	const userRooms = user.__rooms;
+
+	const cursor = Rooms.findByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, [...userTeamsIds, ...publicTeamIds], userRooms, {
 		...pagination,
 		sort: {
 			featured: -1,
@@ -74,11 +77,15 @@ const getChannels = (user, canViewAnon, searchTerm, sort, pagination) => {
 			teamId: 1,
 		},
 	});
+	const total = cursor.count(); // count ignores the `skip` and `limit` options
+	const result = cursor.fetch();
 
-	const total = result.count(); // count ignores the `skip` and `limit` options
-	const results = result.fetch().map((room) => {
+	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
+	const teamsMains = Promise.await(Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } }));
+
+	const results = result.map((room) => {
 		if (room.teamId) {
-			const team = teams.find((team) => team._id === room.teamId);
+			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
 			if (team) {
 				room.belongsTo = team.name;
 			}
@@ -202,13 +209,16 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 
 Meteor.methods({
 	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
-		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+		const searchTerm = s.trim(escapeRegExp(text));
 
 		if (!['channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {
 			return;
 		}
 
-		if (!['name', 'createdAt', 'usersCount', ['channels', 'teams'].includes(...type) ? ['usernames', 'lastMessage'] : [], ...type === 'users' ? ['username', 'email', 'bio'] : []].includes(sortBy)) {
+		const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
+		const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
+
+		if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
 			return;
 		}
 
@@ -227,9 +237,9 @@ Meteor.methods({
 
 		switch (type) {
 			case 'channels':
-				return getChannels(user, canViewAnonymous, regex, sortChannels(sortBy, sortDirection), pagination);
+				return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'teams':
-				return getTeams(user, text, sortChannels(sortBy, sortDirection), pagination);
+				return getTeams(user, searchTerm, sortChannels(sortBy, sortDirection), pagination);
 			case 'users':
 				return getUsers(user, text, workspace, sortUsers(sortBy, sortDirection), pagination);
 			default:

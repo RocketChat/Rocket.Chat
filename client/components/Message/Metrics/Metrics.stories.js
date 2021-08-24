@@ -5,7 +5,7 @@ import Reply from './Reply';
 import Metrics from './index';
 
 export default {
-	title: 'components/Message/Metrics',
+	title: 'message/Metrics',
 	component: Metrics,
 };
 

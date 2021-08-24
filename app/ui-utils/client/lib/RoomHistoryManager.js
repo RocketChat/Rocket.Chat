@@ -5,6 +5,7 @@ import { Blaze } from 'meteor/blaze';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
@@ -14,7 +15,6 @@ import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
-import { escapeHTML } from '../../../../lib/escapeHTML';
 import { getUserPreference } from '../../../utils/client';
 
 export const normalizeThreadMessage = ({ ...message }) => {

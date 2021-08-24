@@ -3,7 +3,7 @@ import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import ChannelDesertionTable from '../../ChannelDesertionTable';
+import ChannelDesertionTable from '../../../ChannelDesertionTable';
 
 const RemoveUsersFirstStep = ({
 	onClose,
@@ -27,7 +27,7 @@ const RemoveUsersFirstStep = ({
 		<GenericModal
 			variant='warning'
 			icon='warning'
-			title={t('What would you like to do?')}
+			title={t('Teams_removing_member')}
 			cancelText={t('Cancel')}
 			confirmText={t('Continue')}
 			onClose={onClose}

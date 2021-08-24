@@ -8,7 +8,6 @@ const DescriptionListEntry = ({ children, label, ...props }) => (
 		<Table.Cell
 			is='th'
 			scope='col'
-			width='30%'
 			align='end'
 			color='hint'
 			backgroundColor='surface'
@@ -17,7 +16,7 @@ const DescriptionListEntry = ({ children, label, ...props }) => (
 		>
 			{label}
 		</Table.Cell>
-		<Table.Cell width='70%' align='start' color='default' style={style}>
+		<Table.Cell align='start' color='default' style={style}>
 			{children}
 		</Table.Cell>
 	</Table.Row>

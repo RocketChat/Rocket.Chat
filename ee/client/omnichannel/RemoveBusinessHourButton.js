@@ -2,7 +2,7 @@ import { Table, Icon, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import DeleteWarningModal from '../../../client/components/DeleteWarningModal';
+import GenericModal from '../../../client/components/GenericModal';
 import { useSetModal } from '../../../client/contexts/ModalContext';
 import { useMethod } from '../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../client/contexts/ToastMessagesContext';
@@ -35,7 +35,14 @@ function RemoveBusinessHourButton({ _id, type, reload }) {
 			setModal();
 		};
 
-		setModal(<DeleteWarningModal onDelete={onBusinessHour} onCancel={() => setModal()} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onBusinessHour}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	});
 
 	return (

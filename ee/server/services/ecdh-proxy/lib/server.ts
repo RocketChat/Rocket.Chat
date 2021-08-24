@@ -8,7 +8,7 @@ import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import mem from 'mem';
 
-import { ServerSession } from '../../../../app/ecdh/ServerSession';
+import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
 
 const app = express();
 app.use(cookieParser());

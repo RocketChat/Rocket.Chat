@@ -42,17 +42,18 @@ function ContactTable({ setContactReload }) {
 
 	const onButtonNewClick = useMutableCallback(() =>
 		directoryRoute.push({
-			tab: 'contacts',
-			context: 'new',
+			page: 'contacts',
+			bar: 'new',
 		}),
 	);
 
-	const onRowClick = useMutableCallback((id) => () =>
-		directoryRoute.push({
-			tab: 'contacts',
-			context: 'info',
-			id,
-		}),
+	const onRowClick = useMutableCallback(
+		(id) => () =>
+			directoryRoute.push({
+				page: 'contacts',
+				id,
+				bar: 'info',
+			}),
 	);
 
 	const { value: data, reload } = useEndpointData('livechat/visitors.search', query);

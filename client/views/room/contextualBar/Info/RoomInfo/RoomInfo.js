@@ -37,6 +37,7 @@ function RoomInfo({
 		filesOnlyDefault,
 		excludePinnedDefault,
 		maxAgeDefault,
+		retentionEnabledDefault,
 	} = retentionPolicy;
 
 	const memoizedActions = useMemo(
@@ -65,7 +66,7 @@ function RoomInfo({
 			...(onClickMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
-					icon: 'team',
+					icon: 'team-arrow-right',
 					action: onClickMoveToTeam,
 				},
 			}),
@@ -195,7 +196,7 @@ function RoomInfo({
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && (
+						{retentionPolicyEnabled && retentionEnabledDefault && (
 							<RetentionPolicyCallout
 								filesOnlyDefault={filesOnlyDefault}
 								excludePinnedDefault={excludePinnedDefault}

@@ -1,4 +1,4 @@
-import { Collection, Cursor, FindOneOptions } from 'mongodb';
+import { Collection, Cursor, FindOneOptions, WithoutProjection } from 'mongodb';
 
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 import { BaseRaw } from './BaseRaw';
@@ -16,7 +16,7 @@ export class BannersRaw extends BaseRaw<T> {
 		]);
 	}
 
-	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOneOptions<T>): Cursor<T> {
+	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: WithoutProjection<FindOneOptions<T>>): Cursor<T> {
 		const today = new Date();
 
 		const query = {
