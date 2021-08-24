@@ -145,6 +145,11 @@ export class LivechatUnit extends LivechatDepartment {
 
 		return monitoredUnits.map((u) => u.unitId);
 	}
+
+	findMonitoredDepartmentsByMonitorId(monitorId) {
+		const monitoredUnits = this.findByMonitorId(monitorId);
+		return LivechatDepartmentInstance.findByUnitIds(monitoredUnits);
+	}
 }
 
 export default new LivechatUnit(LivechatDepartmentInstance.model);

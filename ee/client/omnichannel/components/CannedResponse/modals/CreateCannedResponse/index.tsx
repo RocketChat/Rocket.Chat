@@ -19,6 +19,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
+	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
 	const form = useForm({
 		_id: data ? data._id : '',
@@ -87,12 +88,15 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 				tags: any;
 				departmentId: { value: string; label: string };
 			};
+			const mappedTags = tags.map((tag: string | { value: string; label: string }) =>
+				typeof tag === 'object' ? tag?.value : tag,
+			);
 			await saveCannedResponse({
 				...(_id && { _id }),
 				shortcut,
 				text,
 				scope,
-				...(tags.length > 0 && { tags }),
+				...(tags.length > 0 && { tags: mappedTags }),
 				...(departmentId && { departmentId: departmentId.value }),
 			});
 			dispatchToastMessage({
@@ -113,6 +117,7 @@ const WrapCreateCannedResponseModal: FC<{ data?: any; reloadCannedList?: any }> 
 	return (
 		<CreateCannedResponseModal
 			isManager={hasManagerPermission}
+			isMonitor={hasMonitorPermission}
 			values={values}
 			handlers={handlers}
 			errors={errors}
