@@ -459,17 +459,15 @@ const generateUserAvatarFile = function(exportOperation, userData) {
 };
 
 function spliceByFileSize(fileList, size) {
-	let fileCounter = 0;
 	let sizeCounter = 0;
 
-	for (const file of fileList) {
-		fileCounter++;
+	fileList.forEach((file, i) => {
 		sizeCounter += file.size;
 
 		if (sizeCounter > size) {
-			return fileList.splice(0, fileCounter);
+			return fileList.splice(0, i);
 		}
-	}
+	});
 
 	return fileList.splice(0, fileList.length);
 }
