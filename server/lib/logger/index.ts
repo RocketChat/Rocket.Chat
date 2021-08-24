@@ -49,7 +49,7 @@ export class Logger {
 
 		if (sections) {
 			Object.keys(sections).forEach((section) => {
-				this[section as any] = this.logger.child({ section });
+				this[section as any] = this.logger.child({ section: sections[section] });
 			});
 		}
 
