@@ -67,15 +67,14 @@ describe('[OutOfOffice]', function() {
 	before((done) => getCredentials(done));
 
 	// only for debugging
-	// TODO - but there needs to a permenant method
 	after((done) => {
-		request.get(api('outOfOffice.removeAll')).expect(200).end(done);
+		request.get(api('outout-of-office.status')).expect(200).end(done);
 	});
 
-	describe('[/outOfOffice.toggle]', () => {
+	describe('[/out-of-office.toggle]', () => {
 		it('cannot be enabled if the user is unauthenticated', (done) => {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.send(generateOutOfOfficeData())
 				.expect(401)
 				.end(done);
@@ -83,7 +82,7 @@ describe('[OutOfOffice]', function() {
 
 		it('cannot be enabled if the "customMessage" is empty', (done) => {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(generateOutOfOfficeData({ customMessage: '' }))
 				.expect(400)
@@ -98,7 +97,7 @@ describe('[OutOfOffice]', function() {
 			const outOfOfficeData = generateOutOfOfficeData();
 			delete outOfOfficeData.isEnabled;
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(outOfOfficeData)
 				.expect(400)
@@ -110,7 +109,7 @@ describe('[OutOfOffice]', function() {
 
 		it('cannot be enabled if "startDate" and "endDate" are invalid ', (done) => {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(
 					generateOutOfOfficeData({
@@ -131,7 +130,7 @@ describe('[OutOfOffice]', function() {
 			endDateObject.setHours(endDateObject.getHours() - 1);
 
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(
 					generateOutOfOfficeData({
@@ -146,28 +145,9 @@ describe('[OutOfOffice]', function() {
 				.end(done);
 		});
 
-		// TODO - check for this validation
-		it.skip('cannot be enabled if "startDate" is before the current date', (done) => {
-			const outOfOfficeData = generateOutOfOfficeData();
-			const startDateObject = new Date();
-			startDateObject.setDate(startDateObject.getHours() - 1);
-
-			outOfOfficeData.startDate = startDateObject.toISOString();
-
-			request
-				.post(api('outOfOffice.toggle'))
-				.set(credentials)
-				.send(outOfOfficeData)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
 		it('has a message when successfully enabled', (done) => {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(generateOutOfOfficeData())
 				.expect(200)
@@ -181,7 +161,7 @@ describe('[OutOfOffice]', function() {
 
 		it('has a message when successfully disabled', (done) => {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(generateOutOfOfficeData({ isEnabled: false }))
 				.expect(200)
@@ -198,7 +178,7 @@ describe('[OutOfOffice]', function() {
 		/** @type {User} */
 		let createdUser;
 		let createdUserCredentials;
-		const firstCustomMessage =			'_Out of Office Message_ Currently testing *PostMessageHandler*.';
+		const firstCustomMessage = '_Out of Office Message_ Currently testing *PostMessageHandler*.';
 
 		before(async () => {
 			createdUser = await createUser();
@@ -208,7 +188,7 @@ describe('[OutOfOffice]', function() {
 		before(function(done) {
 			this.timeout(7000);
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(credentials)
 				.send(generateOutOfOfficeData({ customMessage: firstCustomMessage }))
 				.expect(200)
@@ -279,13 +259,13 @@ describe('[OutOfOffice]', function() {
 		});
 
 		describe('Out-Of-Office message is not sent if it was disabled before the first incoming message', () => {
-			const secondCustomMessage =				'_Out Of Office_ Was disabled before first message';
+			const secondCustomMessage =	'_Out Of Office_ Was disabled before first message';
 			const firstIncomingMessage = 'Testing if out-office message was present';
 
 			before('enable out-of-office', function(done) {
 				this.timeout(7000);
 				request
-					.post(api('outOfOffice.toggle'))
+					.post(api('out-of-office.toggle'))
 					.set(credentials)
 					.send(generateOutOfOfficeData({ customMessage: secondCustomMessage }))
 					.expect(200)
@@ -294,7 +274,7 @@ describe('[OutOfOffice]', function() {
 
 			before('disable out-of-office', (done) => {
 				request
-					.post(api('outOfOffice.toggle'))
+					.post(api('out-of-office.toggle'))
 					.set(credentials)
 					.send(generateOutOfOfficeData({ isEnabled: false }))
 					.expect(200)
@@ -330,7 +310,7 @@ describe('[OutOfOffice]', function() {
 		});
 	});
 
-	describe('[/outOfOffice.status]', () => {
+	describe('[/out-of-office.status]', () => {
 		/** @type {User} */
 		let createdUser;
 		let createdUserCredentials;
@@ -346,7 +326,7 @@ describe('[OutOfOffice]', function() {
 
 		before(function(done) {
 			request
-				.post(api('outOfOffice.toggle'))
+				.post(api('out-of-office.toggle'))
 				.set(createdUserCredentials)
 				.send(createdOutOfOfficeData)
 				.expect(200)
@@ -358,12 +338,12 @@ describe('[OutOfOffice]', function() {
 		});
 
 		it('returns unauthorized if user is not authenticated', (done) => {
-			request.get(api('outOfOffice.status')).expect(401).end(done);
+			request.get(api('out-of-office.status')).expect(401).end(done);
 		});
 
 		it("has the same data when user's out-of-office was enabled", (done) => {
 			request
-				.get(api('outOfOffice.status'))
+				.get(api('out-of-office.status'))
 				.set(createdUserCredentials)
 				.expect(200)
 				.expect('Content-Type', 'application/json')
@@ -395,7 +375,7 @@ describe('[OutOfOffice]', function() {
 
 			before((done) => {
 				request
-					.post(api('outOfOffice.toggle'))
+					.post(api('out-of-office.toggle'))
 					.set(createdUserCredentials)
 					.send(newOutOfOfficeData)
 					.expect(200)
@@ -404,7 +384,7 @@ describe('[OutOfOffice]', function() {
 
 			it('has the updated out-of-office data', (done) => {
 				request
-					.get(api('outOfOffice.status'))
+					.get(api('out-of-office.status'))
 					.set(createdUserCredentials)
 					.expect(200)
 					.expect('Content-Type', 'application/json')

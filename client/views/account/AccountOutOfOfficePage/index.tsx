@@ -6,7 +6,7 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import OutOfOfficeForm from './AccountOutOfOfficeForm';
 
 function OutOfOfficePage(): ReactNode {
-	const { value, phase } = useEndpointData('outOfOffice.status' as any);
+	const { value, phase } = useEndpointData('out-of-office.status' as any);
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (

@@ -1,4 +1,7 @@
+import { Logger } from '../../../logger/server';
 import { OutOfOfficeRooms, OutOfOfficeUsers } from '../../../models/server';
+
+const logger = new Logger('OutOfOffice');
 
 export async function addToOutOfOfficeRoomsCollection(
 	userId: string,
@@ -9,10 +12,9 @@ export async function addToOutOfOfficeRoomsCollection(
 			OutOfOfficeRooms.addUserIdAndRoomId({ userId, roomId }),
 		),
 	).catch((e) => {
-		console.log(
-			'Error while adding user and room to OutOfOfficeRooms collection',
-			e,
-		);
+		/* @ts-expect-error */
+		logger.error('Error while adding user and room to OutOfOfficeRooms collection',
+			e);
 	});
 }
 

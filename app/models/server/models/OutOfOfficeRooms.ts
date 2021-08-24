@@ -2,7 +2,7 @@ import { Base } from './_Base';
 
 class OutOfOfficeRooms extends Base {
 	constructor() {
-		super('OutOfOfficeRooms');
+		super('outofoffice_rooms');
 
 		this.tryEnsureIndex({ roomId: 1 });
 	}

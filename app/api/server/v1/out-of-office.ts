@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Promise } from 'meteor/promise';
 import { check, Match } from 'meteor/check';
 
 import { API } from '../api';
@@ -7,12 +8,12 @@ import { updateOutOfOffice } from '../../../out-of-office/server';
 import { OutOfOfficeUsers } from '../../../models/server';
 
 API.v1.addRoute(
-	'outOfOffice.toggle',
+	'out-of-office.toggle',
 	{ authRequired: true },
 	{
 		post() {
 			if (!settings.get('Out_Of_Office_Enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Out-Of-Office Not Enabled', 'outOfOffice.toggle');
+				throw new Meteor.Error('error-not-allowed', 'Out-Of-Office Not Enabled', 'out-of-office.toggle');
 			}
 
 			check(
@@ -26,7 +27,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { message } = (Promise as any).await(updateOutOfOffice({
+			const { message } = Promise.await(updateOutOfOffice({
 				userId: this.userId,
 				...this.bodyParams,
 			}));
@@ -37,12 +38,12 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'outOfOffice.status',
+	'out-of-office.status',
 	{ authRequired: true },
 	{
 		get() {
 			if (!settings.get('Out_Of_Office_Enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Out-Of-Office Not Enabled', 'outOfOffice.toggle');
+				throw new Meteor.Error('error-not-allowed', 'Out-Of-Office Not Enabled', 'out-of-office.status');
 			}
 
 			const foundDocument = OutOfOfficeUsers.findOneByUserId(this.userId, {
@@ -57,9 +58,7 @@ API.v1.addRoute(
 
 			if (!foundDocument) {
 				return API.v1.success({
-					error: 'error-not-found',
-					details:
-            'Out of Office document associated with this user-id could not be found',
+					isEnabled: false,
 				});
 			}
 

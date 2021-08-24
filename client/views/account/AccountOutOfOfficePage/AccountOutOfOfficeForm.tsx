@@ -132,7 +132,7 @@ function OutOfOfficeForm({
 
 	const toggleOutOfOffice = useEndpointAction(
 		'POST',
-		'outOfOffice.toggle',
+		'out-of-office.toggle',
 		useMemo(
 			() => ({
 				isEnabled,

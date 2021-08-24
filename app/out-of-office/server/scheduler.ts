@@ -29,7 +29,7 @@ class OutOfOfficeScheduler {
 			mongo: (
 				MongoInternals.defaultRemoteCollectionDriver().mongo as any
 			).client.db(),
-			db: { collection: 'outofoffice_scheduler' },
+			db: { collection: 'rocketchat_outofoffice_scheduler' },
 			defaultConcurrency: 1,
 		});
 		this.isConnected = false;
