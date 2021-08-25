@@ -65,7 +65,7 @@ export const theme = new class {
 		return less.render(content, options, function(err, data) {
 			logger.info({ stop_rendering: Date.now() - start });
 			if (err != null) {
-				return console.log(err);
+				return logger.error(err);
 			}
 			settings.updateById('css', data.css);
 

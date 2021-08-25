@@ -290,7 +290,7 @@ export class SlackImporter extends Base {
 			});
 
 			if (!_.isEmpty(missedTypes)) {
-				console.log('Missed import types:', missedTypes);
+				this.logger.info('Missed import types:', missedTypes);
 			}
 		} catch (e) {
 			this.logger.error(e);

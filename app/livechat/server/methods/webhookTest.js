@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../logger/server';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
 	HTTP.post(url, options, function(err, res) {
@@ -73,7 +74,7 @@ Meteor.methods({
 
 		const response = postCatchError(settings.get('Livechat_webhookUrl'), options);
 
-		console.log('response ->', response);
+		SystemLogger.debug('response ->', response);
 
 		if (response && response.statusCode && response.statusCode === 200) {
 			return true;

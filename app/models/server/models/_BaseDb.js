@@ -20,7 +20,8 @@ try {
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	console.log(e);
+	// TODO need to remove Logger dependency on settings to be able to use it here
+	console.error(e);
 }
 
 const actions = {

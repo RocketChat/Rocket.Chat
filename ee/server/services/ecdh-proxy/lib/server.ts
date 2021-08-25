@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import mem from 'mem';
 
 import { ServerSession } from '../../../../app/ecdh/server/ServerSession';
+import { SystemLogger } from '../../../../../app/logger/server';
 
 const app = express();
 app.use(cookieParser());
@@ -117,19 +118,19 @@ app.post('/api/ecdh_proxy/echo', async (req, res) => {
 		const result = await session.decrypt(req.body.text);
 		res.send(await session.encrypt(result));
 	} catch (e) {
-		console.log(e);
+		SystemLogger.error(e);
 		res.status(400).send(e.message);
 	}
 });
 
 const httpServer = app.listen(port, () => {
-	console.log(`Proxy listening at http://localhost:${ port }`);
+	SystemLogger.info(`Proxy listening at http://localhost:${ port }`);
 });
 
 const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('error', (error) => {
-	console.log(error);
+	SystemLogger.error(error);
 });
 
 wss.on('connection', async (ws, req) => {

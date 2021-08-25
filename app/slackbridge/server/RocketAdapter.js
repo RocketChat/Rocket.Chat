@@ -301,7 +301,7 @@ export default class RocketAdapter {
 							Meteor._sleepForMs(1000);
 							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
 						}
-						console.log(e.message);
+						rocketLogger.error(e.message);
 					}
 
 					const roomUpdate = {

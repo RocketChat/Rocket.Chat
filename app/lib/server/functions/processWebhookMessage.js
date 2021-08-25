@@ -6,6 +6,7 @@ import mem from 'mem';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
+import { SystemLogger } from '../../../logger/server';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
 // show deprecation warning only once per hour for each integration
@@ -52,7 +53,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 		}
 
 		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
-			console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
+			SystemLogger.warn('Attachments should be Array, ignoring value', messageObj.attachments);
 			messageObj.attachments = undefined;
 		}
 

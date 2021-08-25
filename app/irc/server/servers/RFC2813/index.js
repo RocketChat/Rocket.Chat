@@ -5,6 +5,9 @@ import { EventEmitter } from 'events';
 import parseMessage from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';
 import localCommandHandlers from './localCommandHandlers';
+import { Logger } from '../../../../logger/server';
+
+const logger = new Logger('IRC Server');
 
 class RFC2813 {
 	constructor(config) {
@@ -35,7 +38,7 @@ class RFC2813 {
 		this.socket.on('data', this.onReceiveFromPeer.bind(this));
 
 		this.socket.on('connect', this.onConnect.bind(this));
-		this.socket.on('error', (err) => console.log('[irc][server][err]', err));
+		this.socket.on('error', (err) => logger.error(err));
 		this.socket.on('timeout', () => this.log('Timeout'));
 		this.socket.on('close', () => this.log('Connection Closed'));
 		// Setup local
@@ -46,7 +49,7 @@ class RFC2813 {
 	 * Log helper
 	 */
 	log(message) {
-		console.log(`[irc][server] ${ message }`);
+		logger.info(message);
 	}
 
 	/**

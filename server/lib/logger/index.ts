@@ -74,17 +74,23 @@ export class Logger {
 
 	log<T extends object>(obj: T, ...args: any[]): void;
 
+	log(msg: string, ...args: any[]): void;
+
 	log(msg: string, ...args: any[]): void {
 		this.logger.info(msg, ...args);
 	}
 
 	debug<T extends object>(obj: T, ...args: any[]): void;
 
+	debug(msg: string, ...args: any[]): void;
+
 	debug(msg: string, ...args: any[]): void {
 		this.logger.debug(msg, ...args);
 	}
 
-	// info<T extends object>(obj: T, ...args: any[]): void;
+	info<T extends object>(obj: T, ...args: any[]): void;
+
+	info(msg: string, ...args: any[]): void;
 
 	info(msg: string, ...args: any[]): void {
 		this.logger.info(msg, ...args);
@@ -92,17 +98,23 @@ export class Logger {
 
 	success<T extends object>(obj: T, ...args: any[]): void;
 
+	success(msg: string, ...args: any[]): void;
+
 	success(msg: string, ...args: any[]): void {
 		this.logger.info(msg, ...args);
 	}
 
-	// warn<T extends object>(obj: T, ...args: any[]): void;
+	warn<T extends object>(obj: T, ...args: any[]): void;
+
+	warn(msg: string, ...args: any[]): void;
 
 	warn(msg: string, ...args: any[]): void {
 		this.logger.warn(msg, ...args);
 	}
 
 	error<T extends object>(obj: T, ...args: any[]): void;
+
+	error(msg: string, ...args: any[]): void;
 
 	error(msg: string, ...args: any[]): void {
 		this.logger.error(msg, ...args);
