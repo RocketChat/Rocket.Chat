@@ -72,7 +72,7 @@ const getUnavailableAgents = function(_: any, departmentId: string, customFilter
 				},
 			},
 		},
-		...customFilter || [],
+		...customFilter ? [customFilter] : [],
 		{
 			$sort: {
 				'queueInfo.chats': 1,
