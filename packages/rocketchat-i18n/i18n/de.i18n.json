@@ -4009,8 +4009,6 @@
   "Uses": "Verwendet",
   "Uses_left": "Verbleibende Verwendungen",
   "UTF8_Names_Slugify": "UTF8-Namen-Slugify",
-  "UTF8_Names_Validation": "UTF8-Namen-Verifizierung",
-  "UTF8_Names_Validation_Description": "Regulärer Ausdruck, der zur Validierung der Benutzer- und Kanalnamen verwendet wird",
   "Validate_email_address": "E-Mail-Adresse bestätigen",
   "Verification": "Überprüfung ",
   "Verification_Description": "Sie können die folgenden Platzhalter verwenden: <br/><ul><li>[Verification_Url] für die Verifikations-URL</li><li>[name], [fname], [lname] für den vollständigen Namen, Vornamen oder Nachnamen des Benutzers</li><li>[email] für die E-Mail-Adresse des Benutzers.</li><li>[Site_Name] und [Site_URL] für den Anwendungsnamen und die URL der Anwendung</li></ul>",
