@@ -199,6 +199,7 @@
 		"clipboard": "^2.0.8",
 		"codemirror": "^5.62.0",
 		"coffeescript": "^2.5.1",
+		"colorette": "^1.3.0",
 		"connect": "^3.7.0",
 		"core-js": "^3.14.0",
 		"cors": "^2.8.5",
