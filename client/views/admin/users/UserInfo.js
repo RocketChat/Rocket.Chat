@@ -19,7 +19,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const { tablereload, ...otherProps } = props;
+	const { reloadTable, ...otherProps } = props;
 
 	const {
 		value: data,
@@ -35,7 +35,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	);
 
 	const onChange = useMutableCallback(() => reload());
-	const onDelete = useMutableCallback(() => (tablereload ? tablereload() : null));
+	const onDelete = useMutableCallback(() => (reloadTable ? reloadTable() : null));
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
