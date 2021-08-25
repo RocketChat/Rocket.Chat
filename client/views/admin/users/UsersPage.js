@@ -102,7 +102,7 @@ function UsersPage() {
 					</VerticalBar.Header>
 
 					{context === 'info' && <UserInfoWithData uid={id} tablereload={reload} />}
-					{context === 'edit' && <EditUserWithData uid={id} tablereload={reload} />}
+					{context === 'edit' && <EditUserWithData uid={id} />}
 					{context === 'new' && <AddUser tablereload={reload} />}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
