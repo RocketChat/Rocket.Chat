@@ -310,12 +310,3 @@ export class Logger {
 		}
 	}
 }
-
-export const SystemLogger = new Logger('System', {
-	methods: {
-		startup: {
-			type: 'success',
-			level: 0,
-		},
-	},
-});
