@@ -3898,8 +3898,6 @@
   "Uses": "Použití",
   "Uses_left": "Zbývající počet použití",
   "UTF8_Names_Slugify": "Url podoba UTF8 jmen",
-  "UTF8_Names_Validation": "UTF8 validace jmen",
-  "UTF8_Names_Validation_Description": "Regulární výraz validující uživatelská jména a jména místností",
   "Validate_email_address": "Validovat email",
   "Validation": "Validace",
   "Value_messages": "__value__ zpráv",
