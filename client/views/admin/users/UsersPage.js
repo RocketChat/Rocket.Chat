@@ -73,7 +73,7 @@ function UsersPage() {
 	const query = useQuery(debouncedParams, debouncedSort);
 	const { value: data = {}, reload } = useEndpointData('users.list', query);
 	const [, { context, id }] = useCurrentRoute();
-	console.log(`usersPage : ${typeof reload}`);
+	
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -102,8 +102,8 @@ function UsersPage() {
 					</VerticalBar.Header>
 
 					{context === 'info' && <UserInfoWithData uid={id} tablereload={reload}/>}
-					{context === 'edit' && <EditUserWithData uid={id} />}
-					{context === 'new' && <AddUser />}
+					{context === 'edit' && <EditUserWithData uid={id}/>}
+					{context === 'new' && <AddUser tablereload={reload}/>}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
 			)}

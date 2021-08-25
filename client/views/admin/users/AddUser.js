@@ -17,6 +17,8 @@ export function AddUser({ roles, ...props }) {
 	const { value: roleData } = useEndpointData('roles.list', '');
 	const [errors, setErrors] = useState({});
 
+	const { tablereload, ...otherProps } = props;
+
 	const validationKeys = {
 		name: (name) =>
 			setErrors((errors) => ({
@@ -93,6 +95,7 @@ export function AddUser({ roles, ...props }) {
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
+			tablereload()
 		}
 	});
 
@@ -126,7 +129,7 @@ export function AddUser({ roles, ...props }) {
 			formHandlers={handlers}
 			availableRoles={availableRoles}
 			append={append}
-			{...props}
+			{...otherProps}
 		/>
 	);
 }
