@@ -120,7 +120,7 @@ function MeetPage() {
 						<p
 							style={{
 								color: 'white',
-								fontSize: isMobileDevice() ? 15 : 35,
+								fontSize: isMobileDevice() ? 15 : 22,
 							}}
 						>
 							{visitorToken ? agentName : visitorName}

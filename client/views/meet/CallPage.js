@@ -349,7 +349,7 @@ function CallPage({
 							<Box
 								style={{
 									color: 'white',
-									fontSize: isLocalMobileDevice ? 15 : 35,
+									fontSize: isLocalMobileDevice ? 15 : 22,
 								}}
 							>
 								{visitorName}
