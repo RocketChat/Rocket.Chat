@@ -14,6 +14,9 @@
 	"scripts": {
 		"prepare": "husky install",
 		"start": "meteor",
+		"ha": "meteor npm run ha:start",
+		"ha:start": "ts-node .scripts/run-ha.ts main",
+		"ha:add": "ts-node .scripts/run-ha.ts instance",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
