@@ -1,17 +1,17 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import React, { useMemo, useCallback, useState } from 'react';
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useMemo, useState } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AddUser } from './AddUser';
 import EditUserWithData from './EditUserWithData';
 import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 
 function UsersPage() {
 	const t = useTranslation();
@@ -62,8 +62,8 @@ function UsersPage() {
 			[text, itemsPerPage, current, sortFields],
 		);
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState([
+	const [params] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort] = useState([
 		['name', 'asc'],
 		['usernames', 'asc'],
 	]);
@@ -73,7 +73,7 @@ function UsersPage() {
 	const query = useQuery(debouncedParams, debouncedSort);
 	const { value: data = {}, reload } = useEndpointData('users.list', query);
 	const [, { context, id }] = useCurrentRoute();
-	
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -88,7 +88,7 @@ function UsersPage() {
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<UsersTable users={data.users} total={data.total}/>
+					<UsersTable users={data.users} total={data.total} />
 				</Page.Content>
 			</Page>
 			{context && (
@@ -101,13 +101,12 @@ function UsersPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					{context === 'info' && <UserInfoWithData uid={id} tablereload={reload}/>}
-					{context === 'edit' && <EditUserWithData uid={id} tablereload={reload}/>}
-					{context === 'new' && <AddUser tablereload={reload}/>}
+					{context === 'info' && <UserInfoWithData uid={id} tablereload={reload} />}
+					{context === 'edit' && <EditUserWithData uid={id} tablereload={reload} />}
+					{context === 'new' && <AddUser tablereload={reload} />}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
 			)}
-			
 		</Page>
 	);
 }

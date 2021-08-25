@@ -1,13 +1,11 @@
-import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import UserRow from './UserRow';
-
 
 function UsersTable(props) {
 	const t = useTranslation();

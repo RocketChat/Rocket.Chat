@@ -95,7 +95,7 @@ export function AddUser({ roles, ...props }) {
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
-			tablereload()
+			tablereload();
 		}
 	});
 
