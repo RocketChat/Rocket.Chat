@@ -29,6 +29,8 @@ const getInitialValue = (data) => ({
 function EditUser({ data, roles, ...props }) {
 	const t = useTranslation();
 
+	const { tablereload, ...otherProps } = props;
+
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
 
@@ -143,6 +145,7 @@ function EditUser({ data, roles, ...props }) {
 			if (avatarObj) {
 				await updateAvatar();
 			}
+			tablereload();
 			goToUser(data._id);
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
@@ -191,7 +194,7 @@ function EditUser({ data, roles, ...props }) {
 			availableRoles={availableRoles}
 			prepend={prepend}
 			append={append}
-			{...props}
+			{...otherProps}
 		/>
 	);
 }
