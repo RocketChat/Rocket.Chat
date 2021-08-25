@@ -13,7 +13,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, onDelete }, ...props) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, onDelete }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -36,14 +36,11 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 		onChange();
 	}, [setModal, onChange]);
 
-	const handleDeletedUser = useCallback(() => {
+	const handleDeletedUser = () => {
 		setModal();
 		userRoute.push({});
-		console.log('handling delete user');
-		console.log(typeof onDelete);
 		onDelete();
-	}, [setModal]);
-
+	};
 
 	const confirmOwnerChanges =
 		(action, modalProps = {}) =>
