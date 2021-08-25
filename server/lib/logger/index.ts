@@ -50,6 +50,7 @@ export class Logger {
 			name: loggerLabel,
 			hooks: { logMethod },
 			timestamp: pino.stdTimeFunctions.isoTime,
+			...process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {},
 		});
 
 
@@ -83,7 +84,7 @@ export class Logger {
 		this.logger.debug(msg, ...args);
 	}
 
-	info<T extends object>(obj: T, ...args: any[]): void;
+	// info<T extends object>(obj: T, ...args: any[]): void;
 
 	info(msg: string, ...args: any[]): void {
 		this.logger.info(msg, ...args);
@@ -95,7 +96,7 @@ export class Logger {
 		this.logger.info(msg, ...args);
 	}
 
-	warn<T extends object>(obj: T, ...args: any[]): void;
+	// warn<T extends object>(obj: T, ...args: any[]): void;
 
 	warn(msg: string, ...args: any[]): void {
 		this.logger.warn(msg, ...args);
