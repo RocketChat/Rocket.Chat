@@ -33,6 +33,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	);
 
 	const onChange = useMutableCallback(() => reload());
+	const onDelete = useMutableCallback(() => props.tablereload ? props.tablereload(): null);
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
@@ -99,6 +100,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 						_id={data.user._id}
 						username={data.user.username}
 						onChange={onChange}
+						onDelete={onDelete}
 					/>
 				)
 			}
