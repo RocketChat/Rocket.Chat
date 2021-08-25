@@ -2,21 +2,25 @@ import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
+import { logger } from '../lib/logger';
 
 let autoTransferTimeout = 0;
 
 const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> => {
 	const { rid } = inquiry;
 	if (!rid || !rid.trim()) {
+		(logger as any).cb.debug('Skipping callback. Invalid room id');
 		return;
 	}
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
+		(logger as any).cb.debug('Skipping callback. No auto transfer timeout');
 		return inquiry;
 	}
 
 	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1, autoTransferOngoing: 1 });
 	if (!room || room.autoTransferredAt || room.autoTransferOngoing) {
+		(logger as any).cb.debug('Skipping callback. Room already transfered or not found');
 		return inquiry;
 	}
 
