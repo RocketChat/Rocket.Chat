@@ -1,6 +1,7 @@
-import React, { memo } from 'react';
+import React, { FC, memo, MouseEvent } from 'react';
 
 import { call } from '../../../../../app/ui-utils/client';
+import { IMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
@@ -10,18 +11,28 @@ import { normalizeThreadMessage } from './normalizeThreadMessage';
 
 const Thread = memo(mapProps(clickableItem(ThreadListMessage)));
 
-const handleFollowButton = (e, threadId) => {
+const handleFollowButton = (e: MouseEvent<HTMLElement>, threadId: string): void => {
 	e.preventDefault();
 	e.stopPropagation();
-	call(
-		![true, 'true'].includes(e.currentTarget.dataset.following)
-			? 'followMessage'
-			: 'unfollowMessage',
-		{ mid: threadId },
-	);
+	const { following } = e.currentTarget.dataset;
+
+	following &&
+		call(![true, 'true'].includes(following) ? 'followMessage' : 'unfollowMessage', {
+			mid: threadId,
+		});
 };
 
-const Row = memo(function Row({
+type ThreadRowProps = {
+	thread: IMessage;
+	showRealNames: boolean;
+	unread: string[];
+	unreadUser: string[];
+	unreadGroup: string[];
+	userId: string;
+	onClick: (threadId: string) => void;
+};
+
+const Row: FC<ThreadRowProps> = memo(function Row({
 	thread,
 	showRealNames,
 	unread,
@@ -54,7 +65,9 @@ const Row = memo(function Row({
 			msg={msg}
 			t={t}
 			formatDate={formatDate}
-			handleFollowButton={(e) => handleFollowButton(e, thread._id)}
+			handleFollowButton={(e: MouseEvent<HTMLElement>): unknown =>
+				handleFollowButton(e, thread._id)
+			}
 			onClick={onClick}
 		/>
 	);

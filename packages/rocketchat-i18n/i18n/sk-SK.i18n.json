@@ -2718,8 +2718,6 @@
   "Users_added": "Používatelia boli pridaní",
   "Users_in_role": "Používatelia v úlohe",
   "UTF8_Names_Slugify": "Mená UTF8",
-  "UTF8_Names_Validation": "Validácia mena UTF8",
-  "UTF8_Names_Validation_Description": "RegExp, ktorý sa použije na overenie mien používateľov a názvov kanálov",
   "Validate_email_address": "Overiť e-mailovú adresu",
   "Verification": "overenie",
   "Verification_Description": "Môžete použiť nasledujúce zástupné symboly: <br/><ul><li>[Verification_Url] pre verifikačnú adresu URL.</li><li>[meno], [fname], [lname] pre celé meno používateľa, krstné meno alebo priezvisko.</li><li>[email] pre e-mail používateľa.</li><li>[Site_Name] a [Site_URL] pre názov aplikácie a adresu URL.</li></ul>",
