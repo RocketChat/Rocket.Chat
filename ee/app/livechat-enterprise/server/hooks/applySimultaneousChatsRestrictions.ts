@@ -22,6 +22,8 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', (_: any, { departmen
 							'livechat.maxNumberSimultaneousChat': { $exists: false },
 						},
 						{ 'livechat.maxNumberSimultaneousChat': 0 },
+						{ 'livechat.maxNumberSimultaneousChat': '' },
+						{ 'livechat.maxNumberSimultaneousChat': null },
 					],
 				},
 				{ 'queueInfo.chats': { $gte: maxChatsPerSetting } },
