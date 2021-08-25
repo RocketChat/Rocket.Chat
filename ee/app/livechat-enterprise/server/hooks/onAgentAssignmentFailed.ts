@@ -23,7 +23,7 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 
 		await queueInquiry(room, newInquiry);
 
-		(logger as any).cb.debug('Room queued successfully')
+		(logger as any).cb.debug('Room queued successfully');
 		return;
 	}
 
