@@ -226,15 +226,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
 		this.orch.debugLog(`The App ${ appId } is getting the transcript for livechat room ${ roomId }.`);
 		const messages = Livechat.getRoomMessages({ rid: roomId });
-
-		const result = [];
-
-		for await (const message of messages) {
-			const res = await this.orch.getConverters()?.get('messages').convertMessage(message);
-			result.push(res);
-		}
-
-		return result;
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		const boundMessageConverter = messageConverter.convertMessage.bind(messageConverter);
+		return await Promise.all(messages.map(boundMessageConverter)) as Array<IMessage>;
 	}
 
 	protected async setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
