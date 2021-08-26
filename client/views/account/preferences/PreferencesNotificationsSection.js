@@ -35,7 +35,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		'desktopNotificationRequireInteraction',
 	);
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
-	const userMobileNotifications = useUserPreference('mobileNotifications');
+	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode');
 	const userDesktopAudioNotifications = useUserPreference('audioNotifications');
 
