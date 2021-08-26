@@ -1,6 +1,37 @@
 
 # 3.18.0 (Under Release Candidate Process)
 
+## 3.18.0-rc.1
+`2021-08-26  ·  1 🎉  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Report "Read Receipts" setting on stat collector ([#23033](https://github.com/RocketChat/Rocket.Chat/pull/23033))
+
+### 🐛 Bug fixes
+
+
+- Fix Auto Selection algorithm on community edition ([#22991](https://github.com/RocketChat/Rocket.Chat/pull/22991))
+
+  - When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter  
+  - Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Attachment not rendering on message ([#23046](https://github.com/RocketChat/Rocket.Chat/pull/23046))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@renatobecker](https://github.com/renatobecker)
+
 ## 3.18.0-rc.0
 `2021-08-23  ·  3 🎉  ·  7 🚀  ·  27 🐛  ·  14 🔍  ·  26 👩‍💻👨‍💻`
 
@@ -224,6 +255,94 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.17.2
+`2021-08-26  ·  3 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.1`
+
+### 🐛 Bug fixes
+
+
+- applyChatRestictions callback not working for community version ([#22839](https://github.com/RocketChat/Rocket.Chat/pull/22839) by [@Shailesh351](https://github.com/Shailesh351))
+
+  Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838
+
+- Error getting default agent when routing system algorithm is Auto Selection ([#22976](https://github.com/RocketChat/Rocket.Chat/pull/22976))
+
+- Fix Auto Selection algorithm on community edition ([#22991](https://github.com/RocketChat/Rocket.Chat/pull/22991))
+
+  - When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter  
+  - Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.17.2 ([#23045](https://github.com/RocketChat/Rocket.Chat/pull/23045))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Shailesh351](https://github.com/Shailesh351)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@murtaza98](https://github.com/murtaza98)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 3.17.1
+`2021-08-16  ·  5 🐛  ·  1 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.1`
+
+### 🐛 Bug fixes
+
+
+- "Click to Join" button is not working if there are no muted users in the room ([#22871](https://github.com/RocketChat/Rocket.Chat/pull/22871))
+
+  - Add check to `room.muted` array so as to cover the case in which it is `undefined`;
+
+- Apps-Engine's scheduler failing to update run tasks ([#22882](https://github.com/RocketChat/Rocket.Chat/pull/22882))
+
+  [Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). 
+  This updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).
+
+- Close omnichannel conversations when agent is deactivated ([#22917](https://github.com/RocketChat/Rocket.Chat/pull/22917))
+
+- Message update not working in some cases ([#22856](https://github.com/RocketChat/Rocket.Chat/pull/22856))
+
+- Use correct param on saveBusinessHour method ([#22835](https://github.com/RocketChat/Rocket.Chat/pull/22835))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 3.17.1 ([#22942](https://github.com/RocketChat/Rocket.Chat/pull/22942))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@d-gubert](https://github.com/d-gubert)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@renatobecker](https://github.com/renatobecker)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
 
 # 3.17.0
 `2021-07-30  ·  7 🎉  ·  19 🚀  ·  39 🐛  ·  56 🔍  ·  28 👩‍💻👨‍💻`
