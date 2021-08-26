@@ -63663,6 +63663,18 @@
       ],
       "pull_requests": [
         {
+          "pr": "22942",
+          "title": "Release 3.17.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "thassiov",
+            "murtaza98",
+            "matheusbsilva137"
+          ]
+        },
+        {
           "pr": "22871",
           "title": "[FIX] \"Click to Join\" button is not working if there are no muted users in the room",
           "userLogin": "matheusbsilva137",
@@ -63717,6 +63729,54 @@
           "contributors": [
             "KevLehman",
             "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.17.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22976",
+          "title": "[FIX] Error getting default agent when routing system algorithm is Auto Selection",
+          "userLogin": "renatobecker",
+          "milestone": "3.17.2",
+          "contributors": [
+            "renatobecker",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22991",
+          "title": "[FIX] Fix Auto Selection algorithm on community edition",
+          "userLogin": "KevLehman",
+          "description": "- When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter\r\n- Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0",
+          "milestone": "3.17.2",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22839",
+          "title": "[FIX] applyChatRestictions callback not working for community version",
+          "userLogin": "murtaza98",
+          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "milestone": "3.17.2",
+          "contributors": [
+            "Shailesh351",
+            "murtaza98",
             "web-flow"
           ]
         }
