@@ -42,15 +42,15 @@ export const createFlowRouterHistory = (): History => {
 		get location() {
 			return memoryHistory.location;
 		},
-		push(to: string | LocationDescriptor, state?: LocationState) {
-			const path = typeof to === 'string' ? to : this.createHref(to);
+		push(to: LocationDescriptor, state?: LocationState) {
+			const path = typeof to === 'string' ? to : memoryHistory.createHref(to);
 			state = state ?? memoryHistory.location.state;
 
 			FlowRouter.go(path);
 			memoryHistory.push(path, state);
 		},
-		replace(to: string | LocationDescriptor, state?: LocationState) {
-			const path = typeof to === 'string' ? to : this.createHref(to);
+		replace(to: LocationDescriptor, state?: LocationState) {
+			const path = typeof to === 'string' ? to : memoryHistory.createHref(to);
 			state = state ?? memoryHistory.location.state;
 
 			FlowRouter.withReplaceState(() => {
