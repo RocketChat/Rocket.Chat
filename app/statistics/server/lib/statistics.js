@@ -157,6 +157,9 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
+		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
