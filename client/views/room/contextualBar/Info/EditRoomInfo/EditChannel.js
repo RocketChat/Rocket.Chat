@@ -401,7 +401,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						<Field.Hint>{t('Only_authorized_users_can_react_to_messages')}</Field.Hint>
 					</Field>
 				)}
 				{canViewArchived && (
