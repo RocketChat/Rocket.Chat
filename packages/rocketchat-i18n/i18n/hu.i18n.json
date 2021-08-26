@@ -3248,8 +3248,6 @@
   "Users_added": "A felhasználók hozzáadásra kerültek",
   "Users_in_role": "Felhasználók szerepe",
   "UTF8_Names_Slugify": "UTF8 nevek Slugify",
-  "UTF8_Names_Validation": "UTF8 nevek Validation",
-  "UTF8_Names_Validation_Description": "Ne hagyja, hogy speciális karaktereket és szóközt. Használhatja - _ és. de nem a végén a név",
   "Validate_email_address": "Érvényesítse az e-mail címet",
   "Verification": "Igazolás",
   "Verification_Description": "A következő helyőrzőket használhatja: <br/><ul><li>[Verification_Url] az ellenőrző URL-hez.</li><li>[név], [fname], [lname] a felhasználó teljes neve, utóneve vagy vezetékneve számára.</li><li>[e-mail] a felhasználó e-mailje számára.</li><li>[Site_Name] és [Site_URL] az Alkalmazás neve és URL címekhez.</li></ul>",

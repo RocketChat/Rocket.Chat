@@ -3615,8 +3615,6 @@
   "Uses": "იყენებს",
   "Uses_left": "იყენებს მარცხნივ",
   "UTF8_Names_Slugify": "UTF8 სახელების Slugify",
-  "UTF8_Names_Validation": "UTF8 სახელების დამოწმება",
-  "UTF8_Names_Validation_Description": "RegExp, რომელიც გამოყენებული იქნება მომხმარებლის სახელების და არხების სახელების დამოწმებისთვის",
   "Validate_email_address": "ელ.ფოსტის მისამართების დამოწმება",
   "Validation": "დამოწმება",
   "Value_messages": "__value__ შეტყობინებები",

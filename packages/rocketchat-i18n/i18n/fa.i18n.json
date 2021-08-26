@@ -3040,8 +3040,6 @@
   "Users_added": "کاربران اضافه شده اند",
   "Users_in_role": "کاربران در نقش",
   "UTF8_Names_Slugify": "UTF8 نام slugify را",
-  "UTF8_Names_Validation": "UTF8 اسامی اعتبار سنجی",
-  "UTF8_Names_Validation_Description": "هنوز کاراکترهای خاص و فضاهای اجازه نمی دهد. و _ - شما می توانید استفاده کنید. اما نه در پایان نام",
   "Validate_email_address": "اعتبار آدرس ایمیل",
   "Verification": "تایید",
   "Verification_Description": "شما ممکن است از متغیرهایی زیر استفاده کنید: <br/><ul><li>[Verification_Url] برای URL تأیید.</li><li>[نام]، [نام خانوادگی]، [lname] برای نام کامل، نام یا نام خانوادگی کاربر، به ترتیب.</li><li>[ایمیل] برای ایمیل کاربر.</li><li>[نام سایت] و [Site_URL] برای نام برنامه و URL به ترتیب.</li></ul>",

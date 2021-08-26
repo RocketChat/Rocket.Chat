@@ -2710,8 +2710,6 @@
   "Users_added": "Die Benutzer wurden hinzugefügt",
   "Users_in_role": "Zugeordnete Nutzer",
   "UTF8_Names_Slugify": "UTF8-Namen-Slugify",
-  "UTF8_Names_Validation": "UTF8-Namen-Verifizierung",
-  "UTF8_Names_Validation_Description": "Erlauben Sie keine Sonderzeichen und Leerzeichen. Sie können - _ und . verwenden, aber nicht am Ende eines Namens.",
   "Validate_email_address": "E-mail Adresse bestätigen",
   "Verification": "Überprüfung",
   "Verification_Description": "Sie können die folgenden Platzhalter verwenden: <br/><ul><li>[Verification_Url] für die Bestätigungs-URL.</li><li>[Name], [Name], [Name] für den vollständigen Namen, den Vornamen bzw. den Nachnamen des Benutzers.</li><li>[E-Mail] für die E-Mail des Nutzers.</li><li>[Site_Name] und [Site_URL] für den Anwendungsnamen bzw. die URL.</li></ul>",

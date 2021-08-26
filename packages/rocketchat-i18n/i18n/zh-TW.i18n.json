@@ -4209,8 +4209,6 @@
   "Uses": "使用次數",
   "Uses_left": "剩使用次數",
   "UTF8_Names_Slugify": "UTF8 名稱 Slugify",
-  "UTF8_Names_Validation": "UTF8 名稱驗證",
-  "UTF8_Names_Validation_Description": "不要讓特殊字符和空格。您可以使用 -  _和。但不是在名稱的末尾",
   "Validate_email_address": "驗證電子郵件地址",
   "Validation": "驗證",
   "Value_messages": "__value__條訊息",

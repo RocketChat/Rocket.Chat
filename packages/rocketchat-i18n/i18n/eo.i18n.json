@@ -2708,8 +2708,6 @@
   "Users_added": "La uzantoj estis aldonitaj",
   "Users_in_role": "Uzantoj en rolo",
   "UTF8_Names_Slugify": "UTF8 Nomoj Slugify",
-  "UTF8_Names_Validation": "UTF8 Nomoj Validigo",
-  "UTF8_Names_Validation_Description": "RegExp, kiu estos uzata por validigi domnomonojn kaj kanalajn nomojn",
   "Validate_email_address": "Validigi retpoŝtadreson",
   "Verification": "Verkcio",
   "Verification_Description": "Vi povas uzi la jenajn anstataŭilojn:<br/><ul><li>[Verification_Url] por la verificación URL.</li><li>[nomo], [fname], [lname] por la plena nomo, unua nomo aŭ familinomo de la uzanto, respektive.</li><li>[retpoŝto] por la retpoŝto de la uzanto.</li><li>[Site_Name] kaj [Site_URL] por la Aplika nomo kaj URL respektive.</li></ul>",

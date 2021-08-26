@@ -2705,8 +2705,6 @@
   "Users_added": "Përdoruesit janë shtuar",
   "Users_in_role": "Përdoruesit në rolin",
   "UTF8_Names_Slugify": "UTF8 Emrat Slugify",
-  "UTF8_Names_Validation": "UTF8 Emrat Validation",
-  "UTF8_Names_Validation_Description": "A nuk e lejojnë karaktere dhe hapësira të veçanta. Ju mund të përdorni - _ dhe. por jo në fund të emrit",
   "Validate_email_address": "Validoni adresën e emailit",
   "Verification": "verifikim",
   "Verification_Description": "Mund të përdorësh vendin e mëposhtëm: <br/><ul><li>[Verification_Url] për URL-në e verifikimit.</li><li>[emër], [fname], [lname] për emrin e plotë, emrin ose mbiemrin e përdoruesit.</li><li>[email] për emailin e përdoruesit.</li><li>[Site_Name] dhe [Site_URL] për emrin e aplikacionit dhe URL përkatësisht.</li></ul>",

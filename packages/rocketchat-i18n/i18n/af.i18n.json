@@ -2708,8 +2708,6 @@
   "Users_added": "Die gebruikers is bygevoeg",
   "Users_in_role": "Gebruikers in rol",
   "UTF8_Names_Slugify": "UTF8 Name Slugify",
-  "UTF8_Names_Validation": "UTF8 Name Validation",
-  "UTF8_Names_Validation_Description": "RegExp wat gebruik sal word om gebruikers name en kanaal name te valid aangestel",
   "Validate_email_address": "Bevestig e-pos adres",
   "Verification": "Verifikasie",
   "Verification_Description": "U mag die volgende plekhouers gebruik: <br/><ul><li>[Verifikasie_Url] vir die verifikasie-URL.</li><li>[naam], [fname], [lname] vir die volle naam, voornaam of van die gebruiker se naam.</li><li>[e-pos] vir die gebruiker se e-pos.</li><li>[Site_Name] en [Site_URL] vir die Aansoek Naam en URL onderskeidelik.</li></ul>",

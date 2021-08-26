@@ -2704,8 +2704,6 @@
   "Users_added": "Utilizatorii au fost adăugați",
   "Users_in_role": "Utilizatorii în rol",
   "UTF8_Names_Slugify": "UTF8 Names Slugify",
-  "UTF8_Names_Validation": "Validare UTF8 Names ",
-  "UTF8_Names_Validation_Description": "Nu permite caractere și spații speciale. Puteți folosi '-',  '_' și '.' dar nu la sfârșitul numelui",
   "Validate_email_address": "Validați adresa de e-mail",
   "Verification": "Verificare",
   "Verification_Description": "Puteți utiliza următorii substituenți: <br/><ul><li>[Verification_Url] pentru adresa URL de verificare.</li><li>[name], [fname], [lname] pentru numele complet al utilizatorului, prenumele sau numele de familie.</li><li>[e-mail] pentru e-mailul utilizatorului.</li><li>[Site_Name] și [Site_URL] pentru numele aplicației și respectiv adresa URL.</li></ul>",

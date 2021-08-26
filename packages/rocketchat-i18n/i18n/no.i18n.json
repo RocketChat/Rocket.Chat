@@ -2815,8 +2815,6 @@
   "Users_added": "Brukerne har blitt lagt til",
   "Users_in_role": "Brukere i rollen",
   "UTF8_Names_Slugify": "UTF8 Navn Slugify",
-  "UTF8_Names_Validation": "UTF8 Navn Validering",
-  "UTF8_Names_Validation_Description": "RegExp som vil bli brukt til å validere brukernavn og kanalnavn",
   "Validate_email_address": "Bekreft e-postadresse",
   "Verification": "Bekreftelse",
   "Verification_Description": "Du kan bruke følgende plassholdere: <br/><ul><li>[Verification_Url] for verifikasjonsadressen.</li><li>[navn], [fname], [lname] for brukerens fulle navn, fornavn eller etternavn.</li><li>[email] for brukerens e-postadresse.</li><li>[Site_Name] og [Site_URL] for henholdsvis programnavnet og nettadressen.</li></ul>",
