@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 
 import type { P } from 'pino';
 
-import { Logger } from '.';
+import type { Logger } from '.';
 
 type IncomingMessageLoggable = IncomingMessage & {
 	log: P.Logger;
@@ -26,7 +26,6 @@ function logRequest(this: ServerResponseLoggable, err?: Error): void {
 		const error = err || new Error(`failed with status code ${ this.statusCode }`);
 
 		log.http({
-		//   [resKey]: this,
 			err: error,
 			responseTime,
 		});
@@ -36,10 +35,11 @@ function logRequest(this: ServerResponseLoggable, err?: Error): void {
 	log.http({
 		responseTime,
 		status: this.statusCode,
+		instanceId: this.getHeader('x-instance-id'),
 	});
 }
 
-export function httpLogger(logger: Logger, getRequestIP: Function): Function {
+export function httpLogger(logger: Logger, getRequestIP: Function): (req: IncomingMessageLoggable, res: ServerResponseLoggable, next: Function) => void {
 	return (req: IncomingMessageLoggable, res: ServerResponseLoggable, next: Function): void => {
 		if (!req.url?.startsWith('/api/')) {
 			return next();
