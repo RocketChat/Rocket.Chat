@@ -109,6 +109,15 @@ Meteor.methods({
 				video_size: file.size,
 			};
 			attachments.push(attachment);
+		} else {
+			const attachment = {
+				title: file.name,
+				type: 'file',
+				description: file.description,
+				title_link: fileUrl,
+				title_link_download: true,
+			};
+			attachments.push(attachment);
 		}
 
 
