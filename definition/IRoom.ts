@@ -1,6 +1,7 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
+import { IIncomingChannelWithSource } from './IOmnichannelVisitor';
 
 type RoomType = 'c' | 'd' | 'p' | 'l';
 
@@ -91,6 +92,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	responseBy: any;
 	priorityId: any;
 	livechatData: any;
+
+	channel?: IIncomingChannelWithSource;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
