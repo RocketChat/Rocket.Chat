@@ -1,7 +1,7 @@
-import { pino } from 'pino';
 import type { P } from 'pino';
 
 import { settings } from '../../../app/settings/server';
+import { getPino } from './getPino';
 
 // const oldCustomLevels = {
 // 	levels: {
@@ -33,26 +33,11 @@ const getLevel = (level: string): string => {
 	}
 };
 
-// add support to multiple params on the log commands, i.e.:
-// logger.info('user', Meteor.user()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
-function logMethod(this: P.Logger, args: unknown[], method: any): void {
-	if (args.length > 1) {
-		args[0] = `${ args[0] }${ ' %j'.repeat(args.length - 1) }`;
-	}
-	return method.apply(this, args);
-}
-
 export class Logger {
-	private logger: P.Logger;
+	readonly logger: P.Logger;
 
 	constructor(loggerLabel: string) {
-		this.logger = pino({
-			name: loggerLabel,
-			hooks: { logMethod },
-			timestamp: pino.stdTimeFunctions.isoTime,
-			...process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {},
-		});
-
+		this.logger = getPino(loggerLabel);
 
 		// TODO evaluate replacing this by an event emitter (since this callback is probably costly than an event emitter)
 		settings.get('Log_Level', (_key, value) => {

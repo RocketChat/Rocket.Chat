@@ -6,11 +6,13 @@ import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import { WebApp } from 'meteor/webapp';
 
-import { Logger } from '../../logger';
-import { settings } from '../../settings';
-import { metrics } from '../../metrics';
-import { hasPermission, hasAllPermission } from '../../authorization';
+import { Logger } from '../../logger/server';
+import { httpLogger } from '../../../server/lib/logger/httpLogger';
+import { settings } from '../../settings/server';
+import { metrics } from '../../metrics/server';
+import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
@@ -50,6 +52,8 @@ const getRequestIP = (req) => {
 
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
+
+WebApp.rawConnectHandlers.use(httpLogger(logger, getRequestIP));
 
 export class APIClass extends Restivus {
 	constructor(properties) {
@@ -127,7 +131,7 @@ export class APIClass extends Restivus {
 			body: result,
 		};
 
-		logger.debug('Success', result);
+		// logger.debug('Success', result);
 
 		return result;
 	}
@@ -160,7 +164,7 @@ export class APIClass extends Restivus {
 			body: result,
 		};
 
-		logger.debug('Failure', result);
+		// logger.debug('Failure', result);
 
 		return result;
 	}
@@ -351,7 +355,7 @@ export class APIClass extends Restivus {
 						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
-					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
+					// logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 					this.requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
@@ -393,7 +397,7 @@ export class APIClass extends Restivus {
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
 					} catch (e) {
-						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						// logger.debug(`${ method } ${ route } threw an error:`, e.stack);
 
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',
@@ -421,7 +425,7 @@ export class APIClass extends Restivus {
 				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
-				endpoints[method].logger = logger;
+				// endpoints[method].logger = logger;
 			});
 
 			super.addRoute(route, options, endpoints);
