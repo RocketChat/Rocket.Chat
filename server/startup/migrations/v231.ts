@@ -1,0 +1,53 @@
+import { ISectionBlock, BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
+import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
+
+import { Migrations } from '../../../app/migrations/server';
+import { BannerPlatform } from '../../../definition/IBanner';
+import { Banner } from '../../sdk';
+import { settings } from '../../../app/settings/server';
+import { Settings } from '../../../app/models/server';
+
+Migrations.add({
+	version: 231,
+	up() {
+		const LDAPEnabled = settings.get('LDAP_Enable');
+		const SAMLEnabled = settings.get('SAML_Custom_Default');
+		const CustomOauthEnabled = Settings.isOAuthEnabled();
+
+		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
+
+		if (!isAuthServiceEnabled) {
+			return;
+		}
+
+		const s: ISectionBlock = {
+			type: BlockType.SECTION,
+			blockId: 'attention',
+			text: {
+				type: TextObjectType.PLAINTEXT,
+				text: 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SMAL, and Custom Oauth will be available just in Enterprise Edition and Gold plans. Click here for more info: http://www.example.com',
+				emoji: false,
+			},
+		};
+
+		const LDAPBanner = {
+			platform: [BannerPlatform.Web],
+			createdAt: new Date(),
+			expireAt: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 30)),
+			startAt: new Date(),
+			roles: ['admin'],
+			createdBy: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			},
+			_updatedAt: new Date(),
+			view: {
+				viewId: '',
+				appId: '',
+				blocks: [s],
+			},
+		};
+
+		Promise.await(Banner.create(LDAPBanner));
+	},
+});
