@@ -2,10 +2,10 @@ import React, { ReactElement } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import { lazyLayout } from '../../lib/lazyLayout';
+import AppLayout from './AppLayout';
 
 const SetupWizardRoute = lazyLayout(() => import('../setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazyLayout(() => import('../mailer/MailerUnsubscriptionPage'));
-const NotFoundPage = lazyLayout(() => import('../notFound/NotFoundPage'));
 
 const AppRoutes = (): ReactElement => (
 	<Switch>
@@ -16,7 +16,7 @@ const AppRoutes = (): ReactElement => (
 			<MailerUnsubscriptionPage />
 		</Route>
 		<Route path='*'>
-			<NotFoundPage />
+			<AppLayout />
 		</Route>
 	</Switch>
 );

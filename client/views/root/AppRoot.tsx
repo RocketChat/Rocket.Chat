@@ -9,7 +9,7 @@ const ConnectionStatusBar = lazy(
 );
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const BannerRegion = lazy(() => import('../banners/BannerRegion'));
-const AppLayout = lazy(() => import('./AppLayout'));
+const AppRoutes = lazy(() => import('./AppRoutes'));
 const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 
 const history = getFlowRouterHistory();
@@ -20,7 +20,7 @@ const AppRoot: FC = () => (
 			<MeteorProvider>
 				<ConnectionStatusBar />
 				<BannerRegion />
-				<AppLayout />
+				<AppRoutes />
 				<PortalsWrapper />
 			</MeteorProvider>
 		</Router>

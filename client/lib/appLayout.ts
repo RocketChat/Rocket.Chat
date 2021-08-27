@@ -1,5 +1,4 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ComponentType } from 'react';
 import { Subscription, Unsubscribe } from 'use-subscription';
 
 type BlazeLayoutDescriptor = {
@@ -7,12 +6,7 @@ type BlazeLayoutDescriptor = {
 	data?: EJSONable;
 };
 
-type ComponentLayoutDescriptor<Props extends {} = {}> = {
-	component: ComponentType<Props>;
-	props?: Props;
-};
-
-type AppLayoutDescriptor = BlazeLayoutDescriptor | ComponentLayoutDescriptor | null;
+type AppLayoutDescriptor = BlazeLayoutDescriptor | null;
 
 class AppLayoutSubscription
 	extends Emitter<{ update: void }>
@@ -32,7 +26,6 @@ class AppLayoutSubscription
 	render: {
 		(template: string, data?: EJSONable): void;
 		(descriptor: BlazeLayoutDescriptor): void;
-		<Props = {}>(descriptor: ComponentLayoutDescriptor<Props>): void;
 	} = (templateOrDescriptor: string | AppLayoutDescriptor, data?: EJSONable): void => {
 		if (typeof templateOrDescriptor === 'string') {
 			this.setCurrentValue({ template: templateOrDescriptor, data });
