@@ -104,4 +104,20 @@ export class Logger {
 	error(msg: string, ...args: any[]): void {
 		this.logger.error(msg, ...args);
 	}
+
+	method<T extends object>(obj: T, ...args: any[]): void;
+
+	method(msg: string, ...args: any[]): void;
+
+	method(msg: string, ...args: any[]): void {
+		this.logger.method(msg, ...args);
+	}
+
+	subscription<T extends object>(obj: T, ...args: any[]): void;
+
+	subscription(msg: string, ...args: any[]): void;
+
+	subscription(msg: string, ...args: any[]): void {
+		this.logger.subscription(msg, ...args);
+	}
 }

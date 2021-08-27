@@ -16,6 +16,8 @@ export function getPino(name: string): P.Logger {
 		hooks: { logMethod },
 		customLevels: {
 			http: 35,
+			method: 35,
+			subscription: 35,
 		},
 		timestamp: pino.stdTimeFunctions.isoTime,
 		...process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {},
