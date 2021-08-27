@@ -24,12 +24,15 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', (_: any, { departmen
 							'livechat.maxNumberSimultaneousChat': { $exists: false },
 						},
 						{ 'livechat.maxNumberSimultaneousChat': 0 },
+						{ 'livechat.maxNumberSimultaneousChat': '' },
+						{ 'livechat.maxNumberSimultaneousChat': null },
 					],
 				},
 				{ 'queueInfo.chats': { $gte: maxChatsPerSetting } },
 			],
 		}
-		: {};
+		// dummy filter meaning: don't match anything
+		: { _id: '' };
 
 	(logger as any).cb.debug(`Applying agent & global filters. Max number of chats allowed to all agents: ${ maxChatsPerSetting }`);
 
