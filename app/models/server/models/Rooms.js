@@ -73,6 +73,21 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+	setCallStatusAndCallStartTime(_id, status) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				callStatus: status,
+				webRtcCallStartTime: new Date(),
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	findByTokenpass(tokens) {
 		const query = {
 			'tokenpass.tokens.token': {
