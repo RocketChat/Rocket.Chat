@@ -1712,6 +1712,7 @@
   "error-invalid-username": "Invalid username",
   "error-invalid-value": "Invalid value",
   "error-invalid-webhook-response": "The webhook URL responded with a status other than 200",
+  "error-license-user-limit-reached": "The maximum number of users has been reached.",
   "error-logged-user-not-in-room": "You are not in the room `%s`",
   "error-max-guests-number-reached": "You reached the maximum number of guest users allowed by your license. Contact sale@rocket.chat for a new license.",
   "error-max-number-simultaneous-chats-reached": "The maximum number of simultaneous chats per agent has been reached.",

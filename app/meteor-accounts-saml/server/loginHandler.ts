@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
@@ -32,6 +33,23 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {
 		console.error(error);
-		return makeError(error.toString());
+
+		let message = error.toString();
+		let errorCode = '';
+
+		if (error instanceof Meteor.Error) {
+			errorCode = (error.error || error.message) as string;
+		} else if (error instanceof Error) {
+			errorCode = error.message;
+		}
+
+		if (errorCode) {
+			const localizedMessage = TAPi18n.__(errorCode);
+			if (localizedMessage && localizedMessage !== errorCode) {
+				message = localizedMessage;
+			}
+		}
+
+		return makeError(message);
 	}
 });

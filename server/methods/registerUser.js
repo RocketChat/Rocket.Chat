@@ -62,14 +62,23 @@ Meteor.methods({
 			reason: formData.reason,
 		};
 
-		// Check if user has already been imported and never logged in. If so, set password and let it through
-		const importedUser = Users.findOneByEmailAddress(formData.email);
 		let userId;
-		if (importedUser && importedUser.importIds && importedUser.importIds.length && !importedUser.lastLogin) {
-			Accounts.setPassword(importedUser._id, userData.password);
-			userId = importedUser._id;
-		} else {
-			userId = Accounts.createUser(userData);
+		try {
+			// Check if user has already been imported and never logged in. If so, set password and let it through
+			const importedUser = Users.findOneByEmailAddress(formData.email);
+
+			if (importedUser && importedUser.importIds && importedUser.importIds.length && !importedUser.lastLogin) {
+				Accounts.setPassword(importedUser._id, userData.password);
+				userId = importedUser._id;
+			} else {
+				userId = Accounts.createUser(userData);
+			}
+		} catch (e) {
+			if (e instanceof Meteor.Error) {
+				throw e;
+			}
+
+			throw new Meteor.Error(e.message);
 		}
 
 		Users.setName(userId, s.trim(formData.name));

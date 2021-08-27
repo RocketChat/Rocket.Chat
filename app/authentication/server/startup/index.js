@@ -206,6 +206,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 		Mailer.send(email);
 	}
 
+	callbacks.run('onCreateUser', options, user);
 	return user;
 });
 
