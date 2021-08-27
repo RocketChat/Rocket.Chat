@@ -1,24 +1,21 @@
+import { EJSONable } from 'meteor/ejson';
 import React, { Fragment, ReactElement } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { appLayout } from '../../lib/appLayout';
-import { lazyLayout } from '../../lib/lazyLayout';
 import { blazePortals } from '../../lib/portals/blazePortals';
 import BlazeTemplate from './BlazeTemplate';
 
-const NotFoundPage = lazyLayout(() => import('../notFound/NotFoundPage'));
+type AppLayoutProps = {
+	template: string;
+	data?: EJSONable;
+};
 
-const AppLayout = (): ReactElement => {
-	const descriptor = useSubscription(appLayout);
+const AppLayout = ({ template, data }: AppLayoutProps): ReactElement => {
 	const portals = useSubscription(blazePortals);
-
-	if (descriptor === null) {
-		return <NotFoundPage />;
-	}
 
 	return (
 		<>
-			<BlazeTemplate template={descriptor.template} data={descriptor.data} />
+			<BlazeTemplate template={template} data={data} />
 			{portals.map(({ key, node }) => (
 				<Fragment key={key} children={node} />
 			))}

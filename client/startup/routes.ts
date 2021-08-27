@@ -146,14 +146,14 @@ FlowRouter.route('/room-not-found/:type/:name', {
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
 	action: () => {
-		appLayout.render('secretURL');
+		appLayout.reset();
 	},
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
-		appLayout.render('invite');
+		appLayout.reset();
 	},
 });
 
