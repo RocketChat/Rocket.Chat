@@ -2,7 +2,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
@@ -10,10 +9,6 @@ import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
-
-const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
-const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
-const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 
 FlowRouter.wait();
 
@@ -162,23 +157,9 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
-FlowRouter.route('/setup-wizard/:step?', {
-	name: 'setup-wizard',
-	action: () => {
-		appLayout.render({ component: SetupWizardRoute });
-	},
-});
-
-FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
-	name: 'mailer-unsubscribe',
-	action: () => {
-		appLayout.render({ component: MailerUnsubscriptionPage });
-	},
-});
-
 FlowRouter.notFound = {
 	action: (): void => {
-		appLayout.render({ component: NotFoundPage });
+		appLayout.reset();
 	},
 };
 

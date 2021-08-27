@@ -1,7 +1,7 @@
 import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
-import React, { FC, useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { useRouteParameter } from '../../contexts/RouterContext';
 import { useAbsoluteUrl, useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -11,8 +11,12 @@ const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	const { resolve, reject, ...unsubscribedState } = useAsyncState<boolean>();
 
 	const unsubscribe = useMethod('Mailer:unsubscribe');
-	const _id = useRouteParameter('_id');
-	const createdAt = useRouteParameter('createdAt');
+
+	const { _id, createdAt } = useParams<{
+		_id: string;
+		createdAt: string;
+	}>();
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {
@@ -36,7 +40,7 @@ const useMailerUnsubscriptionState = (): AsyncState<boolean> => {
 	return unsubscribedState;
 };
 
-const MailerUnsubscriptionPage: FC = () => {
+const MailerUnsubscriptionPage = (): ReactElement => {
 	const { phase, error } = useMailerUnsubscriptionState();
 
 	const t = useTranslation();

@@ -15,7 +15,7 @@ Meteor.startup(() => {
 			(!!userId && !!hasRole(userId, 'admin') && setupWizardState === 'in_progress');
 
 		if (mustRedirect) {
-			FlowRouter.go('setup-wizard');
+			FlowRouter.go('/setup-wizard');
 		}
 	});
 });

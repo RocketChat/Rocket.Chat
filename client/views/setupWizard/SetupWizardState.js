@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
-import { useRouteParameter, useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useUserId } from '../../contexts/UserContext';
 import SetupWizardPage from './SetupWizardPage';
@@ -8,9 +8,9 @@ import SetupWizardPage from './SetupWizardPage';
 export const finalStep = 'final';
 
 const useStepRouting = () => {
-	const param = useRouteParameter('step');
+	const { step: param } = useParams();
 	const userId = useUserId();
-	const setupWizardRoute = useRoute('setup-wizard');
+	const history = useHistory();
 
 	const [currentStep, setCurrentStep] = useState(() => {
 		if (param === finalStep) {
@@ -32,8 +32,8 @@ const useStepRouting = () => {
 			setCurrentStep(2);
 		}
 
-		setupWizardRoute.replace({ step: String(currentStep) });
-	}, [setupWizardRoute, userId, currentStep]);
+		history.replace(`/setup-wizard/${String(currentStep)}`);
+	}, [history, userId, currentStep]);
 
 	return [currentStep, setCurrentStep];
 };
