@@ -25,7 +25,7 @@ Migrations.add({
 			blockId: 'attention',
 			text: {
 				type: TextObjectType.PLAINTEXT,
-				text: 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SMAL, and Custom Oauth will be available just in Enterprise Edition and Gold plans. Click here for more info: http://www.example.com',
+				text: 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SMAL, and Custom Oauth will be available just in Enterprise Edition and Gold plans. Click here for more info: https://forums.rocket.chat/t/upcoming-changes-to-identity-management-integrations/11994',
 				emoji: false,
 			},
 		};
@@ -33,7 +33,7 @@ Migrations.add({
 		const LDAPBanner = {
 			platform: [BannerPlatform.Web],
 			createdAt: new Date(),
-			expireAt: new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 30)),
+			expireAt: new Date('2021-09-27'),
 			startAt: new Date(),
 			roles: ['admin'],
 			createdBy: {
