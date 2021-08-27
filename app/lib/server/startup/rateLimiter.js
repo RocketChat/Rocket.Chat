@@ -111,7 +111,7 @@ const ruleIds = {};
 const callback = (message, name) => (reply, input) => {
 	if (reply.allowed === false) {
 		logger.info('DDP RATE LIMIT:', message);
-		logger.info(JSON.stringify({ ...reply, ...input }, null, 2));
+		logger.info({ ...reply, ...input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,

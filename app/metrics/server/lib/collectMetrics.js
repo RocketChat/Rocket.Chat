@@ -175,7 +175,7 @@ const updatePrometheusConfig = async () => {
 			gcStats()();
 		}
 	} catch (error) {
-		console.error(error);
+		SystemLogger.error(error);
 	}
 
 	Object.assign(was, is);

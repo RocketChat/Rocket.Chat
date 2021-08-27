@@ -6,6 +6,7 @@ import { callbacks } from '../../callbacks';
 import { Uploads, Settings, Users, Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
 import { api } from '../../../server/sdk/api';
+import { SystemLogger } from '../../logger/server';
 
 class GoogleVision {
 	constructor() {
@@ -73,7 +74,7 @@ class GoogleVision {
 						throw new Meteor.Error('GoogleVisionError: Image blocked');
 					}
 				} else {
-					console.error('Google Vision: Usage limit exceeded');
+					SystemLogger.error('Google Vision: Usage limit exceeded');
 				}
 				return message;
 			}
@@ -116,11 +117,11 @@ class GoogleVision {
 						if (!error) {
 							Messages.setGoogleVisionData(message._id, this.getAnnotations(visionTypes, results));
 						} else {
-							console.trace('GoogleVision error: ', error.stack);
+							SystemLogger.error('GoogleVision error: ', error.stack);
 						}
 					}));
 				} else {
-					console.error('Google Vision: Usage limit exceeded');
+					SystemLogger.error('Google Vision: Usage limit exceeded');
 				}
 			}
 		}

@@ -710,7 +710,7 @@ export const Livechat = {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 

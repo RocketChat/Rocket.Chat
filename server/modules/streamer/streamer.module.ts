@@ -1,5 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 
+import { SystemLogger } from '../../../app/logger/server';
+
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};
 
@@ -146,7 +148,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			}
 
 			if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
-				console.error(`${ name } shortcut '${ fn }' is invalid`);
+				SystemLogger.error(`${ name } shortcut '${ fn }' is invalid`);
 			}
 
 			if (fn === 'all' || fn === true) {
@@ -307,7 +309,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		try {
 			this.registerMethod(method);
 		} catch (e) {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 	}
 

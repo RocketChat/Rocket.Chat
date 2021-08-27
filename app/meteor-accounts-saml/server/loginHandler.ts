@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
+import { SystemLogger } from '../../logger/server';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -31,7 +32,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {
-		console.error(error);
+		SystemLogger.error(error);
 		return makeError(error.toString());
 	}
 });

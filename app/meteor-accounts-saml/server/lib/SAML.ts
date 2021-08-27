@@ -17,6 +17,7 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
+import { SystemLogger } from '../../../logger/server';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -240,7 +241,7 @@ export class SAML {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutRequest(req.query.SAMLRequest, (err, result) => {
 			if (err) {
-				console.error(err);
+				SystemLogger.error({ err });
 				throw new Meteor.Error('Unable to Validate Logout Request');
 			}
 
@@ -293,14 +294,14 @@ export class SAML {
 
 					serviceProvider.logoutResponseToUrl(response, (err, url) => {
 						if (err) {
-							console.error(err);
+							SystemLogger.error({ err });
 							return redirect();
 						}
 
 						redirect(url);
 					});
 				} catch (e) {
-					console.error(e);
+					SystemLogger.error(e);
 					redirect();
 				}
 			}).run();
@@ -472,7 +473,7 @@ export class SAML {
 				}
 			}
 		} catch (err) {
-			console.error(err);
+			SystemLogger.error(err);
 		}
 	}
 }

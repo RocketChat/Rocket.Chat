@@ -13,7 +13,7 @@ import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOpt
 const showDeprecation = mem(({ integration, channels, username }, error) => {
 	console.warn(`Warning: The integration "${ integration }" failed to send a message to "${ [].concat(channels).join(',') }" because user "${ username }" doesn't have permission or is not a member of the channel.`);
 	console.warn('This behavior is deprecated and starting from version v4.0.0 the following error will be thrown and the message will not be sent.');
-	console.error(error);
+	SystemLogger.error(error);
 }, { maxAge: 360000, cacheKey: (integration) => JSON.stringify(integration) });
 
 export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, integration = null) {

@@ -4,7 +4,7 @@ import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
 
-import { Logger, LoggerManager } from '../../app/logger';
+import { Logger } from '../lib/logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
@@ -88,7 +88,7 @@ function startMatrixBroadcast() {
 			connLogger.info('connecting in', instance);
 
 			connections[instance] = DDP.connect(instance, {
-				_dontPrintErrors: LoggerManager.logLevel < 2,
+				_dontPrintErrors: settings.get('Log_Level') !== '2',
 			});
 
 			// remove not relevant info from instance record
@@ -157,7 +157,7 @@ function startStreamCastBroadcast(value) {
 	}
 
 	const connection = DDP.connect(value, {
-		_dontPrintErrors: LoggerManager.logLevel < 2,
+		_dontPrintErrors: settings.get('Log_Level') !== '2',
 	});
 
 	connections[instance] = connection;

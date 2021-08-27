@@ -7,6 +7,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { SystemLogger } from '../../../app/logger/server';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -216,7 +217,7 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 				return false;
 			}
 		});

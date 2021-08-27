@@ -178,7 +178,7 @@ export class ResponseParser {
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
 			xmlenc.decrypt(encData, options, function(err: Error, result: string) {
 				if (err) {
-					console.error(err);
+					SAMLUtils.error(err);
 				}
 
 				const document = new xmldom.DOMParser().parseFromString(result, 'text/xml');
@@ -320,7 +320,7 @@ export class ResponseParser {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err: Error, result: string) {
 				if (err) {
-					console.error(err);
+					SAMLUtils.error(err);
 				}
 				subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
 			});
