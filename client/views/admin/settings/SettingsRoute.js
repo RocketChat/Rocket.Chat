@@ -1,8 +1,8 @@
 import React from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
-import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useIsPrivilegedSettingsContext } from '../../../contexts/SettingsContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import EditableSettingsProvider from '../../../providers/EditableSettingsProvider';
 import GroupSelector from './GroupSelector';
 

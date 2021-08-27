@@ -2,8 +2,9 @@ import { Tabs } from '@rocket.chat/fuselage';
 import React, { useEffect, useCallback, useState } from 'react';
 
 import Page from '../../../components/Page';
-import { useCurrentRoute, useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import ContextualBar from './ContextualBar';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';

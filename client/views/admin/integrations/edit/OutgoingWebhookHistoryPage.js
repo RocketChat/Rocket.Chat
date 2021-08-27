@@ -4,12 +4,13 @@ import React, { useMemo, useCallback, useState, useEffect } from 'react';
 
 import { integrationHistoryStreamer } from '../../../../../app/integrations/client/streamer';
 import Page from '../../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../../contexts/RouterContext';
+import { useRoute } from '../../../../contexts/RouterContext';
 import { useMethod } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { useRouteParameter } from '../../../../hooks/useRouteParameter';
 import HistoryContent from './HistoryContent';
 
 function OutgoingWebhookHistoryPage(props) {

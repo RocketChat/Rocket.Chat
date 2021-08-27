@@ -2,8 +2,9 @@ import React from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import EditRoomContextBar from './EditRoomContextBar';
 import RoomsTable from './RoomsTable';
 

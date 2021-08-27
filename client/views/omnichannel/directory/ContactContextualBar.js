@@ -1,8 +1,9 @@
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import ContactEditWithData from './contacts/contextualBar/ContactEditWithData';
 import ContactInfo from './contacts/contextualBar/ContactInfo';
 import ContactNewEdit from './contacts/contextualBar/ContactNewEdit';

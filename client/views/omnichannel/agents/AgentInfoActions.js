@@ -3,10 +3,11 @@ import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import AgentInfo from './AgentInfo';
 
 function AgentInfoActions({ reload }) {

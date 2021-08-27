@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useRouteParameter } from '../../../contexts/RouterContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import UsersInRolePage from './UsersInRolePage';
 import { useRole } from './useRole';
 

@@ -2,8 +2,9 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import Page from '../../../components/Page';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import EmailInboxEditWithData from './EmailInboxEditWithData';
 import EmailInboxForm from './EmailInboxForm';
 import EmailInboxTable from './EmailInboxTable';

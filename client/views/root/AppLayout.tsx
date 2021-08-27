@@ -3,7 +3,7 @@ import { useSubscription } from 'use-subscription';
 
 import { appLayout } from '../../lib/appLayout';
 import { blazePortals } from '../../lib/portals/blazePortals';
-import AppsRoute from '../admin/apps/AppsRoute';
+import AppRoutes from './AppRoutes';
 import BlazeTemplate from './BlazeTemplate';
 import PageLoading from './PageLoading';
 
@@ -12,7 +12,7 @@ const AppLayout = (): ReactElement => {
 	const portals = useSubscription(blazePortals);
 
 	if (descriptor === null) {
-		return <AppsRoute />;
+		return <AppRoutes />;
 	}
 
 	if ('template' in descriptor) {

@@ -2,8 +2,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useEffect } from 'react';
 
 import { businessHourManager } from '../../../../app/livechat/client/views/app/business-hours/BusinessHours';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import BusinessHoursPage from './BusinessHoursPage';
 import EditBusinessHoursPage from './EditBusinessHoursPage';
 import NewBusinessHoursPage from './NewBusinessHoursPage';

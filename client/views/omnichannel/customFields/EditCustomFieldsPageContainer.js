@@ -3,10 +3,10 @@ import React from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import EditCustomFieldsPage from './EditCustomFieldsPage';
 
 const EditCustomFieldsPageContainer = ({ reload }) => {

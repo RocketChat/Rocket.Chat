@@ -2,9 +2,9 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import Page from '../../../components/Page';
-// import VerticalBar from '../../components/VerticalBar';
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';

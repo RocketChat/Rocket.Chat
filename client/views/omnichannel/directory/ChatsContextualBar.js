@@ -2,10 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import { FormSkeleton } from './Skeleton';
 import Chat from './chats/Chat';
 import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';

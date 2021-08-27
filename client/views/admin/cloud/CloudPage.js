@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import { useSetModal } from '../../../contexts/ModalContext';
-import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useQueryStringParameter } from '../../../hooks/useQueryStringParameter';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import ConnectToCloudSection from './ConnectToCloudSection';
 import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 import TroubleshootingSection from './TroubleshootingSection';

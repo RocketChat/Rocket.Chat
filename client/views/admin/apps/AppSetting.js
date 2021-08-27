@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import MemoizedSetting from '../settings/MemoizedSetting';
 
 const useAppTranslation = (appId) => {

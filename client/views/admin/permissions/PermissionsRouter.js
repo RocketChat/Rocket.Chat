@@ -2,7 +2,7 @@ import React from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useRouteParameter } from '../../../contexts/RouterContext';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 import PermissionsTable from './PermissionsTable';
 import UsersInRole from './UsersInRolePageContainer';
 

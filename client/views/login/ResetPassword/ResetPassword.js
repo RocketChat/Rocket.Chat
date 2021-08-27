@@ -3,11 +3,12 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { Meteor } from 'meteor/meteor';
 import React, { useState, useCallback, useMemo } from 'react';
 
-import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useUser } from '../../../contexts/UserContext';
 import { useMethodData } from '../../../hooks/useMethodData';
+import { useRouteParameter } from '../../../hooks/useRouteParameter';
 
 const getChangePasswordReason = ({
 	requirePasswordChange,
