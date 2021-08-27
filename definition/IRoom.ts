@@ -34,6 +34,7 @@ export interface IRoom extends IRocketChatRecord {
 	usersCount: number;
 	jitsiTimeout: Date;
 	callStatus?: CallStatus;
+	webRtcCallStartTime?: Date;
 	servedBy?: {
 		_id: string;
 	};
