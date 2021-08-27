@@ -102,7 +102,6 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }) {
 			t: 1,
 			avatarETag: 1,
 		},
-		limit: 10,
 		sort: {
 			name: 1,
 		},
