@@ -101,7 +101,7 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 
 			if (!callStatus || callStatus === 'ended' || callStatus === 'declined') {
 				callStatus = 'ringing';
-				Promise.await(Rooms.setCallStatus(room._id, callStatus));
+				Promise.await(Rooms.setCallStatusAndCallStartTime(room._id, callStatus));
 				Promise.await(Messages.createWithTypeRoomIdMessageAndUser(
 					'livechat_webrtc_video_call',
 					room._id,
