@@ -5,7 +5,7 @@ import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
 export function startRegisterWorkspace(resend = false) {

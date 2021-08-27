@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings/server';
-import { SystemLogger } from '../../app/logger/server';
+import { SystemLogger } from '../lib/logger/system';
 
 Meteor.methods({
 	sendForgotPasswordEmail(to) {

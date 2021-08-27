@@ -6,7 +6,7 @@ import { callbacks } from '../../callbacks';
 import { Uploads, Settings, Users, Messages } from '../../models';
 import { FileUpload } from '../../file-upload';
 import { api } from '../../../server/sdk/api';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 class GoogleVision {
 	constructor() {

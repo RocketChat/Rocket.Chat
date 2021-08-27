@@ -17,7 +17,7 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {

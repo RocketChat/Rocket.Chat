@@ -6,7 +6,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { saveRegistrationData } from './saveRegistrationData';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function connectWorkspace(token) {
 	const { connectToCloud } = retrieveRegistrationStatus();

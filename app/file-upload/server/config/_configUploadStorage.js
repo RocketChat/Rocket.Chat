@@ -2,7 +2,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import './AmazonS3.js';
 import './FileSystem.js';
 import './GoogleStorage.js';

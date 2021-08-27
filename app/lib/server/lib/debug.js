@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
-import { Logger } from '../../../../server/lib/logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('Meteor');
 

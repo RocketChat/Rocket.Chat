@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
 	HTTP.post(url, options, function(err, res) {

@@ -3,7 +3,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export let RocketChatFileCustomSoundsInstance;
 

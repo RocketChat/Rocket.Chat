@@ -5,7 +5,7 @@ import { getRedirectUri } from './getRedirectUri';
 import { settings } from '../../../settings';
 import { Users } from '../../../models';
 import { userScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function finishOAuthAuthorization(code, state) {
 	if (settings.get('Cloud_Workspace_Registration_State') !== state) {

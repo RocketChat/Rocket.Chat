@@ -8,7 +8,7 @@ import { Apps } from '../../../apps/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;

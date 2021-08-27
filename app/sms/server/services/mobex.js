@@ -3,7 +3,7 @@ import { Base64 } from 'meteor/base64';
 
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 class Mobex {
 	constructor() {

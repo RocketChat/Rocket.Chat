@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { api } from '../../../../server/sdk/api';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 

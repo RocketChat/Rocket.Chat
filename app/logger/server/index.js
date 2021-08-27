@@ -1,11 +1,6 @@
-import { LoggerManager } from './server';
-import { Logger } from '../../../server/lib/logger';
+import { Logger } from '../../../server/lib/logger/Logger';
 import './streamer';
 
-const SystemLogger = new Logger('System');
-
 export {
-	LoggerManager,
 	Logger,
-	SystemLogger,
 };

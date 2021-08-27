@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../app/logger/server';
+import { SystemLogger } from './logger/system';
 import { Roles, Users } from '../../app/models/server';
 
 export function sendMessagesToAdmins({

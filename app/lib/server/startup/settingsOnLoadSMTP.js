@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const buildMailURL = _.debounce(function() {
 	SystemLogger.info('Updating process.env.MAIL_URL');

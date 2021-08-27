@@ -14,7 +14,7 @@ import { OEmbedCache, Messages } from '../../models';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};

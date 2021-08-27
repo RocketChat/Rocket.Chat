@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { Users } from '../../../models/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 
 export const setUserAvatar = function(user, dataURI, contentType, service) {

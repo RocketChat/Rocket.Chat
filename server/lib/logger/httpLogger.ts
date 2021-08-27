@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 
 import type { P } from 'pino';
 
-import type { Logger } from '.';
+import type { Logger } from './Logger';
 
 type IncomingMessageLoggable = IncomingMessage & {
 	log: P.Logger;

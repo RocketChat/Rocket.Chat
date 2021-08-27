@@ -5,7 +5,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 
 import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 /**
  * WebDAV store
  * @param options

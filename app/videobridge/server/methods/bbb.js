@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
 import BigBlueButtonApi from '../../../bigbluebutton/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { Rooms, Users } from '../../../models/server';
 import { saveStreamingOptions } from '../../../channel-settings/server';

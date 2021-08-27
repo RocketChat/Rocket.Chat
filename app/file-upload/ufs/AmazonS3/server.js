@@ -6,7 +6,7 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 /**
  * AmazonS3 store

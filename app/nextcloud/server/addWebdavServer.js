@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../callbacks/server';
 import { settings } from '../../settings/server';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 Meteor.startup(() => {
 	settings.get('Webdav_Integration_Enabled', (key, value) => {

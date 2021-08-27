@@ -3,7 +3,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import { Storage } from '@google-cloud/storage';
 
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 /**
  * GoogleStorage store

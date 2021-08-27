@@ -1,6 +1,6 @@
 import { ILoginAttempt } from '../ILoginAttempt';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_Enabled')) {

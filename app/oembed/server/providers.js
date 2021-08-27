@@ -5,7 +5,7 @@ import { camelCase } from 'change-case';
 import _ from 'underscore';
 
 import { callbacks } from '../../callbacks/server';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 class Providers {
 	constructor() {

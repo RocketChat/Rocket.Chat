@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { INpsVote } from '../../../definition/INps';
-import { SystemLogger } from '../../../app/logger/server';
+import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {
 	total: number;

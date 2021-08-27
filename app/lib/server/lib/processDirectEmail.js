@@ -6,7 +6,7 @@ import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
 import { hasPermission } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { sendMessage as _sendMessage } from '../functions';
 
 export const processDirectEmail = function(email) {

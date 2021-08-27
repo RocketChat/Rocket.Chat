@@ -4,7 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { placeholders } from '../../../utils/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer';
 
 export const sendMail = function(from, subject, body, dryrun, query) {

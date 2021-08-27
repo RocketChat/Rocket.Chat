@@ -6,7 +6,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { unregisterWorkspace } from './unregisterWorkspace';
 import { settings } from '../../../settings';
 import { workspaceScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getWorkspaceAccessTokenWithScope(scope = '') {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();

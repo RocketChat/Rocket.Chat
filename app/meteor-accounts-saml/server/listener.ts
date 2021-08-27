@@ -6,7 +6,7 @@ import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { ISAMLAction } from './definition/ISAMLAction';

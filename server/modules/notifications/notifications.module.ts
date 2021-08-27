@@ -7,7 +7,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
-import { SystemLogger } from '../../../app/logger/server';
+import { SystemLogger } from '../../lib/logger/system';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;

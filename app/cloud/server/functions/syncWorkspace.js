@@ -8,7 +8,7 @@ import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();

@@ -6,7 +6,7 @@ import mem from 'mem';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
 // show deprecation warning only once per hour for each integration

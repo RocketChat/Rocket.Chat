@@ -5,7 +5,7 @@ import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { callbacks } from '../../../callbacks';
 import { LICENSE_VERSION } from '../license';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getWorkspaceLicense() {
 	const token = getWorkspaceAccessToken();

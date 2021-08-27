@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings';
 import '../../ufs/Webdav/server.js';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function(file, req, res) {
 	this.store.getReadStream(file._id, file)

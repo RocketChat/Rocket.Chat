@@ -7,7 +7,7 @@ import { SettingsBase } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 import { updateValue } from '../raw';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();

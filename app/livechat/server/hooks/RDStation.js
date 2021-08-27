@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { Livechat } from '../lib/Livechat';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 function sendToRDStation(room) {
 	if (!settings.get('Livechat_RDStation_Token')) {

@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { ReadReceipts, Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models';
 import { settings } from '../../../../app/settings';
 import { roomTypes } from '../../../../app/utils';
-import { SystemLogger } from '../../../../app/logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const rawReadReceipts = ReadReceipts.model.rawCollection();
 

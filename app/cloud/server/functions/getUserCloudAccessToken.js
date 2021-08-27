@@ -8,7 +8,7 @@ import { userLoggedOut } from './userLoggedOut';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { userScopes } from '../oauthScopes';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();

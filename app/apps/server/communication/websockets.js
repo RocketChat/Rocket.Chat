@@ -1,6 +1,6 @@
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 export const AppEvents = Object.freeze({

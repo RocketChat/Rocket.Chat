@@ -11,7 +11,7 @@ import { Info, getOplogInfo } from '../../../utils/server';
 import { Migrations } from '../../../migrations/server';
 import { settings } from '../../../settings/server';
 import { Statistics } from '../../../models/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 

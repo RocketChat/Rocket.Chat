@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
-import { SystemLogger } from '../../../../logger/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 
 class ExternalQueue {
 	constructor() {

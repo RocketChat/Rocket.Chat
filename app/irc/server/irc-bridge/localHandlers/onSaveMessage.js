@@ -1,4 +1,4 @@
-import { SystemLogger } from '../../../../logger/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Subscriptions, Users } from '../../../../models';
 
 export default function handleOnSaveMessage(message, to) {

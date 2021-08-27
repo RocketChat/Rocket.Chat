@@ -1,6 +1,6 @@
 import { EventEmitter } from 'eventemitter3';
 
-import { SystemLogger } from '../../../app/logger/server';
+import { SystemLogger } from '../../lib/logger/system';
 
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};

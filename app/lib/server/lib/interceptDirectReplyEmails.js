@@ -3,7 +3,7 @@ import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
 import { processDirectEmail } from '.';
 

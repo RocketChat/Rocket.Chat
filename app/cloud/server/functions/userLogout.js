@@ -4,7 +4,7 @@ import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function userLogout(userId) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();

@@ -1,5 +1,5 @@
 import { Users } from '../../../models/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const unsubscribe = function(_id, createdAt) {
 	if (_id && createdAt) {

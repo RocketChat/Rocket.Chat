@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',

@@ -28,7 +28,7 @@ import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const cookie = new Cookies();
 let maxFileSize = 0;

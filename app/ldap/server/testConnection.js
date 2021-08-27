@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import LDAP from './ldap';
 import { hasRole } from '../../authorization/server';
 import { settings } from '../../settings/server';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 Meteor.methods({
 	ldap_test_connection() {

@@ -4,7 +4,7 @@ import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import { check } from 'meteor/check';
 import { DDP } from 'meteor/ddp';
 
-import { Logger } from '../lib/logger';
+import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization';
 import { settings } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
