@@ -25,7 +25,7 @@ Migrations.add({
 			blockId: 'attention',
 			text: {
 				type: TextObjectType.PLAINTEXT,
-				text: 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SMAL, and Custom Oauth will be available just in Enterprise Edition and Gold plans. Click here for more info: https://forums.rocket.chat/t/upcoming-changes-to-identity-management-integrations/11994',
+				text: 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SMAL, and Custom Oauth will be available just in Enterprise Edition and Gold plans. Click here for more info: https://go.rocket.chat/i/authentication-changes',
 				emoji: false,
 			},
 		};
