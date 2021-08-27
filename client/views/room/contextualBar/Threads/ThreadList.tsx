@@ -9,13 +9,10 @@ import { IRoom } from '../../../../../definition/IRoom';
 import { IUser } from '../../../../../definition/IUser';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
-import {
-	useRoute,
-	useCurrentRoute,
-	useQueryStringParameter,
-} from '../../../../contexts/RouterContext';
+import { useRoute, useCurrentRoute } from '../../../../contexts/RouterContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
+import { useQueryStringParameter } from '../../../../hooks/useQueryStringParameter';
 import { useTabContext } from '../../providers/ToolboxProvider';
 import Row from './Row';
 import { withData } from './withData';

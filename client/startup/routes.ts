@@ -157,6 +157,20 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
+FlowRouter.route('/setup-wizard/:step?', {
+	name: 'setup-wizard',
+	action: () => {
+		appLayout.reset();
+	},
+});
+
+FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
+	name: 'mailer-unsubscribe',
+	action: () => {
+		appLayout.reset();
+	},
+});
+
 FlowRouter.notFound = {
 	action: (): void => {
 		appLayout.reset();

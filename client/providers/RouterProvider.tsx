@@ -59,11 +59,6 @@ const queryRouteParameter = (
 ): ReturnType<RouterContextValue['queryRouteParameter']> =>
 	createSubscription(() => FlowRouter.getParam(name));
 
-const queryQueryStringParameter = (
-	name: Parameters<RouterContextValue['queryQueryStringParameter']>[0],
-): ReturnType<RouterContextValue['queryQueryStringParameter']> =>
-	createSubscription(() => FlowRouter.getQueryParam(name));
-
 const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']> =>
 	createSubscription(() => {
 		FlowRouter.watchPathChange();
@@ -77,7 +72,6 @@ const contextValue = {
 	pushRoute,
 	replaceRoute,
 	queryRouteParameter,
-	queryQueryStringParameter,
 	queryCurrentRoute,
 };
 

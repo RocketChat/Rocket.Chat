@@ -1,3 +1,3 @@
-import { useQueryStringParameter } from '../contexts/RouterContext';
+import { useQueryStringParameter } from './useQueryStringParameter';
 
 export const useEmbeddedLayout = () => useQueryStringParameter('layout') === 'embedded';

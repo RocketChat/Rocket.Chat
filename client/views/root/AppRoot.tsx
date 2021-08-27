@@ -16,14 +16,14 @@ const history = getFlowRouterHistory();
 
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
-		<MeteorProvider>
-			<Router history={history}>
+		<Router history={history}>
+			<MeteorProvider>
 				<ConnectionStatusBar />
 				<BannerRegion />
 				<AppLayout />
 				<PortalsWrapper />
-			</Router>
-		</MeteorProvider>
+			</MeteorProvider>
+		</Router>
 	</Suspense>
 );
 

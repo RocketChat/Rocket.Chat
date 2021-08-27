@@ -31,7 +31,6 @@ export type RouterContextValue = {
 		queryStringParameters: QueryStringParameters | undefined,
 	) => void;
 	queryRouteParameter: (name: string) => Subscription<string | undefined>;
-	queryQueryStringParameter: (name: string) => Subscription<string | undefined>;
 	queryCurrentRoute: () => Subscription<
 		[RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?]
 	>;
@@ -49,10 +48,6 @@ export const RouterContext = createContext<RouterContextValue>({
 	pushRoute: () => undefined,
 	replaceRoute: () => undefined,
 	queryRouteParameter: () => ({
-		getCurrentValue: (): undefined => undefined,
-		subscribe: () => (): void => undefined,
-	}),
-	queryQueryStringParameter: () => ({
 		getCurrentValue: (): undefined => undefined,
 		subscribe: () => (): void => undefined,
 	}),
@@ -127,14 +122,6 @@ export const useRouteParameter = (name: string): string | undefined => {
 	const { queryRouteParameter } = useContext(RouterContext);
 
 	return useSubscription(useMemo(() => queryRouteParameter(name), [queryRouteParameter, name]));
-};
-
-export const useQueryStringParameter = (name: string): string | undefined => {
-	const { queryQueryStringParameter } = useContext(RouterContext);
-
-	return useSubscription(
-		useMemo(() => queryQueryStringParameter(name), [queryQueryStringParameter, name]),
-	);
 };
 
 export const useCurrentRoute = (): [
