@@ -19,11 +19,11 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	}
 
 	if (!autoCloseOnHoldChatTimeout || autoCloseOnHoldChatTimeout <= 0) {
-		(logger as any).cb.debug('Skipping callback. Disabled by setting');
+		(logger as any).cb.debug('Skipping callback. Autoclose on hold disabled by setting');
 		return;
 	}
 
-	(logger as any).cb.debug(`Scheduling room to be closed in ${ autoCloseOnHoldChatTimeout } seconds`);
+	(logger as any).cb.debug(`Scheduling room ${ rid } to be closed in ${ autoCloseOnHoldChatTimeout } seconds`);
 	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, customCloseMessage);
 };
 

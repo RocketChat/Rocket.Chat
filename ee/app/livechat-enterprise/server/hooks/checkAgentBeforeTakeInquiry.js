@@ -19,7 +19,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 	}
 
 	if (allowAgentSkipQueue(agent)) {
-		logger.cb.debug('Callback success. Agent can skip queue');
+		logger.cb.debug(`Callback success. Agent ${ agent.agentId } can skip queue`);
 		return agent;
 	}
 
@@ -28,7 +28,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 
 	const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({ agentId, departmentId });
 	if (maxNumberSimultaneousChat === 0) {
-		logger.cb.debug('Callback success. Agent max number simultaneous chats on range');
+		logger.cb.debug(`Callback success. Agent ${ agentId } max number simultaneous chats on range`);
 		return agent;
 	}
 
@@ -49,6 +49,6 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 		return null;
 	}
 
-	logger.cb.debug('Callback success. Agent can take inquiry');
+	logger.cb.debug(`Callback success. Agent ${ agentId } can take inquiry ${ inquiry._id }`);
 	return agent;
 }, callbacks.priority.MEDIUM, 'livechat-before-take-inquiry');

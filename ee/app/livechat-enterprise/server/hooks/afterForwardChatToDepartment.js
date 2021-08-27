@@ -26,6 +26,7 @@ callbacks.add('livechat.afterForwardChatToDepartment', (options) => {
 		return options;
 	}
 
+	logger.cb.debug(`Updating department ${ newDepartmentId } ancestors for room ${ rid }`);
 	LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 	return options;

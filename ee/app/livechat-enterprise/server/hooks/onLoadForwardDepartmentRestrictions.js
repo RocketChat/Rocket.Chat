@@ -13,9 +13,9 @@ callbacks.add('livechat.onLoadForwardDepartmentRestrictions', (options = {}) => 
 		logger.cb.debug('Skipping callback. Invalid department provided');
 		return options;
 	}
-	const { departmentsAllowedToForward } = department;
+	const { departmentsAllowedToForward, _id } = department;
 	if (!departmentsAllowedToForward) {
-		logger.cb.debug('Skipping callback. Department doesnt allow forwarding to other departments');
+		logger.cb.debug(`Skipping callback. Department ${ _id } doesnt allow forwarding to other departments`);
 		return options;
 	}
 	return Object.assign({ restrictions: { _id: { $in: departmentsAllowedToForward } } }, options);

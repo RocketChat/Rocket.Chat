@@ -5,6 +5,7 @@ import { logger } from '../lib/logger';
 
 callbacks.add('livechat.applyDepartmentRestrictions', (originalQuery = {}, { userId } = { userId: null }) => {
 	if (!userId || !hasRole(userId, 'livechat-monitor')) {
+		(logger as any).cb.debug('Skipping callback. No user id provided or user is not a monitor');
 		return originalQuery;
 	}
 

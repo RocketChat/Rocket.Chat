@@ -34,7 +34,7 @@ callbacks.add('livechat.applySimultaneousChatRestrictions', (_: any, { departmen
 		// dummy filter meaning: don't match anything
 		: { _id: '' };
 
-	(logger as any).cb.debug(`Applying agent & global filters. Max number of chats allowed to all agents: ${ maxChatsPerSetting }`);
+	(logger as any).cb.debug(`Applying agent & global filters. Max number of chats allowed to all agents by setting: ${ maxChatsPerSetting }`);
 
 	return { $match: { $or: [agentFilter, globalFilter] } };
 }, callbacks.priority.HIGH, 'livechat-apply-simultaneous-restrictions');
