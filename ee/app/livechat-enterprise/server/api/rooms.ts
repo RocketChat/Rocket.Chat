@@ -24,7 +24,7 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 			return API.v1.failure('Invalid room Id');
 		}
 
-		if (!room.lastMessage?.token) {
+		if (room.lastMessage?.token) {
 			return API.v1.failure('You cannot place chat on-hold, when the Contact has sent the last message');
 		}
 
