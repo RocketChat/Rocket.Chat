@@ -120,36 +120,26 @@ FlowRouter.route('/room-not-found/:type/:name', {
 
 FlowRouter.route('/register/:hash', {
 	name: 'register-secret-url',
-	action: () => {
-		appLayout.reset();
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/invite/:hash', {
 	name: 'invite',
-	action: () => {
-		appLayout.reset();
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
-	action: () => {
-		appLayout.reset();
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
-	action: () => {
-		appLayout.reset();
-	},
+	action: () => undefined,
 });
 
 FlowRouter.notFound = {
-	action: (): void => {
-		appLayout.reset();
-	},
+	action: (): void => undefined,
 };
 
 Meteor.startup(() => {

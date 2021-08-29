@@ -37,20 +37,11 @@ const AppRoutes = (): ReactElement => {
 				</Route>
 				<Route exact path='/setup-wizard/:step?'>
 					<SetupWizardRoute />
-					<AppLayout />
 				</Route>
 				<Route exact path='/mailer/unsubscribe/:_id/:createdAt'>
 					<MailerUnsubscriptionPage />
-					<AppLayout />
 				</Route>
-				<Route>
-					{!descriptor && (
-						<>
-							<NotFoundPage />
-							<AppLayout />
-						</>
-					)}
-				</Route>
+				<Route>{!descriptor && <NotFoundPage />}</Route>
 			</Switch>
 		</>
 	);

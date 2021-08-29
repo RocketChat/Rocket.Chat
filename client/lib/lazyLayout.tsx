@@ -1,5 +1,6 @@
 import React, { ComponentType, lazy, ReactElement, Suspense } from 'react';
 
+import AppLayout from '../views/root/AppLayout';
 import PageLoading from '../views/root/PageLoading';
 
 export const lazyLayout = <P,>(
@@ -11,6 +12,7 @@ export const lazyLayout = <P,>(
 		return (
 			<Suspense fallback={<PageLoading />}>
 				<LazyComponent {...props} />
+				<AppLayout />
 			</Suspense>
 		);
 	};
