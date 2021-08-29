@@ -46,17 +46,21 @@ export const createFlowRouterHistory = (): History => {
 			const path = typeof to === 'string' ? to : memoryHistory.createHref(to);
 			state = state ?? memoryHistory.location.state;
 
-			memoryHistory.location.state = state;
-			FlowRouter.go(path);
+			setTimeout(() => {
+				memoryHistory.location.state = state;
+				FlowRouter.go(path);
+			}, 0);
 		},
 		replace(to: LocationDescriptor, state?: LocationState) {
 			const path = typeof to === 'string' ? to : memoryHistory.createHref(to);
 			state = state ?? memoryHistory.location.state;
 
-			memoryHistory.location.state = state;
-			FlowRouter.withReplaceState(() => {
-				FlowRouter.go(path);
-			});
+			setTimeout(() => {
+				memoryHistory.location.state = state;
+				FlowRouter.withReplaceState(() => {
+					FlowRouter.go(path);
+				});
+			}, 0);
 		},
 		createHref(to: LocationDescriptorObject) {
 			return memoryHistory.createHref(to);

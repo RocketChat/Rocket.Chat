@@ -1,26 +1,23 @@
-import { EJSONable } from 'meteor/ejson';
-import React, { Fragment, ReactElement } from 'react';
-import { useSubscription } from 'use-subscription';
+import { useLayoutEffect } from 'react';
 
-import { blazePortals } from '../../lib/portals/blazePortals';
-import BlazeTemplate from './BlazeTemplate';
+import { appLayout } from '../../lib/appLayout';
 
 type AppLayoutProps = {
-	template: string;
+	template?: string;
 	data?: EJSONable;
 };
 
-const AppLayout = ({ template, data }: AppLayoutProps): ReactElement => {
-	const portals = useSubscription(blazePortals);
+const AppLayout = ({ template, data }: AppLayoutProps): null => {
+	useLayoutEffect(() => {
+		if (!template) {
+			appLayout.reset();
+			return;
+		}
 
-	return (
-		<>
-			<BlazeTemplate template={template} data={data} />
-			{portals.map(({ key, node }) => (
-				<Fragment key={key} children={node} />
-			))}
-		</>
-	);
+		appLayout.render(template, data);
+	}, [data, template]);
+
+	return null;
 };
 
 export default AppLayout;

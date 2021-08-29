@@ -17,7 +17,7 @@ FlowRouter.route('/', {
 
 FlowRouter.route('/login', {
 	name: 'login',
-	action: () => appLayout.reset(),
+	action: () => undefined,
 });
 
 FlowRouter.route('/home', {
