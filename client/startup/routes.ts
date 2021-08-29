@@ -1,12 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
-import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 
@@ -14,35 +12,12 @@ FlowRouter.wait();
 
 FlowRouter.route('/', {
 	name: 'index',
-	action() {
-		appLayout.render('main', { center: 'loading' });
-		if (!Meteor.userId()) {
-			return FlowRouter.go('home');
-		}
-
-		Tracker.autorun((c) => {
-			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(() => {
-					const user = Meteor.user() as IUser | null;
-					if (user?.defaultRoom) {
-						const room = user.defaultRoom.split('/');
-						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
-					} else {
-						FlowRouter.go('home');
-					}
-				});
-				c.stop();
-			}
-		});
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/login', {
 	name: 'login',
-
-	action() {
-		FlowRouter.go('home');
-	},
+	action: () => appLayout.reset(),
 });
 
 FlowRouter.route('/home', {

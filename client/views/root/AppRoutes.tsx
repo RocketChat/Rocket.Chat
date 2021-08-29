@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { useSubscription } from 'use-subscription';
 
 import { appLayout } from '../../lib/appLayout';
@@ -15,6 +15,8 @@ const AppRoutes = (): ReactElement => {
 
 	return (
 		<Switch>
+			<Redirect exact path='/' to='/home' />
+			<Redirect exact path='/login' to='/home' />
 			<Route path='/register/:hash' exact>
 				<AppLayout template='secretURL' />
 			</Route>
@@ -27,7 +29,7 @@ const AppRoutes = (): ReactElement => {
 			<Route path='/mailer/unsubscribe/:_id/:createdAt' exact>
 				<MailerUnsubscriptionPage />
 			</Route>
-			<Route path='*'>{descriptor ? <AppLayout {...descriptor} /> : <NotFoundPage />}</Route>
+			<Route>{descriptor ? <AppLayout {...descriptor} /> : <NotFoundPage />}</Route>
 		</Switch>
 	);
 };

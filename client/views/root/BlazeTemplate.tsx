@@ -35,6 +35,14 @@ const BlazeTemplate: FC<BlazeTemplateProps> = ({ template, data }) => {
 		};
 	}, [template]);
 
+	useEffect(() => {
+		console.log('mount');
+
+		return (): void => {
+			console.log('unmount');
+		};
+	}, []);
+
 	return <div ref={ref} data-blaze-template style={hiddenStyle} />;
 };
 

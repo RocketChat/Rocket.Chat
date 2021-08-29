@@ -1,9 +1,11 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import React, { FC } from 'react';
+import { Router } from 'react-router-dom';
 import { Subscription, Unsubscribe } from 'use-subscription';
 
 import { RouterContext, RouterContextValue } from '../contexts/RouterContext';
+import { getFlowRouterHistory } from '../lib/flowRouterHistory';
 
 const createSubscription = function <T>(getValue: () => T): Subscription<T> {
 	let currentValue = Tracker.nonreactive(getValue);
@@ -75,8 +77,12 @@ const contextValue = {
 	queryCurrentRoute,
 };
 
+const history = getFlowRouterHistory();
+
 const RouterProvider: FC = ({ children }) => (
-	<RouterContext.Provider children={children} value={contextValue} />
+	<RouterContext.Provider value={contextValue}>
+		<Router history={history}>{children}</Router>
+	</RouterContext.Provider>
 );
 
 export default RouterProvider;
