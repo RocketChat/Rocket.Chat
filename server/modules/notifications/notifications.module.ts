@@ -452,11 +452,11 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
 	}
 
-	sendPresence(userId: string, status: string): void {
+	sendPresence(userId: string, ...args: any[]): void {
 		// if (this.debug === true) {
 		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		// }
-		return this.streamPresence.emitWithoutBroadcast(userId, status);
+		return this.streamPresence.emitWithoutBroadcast(userId, ...args);
 	}
 
 	progressUpdated(progress: {rate: number}): void {
