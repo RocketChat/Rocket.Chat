@@ -66,8 +66,6 @@ export const readMessage = new class extends Emitter {
 	}
 
 	readNow(rid = Session.get('openedRoom')) {
-		const unread = Session.get('unread');
-
 		if (rid == null) {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
@@ -76,10 +74,6 @@ export const readMessage = new class extends Emitter {
 		const subscription = ChatSubscription.findOne({ rid });
 		if (subscription == null) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
-			return;
-		}
-
-		if ((unread != null) && unread !== '') {
 			return;
 		}
 

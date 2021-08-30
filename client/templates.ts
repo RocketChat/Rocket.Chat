@@ -66,18 +66,6 @@ createTemplateForComponent('sidebarChats', () => import('./sidebar/RoomList/inde
 });
 
 createTemplateForComponent(
-	'reactionList',
-	() => import('../app/ui-utils/client/lib/ReactionListContent'),
-	{
-		renderContainerView: () =>
-			HTML.DIV({
-				style:
-					'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;',
-			}),
-	},
-);
-
-createTemplateForComponent(
 	'omnichannelFlex',
 	() => import('./views/omnichannel/sidebar/OmnichannelSidebar'),
 	{

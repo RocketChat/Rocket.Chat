@@ -21,6 +21,7 @@ const RoomMembersWithData = ({ rid }) => {
 	const onClickClose = useTabBarClose();
 	const room = useUserRoom(rid);
 	const isTeam = room.teamMain;
+	const isDirect = room.t === 'd';
 
 	room.type = room.t;
 	room.rid = rid;
@@ -100,6 +101,7 @@ const RoomMembersWithData = ({ rid }) => {
 		<RoomMembers
 			rid={rid}
 			isTeam={isTeam}
+			isDirect={isDirect}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
