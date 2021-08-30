@@ -12,7 +12,12 @@ Migrations.add({
 	up() {
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
-		const CustomOauthEnabled = Settings.isOAuthEnabled();
+
+		const query = {
+			_id: { $regex: /^Accounts_OAuth_/ },
+			value: true,
+		};
+		const CustomOauthEnabled = !!Settings.findOne(query);
 
 		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
 

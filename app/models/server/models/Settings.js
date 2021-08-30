@@ -242,13 +242,6 @@ export class Settings extends Base {
 			}
 		}
 	}
-
-	isOAuthEnabled() {
-		return !!this.findOne({
-			_id: { $regex: /^Accounts_OAuth_/ },
-			value: true,
-		});
-	}
 }
 
 export default new Settings('settings', true);
