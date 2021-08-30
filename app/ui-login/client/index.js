@@ -1,4 +1,3 @@
-import './routes';
 import './login/footer.html';
 import './login/form.html';
 import './login/header.html';

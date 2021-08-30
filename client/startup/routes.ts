@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
@@ -100,6 +101,67 @@ FlowRouter.route('/setup-wizard/:step?', {
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
 	action: () => undefined,
+});
+
+FlowRouter.route('/reset-password/:token', {
+	name: 'resetPassword',
+	action: () => undefined,
+});
+
+FlowRouter.route('/login-token/:token', {
+	name: 'tokenLogin',
+	action(params) {
+		appLayout.render('loginLayout');
+
+		Accounts.callLoginMethod({
+			methodArguments: [
+				{
+					loginToken: params?.token,
+				},
+			],
+			userCallback(error) {
+				if (!error) {
+					FlowRouter.go('/');
+				}
+			},
+		});
+	},
+});
+
+FlowRouter.route('/oauth/authorize', {
+	name: '/oauth/authorize',
+	action(_params, queryParams) {
+		appLayout.render('main', {
+			center: 'authorize',
+			modal: true,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			client_id: queryParams?.client_id,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			redirect_uri: queryParams?.redirect_uri,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			response_type: queryParams?.response_type,
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			state: queryParams?.state,
+		});
+	},
+});
+
+FlowRouter.route('/oauth/error/:error', {
+	name: '/oauth/error/:error',
+	action(params) {
+		appLayout.render('main', {
+			center: 'oauth404',
+			modal: true,
+			error: params?.error,
+		});
+	},
+});
+
+FlowRouter.route('/snippet/:snippetId/:snippetName', {
+	name: 'snippetView',
+	action() {
+		appLayout.render('main', { center: 'snippetPage' });
+	},
 });
 
 FlowRouter.notFound = {

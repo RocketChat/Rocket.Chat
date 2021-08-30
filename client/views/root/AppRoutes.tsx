@@ -75,6 +75,9 @@ const AppRoutes = (): ReactElement => {
 				<Route exact path='/mailer/unsubscribe/:_id/:createdAt'>
 					<MailerUnsubscriptionPage />
 				</Route>
+				<Route exact path='/reset-password/:token'>
+					<AppLayout template='loginLayout' center='resetPassword' />
+				</Route>
 				<Route>{!descriptor && <NotFoundPage />}</Route>
 			</Switch>
 		</>

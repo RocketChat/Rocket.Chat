@@ -2,34 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-const blockstackLogin = (authResponse, userData = {}) => {
-	Accounts.callLoginMethod({
-		methodArguments: [{
-			blockstack: true,
-			authResponse,
-			userData,
-		}],
-		userCallback() {
-			FlowRouter.go('home');
-		},
-	});
-};
-
 FlowRouter.route('/_blockstack/validate', {
 	name: 'blockstackValidate',
-	async action(params, queryParams) {
-		const blockstack = await import('blockstack/dist/blockstack');
-
+	async action(params, { authResponse }) {
 		if (Meteor.userId()) {
 			console.log('Blockstack Auth requested when already logged in. Reloading.');
-			return FlowRouter.go('home');
+			FlowRouter.go('/');
+			return;
 		}
 
-		if (queryParams.authResponse == null) {
+		if (!authResponse) {
 			throw new Meteor.Error('Blockstack: Auth request without response param.');
 		}
 
-		let userData;
+		const blockstack = await import('blockstack/dist/blockstack');
+		let userData = {};
 
 		if (blockstack.isUserSignedIn()) {
 			userData = blockstack.loadUserData();
@@ -39,6 +26,15 @@ FlowRouter.route('/_blockstack/validate', {
 			userData = await blockstack.handlePendingSignIn();
 		}
 
-		blockstackLogin(queryParams.authResponse, userData);
+		Accounts.callLoginMethod({
+			methodArguments: [{
+				blockstack: true,
+				authResponse,
+				userData,
+			}],
+			userCallback() {
+				FlowRouter.go('/');
+			},
+		});
 	},
 });
