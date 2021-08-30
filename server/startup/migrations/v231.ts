@@ -14,7 +14,7 @@ Migrations.add({
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
 		const query = {
-			_id: { $regex: /^Accounts_OAuth_/ },
+			_id: /^Accounts_OAuth_/,
 			value: true,
 		};
 		const CustomOauthEnabled = !!Settings.findOne(query);
