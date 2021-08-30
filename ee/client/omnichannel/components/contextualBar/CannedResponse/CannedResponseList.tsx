@@ -63,7 +63,7 @@ const CannedResponseList: FC<{
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Canned Responses')}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Canned_Responses')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 
