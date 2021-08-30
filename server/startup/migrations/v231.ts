@@ -38,7 +38,7 @@ Migrations.add({
 		const LDAPBanner = {
 			platform: [BannerPlatform.Web],
 			createdAt: new Date(),
-			expireAt: new Date('2021-09-27'),
+			expireAt: new Date('2022-09-27'),
 			startAt: new Date(),
 			roles: ['admin'],
 			createdBy: {
