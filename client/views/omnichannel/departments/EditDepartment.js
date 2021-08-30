@@ -347,22 +347,20 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Field>
 							<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
 							<Field.Row>
-								<>
-									<PaginatedSelectFiltered
-										value={offlineMessageChannelName}
-										onChange={handleOfflineMessageChannelName}
-										flexShrink={0}
-										filter={offlineMessageChannelName}
-										setFilter={handleOfflineMessageChannelName}
-										options={roomsItems}
-										placeholder={t('Channel_name')}
-										endReached={
-											roomsPhase === AsyncStatePhase.LOADING
-												? () => {}
-												: (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
-										}
-									/>
-								</>
+								<PaginatedSelectFiltered
+									value={offlineMessageChannelName}
+									onChange={handleOfflineMessageChannelName}
+									flexShrink={0}
+									filter={offlineMessageChannelName}
+									setFilter={handleOfflineMessageChannelName}
+									options={roomsItems}
+									placeholder={t('Channel_name')}
+									endReached={
+										roomsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
+									}
+								/>
 							</Field.Row>
 						</Field>
 						{MaxChats && (
