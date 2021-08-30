@@ -95,8 +95,8 @@ export const openRoom = async function(type, name, render = true) {
 					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}
 			}
-			Session.set('roomNotFound', { type, name, error });
-			return appLayout.render('main', { center: 'roomNotFound' });
+
+			return appLayout.render('main', { center: 'roomNotFound', type, name, error });
 		}
 	});
 };

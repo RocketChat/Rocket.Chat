@@ -1,23 +1,22 @@
-import { useLayoutEffect } from 'react';
+import { memo, useLayoutEffect } from 'react';
 
 import { appLayout } from '../../lib/appLayout';
 
 type AppLayoutProps = {
 	template?: string;
-	data?: EJSONable;
-};
+} & EJSONable;
 
-const AppLayout = ({ template, data }: AppLayoutProps): null => {
+const AppLayout = ({ template, ...data }: AppLayoutProps): null => {
 	useLayoutEffect(() => {
-		if (!template) {
-			appLayout.reset();
+		if (template) {
+			appLayout.render(template, data);
 			return;
 		}
 
-		appLayout.render(template, data);
-	}, [data, template]);
+		appLayout.reset();
+	}, [template, data]);
 
 	return null;
 };
 
-export default AppLayout;
+export default memo(AppLayout);

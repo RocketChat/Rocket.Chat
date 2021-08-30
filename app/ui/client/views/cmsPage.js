@@ -1,17 +1,16 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
 
 import { settings } from '../../../settings';
 
 Template.cmsPage.onCreated(function() {
 	this.page = new ReactiveVar('');
-	return Tracker.autorun(() => {
-		const cmsPage = Session.get('cmsPage');
-		if (cmsPage != null) {
-			return this.page.set(settings.get(cmsPage));
+
+	this.autorun(() => {
+		const { cmsPage } = Template.currentData();
+		if (cmsPage) {
+			this.page.set(settings.get(cmsPage));
 		}
 	});
 });
@@ -24,6 +23,6 @@ Template.cmsPage.helpers({
 
 Template.cmsPage.events({
 	'click .cms-page-close'() {
-		return FlowRouter.go('/');
+		FlowRouter.go('/');
 	},
 });

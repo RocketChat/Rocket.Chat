@@ -1,12 +1,10 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
 import { handleError } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
-import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
 
 FlowRouter.wait();
 
@@ -22,7 +20,6 @@ FlowRouter.route('/login', {
 
 FlowRouter.route('/home', {
 	name: 'home',
-
 	action(_params, queryParams) {
 		KonchatNotification.getDesktopPermission();
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
@@ -52,70 +49,37 @@ FlowRouter.route('/home', {
 
 FlowRouter.route('/directory/:tab?', {
 	name: 'directory',
-	action: () => {
-		const DirectoryPage = createTemplateForComponent(
-			'DirectoryPage',
-			() => import('../views/directory/DirectoryPage'),
-			{ attachment: 'at-parent' },
-		);
-		appLayout.render('main', { center: DirectoryPage });
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	name: 'omnichannel-directory',
-	action: () => {
-		const OmnichannelDirectoryPage = createTemplateForComponent(
-			'OmnichannelDirectoryPage',
-			() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'),
-			{ attachment: 'at-parent' },
-		);
-		appLayout.render('main', { center: OmnichannelDirectoryPage });
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/account/:group?', {
 	name: 'account',
-	action: () => {
-		const AccountRoute = createTemplateForComponent(
-			'AccountRoute',
-			() => import('../views/account/AccountRoute'),
-			{ attachment: 'at-parent' },
-		);
-		appLayout.render('main', { center: AccountRoute });
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/terms-of-service', {
 	name: 'terms-of-service',
-	action: () => {
-		Session.set('cmsPage', 'Layout_Terms_of_Service');
-		appLayout.render('cmsPage');
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/privacy-policy', {
 	name: 'privacy-policy',
-	action: () => {
-		Session.set('cmsPage', 'Layout_Privacy_Policy');
-		appLayout.render('cmsPage');
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/legal-notice', {
 	name: 'legal-notice',
-	action: () => {
-		Session.set('cmsPage', 'Layout_Legal_Notice');
-		appLayout.render('cmsPage');
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/room-not-found/:type/:name', {
 	name: 'room-not-found',
-	action: ({ type, name } = {}) => {
-		Session.set('roomNotFound', { type, name });
-		appLayout.render('main', { center: 'roomNotFound' });
-	},
+	action: () => undefined,
 });
 
 FlowRouter.route('/register/:hash', {
