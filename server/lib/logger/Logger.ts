@@ -1,30 +1,9 @@
 import type { P } from 'pino';
 
-import { settings } from '../../../app/settings/server';
 import { getPino } from './getPino';
+import { logLevel, LogLevelSetting } from './logLevel';
 
-// const oldCustomLevels = {
-// 	levels: {
-// 		error: 0,
-// 		deprecation: 1,
-// 		warn: 2,
-// 		success: 3,
-// 		info: 4,
-// 		debug: 5,
-
-// 		// custom
-// 	},
-// 	colors: {
-// 		error: 'red',
-// 		deprecation: 'magenta',
-// 		warn: 'magenta',
-// 		success: 'green',
-// 		info: 'blue',
-// 		debug: 'blue',
-// 	},
-// };
-
-const getLevel = (level: string): string => {
+const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
 		case '0': return 'warn';
 		case '1': return 'info';
@@ -39,14 +18,9 @@ export class Logger {
 	constructor(loggerLabel: string) {
 		this.logger = getPino(loggerLabel);
 
-		// TODO evaluate replacing this by an event emitter (since this callback is probably costly than an event emitter)
-		settings.get('Log_Level', (_key, value) => {
-			if (value != null) {
-				this.logger.level = getLevel(String(value));
-			}
+		logLevel.on('changed', (level) => {
+			this.logger.level = getLevel(level);
 		});
-
-		// this.logger.info('a', { c: 'b' }, 'd');
 	}
 
 	section(name: string): P.Logger {
