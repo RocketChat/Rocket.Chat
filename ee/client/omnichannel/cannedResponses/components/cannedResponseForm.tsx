@@ -11,6 +11,7 @@ import SharingOptions from '../../components/CannedResponse/modals/CreateCannedR
 
 const CannedResponseForm: FC<{
 	isManager: boolean;
+	isMonitor: boolean;
 	values: any;
 	handlers: any;
 	errors: any;
@@ -31,6 +32,7 @@ const CannedResponseForm: FC<{
 	onPreview,
 	previewState,
 	isManager,
+	isMonitor,
 }) => {
 	const { shortcut, text, scope, tags, departmentId } = values;
 	const { handleShortcut, handleText, handleTags, handleDepartmentId } = handlers;
@@ -71,19 +73,25 @@ const CannedResponseForm: FC<{
 			<Field mbe='x24'>
 				<Tags handler={handleTags} tags={tags} />
 			</Field>
-			{isManager && (
+			{(isManager || isMonitor) && (
 				<>
 					<Field mbe='x24'>
 						<Field.Label>{t('Sharing')}</Field.Label>
 						<Field.Description>{radioDescription}</Field.Description>
 						<Field.Row mbs='12px' justifyContent='start'>
-							<SharingOptions scope={scope} radioHandlers={radioHandlers} />
+							<SharingOptions
+								isMonitor={isMonitor}
+								isManager={isManager}
+								scope={scope}
+								radioHandlers={radioHandlers}
+							/>
 						</Field.Row>
 					</Field>
 					{scope === 'department' && (
 						<Field mbe='x24'>
 							<Field.Label>{t('Department')}</Field.Label>
 							<AutoCompleteDepartment
+								{...(isMonitor && { onlyMyDepartments: isMonitor })}
 								value={departmentId}
 								onChange={handleDepartmentId}
 								error={errors.departmentId}

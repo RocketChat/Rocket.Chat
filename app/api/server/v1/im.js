@@ -7,8 +7,9 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
-function findDirectMessageRoom(params, user) {
+function findDirectMessageRoom(params, user, allowAdminOverride) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.username || !params.username.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" or "username" is required');
 	}
@@ -18,7 +19,8 @@ function findDirectMessageRoom(params, user) {
 		nameOrId: params.username || params.roomId,
 	});
 
-	const canAccess = Meteor.call('canAccessRoom', room._id, user._id);
+	const canAccess = Meteor.call('canAccessRoom', room._id, user._id)
+		|| (allowAdminOverride && hasPermission(user._id, 'view-room-administration'));
 	if (!canAccess || !room || room.t !== 'd') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');
 	}
@@ -33,7 +35,7 @@ function findDirectMessageRoom(params, user) {
 
 API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 	post() {
-		const { username, usernames } = this.requestParams();
+		const { username, usernames, excludeSelf } = this.requestParams();
 
 		const users = username ? [username] : usernames && usernames.split(',').map((username) => username.trim());
 
@@ -41,11 +43,25 @@ API.v1.addRoute(['dm.create', 'im.create'], { authRequired: true }, {
 			throw new Meteor.Error('error-room-not-found', 'The required "username" or "usernames" param provided does not match any direct message');
 		}
 
-		const room = Meteor.call('createDirectMessage', ...users);
+		const room = createDirectMessage(users, this.userId, excludeSelf);
 
 		return API.v1.success({
 			room: { ...room, _id: room.rid },
 		});
+	},
+});
+
+API.v1.addRoute(['dm.delete', 'im.delete'], { authRequired: true }, {
+	post() {
+		if (!hasPermission(this.userId, 'view-room-administration')) {
+			return API.v1.unauthorized();
+		}
+
+		const findResult = findDirectMessageRoom(this.requestParams(), this.user, true);
+
+		Meteor.call('eraseRoom', findResult.room._id);
+
+		return API.v1.success();
 	},
 });
 

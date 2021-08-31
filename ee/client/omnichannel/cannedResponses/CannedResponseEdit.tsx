@@ -33,6 +33,7 @@ const CannedResponseEdit: FC<{
 	const saveCannedResponse = useEndpoint('POST', 'canned-responses');
 
 	const hasManagerPermission = usePermission('view-all-canned-responses');
+	const hasMonitorPermission = usePermission('save-department-canned-responses');
 
 	const form = useForm({
 		_id: data && data.cannedResponse ? data.cannedResponse._id : '',
@@ -161,6 +162,7 @@ const CannedResponseEdit: FC<{
 				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 					<CannedResponseForm
 						isManager={hasManagerPermission}
+						isMonitor={hasMonitorPermission}
 						values={values}
 						handlers={handlers}
 						errors={errors}
