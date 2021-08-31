@@ -3122,8 +3122,6 @@
   "Users_added": "Os utilizadores foram adicionados",
   "Users_in_role": "Utilizadores na função",
   "UTF8_Names_Slugify": "Slugify Nomes UTF8 ",
-  "UTF8_Names_Validation": "Validação de Nomes UTF8",
-  "UTF8_Names_Validation_Description": "Não permitir caracteres especiais e espaços. Você pode usar - _ e. mas não no final do nome",
   "Validate_email_address": "Validar endereço de e-mail",
   "Verification": "Validação",
   "Verification_Description": "Pode usar os seguintes espaços reservados: <br/><ul><li>[Verification_Url] para o URL de verificação.</li><li>[name], [fname], [lname] para o nome completo, primeiro nome ou sobrenome do utilizador, respetivamente.</li><li>[email] para o email do usuário.</li><li>[Site_Name] e [Site_URL] para o Nome da aplicação e o URL, respetivamente.</li></ul>",

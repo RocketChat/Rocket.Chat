@@ -80,7 +80,7 @@ const NewUsersSection = ({ timezone }) => {
 			return null;
 		}
 
-		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').format('YYYY-MM-DD'));
+		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').toISOString());
 
 		const relation = Math.ceil(values.length / maxTicks);
 
@@ -102,7 +102,7 @@ const NewUsersSection = ({ timezone }) => {
 		}
 
 		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
-			date: moment(period.start).add(i, 'days').format('YYYY-MM-DD'),
+			date: moment(period.start).add(i, 'days').toISOString(),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
@@ -124,10 +124,7 @@ const NewUsersSection = ({ timezone }) => {
 	}, [data, period, utc]);
 
 	const downloadData = () => {
-		const data = [
-			['Date', 'New Users'],
-			...values.map(({ date, newUsers }) => [date, newUsers]),
-		];
+		const data = values.map(({ data, newUsers }) => [data, newUsers]);
 		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
