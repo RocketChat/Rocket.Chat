@@ -75,16 +75,20 @@ API.v1.addRoute('emoji-custom.create', { authRequired: true }, {
 			request: this.request,
 		}));
 
-		const [, extension] = emoji.mimetype.split('/');
-		fields.extension = extension;
-
-		fields.newFile = true;
-		fields.aliases = fields.aliases || '';
+		if (!emoji) {
+			throw new Meteor.Error('invalid-field');
+		}
 
 		const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
 		if (!isUploadable) {
 			throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
 		}
+
+		const [, extension] = emoji.mimetype.split('/');
+		fields.extension = extension;
+
+		fields.newFile = true;
+		fields.aliases = fields.aliases || '';
 
 		Meteor.runAsUser(this.userId, () => {
 			Meteor.call('insertOrUpdateEmoji', fields);
@@ -114,13 +118,13 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 		fields.newFile = Boolean(emoji?.fileBuffer.length);
 
 		if (fields.newFile) {
-			const [, extension] = emoji.mimetype.split('/');
-			fields.extension = extension;
-
 			const isUploadable = Promise.await(Media.isImage(emoji.fileBuffer));
 			if (!isUploadable) {
 				throw new Meteor.Error('emoji-is-not-image', 'Emoji file provided cannot be uploaded since it\'s not an image');
 			}
+
+			const [, extension] = emoji.mimetype.split('/');
+			fields.extension = extension;
 		} else {
 			fields.extension = emojiToUpdate.extension;
 		}
