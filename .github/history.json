@@ -64355,6 +64355,39 @@
           ]
         }
       ]
+    },
+    "3.18.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23055",
+          "title": "[NEW] Banner for the updates regarding authentication services",
+          "userLogin": "g-thome",
+          "description": "Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.",
+          "contributors": [
+            "g-thome",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23048",
+          "title": "Regression: Logs were missing from Omnichannel callback methods",
+          "userLogin": "KevLehman",
+          "milestone": "3.18",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }

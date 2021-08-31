@@ -1,6 +1,29 @@
 
 # 3.18.0 (Under Release Candidate Process)
 
+## 3.18.0-rc.2
+`2021-08-30  ·  1 🎉  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### 🎉 New features
+
+
+- Banner for the updates regarding authentication services ([#23055](https://github.com/RocketChat/Rocket.Chat/pull/23055))
+
+  Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Logs were missing from Omnichannel callback methods ([#23048](https://github.com/RocketChat/Rocket.Chat/pull/23048))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@g-thome](https://github.com/g-thome)
+
 ## 3.18.0-rc.1
 `2021-08-26  ·  1 🎉  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
 
