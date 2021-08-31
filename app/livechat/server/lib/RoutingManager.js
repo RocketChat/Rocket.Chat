@@ -192,7 +192,8 @@ export const RoutingManager = {
 
 	delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${ inquiry._id }`);
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', { agent, department: inquiry?.department });
+		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, { department: inquiry?.department });
+
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent._id }`);
 			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);

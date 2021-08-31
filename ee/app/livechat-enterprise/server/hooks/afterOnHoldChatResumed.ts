@@ -1,11 +1,14 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { logger } from '../lib/logger';
 
 const handleAfterOnHoldChatResumed = async (room: any): Promise<void> => {
 	if (!room || !room._id || !room.onHold) {
+		(logger as any).cb.debug('Skipping callback. No room provided or room is not on hold');
 		return;
 	}
 
+	(logger as any).cb.debug(`Removing current on hold timers for room ${ room._id }`);
 	LivechatEnterprise.releaseOnHoldChat(room);
 };
 
