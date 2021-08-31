@@ -1,134 +1,12 @@
 
-# 3.18.0 (Under Release Candidate Process)
+# 3.18.0
+`2021-08-31  ·  5 🎉  ·  7 🚀  ·  20 🐛  ·  19 🔍  ·  25 👩‍💻👨‍💻`
 
-## 3.18.0-rc.4
-`2021-08-31  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Bump: Fuselage 0.29.0 ([#23067](https://github.com/RocketChat/Rocket.Chat/pull/23067))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@ggazzo](https://github.com/ggazzo)
-
-## 3.18.0-rc.3
-`2021-08-30  ·  8 🐛  ·  2 🔍  ·  9 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- "Click to Join" button is not working if there are no muted users in the room ([#22871](https://github.com/RocketChat/Rocket.Chat/pull/22871))
-
-  - Add check to `room.muted` array so as to cover the case in which it is `undefined`;
-
-- applyChatRestictions callback not working for community version ([#22839](https://github.com/RocketChat/Rocket.Chat/pull/22839) by [@Shailesh351](https://github.com/Shailesh351))
-
-  Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838
-
-- Apps-Engine's scheduler failing to update run tasks ([#22882](https://github.com/RocketChat/Rocket.Chat/pull/22882))
-
-  [Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). 
-  This updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).
-
-- Close omnichannel conversations when agent is deactivated ([#22917](https://github.com/RocketChat/Rocket.Chat/pull/22917))
-
-- Error getting default agent when routing system algorithm is Auto Selection ([#22976](https://github.com/RocketChat/Rocket.Chat/pull/22976))
-
-- Fix Auto Selection algorithm on community edition ([#22991](https://github.com/RocketChat/Rocket.Chat/pull/22991))
-
-  - When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter  
-  - Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0
-
-- Message update not working in some cases ([#22856](https://github.com/RocketChat/Rocket.Chat/pull/22856))
-
-- Use correct param on saveBusinessHour method ([#22835](https://github.com/RocketChat/Rocket.Chat/pull/22835))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Release 3.17.1 ([#22942](https://github.com/RocketChat/Rocket.Chat/pull/22942))
-
-- Release 3.17.2 ([#23045](https://github.com/RocketChat/Rocket.Chat/pull/23045))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@Shailesh351](https://github.com/Shailesh351)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@d-gubert](https://github.com/d-gubert)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@renatobecker](https://github.com/renatobecker)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-- [@thassiov](https://github.com/thassiov)
-
-## 3.18.0-rc.2
-`2021-08-30  ·  1 🎉  ·  1 🔍  ·  2 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- Banner for the updates regarding authentication services ([#23055](https://github.com/RocketChat/Rocket.Chat/pull/23055))
-
-  Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Logs were missing from Omnichannel callback methods ([#23048](https://github.com/RocketChat/Rocket.Chat/pull/23048))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@g-thome](https://github.com/g-thome)
-
-## 3.18.0-rc.1
-`2021-08-26  ·  1 🎉  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🎉 New features
-
-
-- Report "Read Receipts" setting on stat collector ([#23033](https://github.com/RocketChat/Rocket.Chat/pull/23033))
-
-### 🐛 Bug fixes
-
-
-- Fix Auto Selection algorithm on community edition ([#22991](https://github.com/RocketChat/Rocket.Chat/pull/22991))
-
-  - When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter  
-  - Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Attachment not rendering on message ([#23046](https://github.com/RocketChat/Rocket.Chat/pull/23046))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@renatobecker](https://github.com/renatobecker)
-
-## 3.18.0-rc.0
-`2021-08-23  ·  3 🎉  ·  7 🚀  ·  27 🐛  ·  14 🔍  ·  26 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.1`
 
 ### 🎉 New features
 
@@ -138,6 +16,12 @@
   - Add new settings to support closing chats that have been too long on waiting queue  
   - Moved old settings to new "Queue Management" section  
   - Fix issue when closing a livechat room that caused client to not to know if room was open or not
+
+- Banner for the updates regarding authentication services ([#23055](https://github.com/RocketChat/Rocket.Chat/pull/23055))
+
+  Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.
+
+- Report "Read Receipts" setting on stat collector ([#23033](https://github.com/RocketChat/Rocket.Chat/pull/23033))
 
 - REST endpoint to delete a DM and allow DM for two other users ([#18022](https://github.com/RocketChat/Rocket.Chat/pull/18022) by [@abrom](https://github.com/abrom))
 
@@ -182,25 +66,12 @@
 ### 🐛 Bug fixes
 
 
-- "Click to Join" button is not working if there are no muted users in the room ([#22871](https://github.com/RocketChat/Rocket.Chat/pull/22871))
-
-  - Add check to `room.muted` array so as to cover the case in which it is `undefined`;
-
 - "Read Only" field description is incorrect when the option is checked ([#21868](https://github.com/RocketChat/Rocket.Chat/pull/21868) by [@epif4nio](https://github.com/epif4nio))
 
 - "Users By Time of the Day" chart displays incorrect data for Local Timezone ([#22836](https://github.com/RocketChat/Rocket.Chat/pull/22836))
 
   - Add local timezone conversion to the "Users By Time of the Day" chart in the Engagement Dashboard;
    - Simplify date creations by using `endOf` and `startOf` methods.
-
-- applyChatRestictions callback not working for community version ([#22839](https://github.com/RocketChat/Rocket.Chat/pull/22839) by [@Shailesh351](https://github.com/Shailesh351))
-
-  Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838
-
-- Apps-Engine's scheduler failing to update run tasks ([#22882](https://github.com/RocketChat/Rocket.Chat/pull/22882))
-
-  [Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). 
-  This updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).
 
 - Atlassian Crowd connection not working ([#22996](https://github.com/RocketChat/Rocket.Chat/pull/22996) by [@piotrkochan](https://github.com/piotrkochan))
 
@@ -217,15 +88,9 @@
 
 - Can't access other administration menus after opening Engagement Dashboard ([#22870](https://github.com/RocketChat/Rocket.Chat/pull/22870))
 
-- Close omnichannel conversations when agent is deactivated ([#22917](https://github.com/RocketChat/Rocket.Chat/pull/22917))
-
-- Error getting default agent when routing system algorithm is Auto Selection ([#22976](https://github.com/RocketChat/Rocket.Chat/pull/22976))
-
 - Go command duplicating subfolder path on iframes. ([#22796](https://github.com/RocketChat/Rocket.Chat/pull/22796))
 
 - Manually approve new users is not applied to SAML users ([#22823](https://github.com/RocketChat/Rocket.Chat/pull/22823))
-
-- Message update not working in some cases ([#22856](https://github.com/RocketChat/Rocket.Chat/pull/22856))
 
 - Production-environment dependencies ([#22868](https://github.com/RocketChat/Rocket.Chat/pull/22868))
 
@@ -258,8 +123,6 @@
 
 - TypeError on Callout type prop ([#22790](https://github.com/RocketChat/Rocket.Chat/pull/22790) by [@hrahul2605](https://github.com/hrahul2605))
 
-- Use correct param on saveBusinessHour method ([#22835](https://github.com/RocketChat/Rocket.Chat/pull/22835))
-
 - User is still asked for 2FA confirmation even if it is deactivated ([#22801](https://github.com/RocketChat/Rocket.Chat/pull/22801))
 
 - User presence being processes even if presence monitor was disabled ([#22927](https://github.com/RocketChat/Rocket.Chat/pull/22927))
@@ -271,6 +134,8 @@
 <details>
 <summary>🔍 Minor changes</summary>
 
+
+- Bump: Fuselage 0.29.0 ([#23067](https://github.com/RocketChat/Rocket.Chat/pull/23067))
 
 - Chore: Enable husky pre-push hook (back again) ([#22994](https://github.com/RocketChat/Rocket.Chat/pull/22994))
 
@@ -300,6 +165,8 @@
 
 - Merge master into develop & Set version to 3.18.0-develop ([#22834](https://github.com/RocketChat/Rocket.Chat/pull/22834))
 
+- Regression: Attachment not rendering on message ([#23046](https://github.com/RocketChat/Rocket.Chat/pull/23046))
+
 - Regression: File upload name suggestion ([#22953](https://github.com/RocketChat/Rocket.Chat/pull/22953))
 
   Before:
@@ -313,15 +180,20 @@
 
 - Regression: Fix creation of self-DMs ([#23015](https://github.com/RocketChat/Rocket.Chat/pull/23015))
 
+- Regression: Logs were missing from Omnichannel callback methods ([#23048](https://github.com/RocketChat/Rocket.Chat/pull/23048))
+
 - Regression: no-js-action bump version ([#22997](https://github.com/RocketChat/Rocket.Chat/pull/22997))
 
 - Regression: readNow blocked by a invalid condition ([#22952](https://github.com/RocketChat/Rocket.Chat/pull/22952))
+
+- Release 3.17.1 ([#22942](https://github.com/RocketChat/Rocket.Chat/pull/22942))
+
+- Release 3.17.2 ([#23045](https://github.com/RocketChat/Rocket.Chat/pull/23045))
 
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
-- [@Shailesh351](https://github.com/Shailesh351)
 - [@abrom](https://github.com/abrom)
 - [@aditya-mitra](https://github.com/aditya-mitra)
 - [@eltociear](https://github.com/eltociear)
