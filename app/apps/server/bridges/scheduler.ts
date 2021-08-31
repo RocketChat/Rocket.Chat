@@ -165,9 +165,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 		let cancelQuery;
 		try {
-			cancelQuery = {
-				_id: new ObjectID(jobId.split('_')[0])
-			};
+			cancelQuery = { _id: new ObjectID(jobId.split('_')[0]) };
 		} catch (jobDocIdError) {
 			// it is not a valid objectid, so it won't try to cancel by document id
 			cancelQuery = { name: jobId };
