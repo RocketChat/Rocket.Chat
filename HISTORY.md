@@ -1,6 +1,21 @@
 
 # 3.18.0 (Under Release Candidate Process)
 
+## 3.18.0-rc.4
+`2021-08-31  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump: Fuselage 0.29.0 ([#23067](https://github.com/RocketChat/Rocket.Chat/pull/23067))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
 ## 3.18.0-rc.3
 `2021-08-30  ·  8 🐛  ·  2 🔍  ·  9 👩‍💻👨‍💻`
 

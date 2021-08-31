@@ -64517,6 +64517,27 @@
           ]
         }
       ]
+    },
+    "3.18.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23067",
+          "title": "Bump: Fuselage 0.29.0",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
