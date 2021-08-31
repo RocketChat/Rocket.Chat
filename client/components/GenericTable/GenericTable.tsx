@@ -19,16 +19,16 @@ import LoadingRow from './LoadingRow';
 const defaultParamsValue = { text: '', current: 0, itemsPerPage: 25 } as const;
 const defaultSetParamsValue = (): void => undefined;
 
-type Params = { text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 };
+type GenericTableParams = { text?: string; current?: number; itemsPerPage?: 25 | 50 | 100 };
 
 type GenericTableProps<
-	FilterProps extends { onChange?: (params: Params) => void },
+	FilterProps extends { onChange?: (params: GenericTableParams) => void },
 	ResultProps extends { _id?: Key },
 > = {
 	fixed?: boolean;
 	header?: ReactNode;
-	params?: Params;
-	setParams?: (params: Params) => void;
+	params?: GenericTableParams;
+	setParams?: (params: GenericTableParams) => void;
 	children?: (props: ResultProps, key: number) => ReactElement;
 	renderFilter?: (props: FilterProps) => ReactElement;
 	renderRow?: (props: ResultProps) => ReactElement;
@@ -38,7 +38,10 @@ type GenericTableProps<
 } & FilterProps;
 
 const GenericTable: {
-	<FilterProps extends { onChange?: (params: Params) => void }, ResultProps extends { _id?: Key }>(
+	<
+		FilterProps extends { onChange?: (params: GenericTableParams) => void },
+		ResultProps extends { _id?: Key },
+	>(
 		props: GenericTableProps<FilterProps, ResultProps> & RefAttributes<HTMLElement>,
 	): ReactElement | null;
 } = forwardRef(function GenericTable(

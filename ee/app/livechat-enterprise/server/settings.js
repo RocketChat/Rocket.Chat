@@ -2,57 +2,6 @@ import { settings } from '../../../../app/settings';
 import { Settings } from '../../../../app/models/server';
 
 export const createSettings = () => {
-	settings.add('Livechat_waiting_queue', false, {
-		type: 'boolean',
-		group: 'Omnichannel',
-		section: 'Routing',
-		i18nLabel: 'Waiting_queue',
-		enterprise: true,
-		invalidValue: false,
-	});
-
-	settings.add('Livechat_waiting_queue_message', '', {
-		type: 'string',
-		group: 'Omnichannel',
-		section: 'Routing',
-		i18nLabel: 'Waiting_queue_message',
-		i18nDescription: 'Waiting_queue_message_description',
-		enableQuery: { _id: 'Livechat_waiting_queue', value: true },
-		enterprise: true,
-		invalidValue: '',
-		modules: [
-			'livechat-enterprise',
-		],
-	});
-
-	settings.add('Livechat_maximum_chats_per_agent', 0, {
-		type: 'int',
-		group: 'Omnichannel',
-		section: 'Routing',
-		i18nLabel: 'Max_number_of_chats_per_agent',
-		i18nDescription: 'Max_number_of_chats_per_agent_description',
-		enableQuery: { _id: 'Livechat_waiting_queue', value: true },
-		enterprise: true,
-		invalidValue: 0,
-		modules: [
-			'livechat-enterprise',
-		],
-	});
-
-	settings.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
-		type: 'int',
-		group: 'Omnichannel',
-		section: 'Routing',
-		i18nLabel: 'Number_of_most_recent_chats_estimate_wait_time',
-		i18nDescription: 'Number_of_most_recent_chats_estimate_wait_time_description',
-		enableQuery: { _id: 'Livechat_waiting_queue', value: true },
-		enterprise: true,
-		invalidValue: 100,
-		modules: [
-			'livechat-enterprise',
-		],
-	});
-
 	settings.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
@@ -69,7 +18,6 @@ export const createSettings = () => {
 			'livechat-enterprise',
 		],
 	});
-
 
 	settings.add('Livechat_abandoned_rooms_closed_custom_message', '', {
 		type: 'string',
@@ -110,6 +58,92 @@ export const createSettings = () => {
 				i18nLabel: 'Livechat_business_hour_type',
 				enterprise: true,
 				invalidValue: 'Single',
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+		});
+
+		this.section('Queue_management', function() {
+			this.add('Livechat_waiting_queue', false, {
+				type: 'boolean',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Waiting_queue',
+				enterprise: true,
+				invalidValue: false,
+			});
+
+			this.add('Livechat_waiting_queue_message', '', {
+				type: 'string',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Waiting_queue_message',
+				i18nDescription: 'Waiting_queue_message_description',
+				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enterprise: true,
+				invalidValue: '',
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+
+			this.add('Livechat_maximum_chats_per_agent', 0, {
+				type: 'int',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Max_number_of_chats_per_agent',
+				i18nDescription: 'Max_number_of_chats_per_agent_description',
+				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enterprise: true,
+				invalidValue: 0,
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+
+			this.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
+				type: 'int',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Number_of_most_recent_chats_estimate_wait_time',
+				i18nDescription: 'Number_of_most_recent_chats_estimate_wait_time_description',
+				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enterprise: true,
+				invalidValue: 100,
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+
+			this.add('Livechat_max_queue_wait_time_action', 'Nothing', {
+				type: 'select',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Livechat_max_queue_wait_time_action',
+				enterprise: true,
+				invalidValue: '',
+				modules: [
+					'livechat-enterprise',
+				],
+				values: [{
+					key: 'Nothing',
+					i18nLabel: 'Do_Nothing',
+				}, {
+					key: 'Close_chat',
+					i18nLabel: 'Livechat_close_chat',
+				}],
+			});
+
+			this.add('Livechat_max_queue_wait_time', 60, {
+				type: 'int',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Livechat_maximum_queue_wait_time',
+				i18nDescription: 'Time_in_minutes',
+				enableQuery: { _id: 'Livechat_max_queue_wait_time_action', value: 'Close_chat' },
+				enterprise: true,
+				invalidValue: 0,
 				modules: [
 					'livechat-enterprise',
 				],
