@@ -12,7 +12,7 @@ type ThreadViewProps = {
 	onToggleExpand: (expanded: boolean) => void;
 	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
-	onClickBack: () => void;
+	onClickBack: (e: unknown) => void;
 };
 
 const ThreadView = forwardRef<Element, ThreadViewProps>(({

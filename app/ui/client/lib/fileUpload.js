@@ -104,6 +104,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			component: FileUploadModal,
 			props: {
 				file: file.file,
+				fileName: file.name,
 				onClose: () => {
 					imperativeModal.close();
 					uploadNextFile();
