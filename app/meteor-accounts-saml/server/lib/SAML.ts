@@ -17,6 +17,8 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
+import { callbacks } from '../../../callbacks/server';
+
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -185,6 +187,7 @@ export class SAML {
 
 		if (roleAttributeSync) {
 			updateData.roles = globalRoles;
+			callbacks.run('SAML-rolesync', { updateData, globalRoles });
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
