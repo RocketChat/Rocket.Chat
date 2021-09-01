@@ -14,6 +14,7 @@ let useDNSDomainCheck = false;
 
 settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	if (!value) {
+		emailDomainBlackList = [];
 		return;
 	}
 
@@ -21,6 +22,7 @@ settings.get('Accounts_BlockedDomainsList', function(key, value) {
 });
 settings.get('Accounts_AllowedDomainsList', function(key, value) {
 	if (!value) {
+		emailDomainWhiteList = [];
 		return;
 	}
 

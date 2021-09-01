@@ -535,3 +535,11 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 
 	return true;
 };
+
+export const validateEmail = (email) => {
+	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+	if (!emailValidation.test(email)) {
+		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'Livechat.validateEmail', email });
+	}
+	return true;
+};
