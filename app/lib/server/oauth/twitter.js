@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import Twit from 'twit';
 import _ from 'underscore';
@@ -22,9 +21,10 @@ const getIdentity = function(accessToken, appId, appSecret, accessTokenSecret) {
 		access_token: accessToken,
 		access_token_secret: accessTokenSecret,
 	});
-	const syncTwitter = Meteor.wrapAsync(Twitter.get, Twitter);
 	try {
-		return syncTwitter('account/verify_credentials.json?include_email=true');
+		const result = Promise.await(Twitter.get('account/verify_credentials.json?include_email=true'));
+
+		return result.data;
 	} catch (err) {
 		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${ err.message }`),
 			{ response: err.response });
