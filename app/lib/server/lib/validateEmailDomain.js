@@ -3,7 +3,9 @@ import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 
 import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+
+const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];
@@ -48,7 +50,7 @@ export const validateEmailDomain = function(email) {
 
 	if (useDNSDomainCheck) {
 		try {
-			Meteor.wrapAsync(dns.resolveMx)(emailDomain);
+			dnsResolveMx(emailDomain);
 		} catch (e) {
 			throw new Meteor.Error('error-invalid-domain', 'Invalid domain', { function: 'RocketChat.validateEmailDomain' });
 		}

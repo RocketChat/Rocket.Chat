@@ -1,17 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
-const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
-	HTTP.post(url, options, function(err, res) {
-		if (err) {
-			resolve(null, err.response);
-		} else {
-			resolve(null, res);
-		}
-	});
-});
+const postCatchError = function(url, options) {
+	try {
+		return HTTP.post(url, options);
+	} catch (e) {
+		return e;
+	}
+};
 
 Meteor.methods({
 	'livechat:webhookTest'() {
