@@ -16,10 +16,7 @@ type ServerGetEndpointPaths = {
 	[K in ServerEndpointPath]: ServerEndpoints[K] extends { GET: any } ? K : never;
 };
 
-export const useEndpointData = <
-	_T,
-	Path extends ServerGetEndpointPaths[keyof ServerGetEndpointPaths],
->(
+export const useEndpointData = <Path extends ServerGetEndpointPaths[keyof ServerGetEndpointPaths]>(
 	endpoint: Path,
 	params: ServerEndpointRequestPayload<'GET', Path> = defaultParams,
 	initialValue?:
