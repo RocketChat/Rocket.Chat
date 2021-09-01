@@ -69,6 +69,12 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
+export enum OmnichannelSourceType {
+	WIDGET = 'widget',
+	EMAIL = 'email',
+	SMS = 'sms',
+	APP = 'app',
+}
 
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
 	t: 'l';
@@ -76,6 +82,14 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		_id?: string;
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
+	};
+	source: {
+		// The source, or client, which created the Omnichannel room
+		type: OmnichannelSourceType;
+		// An optional identification of external sources, such as an App
+		id?: string;
+		// A human readable alias that goes with the ID, for post analytical purposes
+		alias?: string;
 	};
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
