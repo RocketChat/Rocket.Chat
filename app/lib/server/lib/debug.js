@@ -6,6 +6,7 @@ import _ from 'underscore';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { Logger } from '../../../../server/lib/logger/Logger';
+import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
 
 const logger = new Logger('Meteor');
 
@@ -59,6 +60,7 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 			referer: this.connection?.httpHeaders.referer,
 			remoteIP: this.connection?.clientAddress,
 			instanceId: InstanceStatus.id(),
+			...getMethodArgs(name, originalArgs),
 		});
 
 		const result = originalHandler.apply(this, originalArgs);

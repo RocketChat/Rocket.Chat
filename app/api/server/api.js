@@ -6,16 +6,14 @@ import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
-import { WebApp } from 'meteor/webapp';
 
-import { Logger } from '../../logger/server';
-import { httpLogger } from '../../../server/lib/logger/httpLogger';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
-
 
 const logger = new Logger('API');
 const rateLimiterDictionary = {};
@@ -52,8 +50,6 @@ const getRequestIP = (req) => {
 
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
-
-WebApp.rawConnectHandlers.use(httpLogger(logger, getRequestIP));
 
 export class APIClass extends Restivus {
 	constructor(properties) {
@@ -131,8 +127,6 @@ export class APIClass extends Restivus {
 			body: result,
 		};
 
-		// logger.debug('Success', result);
-
 		return result;
 	}
 
@@ -163,8 +157,6 @@ export class APIClass extends Restivus {
 			statusCode: 400,
 			body: result,
 		};
-
-		// logger.debug('Failure', result);
 
 		return result;
 	}
@@ -355,12 +347,27 @@ export class APIClass extends Restivus {
 						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
-					// logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 					this.requestIp = getRequestIP(this.request);
+
+					const startTime = Date.now();
+
+					const log = logger.logger.child({
+						method: this.request.method,
+						url: this.request.url,
+						userId: this.request.headers['x-user-id'],
+						userAgent: this.request.headers['user-agent'],
+						length: this.request.headers['content-length'],
+						host: this.request.headers.host,
+						referer: this.request.headers.referer,
+						remoteIP: this.requestIp,
+						...getRestPayload(this.request.body),
+					});
+
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
+
 					let result;
 
 					const connection = {
@@ -395,21 +402,28 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
-					} catch (e) {
-						// logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
 
+						log.http({
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
+					} catch (e) {
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+
+						log.http({
+							err: e,
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
-
-					result = result || API.v1.success();
 
 					rocketchatRestApiEnd({
 						status: result.statusCode,
@@ -425,7 +439,7 @@ export class APIClass extends Restivus {
 				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
-				// endpoints[method].logger = logger;
+				endpoints[method].logger = logger;
 			});
 
 			super.addRoute(route, options, endpoints);
