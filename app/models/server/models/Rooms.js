@@ -18,6 +18,7 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({ t: 1 });
 		this.tryEnsureIndex({ 'u._id': 1 });
 		this.tryEnsureIndex({ ts: 1 });
+		this.tryEnsureIndex({ ephemeralTime: 1 }, { expireAfterSeconds: 0 });
 		// Tokenpass
 		this.tryEnsureIndex({ 'tokenpass.tokens.token': 1 }, { sparse: true });
 		this.tryEnsureIndex({ tokenpass: 1 }, { sparse: true });
@@ -845,6 +846,7 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
+
 	setNameById(_id, name, fname) {
 		const query = { _id };
 
@@ -1324,7 +1326,7 @@ export class Rooms extends Base {
 	createWithFullRoomData(room) {
 		delete room._id;
 
-		room._id = this.insert(room);
+		room._id = room.t === 'e' ? this.insertEphemeral(room) : this.insert(room);
 		return room;
 	}
 

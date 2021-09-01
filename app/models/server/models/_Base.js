@@ -147,6 +147,10 @@ export class Base {
 		return this._db.insert(...args);
 	}
 
+	insertEphemeral(...args/* record*/) {
+		return this._db.insertEphemeral(...args);
+	}
+
 	update(...args/* query, update, options*/) {
 		return this._db.update(...args);
 	}

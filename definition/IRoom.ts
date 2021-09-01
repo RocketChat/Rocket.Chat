@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-type RoomType = 'c' | 'd' | 'p' | 'l';
+type RoomType = 'c' | 'd' | 'p' | 'l' | 'e';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -52,7 +52,8 @@ export interface IRoom extends IRocketChatRecord {
 	teamId?: string;
 	teamDefault?: boolean;
 	open?: boolean;
-
+	ephemeralTime: Date;
+	msgEphemeralTime: string;
 	autoTranslateLanguage: string;
 	autoTranslate?: boolean;
 	unread?: number;

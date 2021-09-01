@@ -1,7 +1,7 @@
 import { IRocketChatRecord } from './IRocketChatRecord';
 import { IUser } from './IUser';
 
-type RoomType = 'c' | 'd' | 'p' | 'l';
+type RoomType = 'c' | 'd' | 'p' | 'l' | 'e';
 
 type RoomID = string;
 
@@ -12,7 +12,8 @@ export interface ISubscription extends IRocketChatRecord {
 	ts: Date;
 
 	name: string;
-
+	ephemeralTime: Date;
+	msgEphemeralTime: string;
 	alert?: boolean;
 	unread: number;
 	t: RoomType;

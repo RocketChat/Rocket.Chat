@@ -1,6 +1,7 @@
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server/raw';
-import { Subscriptions } from '../../../models';
+import { Rooms, Users } from '../../../models/server/raw';
+import { Subscriptions, Messages } from '../../../models';
+import { convertEphemeralTime } from '../../../lib/server/functions/convertEphemeralTime';
 
 export async function findAdminRooms({ uid, filter, types = [], pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(uid, 'view-room-administration')) {
@@ -143,4 +144,52 @@ export async function findRoomsAvailableForTeams({ uid, name }) {
 	return {
 		items: rooms,
 	};
+}
+
+export async function updateEphemeralRoom({ uid, rid, newEphemeralTime, newMsgEphemeralTime }) {
+	const user = await Users.findOneById(uid, { fields: { username: 1 } });
+	if (!user) {
+		throw new Error('invalid-user');
+	}
+	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Error('invalid-room');
+	}
+	if (!hasPermissionAsync(uid, 'edit-ephemeral-room', rid)) {
+		throw new Error('error-not-allowed');
+	}
+	if (newEphemeralTime) {
+		newEphemeralTime = convertEphemeralTime(newEphemeralTime);
+		const updated = Rooms.setEphemeralTime(rid, newEphemeralTime);
+
+		// If there was no msg ephemeral time then we need to set message's ephemeral time to room's ephemeral time.
+		if (!room.msgEphemeralTime && !newMsgEphemeralTime) {
+			Messages.setEphemeralTime(rid, newEphemeralTime);
+		}
+		const subscriptions = Subscriptions.setEphemeralTime(rid, newEphemeralTime);
+		if (!updated || !subscriptions) {
+			throw new Error('error-invalid-room', 'Invalid room', { method: 'updateEphemeralTime' });
+		}
+		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_ephemeral_time', rid, newEphemeralTime, user);
+	}
+
+	if (newMsgEphemeralTime) {
+		const msgs = Messages.findByRoomId(rid).fetch();
+		Rooms.setMsgEphemeralTime(rid, newMsgEphemeralTime);
+		if (newMsgEphemeralTime === 'none') {
+			newMsgEphemeralTime = room.ephemeralTime;
+			Messages.setEphemeralTime(rid, newMsgEphemeralTime);
+		} else {
+			const now = new Date();
+			msgs.forEach((msg) => {
+				newMsgEphemeralTime = convertEphemeralTime(newMsgEphemeralTime, msg.ts);
+				if (newMsgEphemeralTime < now) {
+					Messages.setEphemeralTimeById(msg._id, now);
+				} else {
+					Messages.setEphemeralTimeById(msg._id, newMsgEphemeralTime);
+				}
+			});
+			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('update_msg_ephemeral_time', rid, newMsgEphemeralTime, user);
+		}
+	}
 }

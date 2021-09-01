@@ -41,6 +41,7 @@ const RoomList = () => {
 			sidebarViewMode,
 			isAnonymous,
 		}),
+		// [extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
 		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
 	);
 

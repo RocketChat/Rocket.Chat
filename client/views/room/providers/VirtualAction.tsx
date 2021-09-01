@@ -9,6 +9,7 @@ const groupsDict = {
 	d: 'direct',
 	p: 'group',
 	c: 'channel',
+	e: 'ephemeral',
 };
 
 const getGroup = (room: IRoom): string => {

@@ -19,6 +19,7 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ rid: 1, 'u.username': 1 });
 		this.tryEnsureIndex({ rid: 1, alert: 1, 'u._id': 1 });
 		this.tryEnsureIndex({ rid: 1, roles: 1 });
+		this.tryEnsureIndex({ ephemeralTime: 1 }, { expireAfterSeconds: 0 });
 		this.tryEnsureIndex({ 'u._id': 1, name: 1, t: 1 });
 		this.tryEnsureIndex({ name: 1, t: 1 });
 		this.tryEnsureIndex({ open: 1 });
@@ -222,6 +223,16 @@ export class Subscriptions extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	setEphemeralTime(rid, time) {
+		const query = { rid };
+		const update = {
+			$set: {
+				ephemeralTime: time,
+			},
+		};
+		return this.update(query, update, { multi: true });
 	}
 
 	changeDepartmentByRoomId(rid, department) {
@@ -1208,7 +1219,7 @@ export class Subscriptions extends Base {
 			subscription.prid = room.prid;
 		}
 
-		const result = this.insert(subscription);
+		const result = extraData.ephemeralTime ? this.insertEphemeral(subscription) : this.insert(subscription);
 
 		Rooms.incUsersCountById(room._id);
 

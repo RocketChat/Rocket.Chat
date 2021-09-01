@@ -6,6 +6,7 @@ import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
+import { UploadRaw } from '../../../app/models/server/raw/Upload';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
@@ -36,6 +37,7 @@ import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { EmailInboxRaw } from '../../../app/models/server/raw/EmailInbox';
 import { isPresenceMonitorEnabled } from '../../lib/isPresenceMonitorEnabled';
 
+
 interface IModelsParam {
 	Subscriptions: SubscriptionsRaw;
 	Permissions: PermissionsRaw;
@@ -52,6 +54,7 @@ interface IModelsParam {
 	IntegrationHistory: IntegrationHistoryRaw;
 	Integrations: IntegrationsRaw;
 	EmailInbox: EmailInboxRaw;
+	Uploads: UploadRaw;
 }
 
 interface IChange<T> {
@@ -99,6 +102,7 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		IntegrationHistory,
 		Integrations,
 		EmailInbox,
+		Uploads,
 	} = models;
 
 	const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
@@ -141,6 +145,19 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 					broadcast('watch.messages', { clientAction, message });
 				}
 				break;
+			case 'removed': {
+				const trash = await Messages.trashFindOneById<Pick<IMessage, 'u' | 'rid' | 'file'>>(id, { projection: { u: 1, rid: 1, file: 1 } });
+				const message = trash;
+				const room = trash?.rid ? await Rooms.trashFindOneById<IRoom>(trash.rid, { projection: roomFields }) : undefined;
+				if (room?.t === 'e' && message?.file) {
+					await Uploads.deleteOneById(message.file._id);
+				}
+				if (room?.t === 'e') {
+					Messages.trashFindByIdAndRemove(id);
+				}
+				if (room?.t === 'e' && message) { broadcast('watch.messages', { clientAction, message }); }
+				break;
+			}
 		}
 	});
 
@@ -162,9 +179,12 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 			}
 
 			case 'removed': {
-				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid'>>(id, { projection: { u: 1, rid: 1 } });
+				const trash = await Subscriptions.trashFindOneById<Pick<ISubscription, 'u' | 'rid' | 't'>>(id, { projection: { u: 1, rid: 1, t: 1 } });
 				const subscription = trash || { _id: id };
 				broadcast('watch.subscriptions', { clientAction, subscription });
+				if (trash?.t === 'e') {
+					Subscriptions.trashFindByIdAndRemove(id);
+				}
 				break;
 			}
 		}
@@ -308,7 +328,14 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 	});
 
 	watch<IRoom>(Rooms, async ({ clientAction, id, data, diff }) => {
+		console.log({ id });
 		if (clientAction === 'removed') {
+			const room = await Rooms.trashFindOneById<IRoom>(id, { projection: { t: 1 } });
+			if (room?.t === 'e') {
+				await Messages.deleteByRoomId(id);
+				Messages.trashRemoveByRoomId(id);
+				Rooms.trashFindByIdAndRemove(id);
+			}
 			broadcast('watch.rooms', { clientAction, room: { _id: id } });
 			return;
 		}
@@ -316,7 +343,6 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		if (!hasRoomFields(data || diff)) {
 			return;
 		}
-
 		const room = data ?? await Rooms.findOneById(id, { projection: roomFields });
 		if (!room) {
 			return;

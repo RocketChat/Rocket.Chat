@@ -37,6 +37,7 @@ Meteor.startup(function() {
 		{ _id: 'delete-p',                           roles: ['admin', 'owner'] },
 		{ _id: 'delete-user',                        roles: ['admin'] },
 		{ _id: 'edit-message',                       roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'edit-ephemeral-room',                roles: ['admin', 'owner'] },
 		{ _id: 'edit-other-user-active-status',      roles: ['admin'] },
 		{ _id: 'edit-other-user-info',               roles: ['admin'] },
 		{ _id: 'edit-other-user-password',           roles: ['admin'] },

@@ -385,11 +385,16 @@ Template.message.helpers({
 		// const subscription = Subscriptions.findOne({ rid: this.rid });
 		return subscription && subscription.name;
 	},
+	isEphemeral() {
+		const { room } = this;
+		return room?.t === 'e';
+	},
 	roomIcon() {
 		const { room } = this;
 		if (room && room.t === 'd') {
 			return 'at';
 		}
+		if (room && room.t === 'e') { return 'clock'; }
 		return roomTypes.getIcon(room);
 	},
 	customClass() {

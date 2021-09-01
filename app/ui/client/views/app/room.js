@@ -191,7 +191,8 @@ Template.roomOld.helpers({
 	messagesHistory() {
 		const showInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
 		const { rid } = Template.instance();
-		const room = Rooms.findOne(rid, { fields: { sysMes: 1 } });
+		const room = Rooms.findOne(rid, { fields: { sysMes: 1, t: 1 } });
+		const now = new Date();
 		const hideSettings = settings.collection.findOne('Hide_System_Messages') || {};
 		const settingValues = Array.isArray(room.sysMes) ? room.sysMes : hideSettings.value || [];
 		const hideMessagesOfType = new Set(settingValues.reduce((array, value) => [...array, ...value === 'mute_unmute' ? ['user-muted', 'user-unmuted'] : [value]], []));
@@ -215,8 +216,8 @@ Template.roomOld.helpers({
 				ts: 1,
 			},
 		};
-
-		return ChatMessage.find(query, options);
+		const result = ChatMessage.find(query, options).fetch().filter((msg) => room.t !== 'e' || msg.expireAt > now || msg.t);
+		return result;
 	},
 
 	hasMore() {

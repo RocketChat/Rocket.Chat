@@ -52,6 +52,7 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 						<MarkdownText variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 					)}
 				</Header.Subtitle>
+				{/* <Header.Subtitle>{room.ephemeralTime}</Header.Subtitle> */}
 			</Header.Content.Row>
 		</Header.Content>
 		{slots?.posContent}
@@ -63,5 +64,4 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 		{slots?.end}
 	</Header>
 );
-
 export default RoomHeader;

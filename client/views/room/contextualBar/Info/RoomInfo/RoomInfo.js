@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import InfoPanel from '../../../../InfoPanel';
 import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
@@ -14,6 +15,8 @@ function RoomInfo({
 	description,
 	archived,
 	broadcast,
+	ephemeralTime,
+	msgEphemeralTime,
 	announcement,
 	topic,
 	type,
@@ -39,7 +42,7 @@ function RoomInfo({
 		maxAgeDefault,
 		retentionEnabledDefault,
 	} = retentionPolicy;
-
+	const formatDateAndTime = useFormatDateAndTime();
 	const memoizedActions = useMemo(
 		() => ({
 			...(onClickEnterRoom && {
@@ -63,20 +66,22 @@ function RoomInfo({
 					action: onClickDelete,
 				},
 			}),
-			...(onClickMoveToTeam && {
-				move: {
-					label: t('Teams_move_channel_to_team'),
-					icon: 'team-arrow-right',
-					action: onClickMoveToTeam,
-				},
-			}),
-			...(onClickConvertToTeam && {
-				convert: {
-					label: t('Teams_convert_channel_to_team'),
-					icon: 'team',
-					action: onClickConvertToTeam,
-				},
-			}),
+			...(onClickMoveToTeam &&
+				!ephemeralTime && {
+					move: {
+						label: t('Teams_move_channel_to_team'),
+						icon: 'team-arrow-right',
+						action: onClickMoveToTeam,
+					},
+				}),
+			...(onClickConvertToTeam &&
+				!ephemeralTime && {
+					convert: {
+						label: t('Teams_convert_channel_to_team'),
+						icon: 'team',
+						action: onClickConvertToTeam,
+					},
+				}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
@@ -101,6 +106,7 @@ function RoomInfo({
 			onClickHide,
 			onClickLeave,
 			onClickEnterRoom,
+			ephemeralTime,
 		],
 	);
 
@@ -167,6 +173,18 @@ function RoomInfo({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
+						{ephemeralTime && ephemeralTime !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Ephemeral_time')}</InfoPanel.Label>
+								<InfoPanel.Text>{formatDateAndTime(ephemeralTime)}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
+						{msgEphemeralTime && msgEphemeralTime !== '' && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Msg_Ephemeral_time')}</InfoPanel.Label>
+								<InfoPanel.Text>{msgEphemeralTime}</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
 						{broadcast && broadcast !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>

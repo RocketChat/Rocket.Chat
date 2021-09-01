@@ -74,7 +74,12 @@ export function executeSendMessage(uid, message) {
 
 	try {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
-
+		// Threads not allowed in ephemeral rooms.
+		if (message.tmid && room.ephemeralTime) {
+			throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+				method: 'sendMessage',
+			});
+		}
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
 	} catch (error) {

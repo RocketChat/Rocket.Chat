@@ -188,6 +188,21 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		}, options);
 	}
 
+	trashFindByIdAndRemove(_id: string): void {
+		const query: object = {
+			_id,
+			__collection__: this.name,
+		};
+		this.trash?.deleteOne(query);
+	}
+
+	trashRemoveByRoomId(_id: string): void {
+		const query: object = {
+			rid: _id,
+			__collection__: this.name,
+		};
+		this.trash?.deleteMany(query);
+	}
 
 	trashFindOneById(_id: string): Promise<T | null>;
 

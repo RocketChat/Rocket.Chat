@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams, updateEphemeralRoom } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
@@ -417,4 +417,17 @@ API.v1.addRoute('rooms.export', { authRequired: true }, {
 
 		return API.v1.error();
 	},
+});
+
+API.v1.addRoute('rooms.updateEphemeral', { authRequired: true }, {
+	post() {
+		const { rid, newEphemeralTime, newMsgEphemeralTime } = this.bodyParams;
+		return API.v1.success(Promise.await(updateEphemeralRoom({
+			uid: this.userId,
+			rid,
+			newEphemeralTime,
+			newMsgEphemeralTime,
+		})));
+	},
+
 });

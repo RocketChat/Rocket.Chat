@@ -39,7 +39,16 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	room.type = room.t;
 	room.rid = rid;
 
-	const { type, fname, prid, broadcast, archived, joined = true } = room; // TODO implement joined
+	const {
+		type,
+		fname,
+		prid,
+		broadcast,
+		archived,
+		joined = true,
+		ephemeralTime,
+		msgEphemeralTime,
+	} = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -200,6 +209,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 		<RoomInfo
 			archived={archived}
 			broadcast={broadcast}
+			ephemeralTime={ephemeralTime}
+			msgEphemeralTime={msgEphemeralTime}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickBack={onClickBack}

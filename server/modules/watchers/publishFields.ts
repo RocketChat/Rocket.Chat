@@ -36,7 +36,8 @@ export const subscriptionFields = {
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
-
+	ephemeralTime: 1,
+	msgEphemeralTime: 1,
 	// Omnichannel fields
 	department: 1,
 	v: 1,
@@ -88,7 +89,8 @@ export const roomFields = {
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
-
+	ephemeralTime: 1,
+	msgEphemeralTime: 1,
 	// Omnichannel fields
 	livechatData: 1,
 	priorityId: 1,

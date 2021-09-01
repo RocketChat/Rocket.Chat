@@ -43,7 +43,8 @@ export const useRoomList = (): Array<ISubscription> => {
 			const discussion = new Set();
 			const conversation = new Set();
 			const onHold = new Set();
-
+			const ephemeral = new Set();
+			const date = new Date();
 			rooms.forEach((room) => {
 				if (sidebarShowUnread && (room.alert || room.unread) && !room.hideUnreadStatus) {
 					return unread.add(room);
@@ -59,6 +60,13 @@ export const useRoomList = (): Array<ISubscription> => {
 
 				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
+				}
+				if (
+					room.t === 'e' &&
+					room.ephemeralTime &&
+					room.ephemeralTime.getTime() >= date.getTime()
+				) {
+					return ephemeral.add(room);
 				}
 
 				if (room.t === 'c' || room.t === 'p') {
@@ -91,6 +99,8 @@ export const useRoomList = (): Array<ISubscription> => {
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			team.size && groups.set('Teams', team);
+			ephemeral.size && groups.set('Ephemeral', ephemeral);
+
 			sidebarGroupByType &&
 				isDiscussionEnabled &&
 				discussion.size &&

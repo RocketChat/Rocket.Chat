@@ -36,6 +36,7 @@ export const useFilesList = (
 		l: 'channels.files',
 		d: 'im.files',
 		p: 'groups.files',
+		e: 'groups.files',
 	} as const;
 
 	const apiEndPoint = room ? roomTypes[room.t] : 'channels.files';

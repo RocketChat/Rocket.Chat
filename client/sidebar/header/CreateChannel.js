@@ -7,6 +7,7 @@ import {
 	Icon,
 	Field,
 	ToggleSwitch,
+	Select,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
@@ -23,9 +24,13 @@ const CreateChannel = ({
 	hasUnsavedChanges,
 	onChangeUsers,
 	onChangeType,
+	onChangeEphemeral,
+	onChangeEphemeralTime,
+	onChangeMsgEphemeralTime,
 	onChangeBroadcast,
 	canOnlyCreateOneType,
 	e2eEnabledForPrivateByDefault,
+	options,
 	onCreate,
 	onClose,
 }) => {
@@ -33,6 +38,7 @@ const CreateChannel = ({
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const ephemeralAllowed = useSetting('Accounts_AllowEphemeralChannels');
 	const channelNameExists = useMethod('roomNameExists');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -117,11 +123,42 @@ const CreateChannel = ({
 							</Box>
 							<ToggleSwitch
 								checked={values.type}
-								disabled={!!canOnlyCreateOneType}
+								disabled={!!canOnlyCreateOneType || !!values.ephemeral}
 								onChange={onChangeType}
 							/>
 						</Box>
 					</Field>
+					{ephemeralAllowed && (
+						<Field mbe='x24'>
+							<Box display='flex' justifyContent='space-between' alignItems='start'>
+								<Box display='flex' flexDirection='column'>
+									<Field.Label>{'Ephemeral'}</Field.Label>
+									<Field.Description>{'Channel will self destruct'}</Field.Description>
+								</Box>
+								<ToggleSwitch
+									checked={values.ephemeral}
+									// disabled={!!canOnlyCreateOneType}
+									onChange={onChangeEphemeral}
+								/>
+							</Box>
+						</Field>
+					)}
+					{ephemeralAllowed && values.ephemeral && (
+						<Field mbe='x24'>
+							<Box display='flex' flexDirection='column'>
+								<Field.Label>{'Ephemeral Time'}</Field.Label>
+							</Box>
+							<Select onChange={onChangeEphemeralTime} options={options} />
+						</Field>
+					)}
+					{ephemeralAllowed && values.ephemeral && values.ephemeralTime && (
+						<Field mbe='x24'>
+							<Box display='flex' flexDirection='column'>
+								<Field.Label>{'Message Ephemeral Time'}</Field.Label>
+							</Box>
+							<Select onChange={onChangeMsgEphemeralTime} options={options} />
+						</Field>
+					)}
 					<Field>
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>

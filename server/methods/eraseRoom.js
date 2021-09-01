@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { deleteRoom } from '../../app/lib';
-import { hasPermission } from '../../app/authorization';
+// import { hasPermission } from '../../app/authorization';
 import { Rooms } from '../../app/models';
 import { Apps } from '../../app/apps/server';
-import { roomTypes } from '../../app/utils';
+// import { roomTypes } from '../../app/utils';
 
 Meteor.methods({
 	eraseRoom(rid) {
@@ -24,12 +24,12 @@ Meteor.methods({
 				method: 'eraseRoom',
 			});
 		}
-
-		if (!roomTypes.getConfig(room.t).canBeDeleted(hasPermission, room)) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'eraseRoom',
-			});
-		}
+		// Comment out for ephemeral channels
+		// if (!roomTypes.getConfig(room.t).canBeDeleted(hasPermission, room)) {
+		// 	throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		// 		method: 'eraseRoom',
+		// 	});
+		// }
 
 		if (Apps && Apps.isLoaded()) {
 			const prevent = Promise.await(Apps.getBridges().getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));

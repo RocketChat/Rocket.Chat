@@ -399,4 +399,26 @@ export class RoomsRaw extends BaseRaw {
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
+
+	setEphemeralTime(_id, time) {
+		if (!_id) { return; }
+		const query = { _id };
+		const update = {
+			$set: {
+				ephemeralTime: time,
+			},
+		};
+		return this.update(query, update);
+	}
+
+	setMsgEphemeralTime(_id, time) {
+		if (!_id) { return; }
+		const query = { _id };
+		const update = {
+			$set: {
+				msgEphemeralTime: time,
+			},
+		};
+		return this.update(query, update);
+	}
 }
