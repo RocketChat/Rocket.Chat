@@ -6,6 +6,7 @@ import { BannerPlatform } from '../../../definition/IBanner';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
 import { Settings } from '../../../app/models/server';
+import { isEnterprise } from '../../../ee/app/license/server';
 
 Migrations.add({
 	version: 231,
@@ -21,7 +22,8 @@ Migrations.add({
 
 		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
 
-		if (!isAuthServiceEnabled) {
+		const isEE = isEnterprise();
+		if (!isAuthServiceEnabled || isEE) {
 			return;
 		}
 
