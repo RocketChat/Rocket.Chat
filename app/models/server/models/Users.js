@@ -47,6 +47,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -189,9 +192,6 @@ export class Users extends Base {
 
 		const query = queryStatusAgentOnline(extraFilters);
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -203,7 +203,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -226,9 +226,6 @@ export class Users extends Base {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -240,7 +237,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,

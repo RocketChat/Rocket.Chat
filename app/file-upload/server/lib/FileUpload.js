@@ -462,6 +462,8 @@ export const FileUpload = {
 		store.copy(file, buffer);
 	},
 
+	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
+
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
 		const out = fs.createWriteStream(targetFile);

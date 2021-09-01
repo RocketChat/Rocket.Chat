@@ -44,6 +44,8 @@ import { validateEmailDomain } from '../../../lib/server';
 
 const logger = new Logger('Livechat');
 
+const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+
 export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
@@ -1168,7 +1170,7 @@ export const Livechat = {
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
-				Meteor.wrapAsync(dns.resolveMx)(emailDomain);
+				dnsResolveMx(emailDomain);
 			} catch (e) {
 				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', { method: 'livechat:sendOfflineMessage' });
 			}
