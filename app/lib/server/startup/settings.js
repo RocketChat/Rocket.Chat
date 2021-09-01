@@ -871,10 +871,6 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('General_Default', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('First_Channel_After_Login', '', {
 		type: 'string',
 		public: true,
