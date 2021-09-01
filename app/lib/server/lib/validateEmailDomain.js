@@ -6,6 +6,7 @@ import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
 import { settings } from '../../../settings/server';
 
 const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];
@@ -36,8 +37,7 @@ settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
 });
 
 export const validateEmailDomain = function(email) {
-	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-	if (!emailValidation.test(email)) {
+	if (!emailValidationRegex.test(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'RocketChat.validateEmailDomain', email });
 	}
 
