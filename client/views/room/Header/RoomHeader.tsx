@@ -21,6 +21,11 @@ export type RoomHeaderProps = {
 		insideContent?: unknown;
 		posContent?: unknown;
 		end?: unknown;
+		toolbox?: {
+			pre?: unknown;
+			content?: unknown;
+			pos?: unknown;
+		};
 	};
 };
 
@@ -51,7 +56,9 @@ const RoomHeader: FC<RoomHeaderProps> = ({ room, topic = '', slots = {} }) => (
 		</Header.Content>
 		{slots?.posContent}
 		<Header.ToolBox>
-			<ToolBox room={room} />
+			{slots?.toolbox?.pre}
+			{slots?.toolbox?.content || <ToolBox room={room} />}
+			{slots?.toolbox?.pos}
 		</Header.ToolBox>
 		{slots?.end}
 	</Header>
