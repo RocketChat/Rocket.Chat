@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import './Presence';
+
 class Notifications {
 	constructor(...args) {
 		this.logged = Meteor.userId() !== null;

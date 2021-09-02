@@ -3,10 +3,12 @@ import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
+import { emit } from '../../../app/notifications/server/lib/Presence';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -452,11 +454,12 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
 	}
 
-	sendPresence(userId: string, ...args: any[]): void {
+	sendPresence(uid: string, ...args: any[]): void {
 		// if (this.debug === true) {
 		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
 		// }
-		return this.streamPresence.emitWithoutBroadcast(userId, ...args);
+		emit(uid, args as any);
+		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
 	}
 
 	progressUpdated(progress: {rate: number}): void {

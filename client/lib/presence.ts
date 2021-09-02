@@ -1,11 +1,12 @@
 import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import { Meteor } from 'meteor/meteor';
 
-import { Notifications } from '../../app/notifications/client';
+// import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
 
-const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
+export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -54,10 +55,12 @@ const notify = (presence: UserPresence): void => {
 	}
 };
 
-const subStream = new Map<string, Function>();
+// const subStream = new Map<string, Function>();
 
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
+
+	const deletedUids = new Set<UserPresence['_id']>();
 
 	const fetch = (delay = 250): void => {
 		timer && clearTimeout(timer);
@@ -67,6 +70,21 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			}
 			const currentUids = new Set(uids);
 			uids.clear();
+
+			const ids = Array.from(currentUids);
+			const deleted = Array.from(deletedUids);
+
+			Meteor.subscribe('streamer-user-presences', {
+				...(ids.length > 0 && { added: Array.from(currentUids) }),
+				...(deleted.length && { deleted: Array.from(deletedUids) }),
+			});
+
+			deletedUids.clear();
+
+			if (ids.length === 0) {
+				return;
+			}
+
 			try {
 				const params = {
 					ids: [...currentUids],
@@ -100,26 +118,18 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	const get = (uid: UserPresence['_id']): void => {
 		uids.add(uid);
 		fetch();
-
-		if (!subStream.has(uid)) {
-			subStream.set(
-				uid,
-				([username, status, statusText]: [IUser['username'], number, IUser['statusText']]) => {
-					notify({ _id: uid, username, status: STATUS_MAP[status], statusText });
-				},
-			);
-
-			Notifications.onUserPresence(uid, subStream.get(uid));
-		}
 	};
-
+	const stop = (uid: UserPresence['_id']): void => {
+		deletedUids.add(uid);
+		fetch();
+	};
 	emitter.on('remove', (uid) => {
 		if (emitter.has(uid)) {
 			return;
 		}
 
 		store.delete(uid);
-		Notifications.unUserPresence(uid, subStream.get(uid));
+		stop(uid);
 	});
 
 	emitter.on('reset', () => {
