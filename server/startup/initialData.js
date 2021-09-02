@@ -5,12 +5,18 @@ import _ from 'underscore';
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload';
 import { addUserRoles, getUsersInRole } from '../../app/authorization';
-import { Users, Settings } from '../../app/models';
+import { Users, Settings, Rooms } from '../../app/models';
 import { settings } from '../../app/settings';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
+		if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
+			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+				default: true,
+			});
+		}
+
 		if (!Users.findOneById('rocket.cat')) {
 			Users.create({
 				_id: 'rocket.cat',
