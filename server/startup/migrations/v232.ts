@@ -21,8 +21,6 @@ Migrations.add({
 			return;
 		}
 
-		console.log('its enterprise');
-
 		const admins = Promise.await(Users.find<IUser>({ roles: 'admin' }, {}).toArray());
 
 		const banners = admins.map((a) => Promise.await(Banner.getNewBannersForUser(a._id, BannerPlatform.Web))).flat();
