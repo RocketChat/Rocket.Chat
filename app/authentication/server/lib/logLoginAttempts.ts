@@ -26,6 +26,5 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}
-	SystemLogger.info('Failed login detected - Username[%s] ClientAddress[%s] ForwardedFor[%s] XRealIp[%s] UserAgent[%s]', user, clientAddress, forwardedFor, realIp, userAgent);
-	// SystemLogger.info(`Failed login detected - Username[${ user }] ClientAddress[${ clientAddress }] ForwardedFor[${ forwardedFor }] XRealIp[${ realIp }] UserAgent[${ userAgent }]`);
+	SystemLogger.info(`Failed login detected - Username[${ user }] ClientAddress[${ clientAddress }] ForwardedFor[${ forwardedFor }] XRealIp[${ realIp }] UserAgent[${ userAgent }]`);
 };
