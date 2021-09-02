@@ -198,7 +198,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			if (settings.get('Apps_Framework_Development_Mode')) {
-				SystemLogger.info('A Rocket.Chat App prevented the message sending.', message);
+				SystemLogger.info({ msg: 'A Rocket.Chat App prevented the message sending.', message });
 			}
 
 			return;

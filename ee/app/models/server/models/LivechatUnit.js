@@ -23,13 +23,13 @@ const addQueryRestrictions = (originalQuery = {}) => {
 export class LivechatUnit extends LivechatDepartment {
 	find(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		queriesLogger.debug('LivechatUnit.find', query);
+		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.unfilteredFind(query, ...args);
 	}
 
 	findOne(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		queriesLogger.debug('LivechatUnit.findOne', query);
+		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return super.unfilteredFindOne(query, ...args);
 	}
 

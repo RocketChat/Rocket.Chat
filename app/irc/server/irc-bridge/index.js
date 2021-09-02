@@ -86,10 +86,12 @@ class Bridge {
 	 * Log helper
 	 */
 	log(message) {
+		// TODO logger: debug?
 		logger.info(message);
 	}
 
 	logQueue(message) {
+		// TODO logger: debug?
 		queueLogger.info(message);
 	}
 

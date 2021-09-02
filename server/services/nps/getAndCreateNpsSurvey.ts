@@ -40,7 +40,7 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 		});
 
 		if (result.statusCode !== 200) {
-			SystemLogger.log('invalid response from the nps service:', result);
+			SystemLogger.error({ msg: 'invalid response from the nps service:', result });
 			return;
 		}
 

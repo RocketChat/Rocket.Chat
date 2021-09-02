@@ -30,11 +30,11 @@ function _authorizeConnection(instance) {
 
 	return connections[instance].call('broadcastAuth', InstanceStatus.id(), connections[instance].instanceId, function(err, ok) {
 		if (err != null) {
-			return authLogger.error(`broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err);
+			return authLogger.error({ msg: `broadcastAuth error ${ instance } ${ InstanceStatus.id() } ${ connections[instance].instanceId }`, err });
 		}
 
 		connections[instance].broadcastAuth = ok;
-		return authLogger.info(`broadcastAuth with ${ instance }`, ok);
+		return authLogger.info({ msg: `broadcastAuth with ${ instance }`, ok });
 	});
 }
 
@@ -68,7 +68,7 @@ function startMatrixBroadcast() {
 			let instance = `${ record.extraInformation.host }:${ record.extraInformation.port }${ subPath }`;
 
 			if (record.extraInformation.port === process.env.PORT && record.extraInformation.host === process.env.INSTANCE_IP) {
-				authLogger.info('prevent self connect', instance);
+				authLogger.info({ msg: 'prevent self connect', instance });
 				return;
 			}
 
@@ -85,7 +85,7 @@ function startMatrixBroadcast() {
 				}
 			}
 
-			connLogger.info('connecting in', instance);
+			connLogger.info({ msg: 'connecting in', instance });
 
 			connections[instance] = DDP.connect(instance, {
 				_dontPrintErrors: settings.get('Log_Level') !== '2',
@@ -122,7 +122,7 @@ function startMatrixBroadcast() {
 			};
 
 			if (connections[instance] && !InstanceStatus.getCollection().findOne(query)) {
-				connLogger.info('disconnecting from', instance);
+				connLogger.info({ msg: 'disconnecting from', instance });
 				connections[instance].disconnect();
 				return delete connections[instance];
 			}
@@ -148,7 +148,7 @@ function startMatrixBroadcast() {
 function startStreamCastBroadcast(value) {
 	const instance = 'StreamCast';
 
-	connLogger.info('connecting in', instance, value);
+	connLogger.info({ msg: 'connecting in', instance, value });
 
 	if (!isPresenceMonitorEnabled()) {
 		UserPresence.setDefaultStatus = (id, status) => {
@@ -229,26 +229,39 @@ export function startStreamBroadcast() {
 			if (connection.status().connected === true) {
 				connection.call('stream', streamName, eventName, args, function(error, response) {
 					if (error) {
-						logger.error('Stream broadcast error', error);
+						logger.error({ msg: 'Stream broadcast error', err: error });
 					}
 
 					switch (response) {
 						case 'self-not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`.red);
-							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							streamLogger.debug('    -> connection status'.red, connection.status());
-							return streamLogger.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } to self is not authorized`);
+							streamLogger.debug({
+								msg: 'self-not-authorized',
+								broadcastAuth: connection.broadcastAuth,
+								status: connection.status(),
+								eventName,
+								args,
+							});
+							return;
 						case 'not-authorized':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`.red);
-							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							streamLogger.debug('    -> connection status'.red, connection.status());
-							streamLogger.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } not authorized`);
+							streamLogger.debug({
+								msg: 'not-authorized',
+								broadcastAuth: connection.broadcastAuth,
+								status: connection.status(),
+								eventName,
+								args,
+							});
 							return authorizeConnection(instance);
 						case 'stream-not-exists':
-							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`.red);
-							streamLogger.debug('    -> connection authorized'.red, connection.broadcastAuth);
-							streamLogger.debug('    -> connection status'.red, connection.status());
-							return streamLogger.debug('    -> arguments'.red, eventName, args);
+							streamLogger.error(`Stream broadcast from '${ fromInstance }' to '${ connection._stream.endpoint }' with name ${ streamName } does not exist`);
+							streamLogger.debug({
+								msg: 'stream-not-exists',
+								broadcastAuth: connection.broadcastAuth,
+								status: connection.status(),
+								eventName,
+								args,
+							});
 					}
 				});
 			}

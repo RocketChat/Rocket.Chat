@@ -53,7 +53,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 		}
 
 		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
-			SystemLogger.warn('Attachments should be Array, ignoring value', messageObj.attachments);
+			SystemLogger.warn({ msg: 'Attachments should be Array, ignoring value', attachments: messageObj.attachments });
 			messageObj.attachments = undefined;
 		}
 

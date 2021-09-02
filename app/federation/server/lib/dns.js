@@ -123,7 +123,7 @@ export function search(peerDomain) {
 
 	// Get the public key from the TXT record
 	try {
-		dnsLogger.debug({ msg: 'search', peerDomain, txt: `rocketchat-public-key.${ peerDomain }` });
+		dnsLogger.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-public-key.${ peerDomain }`);
 		const publicKeyTxtRecords = memoizedDnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
 
 		// Join the TXT record, that might be split
@@ -138,7 +138,7 @@ export function search(peerDomain) {
 		return searchHub(peerDomain);
 	}
 
-	dnsLogger.debug(`search: found peerDomain=${ peerDomain } srvEntry=${ srvEntry.name }:${ srvEntry.port } protocol=${ protocol }`);
+	dnsLogger.debug({ msg: 'search: found', peerDomain, srvEntry, protocol });
 
 	return {
 		url: `${ protocol }://${ srvEntry.name }:${ srvEntry.port }`,

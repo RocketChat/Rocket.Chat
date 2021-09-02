@@ -145,7 +145,7 @@ const updatePrometheusConfig = async () => {
 		return;
 	}
 
-	SystemLogger.debug('Configuring Prometheus', is);
+	SystemLogger.debug({ msg: 'Configuring Prometheus', is });
 
 	if (!was.enabled) {
 		server.listen({

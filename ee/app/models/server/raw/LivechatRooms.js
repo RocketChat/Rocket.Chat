@@ -5,7 +5,7 @@ import { overwriteClassOnLicense } from '../../../license/server';
 
 const applyRestrictions = (method) => function(originalFn, originalQuery, ...args) {
 	const query = addQueryRestrictionsToRoomsModel(originalQuery);
-	queriesLogger.debug(`LivechatRoomsRaw.${ method }`, query);
+	queriesLogger.debug({ msg: `LivechatRoomsRaw.${ method }`, query });
 	return originalFn.call(this, query, ...args);
 };
 
