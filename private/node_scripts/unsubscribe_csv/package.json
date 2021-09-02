@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node unsubscribe.js"
+    "start": "node unsubscribe.js",
+    "prepublish": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "dependencies": {
     "commander": "^2.9.0",
@@ -13,6 +15,8 @@
     "moment": "^2.10.2",
     "mongodb": "^2.1.0",
     "underscore": "^1.6.0",
-    "wait.for": "^0.6.6"
-  }
+    "wait.for": "^0.6.6",
+    "@snyk/protect": "latest"
+  },
+  "snyk": true
 }
