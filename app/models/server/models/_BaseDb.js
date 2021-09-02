@@ -7,6 +7,7 @@ import _ from 'underscore';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
@@ -20,8 +21,7 @@ try {
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	// TODO need to remove Logger dependency on settings to be able to use it here
-	console.error(e);
+	SystemLogger.error(e);
 }
 
 const actions = {
