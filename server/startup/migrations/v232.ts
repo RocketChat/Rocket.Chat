@@ -9,7 +9,7 @@ Migrations.add({
 	version: 232,
 	up() {
 		const query = {
-			_id: { $in: [/^Accounts_OAuth_Custom-?([^-_]+)$/, 'Accounts_OAuth_GitHub_Enterprise'] },
+			_id: { $in: [/^Accounts_OAuth_Custom-?([^-_]+)$/] },
 			value: true,
 		};
 
