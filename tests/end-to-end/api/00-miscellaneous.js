@@ -28,13 +28,14 @@ describe('miscellaneous', function() {
 					})
 					.end(done);
 			});
-			it('should return only "version" and the version info must be different qhen the user is not logged in', (done) => {
+			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
 				request.get('/api/info')
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('version');
-						expect(version).to.not.be.equal(res.body.version);
+						expect(res.body).to.not.have.property('info');
+						expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+).*/, '$1'));
 					})
 					.end(done);
 			});
