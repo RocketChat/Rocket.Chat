@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import { FederationRoomEvents, Rooms } from '../../../models/server';
 import { clientLogger } from '../lib/logger';
 import { hasExternalDomain } from '../functions/helpers';
