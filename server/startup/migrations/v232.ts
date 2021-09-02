@@ -1,6 +1,6 @@
 import { Migrations } from '../../../app/migrations/server';
 import { isEnterprise } from '../../../ee/app/license/server';
-import { Users } from '../../../app/models/server/raw';
+import { Users, Settings } from '../../../app/models/server/raw';
 import { Banner } from '../../sdk';
 import { BannerPlatform } from '../../../definition/IBanner';
 import { IUser } from '../../../definition/IUser';
@@ -8,9 +8,16 @@ import { IUser } from '../../../definition/IUser';
 Migrations.add({
 	version: 232,
 	up() {
+		const query = {
+			_id: { $in: [/^Accounts_OAuth_Custom-?([^-_]+)$/, 'Accounts_OAuth_GitHub_Enterprise'] },
+			value: true,
+		};
+
+		const isCustomOAuthEnabled = !!Settings.findOne(query);
+
 		const isEE = isEnterprise();
 
-		if (!isEE) {
+		if (!isEE && isCustomOAuthEnabled) {
 			return;
 		}
 
