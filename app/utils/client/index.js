@@ -19,3 +19,4 @@ export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
 export { canDeleteMessage } from './lib/canDeleteMessage';
 export { secondsToHHMMSS } from '../lib/timeConverter';
+export { waitUntilFind } from './lib/waitUntilFind';

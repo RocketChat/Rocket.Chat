@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { AccountBox } from '../../../ui-utils';
 import { settings } from '../../../settings';
@@ -14,14 +15,15 @@ const commands = {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
-		const newUrl = new URL(baseURI + data.path);
+		const newUrl = new URL(`${ s.rtrim(baseURI, '/') }/${ s.ltrim(data.path, '/') }`);
 
 		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
 			ret[key] = value;
 			return ret;
 		}, {});
 
-		FlowRouter.go(newUrl.pathname, null, { ...FlowRouter.current().queryParams, ...newParams });
+		const newPath = newUrl.pathname.replace(new RegExp(`^${ escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX) }`), '');
+		FlowRouter.go(newPath, null, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 
 	'set-user-status'(data) {
