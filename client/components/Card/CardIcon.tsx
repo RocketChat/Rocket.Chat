@@ -1,7 +1,11 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, ComponentProps } from 'react';
 
-const CardIcon: FC<{ name: string }> = ({ name, children, ...props }) => (
+const CardIcon: FC<{ name?: string } & ComponentProps<typeof Icon>> = ({
+	name,
+	children,
+	...props
+}) => (
 	<Box
 		minWidth='x16'
 		display='inline-flex'

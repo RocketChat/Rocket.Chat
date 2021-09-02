@@ -13,8 +13,9 @@ const SeatsCard = (): ReactElement | null => {
 
 	const seatsLeft = seatsCap ? seatsCap.maxActiveUsers - seatsCap.activeUsers : false;
 
-	const color =
-		seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8 ? colors.r500 : undefined;
+	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
+
+	const color = isNearLimit ? colors.r500 : undefined;
 
 	if (seatsCap && seatsCap.maxActiveUsers === Infinity) {
 		return null;
@@ -30,7 +31,7 @@ const SeatsCard = (): ReactElement | null => {
 							display='flex'
 							flexDirection='row'
 							justifyContent='center'
-							fontScale={color ? 'p2' : 'p1'}
+							fontScale={isNearLimit ? 'p2' : 'p1'}
 						>
 							{!seatsCap ? (
 								<Skeleton variant='rect' width='x112' height='x112' />

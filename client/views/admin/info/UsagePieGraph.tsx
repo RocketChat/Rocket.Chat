@@ -3,6 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { useMemo, useCallback, ReactElement, CSSProperties, ReactNode } from 'react';
 
+import { useLocalePercentage } from '../../../hooks/useLocalePercentage';
+
 type GraphColorsReturn = { [key: string]: string };
 
 const graphColors = (color: CSSProperties['color']): GraphColorsReturn => ({
@@ -53,6 +55,8 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 
 	const unlimited = total === 0;
 
+	const localePercentage = useLocalePercentage(total, used, 0);
+
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center'>
 			<Box size={size}>
@@ -76,7 +80,7 @@ const UsageGraph = ({ used = 0, total = 0, label, color, size }: UsageGraphProps
 						fontScale='p2'
 						style={{ left: 0, right: 0, top: 0, bottom: 0 }}
 					>
-						{unlimited ? '∞' : `${Number((100 / total) * used).toFixed(0)}%`}
+						{unlimited ? '∞' : localePercentage}
 					</Box>
 				</Box>
 			</Box>
