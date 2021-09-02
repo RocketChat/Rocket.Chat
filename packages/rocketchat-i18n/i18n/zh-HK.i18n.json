@@ -2724,8 +2724,6 @@
   "Users_added": "用户已被添加",
   "Users_in_role": "角色中的用户",
   "UTF8_Names_Slugify": "UTF8命名Slugify",
-  "UTF8_Names_Validation": "UTF8名称验证",
-  "UTF8_Names_Validation_Description": "RegExp将用于验证用户名和频道名称",
   "Validate_email_address": "验证电子邮件地址",
   "Verification": "验证",
   "Verification_Description": "您可以使用以下占位符：<br/><ul><li>[Verification_Url]获取验证网址。</li><li>[姓名]，[fname]，[lname]分别代表用户的全名，名字或姓氏。用户的电子邮件为</li><li>[email]。分别为应用程序名称和URL分别为</li><li>[Site_Name]和[Site_URL]。</li></ul>",

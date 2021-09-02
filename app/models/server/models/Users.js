@@ -47,6 +47,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -189,9 +192,6 @@ export class Users extends Base {
 
 		const query = queryStatusAgentOnline(extraFilters);
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -203,7 +203,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -213,76 +213,8 @@ export class Users extends Base {
 		return null;
 	}
 
-	// get next agent ignoring the ones reached the max amount of active chats
-	getUnavailableAgents(departmentId, customFilter) {
-		const col = this.model.rawCollection();
-		// if department is provided, remove the agents that are not from the selected department
-		const departmentFilter = departmentId ? [{
-			$lookup: {
-				from: 'rocketchat_livechat_department_agents',
-				let: { departmentId: '$departmentId', agentId: '$agentId' },
-				pipeline: [{
-					$match: { $expr: { $eq: ['$$agentId', '$_id'] } },
-				}, {
-					$match: { $expr: { $eq: ['$$departmentId', departmentId] } },
-				}],
-				as: 'department',
-			},
-		}, {
-			$match: { department: { $size: 1 } },
-		}] : [];
-
-		return col.aggregate([
-			{
-				$match: {
-					status: { $exists: true, $ne: 'offline' },
-					statusLivechat: 'available',
-					roles: 'livechat-agent',
-				},
-			},
-			...departmentFilter,
-			{
-				$lookup: {
-					from: 'rocketchat_subscription',
-					localField: '_id',
-					foreignField: 'u._id',
-					as: 'subs',
-				},
-			},
-			{
-				$project: {
-					agentId: '$_id',
-					'livechat.maxNumberSimultaneousChat': 1,
-					username: 1,
-					lastAssignTime: 1,
-					lastRoutingTime: 1,
-					'queueInfo.chats': {
-						$size: {
-							$filter: {
-								input: '$subs',
-								as: 'sub',
-								cond: {
-									$and: [
-										{ $eq: ['$$sub.t', 'l'] },
-										{ $eq: ['$$sub.open', true] },
-										{ $ne: ['$$sub.onHold', true] },
-									],
-								},
-							},
-						},
-					},
-				},
-			},
-			...customFilter ? [customFilter] : [],
-			{
-				$sort: {
-					'queueInfo.chats': 1,
-					lastAssignTime: 1,
-					lastRoutingTime: 1,
-					username: 1,
-				},
-			},
-		]).toArray();
+	getUnavailableAgents() {
+		return [];
 	}
 
 
@@ -294,9 +226,6 @@ export class Users extends Base {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -308,7 +237,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,

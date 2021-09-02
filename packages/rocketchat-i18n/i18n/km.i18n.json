@@ -3067,8 +3067,6 @@
   "Users_added": "អ្នកប្រើត្រូវបានបន្ថែម",
   "Users_in_role": "អ្នកប្រើនៅក្នុងតួនាទី",
   "UTF8_Names_Slugify": "ឈ្មោះក្រៅ UTF8 Slugify",
-  "UTF8_Names_Validation": "ឈ្មោះក្រៅ UTF8 សុពលភាព",
-  "UTF8_Names_Validation_Description": "មិនអនុញ្ញាតឱ្យតួអក្សរពិសេសនិងចន្លោះ។ អ្នកអាចប្រើ - _ និង។ ប៉ុន្តែមិននៅចុងបញ្ចប់នៃឈ្មោះនេះ",
   "Validate_email_address": "ធ្វើឱ្យមានអាសយដ្ឋានអ៊ីមែលមានសុពលភាព",
   "Verification": "ការផ្ទៀងផ្ទាត់",
   "Verification_Description": "អ្នកអាចប្រើកន្លែងដាក់ខាងក្រោម: <br/><ul><li>[Verification_Url] សម្រាប់ URL ផ្ទៀងផ្ទាត់។</li><li>[ឈ្មោះ], [fname], [lname] សម្រាប់ឈ្មោះអ្នកប្រើនាមត្រកូលឬនាមត្រកូលរៀងៗខ្លួន។</li><li>[អ៊ីមែល] សម្រាប់អ៊ីម៉ែលរបស់អ្នកប្រើ។</li><li>[Site_Name] និង [Site_URL] សម្រាប់ឈ្មោះកម្មវិធីនិង URL រៀងៗខ្លួន។</li></ul>",
