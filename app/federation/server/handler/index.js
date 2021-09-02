@@ -10,8 +10,7 @@ export function federationSearchUsers(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`searchUsers => query=${ query }`);
+	clientLogger.debug({ msg: 'searchUsers', query });
 
 	const [username, peerDomain] = query.split('@');
 
@@ -27,8 +26,7 @@ export function getUserByUsername(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`getUserByUsername => query=${ query }`);
+	clientLogger.debug({ msg: 'getUserByUsername', query });
 
 	const [username, peerDomain] = query.split('@');
 
@@ -44,8 +42,7 @@ export function requestEventsFromLatest(domain, fromDomain, contextType, context
 		throw disabled('client.requestEventsFromLatest');
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`requestEventsFromLatest => domain=${ domain } contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+	clientLogger.debug({ msg: 'requestEventsFromLatest', domain, contextType, contextQuery, latestEventIds });
 
 	const uri = '/api/v1/federation.events.requestFromLatest';
 
@@ -60,8 +57,7 @@ export function dispatchEvents(domains, events) {
 
 	domains = [...new Set(domains)];
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+	clientLogger.debug({ msg: 'dispatchEvents', domains, events });
 
 	const uri = '/api/v1/federation.events.dispatch';
 

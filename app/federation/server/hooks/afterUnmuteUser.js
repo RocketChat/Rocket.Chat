@@ -9,8 +9,7 @@ async function afterUnmuteUser(involvedUsers, room) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) { return involvedUsers; }
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterUnmuteUser => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterUnmuteUser', involvedUsers, room });
 
 	const { unmutedUser } = involvedUsers;
 

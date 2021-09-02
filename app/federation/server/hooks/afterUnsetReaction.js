@@ -12,8 +12,7 @@ async function afterUnsetReaction(message, { user, reaction }) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) { return message; }
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterUnsetReaction => message=${ JSON.stringify(_.pick(message, '_id', 'msg'), null, 2) } room=${ JSON.stringify(_.pick(room, '_id'), null, 2) } user=${ JSON.stringify(_.pick(user, 'username'), null, 2) } reaction=${ reaction }`);
+	clientLogger.debug({ msg: 'afterUnsetReaction', message, room, user, reaction });
 
 	// Create the event
 	const event = await FederationRoomEvents.createUnsetMessageReactionEvent(getFederationDomain(), room._id, message._id, user.username, reaction);

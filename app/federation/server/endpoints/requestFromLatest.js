@@ -25,8 +25,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 
 		const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(payload);
 
-		// TODO Logger: convert to JSON
-		serverLogger.debug(`federation.events.requestFromLatest => contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+		serverLogger.debug({ msg: 'federation.events.requestFromLatest', contextType, contextQuery, latestEventIds });
 
 		let EventsModel;
 

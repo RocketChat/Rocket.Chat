@@ -49,6 +49,7 @@ class RFC2813 {
 	 * Log helper
 	 */
 	log(message) {
+		// TODO logger: debug?
 		logger.info(message);
 	}
 
@@ -151,11 +152,11 @@ class RFC2813 {
 					const command = peerCommandHandlers[parsedMessage.command].call(this, parsedMessage);
 
 					if (command) {
-						this.log(`Emitting peer command to local: ${ JSON.stringify(command) }`);
+						this.log({ msg: 'Emitting peer command to local', command });
 						this.emit('peerCommand', command);
 					}
 				} else {
-					this.log(`Unhandled peer message: ${ JSON.stringify(parsedMessage) }`);
+					this.log({ msg: 'Unhandled peer message', parsedMessage });
 				}
 			}
 		});
@@ -174,7 +175,7 @@ class RFC2813 {
 
 			localCommandHandlers[command].call(this, parameters, this);
 		} else {
-			this.log(`Unhandled local command: ${ JSON.stringify(command) }`);
+			this.log({ msg: 'Unhandled local command', command });
 		}
 	}
 }

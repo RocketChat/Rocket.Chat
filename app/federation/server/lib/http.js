@@ -37,12 +37,11 @@ export function federationRequestToPeer(method, peerDomain, uri, body, options =
 	let result;
 
 	try {
-		// TODO Logger: convert to JSON
-		httpLogger.debug(`federationRequestToPeer => url=${ baseUrl }${ uri }`);
+		httpLogger.debug({ msg: 'federationRequestToPeer', url: `${ baseUrl }${ uri }` });
 
 		result = federationRequest(method, `${ baseUrl }${ uri }`, body, options.headers || {}, peerKey);
 	} catch (err) {
-		httpLogger.error(`${ ignoreErrors ? '[IGNORED] ' : '' }Error ${ err }`);
+		httpLogger.error({ msg: `${ ignoreErrors ? '[IGNORED] ' : '' }Error`, err });
 
 		if (!ignoreErrors) {
 			throw err;

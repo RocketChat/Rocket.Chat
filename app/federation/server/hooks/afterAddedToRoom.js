@@ -16,8 +16,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		return involvedUsers;
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterAddedToRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterAddedToRoom', involvedUsers, room });
 
 	// If there are not federated users on this room, ignore it
 	const { users, subscriptions } = getFederatedRoomData(room);
@@ -74,7 +73,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 		// Remove the user subscription from the room
 		Subscriptions.remove({ _id: subscription._id });
 
-		clientLogger.error('afterAddedToRoom => Could not add user:', err);
+		clientLogger.error({ msg: 'afterAddedToRoom => Could not add user:', err });
 	}
 
 	return involvedUsers;

@@ -115,7 +115,7 @@ export function search(peerDomain) {
 
 	// If there is no entry, throw error
 	if (!srvEntry || !protocol) {
-		dnsLogger.debug(`search: could not find valid SRV entry peerDomain=${ peerDomain } srvEntry=${ JSON.stringify(srvEntry) } protocol=${ protocol }`);
+		dnsLogger.debug({ msg: 'search: could not find valid SRV entry', peerDomain, srvEntry, protocol });
 		return searchHub(peerDomain);
 	}
 
@@ -123,7 +123,7 @@ export function search(peerDomain) {
 
 	// Get the public key from the TXT record
 	try {
-		dnsLogger.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-public-key.${ peerDomain }`);
+		dnsLogger.debug({ msg: 'search', peerDomain, txt: `rocketchat-public-key.${ peerDomain }` });
 		const publicKeyTxtRecords = memoizedDnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
 
 		// Join the TXT record, that might be split

@@ -13,8 +13,7 @@ async function afterLeaveRoom(user, room) {
 		return user;
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterLeaveRoom => user=${ JSON.stringify(user, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
 	const { users } = getFederatedRoomData(room);
 
@@ -41,7 +40,7 @@ async function afterLeaveRoom(user, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeLeft, userLeftEvent);
 	} catch (err) {
-		clientLogger.error('afterLeaveRoom => Could not make user leave:', err);
+		clientLogger.error({ msg: 'afterLeaveRoom => Could not make user leave:', err });
 	}
 
 	return user;

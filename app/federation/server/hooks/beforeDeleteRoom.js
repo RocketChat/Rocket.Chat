@@ -13,8 +13,7 @@ async function beforeDeleteRoom(roomId) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) { return roomId; }
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'beforeDeleteRoom', room });
 
 	try {
 		// Create the message event
@@ -23,7 +22,7 @@ async function beforeDeleteRoom(roomId) {
 		// Dispatch event (async)
 		dispatchEvent(room.federation.domains, event);
 	} catch (err) {
-		clientLogger.error('beforeDeleteRoom => Could not remove room:', err);
+		clientLogger.error({ msg: 'beforeDeleteRoom => Could not remove room:', err });
 
 		throw err;
 	}

@@ -7,8 +7,7 @@ import { dispatchEvents } from '../handler';
 import { isFullyQualified } from '../functions/helpers';
 
 async function afterCreateDirectRoom(room, extras) {
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterCreateDirectRoom => room=${ JSON.stringify(room, null, 2) } extras=${ JSON.stringify(extras, null, 2) }`);
+	clientLogger.debug({ msg: 'afterCreateDirectRoom', room, extras });
 
 	// If the room is federated, ignore
 	if (room.federation) { return room; }
@@ -46,7 +45,7 @@ async function afterCreateDirectRoom(room, extras) {
 	} catch (err) {
 		await deleteRoom(room._id);
 
-		clientLogger.error('afterCreateDirectRoom => Could not create federated room:', err);
+		clientLogger.error({ msg: 'afterCreateDirectRoom => Could not create federated room:', err });
 	}
 
 	return room;

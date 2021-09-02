@@ -392,7 +392,7 @@ export function syncUserData(user, ldapUser, ldap) {
 	const userChannels = mapLDAPGroupsToChannels(ldap, ldapUser, user);
 
 	if (user && user._id && userData) {
-		logger.debug('setting', JSON.stringify(userData, null, 2));
+		logger.debug({ msg: 'setting', userData });
 		if (userData.name) {
 			_setRealName(user._id, userData.name);
 			delete userData.name;

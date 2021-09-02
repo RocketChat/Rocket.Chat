@@ -140,7 +140,7 @@ export class ResponseParser {
 			}
 		}
 
-		SAMLUtils.log(`NameID: ${ JSON.stringify(profile) }`);
+		SAMLUtils.log({ msg: 'NameID', profile });
 		return callback(null, profile, false);
 	}
 

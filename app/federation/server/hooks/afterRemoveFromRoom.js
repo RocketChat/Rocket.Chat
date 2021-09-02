@@ -15,8 +15,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		return involvedUsers;
 	}
 
-	// TODO Logger: convert to JSON
-	clientLogger.debug(`afterRemoveFromRoom => involvedUsers=${ JSON.stringify(involvedUsers, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'afterRemoveFromRoom', involvedUsers, room });
 
 	const { users } = getFederatedRoomData(room);
 
@@ -43,7 +42,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 		// Dispatch the events
 		dispatchEvent(domainsBeforeRemoval, removeUserEvent);
 	} catch (err) {
-		clientLogger.error('afterRemoveFromRoom => Could not remove user:', err);
+		clientLogger.error({ msg: 'afterRemoveFromRoom => Could not remove user:', err });
 	}
 
 	return involvedUsers;

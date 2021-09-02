@@ -17,7 +17,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 	}
 
 	const loginResult = SAML.retrieveCredential(loginRequest.credentialToken);
-	SAMLUtils.log(`RESULT :${ JSON.stringify(loginResult) }`);
+	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
 		return makeError('No matching login attempt found');

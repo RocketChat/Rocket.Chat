@@ -80,14 +80,13 @@ async function afterCreateRoom(roomOwner, room) {
 			throw new Error('Channels cannot be federated');
 		}
 
-		// TODO Logger: convert to JSON
-		clientLogger.debug(`afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+		clientLogger.debug({ msg: 'afterCreateRoom', roomOwner, room });
 
 		await doAfterCreateRoom(room, users, subscriptions);
 	} catch (err) {
 		deleteRoom(room._id);
 
-		clientLogger.error('afterCreateRoom => Could not create federated room:', err);
+		clientLogger.error({ msg: 'afterCreateRoom => Could not create federated room:', err });
 	}
 
 	return room;
