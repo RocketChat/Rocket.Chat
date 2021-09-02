@@ -1,11 +1,11 @@
 import { API } from '../api';
-import { getServerInfo } from '../lib/server-info';
+import { getServerInfo } from '../lib/getServerInfo';
 
 API.default.addRoute('info', { authRequired: false }, {
 	get() {
 		const user = this.getLoggedInUser();
 
-		return API.v1.success(Promise.await(getServerInfo({ user })));
+		return API.v1.success(Promise.await(getServerInfo(user?._id)));
 	},
 });
 
