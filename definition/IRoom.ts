@@ -74,6 +74,7 @@ export enum OmnichannelSourceType {
 	EMAIL = 'email',
 	SMS = 'sms',
 	APP = 'app',
+	OTHER = 'other', // temporal, catch-all source type
 }
 
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {

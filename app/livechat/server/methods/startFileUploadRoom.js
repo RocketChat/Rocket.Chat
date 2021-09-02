@@ -3,6 +3,7 @@ import { Random } from 'meteor/random';
 
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	'livechat:startFileUploadRoom'(roomId, token) {
@@ -16,6 +17,11 @@ Meteor.methods({
 			token: guest.token,
 		};
 
-		return Livechat.getRoom(guest, message);
+		const roomInfo = {
+			source: OmnichannelSourceType.OTHER,
+			alias: 'file-upload',
+		};
+
+		return Livechat.getRoom(guest, message, roomInfo);
 	},
 });

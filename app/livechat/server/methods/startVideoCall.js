@@ -4,6 +4,7 @@ import { Random } from 'meteor/random';
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	async 'livechat:startVideoCall'(roomId) {
@@ -20,7 +21,15 @@ Meteor.methods({
 			ts: new Date(),
 		};
 
-		const room = await Livechat.getRoom(guest, message, { jitsiTimeout: new Date(Date.now() + 3600 * 1000) });
+		const roomInfo = {
+			jitsiTimeout: new Date(Date.now() + 3600 * 1000),
+			source: {
+				type: OmnichannelSourceType.OTHER,
+				alias: 'video-call',
+			},
+		};
+
+		const room = await Livechat.getRoom(guest, message, roomInfo);
 		message.rid = room._id;
 
 		Messages.createWithTypeRoomIdMessageAndUser('livechat_video_call', room._id, '', guest, {

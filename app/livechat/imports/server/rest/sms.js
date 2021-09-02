@@ -7,6 +7,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../..
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 const getUploadFile = (details, fileUrl) => {
 	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
@@ -82,6 +83,10 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			roomInfo: {
 				sms: {
 					from: sms.to,
+				},
+				source: {
+					type: OmnichannelSourceType.SMS,
+					alias: this.urlParams.service,
 				},
 			},
 		};

@@ -6,6 +6,7 @@ import { API } from '../../../../api/server';
 import { LivechatRooms, LivechatVisitors } from '../../../../models';
 import { settings } from '../../../../settings';
 import { Livechat } from '../../../server/lib/Livechat';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 /**
  * @api {post} /livechat/facebook Send Facebook message
@@ -57,6 +58,10 @@ API.v1.addRoute('livechat/facebook', {
 			roomInfo: {
 				facebook: {
 					page: this.bodyParams.page,
+				},
+				source: {
+					type: OmnichannelSourceType.OTHER,
+					alias: 'facebook-native',
 				},
 			},
 		};

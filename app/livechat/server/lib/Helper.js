@@ -15,6 +15,7 @@ import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 const logger = new Logger('LivechatHelper');
 
@@ -59,6 +60,12 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		cl: false,
 		open: true,
 		waitingResponse: true,
+		// this should be overriden by extraRoomInfo when provided
+		// in case it's not provided, we'll use this "default" type
+		source: {
+			type: OmnichannelSourceType.OTHER,
+			alias: 'unknown',
+		},
 	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
