@@ -16,7 +16,7 @@ export class SlackAPI {
 				cursor,
 			},
 			headers: {
-				'Authorization': 'Bearer ' + this.apiToken
+				Authorization: `Bearer ${this.apiToken}`,
 			},
 		});
 
@@ -41,7 +41,7 @@ export class SlackAPI {
 				cursor,
 			},
 			headers: {
-				'Authorization': 'Bearer ' + this.apiToken
+				Authorization: `Bearer ${this.apiToken}`,
 			},
 		});
 
@@ -63,7 +63,7 @@ export class SlackAPI {
 				include_num_members: true,
 			},
 			headers: {
-				'Authorization': 'Bearer ' + this.apiToken
+				Authorization: `Bearer ${this.apiToken}`,
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.channel;
@@ -82,7 +82,7 @@ export class SlackAPI {
 					cursor: currentCursor,
 				},
 				headers: {
-					'Authorization': 'Bearer ' + this.apiToken
+					Authorization: `Bearer ${this.apiToken}`,
 				},
 			});
 			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
@@ -131,7 +131,7 @@ export class SlackAPI {
 				channel: channelId,
 			},
 			headers: {
-				'Authorization': 'Bearer ' + this.apiToken
+				Authorization: `Bearer ${this.apiToken}`,
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.items;
@@ -143,7 +143,7 @@ export class SlackAPI {
 				user: userId,
 			},
 			headers: {
-				'Authorization': 'Bearer ' + this.apiToken
+				Authorization: `Bearer ${this.apiToken}`,
 			},
 		});
 		return response && response.data && response.statusCode === 200 && response.data.ok && response.data.user;
