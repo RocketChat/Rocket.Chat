@@ -398,17 +398,21 @@ Template.messageBox.events({
 			return;
 		}
 
-		const files = items
-			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
-			.map((item) => ({
-				file: item.getAsFile(),
-				name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
-			}))
-			.filter(({ file }) => file !== null);
-
-		if (files.length) {
-			event.preventDefault();
-			fileUpload(files, input, { rid, tmid });
+		if (settings.get('FileUpload_Enabled')) {
+			const files = items
+				.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
+				.map((item) => ({
+					file: item.getAsFile(),
+					name: `Clipboard - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }`,
+				}))
+				.filter(({ file }) => file !== null);
+			if (files.length) {
+				event.preventDefault();
+				fileUpload(files, input, { rid, tmid });
+			}
+		}
+		else {
+			alert('file_upload_disabled');
 		}
 	},
 	'input .js-input-message'(event, instance) {
