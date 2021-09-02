@@ -5,6 +5,7 @@ import { settings } from '../../settings/server';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
 import { Logger } from '../../logger/server';
 import { SAMLUtils } from './lib/Utils';
+import { addEnterpriseSettings } from '../../../ee/server/authentication/settings';
 
 settings.addGroup('SAML');
 
@@ -18,4 +19,8 @@ const updateServices = _.debounce(Meteor.bindEnvironment(() => {
 
 settings.get(/^SAML_.+/, updateServices);
 
-Meteor.startup(() => addSettings('Default'));
+
+Meteor.startup(() => {
+	addSettings('Default');
+	addEnterpriseSettings('Default');
+});

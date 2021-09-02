@@ -1,1 +1,2 @@
 import './SAML';
+import './settings';

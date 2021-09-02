@@ -48,7 +48,7 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		},
 		signatureValidationType: settings.get(`${ service }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service }_user_data_fieldmap`),
-		allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
+		// allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
 		identifierFormat: settings.get(`${ service }_identifier_format`),
 		nameIDPolicyTemplate: settings.get(`${ service }_NameId_template`),
 		authnContextTemplate: settings.get(`${ service }_AuthnContext_template`),
@@ -323,13 +323,13 @@ export const addSettings = function(name: string): void {
 	});
 
 	// Advanced settings
-	settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
-		type: 'int',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Allowed_Clock_Drift',
-		i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
-	});
+	// settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, 0, {
+	// 	type: 'int',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_Allowed_Clock_Drift',
+	// 	i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
+	// });
 	settings.add(`SAML_Custom_${ name }_identifier_format`, defaultIdentifierFormat, {
 		type: 'string',
 		group: 'SAML',

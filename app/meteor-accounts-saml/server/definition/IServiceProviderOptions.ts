@@ -11,7 +11,7 @@ export interface IServiceProviderOptions {
 	defaultUserRole: string;
 	roleAttributeName: string;
 	roleAttributeSync: boolean;
-	allowedClockDrift: number;
+	allowedClockDrift?: number;
 	signatureValidationType: string;
 	identifierFormat: string;
 	nameIDPolicyTemplate: string;
