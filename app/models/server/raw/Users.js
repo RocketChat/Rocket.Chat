@@ -144,7 +144,7 @@ export class UsersRaw extends BaseRaw {
 			roles: roleName,
 		};
 
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
 	getDistinctFederationDomains() {

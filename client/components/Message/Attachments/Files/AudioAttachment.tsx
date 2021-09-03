@@ -20,7 +20,7 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	const getURL = useMediaUrl();
 	return (
 		<Attachment>
-			<MarkdownText variant='inline' content={description} />
+			<MarkdownText parseEmoji variant='inline' content={description} />
 			<Attachment.Row>
 				<Attachment.Title>{title}</Attachment.Title>
 				{size && <Attachment.Size size={size} />}

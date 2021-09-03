@@ -3,12 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { promises } from '../../app/promises/client';
 import { settings } from '../../app/settings/client';
 import { Layout } from '../../app/ui-utils/client';
+import { waitUntilFind } from '../../app/utils/client';
 import { IMessage } from '../../definition/IMessage';
 import { IRoom } from '../../definition/IRoom';
 import { ISubscription } from '../../definition/ISubscription';

@@ -1,6 +1,7 @@
-import { Skeleton, Select, Callout } from '@rocket.chat/fuselage';
+import { Skeleton, TextInput, Callout } from '@rocket.chat/fuselage';
 import React, { useMemo, ReactElement } from 'react';
 
+import { roomTypes } from '../../../app/utils/client/lib/roomTypes';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../hooks/useAsyncState';
 import { useEndpointData } from '../../hooks/useEndpointData';
@@ -26,15 +27,12 @@ const DefaultParentRoomField = ({
 	}
 
 	if (!value || !value.room) {
-		return <Callout type={'error'}>{t('Error')}</Callout>;
+		return <Callout type={'danger'}>{t('Error')}</Callout>;
 	}
 
-	const { _id, fname, name } = value?.room;
-
 	return (
-		<Select
-			options={[[_id, (fname || name) as string]]}
-			value={_id}
+		<TextInput
+			value={roomTypes.getRoomName(value.room.t, value.room)}
 			disabled
 			onChange={(): string => ''}
 		/>

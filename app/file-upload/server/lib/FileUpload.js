@@ -266,6 +266,45 @@ export const FileUpload = {
 		return result;
 	},
 
+	createImageThumbnail(file) {
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
+			return;
+		}
+
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
+
+		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
+			return;
+		}
+
+		file = Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const store = FileUpload.getStore('Uploads');
+		const image = store._store.getReadStream(file._id, file);
+
+		const transformer = sharp()
+			.resize({ width, height, fit: 'inside' });
+
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		image.pipe(transformer);
+
+		return result;
+	},
+
+	uploadImageThumbnail(file, buffer, rid, userId) {
+		const store = FileUpload.getStore('Uploads');
+		const details = {
+			name: `thumb-${ file.name }`,
+			size: buffer.length,
+			type: file.type,
+			rid,
+			userId,
+		};
+
+		return store.insertSync(details, buffer);
+	},
+
 	uploadsOnValidate(file) {
 		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif)$/.test(file.type)) {
 			return;
@@ -421,6 +460,8 @@ export const FileUpload = {
 
 		store.copy(file, buffer);
 	},
+
+	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
 
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);

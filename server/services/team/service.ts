@@ -23,7 +23,7 @@ import {
 	TEAM_TYPE,
 } from '../../../definition/ITeam';
 import { IUser } from '../../../definition/IUser';
-import { Room } from '../../sdk';
+import { Room, Authorization } from '../../sdk';
 import {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -484,7 +484,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 		};
 	}
 
-	async listRoomsOfUser(uid: string, teamId: string, userId: string, allowPrivateTeam: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
+	async listRoomsOfUser(uid: string, teamId: string, userId: string, allowPrivateTeam: boolean, showCanDeleteOnly: boolean, { offset: skip, count: limit }: IPaginationOptions = { offset: 0, count: 50 }): Promise<IRecordsWithTotal<IRoom>> {
 		if (!teamId) {
 			throw new Error('missing-teamId');
 		}
@@ -498,7 +498,18 @@ export class TeamService extends ServiceClass implements ITeamService {
 		}
 
 		const teamRooms = await this.RoomsModel.findByTeamId(teamId, { projection: { _id: 1, t: 1 } }).toArray();
-		const teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
+		let teamRoomIds: any[];
+		if (showCanDeleteOnly) {
+			for await (const room of teamRooms) {
+				const roomType = room.t;
+				const canDeleteRoom = await Authorization.hasPermission(userId, roomType === 'c' ? 'delete-c' : 'delete-p', room._id);
+				room.userCanDelete = canDeleteRoom;
+			}
+
+			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' || room.t === 'p') && room.userCanDelete).map((room) => room._id);
+		} else {
+			teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
+		}
 
 		const subscriptionsCursor = this.SubscriptionsModel.findByUserIdAndRoomIds(userId, teamRoomIds);
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
