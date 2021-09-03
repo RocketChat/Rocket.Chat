@@ -34,7 +34,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function(email: ParsedM
 		return;
 	}
 
-	const user = Users.findOneByEmailAddress(email.from.text, {
+	const user = Users.findOneByEmailAddress(email.from.value[0].address, {
 		fields: {
 			username: 1,
 			name: 1,
