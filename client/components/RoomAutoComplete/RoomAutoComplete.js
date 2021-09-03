@@ -11,7 +11,7 @@ const RoomAutoComplete = (props) => {
 	const [filter, setFilter] = useState('');
 	const { value: data } = useEndpointData(
 		'rooms.autocomplete.channelAndPrivate',
-		useMemo(() => query(filter.replace(/\#/g, '')), [filter]),
+		useMemo(() => query(filter), [filter]),
 	);
 	const options = useMemo(
 		() =>
