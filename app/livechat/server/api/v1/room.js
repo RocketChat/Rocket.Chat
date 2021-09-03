@@ -49,7 +49,6 @@ API.v1.addRoute('livechat/room', {
 			const roomInfo = {
 				source: {
 					type: OmnichannelSourceType.WIDGET,
-					alias: 'livechat-widget',
 				},
 			};
 
