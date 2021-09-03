@@ -186,7 +186,6 @@ export class SAML {
 		}
 
 		if (roleAttributeSync) {
-			updateData.roles = globalRoles;
 			callbacks.run('SAML-rolesync', { updateData, globalRoles });
 		}
 
