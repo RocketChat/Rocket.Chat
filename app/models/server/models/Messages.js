@@ -30,6 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
+		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
@@ -455,6 +457,15 @@ export class Messages extends Base {
 		const query = { slackTs };
 
 		return this.findOne(query);
+	}
+
+	findOneByRoomIdAndMessageId(rid, messageId, options) {
+		const query = {
+			rid,
+			_id: messageId,
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findByRoomIdAndType(roomId, type, options) {

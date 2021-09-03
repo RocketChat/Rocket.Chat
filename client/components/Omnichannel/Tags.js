@@ -21,7 +21,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [tagValue, handleTagValue] = useState('');
-	const [paginatedTagValue, handlePaginatedTagValue] = useState([]);
+	const [paginatedTagValue, handlePaginatedTagValue] = useState(tags);
 
 	const removeTag = (tag) => {
 		const tagsFiltered = tags.filter((tagArray) => tagArray !== tag);
@@ -68,7 +68,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 					<Field.Row>
 						<TextInput
 							error={error}
-							value={tagValue}
+							value={tagValue?.value ? tagValue.value : tagValue}
 							onChange={(event) => handleTagValue(event.target.value)}
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
@@ -80,7 +80,7 @@ const Tags = ({ tags = [], handler = () => {}, error = '', tagRequired = false }
 					<Field.Row justifyContent='flex-start'>
 						{tags.map((tag, i) => (
 							<Chip key={i} onClick={() => removeTag(tag)} mie='x8'>
-								{tag}
+								{tag?.value ? tag.value : tag}
 							</Chip>
 						))}
 					</Field.Row>

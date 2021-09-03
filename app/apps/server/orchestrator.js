@@ -27,7 +27,11 @@ export class AppServerOrchestrator {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.create('manage-apps', ['admin']);
 
-		this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
+			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
+		} else {
+			this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		}
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
@@ -176,6 +180,27 @@ export const Apps = new AppServerOrchestrator();
 
 settings.addGroup('General', function() {
 	this.section('Apps', function() {
+		this.add('Apps_Logs_TTL', '30_days', {
+			type: 'select',
+			values: [
+				{
+					key: '7_days',
+					i18nLabel: 'Apps_Logs_TTL_7days',
+				},
+				{
+					key: '14_days',
+					i18nLabel: 'Apps_Logs_TTL_14days',
+				},
+				{
+					key: '30_days',
+					i18nLabel: 'Apps_Logs_TTL_30days',
+				},
+			],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Logs_TTL_Alert',
+		});
+
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
 			hidden: false,
@@ -205,6 +230,34 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	} else {
 		Apps.unload();
 	}
+});
+
+settings.get('Apps_Logs_TTL', (key, value) => {
+	if (!Apps.isInitialized()) {
+		return;
+	}
+
+	let expireAfterSeconds = 0;
+
+	switch (value) {
+		case '7_days':
+			expireAfterSeconds = 604800;
+			break;
+		case '14_days':
+			expireAfterSeconds = 1209600;
+			break;
+		case '30_days':
+			expireAfterSeconds = 2592000;
+			break;
+	}
+
+	if (!expireAfterSeconds) {
+		return;
+	}
+
+	const model = Apps._logModel;
+
+	model.resetTTLIndex(expireAfterSeconds);
 });
 
 Meteor.startup(function _appServerOrchestrator() {
