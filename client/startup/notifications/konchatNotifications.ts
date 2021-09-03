@@ -44,15 +44,24 @@ type NotificationEvent = {
 	};
 };
 
-type AudioNotificationEvent = {
-	payload: {
-		_id: IMessage['_id'];
-		rid: IMessage['rid'];
-		sender: IMessage['u'];
-		type: IRoom['t'];
-		name: IRoom['name'];
-	};
-};
+function notifyNewMessageAudio(rid: string): void {
+	const openedRoomId = Session.get('openedRoom');
+
+	// This logic is duplicated in /client/startup/unread.coffee.
+	const hasFocus = readMessage.isEnable();
+	const messageIsInOpenedRoom = openedRoomId === rid;
+	const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
+
+	if (Layout.isEmbedded()) {
+		if (!hasFocus && messageIsInOpenedRoom) {
+			// Play a notification sound
+			KonchatNotification.newMessage(rid);
+		}
+	} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
+		// Play a notification sound
+		KonchatNotification.newMessage(rid);
+	}
+}
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
@@ -85,28 +94,8 @@ Meteor.startup(() => {
 				// Show a notification.
 				KonchatNotification.showDesktop(notification);
 			}
-		});
 
-		Notifications.onUser('audioNotification', (notification: AudioNotificationEvent) => {
-			const openedRoomId = Session.get('openedRoom');
-
-			// This logic is duplicated in /client/startup/unread.coffee.
-			const hasFocus = readMessage.isEnable();
-			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-			const muteFocusedConversations = getUserPreference(
-				Meteor.userId(),
-				'muteFocusedConversations',
-			);
-
-			if (Layout.isEmbedded()) {
-				if (!hasFocus && messageIsInOpenedRoom) {
-					// Play a notification sound
-					KonchatNotification.newMessage(notification.payload.rid);
-				}
-			} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
-				// Play a notification sound
-				KonchatNotification.newMessage(notification.payload.rid);
-			}
+			notifyNewMessageAudio(notification.payload.rid);
 		});
 
 		CachedChatSubscription.onSyncData = ((
