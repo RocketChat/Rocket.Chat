@@ -13,7 +13,7 @@ Migrations.add({
 			value: true,
 		};
 
-		const isCustomOAuthEnabled = !!Settings.findOne(query);
+		const isCustomOAuthEnabled = !!Promise.await(Settings.findOne(query));
 
 		const isEE = isEnterprise();
 
