@@ -5,6 +5,15 @@ import { settings } from '../../../app/settings/server/functions/settings';
 
 export const addEnterpriseSettings = function(name: string): void {
 	onLicense('SAML-enterprise', () => {
+		// role sync
+		settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
+			type: 'boolean',
+			group: 'SAML',
+			section: 'SAML_Section_4_Roles',
+			i18nLabel: 'SAML_Role_Attribute_Sync',
+			i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+		});
+		// advanced
 		settings.add(`SAML_Custom_${ name }_allowed_clock_drift`, false, {
 			type: 'int',
 			group: 'SAML',

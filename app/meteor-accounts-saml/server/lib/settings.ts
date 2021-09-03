@@ -28,7 +28,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		authnContextComparison: settings.get(`${ service }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service }_default_user_role`),
 		roleAttributeName: settings.get(`${ service }_role_attribute_name`),
-		roleAttributeSync: settings.get(`${ service }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service }_private_key`),
 			publicCert: settings.get(`${ service }_public_cert`),
@@ -282,13 +281,6 @@ export const addSettings = function(name: string): void {
 		section: 'SAML_Section_4_Roles',
 		i18nLabel: 'SAML_Role_Attribute_Name',
 		i18nDescription: 'SAML_Role_Attribute_Name_Description',
-	});
-	settings.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_4_Roles',
-		i18nLabel: 'SAML_Role_Attribute_Sync',
-		i18nDescription: 'SAML_Role_Attribute_Sync_Description',
 	});
 
 

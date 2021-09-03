@@ -10,7 +10,7 @@ export interface IServiceProviderOptions {
 	authnContextComparison: string;
 	defaultUserRole: string;
 	roleAttributeName: string;
-	roleAttributeSync: boolean;
+	roleAttributeSync?: boolean;
 	allowedClockDrift?: number;
 	signatureValidationType: string;
 	identifierFormat?: string;
