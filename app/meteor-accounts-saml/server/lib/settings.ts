@@ -66,17 +66,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
 		roleAttributeName: samlConfigs.roleAttributeName,
-		roleAttributeSync: samlConfigs.roleAttributeSync,
-		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
 		signatureValidationType: samlConfigs.signatureValidationType,
-		identifierFormat: samlConfigs.identifierFormat,
-		nameIDPolicyTemplate: samlConfigs.nameIDPolicyTemplate,
-		authnContextTemplate: samlConfigs.authnContextTemplate,
-		authRequestTemplate: samlConfigs.authRequestTemplate,
-		logoutResponseTemplate: samlConfigs.logoutResponseTemplate,
-		logoutRequestTemplate: samlConfigs.logoutRequestTemplate,
-		metadataCertificateTemplate: samlConfigs.metadataCertificateTemplate,
-		metadataTemplate: samlConfigs.metadataTemplate,
 		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
 };
