@@ -19,8 +19,9 @@ const updateServices = _.debounce(Meteor.bindEnvironment(() => {
 
 settings.get(/^SAML_.+/, updateServices);
 
+const addSAMLSettings = (name: string): void => {
+	addSettings(name);
+	addEnterpriseSettings(name);
+};
 
-Meteor.startup(() => {
-	addSettings('Default');
-	addEnterpriseSettings('Default');
-});
+Meteor.startup(() => addSAMLSettings('Default'));
