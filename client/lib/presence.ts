@@ -62,21 +62,18 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 	const deletedUids = new Set<UserPresence['_id']>();
 
-	const fetch = (delay = 250): void => {
+	const fetch = (delay = 500): void => {
 		timer && clearTimeout(timer);
 		timer = setTimeout(async () => {
-			if (uids.size === 0) {
-				return;
-			}
 			const currentUids = new Set(uids);
 			uids.clear();
 
 			const ids = Array.from(currentUids);
-			const deleted = Array.from(deletedUids);
+			const removed = Array.from(deletedUids);
 
 			Meteor.subscribe('streamer-user-presences', {
 				...(ids.length > 0 && { added: Array.from(currentUids) }),
-				...(deleted.length && { deleted: Array.from(deletedUids) }),
+				...(removed.length && { removed: Array.from(deletedUids) }),
 			});
 
 			deletedUids.clear();
