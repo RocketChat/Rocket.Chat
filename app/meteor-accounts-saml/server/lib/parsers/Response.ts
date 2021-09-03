@@ -342,7 +342,7 @@ export class ResponseParser {
 
 	private validateNotBeforeNotOnOrAfterAssertions(element: Element): boolean {
 		const sysnow = new Date();
-		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift;
+		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift || 0;
 
 		const now = new Date(sysnow.getTime() + allowedclockdrift);
 
