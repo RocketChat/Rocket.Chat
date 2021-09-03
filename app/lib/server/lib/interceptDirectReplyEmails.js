@@ -12,7 +12,7 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 			password: settings.get('Direct_Reply_Password'),
 			host: settings.get('Direct_Reply_Host'),
 			port: settings.get('Direct_Reply_Port'),
-			// debug: settings.get('Direct_Reply_Debug') ? console.log : false,
+			debug: settings.get('Direct_Reply_Debug') ? console.log : false,
 			tls: !settings.get('Direct_Reply_IgnoreTLS'),
 			...imapConfig,
 		};

@@ -3,24 +3,24 @@ import moment from 'moment';
 import { ParsedMail } from 'mailparser';
 
 import { IMessage } from '../../../../definition/IMessage';
+import { IRoom } from '../../../../definition/IRoom';
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics';
-import { hasPermission } from '../../../authorization/server';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
 export const processDirectEmail = Meteor.bindEnvironment(function(email: ParsedMail): void {
 	if (!isParsedEmail(email)) {
-		return console.log('invalid', email);
+		return;
 	}
 
 	const to = Array.isArray(email.to) ? email.to.find((email) => email.text) : email.to;
 	const mid = to?.text.split('@')[0].split('+')[1];
 
 	if (!mid) {
-		console.log('mid', email);
 		return;
 	}
 
@@ -56,15 +56,12 @@ export const processDirectEmail = Meteor.bindEnvironment(function(email: ParsedM
 		return;
 	}
 
-	const room = Meteor.call('canAccessRoom', prevMessage.rid, user._id);
+	const room = canAccessRoom({ _id: prevMessage.rid }, user);
 	if (!room) {
 		return;
 	}
 
-	const roomInfo = Rooms.findOneById(prevMessage.rid, {
-		t: 1,
-		name: 1,
-	});
+	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
 	// check mention
 	if (msg.indexOf(`@${ prevMessage.u.username }`) === -1 && roomInfo.t !== 'd') {
@@ -89,16 +86,16 @@ export const processDirectEmail = Meteor.bindEnvironment(function(email: ParsedM
 		return;
 	}
 
-	if ((room.muted || []).includes(user.username)) {
+	if ((roomInfo.muted || []).includes(user.username)) {
 		// user is muted
 		return;
 	}
 
 	// room is readonly
-	if (room.ro === true) {
-		if (!hasPermission(Meteor.userId(), 'post-readonly', room._id)) {
+	if (roomInfo.ro === true) {
+		if (!hasPermission(Meteor.userId(), 'post-readonly', roomInfo._id)) {
 			// Check if the user was manually unmuted
-			if (!(room.unmuted || []).includes(user.username)) {
+			if (!(roomInfo.unmuted || []).includes(user.username)) {
 				return;
 			}
 		}
@@ -115,5 +112,5 @@ export const processDirectEmail = Meteor.bindEnvironment(function(email: ParsedM
 		rid: prevMessage.rid,
 	};
 
-	return sendMessage(user, message, room);
+	return sendMessage(user, message, roomInfo);
 });
