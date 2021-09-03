@@ -5,17 +5,17 @@ import { settings } from '../../../settings/server';
 import { SettingComposedValue } from '../../../settings/lib/settings';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
-import {
-	defaultAuthnContextTemplate,
-	defaultAuthRequestTemplate,
-	defaultLogoutResponseTemplate,
-	defaultLogoutRequestTemplate,
-	defaultNameIDTemplate,
-	defaultIdentifierFormat,
-	defaultAuthnContext,
-	defaultMetadataTemplate,
-	defaultMetadataCertificateTemplate,
-} from './constants';
+// import {
+// 	defaultAuthnContextTemplate,
+// 	defaultAuthRequestTemplate,
+// 	defaultLogoutResponseTemplate,
+// 	defaultLogoutRequestTemplate,
+// 	// defaultNameIDTemplate,
+// 	// defaultIdentifierFormat,
+// 	defaultAuthnContext,
+// 	defaultMetadataTemplate,
+// 	defaultMetadataCertificateTemplate,
+// } from './constants';
 
 export const getSamlConfigs = function(service: string): Record<string, any> {
 	return {
@@ -49,14 +49,14 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		signatureValidationType: settings.get(`${ service }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service }_user_data_fieldmap`),
 		// allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
-		identifierFormat: settings.get(`${ service }_identifier_format`),
-		nameIDPolicyTemplate: settings.get(`${ service }_NameId_template`),
-		authnContextTemplate: settings.get(`${ service }_AuthnContext_template`),
-		authRequestTemplate: settings.get(`${ service }_AuthRequest_template`),
-		logoutResponseTemplate: settings.get(`${ service }_LogoutResponse_template`),
-		logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
-		metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
-		metadataTemplate: settings.get(`${ service }_Metadata_template`),
+		// identifierFormat: settings.get(`${ service }_identifier_format`),
+		// nameIDPolicyTemplate: settings.get(`${ service }_NameId_template`),
+		// authnContextTemplate: settings.get(`${ service }_AuthnContext_template`),
+		// authRequestTemplate: settings.get(`${ service }_AuthRequest_template`),
+		// logoutResponseTemplate: settings.get(`${ service }_LogoutResponse_template`),
+		// logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
+		// metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
+		// metadataTemplate: settings.get(`${ service }_Metadata_template`),
 		channelsAttributeUpdate: settings.get(`${ service }_channels_update`),
 		includePrivateChannelsInUpdate: settings.get(`${ service }_include_private_channels_update`),
 	};
@@ -330,95 +330,95 @@ export const addSettings = function(name: string): void {
 	// 	i18nLabel: 'SAML_Allowed_Clock_Drift',
 	// 	i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
 	// });
-	settings.add(`SAML_Custom_${ name }_identifier_format`, defaultIdentifierFormat, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Identifier_Format',
-		i18nDescription: 'SAML_Identifier_Format_Description',
-	});
+	// settings.add(`SAML_Custom_${ name }_identifier_format`, defaultIdentifierFormat, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_Identifier_Format',
+	// 	i18nDescription: 'SAML_Identifier_Format_Description',
+	// });
 
-	settings.add(`SAML_Custom_${ name }_NameId_template`, defaultNameIDTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_NameIdPolicy_Template',
-		i18nDescription: 'SAML_NameIdPolicy_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_NameId_template`, defaultNameIDTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_NameIdPolicy_Template',
+	// 	i18nDescription: 'SAML_NameIdPolicy_Template_Description',
+	// 	multiline: true,
+	// });
 
-	settings.add(`SAML_Custom_${ name }_custom_authn_context`, defaultAuthnContext, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Custom_Authn_Context',
-		i18nDescription: 'SAML_Custom_Authn_Context_description',
-	});
-	settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
-		type: 'select',
-		values: [
-			{ key: 'better', i18nLabel: 'Better' },
-			{ key: 'exact', i18nLabel: 'Exact' },
-			{ key: 'maximum', i18nLabel: 'Maximum' },
-			{ key: 'minimum', i18nLabel: 'Minimum' },
-		],
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
-	});
+	// settings.add(`SAML_Custom_${ name }_custom_authn_context`, defaultAuthnContext, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_Custom_Authn_Context',
+	// 	i18nDescription: 'SAML_Custom_Authn_Context_description',
+	// });
+	// settings.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+	// 	type: 'select',
+	// 	values: [
+	// 		{ key: 'better', i18nLabel: 'Better' },
+	// 		{ key: 'exact', i18nLabel: 'Exact' },
+	// 		{ key: 'maximum', i18nLabel: 'Maximum' },
+	// 		{ key: 'minimum', i18nLabel: 'Minimum' },
+	// 	],
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+	// });
 
-	settings.add(`SAML_Custom_${ name }_AuthnContext_template`, defaultAuthnContextTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_AuthnContext_Template',
-		i18nDescription: 'SAML_AuthnContext_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_AuthnContext_template`, defaultAuthnContextTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_AuthnContext_Template',
+	// 	i18nDescription: 'SAML_AuthnContext_Template_Description',
+	// 	multiline: true,
+	// });
 
 
-	settings.add(`SAML_Custom_${ name }_AuthRequest_template`, defaultAuthRequestTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_AuthnRequest_Template',
-		i18nDescription: 'SAML_AuthnRequest_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_AuthRequest_template`, defaultAuthRequestTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_AuthnRequest_Template',
+	// 	i18nDescription: 'SAML_AuthnRequest_Template_Description',
+	// 	multiline: true,
+	// });
 
-	settings.add(`SAML_Custom_${ name }_LogoutResponse_template`, defaultLogoutResponseTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_LogoutResponse_Template',
-		i18nDescription: 'SAML_LogoutResponse_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_LogoutResponse_template`, defaultLogoutResponseTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_LogoutResponse_Template',
+	// 	i18nDescription: 'SAML_LogoutResponse_Template_Description',
+	// 	multiline: true,
+	// });
 
-	settings.add(`SAML_Custom_${ name }_LogoutRequest_template`, defaultLogoutRequestTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_LogoutRequest_Template',
-		i18nDescription: 'SAML_LogoutRequest_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_LogoutRequest_template`, defaultLogoutRequestTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_LogoutRequest_Template',
+	// 	i18nDescription: 'SAML_LogoutRequest_Template_Description',
+	// 	multiline: true,
+	// });
 
-	settings.add(`SAML_Custom_${ name }_MetadataCertificate_template`, defaultMetadataCertificateTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_MetadataCertificate_Template',
-		i18nDescription: 'SAML_Metadata_Certificate_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_MetadataCertificate_template`, defaultMetadataCertificateTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_MetadataCertificate_Template',
+	// 	i18nDescription: 'SAML_Metadata_Certificate_Template_Description',
+	// 	multiline: true,
+	// });
 
-	settings.add(`SAML_Custom_${ name }_Metadata_template`, defaultMetadataTemplate, {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Metadata_Template',
-		i18nDescription: 'SAML_Metadata_Template_Description',
-		multiline: true,
-	});
+	// settings.add(`SAML_Custom_${ name }_Metadata_template`, defaultMetadataTemplate, {
+	// 	type: 'string',
+	// 	group: 'SAML',
+	// 	section: 'SAML_Section_6_Advanced',
+	// 	i18nLabel: 'SAML_Metadata_Template',
+	// 	i18nDescription: 'SAML_Metadata_Template_Description',
+	// 	multiline: true,
+	// });
 };
