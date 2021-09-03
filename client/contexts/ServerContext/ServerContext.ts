@@ -23,7 +23,7 @@ type ServerContextValue = {
 		methodName: MethodName,
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
-	callEndpoint?: <Method extends ServerEndpointMethodOf<Path>, Path extends ServerEndpointPath>(
+	callEndpoint: <Method extends ServerEndpointMethodOf<Path>, Path extends ServerEndpointPath>(
 		httpMethod: Method,
 		endpoint: Path,
 		params: ServerEndpointRequestPayload<Method, Path>,
@@ -39,6 +39,9 @@ type ServerContextValue = {
 export const ServerContext = createContext<ServerContextValue>({
 	info: {},
 	absoluteUrl: (path) => path,
+	callEndpoint: () => {
+		throw new Error('not implemented');
+	},
 	uploadToEndpoint: async () => undefined,
 	getStream: () => () => (): void => undefined,
 });
@@ -77,18 +80,7 @@ export const useEndpoint = <
 	const { callEndpoint } = useContext(ServerContext);
 
 	return useCallback(
-		(
-			params: ServerEndpointRequestPayload<Method, Path>,
-			formData?: ServerEndpointFormData<Method, Path>,
-		) => {
-			if (!callEndpoint) {
-				throw new Error(
-					`cannot use useEndpoint(${httpMethod}, ${endpoint}) hook without a wrapping ServerContext`,
-				);
-			}
-
-			return callEndpoint(httpMethod, endpoint, params, formData);
-		},
+		(params, formData?) => callEndpoint(httpMethod, endpoint, params, formData),
 		[callEndpoint, endpoint, httpMethod],
 	);
 };
