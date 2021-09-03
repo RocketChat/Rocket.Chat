@@ -31,6 +31,7 @@ import { CannedResponseEndpoint } from './endpoints/v1/omnichannel/cannedRespons
 import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
 import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
 import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
+import { AutocompleteChannelAndPrivateEndpointWithPagination as RoomsAutocompleteEndpointWithPagination } from './endpoints/v1/rooms/autocompleteChannelAndPrivateWithPagination';
 import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
 import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
 import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
@@ -59,6 +60,7 @@ export type ServerEndpoints = {
 	'custom-user-status.list': CustomUserStatusListEndpoint;
 	'/apps/externalComponents': AppsExternalComponentsEndpoint;
 	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
+	'rooms.autocomplete.channelAndPrivate.withPagination': RoomsAutocompleteEndpointWithPagination;
 	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
 	'teams.listRooms': ListRoomsEndpoint;
 	'teams.listRoomsOfUser': ListRoomsOfUserEndpoint;
