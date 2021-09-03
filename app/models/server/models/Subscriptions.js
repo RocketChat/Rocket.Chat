@@ -34,6 +34,9 @@ export class Subscriptions extends Base {
 		this.tryEnsureIndex({ 'userHighlights.0': 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ prid: 1 });
 		this.tryEnsureIndex({ 'u._id': 1, open: 1, department: 1 });
+
+		const collectionObj = this.model.rawCollection();
+		this.distinct = Meteor.wrapAsync(collectionObj.distinct, collectionObj);
 	}
 
 	findByRoomIds(roomIds) {
@@ -98,14 +101,12 @@ export class Subscriptions extends Base {
 	}
 
 	getAutoTranslateLanguagesByRoomAndNotUser(rid, userId) {
-		const subscriptionsRaw = this.model.rawCollection();
-		const distinct = Meteor.wrapAsync(subscriptionsRaw.distinct, subscriptionsRaw);
 		const query = {
 			rid,
 			'u._id': { $ne: userId },
 			autoTranslate: true,
 		};
-		return distinct('autoTranslateLanguage', query);
+		return this.distinct('autoTranslateLanguage', query);
 	}
 
 	roleBaseQuery(userId, scope) {

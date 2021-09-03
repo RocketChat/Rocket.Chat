@@ -5,5 +5,6 @@ export const logger = new Logger('LivechatEnterprise', {
 		queries: 'Queries',
 		queue: 'Queue',
 		helper: 'Helper',
+		cb: 'Callbacks',
 	},
 });
