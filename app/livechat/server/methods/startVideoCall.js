@@ -4,10 +4,12 @@ import { Random } from 'meteor/random';
 import { Messages } from '../../../models';
 import { settings } from '../../../settings';
 import { Livechat } from '../lib/Livechat';
+import { deprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	async 'livechat:startVideoCall'(roomId) {
+		deprecationLogger.method.warn('livechat:startVideoCall will be deprecated in future versions of Rocket.Chat');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'livechat:closeByVisitor' });
 		}
