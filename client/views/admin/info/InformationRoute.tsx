@@ -1,7 +1,6 @@
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import React, { useState, useEffect, memo, ReactElement } from 'react';
 
-import { IServerInfo } from '../../../../definition/IServerInfo';
 import { IStats } from '../../../../definition/IStats';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
@@ -19,7 +18,7 @@ const InformationRoute = (): ReactElement => {
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
-	const [error, setError] = useState<boolean>(false);
+	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
 	const [instances, setInstances] = useState([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(
@@ -62,7 +61,7 @@ const InformationRoute = (): ReactElement => {
 		};
 	}, [canViewStatistics, getInstances, getStatistics]);
 
-	const info = useServerInformation() as IServerInfo;
+	const info = useServerInformation();
 
 	const handleClickRefreshButton = (): void => {
 		if (isLoading) {
@@ -79,7 +78,11 @@ const InformationRoute = (): ReactElement => {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
-	if (error) {
+	if (isLoading) {
+		return <PageSkeleton />;
+	}
+
+	if (error || !statistics) {
 		return (
 			<Page>
 				<Page.Header title={t('Info')}>
@@ -96,16 +99,12 @@ const InformationRoute = (): ReactElement => {
 		);
 	}
 
-	if (isLoading) {
-		return <PageSkeleton />;
-	}
-
 	if (canViewStatistics) {
 		return (
 			<InformationPage
 				canViewStatistics={canViewStatistics}
 				info={info}
-				statistics={statistics as IStats}
+				statistics={statistics}
 				instances={instances}
 				onClickRefreshButton={handleClickRefreshButton}
 				onClickDownloadInfo={handleClickDownloadInfo}

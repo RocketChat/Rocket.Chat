@@ -7,6 +7,5 @@ export const useLocalePercentage = (
 	decimalCount: number | undefined,
 ): string => {
 	const locale = useLanguage();
-	console.log(locale);
 	return getLocalePercentage(locale, total, fraction, decimalCount);
 };
