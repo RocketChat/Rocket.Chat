@@ -1,13 +1,7 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import {
-	ServerEndpointMethodOf,
-	ServerEndpointPath,
-	ServerEndpointFunction,
-	ServerEndpointRequestPayload,
-	ServerEndpointFormData,
-	ServerEndpointResponsePayload,
-} from './endpoints';
+import { FromApi } from '../../../definition/FromApi';
+import { PathFor, Params, Return, Method } from './endpoints';
 import {
 	ServerMethodFunction,
 	ServerMethodName,
@@ -23,12 +17,12 @@ type ServerContextValue = {
 		methodName: MethodName,
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
-	callEndpoint: <Method extends ServerEndpointMethodOf<Path>, Path extends ServerEndpointPath>(
-		httpMethod: Method,
-		endpoint: Path,
-		params: ServerEndpointRequestPayload<Method, Path>,
-		formData?: ServerEndpointFormData<Method, Path>,
-	) => Promise<ServerEndpointResponsePayload<Method, Path>>;
+	callEndpoint: <M extends Method, P extends PathFor<M>>(
+		method: M,
+		path: P,
+		params: Params<M, P>[0],
+		extraParams?: Params<M, P>[1],
+	) => Promise<FromApi<Return<M, P>>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (
 		streamName: string,
@@ -70,18 +64,15 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 	);
 };
 
-export const useEndpoint = <
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
->(
-	httpMethod: Method,
-	endpoint: Path,
-): ServerEndpointFunction<Method, Path> => {
+export const useEndpoint = <M extends 'GET' | 'POST' | 'DELETE', P extends PathFor<M>>(
+	method: M,
+	path: P,
+): ((params: Params<M, P>[0], extraParams?: Params<M, P>[1]) => Promise<FromApi<Return<M, P>>>) => {
 	const { callEndpoint } = useContext(ServerContext);
 
 	return useCallback(
-		(params, formData?) => callEndpoint(httpMethod, endpoint, params, formData),
-		[callEndpoint, endpoint, httpMethod],
+		(...params) => callEndpoint(method, path, ...params),
+		[callEndpoint, path, method],
 	);
 };
 
