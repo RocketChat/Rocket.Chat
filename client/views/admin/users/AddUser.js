@@ -9,15 +9,13 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
-export function AddUser({ roles, ...props }) {
+export function AddUser({ roles, reloadTable, ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-users');
 
 	const { value: roleData } = useEndpointData('roles.list', '');
 	const [errors, setErrors] = useState({});
-
-	const { reloadTable, ...otherProps } = props;
 
 	const validationKeys = {
 		name: (name) =>
@@ -129,7 +127,7 @@ export function AddUser({ roles, ...props }) {
 			formHandlers={handlers}
 			availableRoles={availableRoles}
 			append={append}
-			{...otherProps}
+			{...props}
 		/>
 	);
 }

@@ -26,10 +26,8 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, reloadTable, ...props }) {
 	const t = useTranslation();
-
-	const { reloadTable, ...otherProps } = props;
 
 	const [avatarObj, setAvatarObj] = useState();
 	const [errors, setErrors] = useState({});
@@ -194,7 +192,7 @@ function EditUser({ data, roles, ...props }) {
 			availableRoles={availableRoles}
 			prepend={prepend}
 			append={append}
-			{...otherProps}
+			{...props}
 		/>
 	);
 }

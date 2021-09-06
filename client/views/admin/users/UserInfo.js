@@ -14,12 +14,10 @@ import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, ...props }) {
+export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
-
-	const { reloadTable, ...otherProps } = props;
 
 	const {
 		value: data,
@@ -106,7 +104,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 					/>
 				)
 			}
-			{...otherProps}
+			{...props}
 		/>
 	);
 }
