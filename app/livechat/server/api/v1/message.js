@@ -56,6 +56,11 @@ API.v1.addRoute('livechat/message', {
 					token,
 				},
 				agent,
+				extraData: {
+					source: {
+						type: 'widget',
+					},
+				},
 			};
 
 			const result = Promise.await(Livechat.sendMessage(sendMessage));
