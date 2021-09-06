@@ -149,6 +149,7 @@
 	},
 	"dependencies": {
 		"@babel/runtime": "^7.14.6",
+		"@bugsnag/js": "^7.11.0",
 		"@google-cloud/language": "^3.8.0",
 		"@google-cloud/storage": "^2.5.0",
 		"@google-cloud/vision": "^1.11.0",
@@ -184,7 +185,6 @@
 		"bcrypt": "^5.0.1",
 		"blockstack": "19.3.0",
 		"body-parser": "1.19.0",
-		"bugsnag": "^2.4.3",
 		"bunyan": "^1.8.15",
 		"busboy": "^0.3.1",
 		"bytebuffer": "5.0.1",
