@@ -186,6 +186,7 @@ export class SAML {
 		}
 
 		if (roleAttributeSync) {
+			// role sync is an enterprise feature, so it needs to be on EE folders
 			callbacks.run('SAML-rolesync', { updateData, globalRoles });
 		}
 

@@ -28,6 +28,7 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		authnContextComparison: settings.get(`${ service }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service }_default_user_role`),
 		roleAttributeName: settings.get(`${ service }_role_attribute_name`),
+		roleAttributeSync: settings.get(`${ service }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service }_private_key`),
 			publicCert: settings.get(`${ service }_public_cert`),
@@ -36,10 +37,20 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		},
 		signatureValidationType: settings.get(`${ service }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service }_user_data_fieldmap`),
+		allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
+		identifierFormat: settings.get(`${ service }_identifier_format`),
+		nameIDPolicyTemplate: settings.get(`${ service }_NameId_template`),
+		authnContextTemplate: settings.get(`${ service }_AuthnContext_template`),
+		authRequestTemplate: settings.get(`${ service }_AuthRequest_template`),
+		logoutResponseTemplate: settings.get(`${ service }_LogoutResponse_template`),
+		logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
+		metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
+		metadataTemplate: settings.get(`${ service }_Metadata_template`),
 		channelsAttributeUpdate: settings.get(`${ service }_channels_update`),
 		includePrivateChannelsInUpdate: settings.get(`${ service }_include_private_channels_update`),
 	};
 };
+
 
 export const configureSamlService = function(samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;

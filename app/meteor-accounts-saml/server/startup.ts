@@ -16,7 +16,6 @@ const updateServices = _.debounce(Meteor.bindEnvironment(() => {
 	loadSamlServiceProviders();
 }), 2000);
 
-
 settings.get(/^SAML_.+/, updateServices);
 
 const addSAMLSettings = (name: string): void => {
