@@ -16,6 +16,7 @@ API.v1.addRoute('livechat/room', {
 	get() {
 		const defaultCheckParams = {
 			token: String,
+			source: Match.Maybe(String),
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
 		};
@@ -24,7 +25,9 @@ API.v1.addRoute('livechat/room', {
 
 		check(this.queryParams, extraCheckParams);
 
-		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+		const { token, rid: roomId, agentId, source, ...extraParams } = this.queryParams;
+
+		const parsedSource = JSON.parse(source);
 
 		const guest = findGuest(token);
 		if (!guest) {
@@ -46,7 +49,7 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			const rid = Random.id();
-			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			room = Promise.await(getRoom({ guest, rid, agent, extraParams: { source: parsedSource, ...extraParams } }));
 			return API.v1.success(room);
 		}
 
