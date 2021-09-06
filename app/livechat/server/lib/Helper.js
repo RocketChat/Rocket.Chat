@@ -18,6 +18,7 @@ import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 const logger = new Logger('LivechatHelper');
+const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -540,5 +541,12 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
 
+	return true;
+};
+
+export const validateEmail = (email) => {
+	if (!emailValidationRegex.test(email)) {
+		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'Livechat.validateEmail', email });
+	}
 	return true;
 };
