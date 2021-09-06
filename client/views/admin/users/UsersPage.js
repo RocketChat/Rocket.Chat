@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -13,7 +13,7 @@ import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
 
-function UsersPage() {
+function UsersPage({ useQuery }) {
 	const t = useTranslation();
 
 	const usersRoute = useRoute('admin-users');
@@ -29,38 +29,6 @@ function UsersPage() {
 	const handleInviteButtonClick = () => {
 		usersRoute.push({ context: 'invite' });
 	};
-	const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
-
-	const useQuery = ({ text, itemsPerPage, current }, sortFields) =>
-		useMemo(
-			() => ({
-				fields: JSON.stringify({
-					name: 1,
-					username: 1,
-					emails: 1,
-					roles: 1,
-					status: 1,
-					avatarETag: 1,
-					active: 1,
-				}),
-				query: JSON.stringify({
-					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
-					],
-				}),
-				sort: JSON.stringify(
-					sortFields.reduce((agg, [column, direction]) => {
-						agg[column] = sortDir(direction);
-						return agg;
-					}, {}),
-				),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
-			}),
-			[text, itemsPerPage, current, sortFields],
-		);
 
 	const [params] = useState({ text: '', current: 0, itemsPerPage: 25 });
 	const [sort] = useState([
