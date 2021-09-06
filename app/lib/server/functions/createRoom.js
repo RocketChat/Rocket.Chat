@@ -119,6 +119,10 @@ export const createRoom = function(type, name, owner, members = [], readOnly, { 
 			extra.ls = now;
 		}
 
+		if (room.taskRoomId) {
+			extra.taskRoomId = room.taskRoomId;
+		}
+
 		Subscriptions.createWithRoomAndUser(room, member, extra);
 	}
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../models/server';
+import { Messages, Tasks } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
@@ -41,7 +41,9 @@ export const processThreads = (message, room) => {
 		return message;
 	}
 
-	const parentMessage = Messages.findOneById(message.tmid);
+	let parentMessage;
+	room.taskRoomId ? parentMessage = Tasks.findOneById(message.tmid) : parentMessage = Messages.findOneById(message.tmid);
+
 	if (!parentMessage) {
 		return message;
 	}
@@ -69,6 +71,7 @@ Meteor.startup(function() {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;
 		}
+		callbacks.add('afterSaveTask', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 		callbacks.add('afterSaveMessage', processThreads, callbacks.priority.LOW, 'threads-after-save-message');
 	});
 });

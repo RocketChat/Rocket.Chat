@@ -1,5 +1,6 @@
 import { IInquiry } from '../../../definition/IInquiry';
 import { IMessage } from '../../../definition/IMessage';
+import { ITask } from '../../../definition/ITask';
 import { IRole } from '../../../definition/IRole';
 import { IRoom } from '../../../definition/IRoom';
 import { ISetting } from '../../../definition/ISetting';
@@ -41,6 +42,7 @@ export type EventSignatures = {
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'presence.status'(data: { user: Partial<IUser> }): void;
 	'watch.messages'(data: { clientAction: ClientAction; message: Partial<IMessage> }): void;
+	'watch.tasks'(data: { clientAction: ClientAction; task: Partial<ITask> }): void;
 	'watch.roles'(data: { clientAction: ClientAction; role: Partial<IRole> }): void;
 	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> & Partial<IRoom> }): void;
 	'watch.subscriptions'(data: { clientAction: ClientAction; subscription: Partial<ISubscription> }): void;

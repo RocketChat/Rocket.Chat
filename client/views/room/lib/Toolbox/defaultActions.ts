@@ -4,7 +4,7 @@ import { addAction } from '.';
 import { usePermission } from '../../../../contexts/AuthorizationContext';
 
 addAction('rocket-search', {
-	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team'],
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'live', 'team', 'taskRoom'],
 	id: 'rocket-search',
 	title: 'Search_Messages',
 	icon: 'magnifier',
@@ -47,7 +47,7 @@ addAction('members-list', ({ room }) => {
 		() =>
 			!room.broadcast || hasPermission
 				? {
-						groups: ['channel', 'group', 'team'],
+						groups: ['channel', 'group', 'team', 'taskRoom'],
 						id: 'members-list',
 						title: room.teamMain ? 'Teams_members' : 'Members',
 						icon: 'members',

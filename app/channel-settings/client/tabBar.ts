@@ -3,7 +3,7 @@ import { FC, lazy, LazyExoticComponent } from 'react';
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 
 addAction('channel-settings', {
-	groups: ['channel', 'group'],
+	groups: ['channel', 'group', 'taskRoom'],
 	id: 'channel-settings',
 	anonymous: true,
 	full: true,

@@ -5,6 +5,7 @@ import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { useStream } from '../../contexts/ServerContext';
 import { MessageList } from '../../lib/lists/MessageList';
+import { TaskList } from '../../lib/lists/TaskList';
 import { createFilterFromQuery, FieldExpression, Query } from '../../lib/minimongo';
 
 type RoomMessagesRidEvent = IMessage;
@@ -42,6 +43,8 @@ export const useStreamUpdatesForMessageList = (
 	messageList: MessageList,
 	uid: IUser['_id'] | null,
 	rid: IRoom['_id'] | null,
+	taskList?: TaskList,
+	taskRoom?: boolean,
 ): void => {
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
@@ -80,5 +83,5 @@ export const useStreamUpdatesForMessageList = (
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList]);
+	}, [subscribeToRoomMessages, subscribeToNotifyRoom, uid, rid, messageList, taskList, taskRoom]);
 };

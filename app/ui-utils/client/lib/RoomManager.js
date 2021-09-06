@@ -7,13 +7,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
 import { fireGlobalEvent } from './fireGlobalEvent';
-import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
+import { upsertMessage, RoomHistoryManager, upsertTask } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { menu } from './menu';
 import { roomTypes } from '../../../utils';
 import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
-import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
+import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom, ChatTask } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
@@ -42,9 +42,29 @@ const onDeleteMessageBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, u
 	ChatMessage.remove(query);
 };
 
+const onDeleteTaskStream = (task) => {
+	ChatTask.remove({ _id: task._id });
+	ChatTask.update({ tmid: task._id }, { $unset: { tmid: 1 } }, { multi: true });
+};
+
+const onDeleteTaskBulkStream = ({ rid, ts, excludePinned, ignoreDiscussion, users }) => {
+	const query = { rid, ts };
+	if (excludePinned) {
+		query.pinned = { $ne: true };
+	}
+	if (ignoreDiscussion) {
+		query.drid = { $exists: false };
+	}
+	if (users && users.length) {
+		query['u.username'] = { $in: users };
+	}
+	ChatTask.remove(query);
+};
+
 export const RoomManager = new function() {
 	const openedRooms = {};
 	const msgStream = new Meteor.Streamer('room-messages');
+	const taskStream = new Meteor.Streamer('room-tasks');
 	const roomStream = new Meteor.Streamer(ROOM_DATA_STREAM);
 	const onlineUsers = new ReactiveVar({});
 	const Dep = new Tracker.Dependency();
@@ -93,10 +113,10 @@ export const RoomManager = new function() {
 					const room = roomTypes.findRoom(type, name, user);
 
 					if (room != null) {
-						record.rid = room._id;
-						RoomHistoryManager.getMoreIfIsEmpty(room._id);
 						if (record.streamActive !== true) {
+							record.rid = room._id;
 							record.streamActive = true;
+							!room.taskRoomId && RoomHistoryManager.getMoreIfIsEmpty(room._id);
 							msgStream.on(record.rid, async (msg) => {
 								// Should not send message to room if room has not loaded all the current messages
 								if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
@@ -129,6 +149,42 @@ export const RoomManager = new function() {
 							});
 							Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 							Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
+
+							if (room.taskRoomId) {
+								RoomHistoryManager.getMoreIfIsEmptyTaskRoom(room._id);
+								taskStream.on(record.rid, async (task) => {
+									// Should not send task to room if room has not loaded all the current task
+									if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
+										return;
+									}
+									// Do not load command messages into channel
+									if (task.t !== 'command') {
+										const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
+										const isNew = !ChatTask.findOne({ _id: task._id, temp: { $ne: true } });
+										upsertTask({ task, subscription });
+
+										task.room = {
+											type,
+											name,
+										};
+										if (isNew) {
+											menu.updateUnreadBars();
+											// callbacks.run('streamNewMessage', task);
+										}
+									}
+
+									task.name = room.name;
+									Tracker.afterFlush(() => RoomManager.updateMentionsMarksOfRoom(typeName));
+
+									handleTrackSettingsChange(task);
+
+									// callbacks.run('streamMessage', task);
+
+									return fireGlobalEvent('new-message', task);
+								});
+								Notifications.onRoom(record.rid, 'deleteTask', onDeleteTaskStream);
+								Notifications.onRoom(record.rid, 'deleteTaskBulk', onDeleteTaskBulkStream);
+							}
 						}
 					}
 
@@ -147,6 +203,7 @@ export const RoomManager = new function() {
 			if (openedRooms[typeName]) {
 				if (openedRooms[typeName].rid != null) {
 					msgStream.removeAllListeners(openedRooms[typeName].rid);
+					taskStream.removeAllListeners(openedRooms[typeName].rid);
 					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessage', onDeleteMessageStream); // eslint-disable-line no-use-before-define
 					Notifications.unRoom(openedRooms[typeName].rid, 'deleteMessageBulk', onDeleteMessageBulkStream); // eslint-disable-line no-use-before-define
 				}

@@ -252,10 +252,10 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 	// add users in thread to mentions array because they follow the same rules
 	mentionIds.push(...usersInThread);
-
-	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+	const msg = message.title ? message.title : message.msg;
+	let notificationMessage = callbacks.run('beforeSendMessageNotifications', msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
-		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
+		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg || message.title, message.mentions);
 	}
 
 	// Don't fetch all users if room exceeds max members
@@ -418,8 +418,9 @@ settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
 	TroubleshootDisableNotifications = value;
 
 	if (value) {
+		callbacks.remove('afterSaveTask', 'sendNotificationsOnMessage');
 		return callbacks.remove('afterSaveMessage', 'sendNotificationsOnMessage');
 	}
-
+	callbacks.add('afterSaveTask', (task, room) => Promise.await(sendAllNotifications(task, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
 	callbacks.add('afterSaveMessage', (message, room) => Promise.await(sendAllNotifications(message, room)), callbacks.priority.LOW, 'sendNotificationsOnMessage');
 });

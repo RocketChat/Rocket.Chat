@@ -5,9 +5,11 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { PermissionsRaw } from '../../../app/models/server/raw/Permissions';
 import { MessagesRaw } from '../../../app/models/server/raw/Messages';
+import { TasksRaw } from '../../../app/models/server/raw/Tasks';
 import { RolesRaw } from '../../../app/models/server/raw/Roles';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { IMessage } from '../../../definition/IMessage';
+import { ITask } from '../../../definition/ITask';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IRole } from '../../../definition/IRole';
 import { IRoom } from '../../../definition/IRoom';
@@ -42,6 +44,7 @@ interface IModelsParam {
 	Users: UsersRaw;
 	Settings: SettingsRaw;
 	Messages: MessagesRaw;
+	Tasks: TasksRaw;
 	LivechatInquiry: LivechatInquiryRaw;
 	LivechatDepartmentAgents: LivechatDepartmentAgentsRaw;
 	UsersSessions: UsersSessionsRaw;
@@ -85,6 +88,7 @@ const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));
 export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback, watch: Watcher): void {
 	const {
 		Messages,
+		Tasks,
 		Users,
 		Settings,
 		Subscriptions,
@@ -139,6 +143,36 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 					}
 
 					broadcast('watch.messages', { clientAction, message });
+				}
+				break;
+		}
+	});
+
+	watch<ITask>(Tasks, async ({ clientAction, id, data }) => {
+		switch (clientAction) {
+			case 'inserted':
+			case 'updated':
+				const task: ITask | undefined = data ?? await Tasks.findOne({ _id: id });
+				if (!task) {
+					return;
+				}
+
+				if (task._hidden !== true && task.imported == null) {
+					const UseRealName = await getSettingCached('UI_Use_Real_Name') === true;
+
+					if (UseRealName) {
+						if (task.u?._id) {
+							task.u.name = await getUserNameCached(task.u._id);
+						}
+
+						if (task.mentions?.length) {
+							for await (const mention of task.mentions) {
+								mention.name = await getUserNameCached(mention._id);
+							}
+						}
+					}
+
+					broadcast('watch.tasks', { clientAction, task });
 				}
 				break;
 		}

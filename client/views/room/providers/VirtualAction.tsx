@@ -12,7 +12,12 @@ const groupsDict = {
 };
 
 const getGroup = (room: IRoom): string => {
+	if (room.taskRoomId) {
+		return 'taskRoom';
+	}
+
 	const group = groupsDict[room.t];
+
 	if (room.teamMain) {
 		return 'team';
 	}

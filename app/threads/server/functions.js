@@ -1,4 +1,4 @@
-import { Messages, Subscriptions } from '../../models/server';
+import { Messages, Subscriptions, Tasks } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export const reply = ({ tmid }, message, parentMessage, followers) => {
@@ -17,9 +17,14 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		]),
 	];
 
-	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
-
-	const replies = Messages.getThreadFollowsByThreadId(tmid);
+	let replies;
+	if (!parentMessage.title) {
+		Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+		replies = Messages.getThreadFollowsByThreadId(tmid);
+	} else {
+		Tasks.updateRepliesByThreadId(tmid, addToReplies, ts);
+		replies = Tasks.getThreadFollowsByThreadId(tmid);
+	}
 
 	const repliesFiltered = replies
 		.filter((userId) => userId !== u._id)
@@ -55,6 +60,14 @@ export const follow = ({ tmid, uid }) => {
 	}
 
 	Messages.addThreadFollowerByThreadId(tmid, uid);
+};
+
+export const followTask = ({ tmid, uid }) => {
+	if (!tmid || !uid) {
+		return false;
+	}
+
+	Tasks.addThreadFollowerByThreadId(tmid, uid);
 };
 
 export const unfollow = ({ tmid, rid, uid }) => {

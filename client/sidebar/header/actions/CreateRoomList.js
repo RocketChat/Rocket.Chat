@@ -8,6 +8,7 @@ import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext'
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import CreateTaskRoomModal from '../../../views/taskRoom/CreateTaskRoomModal';
 import CreateTeamModal from '../../../views/teams/CreateTeamModal';
 import CreateChannelWithData from '../CreateChannelWithData';
 import CreateDirectMessage from '../CreateDirectMessage';
@@ -17,6 +18,8 @@ const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 const CREATE_TEAM_PERMISSIONS = ['create-team'];
 const CREATE_DIRECT_PERMISSIONS = ['create-d'];
 const CREATE_DISCUSSION_PERMISSIONS = ['start-discussion', 'start-discussion-other-user'];
+
+const CREATE_TASKROOM_PERMISSIONS = ['create-taskRoom'];
 
 const style = {
 	textTransform: 'uppercase',
@@ -43,11 +46,13 @@ function CreateRoomList() {
 
 	const canCreateChannel = useAtLeastOnePermission(CREATE_CHANNEL_PERMISSIONS);
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
+	const canCreateTaskRoom = useAtLeastOnePermission(CREATE_TASKROOM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
 
 	const createChannel = useReactModal(CreateChannelWithData);
 	const createTeam = useReactModal(CreateTeamModal);
+	const createTaskRoom = useReactModal(CreateTaskRoomModal);
 	const createDiscussion = useReactModal(CreateDiscussion);
 	const createDirectMessage = useReactModal(CreateDirectMessage);
 
@@ -72,6 +77,9 @@ function CreateRoomList() {
 							text={t('Direct_Messages')}
 							action={createDirectMessage}
 						/>
+					)}
+					{canCreateTaskRoom && (
+						<CreateRoomListItem icon='team' text={t('TaskRoom')} action={createTaskRoom} />
 					)}
 					{discussionEnabled && canCreateDiscussion && (
 						<CreateRoomListItem

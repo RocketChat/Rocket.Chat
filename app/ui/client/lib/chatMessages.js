@@ -25,7 +25,7 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
-import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
+import { Messages, Rooms, ChatMessage, ChatSubscription, ChatTask } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
@@ -256,7 +256,9 @@ export class ChatMessages {
 
 		MsgTyping.stop(rid);
 
-		if (!ChatSubscription.findOne({ rid })) {
+		const sub = ChatSubscription.findOne({ rid });
+
+		if (!sub) {
 			await call('joinRoom', rid);
 		}
 
@@ -296,6 +298,9 @@ export class ChatMessages {
 
 			try {
 				await this.processMessageSend(message);
+				if (sub.taskRoomId) {
+					this.processTask(tmid);
+				}
 				this.$input.removeData('reply').trigger('dataChange');
 			} catch (error) {
 				handleError(error);
@@ -500,6 +505,21 @@ export class ChatMessages {
 				onCancel: onCloseModal,
 			},
 		});
+	}
+
+	processTask(tmid) {
+		const followers = ChatTask.findOne({ _id: tmid }, { fields: { replies: 1 } });
+		const replies = ('replies' in followers && followers.replies[0] && followers.replies) || [];
+		const addToReplies = [
+			...new Set([
+				...replies,
+				Meteor.userId(),
+			]),
+		];
+		ChatTask.update({ _id: tmid }, { $addToSet: { replies: { $each: addToReplies } },
+			$inc: {
+				tcount: 1,
+			} });
 	}
 
 	async deleteMsg({ _id, rid, ts }) {

@@ -27,6 +27,7 @@ export async function findAdminRooms({ uid, filter, types = [], pagination: { of
 		tokenpass: 1,
 		teamId: 1,
 		teamMain: 1,
+		taskRoomId: 1,
 	};
 
 	const name = filter && filter.trim();

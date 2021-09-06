@@ -12,6 +12,7 @@ import { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import { IBannerService } from './types/IBannerService';
 import { INPSService } from './types/INPSService';
 import { ITeamService } from './types/ITeamService';
+import { ITaskRoomService } from './types/ITaskRoomService';
 import { IRoomService } from './types/IRoomService';
 import { IMediaService } from './types/IMediaService';
 
@@ -25,6 +26,7 @@ export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
+export const TaskRoom = proxifyWithWait<ITaskRoomService>('taskRoom');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 

@@ -42,5 +42,6 @@ import './v1/instances';
 import './v1/banners';
 import './v1/email-inbox';
 import './v1/teams';
+import './v1/taskRoom';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

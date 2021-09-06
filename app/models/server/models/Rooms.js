@@ -4,6 +4,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
+import Tasks from './Tasks';
 import Subscriptions from './Subscriptions';
 import { getValidRoomName } from '../../../utils';
 
@@ -30,6 +31,10 @@ export class Rooms extends Base {
 		this.tryEnsureIndex({
 			teamId: 1,
 			teamDefault: 1,
+		}, { sparse: true });
+
+		this.tryEnsureIndex({
+			taskRoomId: 1,
 		}, { sparse: true });
 	}
 
@@ -972,6 +977,23 @@ export class Rooms extends Base {
 		const update = lastMessage ? {
 			$set: {
 				lastMessage,
+			},
+		} : {
+			$unset: {
+				lastMessage: 1,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	resetLastTaskById(_id, messageId = undefined) {
+		const query = { _id };
+		const lastTask = Tasks.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
+
+		const update = lastTask ? {
+			$set: {
+				lastTask,
 			},
 		} : {
 			$unset: {

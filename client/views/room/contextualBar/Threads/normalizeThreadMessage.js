@@ -7,6 +7,10 @@ export const normalizeThreadMessage = ({ ...message }) => {
 		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
 	}
 
+	if (message.title) {
+		return renderMessageBody(message).replace(/<br\s?\\?>/g, ' ');
+	}
+
 	if (message.attachments) {
 		const attachment = message.attachments.find(
 			(attachment) => attachment.title || attachment.description,

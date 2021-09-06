@@ -36,6 +36,7 @@ export const useRoomList = (): Array<ISubscription> => {
 		setRoomList(() => {
 			const favorite = new Set();
 			const team = new Set();
+			const taskRoom = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
 			const channels = new Set();
@@ -51,6 +52,10 @@ export const useRoomList = (): Array<ISubscription> => {
 
 				if (favoritesEnabled && room.f) {
 					return favorite.add(room);
+				}
+
+				if (room.taskRoomId) {
+					return taskRoom.add(room);
 				}
 
 				if (room.teamMain) {
@@ -91,6 +96,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			team.size && groups.set('Teams', team);
+			taskRoom.size && groups.set('Task_Room', taskRoom);
 			sidebarGroupByType &&
 				isDiscussionEnabled &&
 				discussion.size &&

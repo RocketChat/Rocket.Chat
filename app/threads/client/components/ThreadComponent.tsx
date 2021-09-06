@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 
 import { ChatMessage } from '../../../models/client';
+import { useEndpointActionExperimental } from '../../../../client/hooks/useEndpointAction';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { roomTypes } from '../../../utils/client';
 import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
@@ -19,7 +20,7 @@ import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/T
 
 const subscriptionFields = {};
 
-const useThreadMessage = (tmid: string): IMessage => {
+const useThreadMessage = (tmid: string, room: IRoom): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
 	const getMessageParsed = useCallback<(params: Parameters<typeof getMessage>[0]) => Promise<IMessage>>(async (params) => {
@@ -32,7 +33,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid });
+			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid, taskRoomId: room.taskRoomId || '' });
 
 			if (!msg || computation.stopped) {
 				return;
@@ -50,6 +51,7 @@ const useThreadMessage = (tmid: string): IMessage => {
 		return (): void => {
 			computation.stop();
 		};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getMessageParsed, tmid]);
 
 	return message;
@@ -68,7 +70,10 @@ const ThreadComponent: FC<{
 }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
-	const threadMessage = useThreadMessage(mid);
+	const threadMessage = useThreadMessage(mid, room);
+
+	const followTask = useEndpointActionExperimental('POST', 'taskRoom.followTask');
+	const unfollowTask = useEndpointActionExperimental('POST', 'taskRoom.unfollowTask');
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
@@ -86,18 +91,18 @@ const ThreadComponent: FC<{
 	const setFollowing = useCallback<(following: boolean) => void>(async (following) => {
 		try {
 			if (following) {
-				await followMessage({ mid });
+				await (room.taskRoomId ? followTask({ mid }) : followMessage({ mid }));
 				return;
 			}
 
-			await unfollowMessage({ mid });
+			await (room.taskRoomId && unfollowTask({ mid })) || unfollowMessage({ mid });
 		} catch (error) {
 			dispatchToastMessage({
 				type: 'error',
 				message: error,
 			});
 		}
-	}, [dispatchToastMessage, followMessage, unfollowMessage, mid]);
+	}, [dispatchToastMessage, followMessage, unfollowMessage, unfollowTask, room.taskRoomId, followTask, mid]);
 
 	const handleClose = useCallback(() => {
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });

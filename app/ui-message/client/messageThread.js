@@ -22,6 +22,7 @@ const findParentMessage = (() => {
 	const get = async (tmid) => {
 		getMessages();
 		const messages = await pending;
+
 		return messages.find(({ _id }) => _id === tmid);
 	};
 

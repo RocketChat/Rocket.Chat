@@ -5,6 +5,7 @@ import Filter from 'bad-words';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { IMessage } from '../../../../definition/IMessage';
+import { ITask } from '../../../../definition/ITask';
 
 const Dep = new Tracker.Dependency();
 Meteor.startup(() => {
@@ -41,7 +42,18 @@ Meteor.startup(() => {
 			filter.removeWords(...whiteList.split(',').map((word) => word.trim()));
 		}
 
-		callbacks.add('beforeSaveMessage', function(message: IMessage) {
+		callbacks.add('beforeSaveMessage', function(message: IMessage & ITask) {
+			if (message.title) {
+				try {
+					message.title = filter.clean(message.title);
+					message.taskDescription && (message.taskDescription = filter.clean(message.taskDescription));
+					message.taskStatus && (message.taskStatus = filter.clean(message.taskStatus));
+				} finally {
+					// eslint-disable-next-line no-unsafe-finally
+					return message;
+				}
+			}
+
 			if (!message.msg) {
 				return message;
 			}

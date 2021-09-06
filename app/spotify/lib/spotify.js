@@ -17,7 +17,7 @@ export const createSpotifyBeforeSaveMessageHandler = () => (message) => {
 
 	let changed = false;
 
-	process(message, message.msg, (message, msgParts, index, part) => {
+	process(message, message.msg || message.title, (message, msgParts, index, part) => {
 		const re = /(?:^|\s)spotify:([^:\s]+):([^:\s]+)(?::([^:\s]+))?(?::(\S+))?(?:\s|$)/g;
 
 		let match;

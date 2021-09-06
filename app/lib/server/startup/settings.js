@@ -1227,6 +1227,10 @@ settings.addGroup('Message', function() {
 		public: true,
 		i18nDescription: 'Message_GroupingPeriodDescription',
 	});
+	this.add('Task_AllowDeleting', true, {
+		type: 'boolean',
+		public: true,
+	});
 	this.add('API_Embed', true, {
 		type: 'boolean',
 		public: true,

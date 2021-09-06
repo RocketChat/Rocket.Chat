@@ -2,6 +2,7 @@ import { getConnection } from '../mongo';
 import { ServiceClass, IServiceClass } from '../../../../server/sdk/types/ServiceClass';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { MessagesRaw } from '../../../../app/models/server/raw/Messages';
+import { TasksRaw } from '../../../../app/models/server/raw/Tasks';
 import { UsersRaw } from '../../../../app/models/server/raw/Users';
 import { SubscriptionsRaw } from '../../../../app/models/server/raw/Subscriptions';
 import { SettingsRaw } from '../../../../app/models/server/raw/Settings';
@@ -36,6 +37,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const LivechatInquiry = new LivechatInquiryRaw(db.collection('rocketchat_livechat_inquiry'), Trash);
 		const LivechatDepartmentAgents = new LivechatDepartmentAgentsRaw(db.collection('rocketchat_livechat_department_agents'), Trash);
 		const Messages = new MessagesRaw(db.collection('rocketchat_message'), Trash);
+		const Tasks = new TasksRaw(db.collection('rocketchat_task'), Trash);
 		const Permissions = new PermissionsRaw(db.collection('rocketchat_permissions'), Trash);
 		const Roles = new RolesRaw(db.collection('rocketchat_roles'), Trash, { Users, Subscriptions });
 		const LoginServiceConfiguration = new LoginServiceConfigurationRaw(db.collection('meteor_accounts_loginServiceConfiguration'), Trash);
@@ -47,6 +49,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		const models = {
 			Messages,
 			Users,
+			Tasks,
 			UsersSessions,
 			Subscriptions,
 			Permissions,

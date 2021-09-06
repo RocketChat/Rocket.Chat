@@ -11,7 +11,7 @@ import { chatMessages, ChatMessages } from '../../../ui';
 import { call, keyCodes } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
-import { Messages } from '../../../models';
+import { Messages, Tasks } from '../../../models';
 import { fileUpload } from '../../../ui/client/lib/fileUpload';
 import { dropzoneEvents, dropzoneHelpers } from '../../../ui/client/views/app/room';
 import './thread.html';
@@ -115,6 +115,7 @@ Template.thread.helpers({
 
 
 Template.thread.onRendered(function() {
+	const { subscription } = Template.currentData();
 	const rid = Tracker.nonreactive(() => this.state.get('rid'));
 	const tmid = Tracker.nonreactive(() => this.state.get('tmid'));
 	this.atBottom = true;
@@ -154,7 +155,7 @@ Template.thread.onRendered(function() {
 			if (Session.get('openedRoom') !== msg.rid || rid !== msg.rid || msg.editedAt || msg.tmid !== tmid) {
 				return;
 			}
-			Meteor.call('readThreads', tmid);
+			Meteor.call('readThreads', tmid, !!subscription?.taskRoomId);
 		}, 1000), callbacks.priority.MEDIUM, `thread-${ rid }`);
 	});
 
@@ -162,6 +163,7 @@ Template.thread.onRendered(function() {
 	this.autorun(() => {
 		const tmid = this.state.get('tmid');
 		this.threadsObserve && this.threadsObserve.stop();
+		this.taskHeaderObserve && this.taskHeaderObserve.stop();
 
 		this.threadsObserve = Messages.find({ $or: [{ tmid }, { _id: tmid }], _hidden: { $ne: true } }, {
 			fields: {
@@ -178,6 +180,15 @@ Template.thread.onRendered(function() {
 			},
 			removed: ({ _id }) => this.Threads.remove(_id),
 		});
+		if (subscription.taskRoomId) {
+			this.taskHeaderObserve = Tasks.find({ _id: tmid }).observe({
+				changed: ({ _id, ...task }) => {
+					this.Threads.update({ _id }, task);
+				},
+				removed: ({ _id }) => this.Threads.remove(_id),
+			});
+		}
+
 
 		this.loadMore();
 	});
@@ -230,20 +241,21 @@ Template.thread.onRendered(function() {
 
 Template.thread.onCreated(async function() {
 	this.Threads = new Mongo.Collection(null);
-
+	const { subscription } = Template.currentData();
 	this.state = new ReactiveDict({
 		sendToChannel: !this.data.mainMessage.tcount,
 	});
 
 	this.loadMore = async () => {
 		const { tmid } = Tracker.nonreactive(() => this.state.all());
+
 		if (!tmid) {
 			return;
 		}
 
 		this.state.set('loading', true);
 
-		const messages = await call('getThreadMessages', { tmid });
+		const messages = await call('getThreadMessages', { tmid, taskRoom: !!subscription.taskRoomId });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 
@@ -254,10 +266,10 @@ Template.thread.onCreated(async function() {
 });
 
 Template.thread.onDestroyed(function() {
-	const { Threads, threadsObserve, callbackRemove, state } = this;
+	const { Threads, threadsObserve, callbackRemove, state, taskHeaderObserve } = this;
 	Threads.remove({});
 	threadsObserve && threadsObserve.stop();
-
+	taskHeaderObserve && taskHeaderObserve.stop();
 	callbackRemove && callbackRemove();
 
 	const tmid = state.get('tmid');

@@ -12,7 +12,7 @@ import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
 import { getConfig } from '../config';
-import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
+import { ChatMessage, ChatSubscription, ChatRoom, ChatTask } from '../../../models';
 import { call } from './callMethod';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';
@@ -39,6 +39,20 @@ export const normalizeThreadMessage = ({ ...message }) => {
 
 
 export const waitUntilWrapperExists = async (selector = '.messages-box .wrapper') => document.querySelector(selector) || new Promise((resolve) => {
+	const observer = new MutationObserver(function(mutations, obs) {
+		const element = document.querySelector(selector);
+		if (element) {
+			obs.disconnect(); // stop observing
+			return resolve(element);
+		}
+	});
+	observer.observe(document, {
+		childList: true,
+		subtree: true,
+	});
+});
+
+export const waitUntilWrapperExistsTaskRoom = async (selector = '.taskRoom_tasksContainer') => document.querySelector(selector) || new Promise((resolve) => {
 	const observer = new MutationObserver(function(mutations, obs) {
 		const element = document.querySelector(selector);
 		if (element) {
@@ -86,6 +100,35 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	return collection.direct.upsert({ _id }, messageToUpsert);
 };
 
+export const upsertTask = async ({ task, subscription, uid = Tracker.nonreactive(() => Meteor.userId()) }, collection = ChatTask) => {
+	if (!task) {
+		return;
+	}
+	const userId = task.u && task.u._id;
+
+	if (subscription && subscription.ignored && subscription.ignored.indexOf(userId) > -1) {
+		task.ignored = true;
+	}
+
+	if (task.t === 'e2e' && !task.file) {
+		task.e2e = 'pending';
+	}
+	task = await promises.run('onClientMessageReceived', task) || task;
+
+	const { _id, ...taskToUpsert } = task;
+
+	if (task.tcount) {
+		collection.direct.update({ tmid: _id }, {
+			$set: {
+				following: task.replies && task.replies.indexOf(uid) > -1,
+				threadMsg: normalizeThreadMessage(taskToUpsert),
+				repliesCount: task.tcount,
+			},
+		}, { multi: true });
+	}
+	return collection.direct.upsert({ _id }, taskToUpsert);
+};
+
 export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessage) {
 	const uid = Tracker.nonreactive(() => Meteor.userId());
 	const { queries } = ChatMessage;
@@ -93,6 +136,18 @@ export function upsertMessageBulk({ msgs, subscription }, collection = ChatMessa
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
 			ChatMessage.queries = queries;
+		}
+		upsertMessage({ msg, subscription, uid }, collection);
+	});
+}
+
+export function upsertTaskBulk({ tasks, subscription }, collection = ChatTask) {
+	const uid = Tracker.nonreactive(() => Meteor.userId());
+	const { queries } = ChatTask;
+	collection.queries = [];
+	tasks.forEach((msg, index) => {
+		if (index === tasks.length - 1) {
+			ChatTask.queries = queries;
 		}
 		upsertMessage({ msg, subscription, uid }, collection);
 	});
@@ -234,6 +289,87 @@ export const RoomHistoryManager = new class extends Emitter {
 			wrapper.scrollTop = scroll + heightDiff;
 		});
 
+		room.isLoading.set(false);
+		waitAfterFlush(() => {
+			readMessage.refreshUnreadMark(rid);
+			return RoomManager.updateMentionsMarksOfRoom(typeName);
+		});
+	}
+
+	async getMoreTask(rid, limit = defaultLimit) {
+		let ts;
+		const room = this.getRoom(rid);
+
+		if (room.hasMore.curValue !== true) {
+			return;
+		}
+
+		room.isLoading.set(true);
+
+		await this.queue();
+
+		const lastTask = ChatTask.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: 1 } });
+
+		if (lastTask) {
+			({ ts } = lastTask);
+		} else {
+			ts = undefined;
+		}
+
+		let ls = undefined;
+		let typeName = undefined;
+
+		const subscription = ChatSubscription.findOne({ rid });
+
+		if (subscription) {
+			({ ls } = subscription);
+			typeName = subscription.t + subscription.name;
+		} else {
+			const curRoomDoc = ChatRoom.findOne({ _id: rid });
+			typeName = (curRoomDoc ? curRoomDoc.t : undefined) + (curRoomDoc ? curRoomDoc.name : undefined);
+		}
+
+		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
+		const result = await call('loadHistoryTask', rid, ts, limit, ls, showMessageInMainThread);
+		this.unqueue();
+
+		// let previousHeight;
+		// let scroll;
+		const { tasks = [] } = result;
+		room.unreadNotLoaded.set(result.unreadNotLoaded);
+		room.firstUnread.set(result.firstUnread);
+
+		// const wrapper = await waitUntilWrapperExistsTaskRoom();
+		// if (wrapper) {
+		// 	previousHeight = wrapper.scrollHeight;
+		// 	scroll = wrapper.scrollTop;
+		// }
+
+		upsertTaskBulk({
+			tasks: tasks.filter((task) => task.t !== 'command'),
+			subscription,
+		});
+
+		if (!room.loaded) {
+			room.loaded = 0;
+		}
+
+		const visibleTasks = tasks.filter((task) => !task.tmid || showMessageInMainThread || task.tshow);
+
+		room.loaded += visibleTasks.length;
+
+
+		if (tasks.length < limit) {
+			room.hasMore.set(false);
+		}
+		if (room.hasMore.get() && (visibleTasks.length === 0 || room.loaded < limit)) {
+			return this.getMoreTask(rid);
+		}
+
+		// waitAfterFlush(() => {
+		// 	const heightDiff = wrapper.scrollHeight - previousHeight;
+		// 	wrapper.scrollTop = scroll + heightDiff;
+		// });
 		room.isLoading.set(false);
 		waitAfterFlush(() => {
 			readMessage.refreshUnreadMark(rid);
@@ -384,6 +520,13 @@ export const RoomHistoryManager = new class extends Emitter {
 		}
 	}
 
+	getMoreIfIsEmptyTaskRoom(rid) {
+		const room = this.getRoom(rid);
+		if (room.loaded === undefined) {
+			return this.getMoreTask(rid);
+		}
+	}
+
 
 	isLoading(rid) {
 		const room = this.getRoom(rid);
@@ -392,6 +535,15 @@ export const RoomHistoryManager = new class extends Emitter {
 
 	clear(rid) {
 		ChatMessage.remove({ rid });
+		if (this.histories[rid]) {
+			this.histories[rid].hasMore.set(true);
+			this.histories[rid].isLoading.set(false);
+			this.histories[rid].loaded = undefined;
+		}
+	}
+
+	clearTasks(rid) {
+		ChatTask.remove({ rid });
 		if (this.histories[rid]) {
 			this.histories[rid].hasMore.set(true);
 			this.histories[rid].isLoading.set(false);

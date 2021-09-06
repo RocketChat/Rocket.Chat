@@ -48,8 +48,8 @@ export default class MentionsServer extends MentionsParser {
 		return typeof this._messageMaxAll === 'function' ? this._messageMaxAll() : this._messageMaxAll;
 	}
 
-	getUsersByMentions({ msg, rid, u: sender }) {
-		let mentions = this.getUserMentions(msg);
+	getUsersByMentions({ msg, title, rid, u: sender }) {
+		let mentions = title ? this.getUserMentions(title) : this.getUserMentions(msg);
 		const mentionsAll = [];
 		const userMentions = [];
 
@@ -70,8 +70,14 @@ export default class MentionsServer extends MentionsParser {
 		return [...mentionsAll, ...mentions];
 	}
 
-	getChannelbyMentions({ msg }) {
-		const channels = this.getChannelMentions(msg);
+	getChannelbyMentions({ msg, title }) {
+		let channels;
+		if (title) {
+			channels = this.getChannelMentions(title);
+		} else {
+			channels = this.getChannelMentions(msg);
+		}
+
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 

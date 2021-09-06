@@ -32,6 +32,8 @@ export class NotificationsModule {
 
 	public readonly streamImporters: IStreamer;
 
+	public readonly streamRoomTask: IStreamer;
+
 	public readonly streamRoles: IStreamer;
 
 	public readonly streamApps: IStreamer;
@@ -72,7 +74,30 @@ export class NotificationsModule {
 
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
+		this.streamRoomTask = new this.Streamer('room-tasks');
+
 		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+			const { userId } = publication._session;
+			if (!userId) {
+				return;
+			}
+
+			const userEvent = (clientAction: string, { rid }: {rid: string}): void => {
+				switch (clientAction) {
+					case 'removed':
+						streamer.removeListener(userId, userEvent);
+						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
+						sub && streamer.removeSubscription(sub, eventName);
+						break;
+				}
+			};
+
+			streamer.on(userId, userEvent);
+
+			publication.onStop(() => streamer.removeListener(userId, userEvent));
+		});
+
+		this.streamRoomTask.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
 			const { userId } = publication._session;
 			if (!userId) {
 				return;
@@ -148,6 +173,55 @@ export class NotificationsModule {
 				/* error*/
 				return false;
 			}
+		});
+
+		this.streamRoomTask.allowRead('__my_tasks__', 'all');
+		this.streamRoomTask.allowEmit('__my_tasks__', async function(_eventName, { rid }) {
+			if (!this.userId) {
+				return false;
+			}
+
+			try {
+				const room = await Rooms.findOneById(rid);
+				if (!room) {
+					return false;
+				}
+
+				const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+				if (!canAccess) {
+					return false;
+				}
+
+				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, this.userId);
+
+				return {
+					roomParticipant: roomParticipant > 0,
+					roomType: room.t,
+					roomName: room.name,
+				};
+			} catch (error) {
+				/* error*/
+				return false;
+			}
+		});
+
+		this.streamRoomTask.allowWrite('none');
+		this.streamRoomTask.allowRead(async function(eventName, extraData) {
+			const room = await Rooms.findOneById(eventName);
+			if (!room) {
+				return false;
+			}
+
+			const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId || '' }, extraData);
+			if (!canAccess) {
+				// verify if can preview messages from public channels
+				if (room.t === 'c' && this.userId) {
+					return Authorization.hasPermission(this.userId, 'preview-c-room');
+				}
+				return false;
+			}
+
+			return true;
 		});
 
 		this.streamAll.allowWrite('none');
