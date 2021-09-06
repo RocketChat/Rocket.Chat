@@ -27,7 +27,11 @@ export class AppServerOrchestrator {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.create('manage-apps', ['admin']);
 
-		this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
+			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
+		} else {
+			this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		}
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();

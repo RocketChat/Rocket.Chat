@@ -10,13 +10,20 @@ import { Logger } from '../../../logger';
 const logger = new Logger('Meteor', {
 	methods: {
 		method: {
-			type: 'debug',
+			type: 'info',
 		},
 		publish: {
 			type: 'debug',
 		},
 	},
 });
+
+const {
+	LOG_METHOD_PAYLOAD = 'false',
+	LOG_REST_METHOD_PAYLOADS = 'false',
+} = process.env;
+
+const addPayloadToLog = LOG_METHOD_PAYLOAD !== 'false' || LOG_REST_METHOD_PAYLOADS !== 'false';
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
@@ -66,13 +73,20 @@ const omitKeyArgs = (args, name) => {
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
+
+		const method = name === 'stream' ? `${ name }:${ originalArgs[0] }` : name;
+
 		const end = metrics.meteorMethods.startTimer({
-			method: name === 'stream' ? `${ name }:${ originalArgs[0] }` : name,
+			method,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
 		});
 		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
-		logger.method(() => `${ name } -> userId: ${ Meteor.userId() }, arguments: ${ JSON.stringify(omitKeyArgs(args, name)) }`);
+
+		const dateTime = new Date().toISOString();
+		const userId = Meteor.userId();
+		logger.method(() => `${ this.connection?.clientAddress } - ${ userId } [${ dateTime }] "METHOD ${ method }" - "${ this.connection?.httpHeaders.referer }" "${ this.connection?.httpHeaders['user-agent'] }" | ${ addPayloadToLog ? JSON.stringify(omitKeyArgs(args, name)) : '' }`);
+
 		const result = originalHandler.apply(this, originalArgs);
 		end();
 		return result;
