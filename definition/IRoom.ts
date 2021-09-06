@@ -69,6 +69,7 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
+type OmnichannelSourceType = 'widget' | 'email' | 'sms' | 'app' | 'other';
 
 export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | 'featured' | ''> {
 	t: 'l';
@@ -91,11 +92,11 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	responseBy: any;
 	priorityId: any;
 	livechatData: any;
+
 	source: {
-		type: 'livechat' | 'sms' | 'email';
-	} | {
-		type: 'app';
-		id: string;
+		type: OmnichannelSourceType;
+		id?: string;
+		alias?: string;
 	};
 }
 

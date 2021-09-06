@@ -27,7 +27,7 @@ export const allowAgentSkipQueue = (agent) => {
 };
 
 export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
-	const { source = 'widget' } = extraData;
+	const { source } = extraData;
 
 	check(rid, String);
 	check(name, String);
@@ -61,9 +61,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		cl: false,
 		open: true,
 		waitingResponse: true,
-		source: {
-			type: source,
-		},
+		source,
 	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);

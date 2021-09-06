@@ -88,7 +88,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined, { source: 'sms' }));
+			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined, { source: { type: 'sms' } }));
 		}
 
 		let file;

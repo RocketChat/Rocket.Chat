@@ -29,10 +29,11 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 
 			const icon =
 				{
+					widget: 'headset',
 					email: 'email',
-					livechat: 'headset',
 					sms: 'phone',
-					app: 'headset',
+					app: 'headset', // TODO: use app icon
+					other: 'headset',
 				}[omnichannelRoom.source?.type] || 'headset';
 
 			return {
