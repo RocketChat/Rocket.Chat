@@ -45,6 +45,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
 			roomInfo: undefined,
+			extraData: undefined,
 		});
 
 		return msg._id;
