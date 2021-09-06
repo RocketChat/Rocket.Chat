@@ -1,24 +1,35 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import React from 'react';
-import { ConnectionDelegate } from "../../components/voip/ConnectionDelegate"
-//import { connect, register, unRegister } from '../api/Register';
-import { User } from "../../components/voip/User"
-import { RegisterHandlerDeligate } from "../../components/voip/RegisterHandlerDelegate"
-//import $ from "jQuery";
-import { CallEventDelegate } from '../../components/voip/CallEventDelegate';
-interface State {
+
+import { ICallEventDelegate } from '../../components/voip/CallEventDelegate';
+import { IConnectionDelegate } from '../../components/voip/ConnectionDelegate';
+// import { connect, register, unRegister } from '../api/Register';
+import { IRegisterHandlerDeligate } from '../../components/voip/RegisterHandlerDelegate';
+import { User } from '../../components/voip/User';
+// import $ from "jQuery";
+interface IState {
 	isReady?: boolean;
 	enableVideo?: boolean;
 }
 
-class VoIPLayout extends React.Component<{}, State> implements RegisterHandlerDeligate,
-	ConnectionDelegate, CallEventDelegate {
+class VoIPLayout
+	extends React.Component<{}, IState>
+	implements IRegisterHandlerDeligate, IConnectionDelegate, ICallEventDelegate
+{
 	userHandler: User | undefined;
+
 	userName: React.RefObject<HTMLInputElement>;
-	password: React.RefObject<HTMLInputElement>;;
-	registrar: React.RefObject<HTMLInputElement>;;
+
+	password: React.RefObject<HTMLInputElement>;
+
+	registrar: React.RefObject<HTMLInputElement>;
+
 	webSocketPath: React.RefObject<HTMLInputElement>;
+
 	callTypeSelection: React.RefObject<HTMLInputElement>;
+
 	config: any = {};
+
 	constructor() {
 		super({});
 		this.state = {
@@ -31,120 +42,125 @@ class VoIPLayout extends React.Component<{}, State> implements RegisterHandlerDe
 		this.webSocketPath = React.createRef();
 		this.callTypeSelection = React.createRef();
 	}
+
 	/* RegisterHandlerDeligate implementation begin */
-	onRegistered() {
-		console.log("onRegistered");
-		let element = document.getElementById("register");
+	onRegistered(): void {
+		console.log('onRegistered');
+		let element = document.getElementById('register');
 		if (element) {
-			//(element as HTMLInputElement).disabled = true;
-			element.style.display = "none";
+			// (element as HTMLInputElement).disabled = true;
+			element.style.display = 'none';
 		}
-		element = document.getElementById("unregister");
+		element = document.getElementById('unregister');
 		if (element) {
-			element.style.display = "block";
-		}
-	}
-	onRegistrationError(reason: any) {
-		console.log("onRegistrationError" + reason);
-	}
-	onUnregistered() {
-		console.log("onUnregistered");
-		let element = document.getElementById("register");
-		if (element) {
-			//(element as HTMLInputElement).disabled = true;
-			element.style.display = "block";
-		}
-		element = document.getElementById("unregister");
-		if (element) {
-			element.style.display = "none";
+			element.style.display = 'block';
 		}
 	}
-	onUnregistrationError() {
-		console.log("onUnregistrationError");
+
+	onRegistrationError(reason: any): void {
+		console.log(`onRegistrationError${reason}`);
+	}
+
+	onUnregistered(): void {
+		console.log('onUnregistered');
+		let element = document.getElementById('register');
+		if (element) {
+			// (element as HTMLInputElement).disabled = true;
+			element.style.display = 'block';
+		}
+		element = document.getElementById('unregister');
+		if (element) {
+			element.style.display = 'none';
+		}
+	}
+
+	onUnregistrationError(): void {
+		console.log('onUnregistrationError');
 	}
 	/* RegisterHandlerDeligate implementation end */
 
 	/* ConnectionDelegate implementation begin */
-	onConnected() {
-		console.log("onConnected");
-		let element = document.getElementById("register");
+	onConnected(): void {
+		console.log('onConnected');
+		let element = document.getElementById('register');
 		if (element) {
-			element.style.display = "block";
+			element.style.display = 'block';
 		}
-		element = document.getElementById("unregister");
+		element = document.getElementById('unregister');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
+	}
 
+	onConnectionError(error: any): void {
+		console.log(`onConnectionError${error}`);
 	}
-	onConnectionError(error: any) {
-		console.log("onConnectionError" + error);
-	}
+
 	/* ConnectionDelegate implementation end */
 	/* CallEventDelegate implementation begin */
-	onIncomingCall(callingPartyName: string) {
-		let element = document.getElementById("accept_call");
+	onIncomingCall(_callingPartyName: string): void {
+		let element = document.getElementById('accept_call');
 		if (element) {
-			element.style.display = "block";
+			element.style.display = 'block';
 		}
-		element = document.getElementById("reject_call");
+		element = document.getElementById('reject_call');
 		if (element) {
-			element.style.display = "block";
+			element.style.display = 'block';
 		}
 	}
-	onCallEstablished() {
-		let element = document.getElementById("accept_call");
-		if (element) {
-			element.style.display = "none";
-		}
-		element = document.getElementById("reject_call");
-		if (element) {
-			element.style.display = "none";
-		}
-		element = document.getElementById("end_call");
-		if (element) {
-			element.style.display = "block";
-		}
 
+	onCallEstablished(): void {
+		let element = document.getElementById('accept_call');
+		if (element) {
+			element.style.display = 'none';
+		}
+		element = document.getElementById('reject_call');
+		if (element) {
+			element.style.display = 'none';
+		}
+		element = document.getElementById('end_call');
+		if (element) {
+			element.style.display = 'block';
+		}
 	}
-	onCallTermination() {
-		let element = document.getElementById("accept_call");
+
+	onCallTermination(): void {
+		let element = document.getElementById('accept_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("reject_call");
+		element = document.getElementById('reject_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("end_call");
+		element = document.getElementById('end_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
 	}
 	/* CallEventDelegate implementation end */
 
-	async componentDidMount() {
-		let element = document.getElementById("register");
+	async componentDidMount(): Promise<void> {
+		let element = document.getElementById('register');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("unregister");
+		element = document.getElementById('unregister');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("accept_call");
+		element = document.getElementById('accept_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("reject_call");
+		element = document.getElementById('reject_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-		element = document.getElementById("end_call");
+		element = document.getElementById('end_call');
 		if (element) {
-			element.style.display = "none";
+			element.style.display = 'none';
 		}
-
 
 		if (this.userName.current?.textContent) {
 			this.config.auth_user_name = this.userName.current?.textContent;
@@ -169,134 +185,190 @@ class VoIPLayout extends React.Component<{}, State> implements RegisterHandlerDe
 
 		this.config.enable_video = this.state.enableVideo;
 		this.config.connection_delegate = this;
-		this.config.ice_servers = [
-			{ "urls": "stun:stun.l.google.com:19302" }
-		];
-		let videoElement = document.getElementById("remote_video");
+		this.config.ice_servers = [{ urls: 'stun:stun.l.google.com:19302' }];
+		const videoElement = document.getElementById('remote_video');
 		this.config.media = {
-			remote_video_element: videoElement
-		}
+			remote_video_element: videoElement,
+		};
 		this.userHandler = new User(this.config, this, this, this);
 		this.setState({ isReady: true });
 		await this.userHandler?.init();
 	}
 
-	registerEndpoint() {
+	registerEndpoint(): void {
 		if (this.callTypeSelection.current) {
 			this.callTypeSelection.current.disabled = true;
 		}
 		this.userHandler?.register();
-	};
-	unregisterEndpoint() {
+	}
+
+	unregisterEndpoint(): void {
 		if (this.callTypeSelection.current) {
 			this.callTypeSelection.current.disabled = false;
 		}
 		this.userHandler?.unregister();
-	};
-	async acceptCall() {
-		return await this.userHandler?.acceptCall();
 	}
-	async rejectCall() {
-		return await this.userHandler?.rejectCall();
+
+	async acceptCall(): Promise<any> {
+		return this.userHandler?.acceptCall();
 	}
-	async endCall() {
-		return await this.userHandler?.endCall();
+
+	async rejectCall(): Promise<any> {
+		return this.userHandler?.rejectCall();
 	}
-	onChange() {
+
+	async endCall(): Promise<any> {
+		return this.userHandler?.endCall();
+	}
+
+	onChange(): void {
 		if (this.callTypeSelection.current?.value) {
 			this.setState({ enableVideo: this.callTypeSelection.current?.checked });
 		}
 	}
-	render() {
+
+	render(): any {
 		return (
-			< div style={{ marginLeft: "3%", marginTop: "3%", scrollBehavior: "initial", overflowY: "scroll" }} >
+			<div
+				style={{
+					marginLeft: '3%',
+					marginTop: '3%',
+					scrollBehavior: 'initial',
+					overflowY: 'scroll',
+				}}
+			>
 				<div>
-					{
-						this.state.enableVideo ? <video id="remote_video" style={{ width: "50%", border: "1px solid #FF0000" }}></video> : <audio id="remote_video" style={{ width: "50%", border: "1px solid #FF0000" }}></audio>
-					}
+					{this.state.enableVideo ? (
+						<video id='remote_video' style={{ width: '50%', border: '1px solid #FF0000' }}></video>
+					) : (
+						<audio id='remote_video' style={{ width: '50%', border: '1px solid #FF0000' }}></audio>
+					)}
 
-
-					<div className="rcx-box rcx-box--full rcx-css-25ncok">
-						<div className="rcx-box rcx-box--full">Enable Video</div>
-						<label className="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-toggle-switch">
+					<div className='rcx-box rcx-box--full rcx-css-25ncok'>
+						<div className='rcx-box rcx-box--full'>Enable Video</div>
+						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-toggle-switch'>
 							<input
-								type="checkbox"
-								className="rcx-box rcx-box--full rcx-toggle-switch__input"
+								type='checkbox'
+								className='rcx-box rcx-box--full rcx-toggle-switch__input'
 								defaultChecked
 								ref={this.callTypeSelection}
 								onChange={this.onChange.bind(this)}
 							/>
-							<i
-								aria-hidden="true"
-								className="rcx-box rcx-box--full rcx-toggle-switch__fake"
-							/>
+							<i aria-hidden='true' className='rcx-box rcx-box--full rcx-toggle-switch__fake' />
 						</label>
 					</div>
-					<div style={{ width: "20%" }} className="rcx-box rcx-box--full rcx-field rcx-field-group__item">
-						<label className="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label">
+					<div
+						style={{ width: '20%' }}
+						className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
+					>
+						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
 							SIP User Name
 						</label>
-						<span className="rcx-box rcx-box--full rcx-field__row">
+						<span className='rcx-box rcx-box--full rcx-field__row'>
 							<input
-								className="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-								type="text"
+								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
+								type='text'
 								ref={this.userName}
 								size={1}
-								defaultValue="80000"
+								defaultValue='80000'
 							/>
 						</span>
 					</div>
-					<div style={{ width: "20%" }} className="rcx-box rcx-box--full rcx-field rcx-field-group__item">
-						<label className="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label">
+					<div
+						style={{ width: '20%' }}
+						className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
+					>
+						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
 							SIP Password
 						</label>
-						<span className="rcx-box rcx-box--full rcx-field__row">
+						<span className='rcx-box rcx-box--full rcx-field__row'>
 							<input
-								className="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-								type="text"
+								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
+								type='text'
 								ref={this.password}
 								size={1}
-								defaultValue="1234"
+								defaultValue='1234'
 							/>
 						</span>
 					</div>
-					<div style={{ width: "20%" }} className="rcx-box rcx-box--full rcx-field rcx-field-group__item">
-						<label className="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label">
+					<div
+						style={{ width: '20%' }}
+						className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
+					>
+						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
 							SIP Registrar
 						</label>
-						<span className="rcx-box rcx-box--full rcx-field__row">
+						<span className='rcx-box rcx-box--full rcx-field__row'>
 							<input
-								className="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-								type="text"
+								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
+								type='text'
 								ref={this.registrar}
 								size={1}
-								defaultValue="omni-asterisk.dev.rocket.chat"
+								defaultValue='omni-asterisk.dev.rocket.chat'
 							/>
 						</span>
 					</div>
-					<div style={{ width: "20%" }} className="rcx-box rcx-box--full rcx-field rcx-field-group__item">
-						<label className="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label">
+					<div
+						style={{ width: '20%' }}
+						className='rcx-box rcx-box--full rcx-field rcx-field-group__item'
+					>
+						<label className='rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label'>
 							SIP WebSocket URI
 						</label>
-						<span className="rcx-box rcx-box--full rcx-field__row">
+						<span className='rcx-box rcx-box--full rcx-field__row'>
 							<input
-								className="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-								type="text"
+								className='rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h'
+								type='text'
 								ref={this.webSocketPath}
 								size={1}
-								defaultValue="wss://omni-asterisk.dev.rocket.chat/ws"
+								defaultValue='wss://omni-asterisk.dev.rocket.chat/ws'
 							/>
 						</span>
 					</div>
 				</div>
-				<div style={{ marginTop: "20px", marginBottom: "30px" }}>
-					<button style={{ width: "10%", marginTop: "5px", border: "2px solid green" }} className="btn rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py" id="register" onClick={this.registerEndpoint.bind(this)} >Register</button>
-					<button style={{ width: "10%", marginTop: "5px", border: "2px solid green" }} className="rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py" id="unregister" onClick={this.unregisterEndpoint.bind(this)} >UnRegister</button>
-					<button style={{ width: "10%", marginTop: "5px", border: "2px solid green" }} className="rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py" id="accept_call" onClick={this.acceptCall.bind(this)} >Accept Call</button>
-					<button style={{ width: "10%", marginTop: "5px", border: "2px solid green" }} className="rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py" id="reject_call" onClick={this.rejectCall.bind(this)} >Reject Call</button>
-					<button style={{ width: "10%", marginTop: "5px", border: "2px solid green" }} className="rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py" id="end_call" onClick={this.endCall.bind(this)} >End Call</button>
+				<div style={{ marginTop: '20px', marginBottom: '30px' }}>
+					<button
+						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+						className='btn rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+						id='register'
+						onClick={this.registerEndpoint.bind(this)}
+					>
+						Register
+					</button>
+					<button
+						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+						id='unregister'
+						onClick={this.unregisterEndpoint.bind(this)}
+					>
+						UnRegister
+					</button>
+					<button
+						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+						id='accept_call'
+						onClick={this.acceptCall.bind(this)}
+					>
+						Accept Call
+					</button>
+					<button
+						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+						id='reject_call'
+						onClick={this.rejectCall.bind(this)}
+					>
+						Reject Call
+					</button>
+					<button
+						style={{ width: '10%', marginTop: '5px', border: '2px solid green' }}
+						className='rcx-box rcx-box--full rcx-box--animated rcx-button--small-square rcx-button--square rcx-button--small rcx-button--ghost rcx-button rcx-button-group__item rcx-css-ue04py'
+						id='end_call'
+						onClick={this.endCall.bind(this)}
+					>
+						End Call
+					</button>
 				</div>
-			</div >
+			</div>
 		);
 	}
 }
