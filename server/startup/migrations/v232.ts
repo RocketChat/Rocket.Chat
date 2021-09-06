@@ -4,6 +4,7 @@ import { Users, Settings } from '../../../app/models/server/raw';
 import { Banner } from '../../sdk';
 import { BannerPlatform } from '../../../definition/IBanner';
 import { IUser } from '../../../definition/IUser';
+import { settings } from '../../../app/settings/server';
 
 Migrations.add({
 	version: 232,
@@ -14,10 +15,12 @@ Migrations.add({
 		};
 
 		const isCustomOAuthEnabled = !!Promise.await(Settings.findOne(query));
+		const LDAPEnabled = settings.get('LDAP_Enable');
+		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
 		const isEE = isEnterprise();
 
-		if (!isEE && isCustomOAuthEnabled) {
+		if (!isEE && (isCustomOAuthEnabled || LDAPEnabled || SAMLEnabled)) {
 			return;
 		}
 
