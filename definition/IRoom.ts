@@ -84,6 +84,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	onHold?: boolean;
 	departmentId?: string;
 
+	lastMessage?: IMessage & { token?: string };
+
 	tags: any;
 	closedAt: any;
 	metrics: any;
