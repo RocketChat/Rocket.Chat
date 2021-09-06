@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { ChatRoom } from '../../../../models';
+import { ChatRoom, CachedChatRoom } from '../../../../models';
 import { call } from '../../../../ui-utils/client';
 import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';
@@ -65,6 +65,11 @@ Template.livechatReadOnly.onCreated(function() {
 
 	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
 		if (clientAction === 'removed' || !await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
+			// this will force to refresh the room
+			// since the client wont get notified of room changes when chats are on queue (no one assigned)
+			// a better approach should be performed when refactoring these templates to use react
+			ChatRoom.remove(this.rid);
+			CachedChatRoom.save();
 			return FlowRouter.go('/home');
 		}
 

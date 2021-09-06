@@ -15,7 +15,7 @@ Accounts.registerLoginHandler('totp', function(options) {
 });
 
 callbacks.add('onValidateLogin', (login) => {
-	if (login.type === 'resume' || login.type === 'proxy') {
+	if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
 		return login;
 	}
 

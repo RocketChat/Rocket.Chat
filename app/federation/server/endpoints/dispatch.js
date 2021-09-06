@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
@@ -240,7 +239,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+					fileStore.insertSync(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
