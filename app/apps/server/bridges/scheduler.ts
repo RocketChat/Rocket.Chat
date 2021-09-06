@@ -11,9 +11,9 @@ import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/Schedul
 
 import { AppServerOrchestrator } from '../orchestrator';
 
-function _callProcessor(processor: Function): (job: { attrs?: { data: object } }) => void {
+function _callProcessor(processor: Function): (job: { attrs?: { data: object, _id: object } }) => void {
 	return (job): void => {
-		const data = job?.attrs?.data || {};
+		const data = Object.assign({}, job?.attrs?.data || {}, { jobId: job?.attrs?._id.toString() });
 
 		// This field is for internal use, no need to leak to app processor
 		delete (data as any).appId;
