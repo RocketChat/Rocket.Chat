@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
+import { FromApi } from '../../../../../definition/FromApi';
 import { IRoom } from '../../../../../definition/IRoom';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -11,10 +12,10 @@ type FirstStepProps = {
 	onCancel: () => void;
 	onConfirm: () => void;
 	onToggleAllRooms: () => void;
-	onChangeRoomSelection: (room: IRoom) => void;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	onChangeRoomSelection: (room: FromApi<IRoom>) => void;
+	rooms: (FromApi<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
-	selectedRooms: { [key: string]: IRoom };
+	selectedRooms: { [key: string]: FromApi<IRoom> };
 };
 
 const FirstStep: FC<FirstStepProps> = ({

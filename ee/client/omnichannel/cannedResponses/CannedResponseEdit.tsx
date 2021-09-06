@@ -6,19 +6,26 @@ import Page from '../../../../client/components/Page';
 import { usePermission } from '../../../../client/contexts/AuthorizationContext';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useEndpoint } from '../../../../client/contexts/ServerContext';
-import { LivechatDepartmentSingleGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/livechat/departmentSingle';
-import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
+import { FromApi } from '../../../../definition/FromApi';
+import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
+import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{
-	data?: CannedResponseEndpointGetReturn;
+	data?: {
+		cannedResponse: FromApi<IOmnichannelCannedResponse>;
+		success: boolean;
+	};
 	reload: () => void;
 	totalDataReload: () => void;
 	isNew?: boolean;
-	departmentData?: LivechatDepartmentSingleGetReturn;
+	departmentData?: {
+		department: FromApi<ILivechatDepartment>;
+		success: boolean;
+	};
 }> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();

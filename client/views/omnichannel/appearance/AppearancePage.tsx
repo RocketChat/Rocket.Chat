@@ -2,6 +2,7 @@ import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
+import { FromApi } from '../../../../definition/FromApi';
 import { ISetting } from '../../../../definition/ISetting';
 import Page from '../../../components/Page';
 import { useMethod } from '../../../contexts/ServerContext';
@@ -34,14 +35,14 @@ type LivechatAppearanceSettings = {
 
 type AppearanceSettings = Partial<LivechatAppearanceSettings>;
 
-const reduceAppearance = (settings: ISetting[]): AppearanceSettings =>
+const reduceAppearance = (settings: FromApi<ISetting>[]): AppearanceSettings =>
 	settings.reduce<Partial<LivechatAppearanceSettings>>((acc, { _id, value }) => {
 		acc = { ...acc, [_id]: value };
 		return acc;
 	}, {});
 
 type AppearancePageProps = {
-	settings: ISetting[];
+	settings: FromApi<ISetting>[];
 };
 
 const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {

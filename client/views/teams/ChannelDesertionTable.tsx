@@ -1,6 +1,7 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
+import { FromApi } from '../../../definition/FromApi';
 import { IRoom } from '../../../definition/IRoom';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -9,12 +10,12 @@ import ChannelRow from './contextualBar/ChannelRow';
 
 type ChannelDesertionTableProps = {
 	lastOwnerWarning: boolean | undefined;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms: (FromApi<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
 	params?: {};
 	onChangeParams?: () => void;
-	onChangeRoomSelection: (room: IRoom) => void;
-	selectedRooms: { [key: string]: IRoom };
+	onChangeRoomSelection: (room: FromApi<IRoom>) => void;
+	selectedRooms: { [key: string]: FromApi<IRoom> };
 	onToggleAllRooms: () => void;
 };
 

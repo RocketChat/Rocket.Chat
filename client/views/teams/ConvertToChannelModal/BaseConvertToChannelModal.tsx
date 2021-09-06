@@ -1,6 +1,7 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FC, useState, useCallback } from 'react';
 
+import { FromApi } from '../../../../definition/FromApi';
 import { IRoom } from '../../../../definition/IRoom';
 import FirstStep from './ModalSteps/FirstStep';
 import SecondStep from './ModalSteps/SecondStep';
@@ -13,9 +14,9 @@ const STEPS = {
 type BaseConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => Array<IRoom>;
+	onConfirm: () => FromApi<IRoom>[];
 	currentStep?: string;
-	rooms?: Array<IRoom & { isLastOwner?: string }>;
+	rooms?: (FromApi<IRoom> & { isLastOwner?: string })[];
 };
 
 const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
@@ -26,7 +27,7 @@ const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_CONVERT : STEPS.LIST_ROOMS,
 }) => {
 	const [step, setStep] = useState(currentStep);
-	const [selectedRooms, setSelectedRooms] = useState<{ [key: string]: IRoom }>({});
+	const [selectedRooms, setSelectedRooms] = useState<{ [key: string]: FromApi<IRoom> }>({});
 
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_CONVERT));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));

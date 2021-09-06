@@ -1,6 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
+import { FromApi } from '../../../../../definition/FromApi';
 import { IRoom } from '../../../../../definition/IRoom';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -8,11 +9,11 @@ import { useTranslation } from '../../../../contexts/TranslationContext';
 type SecondStepsProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: (deletedRooms: { [key: string]: IRoom }) => void;
+	onConfirm: (deletedRooms: { [key: string]: FromApi<IRoom> }) => void;
 	deletedRooms: {
-		[key: string]: IRoom;
+		[key: string]: FromApi<IRoom>;
 	};
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms: (FromApi<IRoom> & { isLastOwner?: string })[] | undefined;
 };
 
 const SecondStep: FC<SecondStepsProps> = ({

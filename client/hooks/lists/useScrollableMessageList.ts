@@ -1,31 +1,22 @@
 import { useCallback } from 'react';
 
+import { FromApi } from '../../../definition/FromApi';
 import { IMessage } from '../../../definition/IMessage';
-import { ObjectFromApi } from '../../../definition/ObjectFromApi';
+import { mapMessageFromApi } from '../../lib/fromApi';
 import { MessageList } from '../../lib/lists/MessageList';
 import { RecordListBatchChanges } from '../../lib/lists/RecordList';
 import { useScrollableRecordList } from './useScrollableRecordList';
 
-const convertMessageFromApi = (apiMessage: ObjectFromApi<IMessage>): IMessage => ({
-	...apiMessage,
-	_updatedAt: new Date(apiMessage._updatedAt),
-	ts: new Date(apiMessage.ts),
-	...(apiMessage.tlm && { tlm: new Date(apiMessage.tlm) }),
-});
-
 export const useScrollableMessageList = (
 	messageList: MessageList,
-	fetchMessages: (
-		start: number,
-		end: number,
-	) => Promise<RecordListBatchChanges<ObjectFromApi<IMessage>>>,
+	fetchMessages: (start: number, end: number) => Promise<RecordListBatchChanges<FromApi<IMessage>>>,
 	initialItemCount?: number,
 ): ReturnType<typeof useScrollableRecordList> => {
 	const fetchItems = useCallback(
 		async (start: number, end: number): Promise<RecordListBatchChanges<IMessage>> => {
 			const batchChanges = await fetchMessages(start, end);
 			return {
-				...(batchChanges.items && { items: batchChanges.items.map(convertMessageFromApi) }),
+				...(batchChanges.items && { items: batchChanges.items.map(mapMessageFromApi) }),
 				...(batchChanges.itemCount && { itemCount: batchChanges.itemCount }),
 			};
 		},

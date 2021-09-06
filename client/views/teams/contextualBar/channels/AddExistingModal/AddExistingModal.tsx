@@ -1,6 +1,7 @@
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 import React, { memo, FC, useCallback } from 'react';
 
+import { FromApi } from '../../../../../../definition/FromApi';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
@@ -10,8 +11,8 @@ import RoomsInput from './RoomsInput';
 
 type AddExistingModalState = {
 	onAdd: any;
-	rooms: IRoom[];
-	onChange: (value: IRoom, action: 'remove' | undefined) => void;
+	rooms: FromApi<IRoom>[];
+	onChange: (value: FromApi<IRoom>, action: 'remove' | undefined) => void;
 	hasUnsavedChanges: boolean;
 };
 
@@ -31,16 +32,16 @@ const useAddExistingModalState = (
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		rooms: [] as IRoom[],
+		rooms: [] as FromApi<IRoom>[],
 	});
 
-	const { rooms } = values as { rooms: IRoom[] };
+	const { rooms } = values as { rooms: FromApi<IRoom>[] };
 	const { handleRooms } = handlers;
 
 	const onChange = useCallback<AddExistingModalState['onChange']>(
 		(value, action) => {
 			if (!action) {
-				if (rooms.some((current: IRoom) => current._id === value._id)) {
+				if (rooms.some((current) => current._id === value._id)) {
 					return;
 				}
 

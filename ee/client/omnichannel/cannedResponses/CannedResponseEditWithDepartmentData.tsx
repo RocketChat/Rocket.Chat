@@ -2,14 +2,20 @@ import { Callout } from '@rocket.chat/fuselage';
 import React, { useMemo, FC } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { FromApi } from '../../../../definition/FromApi';
+import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
 import CannedResponseEdit from './CannedResponseEdit';
 
 const CannedResponseEditWithData: FC<{
-	data: CannedResponseEndpointGetReturn | undefined;
+	data:
+		| {
+				cannedResponse: FromApi<IOmnichannelCannedResponse>;
+				success: boolean;
+		  }
+		| undefined;
 	reload: () => void;
 	totalDataReload: () => void;
 }> = ({ data, reload, totalDataReload }) => {
