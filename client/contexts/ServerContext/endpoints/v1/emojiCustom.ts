@@ -8,4 +8,7 @@ export type EmojiCustomEndpoints = {
 			};
 		};
 	};
+	'emoji-custom.delete': {
+		POST: (payload: { emojiId: ICustomEmojiDescriptor['_id'] }) => void;
+	};
 };
