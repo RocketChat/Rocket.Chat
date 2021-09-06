@@ -13,7 +13,6 @@ const CannedResponseEditWithData: FC<{
 	data:
 		| {
 				cannedResponse: FromApi<IOmnichannelCannedResponse>;
-				success: boolean;
 		  }
 		| undefined;
 	reload: () => void;
@@ -24,7 +23,7 @@ const CannedResponseEditWithData: FC<{
 		value: departmentData,
 		phase: state,
 		error,
-	} = useEndpointData(`livechat/department/${departmentId}` as 'livechat/department/${string}');
+	} = useEndpointData(`livechat/department/${departmentId}`);
 
 	const t = useTranslation();
 

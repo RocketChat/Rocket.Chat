@@ -17,7 +17,7 @@ import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
@@ -76,7 +76,7 @@ const CreateDiscussion = ({
 				...(parentMessageId && { pmid: parentMessageId }),
 			});
 
-			goToRoomById(result?.discussion?.rid);
+			goToRoomById(result.discussion._id);
 			onClose();
 		} catch (error) {
 			console.warn(error);

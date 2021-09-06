@@ -2,20 +2,18 @@ import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartme
 import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
 import { ILivechatTag } from '../../../../../definition/ILivechatTag';
 import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
-import { IOmnichannelRoom } from '../../../../../definition/IRoom';
+import { IOmnichannelRoom, IRoom } from '../../../../../definition/IRoom';
 import { ISetting } from '../../../../../definition/ISetting';
 import { IUser } from '../../../../../definition/IUser';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
-		GET: (params: Record<string, never>) => {
-			success: boolean;
+		GET: () => {
 			appearance: ISetting[];
 		};
 	};
 	'livechat/visitors.info': {
 		GET: (params: { visitorId: string }) => {
-			success: boolean;
 			visitor: {
 				visitorEmails: Array<{
 					address: string;
@@ -24,9 +22,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/room.onHold': {
-		POST: (roomId: string) => {
-			success: boolean;
-		};
+		POST: (payload: { roomId: IRoom['_id'] }) => void;
 	};
 	'livechat/monitors.list': {
 		GET: (params: { text: string; offset: number; count: number }) => {
@@ -52,10 +48,10 @@ export type OmnichannelEndpoints = {
 			total: number;
 		};
 	};
-	'livechat/department/${string}': {
+	'livechat/department/:_id': {
+		path: `livechat/department/${string}`;
 		GET: () => {
 			department: ILivechatDepartment;
-			success: boolean;
 		};
 	};
 	'livechat/departments.by-unit/': {
@@ -65,7 +61,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/custom-fields': {
-		GET: (params: {}) => {
+		GET: () => {
 			customFields: [
 				{
 					_id: string;
@@ -95,7 +91,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/users/agent': {
-		GET: (params?: { text?: string; offset?: number; count?: number; sort?: string }) => {
+		GET: (params: { text?: string; offset?: number; count?: number; sort?: string }) => {
 			users: {
 				_id: string;
 				emails: {
@@ -113,7 +109,6 @@ export type OmnichannelEndpoints = {
 			count: number;
 			offset: number;
 			total: number;
-			success: boolean;
 		};
 	};
 	'canned-responses': {
@@ -132,26 +127,20 @@ export type OmnichannelEndpoints = {
 			offset?: number;
 			total: number;
 		};
-		POST: (params: {
+		POST: (payload: {
 			_id?: IOmnichannelCannedResponse['_id'];
 			shortcut: string;
 			text: string;
 			scope: string;
 			tags?: any;
 			departmentId?: ILivechatDepartment['_id'];
-		}) => {
-			success: true;
-			statusCode: 200;
-		};
-		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => {
-			success: true;
-			statusCode: 200;
-		};
+		}) => void;
+		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 	};
-	'canned-responses/${string}': {
+	'canned-responses/:_id': {
+		path: `canned-responses/${string}`;
 		GET: () => {
 			cannedResponse: IOmnichannelCannedResponse;
-			success: boolean;
 		};
 	};
 };

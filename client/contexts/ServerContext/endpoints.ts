@@ -5,6 +5,7 @@ import type { ChannelsEndpoints } from './endpoints/v1/channels';
 import type { ChatEndpoints } from './endpoints/v1/chat';
 import type { CloudEndpoints } from './endpoints/v1/cloud';
 import type { CustomUserStatusEndpoints } from './endpoints/v1/customUserStatus';
+import type { DmEndpoints } from './endpoints/v1/dm';
 import type { DnsEndpoints } from './endpoints/v1/dns';
 import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
 import type { GroupsEndpoints } from './endpoints/v1/groups';
@@ -18,6 +19,7 @@ type Endpoints = ChatEndpoints &
 	ChannelsEndpoints &
 	CloudEndpoints &
 	CustomUserStatusEndpoints &
+	DmEndpoints &
 	DnsEndpoints &
 	EmojiCustomEndpoints &
 	GroupsEndpoints &
@@ -43,7 +45,7 @@ type UnionizeMethods<P, OO> = ValueOf<
 	{
 		[M in keyof OO as ExtractOperations<OO, M>]: (
 			method: M,
-			path: P,
+			path: OO extends { path: string } ? OO['path'] : P,
 			...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
 		) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
 	}

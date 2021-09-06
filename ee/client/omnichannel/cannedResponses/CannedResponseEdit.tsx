@@ -17,14 +17,12 @@ import CannedResponseForm from './components/cannedResponseForm';
 const CannedResponseEdit: FC<{
 	data?: {
 		cannedResponse: FromApi<IOmnichannelCannedResponse>;
-		success: boolean;
 	};
 	reload: () => void;
 	totalDataReload: () => void;
 	isNew?: boolean;
 	departmentData?: {
 		department: FromApi<ILivechatDepartment>;
-		success: boolean;
 	};
 }> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();

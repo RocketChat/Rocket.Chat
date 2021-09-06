@@ -8,18 +8,10 @@ export type ChatEndpoints = {
 		};
 	};
 	'chat.followMessage': {
-		POST: (params: { mid: IMessage['_id'] }) => {
-			success: true;
-			statusCode: 200;
-			body: {};
-		};
+		POST: (payload: { mid: IMessage['_id'] }) => void;
 	};
 	'chat.unfollowMessage': {
-		POST: (params: { mid: IMessage['_id'] }) => {
-			success: true;
-			statusCode: 200;
-			body: {};
-		};
+		POST: (payload: { mid: IMessage['_id'] }) => void;
 	};
 	'chat.getDiscussions': {
 		GET: (params: { roomId: IRoom['_id']; text?: string; offset: number; count: number }) => {

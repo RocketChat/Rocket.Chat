@@ -2,6 +2,6 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 
 export type AppsEndpoints = {
 	'/apps/externalComponents': {
-		GET: (params: Record<string, never>) => { externalComponents: IExternalComponent[] };
+		GET: () => { externalComponents: IExternalComponent[] };
 	};
 };
