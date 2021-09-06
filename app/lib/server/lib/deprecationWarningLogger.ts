@@ -4,6 +4,6 @@ export const deprecationLogger = new Logger('DeprecationWarning', {
 	sections: {
 		api: 'API',
 		method: 'METHOD',
-		function: 'FUCNTION',
+		function: 'FUNCTION',
 	},
 });
