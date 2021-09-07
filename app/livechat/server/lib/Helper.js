@@ -202,7 +202,7 @@ export const parseAgentCustomFields = (customFields) => {
 	};
 
 	const externalCF = externalCustomFields();
-	return Object.keys(customFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: customFields[key] } : newObj), null);
+	return Object.keys(customFields).reduce((newObj, key) => (externalCF.includes(key) ? { ...newObj, [key]: customFields[key] } : newObj), {});
 };
 
 export const normalizeAgent = (agentId) => {

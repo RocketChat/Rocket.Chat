@@ -47,6 +47,7 @@ export interface IMessage extends IRocketChatRecord {
 	groupable?: false;
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
+	alias?: string;
 	blocks?: MessageSurfaceLayout;
 	md?: ReturnType<typeof parser>;
 
