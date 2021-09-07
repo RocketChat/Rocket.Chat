@@ -30,7 +30,7 @@ const LayoutProvider: FC = ({ children }) => {
 								: '380px'
 							: '100%',
 					},
-					contextualBarExpanded: !breakpoints.includes('xxxl') && breakpoints.includes('sm'),
+					contextualBarExpanded: breakpoints.includes('sm'),
 					// eslint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm')
 						? breakpoints.includes('lg')
