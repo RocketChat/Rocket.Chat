@@ -1,3 +1,9 @@
+/**
+ * Delegate interface for SIP Registration process.
+ * @remarks
+ * This interface is implemented by a class which is
+ * interested SIP registration events.
+ */
 export interface IRegisterHandlerDeligate {
 	/**
 	 * Called when a endpoint is registered

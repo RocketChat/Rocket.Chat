@@ -1,3 +1,8 @@
+/**
+ * Enumerator represnting call state
+ * @remarks
+ */
+
 export enum CallState {
 	IDLE,
 	SERVER_CONNECTED,

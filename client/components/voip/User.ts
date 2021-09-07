@@ -1,5 +1,12 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-console */
+/**
+ * Class representing SIP UserAgent
+ * @remarks
+ * This class encapsulates all the details of sip.js and exposes
+ * a very simple functions and callback handlers to the outside world.
+ * This class thus abstracts user from Browser specific media details as well as
+ * SIP specific protol details.
+ */
+
 import {
 	UserAgent,
 	UserAgentOptions,
@@ -19,7 +26,7 @@ import { IConnectionDelegate } from './ConnectionDelegate';
 import { Operation } from './Operations';
 import { IRegisterHandlerDeligate } from './RegisterHandlerDelegate';
 import Stream from './media/Stream';
-
+import { Logger } from './utils/Logger';
 // User state is based on whether the User has sent an invite(UAC) or it
 // has received an invite (UAS)
 enum UserState {
@@ -45,6 +52,8 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 	userAgent: UserAgent | undefined;
 
 	registerer: Registerer | undefined;
+
+	logger: Logger | undefined;
 
 	private _callState: CallState = CallState.IDLE;
 
@@ -89,11 +98,13 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		this.registrationDelegate = rDelegate;
 		this.callEventDelegate = cEventDelegate;
 		this._userState = UserState.IDLE;
+		this.logger = new Logger('User');
 	}
 
 	/* UserAgentDelegate methods begin */
 	onConnect(): void {
 		this._callState = CallState.SERVER_CONNECTED;
+		this.logger?.info('onConnect() Connected');
 		console.log('Connected');
 		this.connectionDelegate.onConnected?.();
 		if (this.userAgent) {
@@ -102,19 +113,22 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 	}
 
 	onDisconnect(error: any): void {
+		this.logger?.info('onDisconnect() Disconnected');
 		if (error) {
+			this.logger?.warn('onDisconnect() Error', error);
 			this.connectionDelegate.onConnectionError?.(`Connection Error ${error}`);
 		}
-		console.log('Disconnected');
 	}
 
 	async onInvite(invitation: Invitation): Promise<void> {
+		this.logger?.info('onDisconnect() Disconnected');
 		await this.handleIncomingCall(invitation);
 	}
 
 	/* UserAgentDelegate methods end */
 	/* OutgoingRequestDelegate methods begin */
 	onAccept(): void {
+		this.logger?.info('onAccept()');
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this.registrationDelegate.onRegistered?.();
 			this._callState = CallState.REGISTERED;
@@ -125,6 +139,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 	}
 
 	onReject(error: any): void {
+		this.logger?.info('onReject()');
 		if (this._opInProgress === Operation.OP_REGISTER) {
 			this.registrationDelegate.onRegistrationError?.(error);
 		} else if (this._opInProgress === Operation.OP_UNREGISTER) {
@@ -134,6 +149,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 	/* OutgoingRequestDelegate methods end */
 
 	private async handleIncomingCall(invitation: Invitation): Promise<void> {
+		this.logger?.info('handleIncomingCall()');
 		if (this.callState === CallState.REGISTERED) {
 			this._opInProgress = Operation.OP_PROCESS_INVITE;
 			this._callState = CallState.OFFER_RECEIVED;
@@ -142,12 +158,24 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 			this.setupSessionEventHandlers(invitation);
 			this.callEventDelegate.onIncomingCall?.(invitation.id);
 		} else {
+			this.logger?.warn('handleIncomingCall() Rejecting. Incorrect state', this.callState);
 			await invitation.reject();
-			console.log('Rejected Invite');
 		}
 	}
 
+	/**
+	 * Sets up an listener handler for handling session's state change
+	 * @remarks
+	 * Called for setting up various state listeners. These listeners will
+	 * decide the next action to be taken when the session state changes.
+	 * e.g when session.state changes from |Establishing| to |Established|
+	 * one must set up local and remote media rendering.
+	 *
+	 * This class handles such session state changes and takes necessary actions.
+	 */
+
 	private setupSessionEventHandlers(session: Session): void {
+		this.logger?.info('setupSessionEventHandlers()');
 		this.session?.stateChange.addListener((state: SessionState) => {
 			if (this.session !== session) {
 				return; // if our session has changed, just return
@@ -180,27 +208,39 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 	}
 
 	onTrackAdded(_event: any): void {
-		console.log('onTrackAdded');
+		this.logger?.debug('onTrackAdded()');
 	}
 
 	onTrackRemoved(_event: any): void {
-		console.log('onTrackRemoved');
+		this.logger?.debug('onTrackRemoved()');
 	}
 
+	/**
+	 * Carries out necessary steps for rendering remote media whe
+	 * call gets established.
+	 * @remarks
+	 * Sets up Stream class and plays the stream on given Media element/
+	 * Also sets up various event handlers.
+	 */
 	private setupRemoteMedia(): any {
+		this.logger?.debug('setupRemoteMedia()');
 		if (!this.session) {
+			this.logger?.error('setupRemoteMedia() : Sesson does not exist');
 			throw new Error('Session does not exist.');
 		}
 		const sdh = this.session?.sessionDescriptionHandler;
 		if (!sdh) {
+			this.logger?.error('setupRemoteMedia() : no session description');
 			return undefined;
 		}
 		if (!(sdh instanceof SessionDescriptionHandler)) {
+			this.logger?.error('setupRemoteMedia() : Unknown error');
 			throw new Error('Session description handler not instance of web SessionDescriptionHandler');
 		}
 
 		const remoteStream = sdh.remoteMediaStream;
 		if (!remoteStream) {
+			this.logger?.error('setupRemoteMedia() : Remote stream not found');
 			throw new Error('Remote media stream undefiend.');
 		}
 
@@ -215,8 +255,20 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		}
 	}
 
+	/**
+	 * Configures and initializes sip.js UserAgent
+	 * call gets established.
+	 * @remarks
+	 * This class configures transport properties such as websocket url, passed down in config,
+	 * sets up ICE servers,
+	 * SIP UserAgent options such as userName, Password, URI.
+	 * Once initialized, it starts the userAgent.
+	 */
+
 	async init(): Promise<any> {
+		this.logger?.debug('init()');
 		const sipUri = `sip:${this.config.auth_user_name}@${this.config.sip_registrar_hostname_ip}`;
+		this.logger?.verbose('init() endpoint identity = ', sipUri);
 		const transportOptions = {
 			server: this.config.websocket_uri,
 			connectionTimeout: 10, // Replace this with config
@@ -245,22 +297,40 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		await this.userAgent.start();
 	}
 
+	/**
+	 * Public method called from outside to register the SIP UA with call server.
+	 * @remarks
+	 */
+
 	register(): void {
+		this.logger?.info('register()');
 		this._opInProgress = Operation.OP_REGISTER;
 		this.registerer?.register({
 			requestDelegate: this,
 		});
 	}
 
+	/**
+	 * Public method called from outside to unregister the SIP UA.
+	 * @remarks
+	 */
+
 	unregister(): void {
+		this.logger?.info('unregister()');
 		this._opInProgress = Operation.OP_UNREGISTER;
 		this.registerer?.unregister({
 			all: true,
 			requestDelegate: this,
 		});
 	}
+	/**
+	 * Public method called from outside to accept incoming call.
+	 * @remarks
+	 */
 
 	async acceptCall(): Promise<void> {
+		this.logger?.info('acceptCall()');
+		// Call state must be in offer_received.
 		if (
 			this._callState === CallState.OFFER_RECEIVED &&
 			this._opInProgress === Operation.OP_PROCESS_INVITE
@@ -274,34 +344,54 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 					},
 				},
 			};
+			this.logger?.debug(
+				'acceptCall() constraints = ',
+				JSON.stringify(invitationAcceptOptions.sessionDescriptionHandlerOptions),
+			);
+			// Somethingis wrong, this session is not an instance of INVITE
 			if (!(this.session instanceof Invitation)) {
+				this.logger?.error('acceptCall() Session instance error');
 				throw new Error('Session not instance of Invitation.');
 			}
 			return this.session.accept(invitationAcceptOptions);
 		}
-		alert('Something wrong again');
+		this.logger?.error('acceptCall() Unknown error');
 		throw new Error('Something went wront');
 	}
 
-	// Handling only for incoming call.
+	/**
+	 * Public method called from outside to reject a call.
+	 * @remarks
+	 */
 	rejectCall(): any {
+		this.logger?.info('rejectCall()');
+
 		if (!this.session) {
+			this.logger?.warn('rejectCall() Session does not exist');
 			throw new Error('Session does not exist.');
 		}
 		if (this._callState !== CallState.OFFER_RECEIVED) {
+			this.logger?.warn('rejectCall() Incorrect call State', this.callState);
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		if (!(this.session instanceof Invitation)) {
+			this.logger?.warn('rejectCall() Session not instance of Invitation.');
 			throw new Error('Session not instance of Invitation.');
 		}
 		return this.session.reject();
 	}
+	/**
+	 * Public method called from outside to end a call.
+	 * @remarks
+	 */
 
 	async endCall(): Promise<any> {
 		if (!this.session) {
+			this.logger?.warn('rejectCall() Session does not exist');
 			throw new Error('Session does not exist.');
 		}
 		if (this._callState !== CallState.ANSWER_SENT && this._callState !== CallState.IN_CALL) {
+			this.logger?.warn('rejectCall() Incorrect call State', this.callState);
 			throw new Error(`Incorrect call State = ${this.callState}`);
 		}
 		switch (this.session.state) {
@@ -309,13 +399,15 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
 				}
-				throw new Error('Unknown session type.');
+				this.logger?.warn('rejectCall() Session not instance of Invitation.');
+				throw new Error('Session not instance of Invitation.');
 
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
 				}
-				throw new Error('Unknown session type.');
+				this.logger?.warn('rejectCall() Session not instance of Invitation.');
+				throw new Error('Session not instance of Invitation.');
 
 			case SessionState.Established:
 				return this.session.bye();
@@ -324,6 +416,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 			case SessionState.Terminated:
 				break;
 			default:
+				this.logger?.warn('rejectCall() Unknown state');
 				throw new Error('Unknown state');
 		}
 		console.log('Ended');

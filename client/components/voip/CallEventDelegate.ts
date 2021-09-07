@@ -1,3 +1,9 @@
+/**
+ * Delegate interface for Call Events
+ * @remarks
+ * This interface is implemented by a class which is
+ * interested in handling call events.
+ */
 export interface ICallEventDelegate {
 	/**
 	 * Called when a call is received
