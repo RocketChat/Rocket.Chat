@@ -14,8 +14,15 @@ import { hasPermission, hasAllPermission } from '../../authorization';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
-
 const logger = new Logger('API', {});
+
+const {
+	LOG_REST_PAYLOAD = 'false',
+	LOG_REST_METHOD_PAYLOADS = 'false',
+} = process.env;
+
+const addPayloadToLog = LOG_REST_PAYLOAD !== 'false' || LOG_REST_METHOD_PAYLOADS !== 'false';
+
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -351,7 +358,6 @@ export class APIClass extends Restivus {
 						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
-					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 					this.requestIp = getRequestIP(this.request);
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
@@ -404,6 +410,9 @@ export class APIClass extends Restivus {
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
+
+					const dateTime = new Date().toISOString();
+					logger.info(() => `${ this.requestIp } - ${ this.userId } [${ dateTime }] "${ this.request.method } ${ this.request.url }" ${ result.statusCode } - "${ this.request.headers.referer }" "${ this.request.headers['user-agent'] }" | ${ addPayloadToLog ? JSON.stringify(this.request.body) : '' }`);
 
 					result = result || API.v1.success();
 
