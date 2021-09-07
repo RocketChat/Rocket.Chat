@@ -64550,6 +64550,50 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.18.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,4 +1,40 @@
 
+# 3.18.1
+`2021-09-06  ·  1 🚀  ·  1 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.1`
+
+### 🚀 Improvements
+
+
+- Change HTTP and Method logs to level INFO ([#23100](https://github.com/RocketChat/Rocket.Chat/pull/23100))
+
+### 🐛 Bug fixes
+
+
+- Change way emails are validated on livechat registerGuest method ([#23089](https://github.com/RocketChat/Rocket.Chat/pull/23089))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091))
+
+  Dimisses auth banners assigned to EE admins and prevents new ones from appearing.
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@casalsgh](https://github.com/casalsgh)
+- [@g-thome](https://github.com/g-thome)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 3.18.0
 `2021-08-31  ·  5 🎉  ·  7 🚀  ·  20 🐛  ·  19 🔍  ·  25 👩‍💻👨‍💻`
 

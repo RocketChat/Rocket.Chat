@@ -3,7 +3,9 @@ import dns from 'dns';
 import { Meteor } from 'meteor/meteor';
 
 import { emailDomainDefaultBlackList } from './defaultBlockedDomainsList';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+
+const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 let emailDomainBlackList = [];
 let emailDomainWhiteList = [];
@@ -12,6 +14,7 @@ let useDNSDomainCheck = false;
 
 settings.get('Accounts_BlockedDomainsList', function(key, value) {
 	if (!value) {
+		emailDomainBlackList = [];
 		return;
 	}
 
@@ -19,6 +22,7 @@ settings.get('Accounts_BlockedDomainsList', function(key, value) {
 });
 settings.get('Accounts_AllowedDomainsList', function(key, value) {
 	if (!value) {
+		emailDomainWhiteList = [];
 		return;
 	}
 
@@ -32,8 +36,7 @@ settings.get('Accounts_UseDNSDomainCheck', function(key, value) {
 });
 
 export const validateEmailDomain = function(email) {
-	const emailValidation = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-	if (!emailValidation.test(email)) {
+	if (!emailValidationRegex.test(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'RocketChat.validateEmailDomain', email });
 	}
 
