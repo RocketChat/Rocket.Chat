@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
@@ -150,30 +150,37 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 	post() {
 		const findResult = findRoomByIdOrName({ params: this.bodyParams });
 
-		if (!this.bodyParams.latest) {
+		const {
+			latest,
+			oldest,
+			inclusive = false,
+			limit,
+			excludePinned,
+			filesOnly,
+			ignoreThreads,
+			ignoreDiscussion,
+			users,
+		} = this.bodyParams;
+
+		if (!latest) {
 			return API.v1.failure('Body parameter "latest" is required.');
 		}
 
-		if (!this.bodyParams.oldest) {
+		if (!oldest) {
 			return API.v1.failure('Body parameter "oldest" is required.');
 		}
 
-		const latest = new Date(this.bodyParams.latest);
-		const oldest = new Date(this.bodyParams.oldest);
-
-		const inclusive = this.bodyParams.inclusive || false;
-
 		const count = Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
 			roomId: findResult._id,
-			latest,
-			oldest,
+			latest: new Date(latest),
+			oldest: new Date(oldest),
 			inclusive,
-			limit: this.bodyParams.limit,
-			excludePinned: [true, 'true', 1, '1'].includes(this.bodyParams.excludePinned),
-			filesOnly: [true, 'true', 1, '1'].includes(this.bodyParams.filesOnly),
-			ignoreThreads: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreThreads),
-			ignoreDiscussion: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreDiscussion),
-			fromUsers: this.bodyParams.users,
+			limit,
+			excludePinned: [true, 'true', 1, '1'].includes(excludePinned),
+			filesOnly: [true, 'true', 1, '1'].includes(filesOnly),
+			ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads),
+			ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion),
+			fromUsers: users,
 		}));
 
 		return API.v1.success({ count });
@@ -303,6 +310,28 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 		return API.v1.success(Promise.await(findChannelAndPrivateAutocomplete({
 			uid: this.userId,
 			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.channelAndPrivate.withPagination', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findChannelAndPrivateAutocompleteWithPagination({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
 		})));
 	},
 });

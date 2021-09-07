@@ -1055,12 +1055,28 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.search', () => {
+		beforeEach((done) => {
+			const sendMessage = (text) => {
+				request.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+							msg: text,
+						},
+					})
+					.end(() => {});
+			};
+			for (let i = 0; i < 5; i++) { sendMessage('msg1'); }
+			done();
+		});
+
 		it('should return a list of messages when execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1070,12 +1086,12 @@ describe('[Chat]', function() {
 				})
 				.end(done);
 		});
-		it('should return a list of messages when is provided "count" query parameter execute successfully', (done) => {
+		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
 			request.get(api('chat.search'))
 				.set(credentials)
 				.query({
 					roomId: 'GENERAL',
-					searchText: 'This message was edited via API',
+					searchText: 'msg1',
 					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1083,10 +1099,49 @@ describe('[Chat]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(1);
+				})
+				.end(done);
+		});
+		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 1,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(3);
+				})
+				.end(done);
+		});
+
+		it('should return a empty list of messages when is provided a huge offset value', (done) => {
+			request.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+					searchText: 'msg1',
+					offset: 9999,
+					count: 3,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages');
+					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
 		});
 	});
+
 	describe('[/chat.react]', () => {
 		it('should return statusCode: 200 and success when try unreact a message that\'s no reacted yet', (done) => {
 			request.post(api('chat.react'))
@@ -1543,6 +1598,42 @@ describe('[Chat]', function() {
 		});
 	});
 
+	describe('[/chat.starMessage]', () => {
+		it('should return an error when starMessage is not allowed in this server', (done) => {
+			updateSetting('Message_AllowStarring', false).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error');
+					})
+					.end(done);
+			});
+		});
+
+		it('should star Message successfully', (done) => {
+			updateSetting('Message_AllowStarring', true).then(() => {
+				request.post(api('chat.starMessage'))
+					.set(credentials)
+					.send({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('error');
+					})
+					.end(done);
+			});
+		});
+	});
+
 	describe('[/chat.ignoreUser]', () => {
 		it('should fail if invalid roomId', (done) => {
 			request.get(api('chat.ignoreUser'))
@@ -1881,6 +1972,36 @@ describe('[Chat]', function() {
 	});
 
 	describe('[/chat.getDiscussions]', () => {
+		const messageText = 'Message to create discussion';
+		let testChannel;
+		let discussionRoom;
+		const messageWords = [
+			...messageText.split(' '),
+			...messageText.toUpperCase().split(' '),
+			...messageText.toLowerCase().split(' '),
+			messageText,
+			messageText.charAt(0),
+			' ',
+		];
+		before((done) => {
+			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
+				.end((err, room) => {
+					testChannel = room.body.channel;
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannel._id,
+							t_name: 'Message to create discussion',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end((err, res) => {
+							discussionRoom = res.body.discussion;
+							done();
+						});
+				});
+		});
+
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request.get(api('chat.getDiscussions'))
 				.set(credentials)
@@ -1920,6 +2041,33 @@ describe('[Chat]', function() {
 				.end(done);
 		});
 
+		function filterDiscussionsByText(text) {
+			it(`should return the room's discussion list filtered by the text '${ text }'`, (done) => {
+				request.get(api('chat.getDiscussions'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.messages).to.have.lengthOf(1);
+						expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
+					})
+					.end(done);
+			});
+		}
+
+		messageWords.forEach((text) => {
+			filterDiscussionsByText(text);
+		});
+
 		it('should return an error when the messageId is invalid', (done) => {
 			request.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
 				.set(credentials)
@@ -1942,25 +2090,48 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.getThreadsList]', () => {
+		const messageText = 'Message to create thread';
 		let testChannel;
 		let threadMessage;
+		const messageWords = [
+			...messageText.split(' '),
+			...messageText.toUpperCase().split(' '),
+			...messageText.toLowerCase().split(' '),
+			messageText,
+			messageText.charAt(0),
+			' ',
+		];
 		before((done) => {
 			createRoom({ type: 'c', name: `channel.test.threads.${ Date.now() }` })
-				.end((err, channel) => {
-					testChannel = channel.body.channel;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Message to create thread',
-					}).end((err, message) => {
-						sendSimpleMessage({
-							roomId: testChannel._id,
-							text: 'Thread Message',
-							tmid: message.body.message._id,
-						}).end((err, res) => {
-							threadMessage = res.body.message;
-							done();
+				.end((err, room) => {
+					testChannel = room.body.channel;
+					request.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Message to create thread',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.then((response) => {
+							request.post(api('chat.sendMessage'))
+								.set(credentials)
+								.send({
+									message: {
+										rid: testChannel._id,
+										msg: 'Thread message',
+										tmid: response.body.message._id,
+									},
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.end((err, res) => {
+									threadMessage = res.body.message;
+									done();
+								});
 						});
-					});
 				});
 		});
 
@@ -2023,6 +2194,55 @@ describe('Threads', () => {
 						expect(res.body).to.have.property('count');
 						expect(res.body.threads).to.have.lengthOf(1);
 						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+		});
+
+		function filterThreadsByText(text) {
+			it(`should return the room's thread list filtered by the text '${ text }'`, (done) => {
+				request.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						text,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(1);
+						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
+					})
+					.end(done);
+			});
+		}
+
+		messageWords.forEach((text) => {
+			filterThreadsByText(text);
+		});
+
+		it('should return an empty thread list', (done) => {
+			updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				request.get(api('chat.getThreadsList'))
+					.set(credentials)
+					.query({
+						rid: testChannel._id,
+						text: 'missing',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('threads').and.to.be.an('array');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('count');
+						expect(res.body.threads).to.have.lengthOf(0);
 					})
 					.end(done);
 			});

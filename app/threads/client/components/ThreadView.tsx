@@ -12,7 +12,7 @@ type ThreadViewProps = {
 	onToggleExpand: (expanded: boolean) => void;
 	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
-	onClickBack: () => void;
+	onClickBack: (e: unknown) => void;
 };
 
 const ThreadView = forwardRef<Element, ThreadViewProps>(({
@@ -62,7 +62,7 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				display='flex'
 				flexDirection='column'
 				width={'full'}
-				maxWidth={hasExpand && expanded ? 855 : null}
+				maxWidth={hasExpand && expanded ? 855 : undefined}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}

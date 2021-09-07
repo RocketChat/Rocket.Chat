@@ -47,6 +47,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -135,7 +138,11 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username, options) { // TODO:: Create class Agent
+	findOneOnlineAgentByUserList(userList, options) { // TODO:: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
 		const query = queryStatusAgentOnline({ username });
 
 		return this.findOne(query, options);
@@ -174,14 +181,16 @@ export class Users extends Base {
 		return this.find(query);
 	}
 
-	getNextAgent(ignoreAgentId) { // TODO: Create class Agent
+	getNextAgent(ignoreAgentId, extraQuery) { // TODO: Create class Agent
+		// fetch all unavailable agents, and exclude them from the selection
+		const unavailableAgents = Promise.await(this.getUnavailableAgents(null, extraQuery)).map((u) => u.username);
 		const extraFilters = {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+			// limit query to remove booked agents
+			username: { $nin: unavailableAgents },
 		};
-		const query = queryStatusAgentOnline(extraFilters);
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const sort = {
 			livechatCount: 1,
@@ -194,7 +203,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -204,6 +213,11 @@ export class Users extends Base {
 		return null;
 	}
 
+	getUnavailableAgents() {
+		return [];
+	}
+
+
 	getNextBotAgent(ignoreAgentId) { // TODO: Create class Agent
 		const query = {
 			roles: {
@@ -211,9 +225,6 @@ export class Users extends Base {
 			},
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
-
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 
 		const sort = {
 			livechatCount: 1,
@@ -226,7 +237,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -1554,6 +1565,17 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	countActiveUsersByService(serviceName, options) {
+		const query = {
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			[`services.${ serviceName }`]: { $exists: true },
+		};
+
+		return this.find(query, options).count();
 	}
 
 	getActiveLocalUserCount() {

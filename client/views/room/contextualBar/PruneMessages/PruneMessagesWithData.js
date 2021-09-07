@@ -106,7 +106,7 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 				filesOnly: attached,
 				ignoreDiscussion: discussion,
 				ignoreThreads: threads,
-				fromUsers: users,
+				users,
 			});
 
 			setCounter(count);

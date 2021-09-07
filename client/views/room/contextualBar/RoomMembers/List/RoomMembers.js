@@ -34,6 +34,8 @@ const RoomMembers = ({
 	loadMoreItems,
 	renderRow: Row = DefaultRow,
 	rid,
+	isTeam,
+	isDirect,
 	reload,
 }) => {
 	const t = useTranslation();
@@ -54,7 +56,7 @@ const RoomMembers = ({
 		<>
 			<VerticalBar.Header>
 				<VerticalBar.Icon name='members' />
-				<VerticalBar.Text>{t('Members')}</VerticalBar.Text>
+				<VerticalBar.Text>{isTeam ? t('Teams_members') : t('Members')}</VerticalBar.Text>
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
@@ -129,23 +131,24 @@ const RoomMembers = ({
 					)}
 				</Box>
 			</VerticalBar.Content>
-
-			<VerticalBar.Footer>
-				<ButtonGroup stretch>
-					{onClickInvite && (
-						<Button onClick={onClickInvite} width='50%'>
-							<Icon name='link' size='x20' mie='x4' />
-							{t('Invite_Link')}
-						</Button>
-					)}
-					{onClickAdd && (
-						<Button onClick={onClickAdd} width='50%' primary>
-							<Icon name='user-plus' size='x20' mie='x4' />
-							{t('Add')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</VerticalBar.Footer>
+			{!isDirect && (onClickInvite || onClickAdd) && (
+				<VerticalBar.Footer>
+					<ButtonGroup stretch>
+						{onClickInvite && (
+							<Button onClick={onClickInvite} width='50%'>
+								<Icon name='link' size='x20' mie='x4' />
+								{t('Invite_Link')}
+							</Button>
+						)}
+						{onClickAdd && (
+							<Button onClick={onClickAdd} width='50%' primary>
+								<Icon name='user-plus' size='x20' mie='x4' />
+								{t('Add')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</VerticalBar.Footer>
+			)}
 		</>
 	);
 };

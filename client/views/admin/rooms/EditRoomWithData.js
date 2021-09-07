@@ -6,7 +6,12 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditRoom from './EditRoom';
 
 function EditRoomWithData({ rid }) {
-	const { value: data = {}, phase: state, error, reload } = useEndpointData(
+	const {
+		value: data = {},
+		phase: state,
+		error,
+		reload,
+	} = useEndpointData(
 		'rooms.adminRooms.getRoom',
 		useMemo(() => ({ rid }), [rid]),
 	);

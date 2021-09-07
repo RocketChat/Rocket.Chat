@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { secondsToHHMMSS } from '../../../../../app/utils/lib/timeConverter';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -10,7 +11,18 @@ import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useUpdateChartData } from './useUpdateChartData';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
-
+const tooltipCallbacks = {
+	callbacks: {
+		title(tooltipItem, data) {
+			return data.labels[tooltipItem[0].index];
+		},
+		label(tooltipItem, data) {
+			const { datasetIndex, index } = tooltipItem;
+			const { data: datasetData, label } = data.datasets[datasetIndex];
+			return `${label}: ${secondsToHHMMSS(datasetData[index])}`;
+		},
+	},
+};
 const init = (canvas, context, t) =>
 	drawLineChart(
 		canvas,
@@ -22,8 +34,8 @@ const init = (canvas, context, t) =>
 			t('Longest_response_time'),
 		],
 		labels,
-		[initialData, initialData, initialData, initialData],
-		{ legends: true, anim: true, smallTicks: true },
+		[initialData, initialData.slice(), initialData.slice(), initialData.slice()],
+		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
 	);
 
 const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
@@ -39,10 +51,11 @@ const ResponseTimesChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/timings',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/timings', params);
 
 	reloadRef.current.responseTimesChart = reload;
 

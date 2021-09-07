@@ -23,6 +23,7 @@ import { getStatistics as federationGetStatistics } from '../../../federation/se
 import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { Team } from '../../../../server/sdk';
 
@@ -156,6 +157,9 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
+		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
@@ -183,6 +187,7 @@ export const statistics = {
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();
+		statistics.services = getServicesStatistics();
 
 		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
 			projection: {

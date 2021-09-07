@@ -30,7 +30,6 @@ const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }) => {
 				variant='warning'
 				onClose={onClose}
 				title={<Skeleton width='50%' />}
-				confirmText={<Skeleton width='full' />}
 				confirmText={t('Cancel')}
 				onConfirm={onClose}
 			>

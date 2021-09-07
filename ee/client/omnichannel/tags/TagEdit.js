@@ -1,32 +1,28 @@
-import { Field, TextInput, Button, Box, MultiSelect, Margins } from '@rocket.chat/fuselage';
+import { Field, TextInput, Button, ButtonGroup, Icon, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo } from 'react';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
+import AutoCompleteDepartmentMultiple from '../../../../client/components/AutoCompleteDepartmentMultiple';
+import Page from '../../../../client/components/Page';
 import { useRoute } from '../../../../client/contexts/RouterContext';
 import { useMethod } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
 
-function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props }) {
+function TagEdit({ title, data, tagId, isNew, reload, currentDepartments, ...props }) {
 	const t = useTranslation();
 	const tagsRoute = useRoute('omnichannel-tags');
 
 	const tag = data || {};
 
-	const options = useMemo(
-		() =>
-			availableDepartments && availableDepartments.departments
-				? availableDepartments.departments.map(({ _id, name }) => [_id, name || _id])
-				: [],
-		[availableDepartments],
-	);
-
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: tag.name,
 		description: tag.description,
-		departments: tag.departments && tag.departments[0] === '' ? [] : tag.departments,
+		departments:
+			currentDepartments && currentDepartments.departments
+				? currentDepartments.departments.map((dep) => ({ label: dep.name, value: dep._id }))
+				: [],
 	});
 
 	const { handleName, handleDescription, handleDepartments } = handlers;
@@ -41,8 +37,8 @@ function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props })
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleReset = useMutableCallback(() => {
-		reload();
+	const handleReturn = useMutableCallback(() => {
+		tagsRoute.push({});
 	});
 
 	const canSave = useMemo(() => !nameError, [nameError]);
@@ -54,7 +50,7 @@ function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props })
 			return dispatchToastMessage({ type: 'error', message: t('The_field_is_required') });
 		}
 
-		const finalDepartments = departments || [''];
+		const finalDepartments = departments ? departments.map((dep) => dep.value) : [''];
 
 		try {
 			await saveTag(tagId, tagData, finalDepartments);
@@ -67,52 +63,13 @@ function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props })
 	});
 
 	return (
-		<VerticalBar.ScrollableContent is='form' {...props}>
-			<Field>
-				<Field.Label>{t('Name')}*</Field.Label>
-				<Field.Row>
-					<TextInput
-						placeholder={t('Name')}
-						flexGrow={1}
-						value={name}
-						onChange={handleName}
-						error={hasUnsavedChanges && nameError}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Description')}</Field.Label>
-				<Field.Row>
-					<TextInput
-						placeholder={t('Description')}
-						flexGrow={1}
-						value={description}
-						onChange={handleDescription}
-					/>
-				</Field.Row>
-			</Field>
-			<Field>
-				<Field.Label>{t('Departments')}</Field.Label>
-				<Field.Row>
-					<MultiSelect
-						options={options}
-						value={departments}
-						maxWidth='100%'
-						placeholder={t('Select_an_option')}
-						onChange={handleDepartments}
-						flexGrow={1}
-					/>
-				</Field.Row>
-			</Field>
-
-			<Field.Row>
-				<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-					<Margins inlineEnd='x4'>
-						{!isNew && (
-							<Button flexGrow={1} type='reset' disabled={!hasUnsavedChanges} onClick={handleReset}>
-								{t('Reset')}
-							</Button>
-						)}
+		<Page flexDirection='row'>
+			<Page>
+				<Page.Header title={title}>
+					<ButtonGroup>
+						<Button onClick={handleReturn}>
+							<Icon name='back' /> {t('Back')}
+						</Button>
 						<Button
 							primary
 							mie='none'
@@ -122,10 +79,50 @@ function TagEdit({ data, tagId, isNew, availableDepartments, reload, ...props })
 						>
 							{t('Save')}
 						</Button>
-					</Margins>
-				</Box>
-			</Field.Row>
-		</VerticalBar.ScrollableContent>
+					</ButtonGroup>
+				</Page.Header>
+				<Page.ScrollableContentWithShadow>
+					<FieldGroup
+						w='full'
+						alignSelf='center'
+						maxWidth='x600'
+						is='form'
+						autoComplete='off'
+						{...props}
+					>
+						<Field>
+							<Field.Label>{t('Name')}*</Field.Label>
+							<Field.Row>
+								<TextInput
+									placeholder={t('Name')}
+									flexGrow={1}
+									value={name}
+									onChange={handleName}
+									error={hasUnsavedChanges && nameError}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Description')}</Field.Label>
+							<Field.Row>
+								<TextInput
+									placeholder={t('Description')}
+									flexGrow={1}
+									value={description}
+									onChange={handleDescription}
+								/>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Departments')}</Field.Label>
+							<Field.Row>
+								<AutoCompleteDepartmentMultiple value={departments} onChange={handleDepartments} />
+							</Field.Row>
+						</Field>
+					</FieldGroup>
+				</Page.ScrollableContentWithShadow>
+			</Page>
+		</Page>
 	);
 }
 
