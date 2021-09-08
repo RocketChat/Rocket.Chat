@@ -5,7 +5,7 @@ import type { IUser } from '../../../../../definition/IUser';
 export type ImEndpoints = {
 	'im.create': {
 		POST: (
-			payload: (
+			params: (
 				| {
 						username: Exclude<IUser['username'], undefined>;
 				  }
@@ -27,7 +27,7 @@ export type ImEndpoints = {
 	};
 	'im.members': {
 		GET: (params: {
-			roomId: string;
+			roomId: IRoom['_id'];
 			offset?: number;
 			count?: number;
 			filter?: string;

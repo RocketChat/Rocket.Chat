@@ -4,7 +4,7 @@ import type { IUser } from '../../../../../definition/IUser';
 export type DmEndpoints = {
 	'dm.create': {
 		POST: (
-			payload: (
+			params: (
 				| {
 						username: Exclude<IUser['username'], undefined>;
 				  }
@@ -15,7 +15,7 @@ export type DmEndpoints = {
 				excludeSelf?: boolean;
 			},
 		) => {
-			room: IRoom & { rid: string };
+			room: IRoom & { rid: IRoom['_id'] };
 		};
 	};
 };

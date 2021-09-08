@@ -21,7 +21,6 @@ type ServerContextValue = {
 		method: M,
 		path: P,
 		params: Params<M, P>[0],
-		extraParams?: Params<M, P>[1],
 	) => Promise<FromApi<Return<M, P>>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (
@@ -67,13 +66,10 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 export const useEndpoint = <M extends 'GET' | 'POST' | 'DELETE', P extends PathFor<M>>(
 	method: M,
 	path: P,
-): ((params: Params<M, P>[0], extraParams?: Params<M, P>[1]) => Promise<FromApi<Return<M, P>>>) => {
+): ((params: Params<M, P>[0]) => Promise<FromApi<Return<M, P>>>) => {
 	const { callEndpoint } = useContext(ServerContext);
 
-	return useCallback(
-		(...params) => callEndpoint(method, path, ...params),
-		[callEndpoint, path, method],
-	);
+	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);
 };
 
 export const useUpload = (endpoint: string): ((params: any, formData: any) => Promise<void>) => {

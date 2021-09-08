@@ -11,7 +11,7 @@ export type GroupsEndpoints = {
 	};
 	'groups.members': {
 		GET: (params: {
-			roomId: string;
+			roomId: IRoom['_id'];
 			offset?: number;
 			count?: number;
 			filter?: string;

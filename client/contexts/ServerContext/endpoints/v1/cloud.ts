@@ -1,5 +1,5 @@
 export type CloudEndpoints = {
 	'cloud.manualRegister': {
-		POST: (payload: { cloudBlob: string }) => void;
+		POST: (params: { cloudBlob: string }) => void;
 	};
 };

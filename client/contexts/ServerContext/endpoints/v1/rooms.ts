@@ -27,7 +27,7 @@ export type RoomsEndpoints = {
 		};
 	};
 	'rooms.createDiscussion': {
-		POST: (payload: {
+		POST: (params: {
 			prid: IRoom['_id'];
 			pmid?: IMessage['_id'];
 			t_name: IRoom['fname'];

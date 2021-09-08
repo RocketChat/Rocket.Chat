@@ -67,15 +67,13 @@ type Operation<M extends Method, P extends PathFor<M>> = M extends any
 		: never
 	: never;
 
-type AssertParams<Q> = Q extends []
-	? [undefined?, undefined?]
-	: Q extends [any]
-	? [Q[0], undefined?]
-	: Q extends [...any[]]
-	? [Q[0], Q[1]]
+type ExtractParams<Q> = Q extends [any, any]
+	? [undefined?]
+	: Q extends [any, any, any, ...any[]]
+	? [Q[2]]
 	: never;
 
-export type Params<M extends Method, P extends PathFor<M>> = AssertParams<
-	[Parameters<Operation<M, P>>[2], Parameters<Operation<M, P>>[3]]
+export type Params<M extends Method, P extends PathFor<M>> = ExtractParams<
+	Parameters<Operation<M, P>>
 >;
 export type Return<M extends Method, P extends PathFor<M>> = ReturnType<Operation<M, P>>;

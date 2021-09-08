@@ -14,21 +14,18 @@ export const useEndpointAction = <M extends Method, P extends PathFor<M>>(
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useCallback(
-		async (extraParams?) => {
-			try {
-				const data = await sendData(params, extraParams);
+	return useCallback(async () => {
+		try {
+			const data = await sendData(params);
 
-				if (successMessage) {
-					dispatchToastMessage({ type: 'success', message: successMessage });
-				}
-
-				return data;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				throw error;
+			if (successMessage) {
+				dispatchToastMessage({ type: 'success', message: successMessage });
 			}
-		},
-		[dispatchToastMessage, params, sendData, successMessage],
-	);
+
+			return data;
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+			throw error;
+		}
+	}, [dispatchToastMessage, params, sendData, successMessage]);
 };

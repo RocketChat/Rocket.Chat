@@ -22,7 +22,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/room.onHold': {
-		POST: (payload: { roomId: IRoom['_id'] }) => void;
+		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
 	'livechat/monitors.list': {
 		GET: (params: { text: string; offset: number; count: number }) => {
@@ -127,7 +127,7 @@ export type OmnichannelEndpoints = {
 			offset?: number;
 			total: number;
 		};
-		POST: (payload: {
+		POST: (params: {
 			_id?: IOmnichannelCannedResponse['_id'];
 			shortcut: string;
 			text: string;

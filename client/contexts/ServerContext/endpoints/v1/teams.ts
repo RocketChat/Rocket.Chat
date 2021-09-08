@@ -1,6 +1,6 @@
 import type { IRoom } from '../../../../../definition/IRoom';
 import type { IRecordsWithTotal, ITeam } from '../../../../../definition/ITeam';
-import { IUser } from '../../../../../definition/IUser';
+import type { IUser } from '../../../../../definition/IUser';
 
 export type TeamsEndpoints = {
 	'teams.addRooms': {
@@ -8,7 +8,7 @@ export type TeamsEndpoints = {
 	};
 	'teams.listRooms': {
 		GET: (params: {
-			teamId: string;
+			teamId: ITeam['_id'];
 			offset?: number;
 			count?: number;
 			filter: string;
@@ -21,7 +21,7 @@ export type TeamsEndpoints = {
 	};
 	'teams.listRoomsOfUser': {
 		GET: (params: {
-			teamId: string;
+			teamId: ITeam['_id'];
 			teamName?: string;
 			userId?: string;
 			canUserDelete?: boolean;
@@ -34,7 +34,7 @@ export type TeamsEndpoints = {
 		};
 	};
 	'teams.create': {
-		POST: (payload: {
+		POST: (params: {
 			name: ITeam['name'];
 			type?: ITeam['type'];
 			members?: IUser['_id'][];

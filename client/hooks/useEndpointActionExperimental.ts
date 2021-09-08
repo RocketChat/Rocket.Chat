@@ -9,14 +9,14 @@ export const useEndpointActionExperimental = <M extends Method, P extends PathFo
 	method: M,
 	path: P,
 	successMessage?: string,
-): ((params: Params<M, P>[0], extraParams?: Params<M, P>[1]) => Promise<FromApi<Return<M, P>>>) => {
+): ((params: Params<M, P>[0]) => Promise<FromApi<Return<M, P>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useCallback(
-		async (params, extraParams?) => {
+		async (params) => {
 			try {
-				const data = await sendData(params, extraParams);
+				const data = await sendData(params);
 
 				if (successMessage) {
 					dispatchToastMessage({ type: 'success', message: successMessage });
