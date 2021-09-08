@@ -47,11 +47,11 @@ import {
 	normalizeTransferredByData,
 	parseAgentCustomFields,
 	updateDepartmentAgents,
+	validateEmail,
 } from './Helper';
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { validateEmailDomain } from '../../../lib/server';
 import { IMessage } from '../../../../definition/IMessage';
 import {
 	ILivechatVisitor,
@@ -479,7 +479,7 @@ export const Livechat = {
 
 		if (email) {
 			email = email.trim();
-			validateEmailDomain(email);
+			validateEmail(email);
 			updateUser.$set.visitorEmails = [{ address: email }];
 		}
 
