@@ -3,6 +3,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export let RocketChatFileCustomSoundsInstance;
 
@@ -19,7 +20,7 @@ Meteor.startup(function() {
 		throw new Error(`Invalid RocketChatStore type [${ storeType }]`);
 	}
 
-	console.log(`Using ${ storeType } for custom sounds storage`.green);
+	SystemLogger.info(`Using ${ storeType } for custom sounds storage`);
 
 	let path = '~/uploads';
 	if (settings.get('CustomSounds_FileSystemPath') != null) {
