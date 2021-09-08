@@ -252,7 +252,7 @@ export class CustomOAuth {
 		if (this.emailField) {
 			identity.email = this.getEmail(identity);
 		}
-
+		// will be moved to EE edition as a callback
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -313,7 +313,7 @@ export class CustomOAuth {
 	getAvatarUrl(data) {
 		try {
 			const value = fromTemplate(this.avatarField, data);
-
+			console.log(`get avatar url: ${ value }`);
 			if (!value) {
 				logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
 			}
