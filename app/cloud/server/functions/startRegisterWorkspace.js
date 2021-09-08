@@ -5,6 +5,7 @@ import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
 export function startRegisterWorkspace(resend = false) {
@@ -28,9 +29,9 @@ export function startRegisterWorkspace(resend = false) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return false;
