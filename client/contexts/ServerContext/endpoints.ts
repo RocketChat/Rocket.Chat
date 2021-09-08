@@ -18,6 +18,7 @@ import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
 import { ImMembersEndpoint } from './endpoints/v1/im/members';
 import { LicensesGetEndpoint } from './endpoints/v1/licenses/licensesGet';
 import { LicensesMaxActiveUsersEndpoint } from './endpoints/v1/licenses/licensesMaxActiveUsers';
+import { LicensesRequestSeatsLinkEndpoint } from './endpoints/v1/licenses/licensesRequestSeatsLink';
 import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
 import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
 import { LivechatDepartment } from './endpoints/v1/livechat/department';
@@ -84,6 +85,7 @@ export type ServerEndpoints = {
 	'licenses.get': LicensesGetEndpoint;
 	'licenses.maxActiveUsers': LicensesMaxActiveUsersEndpoint;
 	'statistics': StatisticsEndpoint;
+	'licenses.requestSeatsLink': LicensesRequestSeatsLinkEndpoint;
 };
 
 export type ServerEndpointPath = keyof ServerEndpoints;

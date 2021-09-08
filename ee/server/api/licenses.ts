@@ -4,6 +4,7 @@ import { ILicense, getLicenses, validateFormat, flatModules } from '../../app/li
 import { Settings, Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
+import { getSeatsRequestLink } from '../../app/license/server/getSeatsRequestLink';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {
@@ -11,6 +12,18 @@ function licenseTransform(license: ILicense): ILicense {
 		modules: flatModules(license.modules),
 	};
 }
+
+API.v1.addRoute('licenses.requestSeatsLink', { authRequired: true }, {
+	get() {
+		if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			return API.v1.unauthorized();
+		}
+
+		const url = getSeatsRequestLink();
+
+		return API.v1.success({ url });
+	},
+});
 
 API.v1.addRoute('licenses.get', { authRequired: true }, {
 	get() {
