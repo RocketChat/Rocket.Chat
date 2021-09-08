@@ -65,6 +65,8 @@ import { IUser } from '../../../../definition/IUser';
 import { ILivechatCustomField } from '../../../../definition/ILivechatCustomField';
 import { ILivechatDepartmentAgents } from '../../../../definition/ILivechatDepartmentAgents';
 
+const logger = new Logger('Livechat');
+
 const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 /**
  * Livechat Service
@@ -73,11 +75,8 @@ export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
 
-	logger: new Logger('Livechat', {
-		sections: {
-			webhook: 'Webhook',
-		},
-	}) as any,
+	logger,
+	webhookLogger: logger.section('Webhook'),
 
 	/**
    * Finds Guest's information by token
@@ -1039,7 +1038,7 @@ export const Livechat = {
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
-		} catch (e) {
+		} catch (e: any) {
 			Livechat.logger.error(e);
 			throw new Meteor.Error(
 				'error-returning-inquiry',
@@ -1070,12 +1069,12 @@ export const Livechat = {
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl') as string, options);
 		} catch (e) {
-			Livechat.logger.webhook.error(
+			this.webhookLogger.error(
 				`Response error on ${ 11 - attempts } try ->`,
 				e,
 			);
 			// try 10 times after 10 seconds each
-			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+			this.webhookLogger.webhook.warn('Will try again in 10 seconds ...');
 			setTimeout(
 				Meteor.bindEnvironment(function() {
 					Livechat.sendRequest(postData, callback, attempts--);
