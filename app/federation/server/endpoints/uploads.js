@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { API } from '../../../api/server';
 import { Uploads } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
@@ -19,9 +17,7 @@ API.v1.addRoute('federation.uploads', { authRequired: false }, {
 			return API.v1.failure('There is no such file in this server');
 		}
 
-		const getFileBuffer = Meteor.wrapAsync(FileUpload.getBuffer, FileUpload);
-
-		const buffer = getFileBuffer(upload);
+		const buffer = FileUpload.getBufferSync(upload);
 
 		return API.v1.success({ upload, buffer });
 	},

@@ -1605,14 +1605,6 @@ settings.addGroup('Logs', function() {
 		],
 		public: true,
 	});
-	this.add('Log_Package', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Log_File', false, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Log_View_Limit', 1000, {
 		type: 'int',
 	});
