@@ -57,6 +57,8 @@ export const useQuickActions = (
 		} = await getVisitorInfo({ visitorId: visitorRoomId });
 		if (visitorEmails?.length && visitorEmails[0].address) {
 			setEmail(visitorEmails[0].address);
+		} else {
+			setEmail('');
 		}
 	});
 
