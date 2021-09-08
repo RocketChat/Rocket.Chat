@@ -32,7 +32,7 @@ Meteor.methods({
 		}
 		const providerConfig = getSamlServiceProviderOptions(provider);
 
-		SAMLUtils.log(`Logout request from ${ JSON.stringify(providerConfig) }`);
+		SAMLUtils.log({ msg: 'Logout request', providerConfig });
 		// This query should respect upcoming array of SAML logins
 		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
 		if (!user || !user.services || !user.services.saml) {
@@ -40,7 +40,7 @@ Meteor.methods({
 		}
 
 		const { nameID, idpSession } = user.services.saml;
-		SAMLUtils.log(`NameID for user ${ Meteor.userId() } found: ${ JSON.stringify(nameID) }`);
+		SAMLUtils.log({ msg: `NameID for user ${ Meteor.userId() } found`, nameID });
 
 		const _saml = new SAMLServiceProvider(providerConfig);
 

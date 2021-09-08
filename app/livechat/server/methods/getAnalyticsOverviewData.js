@@ -15,7 +15,7 @@ Meteor.methods({
 		}
 
 		if (!(options.analyticsOptions && options.analyticsOptions.name)) {
-			console.error('Incorrect analytics options');
+			Livechat.logger.error('Incorrect analytics options');
 			return;
 		}
 
