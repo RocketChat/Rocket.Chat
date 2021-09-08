@@ -8,6 +8,7 @@ import { Apps } from '../../../apps/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 const { DISABLE_MESSAGE_PARSER = 'false' } = process.env;
@@ -197,7 +198,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
 			if (settings.get('Apps_Framework_Development_Mode')) {
-				console.log('A Rocket.Chat App prevented the message sending.', message);
+				SystemLogger.info({ msg: 'A Rocket.Chat App prevented the message sending.', message });
 			}
 
 			return;
@@ -223,7 +224,7 @@ export const sendMessage = function(user, message, room, upsert = false) {
 			message.md = parser(message.msg);
 		}
 	} catch (e) {
-		console.log(e); // errors logged while the parser is at experimental stage
+		SystemLogger.error(e); // errors logged while the parser is at experimental stage
 	}
 	if (message) {
 		if (message._id && upsert) {

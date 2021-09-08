@@ -141,7 +141,7 @@ export class SAMLUtils {
 
 	public static log(...args: Array<any>): void {
 		if (debug && logger) {
-			logger.info(...args);
+			logger.debug(...args);
 		}
 	}
 

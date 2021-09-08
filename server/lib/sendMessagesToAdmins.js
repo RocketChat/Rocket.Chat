@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
+import { SystemLogger } from './logger/system';
 import { Roles, Users } from '../../app/models/server';
 
 export function sendMessagesToAdmins({
@@ -37,7 +38,7 @@ export function sendMessagesToAdmins({
 					msgs.forEach((msg) => Meteor.call('sendMessage', Object.assign({ rid }, msg)));
 				});
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 			}
 		}
 
