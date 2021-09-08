@@ -1,10 +1,25 @@
+import { AggregationCursor, Cursor, FindOneOptions } from 'mongodb';
+
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../settings/server/raw';
+import { IOmnichannelRoom } from '../../../../definition/IRoom';
 
-export class LivechatRoomsRaw extends BaseRaw {
-	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
-		const match = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers = { $match: {} };
+export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> {
+	getQueueMetrics({
+		departmentId,
+		agentId,
+		includeOfflineAgents,
+		options = {},
+	}: {
+		departmentId: string;
+		agentId: string;
+		includeOfflineAgents: boolean;
+		options: any;
+	}): Promise<IOmnichannelRoom[]> {
+		const match = {
+			$match: { t: 'l', open: true, servedBy: { $exists: true } },
+		} as any;
+		const matchUsers = { $match: {} } as any;
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
@@ -79,7 +94,14 @@ export class LivechatRoomsRaw extends BaseRaw {
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, departmentsGroup, usersLookup, usersUnwind];
+		const firstParams = [
+			match,
+			departmentsLookup,
+			departmentsUnwind,
+			departmentsGroup,
+			usersLookup,
+			usersUnwind,
+		];
 		if (Object.keys(matchUsers.$match)) {
 			firstParams.push(matchUsers);
 		}
@@ -94,15 +116,23 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	async findAllNumberOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	async findAllNumberOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): Promise<AggregationCursor<IOmnichannelRoom>> {
 		const match = {
 			$match: {
 				t: 'l',
-				'metrics.visitorInactivity': { $gte: await getValue('Livechat_visitor_inactivity_timeout') },
+				'metrics.visitorInactivity': {
+					$gte: await getValue('Livechat_visitor_inactivity_timeout'),
+				},
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -136,13 +166,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	async findPercentageOfAbandonedRooms({ start, end, departmentId, onlyCount = false, options = {} }) {
+	async findPercentageOfAbandonedRooms({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): Promise<AggregationCursor<IOmnichannelRoom>> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -152,12 +188,21 @@ export class LivechatRoomsRaw extends BaseRaw {
 				rooms: { $sum: 1 },
 				abandonedChats: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.visitorInactivity', false] },
-								{ $gte: ['$metrics.visitorInactivity', await getValue('Livechat_visitor_inactivity_timeout')] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [
+									{ $ifNull: ['$metrics.visitorInactivity', false] },
+									{
+										$gte: [
+											'$metrics.visitorInactivity',
+											await getValue('Livechat_visitor_inactivity_timeout'),
+										],
+									},
+								],
+							},
+							1,
+							0,
+						],
 					},
 				},
 			},
@@ -194,14 +239,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageOfChatDurationTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageOfChatDurationTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -215,14 +266,22 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageChatDurationTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsDuration', '$rooms'] }] } },
+				averageChatDurationTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$chatsDuration', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [match, group, project, sort];
+		const params = [match, group, project, sort] as any[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -236,14 +295,20 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageWaitingTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageWaitingTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 				waitingResponse: { $ne: true },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -257,7 +322,15 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageWaitingTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$chatsFirstResponses', '$rooms'] }] } },
+				averageWaitingTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$chatsFirstResponses', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -278,13 +351,22 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllRooms({ start, end, answered, departmentId, onlyCount = false, options = {} }) {
+	findAllRooms({
+		start,
+		end,
+		answered,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams & {
+		answered: boolean;
+	}): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		if (answered !== undefined) {
 			match.$match.waitingResponse = { [answered ? '$ne' : '$eq']: true };
 		}
@@ -321,7 +403,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -329,7 +417,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				closedAt: { $lte: new Date(end) },
 				'metrics.serviceTimeDuration': { $exists: true },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -365,7 +453,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllNumberOfTransferredRooms({ start, end, departmentId, options = {} }) {
+	findAllNumberOfTransferredRooms({
+		start,
+		end,
+		departmentId,
+		options = {},
+	}: Omit<AnalyticParams, 'onlyCount'>): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -454,7 +547,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				numberOfTransferredRooms: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind];
+		const firstParams: any[] = [match, departmentsLookup, departmentsUnwind];
 		if (departmentId && departmentId !== 'undefined') {
 			firstParams.push({
 				$match: {
@@ -463,7 +556,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 			});
 		}
 		const sort = { $sort: options.sort || { name: 1 } };
-		const params = [...firstParams, departmentsGroup, departmentsProject, roomsUnwind, messagesLookup, messagesProject, transferProject, transferGroup, presentationProject, sort];
+		const params = [
+			...firstParams,
+			departmentsGroup,
+			departmentsProject,
+			roomsUnwind,
+			messagesLookup,
+			messagesProject,
+			transferProject,
+			transferGroup,
+			presentationProject,
+			sort,
+		];
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
@@ -473,7 +577,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true }).toArray();
 	}
 
-	countAllOpenChatsBetweenDate({ start, end, departmentId }) {
+	countAllOpenChatsBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<number> {
 		const query = {
 			t: 'l',
 			'metrics.chatDuration': {
@@ -481,14 +589,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
-		};
+		} as any;
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
 	}
 
-	countAllClosedChatsBetweenDate({ start, end, departmentId }) {
+	countAllClosedChatsBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<number> {
 		const query = {
 			t: 'l',
 			'metrics.chatDuration': {
@@ -496,26 +608,34 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
-		};
+		} as any;
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
 	}
 
-	countAllQueuedChatsBetweenDate({ start, end, departmentId }) {
+	countAllQueuedChatsBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<number> {
 		const query = {
 			t: 'l',
 			servedBy: { $exists: false },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
-		};
+		} as any;
 		if (departmentId && departmentId !== 'undefined') {
 			query.departmentId = departmentId;
 		}
 		return this.find(query).count();
 	}
 
-	countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }) {
+	countAllOpenChatsByAgentBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -523,7 +643,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				open: true,
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: '$servedBy.username',
@@ -536,7 +656,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
-	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
+	countAllClosedChatsByAgentBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -545,7 +669,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				ts: { $gte: new Date(start) },
 				closedAt: { $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: '$servedBy.username',
@@ -558,7 +682,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
-	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }) {
+	countAllOpenChatsByDepartmentBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -566,7 +694,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				departmentId: { $exists: true },
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
@@ -604,7 +732,11 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }) {
+	countAllClosedChatsByDepartmentBetweenDate({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -612,7 +744,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				departmentId: { $exists: true },
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
@@ -650,13 +782,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	calculateResponseTimingsBetweenDates({ start, end, departmentId }) {
+	calculateResponseTimingsBetweenDates({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: null,
@@ -665,11 +801,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithResponseTime: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.response.avg', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $ifNull: ['$metrics.response.avg', false] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxFirstResponse: { $max: '$metrics.response.ft' },
@@ -695,13 +833,17 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	calculateReactionTimingsBetweenDates({ start, end, departmentId }) {
+	calculateReactionTimingsBetweenDates({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: null,
@@ -710,11 +852,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithFirstReaction: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.reaction.ft', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $ifNull: ['$metrics.reaction.ft', false] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxFirstReaction: { $max: '$metrics.reaction.ft' },
@@ -727,7 +871,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 						$cond: [
 							{ $eq: ['$roomsWithFirstReaction', 0] },
 							0,
-							{ $divide: ['$sumReactionFirstResponse', '$roomsWithFirstReaction'] },
+							{
+								$divide: [
+									'$sumReactionFirstResponse',
+									'$roomsWithFirstReaction',
+								],
+							},
 						],
 					},
 				},
@@ -740,14 +889,18 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	calculateDurationTimingsBetweenDates({ start, end, departmentId }) {
+	calculateDurationTimingsBetweenDates({
+		start,
+		end,
+		departmentId,
+	}: QueryParams): Promise<IOmnichannelRoom[]> {
 		const match = {
 			$match: {
 				t: 'l',
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 				'metrics.chatDuration': { $exists: true },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: null,
@@ -756,11 +909,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 				},
 				roomsWithChatDuration: {
 					$sum: {
-						$cond: [{
-							$and: [
-								{ $ifNull: ['$metrics.chatDuration', false] },
-							],
-						}, 1, 0],
+						$cond: [
+							{
+								$and: [{ $ifNull: ['$metrics.chatDuration', false] }],
+							},
+							1,
+							0,
+						],
 					},
 				},
 				maxChatDuration: { $max: '$metrics.chatDuration' },
@@ -786,7 +941,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group, project]).toArray();
 	}
 
-	findAllAverageOfServiceTime({ start, end, departmentId, onlyCount = false, options = {} }) {
+	findAllAverageOfServiceTime({
+		start,
+		end,
+		departmentId,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -794,7 +955,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 				'responseBy.lastMessageTs': { $exists: true },
 				'servedBy.ts': { $exists: true },
 			},
-		};
+		} as any;
 		const group = {
 			$group: {
 				_id: {
@@ -802,13 +963,28 @@ export class LivechatRoomsRaw extends BaseRaw {
 					departmentId: '$departmentId',
 				},
 				rooms: { $sum: 1 },
-				allServiceTime: { $sum: { $divide: [{ $subtract: ['$responseBy.lastMessageTs', '$servedBy.ts'] }, 1000] } },
+				allServiceTime: {
+					$sum: {
+						$divide: [
+							{ $subtract: ['$responseBy.lastMessageTs', '$servedBy.ts'] },
+							1000,
+						],
+					},
+				},
 			},
 		};
 		const project = {
 			$project: {
 				_id: { $ifNull: ['$_id.departmentId', null] },
-				averageServiceTimeInSeconds: { $ceil: { $cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allServiceTime', '$rooms'] }] } },
+				averageServiceTimeInSeconds: {
+					$ceil: {
+						$cond: [
+							{ $eq: ['$rooms', 0] },
+							0,
+							{ $divide: ['$allServiceTime', '$rooms'] },
+						],
+					},
+				},
 			},
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -829,15 +1005,32 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findByVisitorId(visitorId, options) {
-		const query = {
+	findByVisitorId(
+		visitorId: string,
+		options: FindOneOptions<IOmnichannelRoom>,
+	): Cursor<IOmnichannelRoom> {
+		const query: { t: 'l'; 'v._id': string } = {
 			t: 'l',
 			'v._id': visitorId,
 		};
 		return this.find(query, options);
 	}
 
-	findRoomsByVisitorIdAndMessageWithCriteria({ visitorId, searchText, open, served, onlyCount = false, options = {} }) {
+	findRoomsByVisitorIdAndMessageWithCriteria({
+		visitorId,
+		searchText,
+		open,
+		served,
+		onlyCount = false,
+		options = {},
+	}: {
+		visitorId: string;
+		searchText: string;
+		open: boolean;
+		served: boolean;
+		onlyCount: boolean;
+		options: any;
+	}): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				'v._id': visitorId,
@@ -845,10 +1038,19 @@ export class LivechatRoomsRaw extends BaseRaw {
 				...served !== undefined && { servedBy: { $exists: served } },
 			},
 		};
-		const lookup = { $lookup: { from: 'rocketchat_message', localField: '_id', foreignField: 'rid', as: 'messages' } };
-		const matchMessages = searchText && { $match: { 'messages.msg': { $regex: `.*${ searchText }.*` } } };
+		const lookup = {
+			$lookup: {
+				from: 'rocketchat_message',
+				localField: '_id',
+				foreignField: 'rid',
+				as: 'messages',
+			},
+		};
+		const matchMessages = searchText && {
+			$match: { 'messages.msg': { $regex: `.*${ searchText }.*` } },
+		};
 
-		const params = [match, lookup];
+		const params: any[] = [match, lookup];
 
 		if (matchMessages) {
 			params.push(matchMessages);
@@ -875,7 +1077,9 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 
-		const unwindClosingMsg = { $unwind: { path: '$closingMessage', preserveNullAndEmptyArrays: true } };
+		const unwindClosingMsg = {
+			$unwind: { path: '$closingMessage', preserveNullAndEmptyArrays: true },
+		};
 		const sort = { $sort: options.sort || { ts: -1 } };
 
 		params.push(project, unwindClosingMsg, sort);
@@ -896,12 +1100,28 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, options = {} }) {
+	findRoomsWithCriteria({
+		agents,
+		roomName,
+		departmentId,
+		open,
+		served,
+		createdAt,
+		closedAt,
+		tags,
+		customFields,
+		visitorId,
+		roomIds,
+		options = {},
+	}: FindRoomParams): Cursor<IOmnichannelRoom> {
 		const query = {
 			t: 'l',
-		};
+		} as any;
 		if (agents) {
-			query.$or = [{ 'servedBy._id': { $in: agents } }, { 'servedBy.username': { $in: agents } }];
+			query.$or = [
+				{ 'servedBy._id': { $in: agents } },
+				{ 'servedBy.username': { $in: agents } },
+			];
 		}
 		if (roomName) {
 			query.fname = new RegExp(roomName, 'i');
@@ -940,17 +1160,28 @@ export class LivechatRoomsRaw extends BaseRaw {
 			query.tags = { $in: tags };
 		}
 		if (customFields) {
-			query.$and = Object.keys(customFields).map((key) => ({ [`livechatData.${ key }`]: new RegExp(customFields[key], 'i') }));
+			query.$and = Object.keys(customFields).map((key) => ({
+				[`livechatData.${ key }`]: new RegExp(customFields[key], 'i'),
+			}));
 		}
 
 		if (roomIds) {
 			query._id = { $in: roomIds };
 		}
 
-		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
+		return this.find(query, {
+			sort: options.sort || { name: 1 },
+			skip: options.offset,
+			limit: options.count,
+		});
 	}
 
-	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
+	findAllServiceTimeByAgent({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -978,7 +1209,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, group, project, sort];
+		const params: any[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -992,7 +1223,12 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findAllAverageServiceTimeByAgents({ start, end, onlyCount = false, options = {} }) {
+	findAllAverageServiceTimeByAgents({
+		start,
+		end,
+		onlyCount = false,
+		options = {},
+	}: AnalyticParams): AggregationCursor<IOmnichannelRoom> {
 		const match = {
 			$match: {
 				t: 'l',
@@ -1029,7 +1265,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		};
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, group, project, sort];
+		const params: any[] = [match, group, project, sort];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
@@ -1043,3 +1279,34 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 }
+
+
+type AnalyticParams = {
+	start: Date;
+	end: Date;
+	departmentId: string;
+	onlyCount: boolean;
+	options: any;
+};
+
+type QueryParams = { start: Date; end: Date; departmentId: string };
+
+type DateRange = {
+	start: Date;
+	end: Date;
+};
+
+type FindRoomParams = {
+	agents: string[];
+	roomName: string;
+	departmentId: string;
+	open: boolean;
+	served: boolean;
+	createdAt: DateRange;
+	closedAt: DateRange;
+	tags: string[];
+	customFields: { [k: string]: string };
+	visitorId: string;
+	roomIds: string[];
+	options: any;
+};

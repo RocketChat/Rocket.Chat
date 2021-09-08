@@ -6,6 +6,13 @@ type RoomType = 'c' | 'd' | 'p' | 'l';
 
 export type RoomID = string;
 export type ChannelName = string;
+
+export enum RoomTypeEnum {
+	PUBLIC = 'c',
+	DIRECT = 'd',
+	PRIVATE = 'p',
+	LIVECHAT = 'l',
+}
 interface IRequestTranscript {
 	email: string;
 	requestedAt: Date;
