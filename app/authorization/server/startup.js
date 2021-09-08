@@ -149,7 +149,7 @@ Meteor.startup(function() {
 		// allows to receive a voip call
 		{ _id: 'receive-voip-calls', roles: ['livechat-agent'] },
 		// allows to perform an outgoing voip call
-		{ _id: 'send-voip-calls', roles: ['livechat-agent'] },
+		{ _id: 'start-voip-calls', roles: ['livechat-agent'] },
 	];
 
 	for (const permission of permissions) {
