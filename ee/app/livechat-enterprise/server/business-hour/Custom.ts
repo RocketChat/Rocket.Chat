@@ -48,7 +48,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		const businessHourToReturn = { ...businessHourData, departmentsToApplyBusinessHour };
 		delete businessHourData.departments;
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
-		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+		const currentDepartments = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { projection: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
 		const toRemove = [...currentDepartments.filter((dept: string) => !departments.includes(dept))];
 		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
 		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
@@ -69,7 +69,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
-		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { fields: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
+		const departmentIds = (await this.DepartmentsRepository.findByBusinessHourId(businessHourId, { projection: { _id: 1 } }).toArray()).map((dept: any) => dept._id);
 		const agentIds = (await this.DepartmentsAgentsRepository.findByDepartmentIds(departmentIds, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
 		this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}

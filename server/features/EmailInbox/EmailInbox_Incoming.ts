@@ -132,7 +132,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 		message: {
 			_id: msgId,
 			groupable: false,
-			msg,
+			msg: msg || '',
 			attachments: [
 				{
 					actions: [{
@@ -155,7 +155,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				type: 'section',
 				text: {
 					type: 'mrkdwn',
-					text: msg,
+					text: msg || '',
 				},
 			}],
 			rid,

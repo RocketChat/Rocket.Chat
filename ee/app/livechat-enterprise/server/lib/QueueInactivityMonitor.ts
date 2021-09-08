@@ -68,7 +68,6 @@ export class OmnichannelQueueInactivityMonitorClass {
 			comment,
 			room,
 			user: this.user,
-			visitor: null,
 		});
 	}
 

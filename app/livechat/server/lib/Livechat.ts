@@ -101,7 +101,7 @@ export const Livechat = {
    * @param {string} department the department ID
    * @returns {boolean} either there are available agents or not
    */
-	online(department: string): boolean {
+	online(department?: string): boolean {
 		Livechat.logger.debug(
 			`Checking online agents (using department ${ department || '' })`,
 		);
@@ -188,7 +188,7 @@ export const Livechat = {
    * @param {string} [department] the department ID
    * @returns {Object[]} the list of bot agents
    */
-	getBotAgents(department: string): Cursor<ILivechatAgentRecord> {
+	getBotAgents(department?: string): Cursor<ILivechatAgentRecord> {
 		if (department) {
 			return LivechatDepartmentAgents.getBotsForDepartment(department);
 		}
@@ -229,9 +229,9 @@ export const Livechat = {
    */
 	async getRoom(
 		guest: ILivechatVisitor,
-		message: IMessage,
+		message: Partial<IMessage>,
 		roomInfo: any,
-		agent: ILivechatAgentRecord,
+		agent?: ILivechatAgentRecord,
 		extraData?: any,
 	): Promise<{ newRoom: boolean; room: IRoom }> {
 		Livechat.logger.debug(
@@ -318,8 +318,8 @@ export const Livechat = {
 		agent,
 	}: {
 		guest: ILivechatVisitor;
-		message: IMessage;
-		agent: ILivechatAgentRecord;
+		message: Partial<IMessage>;
+		agent?: ILivechatAgentRecord;
 		roomInfo?: any;
 	}): Promise<IMessage & { newRoom: boolean; showConnecting: boolean }> {
 		const { room, newRoom } = await this.getRoom(
@@ -341,7 +341,8 @@ export const Livechat = {
 		guest,
 		message,
 	}: {
-		guest: ILivechatVisitor;
+		// using any for app engine compat
+		guest?: ILivechatVisitor | any;
 		message: IMessage;
 	}): boolean {
 		check(message, Match.ObjectIncluding({ _id: String }));
@@ -352,7 +353,9 @@ export const Livechat = {
 		}
 
 		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
+		// this won't return true for apps engine (never)
+		// IVisitor interface doens't have _id property, but `id`
+		const editOwn = originalMessage.u && originalMessage.u._id === guest?._id;
 
 		if (!editAllowed || !editOwn) {
 			throw new Meteor.Error(
