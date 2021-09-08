@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import POP3Lib from 'poplib';
 import { simpleParser } from 'mailparser';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
 import { processDirectEmail } from '.';
 
@@ -45,7 +46,7 @@ export class POP3Intercepter {
 				// run on start
 				this.pop3.list();
 			} else {
-				console.log('Unable to Log-in ....');
+				SystemLogger.info('Unable to Log-in ....');
 			}
 		}));
 
@@ -61,7 +62,7 @@ export class POP3Intercepter {
 					this.pop3.quit();
 				}
 			} else {
-				console.log('Cannot Get Emails ....');
+				SystemLogger.info('Cannot Get Emails ....');
 			}
 		}));
 
@@ -78,7 +79,7 @@ export class POP3Intercepter {
 				// delete email
 				this.pop3.dele(msgnumber);
 			} else {
-				console.log('Cannot Retrieve Message ....');
+				SystemLogger.info('Cannot Retrieve Message ....');
 			}
 		}));
 
@@ -93,18 +94,18 @@ export class POP3Intercepter {
 					this.pop3.quit();
 				}
 			} else {
-				console.log('Cannot Delete Message....');
+				SystemLogger.info('Cannot Delete Message....');
 			}
 		}));
 
 		// invalid server state
 		this.pop3.on('invalid-state', function(cmd) {
-			console.log(`Invalid state. You tried calling ${ cmd }`);
+			SystemLogger.info(`Invalid state. You tried calling ${ cmd }`);
 		});
 
 		// locked => command already running, not finished yet
 		this.pop3.on('locked', function(cmd) {
-			console.log(`Current command has not finished yet. You tried calling ${ cmd }`);
+			SystemLogger.info(`Current command has not finished yet. You tried calling ${ cmd }`);
 		});
 	}
 

@@ -7,6 +7,7 @@ import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { api } from '../../../../server/sdk/api';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
@@ -49,7 +50,7 @@ class Twilio {
 		}
 
 		if (isNaN(numMedia)) {
-			console.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			SystemLogger.error(`Error parsing NumMedia ${ data.NumMedia }`);
 			return returnData;
 		}
 
@@ -98,7 +99,7 @@ class Twilio {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return console.error(`(Twilio) -> ${ reason }`);
+				return SystemLogger.error(`(Twilio) -> ${ reason }`);
 			}
 
 			mediaUrl = [publicFilePath];

@@ -3,27 +3,12 @@ import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
-import { metrics } from '../../../metrics';
-import { Logger } from '../../../logger';
+import { settings } from '../../../settings/server';
+import { metrics } from '../../../metrics/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
+import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
 
-const logger = new Logger('Meteor', {
-	methods: {
-		method: {
-			type: 'info',
-		},
-		publish: {
-			type: 'debug',
-		},
-	},
-});
-
-const {
-	LOG_METHOD_PAYLOAD = 'false',
-	LOG_REST_METHOD_PAYLOADS = 'false',
-} = process.env;
-
-const addPayloadToLog = LOG_METHOD_PAYLOAD !== 'false' || LOG_REST_METHOD_PAYLOADS !== 'false';
+const logger = new Logger('Meteor');
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
@@ -56,20 +41,6 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	}
 };
 
-const omitKeyArgs = (args, name) => {
-	if (name === 'saveSettings') {
-		return [args[0].map((arg) => _.omit(arg, 'value'))];
-	}
-
-	if (name === 'saveSetting') {
-		return [args[0], args[2]];
-	}
-
-	return args.map((arg) => (typeof arg !== 'object'
-		? arg
-		: _.omit(arg, 'password', 'msg', 'pass', 'username', 'message')));
-};
-
 const wrapMethods = function(name, originalHandler, methodsMap) {
 	methodsMap[name] = function(...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
@@ -81,11 +52,16 @@ const wrapMethods = function(name, originalHandler, methodsMap) {
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
 		});
-		const args = name === 'ufsWrite' ? Array.prototype.slice.call(originalArgs, 1) : originalArgs;
 
-		const dateTime = new Date().toISOString();
-		const userId = Meteor.userId();
-		logger.method(() => `${ this.connection?.clientAddress } - ${ userId } [${ dateTime }] "METHOD ${ method }" - "${ this.connection?.httpHeaders.referer }" "${ this.connection?.httpHeaders['user-agent'] }" | ${ addPayloadToLog ? JSON.stringify(omitKeyArgs(args, name)) : '' }`);
+		logger.method({
+			method,
+			userId: Meteor.userId(),
+			userAgent: this.connection?.httpHeaders['user-agent'],
+			referer: this.connection?.httpHeaders.referer,
+			remoteIP: this.connection?.clientAddress,
+			instanceId: InstanceStatus.id(),
+			...getMethodArgs(name, originalArgs),
+		});
 
 		const result = originalHandler.apply(this, originalArgs);
 		end();
@@ -107,7 +83,16 @@ const originalMeteorPublish = Meteor.publish;
 Meteor.publish = function(name, func) {
 	return originalMeteorPublish(name, function(...args) {
 		traceConnection(Log_Trace_Subscriptions, Log_Trace_Subscriptions_Filter, 'subscription', name, this.connection, this.userId);
-		logger.publish(() => `${ name } -> userId: ${ this.userId }, arguments: ${ JSON.stringify(omitKeyArgs(args)) }`);
+
+		logger.subscription({
+			publication: name,
+			userId: this.userId,
+			userAgent: this.connection?.httpHeaders['user-agent'],
+			referer: this.connection?.httpHeaders.referer,
+			remoteIP: this.connection?.clientAddress,
+			instanceId: InstanceStatus.id(),
+		});
+
 		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
 
 		const originalReady = this.ready;
