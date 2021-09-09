@@ -43,12 +43,15 @@ const UserPageHeaderContentWithSeatsCap = ({
 	};
 
 	const withPreventionOnReachedLimit = (fn: () => void) => (): void => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (hasReachedLimit()) {
 			setModal(
 				<ReachedSeatsCapModal
 					members={activeUsers}
 					limit={maxActiveUsers}
-					requestSeatsLink={seatsLinkUrl as string}
+					requestSeatsLink={seatsLinkUrl}
 					onClose={closeModal}
 				/>,
 			);
@@ -59,6 +62,9 @@ const UserPageHeaderContentWithSeatsCap = ({
 	};
 
 	const handleNewButtonClick = withPreventionOnReachedLimit(() => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (isCloseToLimit()) {
 			setModal(
 				<CloseToSeatsCapModal
@@ -67,7 +73,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 					title={t('Create_new_members')}
 					confirmText={t('Create')}
 					confirmIcon='user-plus'
-					requestSeatsLink={seatsLinkUrl as string}
+					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'new' });
 						closeModal();
@@ -82,6 +88,9 @@ const UserPageHeaderContentWithSeatsCap = ({
 	});
 
 	const handleInviteButtonClick = withPreventionOnReachedLimit(() => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (isCloseToLimit()) {
 			setModal(
 				<CloseToSeatsCapModal
@@ -90,7 +99,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 					title={t('Invite_Users')}
 					confirmText={t('Invite')}
 					confirmIcon='mail'
-					requestSeatsLink={seatsLinkUrl as string}
+					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'invite' });
 						closeModal();
