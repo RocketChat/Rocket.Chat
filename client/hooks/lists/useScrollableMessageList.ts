@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
-import { FromApi } from '../../../definition/FromApi';
 import { IMessage } from '../../../definition/IMessage';
+import { Serialized } from '../../../definition/Serialized';
 import { mapMessageFromApi } from '../../lib/fromApi';
 import { MessageList } from '../../lib/lists/MessageList';
 import { RecordListBatchChanges } from '../../lib/lists/RecordList';
@@ -9,7 +9,10 @@ import { useScrollableRecordList } from './useScrollableRecordList';
 
 export const useScrollableMessageList = (
 	messageList: MessageList,
-	fetchMessages: (start: number, end: number) => Promise<RecordListBatchChanges<FromApi<IMessage>>>,
+	fetchMessages: (
+		start: number,
+		end: number,
+	) => Promise<RecordListBatchChanges<Serialized<IMessage>>>,
 	initialItemCount?: number,
 ): ReturnType<typeof useScrollableRecordList> => {
 	const fetchItems = useCallback(

@@ -1,8 +1,8 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import React, { FC, useMemo } from 'react';
 
-import { FromApi } from '../../../../definition/FromApi';
 import { IRoom } from '../../../../definition/IRoom';
+import { Serialized } from '../../../../definition/Serialized';
 import GenericModal from '../../../components/GenericModal';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -12,7 +12,7 @@ import BaseConvertToChannelModal from './BaseConvertToChannelModal';
 type ConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: () => FromApi<IRoom>[];
+	onConfirm: () => Serialized<IRoom>[];
 	teamId: string;
 	userId: string;
 };

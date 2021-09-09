@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import { FromApi } from '../../../definition/FromApi';
-import { PathFor, Params, Return, Method } from './endpoints';
+import type { Serialized } from '../../../definition/Serialized';
+import type { PathFor, Params, Return, Method } from './endpoints';
 import {
 	ServerMethodFunction,
 	ServerMethodName,
@@ -21,7 +21,7 @@ type ServerContextValue = {
 		method: M,
 		path: P,
 		params: Params<M, P>[0],
-	) => Promise<FromApi<Return<M, P>>>;
+	) => Promise<Serialized<Return<M, P>>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (
 		streamName: string,
@@ -66,7 +66,7 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 export const useEndpoint = <M extends 'GET' | 'POST' | 'DELETE', P extends PathFor<M>>(
 	method: M,
 	path: P,
-): ((params: Params<M, P>[0]) => Promise<FromApi<Return<M, P>>>) => {
+): ((params: Params<M, P>[0]) => Promise<Serialized<Return<M, P>>>) => {
 	const { callEndpoint } = useContext(ServerContext);
 
 	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { FromApi } from '../../definition/FromApi';
+import { Serialized } from '../../definition/Serialized';
 import { useEndpoint } from '../contexts/ServerContext';
 import { Method, Params, PathFor, Return } from '../contexts/ServerContext/endpoints';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
@@ -9,7 +9,7 @@ export const useEndpointActionExperimental = <M extends Method, P extends PathFo
 	method: M,
 	path: P,
 	successMessage?: string,
-): ((params: Params<M, P>[0]) => Promise<FromApi<Return<M, P>>>) => {
+): ((params: Params<M, P>[0]) => Promise<Serialized<Return<M, P>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 

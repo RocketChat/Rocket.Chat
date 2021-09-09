@@ -1,19 +1,19 @@
 import { Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { FromApi } from '../../../../../definition/FromApi';
 import { IRoom } from '../../../../../definition/IRoom';
+import { Serialized } from '../../../../../definition/Serialized';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
 type SecondStepsProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: (deletedRooms: { [key: string]: FromApi<IRoom> }) => void;
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	deletedRooms: {
-		[key: string]: FromApi<IRoom>;
+		[key: string]: Serialized<IRoom>;
 	};
-	rooms: (FromApi<IRoom> & { isLastOwner?: string })[] | undefined;
+	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 };
 
 const SecondStep: FC<SecondStepsProps> = ({

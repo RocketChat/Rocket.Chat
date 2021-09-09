@@ -9,20 +9,20 @@ import { useEndpoint } from '../../../../client/contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useForm } from '../../../../client/hooks/useForm';
-import { FromApi } from '../../../../definition/FromApi';
 import { ILivechatDepartment } from '../../../../definition/ILivechatDepartment';
 import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseForm from './components/cannedResponseForm';
 
 const CannedResponseEdit: FC<{
 	data?: {
-		cannedResponse: FromApi<IOmnichannelCannedResponse>;
+		cannedResponse: Serialized<IOmnichannelCannedResponse>;
 	};
 	reload: () => void;
 	totalDataReload: () => void;
 	isNew?: boolean;
 	departmentData?: {
-		department: FromApi<ILivechatDepartment>;
+		department: Serialized<ILivechatDepartment>;
 	};
 }> = ({ data, reload, totalDataReload, isNew = false, departmentData = {} }) => {
 	const t = useTranslation();

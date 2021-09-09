@@ -1,5 +1,5 @@
-import { FromApi } from '../../definition/FromApi';
 import { IMessage } from '../../definition/IMessage';
+import { Serialized } from '../../definition/Serialized';
 
 export const mapMessageFromApi = ({
 	attachments,
@@ -7,7 +7,7 @@ export const mapMessageFromApi = ({
 	ts,
 	_updatedAt,
 	...message
-}: FromApi<IMessage>): IMessage => ({
+}: Serialized<IMessage>): IMessage => ({
 	...message,
 	ts: new Date(ts),
 	...(tlm && { tlm: new Date(tlm) }),

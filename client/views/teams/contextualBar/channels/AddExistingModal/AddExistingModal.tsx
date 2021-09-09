@@ -1,8 +1,8 @@
 import { ButtonGroup, Button, Field, Modal } from '@rocket.chat/fuselage';
 import React, { memo, FC, useCallback } from 'react';
 
-import { FromApi } from '../../../../../../definition/FromApi';
 import { IRoom } from '../../../../../../definition/IRoom';
+import { Serialized } from '../../../../../../definition/Serialized';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -11,8 +11,8 @@ import RoomsInput from './RoomsInput';
 
 type AddExistingModalState = {
 	onAdd: any;
-	rooms: FromApi<IRoom>[];
-	onChange: (value: FromApi<IRoom>, action: 'remove' | undefined) => void;
+	rooms: Serialized<IRoom>[];
+	onChange: (value: Serialized<IRoom>, action: 'remove' | undefined) => void;
 	hasUnsavedChanges: boolean;
 };
 
@@ -32,10 +32,10 @@ const useAddExistingModalState = (
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		rooms: [] as FromApi<IRoom>[],
+		rooms: [] as Serialized<IRoom>[],
 	});
 
-	const { rooms } = values as { rooms: FromApi<IRoom>[] };
+	const { rooms } = values as { rooms: Serialized<IRoom>[] };
 	const { handleRooms } = handlers;
 
 	const onChange = useCallback<AddExistingModalState['onChange']>(

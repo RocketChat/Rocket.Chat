@@ -11,21 +11,21 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 
 import { roomTypes } from '../../../../../../app/utils/client';
-import { FromApi } from '../../../../../../definition/FromApi';
 import { IRoom } from '../../../../../../definition/IRoom';
+import { Serialized } from '../../../../../../definition/Serialized';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
 type RoomsInputProps = {
-	value: FromApi<IRoom>[];
-	onChange: (value: FromApi<IRoom>, action: 'remove' | undefined) => void;
+	value: Serialized<IRoom>[];
+	onChange: (value: Serialized<IRoom>, action: 'remove' | undefined) => void;
 };
 
 // TODO: Make AutoComplete accept arbitrary kinds of values
 const useRoomsAutoComplete = (
 	name: string,
 ): {
-	rooms: Record<IRoom['_id'], FromApi<IRoom>>;
+	rooms: Record<IRoom['_id'], Serialized<IRoom>>;
 	options: AutoCompleteProps['options'];
 } => {
 	const params = useMemo(
@@ -41,18 +41,18 @@ const useRoomsAutoComplete = (
 			return [];
 		}
 
-		return data.items.map((room: FromApi<IRoom>) => ({
+		return data.items.map((room: Serialized<IRoom>) => ({
 			label: roomTypes.getRoomName(room.t, room),
 			value: room._id,
 		}));
 	}, [data]);
 
-	const rooms = useMemo<Record<IRoom['_id'], FromApi<IRoom>>>(
+	const rooms = useMemo<Record<IRoom['_id'], Serialized<IRoom>>>(
 		() =>
 			data?.items.reduce((obj, room) => {
 				obj[room._id] = room;
 				return obj;
-			}, {} as Record<IRoom['_id'], FromApi<IRoom>>) ?? {},
+			}, {} as Record<IRoom['_id'], Serialized<IRoom>>) ?? {},
 		[data],
 	);
 
