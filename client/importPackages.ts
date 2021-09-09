@@ -17,7 +17,6 @@ import '../app/favico';
 import '../app/file-upload';
 import '../app/github-enterprise/client';
 import '../app/gitlab/client';
-import '../app/google-vision/client';
 import '../app/iframe-login/client';
 import '../app/importer/client';
 import '../app/importer-csv/client';
