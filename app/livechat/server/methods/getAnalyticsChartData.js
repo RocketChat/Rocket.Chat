@@ -14,7 +14,7 @@ Meteor.methods({
 		}
 
 		if (!(options.chartOptions && options.chartOptions.name)) {
-			console.log('Incorrect chart options');
+			Livechat.logger.warn('Incorrect chart options');
 			return;
 		}
 
