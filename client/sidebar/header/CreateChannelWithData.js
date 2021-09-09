@@ -3,7 +3,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 
 import { usePermission } from '../../contexts/AuthorizationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/goToRoomById';
 import CreateChannel from './CreateChannel';
