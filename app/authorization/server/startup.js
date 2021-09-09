@@ -144,12 +144,8 @@ Meteor.startup(function() {
 		// VOIP Permissions
 		// allows to manage voip calls configuration
 		{ _id: 'manage-voip-calls', roles: ['livechat-manager', 'admin'] },
-		// allows to hook on an ongoing call and listen
-		{ _id: 'ghost-voip-calls', roles: ['livechat-manager', 'livechat-monitor'] },
 		// allows to receive a voip call
 		{ _id: 'receive-voip-calls', roles: ['livechat-agent'] },
-		// allows to perform an outgoing voip call
-		{ _id: 'start-voip-calls', roles: ['livechat-agent'] },
 	];
 
 	for (const permission of permissions) {

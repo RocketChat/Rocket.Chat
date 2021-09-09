@@ -19,4 +19,10 @@ export const createPermissions = () => {
 	Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]);
 	Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]);
 	Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]);
+
+	// VOIP permissions
+	// allows to hook on an ongoing call and listen
+	Permissions.create('ghost-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]);
+	// allows to perform an outgoing voip call
+	Permissions.create('start-voip-calls', [adminRole, livechatManagerRole]);
 };
