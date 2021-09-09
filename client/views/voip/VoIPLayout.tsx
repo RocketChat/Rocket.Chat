@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import React from 'react';
 
-import { ICallEventDelegate } from '../../components/voip/CallEventDelegate';
-import { IConnectionDelegate } from '../../components/voip/ConnectionDelegate';
-// import { connect, register, unRegister } from '../api/Register';
-import { IRegisterHandlerDeligate } from '../../components/voip/RegisterHandlerDelegate';
-import { User } from '../../components/voip/User';
-// import $ from "jQuery";
+import { ICallEventDelegate } from '../../components/voip/ICallEventDelegate';
+import { IConnectionDelegate } from '../../components/voip/IConnectionDelegate';
+import { IRegisterHandlerDelegate } from '../../components/voip/IRegisterHandlerDelegate';
+import { VoIPUser } from '../../components/voip/VoIPUser';
+import { VoIPUserConfiguration } from '../../components/voip/VoIPUserConfiguration';
+import { Logger } from '../../components/voip/utils/Logger';
+
 interface IState {
 	isReady?: boolean;
 	enableVideo?: boolean;
@@ -14,9 +14,9 @@ interface IState {
 
 class VoIPLayout
 	extends React.Component<{}, IState>
-	implements IRegisterHandlerDeligate, IConnectionDelegate, ICallEventDelegate
+	implements IRegisterHandlerDelegate, IConnectionDelegate, ICallEventDelegate
 {
-	userHandler: User | undefined;
+	userHandler: VoIPUser | undefined;
 
 	userName: React.RefObject<HTMLInputElement>;
 
@@ -28,7 +28,9 @@ class VoIPLayout
 
 	callTypeSelection: React.RefObject<HTMLInputElement>;
 
-	config: any = {};
+	config: VoIPUserConfiguration = {};
+
+	logger: Logger | undefined;
 
 	constructor() {
 		super({});
@@ -41,11 +43,12 @@ class VoIPLayout
 		this.registrar = React.createRef();
 		this.webSocketPath = React.createRef();
 		this.callTypeSelection = React.createRef();
+		this.logger = new Logger('VoIPLayout');
 	}
 
 	/* RegisterHandlerDeligate implementation begin */
 	onRegistered(): void {
-		console.log('onRegistered');
+		this.logger?.info('onRegistered');
 		let element = document.getElementById('register');
 		if (element) {
 			// (element as HTMLInputElement).disabled = true;
@@ -58,11 +61,11 @@ class VoIPLayout
 	}
 
 	onRegistrationError(reason: any): void {
-		console.log(`onRegistrationError${reason}`);
+		this.logger?.error(`onRegistrationError${reason}`);
 	}
 
 	onUnregistered(): void {
-		console.log('onUnregistered');
+		this.logger?.debug('onUnregistered');
 		let element = document.getElementById('register');
 		if (element) {
 			// (element as HTMLInputElement).disabled = true;
@@ -75,13 +78,13 @@ class VoIPLayout
 	}
 
 	onUnregistrationError(): void {
-		console.log('onUnregistrationError');
+		this.logger?.error('onUnregistrationError');
 	}
 	/* RegisterHandlerDeligate implementation end */
 
 	/* ConnectionDelegate implementation begin */
 	onConnected(): void {
-		console.log('onConnected');
+		this.logger?.debug('onConnected');
 		let element = document.getElementById('register');
 		if (element) {
 			element.style.display = 'block';
@@ -93,7 +96,7 @@ class VoIPLayout
 	}
 
 	onConnectionError(error: any): void {
-		console.log(`onConnectionError${error}`);
+		this.logger?.error(`onConnectionError${error}`);
 	}
 
 	/* ConnectionDelegate implementation end */
@@ -163,34 +166,37 @@ class VoIPLayout
 		}
 
 		if (this.userName.current?.textContent) {
-			this.config.auth_user_name = this.userName.current?.textContent;
+			this.config.authUserName = this.userName.current?.textContent;
 		} else {
-			this.config.auth_user_name = this.userName.current?.defaultValue;
+			this.config.authUserName = this.userName.current?.defaultValue;
 		}
 		if (this.password.current?.textContent) {
-			this.config.password = this.password.current?.textContent;
+			this.config.authPassword = this.password.current?.textContent;
 		} else {
-			this.config.password = this.password.current?.defaultValue;
+			this.config.authPassword = this.password.current?.defaultValue;
 		}
 		if (this.registrar.current?.textContent) {
-			this.config.sip_registrar_hostname_ip = this.registrar.current?.textContent;
+			this.config.sipRegistrarHostnameOrIP = this.registrar.current?.textContent;
 		} else {
-			this.config.sip_registrar_hostname_ip = this.registrar.current?.defaultValue;
+			this.config.sipRegistrarHostnameOrIP = this.registrar.current?.defaultValue;
 		}
 		if (this.webSocketPath.current?.textContent) {
-			this.config.websocket_uri = this.webSocketPath.current?.textContent;
+			this.config.webSocketURI = this.webSocketPath.current?.textContent;
 		} else {
-			this.config.websocket_uri = this.webSocketPath.current?.defaultValue;
+			this.config.webSocketURI = this.webSocketPath.current?.defaultValue;
 		}
 
-		this.config.enable_video = this.state.enableVideo;
-		this.config.connection_delegate = this;
-		this.config.ice_servers = [{ urls: 'stun:stun.l.google.com:19302' }];
-		const videoElement = document.getElementById('remote_video');
-		this.config.media = {
-			remote_video_element: videoElement,
-		};
-		this.userHandler = new User(this.config, this, this, this);
+		this.config.enableVideo = this.state.enableVideo;
+		this.config.connectionDelegate = this;
+		this.config.iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+		const videoElement = document.getElementById('remote_video') as HTMLMediaElement;
+		if (videoElement) {
+			this.config.mediaElements = {
+				remoteStreamMediaElement: videoElement,
+			};
+		}
+
+		this.userHandler = new VoIPUser(this.config, this, this, this);
 		this.setState({ isReady: true });
 		await this.userHandler?.init();
 	}

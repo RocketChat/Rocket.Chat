@@ -20,11 +20,12 @@ import {
 import { OutgoingRequestDelegate } from 'sip.js/lib/core';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
-import { ICallEventDelegate } from './CallEventDelegate';
 import { CallState } from './Callstate';
-import { IConnectionDelegate } from './ConnectionDelegate';
+import { ICallEventDelegate } from './ICallEventDelegate';
+import { IConnectionDelegate } from './IConnectionDelegate';
+import { IRegisterHandlerDelegate } from './IRegisterHandlerDelegate';
 import { Operation } from './Operations';
-import { IRegisterHandlerDeligate } from './RegisterHandlerDelegate';
+import { VoIPUserConfiguration } from './VoIPUserConfiguration';
 import Stream from './media/Stream';
 import { Logger } from './utils/Logger';
 // User state is based on whether the User has sent an invite(UAC) or it
@@ -34,10 +35,10 @@ enum UserState {
 	UAC,
 	UAS,
 }
-export class User implements UserAgentDelegate, OutgoingRequestDelegate {
+export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 	private connectionDelegate: IConnectionDelegate;
 
-	private registrationDelegate: IRegisterHandlerDeligate;
+	private registrationDelegate: IRegisterHandlerDelegate;
 
 	private callEventDelegate: ICallEventDelegate;
 
@@ -45,7 +46,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 
 	private remoteStream: Stream | undefined;
 
-	private config: any = {};
+	private config: VoIPUserConfiguration = {};
 
 	userAgentOptions: UserAgentOptions = {};
 
@@ -69,7 +70,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 
 	private _userState: UserState | undefined;
 
-	get userState(): any {
+	get userState(): UserState | undefined {
 		return this._userState;
 	}
 
@@ -88,9 +89,9 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 
 	/* Media Stream functions end */
 	constructor(
-		config: any,
+		config: VoIPUserConfiguration,
 		cDelegate: IConnectionDelegate,
-		rDelegate: IRegisterHandlerDeligate,
+		rDelegate: IRegisterHandlerDelegate,
 		cEventDelegate: ICallEventDelegate,
 	) {
 		this.config = config;
@@ -98,14 +99,13 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		this.registrationDelegate = rDelegate;
 		this.callEventDelegate = cEventDelegate;
 		this._userState = UserState.IDLE;
-		this.logger = new Logger('User');
+		this.logger = new Logger('VoIPUser');
 	}
 
 	/* UserAgentDelegate methods begin */
 	onConnect(): void {
 		this._callState = CallState.SERVER_CONNECTED;
 		this.logger?.info('onConnect() Connected');
-		console.log('Connected');
 		this.connectionDelegate.onConnected?.();
 		if (this.userAgent) {
 			this.registerer = new Registerer(this.userAgent);
@@ -245,7 +245,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		}
 
 		this.remoteStream = new Stream(remoteStream);
-		const mediaElement = this.config.media?.remote_video_element;
+		const mediaElement = this.config.mediaElements?.remoteStreamMediaElement;
 
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
@@ -267,10 +267,10 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 
 	async init(): Promise<any> {
 		this.logger?.debug('init()');
-		const sipUri = `sip:${this.config.auth_user_name}@${this.config.sip_registrar_hostname_ip}`;
+		const sipUri = `sip:${this.config.authUserName}@${this.config.sipRegistrarHostnameOrIP}`;
 		this.logger?.verbose('init() endpoint identity = ', sipUri);
 		const transportOptions = {
-			server: this.config.websocket_uri,
+			server: this.config.webSocketURI,
 			connectionTimeout: 10, // Replace this with config
 			keepAliveInterval: 20,
 			// traceSip: true
@@ -278,17 +278,16 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		const sdpFactoryOptions = {
 			iceGatheringTimeout: 10,
 			peerConnectionConfiguration: {
-				iceServers: this.config.ice_servers,
+				iceServers: this.config.iceServers,
 			},
 		};
 		this.userAgentOptions = {
 			delegate: this,
-			authorizationPassword: this.config.password,
-			authorizationUsername: this.config.auth_user_name,
+			authorizationPassword: this.config.authPassword,
+			authorizationUsername: this.config.authUserName,
 			uri: UserAgent.makeURI(sipUri),
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
-			displayName: this.config.display_name,
 			logConfiguration: false,
 		};
 
@@ -340,7 +339,7 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 				sessionDescriptionHandlerOptions: {
 					constraints: {
 						audio: true,
-						video: !!this.config.enable_video,
+						video: !!this.config.enableVideo,
 					},
 				},
 			};
@@ -380,11 +379,11 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 		}
 		return this.session.reject();
 	}
+
 	/**
 	 * Public method called from outside to end a call.
 	 * @remarks
 	 */
-
 	async endCall(): Promise<any> {
 		if (!this.session) {
 			this.logger?.warn('rejectCall() Session does not exist');
@@ -401,14 +400,12 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 				}
 				this.logger?.warn('rejectCall() Session not instance of Invitation.');
 				throw new Error('Session not instance of Invitation.');
-
 			case SessionState.Establishing:
 				if (this.session instanceof Invitation) {
 					return this.session.reject();
 				}
 				this.logger?.warn('rejectCall() Session not instance of Invitation.');
 				throw new Error('Session not instance of Invitation.');
-
 			case SessionState.Established:
 				return this.session.bye();
 			case SessionState.Terminating:
@@ -419,6 +416,6 @@ export class User implements UserAgentDelegate, OutgoingRequestDelegate {
 				this.logger?.warn('rejectCall() Unknown state');
 				throw new Error('Unknown state');
 		}
-		console.log('Ended');
+		this.logger?.debug('ended');
 	}
 }
