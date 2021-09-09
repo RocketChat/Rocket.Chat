@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization';
+import { hasPermission } from '../../../../../app/authorization/server';
 import { Subscriptions, LivechatRooms } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { IOmnichannelRoom } from '../../../../../definition/IRoom';
 
 
 API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
@@ -18,9 +19,13 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 			return API.v1.failure('Not authorized');
 		}
 
-		const room = LivechatRooms.findOneById(roomId);
+		const room: IOmnichannelRoom = LivechatRooms.findOneById(roomId);
 		if (!room || room.t !== 'l') {
 			return API.v1.failure('Invalid room Id');
+		}
+
+		if (room.lastMessage?.token) {
+			return API.v1.failure('You cannot place chat on-hold, when the Contact has sent the last message');
 		}
 
 		if (room.onHold) {
@@ -28,13 +33,16 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 		}
 
 		const user = Meteor.user();
+		if (!user) {
+			return API.v1.failure('Invalid user');
+		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
 		if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
 			return API.v1.failure('Not authorized');
 		}
 
-		const onHoldBy = { _id: user._id, username: user.username, name: user.name };
+		const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
 		const comment = TAPi18n.__('Omnichannel_On_Hold_manually', { user: onHoldBy.name || `@${ onHoldBy.username }` });
 
 		LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);

@@ -1,6 +1,6 @@
 import SlackAdapter from './SlackAdapter.js';
 import RocketAdapter from './RocketAdapter.js';
-import { logger } from './logger';
+import { classLogger, connLogger } from './logger';
 import { settings } from '../../settings';
 
 /**
@@ -44,7 +44,7 @@ class SlackBridgeClass {
 			}
 
 			this.connected = true;
-			logger.connection.info('Enabled');
+			connLogger.info('Enabled');
 		}
 	}
 
@@ -56,7 +56,7 @@ class SlackBridgeClass {
 			});
 			this.slackAdapters = [];
 			this.connected = false;
-			logger.connection.info('Disabled');
+			connLogger.info('Disabled');
 		}
 	}
 
@@ -71,25 +71,25 @@ class SlackBridgeClass {
 				}
 			}
 
-			logger.class.debug(`Setting: ${ key }`, value);
+			classLogger.debug(`Setting: ${ key }`, value);
 		});
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		settings.get('SlackBridge_AliasFormat', (key, value) => {
 			this.aliasFormat = value;
-			logger.class.debug(`Setting: ${ key }`, value);
+			classLogger.debug(`Setting: ${ key }`, value);
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		settings.get('SlackBridge_ExcludeBotnames', (key, value) => {
 			this.excludeBotnames = value;
-			logger.class.debug(`Setting: ${ key }`, value);
+			classLogger.debug(`Setting: ${ key }`, value);
 		});
 
 		// Reactions
 		settings.get('SlackBridge_Reactions_Enabled', (key, value) => {
 			this.isReactionsEnabled = value;
-			logger.class.debug(`Setting: ${ key }`, value);
+			classLogger.debug(`Setting: ${ key }`, value);
 		});
 
 		// Is this entire SlackBridge enabled
@@ -99,7 +99,7 @@ class SlackBridgeClass {
 			} else {
 				this.disconnect();
 			}
-			logger.class.debug(`Setting: ${ key }`, value);
+			classLogger.debug(`Setting: ${ key }`, value);
 		});
 	}
 }

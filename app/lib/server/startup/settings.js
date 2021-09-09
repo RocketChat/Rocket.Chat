@@ -277,7 +277,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
+		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -1585,14 +1585,6 @@ settings.addGroup('Logs', function() {
 				i18nLabel: '2_Erros_Information_and_Debug',
 			},
 		],
-		public: true,
-	});
-	this.add('Log_Package', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Log_File', false, {
-		type: 'boolean',
 		public: true,
 	});
 	this.add('Log_View_Limit', 1000, {
