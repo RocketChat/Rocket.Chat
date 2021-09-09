@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -13,7 +13,40 @@ import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
 import UsersTable from './UsersTable';
 
-function UsersPage({ useQuery }) {
+const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+
+const useQuery = ({ text, itemsPerPage, current }, sortFields) =>
+	useMemo(
+		() => ({
+			fields: JSON.stringify({
+				name: 1,
+				username: 1,
+				emails: 1,
+				roles: 1,
+				status: 1,
+				avatarETag: 1,
+				active: 1,
+			}),
+			query: JSON.stringify({
+				$or: [
+					{ 'emails.address': { $regex: text || '', $options: 'i' } },
+					{ username: { $regex: text || '', $options: 'i' } },
+					{ name: { $regex: text || '', $options: 'i' } },
+				],
+			}),
+			sort: JSON.stringify(
+				sortFields.reduce((agg, [column, direction]) => {
+					agg[column] = sortDir(direction);
+					return agg;
+				}, {}),
+			),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[text, itemsPerPage, current, sortFields],
+	);
+
+function UsersPage() {
 	const t = useTranslation();
 
 	const usersRoute = useRoute('admin-users');
