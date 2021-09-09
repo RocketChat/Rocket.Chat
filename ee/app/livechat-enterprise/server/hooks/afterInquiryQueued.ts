@@ -3,15 +3,18 @@ import moment from 'moment';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
+import { cbLogger } from '../lib/logger';
 
 let timer = 0;
 
 const setQueueTimer = (inquiry: any): void => {
 	if (!inquiry?._id) {
+		cbLogger.debug('Skipping callback. No inquiry provided');
 		return;
 	}
 
 	const newQueueTime = moment(inquiry?._updatedAt).add(timer, 'minutes');
+	cbLogger.debug(`Setting estimated inactivity close time to ${ newQueueTime } for inquiry ${ inquiry._id }`);
 	(LivechatInquiry as any).setEstimatedInactivityCloseTime(inquiry?._id, newQueueTime);
 };
 

@@ -5,7 +5,7 @@ Migrations.add({
 	version: 161,
 	up() {
 		const desktopNotifications = Settings.findOne({ _id: 'Accounts_Default_User_Preferences_desktopNotifications' });
-		const mobileNotifications = Settings.findOne({ _id: 'Accounts_Default_User_Preferences_mobileNotifications' });
+		const mobileNotifications = Settings.findOne({ _id: 'Accounts_Default_User_Preferences_pushNotifications' });
 
 		if (desktopNotifications && desktopNotifications.value === 'mentions') {
 			Settings.update({ _id: 'Accounts_Default_User_Preferences_desktopNotifications' }, {
@@ -14,7 +14,7 @@ Migrations.add({
 		}
 
 		if (mobileNotifications && mobileNotifications.value === 'mentions') {
-			Settings.update({ _id: 'Accounts_Default_User_Preferences_mobileNotifications' }, {
+			Settings.update({ _id: 'Accounts_Default_User_Preferences_pushNotifications' }, {
 				$set: { value: 'all' },
 			});
 		}
