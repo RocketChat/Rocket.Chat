@@ -3,6 +3,7 @@ import { Base64 } from 'meteor/base64';
 
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 class Mobex {
 	constructor() {
@@ -27,7 +28,7 @@ class Mobex {
 		}
 
 		if (isNaN(numMedia)) {
-			console.error(`Error parsing NumMedia ${ data.NumMedia }`);
+			SystemLogger.error(`Error parsing NumMedia ${ data.NumMedia }`);
 			return returnData;
 		}
 
@@ -84,7 +85,7 @@ class Mobex {
 			}
 		} catch (e) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
-			console.error('Error while sending SMS with Mobex', e);
+			SystemLogger.error('Error while sending SMS with Mobex', e);
 		}
 
 		return result;
@@ -129,7 +130,7 @@ class Mobex {
 			result.response = response;
 		} catch (e) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${ e }`;
-			console.error('Error while sending SMS with Mobex', e);
+			SystemLogger.error('Error while sending SMS with Mobex', e);
 		}
 
 		return result;

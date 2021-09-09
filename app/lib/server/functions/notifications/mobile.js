@@ -96,10 +96,10 @@ export function shouldNotifyMobile({
 	}
 
 	if (!mobilePushNotifications) {
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'all' && (!isThread || hasReplyToThread)) {
+		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all' && (!isThread || hasReplyToThread)) {
 			return true;
 		}
-		if (settings.get('Accounts_Default_User_Preferences_mobileNotifications') === 'nothing') {
+		if (settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'nothing') {
 			return false;
 		}
 	}

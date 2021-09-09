@@ -3,11 +3,12 @@ import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings';
 import '../../ufs/Webdav/server.js';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function(file, req, res) {
 	this.store.getReadStream(file._id, file)
 		.on('error', () => {
-			console.error('An error ocurred when fetching the file');
+			SystemLogger.error('An error ocurred when fetching the file');
 			res.writeHead(503);
 			res.end();
 		})
