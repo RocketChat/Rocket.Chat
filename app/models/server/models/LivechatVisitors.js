@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -124,9 +123,6 @@ export class LivechatVisitors extends Base {
 	 * @return {string} The next visitor name
 	 */
 	getNextVisitorUsername() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_guest_count',
 		};
@@ -137,7 +133,7 @@ export class LivechatVisitors extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return `guest-${ livechatCount.value.value + 1 }`;
 	}

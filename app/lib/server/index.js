@@ -10,7 +10,6 @@ import '../lib/MessageTypes';
 import '../startup';
 import '../startup/defaultRoomTypes';
 import './lib/bugsnag';
-import './lib/configLogger';
 import './lib/debug';
 import './lib/loginErrorMessageOverride';
 import './oauth/oauth';

@@ -5,6 +5,7 @@ import { IRocketChatRecord } from '../IRocketChatRecord';
 import { IUser } from '../IUser';
 import { ChannelName, RoomID } from '../IRoom';
 import { MessageAttachment } from './MessageAttachment/MessageAttachment';
+import { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
@@ -67,6 +68,8 @@ export interface IMessage extends IRocketChatRecord {
 	e2e?: 'pending';
 
 	urls: any;
-	file: any;
-	attachments: MessageAttachment[];
+	/** @deprecated Deprecated in favor of files */
+	file?: FileProp;
+	files?: FileProp[];
+	attachments?: MessageAttachment[];
 }

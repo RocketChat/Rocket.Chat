@@ -3,9 +3,10 @@ import { HTTP } from 'meteor/http';
 import xml2js from 'xml2js';
 
 import BigBlueButtonApi from '../../../bigbluebutton/server';
-import { settings } from '../../../settings';
-import { Rooms, Users } from '../../../models';
-import { saveStreamingOptions } from '../../../channel-settings';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { Rooms, Users } from '../../../models/server';
+import { saveStreamingOptions } from '../../../channel-settings/server';
 import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({
@@ -66,7 +67,7 @@ Meteor.methods({
 
 			if (hookResult.statusCode !== 200) {
 				// TODO improve error logging
-				console.log({ hookResult });
+				SystemLogger.error(hookResult);
 				return;
 			}
 
@@ -130,7 +131,7 @@ API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
 		const meetingID = event.data.attributes.meeting['external-meeting-id'];
 		const rid = meetingID.replace(settings.get('uniqueID'), '');
 
-		console.log(eventType, rid);
+		SystemLogger.debug(eventType, rid);
 
 		if (eventType === 'meeting-ended') {
 			saveStreamingOptions(rid, {});
@@ -147,14 +148,14 @@ API.v1.addRoute('videoconference.bbb.update/:id', { authRequired: false }, {
 
 		// 	if (getMeetingInfoResult.statusCode !== 200) {
 		// 		// TODO improve error logging
-		// 		console.log({ getMeetingInfoResult });
+		// 		SystemLogger.error({ getMeetingInfoResult });
 		// 	}
 
 		// 	const doc = parseString(getMeetingInfoResult.content);
 
 		// 	if (doc.response.returncode[0]) {
 		// 		const participantCount = parseInt(doc.response.participantCount[0]);
-		// 		console.log(participantCount);
+		// 		SystemLogger.debug(participantCount);
 		// 	}
 		// }
 	},
