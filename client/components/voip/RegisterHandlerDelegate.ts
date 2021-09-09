@@ -4,7 +4,7 @@
  * This interface is implemented by a class which is
  * interested SIP registration events.
  */
-export interface IRegisterHandlerDeligate {
+export interface IRegisterHandlerDelegate {
 	/**
 	 * Called when a endpoint is registered
 	 * @remarks
