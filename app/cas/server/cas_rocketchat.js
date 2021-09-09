@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
 
-export const logger = new Logger('CAS', {});
+export const logger = new Logger('CAS');
 
 Meteor.startup(function() {
 	settings.addGroup('CAS', function() {
