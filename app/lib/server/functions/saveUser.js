@@ -148,12 +148,12 @@ function validateUserEditing(userId, userData) {
 	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
 	const user = Users.findOneById(userData._id);
-	const editingUserRoles = userData.roles
+	const isEditingUserRoles = userData.roles
 							&& user.roles.length === userData.roles.length
 							&& user.roles.every((role, index) => role === user[index]);
-	const editingField = (previousValue, newValue) => newValue && newValue !== previousValue;
+	const isEditingField = (previousValue, newValue) => newValue !== previousValue;
 
-	if (editingUserRoles && !hasPermission(userId, 'assign-roles')) {
+	if (isEditingUserRoles && !hasPermission(userId, 'assign-roles')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
@@ -167,28 +167,28 @@ function validateUserEditing(userId, userData) {
 		});
 	}
 
-	if (editingField(user.username, userData.username) && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (isEditingField(user.username, userData.username) && !settings.get('Accounts_AllowUsernameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (editingField(user.statusText, userData.statusText) && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (isEditingField(user.statusText, userData.statusText) && !settings.get('Accounts_AllowUserStatusMessageChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user status is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (editingField(user.name, userData.name) && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (isEditingField(user.name, userData.name) && !settings.get('Accounts_AllowRealNameChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user real name is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
 		});
 	}
 
-	if (user.emails[0] && editingField(user.emails[0].address, userData.email) && !settings.get('Accounts_AllowEmailChange') && (!canEditOtherUserInfo || editingMyself)) {
+	if (user.emails[0] && isEditingField(user.emails[0].address, userData.email) && !settings.get('Accounts_AllowEmailChange') && (!canEditOtherUserInfo || editingMyself)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Edit user email is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',
