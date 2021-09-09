@@ -1074,7 +1074,7 @@ export const Livechat = {
 				e,
 			);
 			// try 10 times after 10 seconds each
-			this.webhookLogger.webhook.warn('Will try again in 10 seconds ...');
+			this.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(
 				Meteor.bindEnvironment(function() {
 					Livechat.sendRequest(postData, callback, attempts--);
