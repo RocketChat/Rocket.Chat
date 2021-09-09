@@ -1,7 +1,7 @@
 import qs from 'querystring';
 
 import { disabled } from '../functions/errors';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { federationRequestToPeer } from '../lib/http';
 
@@ -10,7 +10,7 @@ export function federationSearchUsers(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	logger.client.debug(() => `searchUsers => query=${ query }`);
+	clientLogger.debug({ msg: 'searchUsers', query });
 
 	const [username, peerDomain] = query.split('@');
 
@@ -26,7 +26,7 @@ export function getUserByUsername(query) {
 		throw disabled('client.searchUsers');
 	}
 
-	logger.client.debug(() => `getUserByUsername => query=${ query }`);
+	clientLogger.debug({ msg: 'getUserByUsername', query });
 
 	const [username, peerDomain] = query.split('@');
 
@@ -42,7 +42,7 @@ export function requestEventsFromLatest(domain, fromDomain, contextType, context
 		throw disabled('client.requestEventsFromLatest');
 	}
 
-	logger.client.debug(() => `requestEventsFromLatest => domain=${ domain } contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+	clientLogger.debug({ msg: 'requestEventsFromLatest', domain, contextType, contextQuery, latestEventIds });
 
 	const uri = '/api/v1/federation.events.requestFromLatest';
 
@@ -57,7 +57,7 @@ export function dispatchEvents(domains, events) {
 
 	domains = [...new Set(domains)];
 
-	logger.client.debug(() => `dispatchEvents => domains=${ domains.join(', ') } events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+	clientLogger.debug({ msg: 'dispatchEvents', domains, events });
 
 	const uri = '/api/v1/federation.events.dispatch';
 

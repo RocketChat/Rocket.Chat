@@ -2,29 +2,29 @@ import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
-import { logger } from '../lib/logger';
+import { cbLogger } from '../lib/logger';
 
 let autoTransferTimeout = 0;
 
 const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> => {
 	const { rid } = inquiry;
 	if (!rid || !rid.trim()) {
-		(logger as any).cb.debug('Skipping callback. Invalid room id');
+		cbLogger.debug('Skipping callback. Invalid room id');
 		return;
 	}
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
-		(logger as any).cb.debug('Skipping callback. No auto transfer timeout or invalid value from setting');
+		cbLogger.debug('Skipping callback. No auto transfer timeout or invalid value from setting');
 		return inquiry;
 	}
 
 	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1, autoTransferOngoing: 1 });
 	if (!room || room.autoTransferredAt || room.autoTransferOngoing) {
-		(logger as any).cb.debug(`Skipping callback. Room ${ room._id } already being transfered or not found`);
+		cbLogger.debug(`Skipping callback. Room ${ room._id } already being transfered or not found`);
 		return inquiry;
 	}
 
-	(logger as any).cb.debug(`Callback success. Room ${ room._id } will be scheduled to be auto transfered after ${ autoTransferTimeout } seconds`);
+	cbLogger.debug(`Callback success. Room ${ room._id } will be scheduled to be auto transfered after ${ autoTransferTimeout } seconds`);
 	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
 
 	return inquiry;
