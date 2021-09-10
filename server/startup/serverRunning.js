@@ -9,7 +9,8 @@ import { settings } from '../../app/settings/server';
 import { Info, getMongoInfo } from '../../app/utils/server';
 import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
+import { SystemLogger } from '../lib/logger/system';
 
 const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
