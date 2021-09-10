@@ -1,2 +1,1 @@
 import './autotranslate';
-import './googlevision';
