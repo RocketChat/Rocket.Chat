@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -16,7 +17,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 	}
 
 	const loginResult = SAML.retrieveCredential(loginRequest.credentialToken);
-	SAMLUtils.log(`RESULT :${ JSON.stringify(loginResult) }`);
+	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
 		return makeError('No matching login attempt found');
@@ -31,7 +32,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 		return SAML.insertOrUpdateSAMLUser(userObject);
 	} catch (error) {
-		console.error(error);
+		SystemLogger.error(error);
 		return makeError(error.toString());
 	}
 });

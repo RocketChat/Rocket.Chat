@@ -48,9 +48,9 @@ Meteor.methods({
 		}
 		const lastSeen = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId).ls;
 		if (firstUnreadMessage.ts >= lastSeen) {
-			return logger.connection.debug('Provided message is already marked as unread');
+			return logger.debug('Provided message is already marked as unread');
 		}
-		logger.connection.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
+		logger.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
 		return Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	},
 });

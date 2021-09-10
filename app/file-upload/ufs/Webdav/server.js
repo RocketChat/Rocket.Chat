@@ -5,6 +5,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 
 import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 /**
  * WebDAV store
  * @param options
@@ -72,7 +73,7 @@ export class WebdavStore extends UploadFS.Store {
 			const file = this.getCollection().findOne({ _id: fileId });
 			client.deleteFile(this.getPath(file)).then((data) => {
 				callback && callback(null, data);
-			}).catch(console.error);
+			}).catch(SystemLogger.error);
 		};
 
 		/**

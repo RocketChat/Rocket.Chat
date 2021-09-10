@@ -210,9 +210,12 @@ class Administration extends Page {
 
 	get generalStreamCastAdressReset() { return browser.element('[data-qa-reset-setting-id="Stream_Cast_Address"]'); }
 
-	get generalUTF8Regex() { return browser.element('[data-qa-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8UsernamesRegex() { return browser.element('[data-qa-setting-id="UTF8_User_Names_Validation"]'); }
 
-	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_Names_Validation"]'); }
+	get generalUTF8ChannelsRegex() { return browser.element('[data-qa-setting-id="UTF8_Channel_Names_Validation"]'); }
+
+	get generalUTF8RegexReset() { return browser.element('[data-qa-reset-setting-id="UTF8_User_Names_Validation"]'); }
+
 
 	get generalUTF8NamesSlug() { return browser.element('[data-qa-setting-id="UTF8_Names_Slugify"]'); }
 
@@ -239,9 +242,9 @@ class Administration extends Page {
 
 	get accountsDesktopNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_desktopNotifications"]'); }
 
-	get accountsMobileNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsMobileNotifications() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_pushNotifications"]'); }
 
-	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_mobileNotifications"]'); }
+	get accountsMobileNotificationsReset() { return browser.element('[data-qa-reset-setting-id="Accounts_Default_User_Preferences_pushNotifications"]'); }
 
 	get accountsUnreadAlert() { return browser.element('[data-qa-setting-id="Accounts_Default_User_Preferences_unreadAlert"]'); }
 

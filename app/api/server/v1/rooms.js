@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams, findChannelAndPrivateAutocompleteWithPagination } from '../lib/rooms';
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
@@ -310,6 +310,28 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 		return API.v1.success(Promise.await(findChannelAndPrivateAutocomplete({
 			uid: this.userId,
 			selector: JSON.parse(selector),
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.channelAndPrivate.withPagination', { authRequired: true }, {
+	get() {
+		const { selector } = this.queryParams;
+		const { offset, count } = this.getPaginationItems();
+		const { sort } = this.parseJsonQuery();
+
+		if (!selector) {
+			return API.v1.failure('The \'selector\' param is required');
+		}
+
+		return API.v1.success(Promise.await(findChannelAndPrivateAutocompleteWithPagination({
+			uid: this.userId,
+			selector: JSON.parse(selector),
+			pagination: {
+				offset,
+				count,
+				sort,
+			},
 		})));
 	},
 });

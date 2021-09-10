@@ -10,7 +10,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
 	const options = {
-		fields: {
+		projection: {
 			name: 1,
 			username: 1,
 			nickname: 1,
