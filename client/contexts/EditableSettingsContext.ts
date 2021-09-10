@@ -7,6 +7,7 @@ import { SettingsContextQuery } from './SettingsContext';
 export interface IEditableSetting extends ISetting {
 	disabled: boolean;
 	changed: boolean;
+	invisible: boolean;
 }
 
 export type EditableSettingsContextQuery = SettingsContextQuery & {

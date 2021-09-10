@@ -6,14 +6,13 @@ import { ImportData } from '../models/ImportData';
 import { IImportUser } from '../definitions/IImportUser';
 import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
 import { IImportChannel } from '../definitions/IImportChannel';
+import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
 import { Users, Rooms, Subscriptions } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
-
-// @ts-ignore //@ToDo: Add the Logger class definitions.
-type FakeLogger = Logger;
+import type { Logger } from '../../../../server/lib/logger/Logger';
 
 type IRoom = Record<string, any>;
 type IMessage = Record<string, any>;
@@ -38,14 +37,9 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
-interface IConversionCallbacks {
-	beforeImportFn?: {
-		(data: IImportUser | IImportChannel | IImportMessage, type: string): boolean;
-	};
-	afterImportFn?: {
-		(data: IImportUser | IImportChannel | IImportMessage, type: string): void;
-	};
-}
+export type IConverterOptions = {
+	flagEmailsAsVerified?: boolean;
+};
 
 const guessNameFromUsername = (username: string): string =>
 	username
@@ -64,16 +58,25 @@ export class ImportDataConverter {
 
 	private _roomNameCache: Map<string, string>;
 
-	private _logger: FakeLogger;
+	private _logger: Logger;
 
-	constructor() {
+	private _options: IConverterOptions;
+
+	public get options(): IConverterOptions {
+		return this._options;
+	}
+
+	constructor(options?: IConverterOptions) {
+		this._options = options || {
+			flagEmailsAsVerified: false,
+		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
 		this._roomCache = new Map();
 		this._roomNameCache = new Map();
 	}
 
-	setLogger(logger: FakeLogger): void {
+	setLogger(logger: Logger): void {
 		this._logger = logger;
 	}
 
@@ -135,6 +138,71 @@ export class ImportDataConverter {
 		});
 	}
 
+	addUserImportId(updateData: Record<string, any>, userData: IImportUser): void {
+		if (userData.importIds?.length) {
+			updateData.$addToSet = {
+				importIds: {
+					$each: userData.importIds,
+				},
+			};
+		}
+	}
+
+	addUserServices(updateData: Record<string, any>, userData: IImportUser): void {
+		if (!userData.services) {
+			return;
+		}
+
+		for (const serviceKey in userData.services) {
+			if (!userData.services[serviceKey]) {
+				continue;
+			}
+
+			const service = userData.services[serviceKey];
+
+			for (const key in service) {
+				if (!service[key]) {
+					continue;
+				}
+
+				updateData.$set[`services.${ serviceKey }.${ key }`] = service[key];
+			}
+		}
+	}
+
+	flagEmailsAsVerified(updateData: Record<string, any>, userData: IImportUser): void {
+		if (!this.options.flagEmailsAsVerified || !userData.emails.length) {
+			return;
+		}
+
+		// #ToDo: This only works on mongo 3.6+, if we don't deprecate 3.4 on the ldap release, this won't work.
+		updateData.$set['emails.$[].verified'] = true;
+	}
+
+	addCustomFields(updateData: Record<string, any>, userData: IImportUser): void {
+		if (!userData.customFields) {
+			return;
+		}
+
+		const subset = (source: Record<string, any>, currentPath: string): void => {
+			for (const key in source) {
+				if (!source.hasOwnProperty(key)) {
+					continue;
+				}
+
+				const keyPath = `${ currentPath }.${ key }`;
+				if (typeof source[key] === 'object' && !Array.isArray(source[key])) {
+					subset(source[key], keyPath);
+					continue;
+				}
+
+				updateData.$set[keyPath] = source[key];
+			}
+		};
+
+		subset(userData.customFields, 'customFields');
+	}
+
 	updateUserId(_id: string, userData: IImportUser): void {
 		const updateData: Record<string, any> = {
 			$set: {
@@ -143,17 +211,14 @@ export class ImportDataConverter {
 				type: userData.type || 'user',
 				bio: userData.bio || undefined,
 				name: userData.name || undefined,
+				ldap: !!userData.services?.ldap || undefined,
 			},
 		};
 
-		if (userData.importIds?.length) {
-			updateData.$addToSet = {
-				importIds: {
-					$each: userData.importIds,
-				},
-			};
-		}
-
+		this.addCustomFields(updateData, userData);
+		this.addUserServices(updateData, userData);
+		this.addUserImportId(updateData, userData);
+		this.flagEmailsAsVerified(updateData, userData);
 		Users.update({ _id }, updateData);
 	}
 
@@ -220,8 +285,27 @@ export class ImportDataConverter {
 		return user;
 	}
 
+	getUsersToImport(): any {
+		return ImportData.find({ dataType: 'user' });
+	}
+
+	findExistingUser(data: IImportUser): IUser | undefined {
+		if (data.emails.length) {
+			const emailUser = Users.findOneByEmailAddress(data.emails[0], {});
+
+			if (emailUser) {
+				return emailUser;
+			}
+		}
+
+		// If we couldn't find one by their email address, try to find an existing user by their username
+		if (data.username) {
+			return Users.findOneByUsernameIgnoringCase(data.username, {});
+		}
+	}
+
 	convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = ImportData.find({ dataType: 'user' });
+		const users = this.getUsersToImport();
 		users.forEach(({ data, _id }: IImportUserRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
@@ -236,22 +320,15 @@ export class ImportDataConverter {
 					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				let existingUser;
-				if (data.emails.length) {
-					existingUser = Users.findOneByEmailAddress(data.emails[0], {});
-				}
-
-				if (data.username) {
-					// If we couldn't find one by their email address, try to find an existing user by their username
-					if (!existingUser) {
-						existingUser = Users.findOneByUsernameIgnoringCase(data.username, {});
-					}
-				} else {
+				let existingUser = this.findExistingUser(data);
+				if (!data.username) {
 					data.username = generateUsernameSuggestion({
 						name: data.name,
 						emails: data.emails,
 					});
 				}
+
+				const isNewUser = !existingUser;
 
 				if (existingUser) {
 					this.updateUser(existingUser, data);
@@ -266,12 +343,15 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				if (data.deleted && existingUser?.active) {
 					setUserActiveStatus(data._id, false, true);
+				} else if (data.deleted === false && existingUser && existingUser.active === false) {
+					setUserActiveStatus(data._id, true);
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'user');
+					afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
+				console.error(e);
 				this.saveError(_id, e);
 			}
 		});
@@ -424,9 +504,13 @@ export class ImportDataConverter {
 		return result;
 	}
 
+	getMessagesToImport(): any {
+		return ImportData.find({ dataType: 'message' });
+	}
+
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
-		const messages = ImportData.find({ dataType: 'message' });
+		const messages = this.getMessagesToImport();
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(m, 'message')) {
@@ -498,7 +582,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					afterImportFn(m, 'message');
+					afterImportFn(m, 'message', true);
 				}
 			} catch (e) {
 				this.saveError(_id, e);
@@ -709,7 +793,7 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			this._logger.warn(roomData.name, members);
+			this._logger.warn('Failed to create new room', roomData.name, members);
 			this._logger.error(e);
 			throw e;
 		}
@@ -768,8 +852,12 @@ export class ImportDataConverter {
 		return Rooms.findOneByNonValidatedName(data.name, {});
 	}
 
+	getChannelsToImport(): any {
+		return ImportData.find({ dataType: 'channel' });
+	}
+
 	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const channels = ImportData.find({ dataType: 'channel' });
+		const channels = this.getChannelsToImport();
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(c, 'channel')) {
@@ -801,7 +889,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					afterImportFn(c, 'channel');
+					afterImportFn(c, 'channel', !existingRoom);
 				}
 			} catch (e) {
 				this.saveError(_id, e);

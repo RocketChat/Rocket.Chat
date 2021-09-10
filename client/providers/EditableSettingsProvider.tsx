@@ -1,9 +1,10 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
+import { FilterQuery } from 'mongodb';
 import React, { useEffect, useMemo, FunctionComponent, useRef, MutableRefObject } from 'react';
 
-import { SettingId, GroupId } from '../../definition/ISetting';
+import { SettingId, GroupId, ISetting } from '../../definition/ISetting';
 import {
 	EditableSettingsContext,
 	IEditableSetting,
@@ -44,37 +45,36 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 		}
 	}, [getSettingsCollection, persistedSettings]);
 
-	const queryEditableSetting = useMemo(
-		() =>
-			createReactiveSubscriptionFactory((_id: SettingId): IEditableSetting | undefined => {
-				const settingsCollection = getSettingsCollection();
+	const queryEditableSetting = useMemo(() => {
+		const validateSettingQueries = (
+			query: undefined | string | FilterQuery<ISetting> | FilterQuery<ISetting>[],
+			settingsCollection: Mongo.Collection<IEditableSetting>,
+		): boolean => {
+			if (!query) {
+				return true;
+			}
 
-				const editableSetting = settingsCollection.findOne(_id);
+			const queries = [].concat(typeof query === 'string' ? JSON.parse(query) : query);
+			return queries.every((query) => settingsCollection.find(query).count() > 0);
+		};
 
-				if (!editableSetting) {
-					return undefined;
-				}
+		return createReactiveSubscriptionFactory((_id: SettingId): IEditableSetting | undefined => {
+			const settingsCollection = getSettingsCollection();
+			const editableSetting = settingsCollection.findOne(_id);
 
-				if (editableSetting.blocked) {
-					return { ...editableSetting, disabled: true };
-				}
+			if (!editableSetting) {
+				return undefined;
+			}
 
-				if (!editableSetting.enableQuery) {
-					return { ...editableSetting, disabled: false };
-				}
-
-				const queries = [].concat(
-					typeof editableSetting.enableQuery === 'string'
-						? JSON.parse(editableSetting.enableQuery)
-						: editableSetting.enableQuery,
-				);
-				return {
-					...editableSetting,
-					disabled: !queries.every((query) => settingsCollection.find(query).count() > 0),
-				};
-			}),
-		[getSettingsCollection],
-	);
+			return {
+				...editableSetting,
+				disabled:
+					editableSetting.blocked ||
+					!validateSettingQueries(editableSetting.enableQuery, settingsCollection),
+				invisible: !validateSettingQueries(editableSetting.displayQuery, settingsCollection),
+			};
+		});
+	}, [getSettingsCollection]);
 
 	const queryEditableSettings = useMemo(
 		() =>

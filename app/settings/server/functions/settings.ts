@@ -68,6 +68,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 
 export interface ISettingAddOptions extends Partial<ISetting> {
 	force?: boolean;
+	actionText?: string;
+	code?: 'application/json';
 }
 
 export interface ISettingAddGroupOptions {

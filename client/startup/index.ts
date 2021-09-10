@@ -6,6 +6,7 @@ import './emailVerification';
 import './i18n';
 import './listenActiveUsers';
 import './routes';
+import './ldap';
 import './loginViaQuery';
 import './messageTypes';
 import './notifications';

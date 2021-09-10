@@ -7,11 +7,13 @@ export interface IImportUser {
 	importIds: Array<string>;
 	name?: string;
 	utcOffset?: number;
-	active?: boolean;
 	avatarUrl?: string;
 	deleted?: boolean;
 	statusText?: string;
 	roles?: Array<string>;
 	type: 'user' | 'bot';
 	bio?: string;
+
+	services?: Record<string, Record<string, any>>;
+	customFields?: Record<string, any>;
 }

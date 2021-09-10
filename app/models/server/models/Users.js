@@ -668,6 +668,18 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByLDAPId(id, attribute = undefined) {
+		const query = {
+			'services.ldap.id': id,
+		};
+
+		if (attribute) {
+			query['services.ldap.idAttribute'] = attribute;
+		}
+
+		return this.findOne(query);
+	}
+
 	// FIND
 	findByIds(users, options) {
 		const query = { _id: { $in: users } };

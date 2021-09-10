@@ -68,6 +68,10 @@ export class SettingsBase {
 		return Meteor.settings && Meteor.settings[_id];
 	}
 
+	getAs<T>(_id: string): T {
+		return this.get(_id) as unknown as T;
+	}
+
 	set(_id: string, value: SettingValue, callback: () => void): void {
 		Meteor.call('saveSetting', _id, value, callback);
 	}
