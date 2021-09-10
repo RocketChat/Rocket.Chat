@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings';
 
 /**

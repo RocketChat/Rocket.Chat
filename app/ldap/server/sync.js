@@ -16,7 +16,7 @@ import { FileUpload } from '../../file-upload';
 import { addUserToRoom, removeUserFromRoom, createRoom, saveUserIdentity } from '../../lib/server/functions';
 import { api } from '../../../server/sdk/api';
 
-export const logger = new Logger('LDAPSync', {});
+export const logger = new Logger('LDAPSync');
 
 export function isUserInLDAPGroup(ldap, ldapUser, user, ldapGroup) {
 	const syncUserRolesFilter = settings.get('LDAP_Sync_User_Data_Groups_Filter').trim();
@@ -392,7 +392,7 @@ export function syncUserData(user, ldapUser, ldap) {
 	const userChannels = mapLDAPGroupsToChannels(ldap, ldapUser, user);
 
 	if (user && user._id && userData) {
-		logger.debug('setting', JSON.stringify(userData, null, 2));
+		logger.debug({ msg: 'setting', userData });
 		if (userData.name) {
 			_setRealName(user._id, userData.name);
 			delete userData.name;

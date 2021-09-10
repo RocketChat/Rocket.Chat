@@ -17,7 +17,7 @@ const CannedResponseEditWithData: FC<{
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(`canned-responses/${cannedResponseId}` as 'canned-responses/${string}');
+	} = useEndpointData(`canned-responses/${cannedResponseId}`);
 
 	const t = useTranslation();
 

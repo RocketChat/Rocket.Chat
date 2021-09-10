@@ -62,14 +62,6 @@
 		content: "";
 	}
 
-	&:first-child {
-		margin-top: 4px;
-	}
-
-	&:last-child {
-		margin-bottom: 4px;
-	}
-
 	&:first-child::before {
 		border-radius: 2px 2px 0 0;
 	}
@@ -296,7 +288,6 @@
 
 	&.double-col {
 		& > label {
-
 			width: 30%;
 			margin-bottom: 0;
 			padding: 10px 20px 10px 0;
@@ -307,7 +298,6 @@
 		}
 
 		& > div {
-
 			width: 60%;
 			min-height: 2.5rem;
 
@@ -892,7 +882,6 @@
 	border-radius: var(--border-radius);
 
 	&__content {
-
 		overflow: auto;
 
 		margin: -1rem;
@@ -900,7 +889,6 @@
 	}
 
 	& .cms-page-close {
-
 		display: flex;
 
 		margin-bottom: 10px;
@@ -1036,14 +1024,12 @@
 		}
 
 		& .settings-description {
-
 			padding-top: 2px;
 
 			line-height: 1.2rem;
 		}
 
 		& .settings-alert {
-
 			margin-top: 0.75rem;
 			padding: 1rem;
 
@@ -1542,7 +1528,6 @@
 }
 
 .rc-old .rc-message-box .reply-preview {
-
 	position: relative;
 
 	display: flex;
@@ -1566,7 +1551,6 @@
 }
 
 .rc-old .rc-message-box .reply-preview:not(:last-child)::before {
-
 	position: absolute;
 	right: 15px;
 
@@ -2697,7 +2681,6 @@
 
 		& input,
 		& select {
-
 			position: relative;
 
 			width: 100%;
@@ -3061,7 +3044,6 @@
 
 .rc-old .dropzone {
 	& .dropzone-overlay {
-
 		position: absolute;
 		z-index: 1000000;
 		top: 0;

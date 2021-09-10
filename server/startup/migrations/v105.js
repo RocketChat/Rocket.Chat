@@ -13,7 +13,7 @@ Migrations.add({
 		if (Settings) {
 			const settingsMap = {
 				Desktop_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_desktopNotifications',
-				Mobile_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_mobileNotifications',
+				Mobile_Push_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_pushNotifications',
 				Audio_Notifications_Default_Alert: 'Accounts_Default_User_Preferences_audioNotifications',
 				Audio_Notifications_Value: undefined,
 			};

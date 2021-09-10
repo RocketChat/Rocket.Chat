@@ -35,7 +35,7 @@ export class CsvImporter extends Base {
 					oldRate = rate;
 				}
 			} catch (e) {
-				console.error(e);
+				this.logger.error(e);
 			}
 		};
 
