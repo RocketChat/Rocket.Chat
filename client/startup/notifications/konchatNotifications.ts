@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { CachedChatSubscription, ChatSubscription } from '../../../app/models/client';
+import { CachedChatSubscription, ChatSubscription, ChatRoom } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
@@ -156,6 +156,14 @@ Meteor.startup(() => {
 				return;
 			}
 
+			console.log('rooms-changed ->', room);
+
+			// notify only on new messages
+			const oldRoom = ChatRoom.findOne({ _id: room._id }, { fields: { 'lastMessage.ts': 1 } });
+			if (room.lastMessage.ts <= oldRoom.lastMessage.ts) {
+				return;
+			}
+
 			// TODO validate same behavior as done on server side before
 			// export function shouldNotifyDesktop({
 			// 	disableAllMessageNotifications,
@@ -189,8 +197,6 @@ Meteor.startup(() => {
 
 			// 	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
 			// }
-
-			console.log('rooms-changed ->', room);
 
 			const { lastMessage: msg } = room;
 
