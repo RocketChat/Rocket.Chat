@@ -469,7 +469,7 @@ function spliceByFileSize(fileList, size) {
 		}
 	});
 
-	return fileList.splice(0, fileList.length);
+	return fileList;
 }
 
 const continueExportOperation = async function(exportOperation) {
