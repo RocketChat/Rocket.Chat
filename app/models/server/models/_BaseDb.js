@@ -7,6 +7,7 @@ import _ from 'underscore';
 import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
@@ -20,7 +21,7 @@ try {
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	console.log(e);
+	SystemLogger.error(e);
 }
 
 const actions = {

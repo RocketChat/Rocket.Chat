@@ -19,7 +19,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 import { goToRoomById } from '../../../lib/goToRoomById';
 import TeamNameInput from './TeamNameInput';
@@ -51,7 +51,7 @@ type CreateTeamModalState = {
 const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
-	const namesValidation = useSetting('UTF8_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -71,7 +71,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		readOnly: boolean;
 		broadcast: boolean;
 		encrypted: boolean;
-		members: IUser['username'][];
+		members: Exclude<IUser['username'], undefined>[];
 	};
 
 	const { handleMembers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;

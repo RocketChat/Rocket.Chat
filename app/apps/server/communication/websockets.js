@@ -1,5 +1,6 @@
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 export const AppEvents = Object.freeze({
@@ -49,10 +50,10 @@ export class AppServerListener {
 		this.received.set(`${ AppEvents.APP_STATUS_CHANGE }_${ appId }`, { appId, status, when: new Date() });
 
 		if (AppStatusUtils.isEnabled(status)) {
-			await this.orch.getManager().enable(appId).catch(console.error);
+			await this.orch.getManager().enable(appId).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		} else if (AppStatusUtils.isDisabled(status)) {
-			await this.orch.getManager().disable(appId, status, true).catch(console.error);
+			await this.orch.getManager().disable(appId, status, true).catch(SystemLogger.error);
 			this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		}
 	}

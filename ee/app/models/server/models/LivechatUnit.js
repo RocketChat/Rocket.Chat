@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 import LivechatDepartmentInstance, { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { getUnitsFromUser } from '../../../livechat-enterprise/server/lib/units';
-import { logger } from '../../../livechat-enterprise/server/lib/logger';
+import { queriesLogger } from '../../../livechat-enterprise/server/lib/logger';
 import LivechatUnitMonitors from './LivechatUnitMonitors';
 
 const addQueryRestrictions = (originalQuery = {}) => {
@@ -23,13 +23,13 @@ const addQueryRestrictions = (originalQuery = {}) => {
 export class LivechatUnit extends LivechatDepartment {
 	find(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		logger.queries.debug('LivechatUnit.find', JSON.stringify(query));
+		queriesLogger.debug({ msg: 'LivechatUnit.find', query });
 		return this.unfilteredFind(query, ...args);
 	}
 
 	findOne(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
-		logger.queries.debug('LivechatUnit.findOne', JSON.stringify(query));
+		queriesLogger.debug({ msg: 'LivechatUnit.findOne', query });
 		return super.unfilteredFindOne(query, ...args);
 	}
 

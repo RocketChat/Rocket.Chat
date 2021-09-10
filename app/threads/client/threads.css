@@ -59,7 +59,6 @@
 
 .message {
 	& .thread-replied {
-
 		display: inline-flex;
 
 		display: flex;
@@ -135,7 +134,6 @@
 	}
 
 	.thread-quote__message {
-
 		display: flex;
 
 		overflow: hidden;

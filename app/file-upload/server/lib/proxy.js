@@ -19,7 +19,7 @@ WebApp.connectHandlers.stack.unshift({
 			return next();
 		}
 
-		logger.debug('Upload URL:', req.url);
+		logger.debug({ msg: 'Upload URL:', url: req.url });
 
 		if (req.method !== 'POST') {
 			return next();
@@ -75,7 +75,7 @@ WebApp.connectHandlers.stack.unshift({
 			instance.extraInformation.host = 'localhost';
 		}
 
-		logger.debug('Wrong instance, proxing to:', `${ instance.extraInformation.host }:${ instance.extraInformation.port }`);
+		logger.debug(`Wrong instance, proxing to ${ instance.extraInformation.host }:${ instance.extraInformation.port }`);
 
 		const options = {
 			hostname: instance.extraInformation.host,
@@ -84,7 +84,7 @@ WebApp.connectHandlers.stack.unshift({
 			method: 'POST',
 		};
 
-		console.warn('UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload');
+		logger.warn('UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload');
 		const proxy = http.request(options, function(proxy_res) {
 			proxy_res.pipe(res, {
 				end: true,
