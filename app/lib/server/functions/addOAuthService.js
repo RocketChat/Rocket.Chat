@@ -3,6 +3,7 @@
 import { capitalize } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../../settings';
+import { addEnterpriseOAuthSettings } from '../../../../ee/server/oAuth/settings';
 
 export function addOAuthService(name, values = {}) {
 	name = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -30,9 +31,10 @@ export function addOAuthService(name, values = {}) {
 	settings.add(`Accounts_OAuth_Custom-${ name }-roles_claim`            , values.rolesClaim || 'roles'                  , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-groups_claim`           , values.groupsClaim || 'groups'                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-channels_admin`         , values.channelsAdmin || 'rocket.cat'          , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin', persistent: true });
-	settings.add(`Accounts_OAuth_Custom-${ name }-map_channels`           , values.mapChannels || false                   , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Map_Channels', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`            , values.mergeRoles || false                    , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-merge_users`            , values.mergeUsers || false                    , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Users', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-show_button`            , values.showButton || true                     , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Show_Button_On_Login_Page', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-groups_channel_map`     , values.channelsMap || '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}' , { type: 'code'   , multiline: true, code: 'application/json', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Channel_Map', persistent: true });
+
+	addEnterpriseOAuthSettings(name, values);
 }
