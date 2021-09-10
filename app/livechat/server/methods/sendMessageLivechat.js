@@ -43,8 +43,7 @@ Meteor.methods({
 			agent,
 			roomInfo: {
 				source: {
-					type: OmnichannelSourceType.OTHER,
-					alias: 'livechat-api',
+					type: OmnichannelSourceType.API,
 				},
 			},
 		});

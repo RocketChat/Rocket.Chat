@@ -20,7 +20,7 @@ Meteor.methods({
 		};
 
 		const roomInfo = {
-			source: OmnichannelSourceType.OTHER,
+			source: OmnichannelSourceType.API,
 			alias: 'file-upload',
 		};
 

@@ -26,7 +26,7 @@ Meteor.methods({
 		const roomInfo = {
 			jitsiTimeout: new Date(Date.now() + 3600 * 1000),
 			source: {
-				type: OmnichannelSourceType.OTHER,
+				type: OmnichannelSourceType.API,
 				alias: 'video-call',
 			},
 		};

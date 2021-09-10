@@ -9,6 +9,7 @@ import './helpers/insertUserObject';
 import './helpers/isUserFromParams';
 import './helpers/parseJsonQuery';
 import './helpers/requestParams';
+import './helpers/isWidget';
 import './default/info';
 import './v1/assets';
 import './v1/channels';

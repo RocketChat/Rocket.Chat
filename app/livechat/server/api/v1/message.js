@@ -59,8 +59,7 @@ API.v1.addRoute('livechat/message', {
 				agent,
 				roomInfo: {
 					source: {
-						type: OmnichannelSourceType.OTHER,
-						alias: 'livechat-api',
+						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 					},
 				},
 			};
@@ -314,8 +313,7 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 				},
 				roomInfo: {
 					source: {
-						type: OmnichannelSourceType.OTHER,
-						alias: 'livechat-api',
+						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 					},
 				},
 			};
