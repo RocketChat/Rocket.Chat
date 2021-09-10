@@ -6,13 +6,14 @@ import mem from 'mem';
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getDirectMessageByIdWithOptionToJoin, getDirectMessageByNameOrIdWithOptionToJoin } from './getDirectMessageByNameOrIdWithOptionToJoin';
 
 // show deprecation warning only once per hour for each integration
 const showDeprecation = mem(({ integration, channels, username }, error) => {
 	console.warn(`Warning: The integration "${ integration }" failed to send a message to "${ [].concat(channels).join(',') }" because user "${ username }" doesn't have permission or is not a member of the channel.`);
 	console.warn('This behavior is deprecated and starting from version v4.0.0 the following error will be thrown and the message will not be sent.');
-	console.error(error);
+	SystemLogger.error(error);
 }, { maxAge: 360000, cacheKey: (integration) => JSON.stringify(integration) });
 
 export const processWebhookMessage = function(messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }, integration = null) {
@@ -52,7 +53,7 @@ export const processWebhookMessage = function(messageObj, user, defaultValues = 
 		}
 
 		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
-			console.log('Attachments should be Array, ignoring value'.red, messageObj.attachments);
+			SystemLogger.warn({ msg: 'Attachments should be Array, ignoring value', attachments: messageObj.attachments });
 			messageObj.attachments = undefined;
 		}
 

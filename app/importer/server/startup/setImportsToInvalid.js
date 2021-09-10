@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Imports } from '../../../models';
+import { Imports } from '../../../models/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RawImports } from '../models/RawImports';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
@@ -8,7 +9,7 @@ function runDrop(fn) {
 	try {
 		fn();
 	} catch (e) {
-		console.log('error', e); // TODO: Remove
+		SystemLogger.error('error', e); // TODO: Remove
 		// ignored
 	}
 }

@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import {
 	FederationRoomEvents, FederationServers,
@@ -135,7 +134,7 @@ const eventHandlers = {
 					federationAltered = true;
 				}
 			} catch (ex) {
-				logger.server.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
+				serverLogger.debug(`unable to create subscription for user ( ${ user._id } ) in room (${ roomId })`);
 			}
 
 			// Refresh the servers list
@@ -240,7 +239,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					Meteor.runAsUser(upload.userId, () => Meteor.wrapAsync(fileStore.insert.bind(fileStore))(upload, buffer));
+					fileStore.insertSync(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
@@ -268,7 +267,7 @@ const eventHandlers = {
 					notifyUsersOnMessage(denormalizedMessage, room);
 					sendAllNotifications(denormalizedMessage, room);
 				} catch (err) {
-					logger.server.debug(`Error on creating message: ${ message._id }`);
+					serverLogger.debug(`Error on creating message: ${ message._id }`);
 				}
 			}
 		}
@@ -464,7 +463,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 		// Convert from EJSON
 		const { events } = EJSON.fromJSONValue(payload);
 
-		logger.server.debug(`federation.events.dispatch => events=${ events.map((e) => JSON.stringify(e, null, 2)) }`);
+		serverLogger.debug({ msg: 'federation.events.dispatch', events });
 
 		// Loop over received events
 		for (const event of events) {
@@ -479,14 +478,14 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 			// If there was an error handling the event, take action
 			if (!eventResult || !eventResult.success) {
 				try {
-					logger.server.debug(`federation.events.dispatch => Event has missing parents -> event=${ JSON.stringify(event, null, 2) }`);
+					serverLogger.debug({ msg: 'federation.events.dispatch => Event has missing parents', event });
 
 					requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
 
 					// And stop handling the events
 					break;
 				} catch (err) {
-					logger.server.error(() => `dispatch => event=${ JSON.stringify(event, null, 2) } eventResult=${ JSON.stringify(eventResult, null, 2) } error=${ err.toString() } ${ err.stack }`);
+					serverLogger.error({ msg: 'dispatch', event, eventResult, err });
 
 					throw err;
 				}

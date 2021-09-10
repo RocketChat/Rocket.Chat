@@ -825,10 +825,8 @@ export class ImportDataConverter {
 	}
 
 	clearImportData(): void {
-		const rawCollection = ImportData.model.rawCollection();
-		const remove = Meteor.wrapAsync(rawCollection.remove, rawCollection);
-
-		remove({});
+		// Using raw collection since its faster
+		Promise.await(ImportData.model.rawCollection().remove({}));
 	}
 
 	clearSuccessfullyImportedData(): void {
