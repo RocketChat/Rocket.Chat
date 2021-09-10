@@ -10,7 +10,7 @@ import { callbacks } from '../../callbacks';
 import { Logger } from '../../logger';
 
 
-const logger = new Logger('LDAPHandler', {});
+const logger = new Logger('LDAPHandler');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {

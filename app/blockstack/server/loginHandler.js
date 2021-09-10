@@ -44,7 +44,7 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 				});
 			}
 		} catch (e) {
-			console.error(e);
+			logger.error(e);
 		}
 	}
 

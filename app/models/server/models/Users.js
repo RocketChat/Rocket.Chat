@@ -354,7 +354,6 @@ export class Users extends Base {
 			},
 		};
 		const affectedRows = this.update(query, update);
-		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
 		return affectedRows;
 	}
 
