@@ -2,6 +2,7 @@ import { Box, CheckBox } from '@rocket.chat/fuselage';
 import React, { FC, ReactElement } from 'react';
 
 import { IRoom } from '../../../definition/IRoom';
+import { Serialized } from '../../../definition/Serialized';
 import GenericTable from '../../components/GenericTable';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
@@ -9,12 +10,12 @@ import ChannelRow from './contextualBar/ChannelRow';
 
 type ChannelDesertionTableProps = {
 	lastOwnerWarning: boolean | undefined;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
 	params?: {};
 	onChangeParams?: () => void;
-	onChangeRoomSelection: (room: IRoom) => void;
-	selectedRooms: { [key: string]: IRoom };
+	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
+	selectedRooms: { [key: string]: Serialized<IRoom> };
 	onToggleAllRooms: () => void;
 };
 

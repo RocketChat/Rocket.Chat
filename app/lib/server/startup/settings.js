@@ -295,7 +295,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
+		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -1107,6 +1107,35 @@ settings.addGroup('Message', function() {
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
 		});
+
+		this.add('Message_Attachments_Thumbnails_Enabled', true, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
+		});
+
+		this.add('Message_Attachments_Thumbnails_Width', 480, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
+
+		this.add('Message_Attachments_Thumbnails_Height', 360, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
+
 		this.add('Message_Attachments_Strip_Exif', false, {
 			type: 'boolean',
 			public: true,
@@ -1574,14 +1603,6 @@ settings.addGroup('Logs', function() {
 				i18nLabel: '2_Erros_Information_and_Debug',
 			},
 		],
-		public: true,
-	});
-	this.add('Log_Package', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Log_File', false, {
-		type: 'boolean',
 		public: true,
 	});
 	this.add('Log_View_Limit', 1000, {

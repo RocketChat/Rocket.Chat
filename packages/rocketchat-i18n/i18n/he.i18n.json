@@ -1479,8 +1479,6 @@
   "Users": "משתמשים",
   "Users_in_role": "משתמשים בתפקיד",
   "UTF8_Names_Slugify": "UTF8 שמות Slugify",
-  "UTF8_Names_Validation": "UTF8 שמות אימות",
-  "UTF8_Names_Validation_Description": "אל תאפשרו תווים וחללים מיוחדים. אתה יכול להשתמש - _ ו. אבל לא בסוף השם",
   "Verification_email_sent": "נשלחה הודעת דוא״ל לאימות",
   "Verified": "מְאוּמָת",
   "Version": "גרסה",
