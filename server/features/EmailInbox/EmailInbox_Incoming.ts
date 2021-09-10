@@ -193,7 +193,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			try {
 				attachments.push(await uploadAttachment(attachment, rid, guest.token));
 			} catch (e) {
-				console.error('Error uploading attachment from email', e);
+				Livechat.logger.error('Error uploading attachment from email', e);
 			}
 		}
 
@@ -205,6 +205,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 			},
 		});
 	}).catch((error) => {
-		console.log('Error receiving Email: %s', error.message);
+		Livechat.logger.log('Error receiving Email: %s', error.message);
 	});
 }

@@ -1,13 +1,13 @@
 /* eslint no-use-before-define:0 */
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
+import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { Log } from 'meteor/logging';
 import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment';
 
-import { Info } from '../../utils';
+import { Info } from '../../utils/server';
+import { Logger } from '../../logger/server';
 /*
 	Adds migration capabilities. Migrations are defined like:
 
@@ -87,50 +87,7 @@ function makeABox(message, color = 'red') {
 	return `\n${ topLine }\n${ separator }\n${ text }\n${ separator }\n${ bottomLine }\n`;
 }
 
-/*
-	Logger factory function. Takes a prefix string and options object
-	and uses an injected `logger` if provided, else falls back to
-	Meteor's `Log` package.
-	Will send a log object to the injected logger, on the following form:
-		message: String
-		level: String (info, warn, error, debug)
-		tag: 'Migrations'
-*/
-function createLogger(prefix) {
-	check(prefix, String);
-
-	// Return noop if logging is disabled.
-	if (Migrations.options.log === false) {
-		return function() {};
-	}
-
-	return function(level, message) {
-		check(level, Match.OneOf('info', 'error', 'warn', 'debug'));
-		check(message, Match.OneOf(String, [String]));
-
-		const logger = Migrations.options && Migrations.options.logger;
-
-		if (logger && _.isFunction(logger)) {
-			logger({
-				level,
-				message,
-				tag: prefix,
-			});
-		} else {
-			Log[level]({
-				message: `${ prefix }: ${ message }`,
-			});
-		}
-	};
-}
-
-// collection holding the control record
-
-const log = createLogger('Migrations');
-
-['info', 'warn', 'error', 'debug'].forEach(function(level) {
-	log[level] = _.partial(log, level);
-});
+const log = new Logger('Migrations');
 
 // if (process.env.MIGRATE)
 //   Migrations.migrateTo(process.env.MIGRATE);
@@ -190,7 +147,7 @@ Migrations.migrateTo = function(command) {
 			} else {
 				willRetry = '';
 			}
-			console.log(`Not migrating, control is locked. Attempt ${ attempts }/${ maxAttempts }.${ willRetry }`.yellow);
+			log.warn(`Not migrating, control is locked. Attempt ${ attempts }/${ maxAttempts }.${ willRetry }`.yellow);
 		}
 	}
 	if (!migrated) {
@@ -275,7 +232,7 @@ Migrations._migrateTo = function(version, rerun) {
 		try {
 			migration[direction](migration);
 		} catch (e) {
-			console.log(makeABox([
+			console.error(makeABox([
 				'ERROR! SERVER STOPPED',
 				'',
 				'Your database migration failed:',

@@ -16,7 +16,7 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-	const { Logger } = require('../../logger/server/server');
+	const { Logger } = require('../../../server/lib/logger/Logger');
 	logger = new Logger('Callbacks');
 }
 

@@ -1,7 +1,7 @@
 import { EJSON } from 'meteor/ejson';
 
 import { API } from '../../../api/server';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { FederationRoomEvents } from '../../../models/server';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
@@ -25,7 +25,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 
 		const { fromDomain, contextType, contextQuery, latestEventIds } = EJSON.fromJSONValue(payload);
 
-		logger.server.debug(`federation.events.requestFromLatest => contextType=${ contextType } contextQuery=${ JSON.stringify(contextQuery, null, 2) } latestEventIds=${ latestEventIds.join(', ') }`);
+		serverLogger.debug({ msg: 'federation.events.requestFromLatest', contextType, contextQuery, latestEventIds });
 
 		let EventsModel;
 

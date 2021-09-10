@@ -203,7 +203,7 @@ export const parseAgentCustomFields = (customFields) => {
 			return Object.keys(parseCustomFields)
 				.filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			console.error(error);
+			Livechat.logger.error(error);
 			return [];
 		}
 	};

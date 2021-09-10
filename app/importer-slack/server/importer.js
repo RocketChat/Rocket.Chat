@@ -18,7 +18,7 @@ export class SlackImporter extends Base {
 			this.logger.debug('parsing file contents');
 			return JSON.parse(dataString);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			return false;
 		}
 	}
@@ -197,7 +197,7 @@ export class SlackImporter extends Base {
 					oldRate = rate;
 				}
 			} catch (e) {
-				console.error(e);
+				this.logger.error(e);
 			}
 		};
 
@@ -290,7 +290,7 @@ export class SlackImporter extends Base {
 			});
 
 			if (!_.isEmpty(missedTypes)) {
-				console.log('Missed import types:', missedTypes);
+				this.logger.info('Missed import types:', missedTypes);
 			}
 		} catch (e) {
 			this.logger.error(e);

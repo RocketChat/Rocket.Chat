@@ -137,7 +137,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.video_size = file.size;
 				}
 			} catch (e) {
-				console.error(`Attachment upload failed: ${ e.message }`);
+				Livechat.logger.error(`Attachment upload failed: ${ e.message }`);
 				attachment = {
 					fields: [{
 						title: 'User upload failed',
