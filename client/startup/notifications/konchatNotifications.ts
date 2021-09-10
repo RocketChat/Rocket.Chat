@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { CachedChatSubscription } from '../../../app/models/client';
+import { CachedChatSubscription, ChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
@@ -29,17 +29,16 @@ const notifyNewRoom = (sub: ISubscription): void => {
 type NotificationEvent = {
 	title: string;
 	text: string;
-	duration: number;
 	payload: {
 		_id: IMessage['_id'];
 		rid: IMessage['rid'];
-		tmid: IMessage['_id'];
-		sender: IMessage['u'];
-		type: IRoom['t'];
+		tmid?: IMessage['_id'];
+		sender?: IMessage['u'];
+		type?: IRoom['t'];
 		name: IRoom['name'];
 		message: {
 			msg: IMessage['msg'];
-			t: string;
+			t?: string;
 		};
 	};
 };
@@ -52,6 +51,33 @@ type AudioNotificationEvent = {
 		type: IRoom['t'];
 		name: IRoom['name'];
 	};
+};
+
+const showDesktopNotification = (notification: NotificationEvent): void => {
+	let openedRoomId = undefined;
+	if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
+		openedRoomId = Session.get('openedRoom');
+	}
+
+	// This logic is duplicated in /client/startup/unread.coffee.
+	const hasFocus = readMessage.isEnable();
+	const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
+
+	fireGlobalEvent('notification', {
+		notification,
+		fromOpenedRoom: messageIsInOpenedRoom,
+		hasFocus,
+	});
+
+	if (Layout.isEmbedded()) {
+		if (!hasFocus && messageIsInOpenedRoom) {
+			// Show a notification.
+			KonchatNotification.showDesktop(notification);
+		}
+	} else if (!hasFocus || !messageIsInOpenedRoom) {
+		// Show a notification.
+		KonchatNotification.showDesktop(notification);
+	}
 };
 
 Meteor.startup(() => {
@@ -124,5 +150,78 @@ Meteor.startup(() => {
 				notifyNewRoom(sub);
 			},
 		);
+
+		Notifications.onUser('rooms-changed', (_action: 'changed' | 'removed', room: IRoom) => {
+			if (!room.lastMessage?.msg) {
+				return;
+			}
+
+			// TODO validate same behavior as done on server side before
+			// export function shouldNotifyDesktop({
+			// 	disableAllMessageNotifications,
+			// 	status,
+			// 	statusConnection,
+			// 	desktopNotifications,
+			// 	hasMentionToAll,
+			// 	hasMentionToHere,
+			// 	isHighlighted,
+			// 	hasMentionToUser,
+			// 	hasReplyToThread,
+			// 	roomType,
+			// 	isThread,
+			// }) {
+			// 	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+			// 		return false;
+			// 	}
+
+			// 	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
+			// 		return false;
+			// 	}
+
+			// 	if (!desktopNotifications) {
+			// 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
+			// 			return true;
+			// 		}
+			// 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'nothing') {
+			// 			return false;
+			// 		}
+			// 	}
+
+			// 	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
+			// }
+
+			console.log('rooms-changed ->', room);
+
+			const { lastMessage: msg } = room;
+
+			// TODO is this the best way to get subscription data?
+			const sub = ChatSubscription.findOne({ rid: room._id });
+
+			console.log('sub ->', sub);
+
+			// TODO convert RoomTypeConfig to be able to use it on client side and avoid duplicated logic below to define 'title' and 'text'
+			const roomName = `${room.t !== 'd' && room.t !== 'l' ? '#' : ''}${sub.fname || sub.name}`;
+			const title = room.t === 'l' ? `[Omnichannel] ${roomName}` : roomName;
+			const text = `${
+				room.t !== 'd' || room.uids.length > 2 ? `${msg.u.name || msg.u.username}: ` : ''
+			}${msg.msg}`;
+
+			showDesktopNotification({
+				title,
+				text,
+				payload: {
+					_id: msg._id,
+					rid: msg.rid,
+					tmid: msg.tmid,
+					sender: msg.u,
+					type: room.t,
+					name: room.name,
+					message: {
+						msg: msg.msg,
+						t: msg.t,
+					},
+				},
+			});
+		});
 	});
 });

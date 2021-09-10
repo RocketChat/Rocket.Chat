@@ -9,7 +9,6 @@ import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
@@ -75,7 +74,6 @@ export const sendNotification = async ({
 
 	const {
 		audioNotifications,
-		desktopNotifications,
 		mobilePushNotifications,
 		emailNotifications,
 	} = subscription;
@@ -95,29 +93,6 @@ export const sendNotification = async ({
 		isThread,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
-	}
-
-	// busy users don't receive desktop notification
-	if (shouldNotifyDesktop({
-		disableAllMessageNotifications,
-		status: receiver.status,
-		statusConnection: receiver.statusConnection,
-		desktopNotifications,
-		hasMentionToAll,
-		hasMentionToHere,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
-		notifyDesktopUser({
-			notificationMessage,
-			userId: subscription.u._id,
-			user: sender,
-			message,
-			room,
-		});
 	}
 
 	const queueItems = [];
