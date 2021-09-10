@@ -11,11 +11,8 @@ export const saveReactWhenReadOnly = function(rid, allowReact, user, sendMessage
 	const result = Rooms.setAllowReactingWhenReadOnlyById(rid, allowReact);
 
 	if (result && sendMessage) {
-		if (allowReact) {
-			Messages.createRoomAllowedReactingByRoomIdAndUser(rid, user);
-		} else {
-			Messages.createRoomDisallowedReactingByRoomIdAndUser(rid, user);
-		}
+		allowReact ? Messages.createRoomAllowedReactingByRoomIdAndUser(rid, user)
+			: Messages.createRoomDisallowedReactingByRoomIdAndUser(rid, user);
 	}
 	return result;
 };

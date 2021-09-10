@@ -13,11 +13,8 @@ export const saveRoomReadOnly = function(rid, readOnly, user, sendMessage = true
 	const result = Rooms.setReadOnlyById(rid, readOnly, hasPermission);
 
 	if (result && sendMessage) {
-		if (!readOnly) {
-			Messages.createRoomSetReadOnlyByRoomIdAndUser(rid, user);
-		} else {
-			Messages.createRoomRemovedReadOnlyByRoomIdAndUser(rid, user);
-		}
+		readOnly ? Messages.createRoomSetReadOnlyByRoomIdAndUser(rid, user)
+			: Messages.createRoomRemovedReadOnlyByRoomIdAndUser(rid, user);
 	}
 	return result;
 };
