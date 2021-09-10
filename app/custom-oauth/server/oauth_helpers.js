@@ -3,7 +3,7 @@ import { Roles, Rooms } from '../../models';
 import { addUserToRoom, createRoom } from '../../lib/server/functions';
 import { Logger } from '../../logger';
 
-export const logger = new Logger('OAuth', {});
+export const logger = new Logger('OAuth');
 
 // Returns list of roles from SSO identity
 export function mapRolesFromSSO(identity, roleClaimName) {

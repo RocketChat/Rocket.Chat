@@ -190,7 +190,7 @@ export class CustomOAuth {
 				data = JSON.parse(response.content);
 			}
 
-			logger.debug('Identity response', JSON.stringify(data, null, 2));
+			logger.debug({ msg: 'Identity response', data });
 
 			return this.normalizeIdentity(data);
 		} catch (err) {

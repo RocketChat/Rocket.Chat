@@ -7,7 +7,7 @@ import { settings } from '../../../settings';
 import { metrics } from '../../../metrics';
 import { Logger } from '../../../logger';
 
-const logger = new Logger('RateLimiter', {});
+const logger = new Logger('RateLimiter');
 
 // Get initial set of names already registered for rules
 const names = new Set(Object.values(DDPRateLimiter.printRules())
@@ -111,7 +111,7 @@ const ruleIds = {};
 const callback = (message, name) => (reply, input) => {
 	if (reply.allowed === false) {
 		logger.info('DDP RATE LIMIT:', message);
-		logger.info(JSON.stringify({ ...reply, ...input }, null, 2));
+		logger.info({ ...reply, ...input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,

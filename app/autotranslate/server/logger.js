@@ -1,9 +1,5 @@
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 
-export const logger = new Logger('AutoTranslate', {
-	sections: {
-		google: 'Google',
-		deepl: 'DeepL',
-		microsoft: 'Microsoft',
-	},
-});
+const logger = new Logger('AutoTranslate');
+
+export const msLogger = logger.section('Microsoft');

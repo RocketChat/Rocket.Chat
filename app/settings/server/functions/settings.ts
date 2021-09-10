@@ -7,6 +7,7 @@ import { SettingsBase } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 import { updateValue } from '../raw';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const blockedSettings = new Set<string>();
 const hiddenSettings = new Set<string>();
@@ -131,7 +132,7 @@ class Settings extends SettingsBase {
 		options.enterprise = options.enterprise || false;
 
 		if (options.enterprise && !('invalidValue' in options)) {
-			console.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
+			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 		}
 

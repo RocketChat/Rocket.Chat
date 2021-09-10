@@ -3,12 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
-import { logger } from '../lib/logger';
+import { cbLogger } from '../lib/logger';
 
 callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	const { priority: searchTerm, ...props } = extraData;
 	if (!searchTerm) {
-		logger.cb.debug('Skipping callback. No search param provided');
+		cbLogger.debug('Skipping callback. No search param provided');
 		return extraData;
 	}
 
@@ -23,20 +23,20 @@ callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	const queueOrder = 0;
 	const estimatedServiceTimeAt = new Date(now.setMinutes(now.getMinutes() + estimatedWaitingTimeQueue));
 
-	logger.cb.debug('Callback success. Queue timing properties added');
+	cbLogger.debug('Callback success. Queue timing properties added');
 	return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');
 
 callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	const queueInactivityAction = settings.get('Livechat_max_queue_wait_time_action');
 	if (!queueInactivityAction || queueInactivityAction === 'Nothing') {
-		logger.cb.debug('Skipping callback. Disabled by setting');
+		cbLogger.debug('Skipping callback. Disabled by setting');
 		return extraData;
 	}
 
 	const maxQueueWaitTimeMinutes = settings.get('Livechat_max_queue_wait_time');
 	const estimatedInactivityCloseTimeAt = new Date(new Date().getTime() + maxQueueWaitTimeMinutes * 60000);
 
-	logger.cb.debug(`Setting maximum queue wait time to ${ maxQueueWaitTimeMinutes } minutes`);
+	cbLogger.debug(`Setting maximum queue wait time to ${ maxQueueWaitTimeMinutes } minutes`);
 	return Object.assign(extraData, { estimatedInactivityCloseTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry-append-queue-timer');
