@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { parser } from '@rocket.chat/message-parser';
 
-import { Messages, Rooms } from '../../../models';
-import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { Messages, Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -52,7 +53,7 @@ export const updateMessage = function(message, user, originalMessage) {
 			message.md = parser(message.msg);
 		}
 	} catch (e) {
-		console.log(e); // errors logged while the parser is at experimental stage
+		SystemLogger.error(e); // errors logged while the parser is at experimental stage
 	}
 
 	const tempid = message._id;

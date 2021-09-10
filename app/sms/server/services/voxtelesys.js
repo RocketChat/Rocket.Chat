@@ -8,6 +8,7 @@ import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;
 
@@ -79,7 +80,7 @@ class Voxtelesys {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return console.error(`(Voxtelesys) -> ${ reason }`);
+				return SystemLogger.error(`(Voxtelesys) -> ${ reason }`);
 			}
 
 			media = [publicFilePath];
@@ -100,7 +101,7 @@ class Voxtelesys {
 		try {
 			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
 		} catch (error) {
-			console.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
+			SystemLogger.error(`Error connecting to Voxtelesys SMS API: ${ error }`);
 		}
 	}
 
