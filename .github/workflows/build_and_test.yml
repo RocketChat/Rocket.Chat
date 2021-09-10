@@ -124,6 +124,8 @@ jobs:
 
     - run: meteor npm run testunit
 
+    - run: meteor npm run testunit-dom
+
     - run: meteor npm run typecheck
 
     - name: Build Storybook to sanity check components

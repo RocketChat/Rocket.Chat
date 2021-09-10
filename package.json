@@ -31,6 +31,7 @@
 		"testapi": "mocha --config ./mocha_end_to_end.opts.js",
 		"testunit": "mocha --config ./.mocharc.js",
 		"testunit-watch": "mocha --watch --config ./.mocharc.js",
+		"testunit-dom": "mocha --config ./.mocharc.dom.json",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
 		"translation-check": "node .scripts/check-i18n.js",

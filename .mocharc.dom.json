@@ -1,0 +1,13 @@
+{
+	"require": [
+		"ts-node/register",
+		"./client/lib/tests/registerJsdom.ts"
+	],
+	"reporter": "spec",
+	"ui": "bdd",
+	"extension": ["ts", "tsx"],
+	"spec": [
+		"client/**/*.spec.ts",
+		"client/**/*.spec.tsx"
+	]
+}

@@ -1,4 +1,3 @@
-import 'jsdom-global/register';
 import chai from 'chai';
 import chaiSpies from 'chai-spies';
 import { after, before, describe, it } from 'mocha';
