@@ -22,7 +22,6 @@ import {
 	messageBox,
 	popover,
 	call,
-	keyCodes,
 	isRTL,
 } from '../../../ui-utils';
 import {
@@ -37,6 +36,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+import { keyCodes } from '../../../../client/lib/keyCodes';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();

@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { call, keyCodes } from '../../../ui-utils/client';
+import { call } from '../../../ui-utils/client';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
@@ -20,6 +20,7 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
+import { keyCodes } from '../../../../client/lib/keyCodes';
 
 const sort = { ts: 1 };
 

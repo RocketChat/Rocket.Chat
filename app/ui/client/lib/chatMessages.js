@@ -18,7 +18,6 @@ import {
 	readMessage,
 	modal,
 	call,
-	keyCodes,
 	prependReplies,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
@@ -30,6 +29,7 @@ import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
+import { keyCodes } from '../../../../client/lib/keyCodes';
 
 
 const messageBoxState = {

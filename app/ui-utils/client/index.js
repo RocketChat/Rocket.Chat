@@ -21,7 +21,6 @@ export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
 export { warnUserDeletionMayRemoveRooms } from './lib/warnUserDeletionMayRemoveRooms';
 export * from './lib/rtl';
-export * from './lib/keyCodes';
 export * from './lib/prependReplies';
 export * from './lib/collapseArrow';
 export * from './lib/messageArgs';

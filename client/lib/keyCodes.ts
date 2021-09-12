@@ -33,4 +33,4 @@ export const keyCodes = {
 	F12: 123,
 	NUM_LOCK: 144,
 	SCROLL_LOCK: 145,
-};
+} as const;
