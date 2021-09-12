@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { IUser } from '../../../../../definition/IUser';
@@ -15,13 +15,7 @@ export const useDiscussionsList = (
 	initialItemCount: number;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const [discussionsList] = useState(() => new DiscussionsList(options));
-
-	useEffect(() => {
-		if (discussionsList.options !== options) {
-			discussionsList.updateFilters(options);
-		}
-	}, [discussionsList, options]);
+	const discussionsList = useMemo(() => new DiscussionsList(options), [options]);
 
 	const getDiscussions = useEndpoint('GET', 'chat.getDiscussions');
 
