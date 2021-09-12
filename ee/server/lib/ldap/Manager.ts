@@ -160,9 +160,9 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const username = user.username as string;
-		for (const ldapField in fieldMap) {
+		Object.keys(fieldMap).forEach(async (ldapField) => {
 			if (!fieldMap.hasOwnProperty(ldapField)) {
-				continue;
+				return;
 			}
 
 			const userField = fieldMap[ldapField];
@@ -170,27 +170,27 @@ export class LDAPEEManager extends LDAPManager {
 			const [roleName] = userField.split(/\.(.+)/);
 			if (!_.find<IRole>(roles, (el) => el._id === roleName)) {
 				logger.debug(`User Role doesn't exist: ${ roleName }`);
-				continue;
+				return;
 			}
 
 			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
 
-			if (this.isUserInGroup(ldap, { dn, username }, ldapField)) {
+			if (await this.isUserInGroup(ldap, { dn, username }, ldapField)) {
 				if (Roles.addUserRoles(user._id, roleName)) {
 					this.broadcastRoleChange('added', roleName, user._id, username);
 				}
 				logger.info(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
-				continue;
+				return;
 			}
 
 			if (!syncUserRolesAutoRemove) {
-				continue;
+				return;
 			}
 
 			if (Roles.removeUserRoles(user._id, roleName)) {
 				this.broadcastRoleChange('removed', roleName, user._id, username);
 			}
-		}
+		});
 	}
 
 	private static createRoomForSync(channel: string): IRoom | undefined {
@@ -229,13 +229,13 @@ export class LDAPEEManager extends LDAPManager {
 				channels = [channels];
 			}
 
-			for (const channel of channels) {
+			channels.forEach(async (channel: string) => {
 				const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
 				if (!room) {
-					continue;
+					return;
 				}
 
-				if (this.isUserInGroup(ldap, { dn, username }, ldapField)) {
+				if (await this.isUserInGroup(ldap, { dn, username }, ldapField)) {
 					if (room.teamMain) {
 						logger.error(`Can't add user to channel ${ channel } because it is a team.`);
 					} else {
@@ -248,7 +248,7 @@ export class LDAPEEManager extends LDAPManager {
 						removeUserFromRoom(room._id, user);
 					}
 				}
-			}
+			});
 		});
 	}
 
@@ -305,7 +305,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static async getLdapTeamsByUsername(ldap: LDAPConnection, username: string): Promise<Array<string>> {
 		const searchOptions = {
-			filter: settings.getAs<string>('LDAP_Query_To_Get_User_Teams').replace('/#{username}/g', username),
+			filter: settings.getAs<string>('LDAP_Query_To_Get_User_Teams').replace(/#{username}/g, username),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
