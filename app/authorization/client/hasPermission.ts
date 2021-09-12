@@ -65,17 +65,17 @@ const validatePermissions = (
 
 export const hasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope: IRole['scope'],
+	scope?: IRole['scope'],
 ): boolean => validatePermissions(permissions, scope, all);
 
 export const hasAtLeastOnePermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope: IRole['scope'],
+	scope?: IRole['scope'],
 ): boolean => validatePermissions(permissions, scope, atLeastOne);
 
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
-	scope: IRole['scope'],
+	scope?: IRole['scope'],
 	userId?: IUser['_id'] | null,
 ): boolean => validatePermissions(permissions, scope, all, userId);
 
