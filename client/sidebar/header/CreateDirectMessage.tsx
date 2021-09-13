@@ -5,7 +5,7 @@ import React, { FC, useState, memo } from 'react';
 import { IUser } from '../../../definition/IUser';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { goToRoomById } from '../../lib/goToRoomById';
 
 type Username = IUser['username'];

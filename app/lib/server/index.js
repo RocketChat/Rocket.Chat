@@ -10,7 +10,6 @@ import '../lib/MessageTypes';
 import '../startup';
 import '../startup/defaultRoomTypes';
 import './lib/bugsnag';
-import './lib/configLogger';
 import './lib/debug';
 import './lib/loginErrorMessageOverride';
 import './oauth/oauth';
@@ -65,6 +64,7 @@ import './methods/setUsername';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
+import './methods/saveCustomFields';
 
 export * from './lib';
 export * from './functions';
