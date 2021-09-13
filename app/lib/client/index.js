@@ -1,7 +1,6 @@
 import '../lib/startup/settingsOnLoadSiteUrl';
 import '../lib/MessageTypes';
 import './OAuthProxy';
-import './UserDeleted';
 import './lib/settings';
 import './methods/sendMessage';
 import './views/customFieldsForm.html';
