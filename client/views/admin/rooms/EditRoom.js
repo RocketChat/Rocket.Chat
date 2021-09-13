@@ -20,7 +20,7 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 
 const getInitialValues = (room) => ({

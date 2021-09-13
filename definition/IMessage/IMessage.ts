@@ -71,5 +71,5 @@ export interface IMessage extends IRocketChatRecord {
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
 	files?: FileProp[];
-	attachments: MessageAttachment[];
+	attachments?: MessageAttachment[];
 }

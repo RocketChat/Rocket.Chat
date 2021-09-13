@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 
 const OfflineLicenseModal = ({ onClose, license, licenseStatus, ...props }) => {
 	const t = useTranslation();
