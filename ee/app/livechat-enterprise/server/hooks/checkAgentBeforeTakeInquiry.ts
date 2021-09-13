@@ -29,7 +29,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
 	};
 }) => {
 	if (!inquiry ?._id || !agent?.agentId) {
-		cbLogger.cb.debug('Callback with error. No inquiry or agent provided');
+		cbLogger.debug('Callback with error. No inquiry or agent provided');
 		return null;
 	}
 	const {
@@ -37,17 +37,17 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
 	} = agent;
 
 	if (!Livechat.checkOnlineAgents(null, agent)) {
-		cbLogger.cb.debug('Callback with error. provided agent is not online');
+		cbLogger.debug('Callback with error. provided agent is not online');
 		return null;
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
-		cbLogger.cb.debug('Skipping callback. Disabled by setting');
+		cbLogger.debug('Skipping callback. Disabled by setting');
 		return agent;
 	}
 
 	if (allowAgentSkipQueue(agent)) {
-		cbLogger.cb.debug(`Callback success. Agent ${ agent.agentId } can skip queue`);
+		cbLogger.debug(`Callback success. Agent ${ agent.agentId } can skip queue`);
 		return agent;
 	}
 
@@ -60,19 +60,19 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
 		departmentId,
 	});
 	if (maxNumberSimultaneousChat === 0) {
-		cbLogger.cb.debug(`Callback success. Agent ${ agentId } max number simultaneous chats on range`);
+		cbLogger.debug(`Callback success. Agent ${ agentId } max number simultaneous chats on range`);
 		return agent;
 	}
 
 	const user = await Users.getAgentAndAmountOngoingChats(agentId);
 	if (!user) {
-		cbLogger.cb.debug('Callback with error. No valid agent found');
+		cbLogger.debug('Callback with error. No valid agent found');
 		return null;
 	}
 
 	const { queueInfo: { chats = 0 } = {} } = user;
 	if (maxNumberSimultaneousChat <= chats) {
-		cbLogger.cb.debug('Callback with error. Agent reached max amount of simultaneous chats');
+		cbLogger.debug('Callback with error. Agent reached max amount of simultaneous chats');
 		callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);
 		if (options.clientAction && !options.forwardingToDepartment) {
 			throw new Meteor.Error('error-max-number-simultaneous-chats-reached', 'Not allowed');
@@ -81,6 +81,6 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
 		return null;
 	}
 
-	cbLogger.cb.debug(`Callback success. Agent ${ agentId } can take inquiry ${ inquiry._id }`);
+	cbLogger.debug(`Callback success. Agent ${ agentId } can take inquiry ${ inquiry._id }`);
 	return agent;
 }, callbacks.priority.MEDIUM, 'livechat-before-take-inquiry');

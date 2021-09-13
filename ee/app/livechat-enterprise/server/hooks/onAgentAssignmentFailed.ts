@@ -3,6 +3,7 @@ import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../ap
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
+import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 
 const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inquiry: any; room: any; options: { forwardingToDepartment?: { oldDepartmentId: string; transferData: any }; clientAction?: boolean} }): Promise<any> => {
 	if (!inquiry || !room) {
@@ -19,6 +20,8 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		LivechatInquiry.removeDefaultAgentById(inquiryId);
 		LivechatRooms.removeAgentByRoomId(roomId);
 		Subscriptions.removeByRoomId(roomId);
+		dispatchAgentDelegated(roomId, null);
+
 		const newInquiry = LivechatInquiry.findOneById(inquiryId);
 
 		await queueInquiry(room, newInquiry);
