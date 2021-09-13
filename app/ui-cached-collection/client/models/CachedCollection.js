@@ -10,7 +10,7 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
-import { getConfig } from '../../../ui-utils/client/config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
 
 const wrap = (fn) => (...args) => new Promise((resolve, reject) => {

@@ -15,7 +15,7 @@ import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import { getConfig } from '../config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
