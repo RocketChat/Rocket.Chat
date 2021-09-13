@@ -9,7 +9,7 @@ import { RoomService } from './room/service';
 import { TeamService } from './team/service';
 import { UiKitCoreApp } from './uikit-core-app/service';
 import { MediaService } from './image/service';
-import { LivechatVoipService } from './livechat-voip/service';
+import { LivechatVoipService } from './omnichannel-voip/service';
 import { VoipService } from './voip/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
