@@ -17,6 +17,5 @@ export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
-export { canDeleteMessage } from './lib/canDeleteMessage';
 export { secondsToHHMMSS } from '../lib/timeConverter';
 export { waitUntilFind } from './lib/waitUntilFind';

@@ -10,13 +10,14 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/components/modals/ReactionList';
 import { call } from '../../../../client/lib/utils/call';
+import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
