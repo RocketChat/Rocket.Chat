@@ -8,10 +8,10 @@ import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
-import { Layout } from './Layout';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
+import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
 
 const fields = { name: 1, username: 1, 'settings.preferences.enableMessageParserEarlyAdoption': 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 
@@ -34,7 +34,7 @@ export function messageContext({ rid } = Template.instance()) {
 		e.stopPropagation();
 	};
 
-	const runAction = Layout.isEmbedded() ? (msg, e) => {
+	const runAction = isLayoutEmbedded() ? (msg, e) => {
 		const { actionlink } = e.currentTarget.dataset;
 		return fireGlobalEvent('click-action-link', {
 			actionlink,

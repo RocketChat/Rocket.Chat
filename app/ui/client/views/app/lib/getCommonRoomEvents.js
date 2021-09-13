@@ -5,7 +5,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import {
 	popover,
-	Layout,
 	MessageAction,
 } from '../../../../../ui-utils/client';
 import {
@@ -22,6 +21,7 @@ import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -311,7 +311,7 @@ export const getCommonRoomEvents = () => ({
 		const { currentTarget: { dataset: { channel, group, username } } } = e;
 
 		if (channel) {
-			if (Layout.isEmbedded()) {
+			if (isLayoutEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
 			goToRoomById(channel);

@@ -17,7 +17,6 @@ import {
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
@@ -30,6 +29,7 @@ import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
 import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 
 export const chatMessages = {};
 
@@ -39,7 +39,7 @@ const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteo
 export const openProfileTab = (e, tabBar, username) => {
 	e.stopPropagation();
 
-	if (Layout.isEmbedded()) {
+	if (isLayoutEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		return;
@@ -272,7 +272,7 @@ Template.roomOld.helpers({
 	messageboxData() {
 		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
