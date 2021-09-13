@@ -3,7 +3,8 @@ import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { placeholders } from '../../../utils';
+import { placeholders } from '../../../utils/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer';
 
 export const sendMail = function(from, subject, body, dryrun, query) {
@@ -33,7 +34,7 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 				email,
 			});
 
-			console.log(`Sending email to ${ email }`);
+			SystemLogger.debug(`Sending email to ${ email }`);
 			return Mailer.send({
 				to: email,
 				from,
@@ -54,7 +55,7 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 				name: escapeHTML(user.name),
 				email: escapeHTML(email),
 			});
-			console.log(`Sending email to ${ email }`);
+			SystemLogger.debug(`Sending email to ${ email }`);
 			return Mailer.send({
 				to: email,
 				from,

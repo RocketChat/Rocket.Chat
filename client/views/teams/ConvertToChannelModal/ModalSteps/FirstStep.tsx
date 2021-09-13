@@ -2,6 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
+import { Serialized } from '../../../../../definition/Serialized';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import ChannelDesertionTable from '../../ChannelDesertionTable';
@@ -11,10 +12,10 @@ type FirstStepProps = {
 	onCancel: () => void;
 	onConfirm: () => void;
 	onToggleAllRooms: () => void;
-	onChangeRoomSelection: (room: IRoom) => void;
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
+	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 	eligibleRoomsLength: number | undefined;
-	selectedRooms: { [key: string]: IRoom };
+	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
 
 const FirstStep: FC<FirstStepProps> = ({

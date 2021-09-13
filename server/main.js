@@ -5,6 +5,7 @@ import '../imports/startup/server';
 import './services/startup';
 
 import '../ee/server';
+import './lib/logger/startup';
 import './lib/pushConfig';
 import './startup/migrations';
 import './startup/appcache';

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings';
 import OmniChannel from '../lib/OmniChannel';
 
@@ -59,7 +60,7 @@ Meteor.methods({
 					throw new Meteor.Error('integration-error', e.response.data.error.message);
 				}
 			}
-			console.error('Error contacting omni.rocket.chat:', e);
+			SystemLogger.error('Error contacting omni.rocket.chat:', e);
 			throw new Meteor.Error('integration-error', e.error);
 		}
 	},

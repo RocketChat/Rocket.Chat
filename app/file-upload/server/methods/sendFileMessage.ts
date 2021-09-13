@@ -11,6 +11,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
 import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
 import { IUser } from '../../../../definition/IUser';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 Meteor.methods({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
@@ -82,7 +83,7 @@ Meteor.methods({
 					});
 				}
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 			}
 			attachments.push(attachment);
 		} else if (/^audio\/.+/.test(file.type)) {
