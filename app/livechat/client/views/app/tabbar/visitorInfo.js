@@ -11,7 +11,7 @@ import UAParser from 'ua-parser-js';
 import { modal } from '../../../../../ui-utils';
 import { Subscriptions } from '../../../../../models';
 import { settings } from '../../../../../settings';
-import { t, handleError, roomTypes } from '../../../../../utils';
+import { t, roomTypes } from '../../../../../utils';
 import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../authorization';
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
@@ -19,6 +19,7 @@ import { RoomManager } from '../../../../../ui-utils/client';
 import { DateFormat } from '../../../../../lib/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();

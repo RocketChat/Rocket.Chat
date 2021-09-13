@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { handleError, slashCommands } from '../../utils';
+import { slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
 import { callbacks } from '../../callbacks';
 import { hasPermission } from '../../authorization';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 function Topic(command, params, item) {
 	if (command === 'topic') {

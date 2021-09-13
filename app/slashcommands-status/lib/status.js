@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { handleError, slashCommands } from '../../utils';
+import { slashCommands } from '../../utils';
 import { api } from '../../../server/sdk/api';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 function Status(command, params, item) {
 	if (command === 'status') {

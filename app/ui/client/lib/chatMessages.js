@@ -11,7 +11,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { KonchatNotification } from './notification';
 import { MsgTyping } from './msgTyping';
 import { fileUpload } from './fileUpload';
-import { t, slashCommands, handleError } from '../../../utils/client';
+import { t, slashCommands } from '../../../utils/client';
 import {
 	messageProperties,
 	MessageTypes,
@@ -30,6 +30,7 @@ import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 
 const messageBoxState = {

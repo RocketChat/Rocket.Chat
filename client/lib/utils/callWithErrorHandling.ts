@@ -1,10 +1,10 @@
-import { handleError } from '../../../app/utils/client/lib/handleError';
 import {
 	ServerMethodName,
 	ServerMethodParameters,
 	ServerMethodReturn,
 } from '../../contexts/ServerContext';
 import { call } from './call';
+import { handleError } from './handleError';
 
 export const callWithErrorHandling = async <M extends ServerMethodName>(
 	method: M,
