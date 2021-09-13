@@ -7,11 +7,11 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { mapRolesFromSSO, mapSSOGroupsToChannels, updateRolesFromSSO } from './oauth_helpers';
 import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
+import { EnterpriseOAuthHelpers } from '../../../ee/server/oAuth/helpers';
 
 const logger = new Logger('CustomOAuth');
 
@@ -348,11 +348,11 @@ export class CustomOAuth {
 				}
 
 				if (this.mergeRoles) {
-					updateRolesFromSSO(user, serviceData, this.rolesClaim);
+					EnterpriseOAuthHelpers.updateRolesFromSSO(user, serviceData, this.rolesClaim);
 				}
 
 				if (this.mapChannels) {
-					mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
+					EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
 				}
 
 				// User already created or merged and has identical name as before
@@ -394,11 +394,11 @@ export class CustomOAuth {
 			}
 
 			if (this.mergeRoles) {
-				user.roles = mapRolesFromSSO(user.services[this.name], this.rolesClaim);
+				user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(user.services[this.name], this.rolesClaim);
 			}
 
 			if (this.mapChannels) {
-				mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
+				EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
 			}
 
 			return true;

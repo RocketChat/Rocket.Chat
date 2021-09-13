@@ -30,7 +30,7 @@ export function addOAuthService(name, values = {}) {
 	settings.add(`Accounts_OAuth_Custom-${ name }-avatar_field`           , values.avatarField || ''                      , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Avatar_Field', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-roles_claim`            , values.rolesClaim || 'roles'                  , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Roles_Claim', persistent: true });
 	settings.add(`Accounts_OAuth_Custom-${ name }-groups_claim`           , values.groupsClaim || 'groups'                , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Groups_Claim', persistent: true });
-	settings.add(`Accounts_OAuth_Custom-${ name }-channels_admin`         , values.channelsAdmin || 'rocket.cat'          , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin', persistent: true });
+	settings.add(`Accounts_OAuth_Cuestom-${ name }-channels_admin`         , values.channelsAdmin || 'rocket.cat'          , { type: 'string' , group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Channel_Admin', persistent: true });
 	// add EE oAuth settings (role mapping and avatar sync) preserving the order of settings
 	addEnterpriseOAuthSettings(name, values);
 	settings.add(`Accounts_OAuth_Custom-${ name }-merge_roles`            , values.mergeRoles || false                    , { type: 'boolean', group: 'OAuth', section: `Custom OAuth: ${ name }`, i18nLabel: 'Accounts_OAuth_Custom_Merge_Roles', persistent: true });
