@@ -2,6 +2,7 @@ import './absoluteUrl';
 import './appRoot';
 import './banners';
 import './contextualBar';
+import './customTranslations';
 import './e2e';
 import './emailVerification';
 import './i18n';

@@ -1,6 +1,5 @@
 import '../lib/startup/settingsOnLoadSiteUrl';
 import '../lib/MessageTypes';
-import './CustomTranslations';
 import './OAuthProxy';
 import './UserDeleted';
 import './lib/startup/commands';

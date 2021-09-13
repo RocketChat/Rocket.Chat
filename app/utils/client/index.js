@@ -11,7 +11,6 @@ export { RoomTypesCommon } from '../lib/RoomTypesCommon';
 export { getUserAvatarURL } from '../lib/getUserAvatarURL';
 export { slashCommands } from '../lib/slashCommand';
 export { getUserNotificationPreference } from '../lib/getUserNotificationPreference';
-export { applyCustomTranslations } from './lib/CustomTranslations';
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
