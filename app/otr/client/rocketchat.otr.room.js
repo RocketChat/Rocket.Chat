@@ -12,7 +12,7 @@ import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
 import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
-import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
 

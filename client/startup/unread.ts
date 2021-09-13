@@ -8,7 +8,7 @@ import { settings } from '../../app/settings/client';
 import { menu } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
 import { ISubscription } from '../../definition/ISubscription';
-import { fireGlobalEvent } from '../lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>
 	ChatSubscription.find(

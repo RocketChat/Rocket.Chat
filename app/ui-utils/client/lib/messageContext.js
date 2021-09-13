@@ -9,9 +9,9 @@ import { settings } from '../../../settings/client';
 import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 import { Layout } from './Layout';
-import { fireGlobalEvent } from '../../../../client/lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
-import { goToRoomById } from '../../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 
 const fields = { name: 1, username: 1, 'settings.preferences.enableMessageParserEarlyAdoption': 1, 'settings.preferences.showMessageInMainThread': 1, 'settings.preferences.autoImageLoad': 1, 'settings.preferences.saveMobileBandwidth': 1, 'settings.preferences.collapseMediaByDefault': 1, 'settings.preferences.hideRoles': 1 };
 

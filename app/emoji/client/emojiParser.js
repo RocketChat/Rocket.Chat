@@ -1,4 +1,4 @@
-import { isIE11 } from '../../../client/lib/isIE11';
+import { isIE11 } from '../../../client/lib/utils/isIE11';
 import { emoji } from '../lib/rocketchat';
 
 /*

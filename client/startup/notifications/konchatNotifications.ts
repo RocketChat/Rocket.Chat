@@ -11,7 +11,7 @@ import { getUserPreference } from '../../../app/utils/client';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
-import { fireGlobalEvent } from '../../lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 
 const notifyNewRoom = (sub: ISubscription): void => {
 	if (Session.equals(`user_${Meteor.userId()}_status`, 'busy')) {

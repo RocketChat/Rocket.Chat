@@ -12,8 +12,8 @@ import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
-import { fireGlobalEvent } from '../lib/fireGlobalEvent';
 import { synchronizeUserData } from '../lib/userData';
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 hljs.initHighlightingOnLoad();
 

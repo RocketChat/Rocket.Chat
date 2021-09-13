@@ -13,7 +13,7 @@ import { ChatSubscription } from '../../models';
 import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
-import { fireGlobalEvent } from '../../../client/lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');

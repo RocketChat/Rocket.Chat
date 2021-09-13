@@ -13,7 +13,7 @@ import { call, callMethod } from './callMethod';
 import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
-import { fireGlobalEvent } from '../../../../client/lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 
 window.currentTracker = undefined;
 

@@ -29,7 +29,7 @@ import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
-import { keyCodes } from '../../../../client/lib/keyCodes';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
 
 const messageBoxState = {

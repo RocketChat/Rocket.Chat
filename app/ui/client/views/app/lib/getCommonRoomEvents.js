@@ -20,8 +20,8 @@ import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
-import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
-import { fireGlobalEvent } from '../../../../../../client/lib/fireGlobalEvent';
+import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
+import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');

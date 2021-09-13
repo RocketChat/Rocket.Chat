@@ -1,4 +1,4 @@
-import { fireGlobalEvent } from '../../../client/lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 
 export const ChromeScreenShare = {
 	callbacks: {},

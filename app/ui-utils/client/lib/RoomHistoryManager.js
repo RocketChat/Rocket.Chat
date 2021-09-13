@@ -10,7 +10,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
 import { getConfig } from '../config';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { call } from './callMethod';

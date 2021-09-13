@@ -5,8 +5,8 @@ import { IRoom } from '../../../../../../definition/IRoom';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { mapMessageFromApi } from '../../../../../lib/fromApi';
 import { RecordList } from '../../../../../lib/lists/RecordList';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
 type TeamsChannelListOptions = {
 	teamId: string;

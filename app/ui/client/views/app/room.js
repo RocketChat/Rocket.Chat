@@ -29,7 +29,7 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
-import { fireGlobalEvent } from '../../../../../client/lib/fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
 
 export const chatMessages = {};
 

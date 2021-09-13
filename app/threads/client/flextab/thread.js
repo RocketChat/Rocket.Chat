@@ -20,7 +20,7 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import { keyCodes } from '../../../../client/lib/keyCodes';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
 const sort = { ts: 1 };
 

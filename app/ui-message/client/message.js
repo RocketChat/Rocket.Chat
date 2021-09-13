@@ -15,7 +15,7 @@ import { t, roomTypes } from '../../utils';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
-import { renderMessageBody } from '../../../client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
 import { settings } from '../../settings/client';
 import './message.html';
 

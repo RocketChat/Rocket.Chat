@@ -36,7 +36,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
-import { keyCodes } from '../../../../client/lib/keyCodes';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();

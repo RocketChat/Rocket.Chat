@@ -1,5 +1,5 @@
-import { IMessage } from '../../definition/IMessage';
-import { Serialized } from '../../definition/Serialized';
+import { IMessage } from '../../../definition/IMessage';
+import { Serialized } from '../../../definition/Serialized';
 
 export const mapMessageFromApi = ({
 	attachments = [],
