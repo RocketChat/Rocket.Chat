@@ -9,17 +9,7 @@ import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext'
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserRow from './UserRow';
 
-function UsersInRoleTable({
-	data,
-	reload,
-	roleId,
-	roleName,
-	description,
-	total,
-	params,
-	setParams,
-	rid,
-}) {
+function UsersInRoleTable({ data, reload, roleName, description, total, params, setParams, rid }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -31,7 +21,7 @@ function UsersInRoleTable({
 	const onRemove = useMutableCallback((username) => {
 		const remove = async () => {
 			try {
-				await removeUser({ roleId, username, rid });
+				await removeUser({ roleName, username, rid });
 				dispatchToastMessage({ type: 'success', message: t('User_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });

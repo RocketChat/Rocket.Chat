@@ -222,13 +222,13 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, {
-			roleId: String,
+			roleName: String,
 			username: String,
 			scope: Match.Maybe(String),
 		});
 
 		const data = {
-			roleId: this.bodyParams.roleId,
+			roleName: this.bodyParams.roleName,
 			username: this.bodyParams.username,
 			scope: this.bodyParams.scope,
 		};
@@ -243,7 +243,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 		}
 
-		const role = Roles.findOneByIdOrName(data.roleId);
+		const role = Roles.findOneByIdOrName(data.roleName);
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');

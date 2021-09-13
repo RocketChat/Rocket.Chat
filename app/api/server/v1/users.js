@@ -216,18 +216,6 @@ API.v1.addRoute('users.info', { authRequired: true }, {
 			}).fetch();
 		}
 
-		if (user.roles) {
-			const rolesId = user.roles;
-			user.rolesId = user.roles;
-
-			const rolesArr = [];
-			for (const roleId of rolesId) {
-				rolesArr.push(...Roles.find({ _id: roleId }, { fields: { name: 1, description: 1 } }).fetch().map(({ name, description }) => description || name));
-			}
-
-			user.roles = rolesArr;
-		}
-
 		return API.v1.success({
 			user,
 		});
