@@ -17,7 +17,6 @@ import {
 	MessageTypes,
 	readMessage,
 	modal,
-	call,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
@@ -30,6 +29,7 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 
 const messageBoxState = {
@@ -102,7 +102,7 @@ export class ChatMessages {
 			return;
 		}
 
-		const message = Messages.findOne(mid) || await call('getSingleMessage', mid);
+		const message = Messages.findOne(mid) || await callWithErrorHandling('getSingleMessage', mid);
 		if (!message) {
 			return;
 		}
@@ -257,7 +257,7 @@ export class ChatMessages {
 		MsgTyping.stop(rid);
 
 		if (!ChatSubscription.findOne({ rid })) {
-			await call('joinRoom', rid);
+			await callWithErrorHandling('joinRoom', rid);
 		}
 
 		messageBoxState.save({ rid, tmid }, this.input);
@@ -345,7 +345,7 @@ export class ChatMessages {
 			return;
 		}
 
-		await call('sendMessage', message);
+		await callWithErrorHandling('sendMessage', message);
 	}
 
 	async processSetReaction({ rid, tmid, msg }) {
@@ -359,7 +359,7 @@ export class ChatMessages {
 		}
 
 		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-		await call('setReaction', reaction, lastMessage._id);
+		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
 
@@ -406,7 +406,7 @@ export class ChatMessages {
 		}
 
 		this.clearEditing();
-		await call('updateMessage', message);
+		await callWithErrorHandling('updateMessage', message);
 		return true;
 	}
 
@@ -521,7 +521,7 @@ export class ChatMessages {
 		}
 
 
-		await call('deleteMessage', { _id });
+		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
 	keydown(event) {

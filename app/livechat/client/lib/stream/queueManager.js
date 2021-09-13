@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
-import { call } from '../../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { getUserPreference } from '../../../../utils';
 import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
 
@@ -80,7 +80,7 @@ const addGlobalListener = () => {
 
 
 const subscribe = async (userId) => {
-	const config = await call('livechat:getRoutingConfig');
+	const config = await callWithErrorHandling('livechat:getRoutingConfig');
 	if (config && config.autoAssignAgent) {
 		return;
 	}

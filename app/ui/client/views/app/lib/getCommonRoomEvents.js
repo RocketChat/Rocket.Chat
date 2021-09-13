@@ -11,7 +11,7 @@ import {
 import {
 	addMessageToList,
 } from '../../../../../ui-utils/client/lib/MessageAction';
-import { call } from '../../../../../ui-utils/client/lib/callMethod';
+import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { promises } from '../../../../../promises/client';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
@@ -163,13 +163,13 @@ export const getCommonRoomEvents = () => ({
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('followMessage', { mid: msg._id });
+		callWithErrorHandling('followMessage', { mid: msg._id });
 	},
 	'click .js-unfollow-thread'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('unfollowMessage', { mid: msg._id });
+		callWithErrorHandling('unfollowMessage', { mid: msg._id });
 	},
 	'click .js-open-thread'(event) {
 		event.preventDefault();
@@ -259,7 +259,7 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		await call('sendMessage', msgObject);
+		await callWithErrorHandling('sendMessage', msgObject);
 	},
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);

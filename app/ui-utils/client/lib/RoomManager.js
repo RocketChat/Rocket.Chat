@@ -17,7 +17,7 @@ import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, 
 import { CachedCollectionManager } from '../../../ui-cached-collection';
 import { getConfig } from '../config';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
-import { call } from '..';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
@@ -286,7 +286,7 @@ const loadMissedMessages = async function(rid) {
 
 
 	try {
-		const result = await call('loadMissedMessages', rid, lastMessage.ts);
+		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
 			const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));

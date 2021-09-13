@@ -2,11 +2,11 @@ import { memoize } from '@rocket.chat/memo';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatSubscription } from '../../../app/models/client';
-import { call } from '../../../app/ui-utils/client';
 import { roomTypes } from '../../../app/utils/client';
 import { IRoom } from '../../../definition/IRoom';
+import { callWithErrorHandling } from './callWithErrorHandling';
 
-const getRoomById = memoize((rid: IRoom['_id']) => call('getRoomById', rid));
+const getRoomById = memoize((rid: IRoom['_id']) => callWithErrorHandling('getRoomById', rid));
 
 export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 	if (!rid) {

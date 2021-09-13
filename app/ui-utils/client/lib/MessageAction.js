@@ -16,7 +16,7 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/c
 import { modal } from './modal';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/components/modals/ReactionList';
-import { callMethod } from './callMethod';
+import { call } from '../../../../client/lib/utils/call';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -121,7 +121,7 @@ export const MessageAction = new class {
 			throw new Error('invalid-parameter');
 		}
 
-		const msg = Messages.findOne(msgId) || await callMethod('getSingleMessage', msgId);
+		const msg = Messages.findOne(msgId) || await call('getSingleMessage', msgId);
 		if (!msg) {
 			throw new Error('message-not-found');
 		}
