@@ -1,7 +1,7 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 
-import { baseURI } from '../../../utils/client/lib/baseuri';
+import { baseURI } from '../../../../client/lib/baseURI';
 
 import './icon.html';
 
