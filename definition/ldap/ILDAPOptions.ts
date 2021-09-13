@@ -14,6 +14,7 @@ export interface ILDAPConnectionOptions {
 	caCert: string;
 	rejectUnauthorized: boolean;
 	baseDN: string;
+	userSearchFilter: string;
 	userSearchScope: LDAPSearchScope;
 	userSearchField: string;
 	searchPageSize: number;

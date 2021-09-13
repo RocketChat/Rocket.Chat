@@ -17,7 +17,6 @@ export class LDAPEEConnection extends LDAPConnection {
 			authentication: settings.getAs<boolean>('LDAP_Authentication'),
 			authenticationUserDN: settings.getAs<string>('LDAP_Authentication_UserDN'),
 			authenticationPassword: settings.getAs<string>('LDAP_Authentication_Password'),
-			userSearchFilter: settings.getAs<string>('LDAP_User_Search_Filter'),
 			groupFilterEnabled: settings.getAs<boolean>('LDAP_Group_Filter_Enable'),
 			groupFilterObjectClass: settings.getAs<string>('LDAP_Group_Filter_ObjectClass'),
 			groupFilterGroupIdAttribute: settings.getAs<string>('LDAP_Group_Filter_Group_Id_Attribute'),
@@ -103,19 +102,5 @@ export class LDAPEEConnection extends LDAPConnection {
 		}
 		searchOptions.attributes.push('pwdAccountLockedTime');
 		super.runBeforeSearch(searchOptions);
-	}
-
-	protected addUserFilters(filters: string[], username: string): void {
-		const { userSearchFilter } = this.eeOptions;
-
-		if (userSearchFilter !== '') {
-			if (userSearchFilter[0] === '(') {
-				filters.push(`${ userSearchFilter }`);
-			} else {
-				filters.push(`(${ userSearchFilter })`);
-			}
-		}
-
-		super.addUserFilters(filters, username);
 	}
 }

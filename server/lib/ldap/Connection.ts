@@ -63,6 +63,7 @@ export class LDAPConnection {
 			caCert: settings.getAs<string>('LDAP_CA_Cert'),
 			rejectUnauthorized: settings.getAs<boolean>('LDAP_Reject_Unauthorized') || false,
 			baseDN: settings.getAs<string>('LDAP_BaseDN'),
+			userSearchFilter: settings.getAs<string>('LDAP_User_Search_Filter'),
 			userSearchScope: settings.getAs<LDAPSearchScope>('LDAP_User_Search_Scope'),
 			userSearchField: getLDAPConditionalSetting('LDAP_User_Search_Field') as string,
 			searchPageSize: settings.getAs<number>('LDAP_Search_Page_Size'),
@@ -317,8 +318,16 @@ export class LDAPConnection {
 		return `(&${ filter.join('') })`;
 	}
 
-	protected addUserFilters(_filters: string[], _username: string): void {
-		// This method can be overwritten to add custom filters to the query
+	protected addUserFilters(filters: string[], _username: string): void {
+		const { userSearchFilter } = this.options;
+
+		if (userSearchFilter !== '') {
+			if (userSearchFilter[0] === '(') {
+				filters.push(`${ userSearchFilter }`);
+			} else {
+				filters.push(`(${ userSearchFilter })`);
+			}
+		}
 	}
 
 	public async bindDN(dn: string, password: string): Promise<void> {

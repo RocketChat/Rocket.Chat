@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import type ldapjs from 'ldapjs';
-import { Meteor } from 'meteor/meteor';
 
 import { ILDAPEntry } from '../../../../definition/ldap/ILDAPEntry';
 import type { IUser } from '../../../../definition/IUser';
@@ -16,8 +15,6 @@ import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { LDAPEEConnection } from './Connection';
-import { RocketChatFile } from '../../../../app/file';
-import { FileUpload } from '../../../../app/file-upload/server';
 import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Team } from '../../../../server/sdk';
@@ -414,40 +411,6 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	public static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
-		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
-			return;
-		}
-
-		const avatar = this.getAvatarFromUser(ldapUser);
-		logger.info('Syncing user avatar');
-
-		Meteor.defer(() => {
-			const rs = RocketChatFile.bufferToStream(avatar);
-			const fileStore = FileUpload.getStore('Avatars');
-			fileStore.deleteByName(user.username);
-
-			const file = {
-				userId: user._id,
-				type: 'image/jpeg',
-				size: avatar.length,
-			};
-
-			Meteor.runAsUser(user._id, () => {
-				fileStore.insert(file, rs, (_err: Error | undefined, result: { etag: string }) => {
-					if (!result) {
-						return;
-					}
-
-					Meteor.setTimeout(function() {
-						Users.setAvatarData(user._id, 'ldap', result.etag);
-						api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
-					}, 500);
-				});
-			});
-		});
-	}
-
 	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPDataConverter, updateExistingUsers: boolean): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let count = 0;
@@ -518,21 +481,6 @@ export class LDAPEEManager extends LDAPManager {
 			return _.reduce(property.split('.'), (acc, el) => acc[el], customFields);
 		} catch {
 			// ignore errors
-		}
-	}
-
-	private static getAvatarFromUser(ldapUser: ILDAPEntry): any | undefined {
-		const avatarField = String(settings.get('LDAP_Avatar_Field') || '').trim();
-		if (avatarField && ldapUser._raw[avatarField]) {
-			return ldapUser._raw[avatarField];
-		}
-
-		if (ldapUser._raw.thumbnailPhoto) {
-			return ldapUser._raw.thumbnailPhoto;
-		}
-
-		if (ldapUser._raw.jpegPhoto) {
-			return ldapUser._raw.jpegPhoto;
 		}
 	}
 }

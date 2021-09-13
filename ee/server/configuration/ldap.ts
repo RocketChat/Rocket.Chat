@@ -54,7 +54,7 @@ onLicense('ldap-enterprise', () => {
 		return LDAPEEConnection;
 	}, callbacks.priority.HIGH, 'replaceLDAPConnectionClass');
 
-	callbacks.add('onLDAPLogin', ({ password, user, ldapUser }: ILDAPOnLoginEvent) => {
+	callbacks.add('onLDAPLogin', ({ password, user }: ILDAPOnLoginEvent) => {
 		if (!user) {
 			return;
 		}
@@ -62,8 +62,6 @@ onLicense('ldap-enterprise', () => {
 		if (settings.get('LDAP_Login_Fallback') === true && typeof password === 'string' && password.trim() !== '') {
 			Accounts.setPassword(user._id, password, { logout: false });
 		}
-
-		LDAPEEManager.syncUserAvatar(user, ldapUser);
 	}, callbacks.priority.MEDIUM, 'onLDAPEELogin');
 
 	callbacks.add('findLDAPUser', ({ ldapUser, escapedUsername }: ILDAPOnFindUserEvent, ldap: LDAPConnection) => {

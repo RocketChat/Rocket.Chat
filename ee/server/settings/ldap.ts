@@ -24,13 +24,6 @@ settings.addGroup('LDAP', function() {
 	});
 
 	this.section('LDAP_31_Advanced_User_Search', function() {
-		this.add('LDAP_User_Search_Filter', '(objectclass=*)', {
-			type: 'string',
-			enableQuery,
-			enterprise,
-			invalidValue: '(objectclass=*)',
-		});
-
 		this.add('LDAP_Group_Filter_Enable', false, { type: 'boolean', enableQuery, enterprise, invalidValue: false });
 		this.add('LDAP_Group_Filter_ObjectClass', 'groupOfUniqueNames', { type: 'string', enableQuery: groupFilterQuery, enterprise, invalidValue: 'groupOfUniqueNames' });
 		this.add('LDAP_Group_Filter_Group_Id_Attribute', 'cn', { type: 'string', enableQuery: groupFilterQuery, enterprise, invalidValue: 'cn' });
@@ -56,20 +49,6 @@ settings.addGroup('LDAP', function() {
 			],
 			enterprise,
 			invalidValue: '{}',
-		});
-
-		this.add('LDAP_Sync_User_Avatar', true, {
-			type: 'boolean',
-			enableQuery,
-			enterprise,
-			invalidValue: false,
-		});
-
-		this.add('LDAP_Avatar_Field', '', {
-			type: 'string',
-			enableQuery,
-			enterprise,
-			invalidValue: '',
 		});
 
 		this.add('LDAP_Sync_User_Active_State', 'disable', {

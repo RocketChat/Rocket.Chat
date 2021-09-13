@@ -18,6 +18,9 @@ import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { callbacks } from '../../../app/callbacks/server';
+import { RocketChatFile } from '../../../app/file';
+import { FileUpload } from '../../../app/file-upload/server';
+import { api } from '../../sdk/api';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -164,6 +167,10 @@ export class LDAPManager {
 	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
 		logger.info('running onLDAPLogin');
 		callbacks.run('onLDAPLogin', { user, ldapUser, password }, ldap);
+
+		if (user) {
+			this.syncUserAvatar(user, ldapUser);
+		}
 	}
 
 	private static loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): LDAPLoginResult {
@@ -348,5 +355,54 @@ export class LDAPManager {
 		};
 
 		return Accounts._runLoginHandlers(this, loginRequest);
+	}
+
+	private static getAvatarFromUser(ldapUser: ILDAPEntry): any | undefined {
+		const avatarField = String(settings.get('LDAP_Avatar_Field') || '').trim();
+		if (avatarField && ldapUser._raw[avatarField]) {
+			return ldapUser._raw[avatarField];
+		}
+
+		if (ldapUser._raw.thumbnailPhoto) {
+			return ldapUser._raw.thumbnailPhoto;
+		}
+
+		if (ldapUser._raw.jpegPhoto) {
+			return ldapUser._raw.jpegPhoto;
+		}
+	}
+
+	private static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
+		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
+			return;
+		}
+
+		const avatar = this.getAvatarFromUser(ldapUser);
+		logger.info('Syncing user avatar');
+
+		Meteor.defer(() => {
+			const rs = RocketChatFile.bufferToStream(avatar);
+			const fileStore = FileUpload.getStore('Avatars');
+			fileStore.deleteByName(user.username);
+
+			const file = {
+				userId: user._id,
+				type: 'image/jpeg',
+				size: avatar.length,
+			};
+
+			Meteor.runAsUser(user._id, () => {
+				fileStore.insert(file, rs, (_err: Error | undefined, result: { etag: string }) => {
+					if (!result) {
+						return;
+					}
+
+					Meteor.setTimeout(function() {
+						Users.setAvatarData(user._id, 'ldap', result.etag);
+						api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
+					}, 500);
+				});
+			});
+		});
 	}
 }

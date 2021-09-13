@@ -65,6 +65,11 @@ settings.addGroup('LDAP', function() {
 			enableQuery,
 		});
 
+		this.add('LDAP_User_Search_Filter', '(objectclass=*)', {
+			type: 'string',
+			enableQuery,
+		});
+
 		this.add('LDAP_User_Search_Scope', 'sub', {
 			type: 'string',
 			enableQuery,
@@ -106,7 +111,7 @@ settings.addGroup('LDAP', function() {
 			public: true,
 		});
 
-		this.add('LDAP_Username_Field', 'ou', {
+		this.add('LDAP_Username_Field', 'uid', {
 			type: 'string',
 			enableQuery,
 			displayQuery: ldapOnly,
@@ -142,6 +147,16 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Name_Field', 'cn', {
 			type: 'string',
 			displayQuery: ldapOnly,
+		});
+
+		this.add('LDAP_Sync_User_Avatar', true, {
+			type: 'boolean',
+			enableQuery,
+		});
+
+		this.add('LDAP_Avatar_Field', '', {
+			type: 'string',
+			enableQuery,
 		});
 
 		this.add('LDAP_Merge_Existing_Users', false, {
