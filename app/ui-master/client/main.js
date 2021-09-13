@@ -12,8 +12,7 @@ import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
-import { fireGlobalEvent } from '../../ui-utils/client';
-
+import { fireGlobalEvent } from '../../../client/lib/fireGlobalEvent';
 import './main.html';
 
 

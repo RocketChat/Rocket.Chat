@@ -14,7 +14,6 @@ import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
@@ -30,6 +29,7 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { fireGlobalEvent } from '../../../../../client/lib/fireGlobalEvent';
 
 export const chatMessages = {};
 

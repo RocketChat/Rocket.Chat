@@ -6,7 +6,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
-import { fireGlobalEvent } from './fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { menu } from './menu';

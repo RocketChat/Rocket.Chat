@@ -8,11 +8,11 @@ import toastr from 'toastr';
 
 import { hasPermission } from '../../app/authorization/client';
 import hljs from '../../app/markdown/lib/hljs';
-import { fireGlobalEvent } from '../../app/ui-utils/client';
 import { getUserPreference, t } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
+import { fireGlobalEvent } from '../lib/fireGlobalEvent';
 import { synchronizeUserData } from '../lib/userData';
 
 hljs.initHighlightingOnLoad();

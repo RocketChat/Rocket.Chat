@@ -10,9 +10,10 @@ import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
 import { call, callMethod } from './callMethod';
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
+import { fireGlobalEvent } from '../../../../client/lib/fireGlobalEvent';
 
 window.currentTracker = undefined;
 

@@ -5,12 +5,13 @@ import { Tracker } from 'meteor/tracker';
 
 import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
-import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
+import { readMessage, Layout } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
+import { fireGlobalEvent } from '../../lib/fireGlobalEvent';
 
 const notifyNewRoom = (sub: ISubscription): void => {
 	if (Session.equals(`user_${Meteor.userId()}_status`, 'busy')) {

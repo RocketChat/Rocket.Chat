@@ -9,7 +9,7 @@ import { settings } from '../../../settings/client';
 import { getUserPreference, roomTypes, handleError } from '../../../utils/client';
 import { AutoTranslate } from '../../../autotranslate/client';
 import { Layout } from './Layout';
-import { fireGlobalEvent } from './fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/fireGlobalEvent';
 import { actionLinks } from '../../../action-links/client';
 import { goToRoomById } from '../../../../client/lib/goToRoomById';
 

@@ -4,7 +4,6 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import {
-	fireGlobalEvent,
 	popover,
 	Layout,
 	MessageAction,
@@ -22,6 +21,7 @@ import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
 import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
+import { fireGlobalEvent } from '../../../../../../client/lib/fireGlobalEvent';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');

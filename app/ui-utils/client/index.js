@@ -12,7 +12,6 @@ export { upsertMessage, RoomHistoryManager, normalizeThreadMessage } from './lib
 export { mainReady } from './lib/mainReady';
 export { Layout } from './lib/Layout';
 export { IframeLogin, iframeLogin } from './lib/IframeLogin';
-export { fireGlobalEvent } from './lib/fireGlobalEvent';
 export { getAvatarAsPng } from './lib/getAvatarAsPng';
 export { popout } from './lib/popout';
 export { messageProperties } from '../lib/MessageProperties';
