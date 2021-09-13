@@ -25,3 +25,4 @@ import './userSetUtcOffset';
 import './usersObserve';
 import './userStatusManuallySet';
 import './slashCommands';
+import './userRoles';

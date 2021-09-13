@@ -3,7 +3,6 @@ import '../lib/MessageTypes';
 import './OAuthProxy';
 import './UserDeleted';
 import './lib/settings';
-import './lib/userRoles';
 import './methods/sendMessage';
 import './views/customFieldsForm.html';
 import './views/customFieldsForm';
