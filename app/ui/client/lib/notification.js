@@ -12,9 +12,9 @@ import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
+import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
