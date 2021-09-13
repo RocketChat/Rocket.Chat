@@ -239,11 +239,11 @@ export class LDAPManager {
 	}
 
 	private static ldapKeyExists(ldapUser: ILDAPEntry, key: string): boolean {
-		return !_.isEmpty(ldapUser._raw[key.trim()]);
+		return !_.isEmpty(ldapUser[key.trim()]);
 	}
 
 	private static getLdapString(ldapUser: ILDAPEntry, key: string): string {
-		return ldapUser._raw[key.trim()].toString('hex');
+		return ldapUser[key.trim()];
 	}
 
 	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string): string | undefined {
@@ -378,6 +378,10 @@ export class LDAPManager {
 		}
 
 		const avatar = this.getAvatarFromUser(ldapUser);
+		if (!avatar) {
+			return;
+		}
+
 		logger.info('Syncing user avatar');
 
 		Meteor.defer(() => {
