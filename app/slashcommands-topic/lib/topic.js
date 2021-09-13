@@ -4,7 +4,6 @@ import { slashCommands } from '../../utils';
 import { ChatRoom } from '../../models';
 import { callbacks } from '../../callbacks';
 import { hasPermission } from '../../authorization';
-import { handleError } from '../../../client/lib/utils/handleError';
 
 function Topic(command, params, item) {
 	if (command === 'topic') {
@@ -12,6 +11,7 @@ function Topic(command, params, item) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err) => {
 				if (err) {
 					if (Meteor.isClient) {
+						const { handleError } = require('../../../client/lib/utils/handleError');
 						return handleError(err);
 					}
 					throw err;

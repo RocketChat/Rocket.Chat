@@ -3,7 +3,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { slashCommands } from '../../utils';
 import { api } from '../../../server/sdk/api';
-import { handleError } from '../../../client/lib/utils/handleError';
 
 function Status(command, params, item) {
 	if (command === 'status') {
@@ -12,6 +11,7 @@ function Status(command, params, item) {
 		Meteor.call('setUserStatus', null, params, (err) => {
 			if (err) {
 				if (Meteor.isClient) {
+					const { handleError } = require('../../../client/lib/utils/handleError');
 					return handleError(err);
 				}
 
