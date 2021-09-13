@@ -17,7 +17,6 @@ export { messageProperties } from '../lib/MessageProperties';
 export { MessageTypes } from '../lib/MessageTypes';
 export { Message } from '../lib/Message';
 export { openRoom } from './lib/openRoom';
-export { warnUserDeletionMayRemoveRooms } from './lib/warnUserDeletionMayRemoveRooms';
 export * from './lib/prependReplies';
 export * from './lib/collapseArrow';
 export * from './lib/messageArgs';
