@@ -16,4 +16,3 @@ export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
 export { secondsToHHMMSS } from '../lib/timeConverter';
-export { waitUntilFind } from './lib/waitUntilFind';
