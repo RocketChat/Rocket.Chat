@@ -53,13 +53,6 @@ const NotificationPreferences = ({
 							optionDefault={formValues?.desktopAlert}
 						/>
 						<Preferences
-							id={'DesktopAudio'}
-							onChange={formHandlers?.handleDesktopAudio}
-							name={t('Audio')}
-							options={handleOptions.audio}
-							optionDefault={formValues?.desktopAudio}
-						/>
-						<Preferences
 							id={'DesktopSound'}
 							onChange={formHandlers?.handleDesktopSound}
 							name={t('Sound')}
