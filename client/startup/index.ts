@@ -24,3 +24,4 @@ import './unread';
 import './userSetUtcOffset';
 import './usersObserve';
 import './userStatusManuallySet';
+import './slashCommands';

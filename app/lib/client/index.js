@@ -2,7 +2,6 @@ import '../lib/startup/settingsOnLoadSiteUrl';
 import '../lib/MessageTypes';
 import './OAuthProxy';
 import './UserDeleted';
-import './lib/startup/commands';
 import './lib/settings';
 import './lib/userRoles';
 import './methods/sendMessage';
