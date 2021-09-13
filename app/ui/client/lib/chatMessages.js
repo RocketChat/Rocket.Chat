@@ -18,7 +18,6 @@ import {
 	readMessage,
 	modal,
 	call,
-	prependReplies,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
@@ -30,6 +29,7 @@ import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 
 
 const messageBoxState = {
