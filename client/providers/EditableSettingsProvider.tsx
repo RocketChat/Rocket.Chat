@@ -84,19 +84,25 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 						{
 							...('_id' in query && { _id: { $in: query._id } }),
 							...('group' in query && { group: query.group }),
-							...('section' in query &&
-								(query.section
-									? { section: query.section }
-									: {
-											$or: [{ section: { $exists: false } }, { section: '' }],
-									  })),
-							...('tab' in query &&
-								(query.tab
-									? { tab: query.tab }
-									: {
-											$or: [{ tab: { $exists: false } }, { tab: '' }],
-									  })),
 							...('changed' in query && { changed: query.changed }),
+							$and: [
+								{
+									...('section' in query &&
+										(query.section
+											? { section: query.section }
+											: {
+													$or: [{ section: { $exists: false } }, { section: '' }],
+											  })),
+								},
+								{
+									...('tab' in query &&
+										(query.tab
+											? { tab: query.tab }
+											: {
+													$or: [{ tab: { $exists: false } }, { tab: '' }],
+											  })),
+								},
+							],
 						},
 						{
 							sort: {
