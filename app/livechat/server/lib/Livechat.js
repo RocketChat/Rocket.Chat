@@ -1108,7 +1108,7 @@ export const Livechat = {
 
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 
-		 return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
 	},
 
 	requestTranscript({ rid, email, subject, user }) {
