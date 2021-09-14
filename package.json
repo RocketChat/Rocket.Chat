@@ -39,7 +39,8 @@
 		"set-version": "node .scripts/set-version.js",
 		"release": "meteor npm run set-version --silent",
 		"storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 start-storybook -p 6006",
-		"build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 build-storybook"
+		"build-storybook": "cross-env NODE_OPTIONS=--max-old-space-size=8192 build-storybook",
+		"postinstall": "patch-package"
 	},
 	"license": "MIT",
 	"repository": {
@@ -129,6 +130,7 @@
 		"mocha": "^9.0.0",
 		"mock-require": "^3.0.3",
 		"mongo-unit": "^2.0.1",
+		"patch-package": "^6.4.7",
 		"pino-pretty": "^7.0.0",
 		"postcss": "^8.3.5",
 		"postcss-custom-properties": "^11.0.0",
