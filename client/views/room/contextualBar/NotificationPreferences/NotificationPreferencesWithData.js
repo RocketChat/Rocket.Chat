@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 import { useCustomSound } from '../../../../contexts/CustomSoundContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../hooks/useForm';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import NotificationPreferences from './NotificationPreferences';
@@ -28,9 +28,6 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		showCounter: !subscription.hideUnreadStatus,
 		desktopAlert:
 			(subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
-			'default',
-		desktopAudio:
-			(subscription.audioPrefOrigin === 'subscription' && subscription.audioNotifications) ||
 			'default',
 		desktopSound: subscription.audioNotificationValue || 'default',
 		mobileAlert:
@@ -68,7 +65,6 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		notifications.muteGroupMentions = values.muteGroupMentions ? '1' : '0';
 		notifications.hideUnreadStatus = values.showCounter ? '0' : '1';
 		notifications.desktopNotifications = values.desktopAlert;
-		notifications.audioNotifications = values.desktopAudio;
 		notifications.audioNotificationValue = values.desktopSound;
 		notifications.mobilePushNotifications = values.mobileAlert;
 		notifications.emailNotifications = values.emailAlert;
