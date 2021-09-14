@@ -2,6 +2,9 @@ import { Box, Button, ButtonGroup, Callout, Icon, Margins } from '@rocket.chat/f
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
+import type { IInstance } from '../../../../definition/IInstance';
+import type { IServerInfo } from '../../../../definition/IServerInfo';
+import type { IStats } from '../../../../definition/IStats';
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import { DOUBLE_COLUMN_CARD_WIDTH } from '../../../components/Card';
 import Page from '../../../components/Page';
@@ -10,18 +13,24 @@ import DeploymentCard from './DeploymentCard';
 import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
 import UsageCard from './UsageCard';
-// import InstancesCard from './InstancesCard';
-// import PushCard from './PushCard';
+
+type InformationPageProps = {
+	canViewStatistics: boolean;
+	info: IServerInfo;
+	statistics: IStats;
+	instances: Array<IInstance>;
+	onClickRefreshButton: () => void;
+	onClickDownloadInfo: () => void;
+};
 
 const InformationPage = memo(function InformationPage({
 	canViewStatistics,
-	isLoading,
 	info,
 	statistics,
 	instances,
 	onClickRefreshButton,
 	onClickDownloadInfo,
-}) {
+}: InformationPageProps) {
 	const t = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize = DOUBLE_COLUMN_CARD_WIDTH } = {} } =
@@ -41,10 +50,10 @@ const InformationPage = memo(function InformationPage({
 			<Page.Header title={t('Info')}>
 				{canViewStatistics && (
 					<ButtonGroup>
-						<Button disabled={isLoading} external type='button' onClick={onClickDownloadInfo}>
+						<Button type='button' onClick={onClickDownloadInfo}>
 							<Icon name='download' /> {t('Download_Info')}
 						</Button>
-						<Button disabled={isLoading} primary type='button' onClick={onClickRefreshButton}>
+						<Button primary type='button' onClick={onClickRefreshButton}>
 							<Icon name='reload' /> {t('Refresh')}
 						</Button>
 					</ButtonGroup>
@@ -92,18 +101,11 @@ const InformationPage = memo(function InformationPage({
 						ref={ref}
 					>
 						<Margins all='x8'>
-							<DeploymentCard
-								info={info}
-								statistics={statistics}
-								instances={instances}
-								isLoading={isLoading}
-							/>
-							<LicenseCard statistics={statistics} isLoading={isLoading} />
-							<UsageCard vertical={isSmall} statistics={statistics} isLoading={isLoading} />
+							<DeploymentCard info={info} statistics={statistics} instances={instances} />
+							<LicenseCard />
+							<UsageCard vertical={isSmall} statistics={statistics} />
 							<FederationCard />
 							<SeatsCard />
-							{/* {!!instances.length && <InstancesCard instances={instances}/>} */}
-							{/* <PushCard /> */}
 						</Margins>
 					</Box>
 				</Box>
