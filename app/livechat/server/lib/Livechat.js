@@ -1103,7 +1103,7 @@ export const Livechat = {
 		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
 
 		if (!isLivechat) {
-			return [];
+			throw new Meteor.Error('invalid-room');
 		}
 
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
