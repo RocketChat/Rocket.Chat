@@ -1,17 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const postCatchError = Meteor.wrapAsync(function(url, options, resolve) {
-	HTTP.post(url, options, function(err, res) {
-		if (err) {
-			resolve(null, err.response);
-		} else {
-			resolve(null, res);
-		}
-	});
-});
+const postCatchError = function(url, options) {
+	try {
+		return HTTP.post(url, options);
+	} catch (e) {
+		return e;
+	}
+};
 
 Meteor.methods({
 	'livechat:webhookTest'() {
@@ -73,7 +72,7 @@ Meteor.methods({
 
 		const response = postCatchError(settings.get('Livechat_webhookUrl'), options);
 
-		console.log('response ->', response);
+		SystemLogger.debug({ response });
 
 		if (response && response.statusCode && response.statusCode === 200) {
 			return true;

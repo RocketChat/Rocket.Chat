@@ -13,6 +13,13 @@ const oauth2server = new OAuth2Server({
 	debug: true,
 });
 
+// https://github.com/RocketChat/rocketchat-oauth2-server/blob/e758fd7ef69348c7ceceabe241747a986c32d036/model.coffee#L27-L27
+function getAccessToken(accessToken) {
+	return oauth2server.oauth.model.AccessTokens.findOne({
+		accessToken,
+	});
+}
+
 oauth2server.app.disable('x-powered-by');
 oauth2server.routes.disable('x-powered-by');
 
@@ -23,9 +30,7 @@ oauth2server.routes.get('/oauth/userinfo', function(req, res) {
 		return res.sendStatus(401).send('No token');
 	}
 	const accessToken = req.headers.authorization.replace('Bearer ', '');
-	const token = oauth2server.oauth.model.AccessTokens.findOne({
-		accessToken,
-	});
+	const token = getAccessToken(accessToken);
 	if (token == null) {
 		return res.sendStatus(401).send('Invalid Token');
 	}
@@ -61,7 +66,7 @@ API.v1.addAuthMethod(function() {
 	if (bearerToken == null) {
 		return;
 	}
-	const getAccessToken = Meteor.wrapAsync(oauth2server.oauth.model.getAccessToken, oauth2server.oauth.model);
+
 	const accessToken = getAccessToken(bearerToken);
 	if (accessToken == null) {
 		return;

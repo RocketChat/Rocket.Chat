@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 let logger;
 
 if (Meteor.isServer) {
-	const { Logger } = require('../../logger/server/server');
-	logger = new Logger('TemplateVarHandler', {});
+	const { Logger } = require('../../../server/lib/logger/Logger');
+	logger = new Logger('TemplateVarHandler');
 }
 
 export const templateVarHandler = function(variable, object) {

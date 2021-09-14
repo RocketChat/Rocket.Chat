@@ -1,12 +1,20 @@
 import { Meteor } from 'meteor/meteor';
-import bugsnag from 'bugsnag';
+import Bugsnag from '@bugsnag/js';
 
-import { settings } from '../../../settings';
-import { Info } from '../../../utils';
+import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/server';
+import { Logger } from '../../../logger/server';
+
+const logger = new Logger('bugsnag');
 
 settings.get('Bugsnag_api_key', (key, value) => {
 	if (value) {
-		bugsnag.register(value);
+		Bugsnag.start({
+			apiKey: value,
+			appVersion: Info.version,
+			logger,
+			metadata: Info,
+		});
 	}
 });
 
@@ -14,22 +22,13 @@ const notify = function(message, stack) {
 	if (typeof stack === 'string') {
 		message += ` ${ stack }`;
 	}
-	let options = {};
-	if (Info) {
-		options = { app: { version: Info.version, info: Info } };
-	}
 	const error = new Error(message);
 	error.stack = stack;
-	bugsnag.notify(error, options);
+	Bugsnag.notify(error);
 };
 
-process.on('uncaughtException', Meteor.bindEnvironment((error) => {
-	notify(error.message, error.stack);
-	throw error;
-}));
-
 const originalMeteorDebug = Meteor._debug;
-Meteor._debug = function(...args) {
+Meteor._debug = function _bugsnagDebug(...args) {
 	notify(...args);
 	return originalMeteorDebug(...args);
 };

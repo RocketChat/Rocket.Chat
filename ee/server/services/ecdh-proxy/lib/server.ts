@@ -117,7 +117,7 @@ app.post('/api/ecdh_proxy/echo', async (req, res) => {
 		const result = await session.decrypt(req.body.text);
 		res.send(await session.encrypt(result));
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 		res.status(400).send(e.message);
 	}
 });
@@ -129,7 +129,7 @@ const httpServer = app.listen(port, () => {
 const wss = new WebSocket.Server({ server: httpServer });
 
 wss.on('error', (error) => {
-	console.log(error);
+	console.error(error);
 });
 
 wss.on('connection', async (ws, req) => {
