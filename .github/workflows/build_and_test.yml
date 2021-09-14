@@ -186,7 +186,7 @@ jobs:
         path: /tmp/build
 
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     needs: build
 
     strategy:
