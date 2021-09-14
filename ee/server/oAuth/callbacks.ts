@@ -12,39 +12,69 @@ interface IProcessEEOAuthUser {
 	user: Record<string, any>;
 }
 
+interface ISettings {
+	mapChannels: string;
+	mergeRoles: string;
+	rolesClaim: string;
+	groupsClaim: string;
+	channelsAdmin: string;
+	channelsMap: string;
+}
+
+const logger = new Logger('EECustomOAuth');
+
+function getOAuthSettings(serviceName: string): ISettings {
+	return {
+		mapChannels: settings.get(`Accounts_OAuth_Custom-${ serviceName }-map_channels`) as string,
+		mergeRoles: settings.get(`Accounts_OAuth_Custom-${ serviceName }-merge_roles`) as string,
+		rolesClaim: settings.get(`Accounts_OAuth_Custom-${ serviceName }-roles_claim`) as string,
+		groupsClaim: settings.get(`Accounts_OAuth_Custom-${ serviceName }-groups_claim`) as string,
+		channelsAdmin: settings.get(`Accounts_OAuth_Custom-${ serviceName }-channels_admin`) as string,
+		channelsMap: settings.get(`Accounts_OAuth_Custom-${ serviceName }-channels_map`) as string,
+	};
+}
+
+function getChannelsMap(channelsMap: string): Record<string, any> | void {
+	channelsMap = (channelsMap || '{}').trim();
+
+	try {
+		return JSON.parse(channelsMap);
+	} catch (err) {
+		logger.error(`Unexpected error : ${ err }`);
+	}
+}
+
 // TODO: rename auth to something meaningful
-onLicense('oAuth-enterprise', (auth: IProcessEEOAuthUser) => {
-	callbacks.add('beforeProcessOAuthUser', () => {
-		const logger = new Logger('EECustomOAuth');
+onLicense('oAuth-enterprise', () => {
+	callbacks.add('afterOAuthUserHook', (auth: IProcessEEOAuthUser) => {
 		auth.serviceName = capitalize(auth.serviceName);
 
-		const mapChannels = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-map_channels`);
-		const mergeRoles = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-merge_roles`);
-		const rolesClaim = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-roles_claim`);
-		const groupsClaim = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-groups_claim`);
-		const channelsAdmin = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-channels_admin`);
+		const settings = getOAuthSettings(auth.serviceName);
 
+		const channelsMap = getChannelsMap(settings.channelsMap);
 
-		let channelsMap;
-
-		if (mapChannels) {
-			channelsMap = settings.get(`Accounts_OAuth_Custom-${ auth.serviceName }-channels_map`) as string;
-			channelsMap = (channelsMap || '{}').trim();
-			console.log(channelsMap, mergeRoles);
-
-			try {
-				channelsMap = JSON.parse(channelsMap);
-			} catch (err) {
-				logger.error(`Unexpected error : ${ err }`);
-			}
+		if (settings.mergeRoles) {
+			EnterpriseOAuthHelpers.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim);
 		}
 
-		if (mergeRoles) {
-			EnterpriseOAuthHelpers.updateRolesFromSSO(auth.user, auth.serviceData, rolesClaim);
+		if (settings.mapChannels) {
+			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
+		}
+	});
+
+	callbacks.add('afterValidateNewOAuthUser', (auth: IProcessEEOAuthUser) => {
+		auth.serviceName = capitalize(auth.serviceName);
+
+		const settings = getOAuthSettings(auth.serviceName);
+
+		const channelsMap = getChannelsMap(settings.channelsMap);
+
+		if (settings.mergeRoles) {
+			auth.user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(auth.user.services[auth.serviceName], settings.rolesClaim);
 		}
 
-		if (mapChannels) {
-			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.serviceData, groupsClaim, channelsMap, channelsAdmin);
+		if (settings.mapChannels) {
+			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.user.services[auth.serviceName], settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 	});
 });

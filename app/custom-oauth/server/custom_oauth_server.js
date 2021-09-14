@@ -327,9 +327,6 @@ export class CustomOAuth {
 
 	addHookToProcessUser() {
 		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/* , options*/) => {
-			console.log('service data');
-			console.log(serviceData);
-			callbacks.run('beforeProcessOAuthUser', serviceName);
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -347,14 +344,6 @@ export class CustomOAuth {
 					return;
 				}
 
-				// if (this.mergeRoles) {
-				// 	EnterpriseOAuthHelpers.updateRolesFromSSO(user, serviceData, this.rolesClaim);
-				// }
-
-				// if (this.mapChannels) {
-				// 	EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
-				// }
-
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
 					return;
@@ -363,6 +352,8 @@ export class CustomOAuth {
 				if (this.mergeUsers !== true) {
 					throw new Meteor.Error('CustomOAuth', `User with username ${ user.username } already exists`);
 				}
+
+				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
 
 				const serviceIdKey = `services.${ serviceName }.id`;
 				const update = {
@@ -400,6 +391,8 @@ export class CustomOAuth {
 			// if (this.mapChannels) {
 			// 	EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
 			// }
+			callbacks.run('afterProcessOAuthUser', { serviceName: user.services[this.name], user });
+
 
 			return true;
 		});
