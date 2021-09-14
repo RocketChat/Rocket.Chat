@@ -4,7 +4,8 @@ import QueryString from 'querystring';
 import { camelCase } from 'change-case';
 import _ from 'underscore';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../callbacks/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 class Providers {
 	constructor() {
@@ -146,7 +147,7 @@ callbacks.add('oembed:afterParseContent', function(data) {
 			}
 		});
 	} catch (error) {
-		console.log(error);
+		SystemLogger.error(error);
 	}
 	return data;
 }, callbacks.priority.MEDIUM, 'oembed-providers-after');

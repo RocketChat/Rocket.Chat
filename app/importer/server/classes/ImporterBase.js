@@ -54,7 +54,7 @@ export class Base {
 
 		this.info = info;
 
-		this.logger = new Logger(`${ this.info.name } Importer`, {});
+		this.logger = new Logger(`${ this.info.name } Importer`);
 		this.converter.setLogger(this.logger);
 
 		this.progress = new Progress(this.info.key, this.info.name);

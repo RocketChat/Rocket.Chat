@@ -194,7 +194,7 @@ export const useQuickActions = (
 
 	const handleOnHoldChat = useCallback(async () => {
 		try {
-			await onHoldChat({ roomId: rid } as any);
+			await onHoldChat({ roomId: rid });
 			closeModal();
 			toastr.success(t('Chat_On_Hold_Successfully'));
 		} catch (error) {
