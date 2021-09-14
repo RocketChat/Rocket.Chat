@@ -59,7 +59,7 @@ onLicense('oAuth-enterprise', () => {
 		let channelsMap;
 
 		if (settings.mapChannels) {
-			getChannelsMap(settings.channelsMap);
+			channelsMap = getChannelsMap(settings.channelsMap);
 		}
 
 		if (settings.mergeRoles) {
