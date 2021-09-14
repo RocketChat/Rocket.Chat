@@ -16,10 +16,10 @@ import { hasRole, hasPermission, hasAtLeastOnePermission } from '../../../../../
 import './visitorInfo.html';
 import { APIClient } from '../../../../../utils/client';
 import { RoomManager } from '../../../../../ui-utils/client';
-import { DateFormat } from '../../../../../lib/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import { Markdown } from '../../../../../markdown/client';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { formatDateAndTime } from '../../../../../../client/lib/utils/formatDateAndTime';
 
 const isSubscribedToRoom = () => {
 	const data = Template.currentData();
@@ -214,7 +214,7 @@ Template.visitorInfo.helpers({
 
 	roomClosedDateTime() {
 		const { closedAt } = this;
-		return DateFormat.formatDateAndTime(closedAt);
+		return formatDateAndTime(closedAt);
 	},
 
 	roomClosedBy() {
@@ -250,7 +250,7 @@ Template.visitorInfo.helpers({
 
 	transcriptRequestedDateTime() {
 		const { requestedAt } = this;
-		return DateFormat.formatDateAndTime(requestedAt);
+		return formatDateAndTime(requestedAt);
 	},
 
 	markdown(text) {
