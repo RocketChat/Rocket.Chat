@@ -26,7 +26,10 @@ const debug = (name: string): boolean => [getConfig(`debugCachedCollection-${ na
 
 type EventType = keyof Notifications;
 
-export class CachedCollection<T extends IRocketChatRecord> extends Emitter {
+export class CachedCollection<T extends IRocketChatRecord> extends Emitter<{
+	change: [T, T | undefined];
+	remove: [T];
+}> {
 	ready = new ReactiveVar(false);
 
 	public readonly name: string;
@@ -231,6 +234,7 @@ export class CachedCollection<T extends IRocketChatRecord> extends Emitter {
 
 		(Notifications as any)[this.eventType](this.eventName, (t: 'changed' | 'removed' | 'added', record: T) => {
 			this.log('record received', t, record);
+			const oldRecord = { ...this.collection._collection._docs._map.get(record._id) as T | undefined };
 			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
 				let room;
@@ -248,10 +252,13 @@ export class CachedCollection<T extends IRocketChatRecord> extends Emitter {
 					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove({ _id: record._id });
+				oldRecord && this.emit('remove', [oldRecord]);
 			} else {
 				const { _id, ...recordData } = record;
 				this.collection.direct.upsert({ _id }, recordData as T);
+				this.emit('change', [record, oldRecord]);
 			}
+
 			this.save();
 		});
 	}

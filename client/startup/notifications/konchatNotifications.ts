@@ -3,8 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
-import { CachedChatSubscription, ChatSubscription, ChatRoom } from '../../../app/models/client';
-import { Notifications } from '../../../app/notifications/client';
+import { messageContainsHighlight } from '../../../app/lib/messageContainsHighlight';
+import {
+	CachedChatSubscription,
+	ChatSubscription,
+	ChatRoom,
+	CachedChatRoom,
+} from '../../../app/models/client';
+import { Notifications } from '../../../app/notifications/client/lib/Notifications';
+import { settings } from '../../../app/settings/client';
 import { fireGlobalEvent, readMessage, Layout } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
@@ -89,7 +96,8 @@ const showDesktopNotification = (notification: NotificationEvent): void => {
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			return;
 		}
 
@@ -109,40 +117,62 @@ Meteor.startup(() => {
 			},
 		);
 
-		Notifications.onUser('rooms-changed', (_action: 'changed' | 'removed', room: IRoom) => {
-			if (!room.lastMessage?.msg) {
+		const highlights = getUserPreference(Meteor.userId(), 'highlights');
+		const desktopNotifications = getUserPreference(Meteor.userId(), 'desktopNotifications') as
+			| 'all'
+			| 'mentions'
+			| 'nothing'
+			| undefined;
+		const notificationMaxRoomMembers = settings.get('Notifications_Max_Room_Members');
+
+		CachedChatRoom.on('change', ([room, oldRecord]) => {
+			const currentMsg = room.lastMessage;
+			if (!currentMsg) {
 				return;
 			}
 
-			console.log('rooms-changed ->', room);
-
-			// notify only on new messages
-			const oldRoom = ChatRoom.findOne({ _id: room._id }, { fields: { 'lastMessage.ts': 1 } });
-			if (room.lastMessage.ts <= oldRoom.lastMessage.ts) {
+			const lastMessage = oldRecord?.lastMessage;
+			console.log(currentMsg, lastMessage);
+			if (lastMessage && currentMsg?.ts.getTime() <= lastMessage?.ts?.getTime()) {
 				return;
 			}
 
-			// TODO validate same behavior as done on server side before
-			// export function shouldNotifyDesktop({
-			// 	disableAllMessageNotifications,
-			// 	status,
-			// 	statusConnection,
-			// 	desktopNotifications,
-			// 	hasMentionToAll,
-			// 	hasMentionToHere,
-			// 	isHighlighted,
-			// 	hasMentionToUser,
-			// 	hasReplyToThread,
-			// 	roomType,
-			// 	isThread,
-			// }) {
-			// 	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
-			// 		return false;
-			// 	}
+			const sub = ChatSubscription.findOne({ rid: room._id });
+			if (!sub) {
+				return;
+			}
+
+			const disableAllMessageNotifications = room.usersCount >= notificationMaxRoomMembers;
+
+			const hasMentionToUser = currentMsg.mentions?.map(({ _id }) => _id).includes(uid);
+
+			const isHighlighted = messageContainsHighlight(currentMsg.msg, highlights);
+
+			// TODO convert RoomTypeConfig to be able to use it on client side and avoid duplicated logic below to define 'title' and 'text'
+			const roomName = `${room.t !== 'd' && room.t !== 'l' ? '#' : ''}${sub.fname || sub.name}`;
+			const title = room.t === 'l' ? `[Omnichannel] ${roomName}` : roomName;
+			const text = `${
+				room.t !== 'd' || room.uids.length > 2
+					? `${currentMsg.u.name || currentMsg.u.username}: `
+					: ''
+			}${currentMsg.msg}`;
+
+			const { _id, rid, tmid, u: sender, msg, t } = currentMsg;
+
+			if (
+				disableAllMessageNotifications &&
+				desktopNotifications == null &&
+				!isHighlighted &&
+				!hasMentionToUser
+				// !hasReplyToThread
+			) {
+				return;
+			}
 
 			// 	if (statusConnection === 'offline' || status === 'busy' || desktopNotifications === 'nothing') {
 			// 		return false;
 			// 	}
+
 
 			// 	if (!desktopNotifications) {
 			// 		if (settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all' && (!isThread || hasReplyToThread)) {
@@ -154,35 +184,19 @@ Meteor.startup(() => {
 			// 	}
 
 			// 	return (roomType === 'd' || (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) || isHighlighted || desktopNotifications === 'all' || hasMentionToUser) && (!isThread || hasReplyToThread);
-			// }
-
-			const { lastMessage: msg } = room;
-
-			// TODO is this the best way to get subscription data?
-			const sub = ChatSubscription.findOne({ rid: room._id });
-
-			console.log('sub ->', sub);
-
-			// TODO convert RoomTypeConfig to be able to use it on client side and avoid duplicated logic below to define 'title' and 'text'
-			const roomName = `${room.t !== 'd' && room.t !== 'l' ? '#' : ''}${sub.fname || sub.name}`;
-			const title = room.t === 'l' ? `[Omnichannel] ${roomName}` : roomName;
-			const text = `${
-				room.t !== 'd' || room.uids.length > 2 ? `${msg.u.name || msg.u.username}: ` : ''
-			}${msg.msg}`;
-
 			showDesktopNotification({
 				title,
 				text,
 				payload: {
-					_id: msg._id,
-					rid: msg.rid,
-					tmid: msg.tmid,
-					sender: msg.u,
-					type: room.t,
+					_id,
+					rid,
+					tmid,
+					sender,
 					name: room.name,
+					type: room.t,
 					message: {
-						msg: msg.msg,
-						t: msg.t,
+						msg,
+						t,
 					},
 				},
 			});
