@@ -3,6 +3,51 @@ import { Db, Collection } from 'mongodb';
 
 import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
+declare module 'meteor/meteor' {
+	namespace Meteor {
+		interface IDDPMessage {
+			msg: 'method';
+			method: string;
+			params: EJSON[];
+			id: string;
+		}
+
+		interface IDDPUpdatedMessage {
+			msg: 'updated';
+			methods: string[];
+		}
+
+		interface IMeteorConnection {
+			_send(message: IDDPMessage): void;
+
+			// eslint-disable-next-line @typescript-eslint/camelcase
+			_livedata_data(message: IDDPUpdatedMessage): void;
+
+			_stream: {
+				eventCallbacks: {
+					message: Array<(data: string) => void>;
+				};
+				socket: {
+					onmessage: (data: { type: string; data: string }) => void;
+					_didMessage: (data: string) => void;
+					send: (data: string) => void;
+				};
+				_launchConnectionAsync: () => void;
+				allowConnection: () => void;
+			};
+
+			onMessage(message: string): void;
+			_outstandingMethodBlocks: unknown[];
+		}
+
+		const connection: IMeteorConnection;
+
+		function _relativeToSiteRootUrl(path: string): void;
+		const _localStorage: Window['localStorage'];
+	}
+}
+
+
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
 	namespace Random {
@@ -18,6 +63,11 @@ declare module 'meteor/mongo' {
 
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
+
+		function _storedLoginToken(): string | undefined;
+
+		function _unstoreLoginToken(): unknown;
+
 		function _bcryptRounds(): number;
 
 		function _getLoginToken(connectionId: string): string | undefined;

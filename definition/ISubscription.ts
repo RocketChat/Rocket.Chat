@@ -5,6 +5,7 @@ type RoomType = 'c' | 'd' | 'p' | 'l';
 
 type RoomID = string;
 
+export const isISubscription = (obj: any): obj is ISubscription => obj && typeof obj === 'object' && 'rid' in obj;
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	rid: RoomID;

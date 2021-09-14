@@ -32,6 +32,7 @@ declare module 'meteor/meteor' {
 			};
 
 			onMessage(message: string): void;
+			_outstandingMethodBlocks: unknown[];
 		}
 
 		const connection: IMeteorConnection;

@@ -54,7 +54,6 @@ FlowRouter.route('/home', {
 	name: 'home',
 
 	action(_params, queryParams) {
-		KonchatNotification.getDesktopPermission();
 		if (queryParams?.saml_idp_credentialToken !== undefined) {
 			const token = queryParams.saml_idp_credentialToken;
 			FlowRouter.setQueryParams({
@@ -184,4 +183,5 @@ FlowRouter.notFound = {
 
 Meteor.startup(() => {
 	FlowRouter.initialize();
+	KonchatNotification.getDesktopPermission();
 });

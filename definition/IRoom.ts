@@ -63,6 +63,8 @@ export interface IRoom extends IRocketChatRecord {
 	muted?: string[];
 }
 
+export const isRoom = (room: IRoom | any): room is IRoom => room && room._id && room.t;
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;

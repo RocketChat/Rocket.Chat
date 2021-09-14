@@ -63,10 +63,8 @@ function notifyNewMessageAudio(rid: string): void {
 }
 
 const showDesktopNotification = (notification: NotificationEvent): void => {
-	let openedRoomId = undefined;
-	if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-		openedRoomId = Session.get('openedRoom');
-	}
+	const openedRoomId =
+		['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) && Session.get('openedRoom');
 
 	// This logic is duplicated in /client/startup/unread.coffee.
 	const hasFocus = readMessage.isEnable();
@@ -94,35 +92,6 @@ Meteor.startup(() => {
 		if (!Meteor.userId()) {
 			return;
 		}
-
-		Notifications.onUser('notification', (notification: NotificationEvent) => {
-			let openedRoomId = undefined;
-			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-				openedRoomId = Session.get('openedRoom');
-			}
-
-			// This logic is duplicated in /client/startup/unread.coffee.
-			const hasFocus = readMessage.isEnable();
-			const messageIsInOpenedRoom = openedRoomId === notification.payload.rid;
-
-			fireGlobalEvent('notification', {
-				notification,
-				fromOpenedRoom: messageIsInOpenedRoom,
-				hasFocus,
-			});
-
-			if (Layout.isEmbedded()) {
-				if (!hasFocus && messageIsInOpenedRoom) {
-					// Show a notification.
-					KonchatNotification.showDesktop(notification);
-				}
-			} else if (!hasFocus || !messageIsInOpenedRoom) {
-				// Show a notification.
-				KonchatNotification.showDesktop(notification);
-			}
-
-			notifyNewMessageAudio(notification.payload.rid);
-		});
 
 		CachedChatSubscription.onSyncData = ((
 			action: 'changed' | 'removed',

@@ -1,138 +1,93 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { Accounts } from 'meteor/accounts-base';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 import localforage from 'localforage';
 import _ from 'underscore';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { callbacks } from '../../../callbacks';
-import Notifications from '../../../notifications/client/lib/Notifications';
+import { callbacks } from '../../../callbacks/client';
 import { getConfig } from '../../../ui-utils/client/config';
 import { callMethod } from '../../../ui-utils/client/lib/callMethod';
+import { CachedCollectionManager } from './CachedCollectionManager';
+import { isRoom } from '../../../../definition/IRoom';
+import { isISubscription } from '../../../../definition/ISubscription';
+import { isIRocketChatRecord, IRocketChatRecord } from '../../../../definition/IRocketChatRecord';
+import type { Notifications } from '../../../notifications/client/lib/Notifications';
 
-const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
-	fn(...args, (err, result) => {
-		if (err) {
-			return reject(err);
-		}
-		return resolve(result);
-	});
-});
-
-const localforageGetItem = wrap(localforage.getItem);
-
-class CachedCollectionManagerClass extends Emitter {
-	constructor() {
-		super();
-		this.items = [];
-		this._syncEnabled = false;
-		this.logged = false;
-
-		const { _unstoreLoginToken } = Accounts;
-		Accounts._unstoreLoginToken = (...args) => {
-			_unstoreLoginToken.apply(Accounts, args);
-			this.clearAllCacheOnLogout();
-		};
-
-		// Wait 1s to start or the code will run before the connection and
-		// on first connection the `reconnect` callbacks will run
-
-		Tracker.autorun(() => {
-			const [WAITING_FIRST_CONNECTION, WAITING_FIRST_DISCONNECTION, LISTENING_RECONNECTIONS] = [0, 1, 2];
-			this.step = this.step || WAITING_FIRST_CONNECTION;
-			const { connected } = Meteor.status();
-			switch (this.step) {
-				case WAITING_FIRST_CONNECTION:
-					return !connected || this.step++;
-				case WAITING_FIRST_DISCONNECTION:
-					return connected || this.step++;
-				case LISTENING_RECONNECTIONS:
-					return connected && this.emit('reconnect');
-			}
-		});
-
-		Tracker.autorun(() => {
-			const uid = Meteor.userId();
-			this.logged = uid !== null;
-			if (this.logged) {
-				this.emit('login', uid);
-			}
-		});
-	}
-
-	register(cachedCollection) {
-		this.items.push(cachedCollection);
-	}
-
-	clearAllCache() {
-		for (const item of this.items) {
-			item.clearCache();
-		}
-	}
-
-	clearAllCacheOnLogout() {
-		for (const item of this.items) {
-			item.clearCacheOnLogout();
-		}
-	}
-
-	countQueries() {
-		for (const item of this.items) {
-			item.countQueries();
-		}
-	}
-
-	set syncEnabled(value) {
-		check(value, Boolean);
-		this._syncEnabled = value;
-	}
-
-	get syncEnabled() {
-		return this._syncEnabled;
-	}
-
-	onReconnect(cb) {
-		this.on('reconnect', cb);
-	}
-
-	onLogin(cb) {
-		this.on('login', cb);
-		if (this.logged) {
-			cb();
-		}
-	}
+type LocalforageRecord<T> ={
+	updatedAt: Date;
+	version: number;
+	token: string;
+	records: T[];
 }
 
-export const CachedCollectionManager = new CachedCollectionManagerClass();
+const debug = (name: string): boolean => [getConfig(`debugCachedCollection-${ name }`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
 
-const debug = (name) => [getConfig(`debugCachedCollection-${ name }`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true');
+type EventType = keyof Notifications;
 
-const nullLog = function() {};
+export class CachedCollection<T extends IRocketChatRecord> extends Emitter {
+	ready = new ReactiveVar(false);
 
-const log = (...args) => console.log(`CachedCollection ${ this.name } =>`, ...args);
+	public readonly name: string;
 
-export class CachedCollection extends Emitter {
+	public collection: Mongo.Collection<T> & { direct: Mongo.Collection<T>; _collection: any };
+
+	private userRelated: boolean;
+
+	public updatedAt: Date;
+
+	public methodName: string;
+
+	public version: number;
+
+	private maxCacheTime: number;
+
+	private syncMethodName: string;
+
+	private tm: ReturnType<typeof setTimeout>;
+
+	public eventName: string;
+
+	public eventType: EventType;
+
+	private useSync: boolean;
+
+	private listenChangesForLoggedUsersOnly: boolean;
+
+	public onSyncData: (action: string, record: IRocketChatRecord) => void;
+
+	private debug: boolean;
+
 	constructor({
-		collection = new Mongo.Collection(null),
+		collection = new Mongo.Collection<T>(null),
 		name,
 		methodName = `${ name }/get`,
 		syncMethodName = `${ name }/get`,
 		eventName = `${ name }-changed`,
-		eventType = 'onUser',
+		eventType = 'onUser' as const,
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
 		version = 16,
 		maxCacheTime = 60 * 60 * 24 * 30,
-		onSyncData = (/* action, record */) => {},
+		onSyncData = (/* action, record */) => undefined,
+	}: {
+		collection?: Mongo.Collection<T>;
+		name: string;
+		methodName?: string;
+		syncMethodName?: string;
+		eventName?: string;
+		eventType?: EventType;
+		userRelated?: boolean;
+		listenChangesForLoggedUsersOnly?: boolean;
+		useSync?: boolean;
+		version?: number;
+		maxCacheTime?: number;
+		onSyncData?: (action: string, record: IRocketChatRecord) => void;
 	}) {
 		super();
-		this.collection = collection;
-
-		this.ready = new ReactiveVar(false);
+		this.collection = collection as any;
 		this.name = name;
 		this.methodName = methodName;
 		this.syncMethodName = syncMethodName;
@@ -145,7 +100,8 @@ export class CachedCollection extends Emitter {
 		this.updatedAt = new Date(0);
 		this.maxCacheTime = maxCacheTime;
 		this.onSyncData = onSyncData;
-		this.log = debug(name) ? log : nullLog;
+
+		this.debug = debug(name);
 
 		CachedCollectionManager.register(this);
 		if (!userRelated) {
@@ -157,11 +113,11 @@ export class CachedCollection extends Emitter {
 		});
 	}
 
-	countQueries() {
+	countQueries(): void {
 		this.log(`${ Object.keys(this.collection._collection.queries).length } queries`);
 	}
 
-	getToken() {
+	getToken(): string | undefined {
 		if (this.userRelated === false) {
 			return undefined;
 		}
@@ -169,8 +125,15 @@ export class CachedCollection extends Emitter {
 		return Accounts._storedLoginToken();
 	}
 
-	async loadFromCache() {
-		const data = await localforageGetItem(this.name);
+	private log = (...args: Parameters<typeof console.log>): void => {
+		if (!this.debug) {
+			return;
+		}
+		console.log(`CachedCollection ${ this.name } =>`, ...args);
+	}
+
+	async loadFromCache(): Promise<boolean> {
+		const data: LocalforageRecord<T> = await localforage.getItem(this.name) as unknown as LocalforageRecord<T>;
 		if (!data) {
 			return false;
 		}
@@ -181,7 +144,7 @@ export class CachedCollection extends Emitter {
 			return false;
 		}
 
-		if (new Date() - data.updatedAt >= 1000 * this.maxCacheTime) {
+		if (new Date().getTime() - data.updatedAt.getTime() >= 1000 * this.maxCacheTime) {
 			return false;
 		}
 
@@ -191,13 +154,14 @@ export class CachedCollection extends Emitter {
 			callbacks.run(`cachedCollection-loadFromCache-${ this.name }`, record);
 			// this.collection.direct.insert(record);
 
-			if (!record._updatedAt) {
+			if (!isIRocketChatRecord(record)) {
 				return;
 			}
+
 			const _updatedAt = new Date(record._updatedAt);
 			record._updatedAt = _updatedAt;
 
-			if (record.lastMessage && typeof record.lastMessage._updatedAt === 'string') {
+			if (isRoom(record) && record.lastMessage && typeof record.lastMessage._updatedAt === 'string') {
 				record.lastMessage._updatedAt = new Date(record.lastMessage._updatedAt);
 			}
 
@@ -215,14 +179,13 @@ export class CachedCollection extends Emitter {
 		return true;
 	}
 
-	async loadFromServer() {
+	async loadFromServer(): Promise<void> {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await callMethod(this.methodName);
+		const data: T[] = await callMethod(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
-
 			this.collection.direct.upsert({ _id: record._id }, _.omit(record, '_id'));
 
 			this.onSyncData('changed', record);
@@ -232,7 +195,7 @@ export class CachedCollection extends Emitter {
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	async loadFromServerAndPopulate() {
+	async loadFromServerAndPopulate(): Promise<void> {
 		await this.loadFromServer();
 		this.save();
 	}
@@ -249,55 +212,51 @@ export class CachedCollection extends Emitter {
 		this.log('saving cache (done)');
 	}, 1000);
 
-	clearCacheOnLogout() {
+	clearCacheOnLogout(): void {
 		if (this.userRelated === true) {
 			this.clearCache();
 		}
 	}
 
-	clearCache() {
+	clearCache(): void {
 		this.log('clearing cache');
 		localforage.removeItem(this.name);
 		this.collection.remove({});
 	}
 
-	removeRoomFromCacheWhenUserLeaves(roomId, ChatRoom, CachedChatRoom) {
-		ChatRoom.remove(roomId);
-		CachedChatRoom.save();
-	}
+	async setupListener(): Promise<void> {
+		const { RoomManager } = await import('../../../ui-utils/client');
+		const { ChatRoom, CachedChatRoom } = await import('../../../models/client');
+		const { Notifications } = await import('../../../notifications/client/lib/Notifications');
 
-	async setupListener(eventType, eventName) {
-		const { RoomManager } = await import('../../../ui-utils');
-		const { ChatRoom, CachedChatRoom } = await import('../../../models');
-		Notifications[eventType || this.eventType](eventName || this.eventName, (t, record) => {
+		(Notifications as any)[this.eventType](this.eventName, (t: 'changed' | 'removed' | 'added', record: T) => {
 			this.log('record received', t, record);
 			callbacks.run(`cachedCollection-received-${ this.name }`, record, t);
 			if (t === 'removed') {
 				let room;
-				if (this.eventName === 'subscriptions-changed') {
-					room = ChatRoom.findOne(record.rid);
+				if (this.eventName === 'subscriptions-changed' && isISubscription(record)) {
+					room = ChatRoom.findOne({ _id: record.rid });
 					if (room) {
-						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+						ChatRoom.remove(room._id);
+						CachedChatRoom.save();
 					}
 				} else {
-					room = this.collection.findOne({
-						_id: record._id,
-					});
+					room = this.collection.findOne({ _id: record._id });
 				}
-				if (room) {
+				if (isRoom(room)) {
 					room.name && RoomManager.close(room.t + room.name);
 					!room.name && RoomManager.close(room.t + room._id);
 				}
-				this.collection.remove(record._id);
+				this.collection.remove({ _id: record._id });
 			} else {
 				const { _id, ...recordData } = record;
-				this.collection.direct.upsert({ _id }, recordData);
+				this.collection.direct.upsert({ _id }, recordData as T);
 			}
 			this.save();
 		});
 	}
 
-	trySync(delay = 10) {
+	private trySync(delay = 10): void {
 		clearTimeout(this.tm);
 		// Wait for an empty queue to load data again and sync
 		this.tm = setTimeout(async () => {
@@ -308,8 +267,8 @@ export class CachedCollection extends Emitter {
 		}, delay);
 	}
 
-	async sync() {
-		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || Meteor.connection._outstandingMethodBlocks.length !== 0) {
+	async sync(): Promise<boolean> {
+		if (!this.updatedAt || this.updatedAt.valueOf() === 0 || (Meteor as any).connection._outstandingMethodBlocks.length !== 0) {
 			return false;
 		}
 
@@ -366,7 +325,7 @@ export class CachedCollection extends Emitter {
 		return true;
 	}
 
-	async init() {
+	async init(): Promise<void> {
 		this.ready.set(false);
 
 		if (await this.loadFromCache()) {

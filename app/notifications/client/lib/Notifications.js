@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-class Notifications {
+const Notifications = new class Notifications {
 	constructor(...args) {
 		this.logged = Meteor.userId() !== null;
 		this.loginCb = [];
@@ -95,6 +95,7 @@ class Notifications {
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
 	}
-}
+}();
 
-export default new Notifications();
+export { Notifications };
+export default Notifications;
