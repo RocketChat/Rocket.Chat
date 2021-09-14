@@ -28,7 +28,7 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
 		clientAction? : boolean;
 	};
 }) => {
-	if (!inquiry ?._id || !agent?.agentId) {
+	if (!inquiry?._id || !agent?.agentId) {
 		cbLogger.debug('Callback with error. No inquiry or agent provided');
 		return null;
 	}
