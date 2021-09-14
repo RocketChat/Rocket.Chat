@@ -4,11 +4,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
 import { baseURI } from '../../../../client/lib/baseURI';
 
-export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
-	acc += `${ label }[]=${ item }&`;
-	return acc;
-}, '');
-
 export const APIClient = {
 	delete(endpoint, params) {
 		return APIClient._jqueryCall('DELETE', endpoint, params);

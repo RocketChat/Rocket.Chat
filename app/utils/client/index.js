@@ -14,5 +14,5 @@ export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
-export { APIClient, mountArrayQueryParameters } from './lib/RestApiClient';
+export { APIClient } from './lib/RestApiClient';
 export { secondsToHHMMSS } from '../lib/timeConverter';
