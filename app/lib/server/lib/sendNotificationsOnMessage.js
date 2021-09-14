@@ -9,7 +9,6 @@ import { roomTypes } from '../../../utils';
 import { callJoinRoom, messageContainsHighlight, parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
 import { getEmailData, shouldNotifyEmail } from '../functions/notifications/email';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
-import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 
@@ -73,27 +72,9 @@ export const sendNotification = async ({
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
 
 	const {
-		audioNotifications,
 		mobilePushNotifications,
 		emailNotifications,
 	} = subscription;
-
-	// busy users don't receive audio notification
-	if (shouldNotifyAudio({
-		disableAllMessageNotifications,
-		status: receiver.status,
-		statusConnection: receiver.statusConnection,
-		audioNotifications,
-		hasMentionToAll,
-		hasMentionToHere,
-		isHighlighted,
-		hasMentionToUser,
-		hasReplyToThread,
-		roomType,
-		isThread,
-	})) {
-		notifyAudioUser(subscription.u._id, message, room);
-	}
 
 	const queueItems = [];
 
@@ -166,7 +147,6 @@ export const sendNotification = async ({
 
 const project = {
 	$project: {
-		audioNotifications: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
