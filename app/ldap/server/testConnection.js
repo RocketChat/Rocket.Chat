@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
 import LDAP from './ldap';
-import { hasRole } from '../../authorization';
-import { settings } from '../../settings';
+import { hasRole } from '../../authorization/server';
+import { settings } from '../../settings/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 Meteor.methods({
 	ldap_test_connection() {
@@ -24,7 +25,7 @@ Meteor.methods({
 			ldap = new LDAP();
 			ldap.connectSync();
 		} catch (error) {
-			console.log(error);
+			SystemLogger.error(error);
 			throw new Meteor.Error(error.message);
 		}
 

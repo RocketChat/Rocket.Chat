@@ -14,6 +14,7 @@ import { OEmbedCache, Messages } from '../../models';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -224,7 +225,7 @@ OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 		try {
 			OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			console.error('OEmbed duplicated record', url);
+			SystemLogger.error('OEmbed duplicated record', url);
 		}
 		return data;
 	}
