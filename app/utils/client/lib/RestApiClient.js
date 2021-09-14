@@ -50,10 +50,11 @@ export const APIClient = {
 				query += query === '' ? '?' : '&';
 
 				if (Array.isArray(params[key])) {
-					const joinedArray = params[key].join(`&${ key }[]=`);
+					const encodedParams = params[key].map((value) => encodeURIComponent(value));
+					const joinedArray = encodedParams.join(`&${ key }[]=`);
 					query += `${ key }[]=${ joinedArray }`;
 				} else {
-					query += `${ key }=${ params[key] }`;
+					query += `${ key }=${ encodeURIComponent(params[key]) }`;
 				}
 			});
 		}
