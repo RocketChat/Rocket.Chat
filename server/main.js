@@ -76,6 +76,7 @@ import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
+import './stream/logQueue';
 import './stream/streamBroadcast';
 
 import './features/EmailInbox/index';
