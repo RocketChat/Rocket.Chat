@@ -11,7 +11,7 @@ import { Logger } from '../../logger';
 import { Users } from '../../models';
 import { isURL } from '../../utils/lib/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
-import { EnterpriseOAuthHelpers } from '../../../ee/server/oAuth/helpers';
+import { callbacks } from '../../callbacks/server';
 
 const logger = new Logger('CustomOAuth');
 
@@ -21,7 +21,6 @@ const BeforeUpdateOrCreateUserFromExternalService = [];
 export class CustomOAuth {
 	constructor(name, options) {
 		logger.debug('Init CustomOAuth', name, options);
-
 		this.name = name;
 		if (!Match.test(this.name, String)) {
 			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
@@ -40,7 +39,6 @@ export class CustomOAuth {
 		if (Meteor.release) {
 			this.userAgent += `/${ Meteor.release }`;
 		}
-
 		Accounts.oauth.registerService(this.name);
 		this.registerService();
 		this.addHookToProcessUser();
@@ -86,14 +84,14 @@ export class CustomOAuth {
 		this.accessTokenParam = options.accessTokenParam;
 		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
 
-		if (this.mapChannels) {
-			const channelsMap = (options.channelsMap || '{}').trim();
-			try {
-				this.channelsMap = JSON.parse(channelsMap);
-			} catch (err) {
-				logger.error(`Unexpected error : ${ err.message }`);
-			}
-		}
+		// if (this.mapChannels) {
+		// 	const channelsMap = (options.channelsMap || '{}').trim();
+		// 	try {
+		// 		this.channelsMap = JSON.parse(channelsMap);
+		// 	} catch (err) {
+		// 		logger.error(`Unexpected error : ${ err.message }`);
+		// 	}
+		// }
 
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
@@ -313,7 +311,6 @@ export class CustomOAuth {
 	getAvatarUrl(data) {
 		try {
 			const value = fromTemplate(this.avatarField, data);
-			console.log(`get avatar url: ${ value }`);
 			if (!value) {
 				logger.debug(`Avatar field "${ this.avatarField }" not found in data`, data);
 			}
@@ -330,6 +327,9 @@ export class CustomOAuth {
 
 	addHookToProcessUser() {
 		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData/* , options*/) => {
+			console.log('service data');
+			console.log(serviceData);
+			callbacks.run('beforeProcessOAuthUser', serviceName);
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -347,13 +347,13 @@ export class CustomOAuth {
 					return;
 				}
 
-				if (this.mergeRoles) {
-					EnterpriseOAuthHelpers.updateRolesFromSSO(user, serviceData, this.rolesClaim);
-				}
+				// if (this.mergeRoles) {
+				// 	EnterpriseOAuthHelpers.updateRolesFromSSO(user, serviceData, this.rolesClaim);
+				// }
 
-				if (this.mapChannels) {
-					EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
-				}
+				// if (this.mapChannels) {
+				// 	EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, serviceData, this.groupsClaim, this.channelsMap, this.channelsAdmin);
+				// }
 
 				// User already created or merged and has identical name as before
 				if (user.services && user.services[serviceName] && user.services[serviceName].id === serviceData.id && user.name === serviceData.name) {
@@ -393,13 +393,13 @@ export class CustomOAuth {
 				user.name = user.services[this.name].name;
 			}
 
-			if (this.mergeRoles) {
-				user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(user.services[this.name], this.rolesClaim);
-			}
+			// if (this.mergeRoles) {
+			// 	user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(user.services[this.name], this.rolesClaim);
+			// }
 
-			if (this.mapChannels) {
-				EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
-			}
+			// if (this.mapChannels) {
+			// 	EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
+			// }
 
 			return true;
 		});

@@ -12,3 +12,4 @@ import '../app/livechat-enterprise/server/index';
 import '../app/settings/server/index';
 import '../app/teams-mention/server/index';
 import './api';
+import './oAuth';
