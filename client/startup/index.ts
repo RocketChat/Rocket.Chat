@@ -15,6 +15,7 @@ import './readReceipt';
 import './renderMessage';
 import './renderNotification';
 import './roomObserve';
+import './rootUrlChange';
 import './routes';
 import './setupWizard';
 import './slashCommands';

@@ -2,16 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import toastr from 'toastr';
 
-import { t } from '../../../utils';
-import { settings } from '../../../settings';
-import { hasRole } from '../../../authorization';
-import { Roles } from '../../../models/client';
-import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import UrlChangeModal from '../../../../client/components/UrlChangeModal';
-import { isSyncReady } from '../../../../client/lib/userData';
+import { hasRole } from '../../app/authorization/client';
+import { Roles } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
+import { t } from '../../app/utils/client';
+import UrlChangeModal from '../components/UrlChangeModal';
+import { imperativeModal } from '../lib/imperativeModal';
+import { isSyncReady } from '../lib/userData';
 
-Meteor.startup(function() {
-	Tracker.autorun(function(c) {
+Meteor.startup(() => {
+	Tracker.autorun((c) => {
 		if (!Meteor.userId()) {
 			return;
 		}
@@ -29,11 +29,11 @@ Meteor.startup(function() {
 			return;
 		}
 
-		const currentUrl = location.origin + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-		if (__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
-			const confirm = () => {
+		const currentUrl = location.origin + window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
+		if (window.__meteor_runtime_config__.ROOT_URL.replace(/\/$/, '') !== currentUrl) {
+			const confirm = (): void => {
 				imperativeModal.close();
-				Meteor.call('saveSetting', 'Site_Url', currentUrl, function() {
+				Meteor.call('saveSetting', 'Site_Url', currentUrl, () => {
 					toastr.success(t('Saved'));
 				});
 			};
