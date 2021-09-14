@@ -402,7 +402,7 @@ describe('[Roles]', function() {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleId: usersScopedRole._id,
+					roleName: usersScopedRole.name,
 					username: login.user,
 				})
 				.expect('Content-Type', 'application/json')
@@ -421,7 +421,7 @@ describe('[Roles]', function() {
 			request.post(api('roles.removeUserFromRole'))
 				.set(credentials)
 				.send({
-					roleId: subscriptionsScopedRole._id,
+					roleName: subscriptionsScopedRole.name,
 					username: login.user,
 					scope: 'GENERAL',
 				})
