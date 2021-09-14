@@ -24,7 +24,7 @@ function UsersPage() {
 			return;
 		}
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers) {
+		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
 			usersRoute.push({});
 		}
 	}, [context, seatsCap, usersRoute]);

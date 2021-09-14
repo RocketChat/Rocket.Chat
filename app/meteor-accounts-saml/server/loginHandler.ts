@@ -4,6 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { SAMLUtils } from './lib/Utils';
 import { SAML } from './lib/SAML';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
@@ -17,7 +18,7 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 	}
 
 	const loginResult = SAML.retrieveCredential(loginRequest.credentialToken);
-	SAMLUtils.log(`RESULT :${ JSON.stringify(loginResult) }`);
+	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
 		return makeError('No matching login attempt found');
@@ -31,8 +32,8 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
 
 		return SAML.insertOrUpdateSAMLUser(userObject);
-	} catch (error) {
-		console.error(error);
+	} catch (error: any) {
+		SystemLogger.error(error);
 
 		let message = error.toString();
 		let errorCode = '';

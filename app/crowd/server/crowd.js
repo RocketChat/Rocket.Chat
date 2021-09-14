@@ -12,7 +12,7 @@ import { hasRole } from '../../authorization';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
-const logger = new Logger('CROWD', {});
+const logger = new Logger('CROWD');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {

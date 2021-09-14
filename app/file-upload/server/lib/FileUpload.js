@@ -28,6 +28,7 @@ import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -235,7 +236,7 @@ export const FileUpload = {
 				.then(Meteor.bindEnvironment(({ data, info }) => {
 					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
 						if (err != null) {
-							console.error(err);
+							SystemLogger.error(err);
 						}
 
 						this.getCollection().direct.update({ _id: file._id }, {
@@ -317,7 +318,7 @@ export const FileUpload = {
 		const s = sharp(tmpFile);
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
-				console.error(err);
+				SystemLogger.error(err);
 				return fut.return();
 			}
 
@@ -344,7 +345,7 @@ export const FileUpload = {
 							}));
 						}));
 					})).catch((err) => {
-						console.error(err);
+						SystemLogger.error(err);
 						fut.return();
 					});
 			};
@@ -431,7 +432,7 @@ export const FileUpload = {
 
 	getStoreByName(handlerName) {
 		if (this.handlers[handlerName] == null) {
-			console.error(`Upload handler "${ handlerName }" does not exists`);
+			SystemLogger.error(`Upload handler "${ handlerName }" does not exists`);
 		}
 		return this.handlers[handlerName];
 	},
@@ -460,6 +461,8 @@ export const FileUpload = {
 
 		store.copy(file, buffer);
 	},
+
+	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
 
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);

@@ -16,7 +16,6 @@ const logger = new Logger('LoginProtection');
 export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
-		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
 	}
@@ -24,7 +23,6 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 	// to avoid issues when "fname" is presented in the UI, check if the name matches it as well
 	const room = await Rooms.findOneByNameOrFname(channelToNotify);
 	if (!room) {
-		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided doesn\'t exists');
 		return;
 	}

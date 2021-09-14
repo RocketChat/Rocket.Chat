@@ -7,18 +7,12 @@ import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { addOAuthService } from '../functions/addOAuthService';
 
-const logger = new Logger('rocketchat:lib', {
-	methods: {
-		oauth_updated: {
-			type: 'info',
-		},
-	},
-});
+const logger = new Logger('rocketchat:lib');
 
 function _OAuthServicesUpdate() {
 	const services = settings.get(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	services.forEach((service) => {
-		logger.oauth_updated(service.key);
+		logger.info({ oauth_updated: service.key });
 		let serviceName = service.key.replace('Accounts_OAuth_', '');
 		if (serviceName === 'Meteor') {
 			serviceName = 'meteor-developer';
