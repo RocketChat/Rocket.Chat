@@ -981,6 +981,10 @@ settings.addGroup('General', function() {
 		type: 'boolean',
 		alert: 'This_feature_is_currently_in_alpha',
 	});
+	this.add('Out_Of_Office_Enabled', false, {
+		type: 'boolean',
+		public: true,
+	});
 	this.section('UTF8', function() {
 		this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
