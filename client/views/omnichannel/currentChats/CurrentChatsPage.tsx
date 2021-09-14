@@ -1,12 +1,13 @@
 import React, { Dispatch, FC, Key, memo, ReactElement, ReactNode, SetStateAction } from 'react';
 
 import { IOmnichannelRoom } from '../../../../definition/IRoom';
+import { Serialized } from '../../../../definition/Serialized';
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
 import FilterByText from './FilterByText';
 
 type CurrentChatsPageData = {
-	rooms: IOmnichannelRoom[];
+	rooms: Serialized<IOmnichannelRoom>[];
 	count: number;
 	offset: number;
 	total: number;

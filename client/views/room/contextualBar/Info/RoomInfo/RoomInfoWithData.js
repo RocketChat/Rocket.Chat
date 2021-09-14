@@ -13,7 +13,7 @@ import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import WarningModal from '../../../../admin/apps/WarningModal';
 import { useTabBarClose } from '../../../providers/ToolboxProvider';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';

@@ -13,9 +13,8 @@ const newInquirySound = () => {
 	const userId = Meteor.userId();
 	const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 	const newRoomNotification = getUserPreference(userId, 'newRoomNotification');
-	const audioNotificationValue = getUserPreference(userId, 'audioNotifications');
 
-	if (audioNotificationValue !== 'none') {
+	if (newRoomNotification !== 'none') {
 		CustomSounds.play(newRoomNotification, {
 			volume: Number((audioVolume / 100).toPrecision(2)),
 		});

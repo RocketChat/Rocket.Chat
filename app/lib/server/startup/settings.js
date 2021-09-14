@@ -259,24 +259,6 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Notification_RequireInteraction',
 			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
-		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
@@ -295,7 +277,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
+		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
