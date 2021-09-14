@@ -22,40 +22,54 @@ API.v1.addRoute('livechat/room', {
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 
-		check(this.queryParams, extraCheckParams);
-
-		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
-
-		const guest = findGuest(token);
-		if (!guest) {
-			throw new Meteor.Error('invalid-token');
-		}
-
-		let room;
-		if (!roomId) {
-			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
-			if (room) {
-				return API.v1.success({ room, newRoom: false });
+		try {
+			check(this.queryParams, extraCheckParams);
+	
+			const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+	
+			const guest = findGuest(token);
+			if (!guest) {
+				throw new Meteor.Error('invalid-token');
 			}
-
+	
+			let room;		
 			let agent;
+			let newRoom = false;
 			const agentObj = agentId && findAgent(agentId);
 			if (agentObj) {
 				const { username } = agentObj;
 				agent = { agentId, username };
 			}
-
-			const rid = Random.id();
-			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
-			return API.v1.success(room);
+	
+			function createRoom(customRoomId) {
+				const rid = customRoomId || Random.id();
+				newRoom = true
+				room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			}
+	
+			function success() {
+				return API.v1.success({room, newRoom});
+			}
+	
+			if (!roomId) {
+				room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+				if (room) {
+					return success()
+				}
+				createRoom();
+				return success()
+			}
+	
+			room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+	
+			if (!room) {
+				createRoom(roomId);			
+			}
+			
+			return success()
+		} catch(e) {
+			return API.v1.failure(e);
 		}
-
-		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
-		}
-
-		return API.v1.success({ room, newRoom: false });
 	},
 });
 
