@@ -7,7 +7,7 @@ export const logger = new Logger('OAuth');
 
 // TODO ---> add types to all static methods
 export class EnterpriseOAuthHelpers {
-	static mapSSOGroupsToChannels(user: any, identity: any, groupClaimName: any, channelsMap: any, channelsAdmin: any): void {
+	static mapSSOGroupsToChannels(user: Record<string, any>, identity: Record<string, any>, groupClaimName: string, channelsMap: Record<string, any> | undefined, channelsAdmin: string): void {
 		if (user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
@@ -35,7 +35,7 @@ export class EnterpriseOAuthHelpers {
 		}
 	}
 
-	static updateRolesFromSSO(user: any, identity: any, roleClaimName: any): any {
+	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string): void {
 		if (user && identity && roleClaimName) {
 			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
 
@@ -60,13 +60,12 @@ export class EnterpriseOAuthHelpers {
 	}
 
 	// Returns list of roles from SSO identity
-	static mapRolesFromSSO(identity: any, roleClaimName: any): any {
+	static mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): any {
 		let roles = [];
 
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				// TODO: add types
 				roles = identity[roleClaimName].filter((val: any) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
 			}
 		}

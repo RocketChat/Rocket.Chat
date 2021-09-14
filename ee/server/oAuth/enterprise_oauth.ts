@@ -6,9 +6,15 @@ import { callbacks } from '../../../app/callbacks/server';
 import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
 
-interface IProcessEEOAuthUser {
+interface IUserService {
 	serviceName: string;
 	serviceData: Record<string, any>;
+	user: Record<string, any>;
+}
+
+interface IUserIdentity {
+	serviceName: string;
+	identity: Record<string, any>;
 	user: Record<string, any>;
 }
 
@@ -34,7 +40,7 @@ function getOAuthSettings(serviceName: string): ISettings {
 	};
 }
 
-function getChannelsMap(channelsMap: string): Record<string, any> | void {
+function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 	channelsMap = (channelsMap || '{}').trim();
 
 	try {
@@ -44,14 +50,17 @@ function getChannelsMap(channelsMap: string): Record<string, any> | void {
 	}
 }
 
-// TODO: rename auth to something meaningful
 onLicense('oAuth-enterprise', () => {
-	callbacks.add('afterOAuthUserHook', (auth: IProcessEEOAuthUser) => {
+	callbacks.add('afterOAuthUserHook', (auth: IUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
 
 		const settings = getOAuthSettings(auth.serviceName);
 
-		const channelsMap = getChannelsMap(settings.channelsMap);
+		let channelsMap;
+
+		if (settings.mapChannels) {
+			getChannelsMap(settings.channelsMap);
+		}
 
 		if (settings.mergeRoles) {
 			EnterpriseOAuthHelpers.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim);
@@ -62,19 +71,23 @@ onLicense('oAuth-enterprise', () => {
 		}
 	});
 
-	callbacks.add('afterValidateNewOAuthUser', (auth: IProcessEEOAuthUser) => {
+	callbacks.add('afterValidateNewOAuthUser', (auth: IUserIdentity) => {
 		auth.serviceName = capitalize(auth.serviceName);
 
 		const settings = getOAuthSettings(auth.serviceName);
 
-		const channelsMap = getChannelsMap(settings.channelsMap);
+		let channelsMap;
+		if (settings.mapChannels) {
+			channelsMap = getChannelsMap(settings.channelsMap);
+		}
+		console.log('channels map: ', channelsMap);
 
 		if (settings.mergeRoles) {
-			auth.user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(auth.user.services[auth.serviceName], settings.rolesClaim);
+			auth.user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 		}
 
 		if (settings.mapChannels) {
-			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.user.services[auth.serviceName], settings.groupsClaim, channelsMap, settings.channelsAdmin);
+			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 	});
 });

@@ -84,16 +84,6 @@ export class CustomOAuth {
 		this.accessTokenParam = options.accessTokenParam;
 		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
 
-		// if (this.mapChannels) {
-		// 	const channelsMap = (options.channelsMap || '{}').trim();
-		// 	try {
-		// 		this.channelsMap = JSON.parse(channelsMap);
-		// 	} catch (err) {
-		// 		logger.error(`Unexpected error : ${ err.message }`);
-		// 	}
-		// }
-
-
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
@@ -384,14 +374,7 @@ export class CustomOAuth {
 				user.name = user.services[this.name].name;
 			}
 
-			// if (this.mergeRoles) {
-			// 	user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(user.services[this.name], this.rolesClaim);
-			// }
-
-			// if (this.mapChannels) {
-			// 	EnterpriseOAuthHelpers.mapSSOGroupsToChannels(user, user.services[this.name], this.groupsClaim, this.channelsMap, this.channelsAdmin);
-			// }
-			callbacks.run('afterProcessOAuthUser', { serviceName: user.services[this.name], user });
+			callbacks.run('afterValidateNewOAuthUser', { identity: user.services[this.name], serviceName: this.name, user });
 
 
 			return true;
