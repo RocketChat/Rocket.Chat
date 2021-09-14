@@ -77,8 +77,6 @@ export class CustomOAuth {
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
-		this.mergeRoles = options.mergeRoles || false;
-		this.mapChannels = options.mapChannels || false;
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.groupsClaim = options.groupsClaim || 'groups';
 		this.accessTokenParam = options.accessTokenParam;
@@ -375,7 +373,6 @@ export class CustomOAuth {
 			}
 
 			callbacks.run('afterValidateNewOAuthUser', { identity: user.services[this.name], serviceName: this.name, user });
-
 
 			return true;
 		});

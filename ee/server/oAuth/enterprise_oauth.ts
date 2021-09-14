@@ -80,7 +80,6 @@ onLicense('oAuth-enterprise', () => {
 		if (settings.mapChannels) {
 			channelsMap = getChannelsMap(settings.channelsMap);
 		}
-		console.log('channels map: ', channelsMap);
 
 		if (settings.mergeRoles) {
 			auth.user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(auth.identity, settings.rolesClaim);

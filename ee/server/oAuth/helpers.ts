@@ -5,7 +5,6 @@ import { Logger } from '../../../app/logger/server';
 
 export const logger = new Logger('OAuth');
 
-// TODO ---> add types to all static methods
 export class EnterpriseOAuthHelpers {
 	static mapSSOGroupsToChannels(user: Record<string, any>, identity: Record<string, any>, groupClaimName: string, channelsMap: Record<string, any> | undefined, channelsAdmin: string): void {
 		if (user && identity && groupClaimName) {
@@ -45,14 +44,14 @@ export class EnterpriseOAuthHelpers {
 
 			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val));
 
-			// loop through roles that user has that sso doesnt have and remove
+			// loop through roles that user has that sso doesnt have and remove each one
 			toRemove.forEach(function(role: any) {
 				removeUserFromRoles(user._id, role);
 			});
 
 			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val));
 
-			// loop through roles sso has that user doesnt and add
+			// loop through sso roles and add the new ones
 			toAdd.forEach(function(role: any) {
 				addUserRoles(user._id, role);
 			});
