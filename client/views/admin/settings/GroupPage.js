@@ -13,7 +13,14 @@ import { useTranslation, useLoadLanguage } from '../../../contexts/TranslationCo
 import { useUser } from '../../../contexts/UserContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
-function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription }) {
+function GroupPage({
+	children,
+	headerButtons = undefined,
+	_id,
+	i18nLabel,
+	i18nDescription = undefined,
+	tabs,
+}) {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
 			() => ({
@@ -135,6 +142,8 @@ function GroupPage({ children, headerButtons, _id, i18nLabel, i18nDescription })
 					{headerButtons}
 				</ButtonGroup>
 			</Page.Header>
+
+			{tabs}
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>

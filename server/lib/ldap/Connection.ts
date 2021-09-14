@@ -69,6 +69,12 @@ export class LDAPConnection {
 			searchPageSize: settings.getAs<number>('LDAP_Search_Page_Size'),
 			searchSizeLimit: settings.getAs<number>('LDAP_Search_Size_Limit'),
 			uniqueIdentifierField: settings.getAs<string>('LDAP_Unique_Identifier_Field'),
+			groupFilterEnabled: settings.getAs<boolean>('LDAP_Group_Filter_Enable'),
+			groupFilterObjectClass: settings.getAs<string>('LDAP_Group_Filter_ObjectClass'),
+			groupFilterGroupIdAttribute: settings.getAs<string>('LDAP_Group_Filter_Group_Id_Attribute'),
+			groupFilterGroupMemberAttribute: settings.getAs<string>('LDAP_Group_Filter_Group_Member_Attribute'),
+			groupFilterGroupMemberFormat: settings.getAs<string>('LDAP_Group_Filter_Group_Member_Format'),
+			groupFilterGroupName: settings.getAs<string>('LDAP_Group_Filter_Group_Name'),
 		};
 	}
 
@@ -316,6 +322,41 @@ export class LDAPConnection {
 		}
 
 		return `(&${ filter.join('') })`;
+	}
+
+	public async isUserAcceptedByGroupFilter(username: string, userdn: string): Promise<boolean> {
+		if (!this.options.groupFilterEnabled) {
+			return true;
+		}
+
+		const filter = ['(&'];
+
+		if (this.options.groupFilterObjectClass !== '') {
+			filter.push(`(objectclass=${ this.options.groupFilterObjectClass })`);
+		}
+
+		if (this.options.groupFilterGroupMemberAttribute !== '') {
+			filter.push(`(${ this.options.groupFilterGroupMemberAttribute }=${ this.options.groupFilterGroupMemberFormat })`);
+		}
+
+		if (this.options.groupFilterGroupIdAttribute !== '') {
+			filter.push(`(${ this.options.groupFilterGroupIdAttribute }=${ this.options.groupFilterGroupName })`);
+		}
+		filter.push(')');
+
+		const searchOptions: ldapjs.SearchOptions = {
+			filter: filter.join('').replace(/#{username}/g, username).replace(/#{userdn}/g, userdn),
+			scope: 'sub',
+		};
+
+		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
+
+		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+
+		if (!Array.isArray(result) || result.length === 0) {
+			return false;
+		}
+		return true;
 	}
 
 	protected addUserFilters(filters: string[], _username: string): void {

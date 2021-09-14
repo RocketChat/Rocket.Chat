@@ -88,6 +88,7 @@ interface IUpdateOperator {
 	};
 	$unset?: {
 		section?: 1;
+		tab?: 1;
 	};
 }
 
@@ -103,9 +104,15 @@ type addSectionCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
 }) => void;
 
-type addGroupCallback = (this: {
+type addTabCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
 	section(section: string, cb: addSectionCallback): void;
+}) => void;
+
+type addGroupCallback = (this: {
+	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
+	section(section: string, cb: addSectionCallback, tab?: string): void;
+	tab(tab: string, cb: addTabCallback): void;
 }) => void;
 
 class Settings extends SettingsBase {
@@ -115,20 +122,13 @@ class Settings extends SettingsBase {
 
 	private initialLoad = false;
 
-	/*
-	* Add a setting
-	*/
-	add(_id: string, value: SettingValue, { editor, ...options }: ISettingAddOptions = {}): boolean {
-		if (!_id || value == null) {
-			return false;
-		}
+	private validateOptions(_id: string, value: SettingValue, options: ISettingAddOptions): void {
 		if (options.group && this._sorter[options.group] == null) {
 			this._sorter[options.group] = 0;
 		}
 		options.packageValue = value;
 		options.valueSource = 'packageValue';
 		options.hidden = options.hidden || false;
-		options.blocked = options.blocked || false;
 		options.requiredOnWizard = options.requiredOnWizard || false;
 		options.secret = options.secret || false;
 		options.enterprise = options.enterprise || false;
@@ -144,8 +144,8 @@ class Settings extends SettingsBase {
 		if (options.enableQuery != null) {
 			options.enableQuery = JSON.stringify(options.enableQuery);
 		}
-		if (options.i18nLabel == null) {
-			options.i18nLabel = _id;
+		if (options.displayQuery != null) {
+			options.displayQuery = JSON.stringify(options.displayQuery);
 		}
 		if (options.i18nDescription == null) {
 			options.i18nDescription = `${ _id }_Description`;
@@ -161,6 +161,21 @@ class Settings extends SettingsBase {
 		}
 		if (options.autocomplete == null) {
 			options.autocomplete = true;
+		}
+	}
+
+	/*
+	* Add a setting
+	*/
+	add(_id: string, value: SettingValue, { editor, ...options }: ISettingAddOptions = {}): boolean {
+		if (!_id || value == null) {
+			return false;
+		}
+
+		this.validateOptions(_id, value, options);
+		options.blocked = options.blocked || false;
+		if (options.i18nLabel == null) {
+			options.i18nLabel = _id;
 		}
 
 		value = overrideSetting(_id, value, options);
@@ -194,6 +209,15 @@ class Settings extends SettingsBase {
 				section: 1,
 			};
 			query.section = {
+				$exists: false,
+			};
+		}
+
+		if (!options.tab) {
+			updateOperations.$unset = {
+				tab: 1,
+			};
+			query.tab = {
 				$exists: false,
 			};
 		}
@@ -286,12 +310,28 @@ class Settings extends SettingsBase {
 					options.group = _id;
 					return this.add(id, value, options);
 				},
-				section: (section: string, cb: addSectionCallback) => cb.call({
+				section: (section: string, cb: addSectionCallback, tab?: string) => cb.call({
 					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
 						options.group = _id;
 						options.section = section;
+						options.tab = tab;
 						return this.add(id, value, options);
 					},
+				}),
+				tab: (tab: string, cb: addTabCallback) => cb.call({
+					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
+						options.group = _id;
+						options.tab = tab;
+						return this.add(id, value, options);
+					},
+					section: (section: string, cb: addSectionCallback) => cb.call({
+						add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
+							options.group = _id;
+							options.section = section;
+							options.tab = tab;
+							return this.add(id, value, options);
+						},
+					}),
 				}),
 			});
 		}

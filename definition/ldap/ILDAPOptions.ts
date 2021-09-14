@@ -20,4 +20,10 @@ export interface ILDAPConnectionOptions {
 	searchPageSize: number;
 	searchSizeLimit: number;
 	uniqueIdentifierField: string;
+	groupFilterEnabled: boolean;
+	groupFilterObjectClass: string;
+	groupFilterGroupIdAttribute: string;
+	groupFilterGroupMemberAttribute: string;
+	groupFilterGroupMemberFormat: string;
+	groupFilterGroupName: string;
 }

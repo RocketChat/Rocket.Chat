@@ -132,7 +132,9 @@ export class LDAPManager {
 				}
 			}
 
-			callbacks.run('onFindLDAPUser', { ldapUser, escapedUsername }, ldap);
+			if (!await ldap.isUserAcceptedByGroupFilter(escapedUsername, ldapUser.dn)) {
+				throw new Error('User not in a valid group');
+			}
 
 			return ldapUser;
 		} catch (error) {
@@ -166,11 +168,16 @@ export class LDAPManager {
 
 	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
 		logger.info('running onLDAPLogin');
-		callbacks.run('onLDAPLogin', { user, ldapUser, password }, ldap);
 
 		if (user) {
+			if (settings.getAs<boolean>('LDAP_Login_Fallback') === true && typeof password === 'string' && password.trim() !== '') {
+				Accounts.setPassword(user._id, password, { logout: false });
+			}
+
 			this.syncUserAvatar(user, ldapUser);
 		}
+
+		callbacks.run('onLDAPLogin', { user, ldapUser }, ldap);
 	}
 
 	private static loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): LDAPLoginResult {

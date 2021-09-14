@@ -1,12 +1,13 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { SettingId, ISetting, GroupId, SectionName } from '../../definition/ISetting';
+import { SettingId, ISetting, GroupId, SectionName, TabId } from '../../definition/ISetting';
 
 export type SettingsContextQuery = {
 	readonly _id?: SettingId[];
 	readonly group?: GroupId;
 	readonly section?: SectionName;
+	readonly tab?: TabId;
 };
 
 export type SettingsContextValue = {

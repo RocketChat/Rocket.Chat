@@ -2,6 +2,7 @@ import { FilterQuery } from 'mongodb';
 
 export type SettingId = string;
 export type GroupId = SettingId;
+export type TabId = SettingId;
 export type SectionName = string;
 
 export enum SettingEditor {
@@ -25,6 +26,7 @@ export interface ISetting {
 	env: boolean;
 	group?: GroupId;
 	section?: SectionName;
+	tab?: TabId;
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;

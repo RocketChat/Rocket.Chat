@@ -38,8 +38,7 @@ settings.get('LDAP_Enable', (_key, value) => {
 
 		// LDAP users can still login locally when login fallback is enabled
 		if (login.user.services?.ldap?.id) {
-			login.allowed = false;
-			callbacks.run('onBlockedLDAPLoginAttempt', login);
+			login.allowed = !!settings.getAs<boolean>('LDAP_Login_Fallback');
 		}
 
 		return login;

@@ -83,20 +83,17 @@ export class LDAPEEManager extends LDAPManager {
 		await this.syncUserTeams(ldap, user, isNewRecord);
 	}
 
-	private static async isUserInGroup(ldap: LDAPConnection, { dn, username }: { dn: string; username: string }, groupName: string): Promise<boolean> {
-		const syncUserRolesFilter = settings.getAs<string>('LDAP_Sync_User_Data_Groups_Filter').trim();
-		const syncUserRolesBaseDN = settings.getAs<string>('LDAP_Sync_User_Data_Groups_BaseDN').trim();
-
-		if (!syncUserRolesFilter || !syncUserRolesBaseDN) {
+	private static async isUserInGroup(ldap: LDAPConnection, baseDN: string, filter: string, { dn, username }: { dn: string; username: string }, groupName: string): Promise<boolean> {
+		if (!filter || !baseDN) {
 			logger.error('Please setup LDAP Group Filter and LDAP Group BaseDN in LDAP Settings.');
 			return false;
 		}
 		const searchOptions: ldapjs.SearchOptions = {
-			filter: syncUserRolesFilter.replace(/#{username}/g, username).replace(/#{groupName}/g, groupName).replace(/#{userdn}/g, dn),
+			filter: filter.replace(/#{username}/g, username).replace(/#{groupName}/g, groupName).replace(/#{userdn}/g, dn),
 			scope: 'sub',
 		};
 
-		const result = await ldap.searchRaw(syncUserRolesBaseDN, searchOptions);
+		const result = await ldap.searchRaw(baseDN, searchOptions);
 		if (!Array.isArray(result) || result.length === 0) {
 			logger.debug(`${ username } is not in ${ groupName } group!!!`);
 		} else {
@@ -132,9 +129,11 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async syncUserRoles(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
-		const syncUserRoles = settings.getAs<boolean>('LDAP_Sync_User_Data_Groups');
-		const syncUserRolesAutoRemove = settings.getAs<boolean>('LDAP_Sync_User_Data_Groups_AutoRemove');
-		const syncUserRolesFieldMap = settings.getAs<string>('LDAP_Sync_User_Data_GroupsMap').trim();
+		const syncUserRoles = settings.getAs<boolean>('LDAP_Sync_User_Data_Roles');
+		const syncUserRolesAutoRemove = settings.getAs<boolean>('LDAP_Sync_User_Data_Roles_AutoRemove');
+		const syncUserRolesFieldMap = settings.getAs<string>('LDAP_Sync_User_Data_RolesMap').trim();
+		const syncUserRolesFilter = settings.getAs<string>('LDAP_Sync_User_Data_Roles_Filter').trim();
+		const syncUserRolesBaseDN = settings.getAs<string>('LDAP_Sync_User_Data_Roles_BaseDN').trim();
 
 		if (!syncUserRoles || !syncUserRolesFieldMap) {
 			logger.debug('not syncing user roles');
@@ -172,7 +171,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
 
-			if (await this.isUserInGroup(ldap, { dn, username }, ldapField)) {
+			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
 				if (Roles.addUserRoles(user._id, roleName)) {
 					this.broadcastRoleChange('added', roleName, user._id, username);
 				}
@@ -193,7 +192,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static createRoomForSync(channel: string): IRoom | undefined {
 		logger.info(`Channel '${ channel }' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get('LDAP_Sync_User_Data_Groups_AutoChannels_Admin') || '';
+		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, { customFields: { ldap: true } } as any) as unknown as ICreatedRoom | undefined;
 		if (!room?.rid) {
@@ -206,9 +205,11 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
-		const syncUserChannels = settings.getAs<boolean>('LDAP_Sync_User_Data_Groups_AutoChannels');
-		const syncUserChannelsRemove = settings.getAs<boolean>('LDAP_Sync_User_Data_Groups_Enforce_AutoChannels');
-		const syncUserChannelsFieldMap = settings.getAs<string>('LDAP_Sync_User_Data_Groups_AutoChannelsMap').trim();
+		const syncUserChannels = settings.getAs<boolean>('LDAP_Sync_User_Data_Channels');
+		const syncUserChannelsRemove = settings.getAs<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels');
+		const syncUserChannelsFieldMap = settings.getAs<string>('LDAP_Sync_User_Data_ChannelsMap').trim();
+		const syncUserChannelsFilter = settings.getAs<string>('LDAP_Sync_User_Data_Channels_Filter').trim();
+		const syncUserChannelsBaseDN = settings.getAs<string>('LDAP_Sync_User_Data_Channels_BaseDN').trim();
 
 		if (!syncUserChannels || !syncUserChannelsFieldMap) {
 			logger.debug('not syncing groups to channels');
@@ -232,7 +233,7 @@ export class LDAPEEManager extends LDAPManager {
 					return;
 				}
 
-				if (await this.isUserInGroup(ldap, { dn, username }, ldapField)) {
+				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapField)) {
 					if (room.teamMain) {
 						logger.error(`Can't add user to channel ${ channel } because it is a team.`);
 					} else {

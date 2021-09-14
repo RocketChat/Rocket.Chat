@@ -79,5 +79,6 @@ import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
 import './stream/streamBroadcast';
+import './settings/index';
 
 import './features/EmailInbox/index';

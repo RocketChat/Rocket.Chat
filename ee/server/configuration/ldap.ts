@@ -1,4 +1,3 @@
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Promise } from 'meteor/promise';
 import _ from 'underscore';
@@ -13,8 +12,6 @@ import { callbacks } from '../../../app/callbacks/server';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import type { IImportUser } from '../../../app/importer/server/definitions/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
-import type { ILDAPOnLoginEvent } from '../../../definition/ldap/ILDAPOnLoginEvent';
-import type { ILDAPOnFindUserEvent } from '../../../definition/ldap/ILDAPOnFindUserEvent';
 import { onLicense } from '../../app/license/server';
 
 onLicense('ldap-enterprise', () => {
@@ -53,30 +50,6 @@ onLicense('ldap-enterprise', () => {
 	callbacks.add('getLDAPConnectionClass', function(): typeof LDAPConnection {
 		return LDAPEEConnection;
 	}, callbacks.priority.HIGH, 'replaceLDAPConnectionClass');
-
-	callbacks.add('onLDAPLogin', ({ password, user }: ILDAPOnLoginEvent) => {
-		if (!user) {
-			return;
-		}
-
-		if (settings.get('LDAP_Login_Fallback') === true && typeof password === 'string' && password.trim() !== '') {
-			Accounts.setPassword(user._id, password, { logout: false });
-		}
-	}, callbacks.priority.MEDIUM, 'onLDAPEELogin');
-
-	callbacks.add('findLDAPUser', ({ ldapUser, escapedUsername }: ILDAPOnFindUserEvent, ldap: LDAPConnection) => {
-		if (ldap instanceof LDAPEEConnection) {
-			const ldapEE = ldap as LDAPEEConnection;
-
-			if (!ldapEE.isUserInGroup(escapedUsername, ldapUser.dn)) {
-				throw new Error('User not in a valid group');
-			}
-		}
-	}, callbacks.priority.MEDIUM, 'filterLDAPGroup');
-
-	callbacks.add('onBlockedLDAPLoginAttempt', (login: Record<string, any>) => {
-		login.allowed = !!settings.getAs<boolean>('LDAP_Login_Fallback');
-	}, callbacks.priority.MEDIUM, 'unblockLDAPLoginFallback');
 
 	callbacks.add('mapLDAPUserData', (userData: IImportUser, ldapUser: ILDAPEntry) => {
 		LDAPEEManager.copyCustomFields(ldapUser, userData);
