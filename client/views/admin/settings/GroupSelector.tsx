@@ -4,6 +4,7 @@ import { GroupId } from '../../../../definition/ISetting';
 import { useSettingStructure } from '../../../contexts/SettingsContext';
 import GroupPage from './GroupPage';
 import AssetsGroupPage from './groups/AssetsGroupPage';
+import LDAPGroupPage from './groups/LDAPGroupPage';
 import OAuthGroupPage from './groups/OAuthGroupPage';
 import TabbedGroupPage from './groups/TabbedGroupPage';
 
@@ -24,6 +25,10 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 
 	if (groupId === 'OAuth') {
 		return <OAuthGroupPage {...group} />;
+	}
+
+	if (groupId === 'LDAP') {
+		return <LDAPGroupPage {...group} />;
 	}
 
 	return <TabbedGroupPage {...group} />;
