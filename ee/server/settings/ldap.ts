@@ -24,7 +24,7 @@ settings.addGroup('LDAP', function() {
 			});
 
 			this.add('LDAP_CustomFieldMap', '{}', {
-				type: 'string',
+				type: 'code',
 				multiline: true,
 				enableQuery: [
 					enableQuery,

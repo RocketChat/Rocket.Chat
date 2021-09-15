@@ -10,6 +10,7 @@ settings.addGroup('LDAP', function() {
 
 		this.add('LDAP_Server_Type', 'ad', {
 			type: 'select',
+			public: true,
 			values: [
 				{ key: 'ad', i18nLabel: 'LDAP_Server_Type_AD' },
 				{ key: '', i18nLabel: 'LDAP_Server_Type_Other' },
@@ -82,6 +83,8 @@ settings.addGroup('LDAP', function() {
 			});
 
 			this.add('LDAP_AD_User_Search_Field', 'sAMAccountName', {
+				i18nLabel: 'LDAP_User_Search_Field',
+				i18nDescription: 'LDAP_User_Search_Field_Description',
 				type: 'string',
 				enableQuery,
 				displayQuery: adOnly,
@@ -144,6 +147,8 @@ settings.addGroup('LDAP', function() {
 			this.add('LDAP_AD_Username_Field', 'sAMAccountName', {
 				type: 'string',
 				enableQuery,
+				i18nLabel: 'LDAP_Username_Field',
+				i18nDescription: 'LDAP_Username_Field_Description',
 				displayQuery: adOnly,
 				// public so that it's visible to AccountProfilePage:
 				public: true,
@@ -158,22 +163,30 @@ settings.addGroup('LDAP', function() {
 			});
 
 			this.add('LDAP_AD_Email_Field', 'mail', {
+				i18nLabel: 'LDAP_Email_Field',
+				i18nDescription: 'LDAP_Email_Field_Description',
 				type: 'string',
+				enableQuery,
 				displayQuery: adOnly,
 			});
 
 			this.add('LDAP_Email_Field', 'mail', {
 				type: 'string',
+				enableQuery,
 				displayQuery: ldapOnly,
 			});
 
 			this.add('LDAP_AD_Name_Field', 'cn', {
+				i18nLabel: 'LDAP_Name_Field',
+				i18nDescription: 'LDAP_Name_Field_Description',
 				type: 'string',
+				enableQuery,
 				displayQuery: adOnly,
 			});
 
 			this.add('LDAP_Name_Field', 'cn', {
 				type: 'string',
+				enableQuery,
 				displayQuery: ldapOnly,
 			});
 		});
