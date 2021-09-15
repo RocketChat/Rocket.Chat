@@ -25,11 +25,11 @@ const processString = function(string, date) {
 	}
 };
 
-export const StdOut = new EventEmitter();
+export const StdOut = Object.assign(new EventEmitter(), {
+	queue: [],
+});
 
 const { write } = process.stdout;
-
-const queue = [];
 
 const maxInt = 2147483647;
 let queueSize = 0;
@@ -43,13 +43,13 @@ process.stdout.write = (...args) => {
 		string,
 		ts: date,
 	};
-	queue.push(item);
+	StdOut.queue.push(item);
 
 	queueSize = (queueSize + 1) & maxInt;
 
 	const limit = settings.get('Log_View_Limit') || 1000;
 	if (queueSize > limit) {
-		queue.shift();
+		StdOut.queue.shift();
 	}
 
 	StdOut.emit('write', string, item);
