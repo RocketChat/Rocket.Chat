@@ -11,6 +11,7 @@ settings.addGroup('LDAP', function() {
 		this.add('LDAP_Server_Type', 'ad', {
 			type: 'select',
 			public: true,
+			enableQuery,
 			values: [
 				{ key: 'ad', i18nLabel: 'LDAP_Server_Type_AD' },
 				{ key: '', i18nLabel: 'LDAP_Server_Type_Other' },

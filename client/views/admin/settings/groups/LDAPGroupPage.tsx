@@ -35,9 +35,8 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
-			const data = await testConnection();
-			const args = [data.message].concat(data.params);
-			dispatchToastMessage({ type: 'success', message: t(...args) });
+			const { message } = await testConnection(undefined);
+			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -45,7 +44,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleSyncNowButtonClick = async (): Promise<void> => {
 		try {
-			await testConnection();
+			await testConnection(undefined);
 			modal.open(
 				{
 					title: t('Execute_Synchronization_Now'),
@@ -61,9 +60,8 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 					}
 
 					try {
-						const data = await syncNow();
-						const args = [data.message].concat(data.params);
-						dispatchToastMessage({ type: 'success', message: t(...args) });
+						const { message } = await syncNow(undefined);
+						dispatchToastMessage({ type: 'success', message: t(message) });
 					} catch (error) {
 						dispatchToastMessage({ type: 'error', message: error });
 					}

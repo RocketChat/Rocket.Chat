@@ -14,12 +14,12 @@ import { useUser } from '../../../contexts/UserContext';
 import GroupPageSkeleton from './GroupPageSkeleton';
 
 function GroupPage({
-	children,
+	children = undefined,
 	headerButtons = undefined,
 	_id,
 	i18nLabel,
 	i18nDescription = undefined,
-	tabs,
+	tabs = undefined,
 }) {
 	const changedEditableSettings = useEditableSettings(
 		useMemo(

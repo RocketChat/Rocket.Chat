@@ -1,7 +1,6 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import React, { memo, useState, useMemo } from 'react';
+import React, { ReactNode, memo, useState, useMemo } from 'react';
 
-import type { ISetting } from '../../../../../definition/ISetting';
 import {
 	useEditableSettingsGroupSections,
 	useEditableSettingsGroupTabs,
@@ -11,7 +10,17 @@ import GroupPage from '../GroupPage';
 import Section from '../Section';
 import GenericGroupPage from './GenericGroupPage';
 
-function TabbedGroupPage({ _id, ...group }: ISetting): JSX.Element {
+function TabbedGroupPage({
+	_id,
+	...group
+}: {
+	children?: ReactNode;
+	headerButtons?: ReactNode;
+	_id: string;
+	i18nLabel: string;
+	i18nDescription?: string;
+	tabs?: ReactNode;
+}): JSX.Element {
 	const t = useTranslation();
 	const tabs = useEditableSettingsGroupTabs(_id);
 

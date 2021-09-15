@@ -21,7 +21,6 @@ API.v1.addRoute('ldap.syncNow', { authRequired: true }, {
 
 		return API.v1.success({
 			message: 'Sync_in_progress',
-			params: [],
 		});
 	},
 });

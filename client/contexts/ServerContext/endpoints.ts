@@ -10,6 +10,7 @@ import type { DnsEndpoints } from './endpoints/v1/dns';
 import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
 import type { GroupsEndpoints } from './endpoints/v1/groups';
 import type { ImEndpoints } from './endpoints/v1/im';
+import type { LDAPEndpoints } from './endpoints/v1/ldap';
 import type { OmnichannelEndpoints } from './endpoints/v1/omnichannel';
 import type { RoomsEndpoints } from './endpoints/v1/rooms';
 import type { TeamsEndpoints } from './endpoints/v1/teams';
@@ -24,6 +25,7 @@ type Endpoints = ChatEndpoints &
 	EmojiCustomEndpoints &
 	GroupsEndpoints &
 	ImEndpoints &
+	LDAPEndpoints &
 	RoomsEndpoints &
 	TeamsEndpoints &
 	UsersEndpoints &

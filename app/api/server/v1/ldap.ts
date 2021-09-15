@@ -27,7 +27,6 @@ API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
 
 		return API.v1.success({
 			message: 'Connection_success',
-			params: [],
 		});
 	},
 });

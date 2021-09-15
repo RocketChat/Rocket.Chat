@@ -51,6 +51,8 @@ export class LDAPEEConnection extends LDAPConnection {
 		await super.testConnection();
 
 		await this.maybeBindDN();
+
+		this.disconnect();
 	}
 
 	protected async runBeforeSearch(searchOptions: ldapjs.SearchOptions): Promise<void> {
