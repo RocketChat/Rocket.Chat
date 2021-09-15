@@ -17,6 +17,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	inquiries: { enabled: false },
 	enabled: false,
 	agentAvailable: false,
+	voipCallAvailable: false,
 	showOmnichannelQueueLink: false,
 };
 
@@ -34,6 +35,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const user = useUser() as IOmnichannelAgent;
 
 	const agentAvailable = user?.statusLivechat === 'available';
+	const voipCallAvailable = true; // TODO: use backend check;
 
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
@@ -119,6 +121,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				...emptyContextValue,
 				enabled: true,
 				agentAvailable,
+				voipCallAvailable,
 				routeConfig,
 			};
 		}
@@ -127,6 +130,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			...emptyContextValue,
 			enabled: true,
 			agentAvailable,
+			voipCallAvailable,
 			routeConfig,
 			inquiries: queue
 				? {
@@ -136,7 +140,15 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 		};
-	}, [agentAvailable, enabled, manuallySelected, queue, routeConfig, showOmnichannelQueueLink]);
+	}, [
+		agentAvailable,
+		voipCallAvailable,
+		enabled,
+		manuallySelected,
+		queue,
+		routeConfig,
+		showOmnichannelQueueLink,
+	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
 };

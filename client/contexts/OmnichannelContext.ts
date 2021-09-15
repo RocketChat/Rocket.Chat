@@ -6,6 +6,7 @@ export type OmnichannelContextValue = {
 	inquiries: Inquiries;
 	enabled: boolean;
 	agentAvailable: boolean;
+	voipCallAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
 };
@@ -14,6 +15,7 @@ export const OmnichannelContext = createContext<OmnichannelContextValue>({
 	inquiries: { enabled: false },
 	enabled: false,
 	agentAvailable: false,
+	voipCallAvailable: false,
 	showOmnichannelQueueLink: false,
 });
 
@@ -22,6 +24,7 @@ export const useOmnichannelShowQueueLink = (): boolean => useOmnichannel().showO
 export const useOmnichannelRouteConfig = (): OmichannelRoutingConfig | undefined =>
 	useOmnichannel().routeConfig;
 export const useOmnichannelAgentAvailable = (): boolean => useOmnichannel().agentAvailable;
+export const useOmnichannelVoipCallAvailable = (): boolean => useOmnichannel().voipCallAvailable;
 export const useQueuedInquiries = (): Inquiries => useOmnichannel().inquiries;
 export const useOmnichannelQueueLink = (): string => '/livechat-queue';
 export const useOmnichannelDirectoryLink = (): string => '/omnichannel-directory';
