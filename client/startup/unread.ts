@@ -5,9 +5,10 @@ import { Tracker } from 'meteor/tracker';
 import { Favico } from '../../app/favico/client';
 import { ChatSubscription, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { menu, fireGlobalEvent } from '../../app/ui-utils/client';
+import { menu } from '../../app/ui-utils/client';
 import { getUserPreference } from '../../app/utils/client';
 import { ISubscription } from '../../definition/ISubscription';
+import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>
 	ChatSubscription.find(

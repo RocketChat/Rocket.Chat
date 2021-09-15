@@ -5,7 +5,6 @@ export const getDefaultSubscriptionPref = (userPref) => {
 		desktopNotifications,
 		mobileNotifications,
 		emailNotificationMode,
-		audioNotifications,
 		highlights,
 	} = (userPref.settings && userPref.settings.preferences) || {};
 
@@ -26,11 +25,6 @@ export const getDefaultSubscriptionPref = (userPref) => {
 	if (emailNotificationMode && emailNotificationMode !== 'default') {
 		subscription.emailNotifications = emailNotificationMode;
 		subscription.emailPrefOrigin = 'user';
-	}
-
-	if (audioNotifications && audioNotifications !== 'default') {
-		subscription.audioNotifications = audioNotifications;
-		subscription.audioPrefOrigin = 'user';
 	}
 
 	return subscription;

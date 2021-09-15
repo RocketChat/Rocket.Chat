@@ -7,12 +7,14 @@ import { Template } from 'meteor/templating';
 
 import { t } from '../../utils/client';
 import { chatMessages } from '../../ui';
-import { Layout, popover, fireGlobalEvent, RoomManager } from '../../ui-utils';
+import { popover, RoomManager } from '../../ui-utils';
 import { settings } from '../../settings';
 import { ChatSubscription } from '../../models';
 import './body.html';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 
 Template.body.onRendered(function() {
 	new Clipboard('.clipboard');
@@ -99,7 +101,7 @@ Template.body.onRendered(function() {
 	};
 
 	this.autorun(() => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			$(document.body).on('click', 'a', handleMessageLinkClick);
 		} else {
 			$(document.body).off('click', 'a', handleMessageLinkClick);

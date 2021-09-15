@@ -10,8 +10,8 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
-import { getConfig } from '../../../ui-utils/client/config';
-import { callMethod } from '../../../ui-utils/client/lib/callMethod';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { call } from '../../../../client/lib/utils/call';
 
 const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 	fn(...args, (err, result) => {
@@ -218,7 +218,7 @@ export class CachedCollection extends Emitter {
 	async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await callMethod(this.methodName);
+		const data = await call(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
@@ -318,7 +318,7 @@ export class CachedCollection extends Emitter {
 
 		this.log(`syncing from ${ this.updatedAt }`);
 
-		const data = await callMethod(this.syncMethodName, this.updatedAt);
+		const data = await call(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {
