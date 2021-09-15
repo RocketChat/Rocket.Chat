@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom, CachedChatRoom } from '../../../../models';
-import { call } from '../../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import './livechatReadOnly.html';
 import { APIClient } from '../../../../utils/client';
 import { inquiryDataStream } from '../../lib/stream/inquiry';
@@ -42,7 +42,7 @@ Template.livechatReadOnly.events({
 
 		const inquiry = instance.inquiry.get();
 		const { _id } = inquiry;
-		await call('livechat:takeInquiry', _id, { clientAction: true });
+		await callWithErrorHandling('livechat:takeInquiry', _id, { clientAction: true });
 		instance.loadInquiry(inquiry.rid);
 	},
 
@@ -52,7 +52,7 @@ Template.livechatReadOnly.events({
 
 		const room = instance.room.get();
 
-		await call('livechat:resumeOnHold', room._id, { clientAction: true });
+		await callWithErrorHandling('livechat:resumeOnHold', room._id, { clientAction: true });
 	},
 });
 
@@ -64,7 +64,7 @@ Template.livechatReadOnly.onCreated(function() {
 	this.preparing = new ReactiveVar(true);
 
 	this.updateInquiry = async ({ clientAction, ...inquiry }) => {
-		if (clientAction === 'removed' || !await call('canAccessRoom', inquiry.rid, Meteor.userId())) {
+		if (clientAction === 'removed' || !await callWithErrorHandling('canAccessRoom', inquiry.rid, Meteor.userId())) {
 			// this will force to refresh the room
 			// since the client wont get notified of room changes when chats are on queue (no one assigned)
 			// a better approach should be performed when refactoring these templates to use react

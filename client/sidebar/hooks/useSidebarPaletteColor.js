@@ -1,8 +1,8 @@
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useLayoutEffect, useEffect, useMemo } from 'react';
 
-import { isIE11 } from '../../../app/ui-utils/client/lib/isIE11.js';
 import { useSettings } from '../../contexts/SettingsContext';
+import { isIE11 } from '../../lib/utils/isIE11';
 
 const isInternetExplorer11 = isIE11();
 

@@ -2,10 +2,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { call } from '../../ui-utils/client';
+import { callWithErrorHandling } from '../../../client/lib/utils/callWithErrorHandling';
 import { Messages } from '../../models/client';
-import './messageThread.html';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
+import './messageThread.html';
 
 const findParentMessage = (() => {
 	const waiting = [];
@@ -15,7 +15,7 @@ const findParentMessage = (() => {
 	const getMessages = _.debounce(async function() {
 		const _tmp = [...waiting];
 		waiting.length = 0;
-		resolve(call('getMessages', _tmp));
+		resolve(callWithErrorHandling('getMessages', _tmp));
 		pending = new Promise((r) => { resolve = r; });
 	}, 500);
 
