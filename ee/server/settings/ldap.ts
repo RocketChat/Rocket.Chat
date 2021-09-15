@@ -8,20 +8,11 @@ settings.addGroup('LDAP', function() {
 	];
 	const enterprise = true;
 
-	this.tab('LDAP_1_Connection', function() {
+	this.tab('LDAP_9_Enterprise', function() {
 		this.section('LDAP_Connection_Authentication', function() {
 			this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery, enterprise, invalidValue: false });
 			this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true, enterprise, invalidValue: '' });
 			this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true, enterprise, invalidValue: '' });
-		});
-	});
-
-	this.tab('LDAP_9_Enterprise', function() {
-		this.add('LDAP_Sync_Now', 'ldapSyncNow', {
-			type: 'action',
-			actionText: 'Execute_Synchronization_Now',
-			enterprise,
-			invalidValue: '',
 		});
 
 		this.section('LDAP_DataSync_CustomFields', function() {
