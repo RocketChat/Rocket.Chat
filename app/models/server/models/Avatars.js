@@ -81,32 +81,6 @@ export class Avatars extends Base {
 		return this.update(filter, update);
 	}
 
-	// @TODO deprecated
-	updateFileCompleteByNameAndUserId(name, userId, url) {
-		if (!name) {
-			return;
-		}
-
-		const filter = {
-			name,
-			userId,
-		};
-
-		const update = {
-			$set: {
-				complete: true,
-				uploading: false,
-				progress: 1,
-				url,
-			},
-		};
-
-		if (this.model.direct && this.model.direct.update) {
-			return this.model.direct.update(filter, update);
-		}
-		return this.update(filter, update);
-	}
-
 	deleteFile(fileId) {
 		if (this.model.direct && this.model.direct.remove) {
 			return this.model.direct.remove({ _id: fileId });
