@@ -62,7 +62,7 @@ Migrations.add({
 				const newJson = JSON.stringify(newObject);
 				Settings.upsert({ _id: 'LDAP_CustomFieldMap' }, { $set: { value: newJson } });
 
-				const syncCustomFields = Object.keys(newJson).length > 0 && settings.get('LDAP_Sync_User_Data');
+				const syncCustomFields = Object.keys(newObject).length > 0 && settings.get('LDAP_Sync_User_Data');
 				Settings.upsert({ _id: 'LDAP_Sync_Custom_Fields' }, { $set: { value: syncCustomFields } });
 			}
 		}
