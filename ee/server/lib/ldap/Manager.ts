@@ -8,7 +8,12 @@ import type { IRole } from '../../../../definition/IRole';
 import { IImportUser } from '../../../../app/importer/server/definitions/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Users, Roles, Rooms, Subscriptions } from '../../../../app/models/server';
+import { Roles, Rooms } from '../../../../app/models/server';
+import {
+	Users as UsersRaw,
+	Roles as RolesRaw,
+	Subscriptions as SubscriptionsRaw,
+} from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import type { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -140,11 +145,11 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = Roles.find({}, {
+		const roles = await RolesRaw.find({}, {
 			fields: {
 				_updatedAt: 0,
 			},
-		}).fetch();
+		}).toArray() as Array<IRole>;
 
 		if (!roles) {
 			return;
@@ -241,7 +246,7 @@ export class LDAPEEManager extends LDAPManager {
 						logger.info(`Synced user channel ${ room._id } from LDAP for ${ username }`);
 					}
 				} else if (syncUserChannelsRemove && !room.teamMain) {
-					const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+					const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
 					if (subscription) {
 						removeUserFromRoom(room._id, user);
 					}
@@ -447,11 +452,10 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
-				const users = Users.findLDAPUsers();
-
-				users.forEach(async (user: IUser) => {
+				const users = await UsersRaw.findLDAPUsers();
+				for await (const user of users) {
 					let ldapUser: ILDAPEntry | undefined;
 
 					if (user.services?.ldap?.id) {
@@ -463,12 +467,8 @@ export class LDAPEEManager extends LDAPManager {
 					if (ldapUser) {
 						const userData = this.mapUserData(ldapUser, user.username);
 						converter.addUser(userData);
-					} else {
-						// Do something when the user is not found ?
 					}
-
-					// #ToDo: Sync active state
-				});
+				}
 
 				resolve();
 			} catch (error) {

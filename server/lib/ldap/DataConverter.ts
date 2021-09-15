@@ -3,7 +3,7 @@ import { IImportUser } from '../../../app/importer/server/definitions/IImportUse
 import type { IUser } from '../../../definition/IUser';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { Logger } from '../logger/Logger';
-import { Users } from '../../../app/models/server';
+import { Users } from '../../../app/models/server/raw';
 import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('LDAP Data Converter');
@@ -20,7 +20,7 @@ export class LDAPDataConverter extends VirtualDataConverter {
 
 	findExistingUser(data: IImportUser): IUser | undefined {
 		if (data.services?.ldap?.id) {
-			const importedUser = Users.findOneByLDAPId(data.services.ldap.id, data.services.ldap.idAttribute);
+			const importedUser = Promise.await(Users.findOneByLDAPId(data.services.ldap.id, data.services.ldap.idAttribute));
 			if (importedUser) {
 				return importedUser;
 			}
