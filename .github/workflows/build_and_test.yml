@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
 
@@ -172,7 +172,7 @@ jobs:
         path: /tmp/build
 
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     needs: build
 
     strategy:
@@ -245,7 +245,7 @@ jobs:
         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
-#     runs-on: ubuntu-latest
+#     runs-on: ubuntu-20.04
 #     needs: test
 
 #     steps:
@@ -259,7 +259,7 @@ jobs:
 #         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-image-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
@@ -364,7 +364,7 @@ jobs:
         docker push $IMAGE_NAME
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: test
 
@@ -442,7 +442,7 @@ jobs:
         fi
 
   image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
@@ -519,7 +519,7 @@ jobs:
         docker push ${IMAGE}:develop
 
   services-image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
