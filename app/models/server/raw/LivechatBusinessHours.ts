@@ -2,7 +2,6 @@ import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb
 
 import { BaseRaw } from './BaseRaw';
 import {
-	IBusinessHourWorkHour,
 	ILivechatBusinessHour,
 	LivechatBusinessHourTypes,
 } from '../../../../definition/ILivechatBusinessHour';
@@ -60,20 +59,6 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 			_id: new ObjectId().toHexString(),
 			...{ ts: new Date() },
 			...data,
-		});
-	}
-
-	// TODO: Remove this function after remove the deprecated method livechat:saveOfficeHours
-	async updateDayOfGlobalBusinessHour(day: Omit<IBusinessHourWorkHour, 'code'>): Promise<any> {
-		return this.col.updateOne({
-			type: LivechatBusinessHourTypes.DEFAULT,
-			'workHours.day': day.day,
-		}, {
-			$set: {
-				'workHours.$.start': day.start,
-				'workHours.$.finish': day.finish,
-				'workHours.$.open': day.open,
-			},
 		});
 	}
 

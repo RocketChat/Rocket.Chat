@@ -16,7 +16,7 @@ import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
-import { mapMessageFromApi } from '../../../../client/lib/fromApi';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 
 const subscriptionFields = {};
 
