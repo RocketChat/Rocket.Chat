@@ -1,10 +1,10 @@
 import { CachedCollectionManager } from '../../../../app/ui-cached-collection';
-import { callMethod } from '../../../../app/ui-utils/client/lib/callMethod';
+import { call } from '../../../../client/lib/utils/call';
 
 const allModules = new Promise<Set<string>>((resolve, reject) => {
 	CachedCollectionManager.onLogin(async () => {
 		try {
-			const features: string[] = await callMethod('license:getModules');
+			const features: string[] = await call('license:getModules');
 			resolve(new Set(features));
 		} catch (e) {
 			console.error('Error getting modules', e);
