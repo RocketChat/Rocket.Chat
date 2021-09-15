@@ -13,7 +13,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
-import { StdOut } from '../../../logger/server/streamer';
+import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 API.v1.addRoute('me', { authRequired: true }, {
@@ -195,7 +195,7 @@ API.v1.addRoute('stdout.queue', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'view-logs')) {
 			return API.v1.unauthorized();
 		}
-		return API.v1.success({ queue: StdOut.queue });
+		return API.v1.success({ queue: getLogs() });
 	},
 });
 
