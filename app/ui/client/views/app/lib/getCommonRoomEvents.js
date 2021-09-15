@@ -4,15 +4,13 @@ import { Random } from 'meteor/random';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import {
-	fireGlobalEvent,
 	popover,
-	Layout,
 	MessageAction,
 } from '../../../../../ui-utils/client';
 import {
 	addMessageToList,
 } from '../../../../../ui-utils/client/lib/MessageAction';
-import { call } from '../../../../../ui-utils/client/lib/callMethod';
+import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { promises } from '../../../../../promises/client';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
@@ -21,7 +19,9 @@ import { ChatMessage, Rooms, Messages } from '../../../../../models';
 import { t } from '../../../../../utils/client';
 import { chatMessages } from '../room';
 import { EmojiEvents } from '../../../../../reactions/client/init';
-import { goToRoomById } from '../../../../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
+import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -163,13 +163,13 @@ export const getCommonRoomEvents = () => ({
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('followMessage', { mid: msg._id });
+		callWithErrorHandling('followMessage', { mid: msg._id });
 	},
 	'click .js-unfollow-thread'(e) {
 		e.preventDefault();
 		e.stopPropagation();
 		const { msg } = messageArgs(this);
-		call('unfollowMessage', { mid: msg._id });
+		callWithErrorHandling('unfollowMessage', { mid: msg._id });
 	},
 	'click .js-open-thread'(event) {
 		event.preventDefault();
@@ -259,7 +259,7 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		await call('sendMessage', msgObject);
+		await callWithErrorHandling('sendMessage', msgObject);
 	},
 	'click .message-actions__menu'(e, template) {
 		const messageContext = messageArgs(this);
@@ -311,7 +311,7 @@ export const getCommonRoomEvents = () => ({
 		const { currentTarget: { dataset: { channel, group, username } } } = e;
 
 		if (channel) {
-			if (Layout.isEmbedded()) {
+			if (isLayoutEmbedded()) {
 				fireGlobalEvent('click-mention-link', { path: FlowRouter.path('channel', { name: channel }), channel });
 			}
 			goToRoomById(channel);

@@ -1,13 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { baseURI } from './baseuri';
 import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
-
-export const mountArrayQueryParameters = (label, array) => array.reduce((acc, item) => {
-	acc += `${ label }[]=${ item }&`;
-	return acc;
-}, '');
+import { baseURI } from '../../../../client/lib/baseURI';
 
 export const APIClient = {
 	delete(endpoint, params) {
