@@ -74,6 +74,10 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		}
 	};
 
+	const handleDocumentationClick = (): void => {
+		window.open('https://docs.rocket.chat/guides/administration/administration/settings/ldap');
+	};
+
 	return (
 		<TabbedGroupPage
 			_id={_id}
@@ -92,6 +96,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 							onClick={handleSyncNowButtonClick}
 						/>
 					)}
+					<Button children={t('LDAP_Documentation')} onClick={handleDocumentationClick} />
 				</>
 			}
 		/>

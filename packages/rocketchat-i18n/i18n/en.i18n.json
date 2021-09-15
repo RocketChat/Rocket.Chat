@@ -2414,6 +2414,7 @@
   "Layout_Sidenav_Footer_description": "Footer size is 260 x 70px",
   "Layout_Terms_of_Service": "Terms of Service",
   "LDAP": "LDAP",
+  "LDAP_Documentation": "LDAP Documentation",
   "LDAP_1_Connection": "Connection",
   "LDAP_Connection_Authentication": "Authentication",
   "LDAP_Connection_Encryption": "Encryption",
