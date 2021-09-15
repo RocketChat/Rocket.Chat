@@ -75,11 +75,16 @@ async function runFederation(): Promise<void> {
 }
 
 export function federationCron(SyncedCron: any): void {
-	SyncedCron.add({
-		name: 'Federation',
-		schedule(parser: any) {
-			return parser.cron('* * * * *');
-		},
-		job: runFederation,
+	settings.get('FEDERATION_Enabled', (_, value) => {
+		if (!value) {
+			return SyncedCron.remove('Federation');
+		}
+		SyncedCron.add({
+			name: 'Federation',
+			schedule(parser: any) {
+				return parser.cron('* * * * *');
+			},
+			job: runFederation,
+		});
 	});
 }

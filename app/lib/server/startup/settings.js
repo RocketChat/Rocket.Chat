@@ -3045,5 +3045,3 @@ settings.addGroup('Troubleshoot', function() {
 		alert: 'Troubleshoot_Disable_Workspace_Sync_Alert',
 	});
 });
-
-settings.init();

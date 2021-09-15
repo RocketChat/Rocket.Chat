@@ -1,11 +1,11 @@
 /* eslint no-multi-spaces: 0 */
-import { Meteor } from 'meteor/meteor';
+import Roles from '../../../models/server/models/Roles';
+import Permissions from '../../../models/server/models/Permissions';
+import Settings from '../../../models/server/models/Settings';
+import { settings } from '../../../settings/server';
+import { getSettingPermissionId, CONSTANTS } from '../../lib';
 
-import { Roles, Permissions, Settings } from '../../models/server';
-import { settings } from '../../settings/server';
-import { getSettingPermissionId, CONSTANTS } from '../lib';
-
-Meteor.startup(function() {
+export const upsertPermissions = () => {
 	// Note:
 	// 1.if we need to create a role that can only edit channel message, but not edit group message
 	// then we can define edit-<type>-message instead of edit-message
@@ -172,7 +172,7 @@ Meteor.startup(function() {
 			selector.settingId = settingId;
 		}
 
-		Permissions.find(selector).fetch().forEach(
+		Permissions.find(selector).forEach(
 			function(permission) {
 				previousSettingPermissions[permission._id] = permission;
 			});
@@ -251,4 +251,4 @@ Meteor.startup(function() {
 	};
 
 	settings.onload('*', createPermissionForAddedSetting);
-});
+};

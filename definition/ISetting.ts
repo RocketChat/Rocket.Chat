@@ -19,7 +19,9 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export interface ISetting {
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor;
+
+export interface ISettingBase {
 	_id: SettingId;
 	type: 'boolean' | 'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
 	public: boolean;
@@ -30,8 +32,6 @@ export interface ISetting {
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;
-	editor?: SettingEditor;
-	packageEditor?: SettingEditor;
 	blocked: boolean;
 	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
@@ -52,3 +52,28 @@ export interface ISetting {
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 }
+
+export interface ISettingGroup {
+	_id: string;
+	hidden: boolean;
+	blocked: boolean;
+	ts?: Date;
+	i18nLabel: string;
+	i18nDescription: string;
+	type: 'group';
+}
+
+
+export interface ISettingEnterprise extends ISettingBase {
+	enterprise: true;
+	invalidValue: SettingValue;
+}
+
+export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
+export interface ISettingColor extends ISettingBase {
+	type: 'color';
+	editor: SettingEditor;
+	packageEditor?: SettingEditor;
+}
+
+export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
