@@ -1,10 +1,11 @@
 import React, { memo, useCallback, useEffect } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { menu, SideNav, Layout } from '../../../app/ui-utils/client';
+import { menu, SideNav } from '../../../app/ui-utils/client';
 import Sidebar from '../../components/Sidebar';
 import { useRoutePath, useCurrentRoute } from '../../contexts/RouterContext';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../providers/SettingsProvider';
 import { itemsSubscription } from './sidebarItems';
 
@@ -14,7 +15,7 @@ const AccountSidebar = () => {
 	const items = useSubscription(itemsSubscription);
 
 	const closeFlex = useCallback(() => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			menu.close();
 			return;
 		}

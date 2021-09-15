@@ -4,8 +4,9 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
-import { t, handleError } from '../../utils';
+import { t } from '../../utils';
 import { ChatRoom } from '../../models';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {

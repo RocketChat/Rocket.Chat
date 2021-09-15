@@ -5,40 +5,6 @@ import { hasPermission } from '../../../authorization';
 import { Permissions, Roles } from '../../../models/server';
 import { API } from '../api';
 
-/**
-	This API returns all permissions that exists
-	on the server, with respective roles.
-
-	Method: GET
-	Route: api/v1/permissions
- */
-API.v1.addRoute('permissions', { authRequired: true }, {
-	get() {
-		const warningMessage = 'The endpoint "permissions" is deprecated and will be removed after version v0.69';
-		console.warn(warningMessage);
-
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
-
-		return API.v1.success(result);
-	},
-});
-
-// DEPRECATED
-// TODO: Remove this after three versions have been released. That means at 0.85 this should be gone.
-API.v1.addRoute('permissions.list', { authRequired: true }, {
-	get() {
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
-
-		return API.v1.success(this.deprecationWarning({
-			endpoint: 'permissions.list',
-			versionWillBeRemoved: '0.85',
-			response: {
-				permissions: result,
-			},
-		}));
-	},
-});
-
 API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;

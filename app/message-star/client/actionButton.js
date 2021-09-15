@@ -4,12 +4,12 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 
-import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../models/client';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
