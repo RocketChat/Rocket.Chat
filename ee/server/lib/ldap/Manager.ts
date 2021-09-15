@@ -422,7 +422,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					if (!updateExistingUsers) {
-						const existingUser = this.findExistingLDAPUser(data);
+						const existingUser = Promise.await(this.findExistingLDAPUser(data));
 						if (existingUser) {
 							return;
 						}

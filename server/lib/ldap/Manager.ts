@@ -11,16 +11,14 @@ import { ILDAPUniqueIdentifierField } from '../../../definition/ldap/ILDAPUnique
 import { IUser, /* IUserEmail,*/ LoginUsername } from '../../../definition/IUser';
 import { IImportUser } from '../../../app/importer/server/definitions/IImportUser';
 import { settings } from '../../../app/settings/server';
-import { Users } from '../../../app/models/server';
+import { Users as UsersRaw } from '../../../app/models/server/raw';
 import { LDAPConnection } from './Connection';
 import { LDAPDataConverter } from './DataConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { callbacks } from '../../../app/callbacks/server';
-import { RocketChatFile } from '../../../app/file';
-import { FileUpload } from '../../../app/file-upload/server';
-import { api } from '../../sdk/api';
+import { setUserAvatar } from '../../../app/lib/server/functions';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -44,7 +42,7 @@ export class LDAPManager {
 		}
 
 		const slugifiedUsername = this.slugifyUsername(ldapUser, username);
-		const user = this.findExistingUser(ldapUser, slugifiedUsername);
+		const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
 		if (user) {
 			return this.loginExistingUser(ldap, user, ldapUser, password);
@@ -70,12 +68,12 @@ export class LDAPManager {
 	}
 
 	// This method will only find existing users that are already linked to LDAP
-	protected static findExistingLDAPUser(ldapUser: ILDAPEntry): IUser | undefined {
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
 			logger.info({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
-			return Users.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
+			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 	}
 
@@ -152,7 +150,7 @@ export class LDAPManager {
 		}
 	}
 
-	private static loginNewUserFromLDAP(slugifiedUsername: string, ldapPass: string, ldapUser: ILDAPEntry, ldap: LDAPConnection): LDAPLoginResult {
+	private static async loginNewUserFromLDAP(slugifiedUsername: string, ldapPass: string, ldapUser: ILDAPEntry, ldap: LDAPConnection): Promise<LDAPLoginResult> {
 		logger.info({ msg: 'User does not exist, creating', username: slugifiedUsername });
 
 		let username: string | undefined;
@@ -165,8 +163,8 @@ export class LDAPManager {
 		return this.addLdapUser(ldapUser, username, ldapPass, ldap);
 	}
 
-	private static addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): LDAPLoginResult {
-		const user = this.syncUserForLogin(ldapUser, undefined, username);
+	private static async addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): Promise<LDAPLoginResult> {
+		const user = await this.syncUserForLogin(ldapUser, undefined, username);
 
 		this.onLogin(ldapUser, user, password, ldap);
 		if (user) {
@@ -190,7 +188,7 @@ export class LDAPManager {
 		callbacks.run('onLDAPLogin', { user, ldapUser }, ldap);
 	}
 
-	private static loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): LDAPLoginResult {
+	private static async loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): Promise<LDAPLoginResult> {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
 			logger.info('User exists without "ldap: true"');
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
@@ -199,7 +197,7 @@ export class LDAPManager {
 		logger.info('Logging user');
 
 		const syncData = settings.getAs<boolean>('LDAP_Update_Data_On_Login');
-		const updatedUser = (syncData && this.syncUserForLogin(ldapUser, user)) || user;
+		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
 		this.onLogin(ldapUser, updatedUser, password, ldap);
 		return {
@@ -207,7 +205,7 @@ export class LDAPManager {
 		};
 	}
 
-	private static syncUserForLogin(ldapUser: ILDAPEntry, existingUser?: IUser, usedUsername?: string | undefined): IUser | undefined {
+	private static async syncUserForLogin(ldapUser: ILDAPEntry, existingUser?: IUser, usedUsername?: string | undefined): Promise<IUser | undefined> {
 		logger.info('Syncing user data');
 		if (existingUser) {
 			logger.debug({ msg: 'user', user: { email: existingUser.emails, _id: existingUser._id } });
@@ -343,13 +341,13 @@ export class LDAPManager {
 	}
 
 	// This method will find existing users by LDAP id or by username.
-	private static findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): IUser | undefined {
-		const user = this.findExistingLDAPUser(ldapUser);
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
+		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;
 		}
 
-		return Users.findOneByUsername(slugifiedUsername);
+		return UsersRaw.findOneByUsername(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): Record<string, any> | undefined {
@@ -400,30 +398,6 @@ export class LDAPManager {
 		}
 
 		logger.info('Syncing user avatar');
-
-		Meteor.defer(() => {
-			const rs = RocketChatFile.bufferToStream(avatar);
-			const fileStore = FileUpload.getStore('Avatars');
-			fileStore.deleteByName(user.username);
-
-			const file = {
-				userId: user._id,
-				type: 'image/jpeg',
-				size: avatar.length,
-			};
-
-			Meteor.runAsUser(user._id, () => {
-				fileStore.insert(file, rs, (_err: Error | undefined, result: { etag: string }) => {
-					if (!result) {
-						return;
-					}
-
-					Meteor.setTimeout(function() {
-						Users.setAvatarData(user._id, 'ldap', result.etag);
-						api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
-					}, 500);
-				});
-			});
-		});
+		Meteor.defer(() => Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest')));
 	}
 }
