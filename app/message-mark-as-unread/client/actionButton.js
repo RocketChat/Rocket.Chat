@@ -3,9 +3,9 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { RoomManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { ChatSubscription } from '../../models';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
