@@ -59,6 +59,16 @@ export class LDAPManager {
 		return new ClassRef();
 	}
 
+	public static async testConnection(): Promise<void> {
+		try {
+			const ldap = LDAPManager.getNewConnection();
+			await ldap.testConnection();
+		} catch (error) {
+			connLogger.error(error);
+			throw new Meteor.Error(error.message);
+		}
+	}
+
 	// This method will only find existing users that are already linked to LDAP
 	protected static findExistingLDAPUser(ldapUser: ILDAPEntry): IUser | undefined {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);

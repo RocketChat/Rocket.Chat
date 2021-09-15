@@ -35,8 +35,6 @@ settings.addGroup('LDAP', function() {
 			enableQuery,
 		});
 
-		// this.add('LDAP_Test_Connection', 'ldapTestConnection', { type: 'action', actionText: 'Test_Connection' });
-
 		this.section('LDAP_Connection_Encryption', function() {
 			this.add('LDAP_Encryption', 'plain', {
 				type: 'select',

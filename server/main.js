@@ -40,7 +40,6 @@ import './methods/getTotalChannels';
 import './methods/getUsersOfRoom';
 import './methods/hideRoom';
 import './methods/ignoreUser';
-import './methods/ldapTestConnection';
 import './methods/loadHistory';
 import './methods/loadLocale';
 import './methods/loadMissedMessages';

@@ -14,4 +14,3 @@ import './api';
 import './settings/index';
 import './services2/ldap/service';
 import './configuration/ldap';
-import './methods/ldapSyncNow';
