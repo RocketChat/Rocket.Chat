@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../app/models/client';
-import { canDeleteMessage } from '../../app/utils/client';
+import { canDeleteMessage } from '../lib/utils/canDeleteMessage';
 
 Meteor.methods({
 	deleteMessage(msg) {

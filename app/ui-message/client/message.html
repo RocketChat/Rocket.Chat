@@ -26,7 +26,7 @@
 				{{#if msg.emoji}}
 					<button aria-label="{{msg.u.username}}" class="thumb user-card-message" data-username="{{msg.u.username}}">
 						<div class="avatar">
-							{{> renderEmoji msg.emoji}}
+							{{{renderEmoji msg.emoji}}}
 						</div>
 					</button>
 				{{else}}
