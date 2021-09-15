@@ -63,8 +63,8 @@ function UsersPage() {
 		usersRoute.push({ context: 'invite' });
 	};
 
-	const [params] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort] = useState([
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState([
 		['name', 'asc'],
 		['usernames', 'asc'],
 	]);
@@ -89,7 +89,14 @@ function UsersPage() {
 					</ButtonGroup>
 				</Page.Header>
 				<Page.Content>
-					<UsersTable users={data.users} total={data.total} />
+					<UsersTable
+						users={data.users}
+						total={data.total}
+						params={params}
+						onChangeParams={setParams}
+						sort={sort}
+						onChangeSort={setSort}
+					/>
 				</Page.Content>
 			</Page>
 			{context && (
