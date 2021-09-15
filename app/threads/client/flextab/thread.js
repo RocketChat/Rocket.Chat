@@ -8,7 +8,7 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { chatMessages, ChatMessages } from '../../../ui';
-import { call, keyCodes } from '../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { messageContext } from '../../../ui-utils/client/lib/messageContext';
 import { upsertMessageBulk } from '../../../ui-utils/client/lib/RoomHistoryManager';
 import { Messages } from '../../../models';
@@ -20,6 +20,7 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
 import './messageBoxFollow';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 
 const sort = { ts: 1 };
 
@@ -243,7 +244,7 @@ Template.thread.onCreated(async function() {
 
 		this.state.set('loading', true);
 
-		const messages = await call('getThreadMessages', { tmid });
+		const messages = await callWithErrorHandling('getThreadMessages', { tmid });
 
 		upsertMessageBulk({ msgs: messages }, this.Threads);
 

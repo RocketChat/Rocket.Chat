@@ -7,7 +7,7 @@ import ScrollableContentWrapper from '../../../../components/ScrollableContentWr
 import VerticalBar from '../../../../components/VerticalBar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { goToRoomById } from '../../../../lib/goToRoomById';
+import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';
 

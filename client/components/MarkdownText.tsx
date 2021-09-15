@@ -3,7 +3,7 @@ import dompurify from 'dompurify';
 import marked from 'marked';
 import React, { ComponentProps, FC, useMemo } from 'react';
 
-import { renderMessageEmoji } from '../lib/renderMessageEmoji';
+import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
 	content: string;
