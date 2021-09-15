@@ -5,7 +5,7 @@ import mem from 'mem';
 
 import { Subscriptions, Messages } from '../../../models';
 import { hasPermission } from '../../../authorization';
-import { call } from '../../../ui-utils/client';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 let userLanguage = 'en';
 let username = '';
@@ -76,8 +76,8 @@ export const AutoTranslate = {
 			c.stop();
 
 			[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-				call('autoTranslate.getProviderUiMetadata'),
-				call('autoTranslate.getSupportedLanguages', 'en'),
+				callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
+				callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
 			]);
 		});
 

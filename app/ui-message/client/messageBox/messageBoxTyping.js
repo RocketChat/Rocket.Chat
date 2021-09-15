@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 
 import { MsgTyping } from '../../../ui';
 import { t } from '../../../utils';
-import { getConfig } from '../../../ui-utils/client/config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import './messageBoxTyping.html';
 
 const maxUsernames = parseInt(getConfig('max-usernames-typing')) || 4;

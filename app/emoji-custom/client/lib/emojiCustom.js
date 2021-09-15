@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -25,8 +24,6 @@ export const getEmojiUrlFromName = function(name, extension) {
 	const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 	return `${ path }/emoji-custom/${ encodeURIComponent(name) }.${ extension }?_dc=${ random }`;
 };
-
-Blaze.registerHelper('emojiUrlFromName', getEmojiUrlFromName);
 
 export const deleteEmojiCustom = function(emojiData) {
 	delete emoji.list[`:${ emojiData.name }:`];
