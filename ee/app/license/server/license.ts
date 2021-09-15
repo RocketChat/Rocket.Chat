@@ -4,6 +4,12 @@ import { Users } from '../../../../app/models/server';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
+import {
+	enableDangerBanner,
+	disableDangerBannerDiscardingDismissal,
+	enableWarningBanner,
+	disableWarningBannerDiscardingDismissal,
+} from './maxSeatsBanners';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -343,6 +349,30 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 
 	return modules.concat(modulesFromBundles);
 }
+
+export const handleMaxSeatsBanners = (): void => {
+	const maxActiveUsers = getMaxActiveUsers();
+	const activeUsers = Users.getActiveLocalUserCount();
+
+	// callback runs before user is added, so we should add the user
+	// that is being created to the current value.
+	const ratio = activeUsers / maxActiveUsers;
+	const seatsLeft = maxActiveUsers - activeUsers;
+
+	if (ratio < 0.8 || ratio >= 1) {
+		disableWarningBannerDiscardingDismissal();
+	} else {
+		enableWarningBanner(seatsLeft);
+	}
+
+	if (ratio < 1) {
+		disableDangerBannerDiscardingDismissal();
+	} else {
+		enableDangerBanner();
+	}
+};
+
+onValidateLicenses(handleMaxSeatsBanners);
 
 export interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;

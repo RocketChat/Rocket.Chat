@@ -28,6 +28,25 @@ export class BannerService extends ServiceClass implements IBannerService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
+	async getById(bannerId: string): Promise<null | IBanner> {
+		return this.Banners.findOneById(bannerId);
+	}
+
+	async discardDismissal(bannerId: string): Promise<boolean> {
+		const result = await this.Banners.findOneById(bannerId);
+
+		if (!result) {
+			return false;
+		}
+
+		const { _id, ...banner } = result;
+
+		const snapshot = await this.create({ ...banner, snapshot: _id, active: false }); // create a snapshot
+
+		await this.BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
+		return true;
+	}
+
 	async create(doc: Optional<IBanner, '_id'>): Promise<IBanner> {
 		const bannerId = doc._id || uuidv4();
 
@@ -119,10 +138,9 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		const { _id, ...banner } = result;
 
-		const snapshot = await this.create({ ...banner, snapshot: _id }); // create a snapshot
-
+		// TODO deprecate this
 		if (!preserveDismiss) {
-			await this.BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
+			this.discardDismissal(bannerId);
 		}
 
 		this.Banners.update({ _id }, { ...banner, ...doc, active: true }); // reenable the banner
