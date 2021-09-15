@@ -2,10 +2,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { DateFormat } from '../../../lib';
 import { roomTypes, getURL } from '../../../utils';
 import { Subscriptions } from '../../../models';
 import { getUserAvatarURL as getAvatarUrl } from '../../../utils/lib/getUserAvatarURL';
+import { formatTime } from '../../../../client/lib/utils/formatTime';
+import { formatDate } from '../../../../client/lib/utils/formatDate';
 
 const getDMUrl = (username) => getURL(`/direct/${ username }`);
 
@@ -116,10 +117,10 @@ Template.ChatpalSearchSingleMessage.helpers({
 	},
 
 	time() {
-		return DateFormat.formatTime(this.created);
+		return formatTime(this.created);
 	},
 	date() {
-		return DateFormat.formatDate(this.created);
+		return formatDate(this.created);
 	},
 	getAvatarUrl,
 });

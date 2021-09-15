@@ -10,10 +10,10 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
-import { renderMessageBody } from '../../../../client/lib/renderMessageBody';
-import { getConfig } from '../config';
+import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
-import { call } from './callMethod';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';
 
@@ -190,7 +190,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		}
 
 		const showMessageInMainThread = getUserPreference(Meteor.userId(), 'showMessageInMainThread', false);
-		const result = await call('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, showMessageInMainThread);
 
 		this.unqueue();
 
@@ -269,7 +269,7 @@ export const RoomHistoryManager = new class extends Emitter {
 		const { ts } = lastMessage;
 
 		if (ts) {
-			const result = await call('loadNextMessages', rid, ts, limit);
+			const result = await callWithErrorHandling('loadNextMessages', rid, ts, limit);
 			upsertMessageBulk({
 				msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'),
 				subscription,
