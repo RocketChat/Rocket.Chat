@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import ViewLogs from './ViewLogs';
+import ViewLogsPage from './ViewLogsPage';
 
-export default function ViewLogsRoute() {
+const ViewLogsRoute = (): ReactElement => {
 	const canViewLogs = usePermission('view-logs');
 
 	if (!canViewLogs) {
 		return <NotAuthorizedPage />;
 	}
 
-	return <ViewLogs />;
-}
+	return <ViewLogsPage />;
+};
+
+export default ViewLogsRoute;
