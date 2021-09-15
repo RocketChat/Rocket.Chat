@@ -30,14 +30,12 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		title: voipCallAvailable ? t('Available') : t('Not_Available'),
 		color: voipCallAvailable ? 'success' : undefined,
 		icon: voipCallAvailable ? 'phone' : 'phone-off',
-		...(voipCallAvailable && { success: 1 }),
 	};
 
 	const availableIcon = {
 		title: agentAvailable ? t('Available') : t('Not_Available'),
 		color: agentAvailable ? 'success' : undefined,
 		icon: agentAvailable ? 'message' : 'message-disabled',
-		...(agentAvailable && { success: 1 }),
 	};
 
 	const directoryIcon = {
