@@ -175,7 +175,6 @@ export class ImportDataConverter {
 			return;
 		}
 
-		// #ToDo: This only works on mongo 3.6+, if we don't deprecate 3.4 on the ldap release, this won't work.
 		updateData.$set['emails.$[].verified'] = true;
 	}
 
@@ -351,7 +350,7 @@ export class ImportDataConverter {
 					afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
-				console.error(e);
+				this._logger.error(e);
 				this.saveError(_id, e);
 			}
 		});
@@ -793,7 +792,7 @@ export class ImportDataConverter {
 				roomData._id = roomInfo.rid;
 			});
 		} catch (e) {
-			this._logger.warn('Failed to create new room', roomData.name, members);
+			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);
 			throw e;
 		}
