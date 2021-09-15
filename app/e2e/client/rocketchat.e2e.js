@@ -25,7 +25,7 @@ import { call } from '../../ui-utils';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
-import { waitUntilFind } from '../../utils/client/lib/waitUntilFind';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import SaveE2EPasswordModal from './SaveE2EPasswordModal';
 import EnterE2EPasswordModal from './EnterE2EPasswordModal';

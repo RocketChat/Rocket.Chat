@@ -8,7 +8,7 @@ import { settings } from '../../settings';
 import { Logger } from '../../logger';
 
 
-const logger = new Logger('CORS', {});
+const logger = new Logger('CORS');
 
 // Deprecated setting
 let Support_Cordova_App = false;

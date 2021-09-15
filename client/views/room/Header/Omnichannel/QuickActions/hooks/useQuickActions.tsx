@@ -5,7 +5,6 @@ import React, { useCallback, useState, useEffect } from 'react';
 import toastr from 'toastr';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
-import { handleError } from '../../../../../../../app/utils/client';
 import { IOmnichannelRoom } from '../../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -20,6 +19,7 @@ import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext
 import { useSetting } from '../../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../../contexts/UserContext';
+import { handleError } from '../../../../../../lib/utils/handleError';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 
@@ -194,7 +194,7 @@ export const useQuickActions = (
 
 	const handleOnHoldChat = useCallback(async () => {
 		try {
-			await onHoldChat({ roomId: rid } as any);
+			await onHoldChat({ roomId: rid });
 			closeModal();
 			toastr.success(t('Chat_On_Hold_Successfully'));
 		} catch (error) {

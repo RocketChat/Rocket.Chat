@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import mem from 'mem';
 
 import * as federationErrors from '../functions/errors';
-import { logger } from './logger';
+import { dnsLogger } from './logger';
 import { isFederationEnabled } from './isFederationEnabled';
 import { federationRequest } from './http';
 
@@ -26,7 +26,7 @@ export function registerWithHub(peerDomain, url, publicKey) {
 
 		return true;
 	} catch (err) {
-		logger.dns.error(err);
+		dnsLogger.error(err);
 
 		throw federationErrors.peerCouldNotBeRegisteredWithHub('dns.registerWithHub');
 	}
@@ -34,19 +34,19 @@ export function registerWithHub(peerDomain, url, publicKey) {
 
 export function searchHub(peerDomain) {
 	try {
-		logger.dns.debug(`searchHub: peerDomain=${ peerDomain }`);
+		dnsLogger.debug(`searchHub: peerDomain=${ peerDomain }`);
 
 		// If there is no DNS entry for that, get from the Hub
 		const { data: { peer } } = federationRequest('GET', `${ hubUrl }/api/v1/peers?search=${ peerDomain }`);
 
 		if (!peer) {
-			logger.dns.debug(`searchHub: could not find peerDomain=${ peerDomain }`);
+			dnsLogger.debug(`searchHub: could not find peerDomain=${ peerDomain }`);
 			throw federationErrors.peerCouldNotBeRegisteredWithHub('dns.registerWithHub');
 		}
 
 		const { url, public_key: publicKey } = peer;
 
-		logger.dns.debug(`searchHub: found peerDomain=${ peerDomain } url=${ url }`);
+		dnsLogger.debug(`searchHub: found peerDomain=${ peerDomain } url=${ url }`);
 
 		return {
 			url,
@@ -54,7 +54,7 @@ export function searchHub(peerDomain) {
 			publicKey,
 		};
 	} catch (err) {
-		logger.dns.error(err);
+		dnsLogger.error(err);
 
 		throw federationErrors.peerNotFoundUsingDNS('dns.searchHub');
 	}
@@ -65,14 +65,14 @@ export function search(peerDomain) {
 		throw federationErrors.disabled('dns.search');
 	}
 
-	logger.dns.debug(`search: peerDomain=${ peerDomain }`);
+	dnsLogger.debug(`search: peerDomain=${ peerDomain }`);
 
 	let srvEntries = [];
 	let protocol = '';
 
 	// Search by HTTPS first
 	try {
-		logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._https.${ peerDomain }`);
+		dnsLogger.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._https.${ peerDomain }`);
 		srvEntries = memoizedDnsResolveSRV(`_rocketchat._https.${ peerDomain }`);
 		protocol = 'https';
 	} catch (err) {
@@ -82,7 +82,7 @@ export function search(peerDomain) {
 	// If there is not entry, try with http
 	if (!srvEntries.length) {
 		try {
-			logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._http.${ peerDomain }`);
+			dnsLogger.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._http.${ peerDomain }`);
 			srvEntries = memoizedDnsResolveSRV(`_rocketchat._http.${ peerDomain }`);
 			protocol = 'http';
 		} catch (err) {
@@ -93,12 +93,12 @@ export function search(peerDomain) {
 	// If there is not entry, try with tcp
 	if (!srvEntries.length) {
 		try {
-			logger.dns.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._tcp.${ peerDomain }`);
+			dnsLogger.debug(`search: peerDomain=${ peerDomain } srv=_rocketchat._tcp.${ peerDomain }`);
 			srvEntries = memoizedDnsResolveSRV(`_rocketchat._tcp.${ peerDomain }`);
 			protocol = 'https'; // https is the default
 
 			// Then, also try to get the protocol
-			logger.dns.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-tcp-protocol.${ peerDomain }`);
+			dnsLogger.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-tcp-protocol.${ peerDomain }`);
 			protocol = memoizedDnsResolveSRV(`rocketchat-tcp-protocol.${ peerDomain }`);
 			protocol = protocol[0].join('');
 
@@ -115,7 +115,7 @@ export function search(peerDomain) {
 
 	// If there is no entry, throw error
 	if (!srvEntry || !protocol) {
-		logger.dns.debug(`search: could not find valid SRV entry peerDomain=${ peerDomain } srvEntry=${ JSON.stringify(srvEntry) } protocol=${ protocol }`);
+		dnsLogger.debug({ msg: 'search: could not find valid SRV entry', peerDomain, srvEntry, protocol });
 		return searchHub(peerDomain);
 	}
 
@@ -123,7 +123,7 @@ export function search(peerDomain) {
 
 	// Get the public key from the TXT record
 	try {
-		logger.dns.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-public-key.${ peerDomain }`);
+		dnsLogger.debug(`search: peerDomain=${ peerDomain } txt=rocketchat-public-key.${ peerDomain }`);
 		const publicKeyTxtRecords = memoizedDnsResolveTXT(`rocketchat-public-key.${ peerDomain }`);
 
 		// Join the TXT record, that might be split
@@ -134,11 +134,11 @@ export function search(peerDomain) {
 
 	// If there is no entry, throw error
 	if (!publicKey) {
-		logger.dns.debug(`search: could not find TXT entry for peerDomain=${ peerDomain } - SRV entry found`);
+		dnsLogger.debug(`search: could not find TXT entry for peerDomain=${ peerDomain } - SRV entry found`);
 		return searchHub(peerDomain);
 	}
 
-	logger.dns.debug(`search: found peerDomain=${ peerDomain } srvEntry=${ srvEntry.name }:${ srvEntry.port } protocol=${ protocol }`);
+	dnsLogger.debug({ msg: 'search: found', peerDomain, srvEntry, protocol });
 
 	return {
 		url: `${ protocol }://${ srvEntry.name }:${ srvEntry.port }`,

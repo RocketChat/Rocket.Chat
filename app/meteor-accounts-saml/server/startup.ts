@@ -9,7 +9,7 @@ import { addEnterpriseSettings } from '../../../ee/server/authentication/setting
 
 settings.addGroup('SAML');
 
-export const logger = new Logger('steffo:meteor-accounts-saml', {});
+export const logger = new Logger('steffo:meteor-accounts-saml');
 SAMLUtils.setLoggerInstance(logger);
 
 const updateServices = _.debounce(Meteor.bindEnvironment(() => {

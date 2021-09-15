@@ -10,12 +10,6 @@ type AgentsListOptions = {
 	filter: string;
 };
 
-type getAgentsQuery = {
-	text: string;
-	offset: number;
-	count: number;
-};
-
 export const useAgentsList = (
 	options: AgentsListOptions,
 ): {
@@ -39,7 +33,7 @@ export const useAgentsList = (
 				text: options.filter,
 				offset: start,
 				count: end + start,
-			} as getAgentsQuery);
+			});
 			return {
 				items: users.map((agent: any) => {
 					agent._updatedAt = new Date(agent._updatedAt);

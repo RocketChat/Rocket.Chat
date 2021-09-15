@@ -11,7 +11,7 @@ import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
 import { deleteUser } from '../../lib/server/functions';
 
-const logger = new Logger('CROWD', {});
+const logger = new Logger('CROWD');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
