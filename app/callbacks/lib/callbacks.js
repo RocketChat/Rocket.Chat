@@ -11,12 +11,12 @@ let logger = {
 };
 
 if (Meteor.isClient) {
-	const { getConfig } = require('../../ui-utils/client/config');
+	const { getConfig } = require('../../../client/lib/utils/getConfig');
 	timed = [getConfig('debug'), getConfig('timed-callbacks')].includes('true');
 }
 
 if (Meteor.isServer) {
-	const { Logger } = require('../../logger/server/server');
+	const { Logger } = require('../../../server/lib/logger/Logger');
 	logger = new Logger('Callbacks');
 }
 

@@ -6,10 +6,10 @@ import { lazy } from 'react';
 import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
-import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
+import { handleError } from '../lib/utils/handleError';
 
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
