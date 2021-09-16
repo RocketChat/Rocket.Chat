@@ -352,6 +352,13 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 
 export const handleMaxSeatsBanners = (): void => {
 	const maxActiveUsers = getMaxActiveUsers();
+
+	if (!maxActiveUsers) {
+		disableWarningBannerDiscardingDismissal();
+		disableDangerBannerDiscardingDismissal();
+		return;
+	}
+
 	const activeUsers = Users.getActiveLocalUserCount();
 
 	// callback runs before user is added, so we should add the user

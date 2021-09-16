@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../app/callbacks/server';
-import { canAddNewUser, handleMaxSeatsBanners } from '../app/license/server/license';
-import { createSeatsLimitBanners } from '../app/license/server/maxSeatsBanners';
-import { validateUserRoles } from '../app/authorization/server/validateUserRoles';
-import { Users } from '../../app/models/server';
-import type { IUser } from '../../definition/IUser';
+import { callbacks } from '../../../app/callbacks/server';
+import { canAddNewUser, handleMaxSeatsBanners, isEnterprise } from '../../app/license/server/license';
+import { createSeatsLimitBanners } from '../../app/license/server/maxSeatsBanners';
+import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
+import { Users } from '../../../app/models/server';
+import type { IUser } from '../../../definition/IUser';
 
 callbacks.add('onCreateUser', ({ isGuest }: { isGuest: boolean }) => {
 	if (isGuest) {
@@ -69,4 +69,8 @@ callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.M
 
 callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-createSeatsLimitBanners();
+Meteor.startup(() => {
+	if (isEnterprise()) {
+		createSeatsLimitBanners();
+	}
+});

@@ -18,7 +18,7 @@ const makeWarningBanner = (seats: number): IBanner => ({
 		icon: 'warning',
 		variant: 'warning',
 		viewId: '',
-		appId: '',
+		appId: 'banner-core',
 		blocks: [{
 			type: BlockType.SECTION,
 			blockId: 'attention',
@@ -48,7 +48,7 @@ const makeDangerBanner = (): IBanner => ({
 		icon: 'ban',
 		variant: 'danger',
 		viewId: '',
-		appId: '',
+		appId: 'banner-core',
 		blocks: [{
 			type: BlockType.SECTION,
 			blockId: 'attention',
