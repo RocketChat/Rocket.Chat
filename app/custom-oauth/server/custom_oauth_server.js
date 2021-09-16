@@ -80,7 +80,6 @@ export class CustomOAuth {
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
 		this.rolesClaim = options.rolesClaim || 'roles';
-		this.groupsClaim = options.groupsClaim || 'groups';
 		this.accessTokenParam = options.accessTokenParam;
 		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
 
