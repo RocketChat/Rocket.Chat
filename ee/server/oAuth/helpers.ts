@@ -59,13 +59,12 @@ export class EnterpriseOAuthHelpers {
 	}
 
 	// Returns list of roles from SSO identity
-	static mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): any {
-		let roles = [];
-
+	static mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): string[] {
+		let roles: string[] = [];
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter((val: any) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
+				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
 			}
 		}
 
