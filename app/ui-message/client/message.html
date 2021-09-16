@@ -154,7 +154,7 @@
 			<ul class="reactions">
 				{{#each reaction in reactions}}
 					<li data-emoji="{{reaction.emoji}}" {{markUserReaction reaction}}>
-						<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
+						<span class="reaction-emoji">{{{renderEmoji reaction.emoji}}}</span>
 						<span class="reaction-count">{{reaction.count}}</span>
 						<span class="people" style="font-weight: bold">
 							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
