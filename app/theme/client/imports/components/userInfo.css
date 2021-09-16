@@ -39,7 +39,6 @@
 	}
 
 	&__banner {
-
 		position: absolute;
 		z-index: 1;
 		bottom: 50px;
@@ -59,7 +58,6 @@
 	}
 
 	&__avatar {
-
 		position: relative;
 
 		width: 120px;
@@ -75,7 +73,6 @@
 	}
 
 	&__name {
-
 		width: 100%;
 
 		text-align: center;
@@ -161,7 +158,6 @@
 		}
 
 		&--separator {
-
 			margin: 14px 0;
 
 			border-bottom: 1px solid #d7d7d7;
@@ -205,7 +201,6 @@
 	}
 
 	&-details {
-
 		margin-bottom: calc(var(--default-small-padding) * -1);
 		padding: var(--default-padding);
 
@@ -266,7 +261,6 @@
 			align-items: flex-end;
 
 			&-icon {
-
 				color: #444444;
 
 				font-size: 1.25rem;
@@ -288,7 +282,6 @@
 		}
 
 		&-value {
-
 			display: flex;
 
 			margin: 0 0.25rem;

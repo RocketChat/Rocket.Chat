@@ -5,7 +5,6 @@ import React, { useCallback, useState, useEffect } from 'react';
 import toastr from 'toastr';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
-import { handleError } from '../../../../../../../app/utils/client';
 import { IOmnichannelRoom } from '../../../../../../../definition/IRoom';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
@@ -20,6 +19,7 @@ import { useEndpoint, useMethod } from '../../../../../../contexts/ServerContext
 import { useSetting } from '../../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../../../contexts/UserContext';
+import { handleError } from '../../../../../../lib/utils/handleError';
 import { QuickActionsActionConfig, QuickActionsEnum } from '../../../../lib/QuickActions';
 import { useQuickActionsContext } from '../../../../lib/QuickActions/QuickActionsContext';
 
@@ -37,10 +37,14 @@ export const useQuickActions = (
 	const actions = (Array.from(context.actions.values()) as QuickActionsActionConfig[]).sort(
 		(a, b) => (a.order || 0) - (b.order || 0),
 	);
+
+	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
 	const [email, setEmail] = useState('');
+
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
 	const uid = useUserId();
+	const roomLastMessage = room.lastMessage;
 
 	const getVisitorInfo = useEndpoint('GET', 'livechat/visitors.info');
 
@@ -60,7 +64,18 @@ export const useQuickActions = (
 		getVisitorEmail();
 	}, [visitorRoomId, getVisitorEmail]);
 
+	useEffect(() => {
+		if (onHoldModalActive && roomLastMessage?.token) {
+			setModal(null);
+		}
+	}, [roomLastMessage, onHoldModalActive, setModal]);
+
 	const closeModal = useCallback(() => setModal(null), [setModal]);
+
+	const closeOnHoldModal = useCallback(() => {
+		closeModal();
+		setOnHoldModalActive(false);
+	}, [closeModal]);
 
 	const methodReturn = useMethod('livechat:returnAsInquiry');
 
@@ -179,7 +194,7 @@ export const useQuickActions = (
 
 	const handleOnHoldChat = useCallback(async () => {
 		try {
-			await onHoldChat({ roomId: rid } as any);
+			await onHoldChat({ roomId: rid });
 			closeModal();
 			toastr.success(t('Chat_On_Hold_Successfully'));
 		} catch (error) {
@@ -223,7 +238,10 @@ export const useQuickActions = (
 				);
 				break;
 			case QuickActionsEnum.OnHoldChat:
-				setModal(<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeModal} />);
+				setModal(
+					<PlaceChatOnHoldModal onOnHoldChat={handleOnHoldChat} onCancel={closeOnHoldModal} />,
+				);
+				setOnHoldModalActive(true);
 				break;
 			default:
 				break;

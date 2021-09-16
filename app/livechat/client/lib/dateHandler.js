@@ -1,7 +1,6 @@
 import moment from 'moment';
 
-import { handleError } from '../../../utils';
-
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 /**
  *	Check if given daterange matches any of pre-defined options
