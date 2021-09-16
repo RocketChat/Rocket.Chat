@@ -41,18 +41,16 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
 
+const logger = new Logger('Livechat');
+
 const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
 
-	logger: new Logger('Livechat', {
-		sections: {
-			webhook: 'Webhook',
-		},
-	}),
-
+	logger,
+	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -713,7 +711,7 @@ export const Livechat = {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
@@ -732,9 +730,9 @@ export const Livechat = {
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			Livechat.logger.webhook.error(`Response error on ${ 11 - attempts } try ->`, e);
+			Livechat.webhookLogger.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
-			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+			Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(Meteor.bindEnvironment(function() {
 				Livechat.sendRequest(postData, callback, attempts--);
 			}), 10000);
@@ -1096,6 +1094,20 @@ export const Livechat = {
 
 		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, { requestData: { type, visitor, user } });
 		return true;
+	},
+
+	getRoomMessages({ rid }) {
+		check(rid, String);
+
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+
+		if (!isLivechat) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
 	},
 
 	requestTranscript({ rid, email, subject, user }) {

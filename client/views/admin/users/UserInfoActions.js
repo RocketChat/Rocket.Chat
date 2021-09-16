@@ -13,7 +13,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, onDelete }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -35,6 +35,12 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 		setModal();
 		onChange();
 	}, [setModal, onChange]);
+
+	const handleDeletedUser = () => {
+		setModal();
+		userRoute.push({});
+		onDelete();
+	};
 
 	const confirmOwnerChanges =
 		(action, modalProps = {}) =>
@@ -79,7 +85,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 			const result = await deleteUserEndpoint(deleteUserQuery);
 			if (result.success) {
 				setModal(
-					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
+					<GenericModal variant='success' onClose={handleDeletedUser} onConfirm={handleDeletedUser}>
 						{t('User_has_been_deleted')}
 					</GenericModal>,
 				);

@@ -687,15 +687,6 @@ describe('[Administration]', () => {
 					admin.accountsidleTimeLimit.should('have.value', '300');
 				});
 
-				it('it should show the audio notifications select field', () => {
-					admin.accountsAudioNotifications.scrollIntoView();
-					admin.accountsAudioNotifications.should('be.visible');
-				});
-
-				it('the audio notifications field value should be mentions', () => {
-					admin.accountsAudioNotifications.should('have.value', 'mentions');
-				});
-
 				it('it should show the desktop audio notifications select field', () => {
 					admin.accountsDesktopNotifications.scrollIntoView();
 					admin.accountsDesktopNotifications.should('be.visible');

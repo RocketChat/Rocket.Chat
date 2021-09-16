@@ -11,7 +11,7 @@ import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { getUserEmailVerified } from '../../../../lib/getUserEmailVerified';
+import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 import UserInfo from './UserInfo';
 import UserActions from './actions/UserActions';
 

@@ -62,14 +62,6 @@
 		content: "";
 	}
 
-	&:first-child {
-		margin-top: 4px;
-	}
-
-	&:last-child {
-		margin-bottom: 4px;
-	}
-
 	&:first-child::before {
 		border-radius: 2px 2px 0 0;
 	}
