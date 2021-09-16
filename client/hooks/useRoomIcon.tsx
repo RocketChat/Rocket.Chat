@@ -34,7 +34,7 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 					sms: 'mobile',
 					app: 'headset', // TODO: use app icon
 					other: 'headset',
-				}[omnichannelRoom.source?.type] || 'headset';
+				}[omnichannelRoom.source?.type as string] || 'headset';
 
 			return {
 				name: icon,
