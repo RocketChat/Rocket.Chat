@@ -4,10 +4,8 @@ import React, { ReactElement, ReactNode } from 'react';
 import Line from './Line';
 import Wrapper from './Wrapper';
 
-function BurgerIcon({ children, open }: { children?: ReactNode; open: string }): ReactElement {
+const BurgerIcon = ({ children, open }: { children?: ReactNode; open?: boolean }): ReactElement => {
 	const isReducedMotionPreferred = usePrefersReducedMotion();
-
-	console.log(open);
 
 	return (
 		<Wrapper>
@@ -17,6 +15,6 @@ function BurgerIcon({ children, open }: { children?: ReactNode; open: string }):
 			{children}
 		</Wrapper>
 	);
-}
+};
 
 export default BurgerIcon;
