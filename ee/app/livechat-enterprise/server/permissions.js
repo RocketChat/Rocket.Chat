@@ -22,7 +22,7 @@ export const createPermissions = () => {
 
 	// VOIP permissions
 	// allows to hook on an ongoing call and listen
-	Permissions.create('ghost-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]);
+	Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]);
 	// allows to perform an outgoing voip call
-	Permissions.create('start-voip-calls', [adminRole, livechatManagerRole]);
+	Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]);
 };
