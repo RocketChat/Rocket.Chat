@@ -21,7 +21,7 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
-import { goToRoomById } from '../../../lib/goToRoomById';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
 
