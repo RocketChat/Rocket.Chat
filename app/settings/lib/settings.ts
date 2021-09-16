@@ -17,32 +17,34 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
-	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback?: SettingCallback): SettingComposedValue<T>[];
+	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback: SettingCallback): void;
 
-	public get<T extends SettingValue = SettingValue>(_id: string, callback?: SettingCallback): T | undefined;
+	public get<T extends SettingValue = SettingValue>(_id: string, callback: SettingCallback): void;
 
-	public get<T extends SettingValue = SettingValue>(_id: string | RegExp, callback?: SettingCallback): T | SettingComposedValue<T>[] | undefined {
+	public get<T extends SettingValue = SettingValue>(_id: RegExp): SettingComposedValue<T>[];
+
+	public get<T extends SettingValue = SettingValue>(_id: string): T | undefined;
+
+	public get<T extends SettingValue = SettingValue>(_id: string | RegExp, callback?: SettingCallback): T | undefined | SettingComposedValue<T>[] | void {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
 				return;
 			}
 			if (_id === '*') {
-				Object.keys(Meteor.settings).forEach((key) => {
+				return Object.keys(Meteor.settings).forEach((key) => {
 					const value = Meteor.settings[key];
 					callback(key, value);
 				});
-				return;
 			}
 			if (_.isRegExp(_id) && Meteor.settings) {
-				Object.keys(Meteor.settings).forEach((key) => {
+				return Object.keys(Meteor.settings).forEach((key) => {
 					if (!_id.test(key)) {
 						return;
 					}
 					const value = Meteor.settings[key];
 					callback(key, value);
 				});
-				return;
 			}
 
 			if (typeof _id === 'string') {
