@@ -8,6 +8,7 @@ import {
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
@@ -220,6 +221,19 @@ export class AppLivechatBridge extends LivechatBridge {
 		const boundConverter = converter.convertDepartment.bind(converter);
 
 		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+	}
+
+	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
+		this.orch.debugLog(`The App ${ appId } is getting the transcript for livechat room ${ roomId }.`);
+		const messageConverter = this.orch.getConverters()?.get('messages');
+
+		if (!messageConverter) {
+			throw new Error('Could not get the message converter to process livechat room messages');
+		}
+
+		const boundMessageConverter = messageConverter.convertMessage.bind(messageConverter);
+
+		return Livechat.getRoomMessages({ rid: roomId }).map(boundMessageConverter);
 	}
 
 	protected async setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {
