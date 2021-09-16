@@ -269,6 +269,7 @@
 		"react-virtuoso": "^1.2.4",
 		"semver": "^5.7.1",
 		"sharp": "^0.22.1",
+		"sip.js": "^0.20.0",
 		"sodium-native": "^3.2.1",
 		"sodium-plus": "^0.9.0",
 		"speakeasy": "^2.0.0",
