@@ -26,9 +26,10 @@ onLicense('ldap-enterprise', () => {
 			return;
 		}
 
-		if (settings.get('LDAP_Background_Sync_Interval')) {
+		const schedule = settings.get<string>('LDAP_Background_Sync_Interval');
+		if (schedule) {
 			logger.info('Enabling LDAP Background Sync');
-			cronJobs.add(jobName, settings.getAs<string>('LDAP_Background_Sync_Interval'), () => Promise.await(LDAPEE.sync()), 'text');
+			cronJobs.add(jobName, schedule, () => Promise.await(LDAPEE.sync()), 'text');
 		}
 	}), 500);
 

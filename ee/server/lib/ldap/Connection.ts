@@ -14,9 +14,9 @@ export class LDAPEEConnection extends LDAPConnection {
 		super();
 
 		this.eeOptions = {
-			authentication: settings.getAs<boolean>('LDAP_Authentication'),
-			authenticationUserDN: settings.getAs<string>('LDAP_Authentication_UserDN'),
-			authenticationPassword: settings.getAs<string>('LDAP_Authentication_Password'),
+			authentication: settings.get<boolean>('LDAP_Authentication') ?? false,
+			authenticationUserDN: settings.get<string>('LDAP_Authentication_UserDN') ?? '',
+			authenticationPassword: settings.get<string>('LDAP_Authentication_Password') ?? '',
 		};
 	}
 
@@ -51,8 +51,6 @@ export class LDAPEEConnection extends LDAPConnection {
 		await super.testConnection();
 
 		await this.maybeBindDN();
-
-		this.disconnect();
 	}
 
 	protected async runBeforeSearch(searchOptions: ldapjs.SearchOptions): Promise<void> {

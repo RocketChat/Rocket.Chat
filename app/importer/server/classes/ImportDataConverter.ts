@@ -205,12 +205,12 @@ export class ImportDataConverter {
 	updateUserId(_id: string, userData: IImportUser): void {
 		const updateData: Record<string, any> = {
 			$set: {
-				statusText: userData.statusText || undefined,
 				roles: userData.roles || ['user'],
 				type: userData.type || 'user',
-				bio: userData.bio || undefined,
-				name: userData.name || undefined,
-				ldap: !!userData.services?.ldap || undefined,
+				...userData.statusText && { statusText: userData.statusText },
+				...userData.bio && { bio: userData.bio },
+				...userData.name && { name: userData.name },
+				...userData.services?.ldap && { ldap: true },
 			},
 		};
 

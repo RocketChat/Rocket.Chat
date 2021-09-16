@@ -30,7 +30,7 @@ Migrations.add({
 
 		let fieldMap;
 		try {
-			fieldMap = JSON.parse(settings.getAs<string>('LDAP_Sync_User_Data_FieldMap'));
+			fieldMap = JSON.parse(settings.get<string>('LDAP_Sync_User_Data_FieldMap') ?? '');
 		} catch (_error) {
 			// Ignore any parsing errors;
 		}

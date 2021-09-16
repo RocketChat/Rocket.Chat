@@ -9,7 +9,6 @@ export class LDAPEEService extends ServiceClass implements ILDAPEEService {
 	protected name = 'ldap-enterprise';
 
 	async sync(): Promise<void> {
-		console.log('EE SYNC');
 		return LDAPEEManager.sync();
 	}
 }

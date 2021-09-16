@@ -3,7 +3,7 @@ export type LDAPEncryptionType = 'plain' | 'tls' | 'ssl';
 export type LDAPSearchScope = 'base' | 'one' | 'sub';
 
 export interface ILDAPConnectionOptions {
-	host: string;
+	host?: string;
 	port: number;
 	reconnect: boolean;
 	internalLogLevel: LDAPLogLevel;
@@ -11,7 +11,7 @@ export interface ILDAPConnectionOptions {
 	connectionTimeout: number;
 	idleTimeout: number;
 	encryption: LDAPEncryptionType;
-	caCert: string;
+	caCert?: string;
 	rejectUnauthorized: boolean;
 	baseDN: string;
 	userSearchFilter: string;
@@ -19,11 +19,11 @@ export interface ILDAPConnectionOptions {
 	userSearchField: string;
 	searchPageSize: number;
 	searchSizeLimit: number;
-	uniqueIdentifierField: string;
+	uniqueIdentifierField?: string;
 	groupFilterEnabled: boolean;
-	groupFilterObjectClass: string;
-	groupFilterGroupIdAttribute: string;
-	groupFilterGroupMemberAttribute: string;
-	groupFilterGroupMemberFormat: string;
-	groupFilterGroupName: string;
+	groupFilterObjectClass?: string;
+	groupFilterGroupIdAttribute?: string;
+	groupFilterGroupMemberAttribute?: string;
+	groupFilterGroupMemberFormat?: string;
+	groupFilterGroupName?: string;
 }

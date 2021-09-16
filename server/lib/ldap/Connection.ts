@@ -52,30 +52,37 @@ export class LDAPConnection {
 		this._connectionTimedOut = false;
 
 		this.options = {
-			host: settings.getAs<string>('LDAP_Host'),
-			port: settings.getAs<number>('LDAP_Port'),
-			reconnect: settings.getAs<boolean>('LDAP_Reconnect'),
-			internalLogLevel: settings.getAs<LDAPLogLevel>('LDAP_Internal_Log_Level'),
-			timeout: settings.getAs<number>('LDAP_Timeout'),
-			connectionTimeout: settings.getAs<number>('LDAP_Connect_Timeout'),
-			idleTimeout: settings.getAs<number>('LDAP_Idle_Timeout'),
-			encryption: settings.getAs<LDAPEncryptionType>('LDAP_Encryption'),
-			caCert: settings.getAs<string>('LDAP_CA_Cert'),
-			rejectUnauthorized: settings.getAs<boolean>('LDAP_Reject_Unauthorized') || false,
-			baseDN: settings.getAs<string>('LDAP_BaseDN'),
-			userSearchFilter: settings.getAs<string>('LDAP_User_Search_Filter'),
-			userSearchScope: settings.getAs<LDAPSearchScope>('LDAP_User_Search_Scope'),
-			userSearchField: getLDAPConditionalSetting('LDAP_User_Search_Field') as string,
-			searchPageSize: settings.getAs<number>('LDAP_Search_Page_Size'),
-			searchSizeLimit: settings.getAs<number>('LDAP_Search_Size_Limit'),
-			uniqueIdentifierField: settings.getAs<string>('LDAP_Unique_Identifier_Field'),
-			groupFilterEnabled: settings.getAs<boolean>('LDAP_Group_Filter_Enable'),
-			groupFilterObjectClass: settings.getAs<string>('LDAP_Group_Filter_ObjectClass'),
-			groupFilterGroupIdAttribute: settings.getAs<string>('LDAP_Group_Filter_Group_Id_Attribute'),
-			groupFilterGroupMemberAttribute: settings.getAs<string>('LDAP_Group_Filter_Group_Member_Attribute'),
-			groupFilterGroupMemberFormat: settings.getAs<string>('LDAP_Group_Filter_Group_Member_Format'),
-			groupFilterGroupName: settings.getAs<string>('LDAP_Group_Filter_Group_Name'),
+			host: settings.get<string>('LDAP_Host') ?? '',
+			port: settings.get<number>('LDAP_Port') ?? 389,
+			reconnect: settings.get<boolean>('LDAP_Reconnect') ?? false,
+			internalLogLevel: settings.get<LDAPLogLevel>('LDAP_Internal_Log_Level') ?? 'disabled',
+			timeout: settings.get<number>('LDAP_Timeout') ?? 60000,
+			connectionTimeout: settings.get<number>('LDAP_Connect_Timeout') ?? 1000,
+			idleTimeout: settings.get<number>('LDAP_Idle_Timeout') ?? 1000,
+			encryption: settings.get<LDAPEncryptionType>('LDAP_Encryption') ?? 'plain',
+			caCert: settings.get<string>('LDAP_CA_Cert'),
+			rejectUnauthorized: settings.get<boolean>('LDAP_Reject_Unauthorized') || false,
+			baseDN: settings.get<string>('LDAP_BaseDN') ?? '',
+			userSearchFilter: settings.get<string>('LDAP_User_Search_Filter') ?? '',
+			userSearchScope: settings.get<LDAPSearchScope>('LDAP_User_Search_Scope') ?? 'sub',
+			userSearchField: getLDAPConditionalSetting<string>('LDAP_User_Search_Field') ?? '',
+			searchPageSize: settings.get<number>('LDAP_Search_Page_Size') ?? 250,
+			searchSizeLimit: settings.get<number>('LDAP_Search_Size_Limit') ?? 1000,
+			uniqueIdentifierField: settings.get<string>('LDAP_Unique_Identifier_Field'),
+			groupFilterEnabled: settings.get<boolean>('LDAP_Group_Filter_Enable') ?? false,
+			groupFilterObjectClass: settings.get<string>('LDAP_Group_Filter_ObjectClass'),
+			groupFilterGroupIdAttribute: settings.get<string>('LDAP_Group_Filter_Group_Id_Attribute'),
+			groupFilterGroupMemberAttribute: settings.get<string>('LDAP_Group_Filter_Group_Member_Attribute'),
+			groupFilterGroupMemberFormat: settings.get<string>('LDAP_Group_Filter_Group_Member_Format'),
+			groupFilterGroupName: settings.get<string>('LDAP_Group_Filter_Group_Name'),
 		};
+
+		if (!this.options.host) {
+			logger.warn('LDAP Host is not configured.');
+		}
+		if (!this.options.baseDN) {
+			logger.warn('LDAP Search BaseDN is not configured.');
+		}
 	}
 
 	public async connect(): Promise<any> {
@@ -117,7 +124,7 @@ export class LDAPConnection {
 			};
 		}
 
-		searchLogger.info({ msg: 'Searching by username', username: escapedUsername });
+		searchLogger.info({ msg: 'Searching by username', username: escapedUsername, baseDN: this.options.baseDN, searchOptions });
 		return this.search(this.options.baseDN, searchOptions);
 	}
 
@@ -135,8 +142,13 @@ export class LDAPConnection {
 			attributes: ['*', '+'],
 		};
 
-		// If we don't know what attribute the id came from, we have to look for all of them.
-		if (!attribute) {
+		if (attribute) {
+			searchOptions.filter = new this.ldapjs.filters.EqualityFilter({
+				attribute,
+				value: Buffer.from(id, 'hex'),
+			});
+		} else if (this.options.uniqueIdentifierField) {
+			// If we don't know what attribute the id came from, we have to look for all of them.
 			const possibleFields = this.options.uniqueIdentifierField.split(',').concat(this.options.userSearchField.split(','));
 			const filters = [];
 			for (const field of possibleFields) {
@@ -151,14 +163,11 @@ export class LDAPConnection {
 			}
 			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
 		} else {
-			searchOptions.filter = new this.ldapjs.filters.EqualityFilter({
-				attribute,
-				value: Buffer.from(id, 'hex'),
-			});
+			searchLogger.warn('Unique Identifier Field is not configured.');
 		}
 
 		searchLogger.info({ msg: 'Searching by id', id });
-		searchLogger.debug({ msg: 'search filter', filter: (searchOptions.filter as ldapjs.Filter).toString(), baseDN: this.options.baseDN });
+		searchLogger.debug({ msg: 'search filter', searchOptions, baseDN: this.options.baseDN });
 
 		return this.search(this.options.baseDN, searchOptions);
 	}
@@ -331,15 +340,15 @@ export class LDAPConnection {
 
 		const filter = ['(&'];
 
-		if (this.options.groupFilterObjectClass !== '') {
+		if (this.options.groupFilterObjectClass) {
 			filter.push(`(objectclass=${ this.options.groupFilterObjectClass })`);
 		}
 
-		if (this.options.groupFilterGroupMemberAttribute !== '') {
+		if (this.options.groupFilterGroupMemberAttribute) {
 			filter.push(`(${ this.options.groupFilterGroupMemberAttribute }=${ this.options.groupFilterGroupMemberFormat })`);
 		}
 
-		if (this.options.groupFilterGroupIdAttribute !== '') {
+		if (this.options.groupFilterGroupIdAttribute) {
 			filter.push(`(${ this.options.groupFilterGroupIdAttribute }=${ this.options.groupFilterGroupName })`);
 		}
 		filter.push(')');
@@ -537,7 +546,7 @@ export class LDAPConnection {
 			rejectUnauthorized: this.options.rejectUnauthorized,
 		};
 
-		if (this.options.caCert && this.options.caCert !== '') {
+		if (this.options.caCert) {
 			// Split CA cert into array of strings
 			const chainLines = this.options.caCert.split('\n');
 			let cert: string[] = [];

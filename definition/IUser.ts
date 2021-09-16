@@ -71,7 +71,7 @@ export interface IUserServices {
 		nameID?: string;
 	};
 	ldap?: {
-		id?: string;
+		id: string;
 		idAttribute?: string;
 	};
 }

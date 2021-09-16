@@ -28,27 +28,32 @@ export class LDAPManager {
 			return this.fallbackToDefaultLogin(username, password);
 		}
 
-		const ldap = this.getNewConnection();
 		let ldapUser: ILDAPEntry | undefined;
+
+		const ldap = this.getNewConnection();
 		try {
-			await ldap.connect();
-			ldapUser = await this.findUser(ldap, username, password);
-		} catch (error) {
-			logger.error(error);
+			try {
+				await ldap.connect();
+				ldapUser = await this.findUser(ldap, username, password);
+			} catch (error) {
+				logger.error(error);
+			}
+
+			if (ldapUser === undefined) {
+				return this.fallbackToDefaultLogin(username, password);
+			}
+
+			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
+			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
+
+			if (user) {
+				return await this.loginExistingUser(ldap, user, ldapUser, password);
+			}
+
+			return await this.loginNewUserFromLDAP(slugifiedUsername, password, ldapUser, ldap);
+		} finally {
+			ldap.disconnect();
 		}
-
-		if (ldapUser === undefined) {
-			return this.fallbackToDefaultLogin(username, password);
-		}
-
-		const slugifiedUsername = this.slugifyUsername(ldapUser, username);
-		const user = await this.findExistingUser(ldapUser, slugifiedUsername);
-
-		if (user) {
-			return this.loginExistingUser(ldap, user, ldapUser, password);
-		}
-
-		return this.loginNewUserFromLDAP(slugifiedUsername, password, ldapUser, ldap);
 	}
 
 	public static getNewConnection(): LDAPConnection {
@@ -60,7 +65,11 @@ export class LDAPManager {
 	public static async testConnection(): Promise<void> {
 		try {
 			const ldap = LDAPManager.getNewConnection();
-			await ldap.testConnection();
+			try {
+				await ldap.testConnection();
+			} finally {
+				ldap.disconnect();
+			}
 		} catch (error) {
 			connLogger.error(error);
 			throw new Meteor.Error(error.message);
@@ -72,14 +81,14 @@ export class LDAPManager {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
-			logger.info({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
+			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
 			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 	}
 
 	protected static getConverterOptions(): IConverterOptions {
 		return {
-			flagEmailsAsVerified: settings.getAs<boolean>('Accounts_Verify_Email_For_External_Accounts'),
+			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 		};
 	}
 
@@ -127,14 +136,14 @@ export class LDAPManager {
 				throw new Error('User not found');
 			}
 
-			const ldapUser = users[0];
+			const [ldapUser] = users;
 			if (!await ldap.authenticate(ldapUser.dn, password)) {
 				logger.info(`Wrong password for ${ escapedUsername }`);
 			}
 
-			if (settings.getAs<boolean>('LDAP_Find_User_After_Login')) {
+			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
 				// Do a search as the user and check if they have any result
-				authLogger.info('User authenticated successfully, performing additional search.');
+				authLogger.debug('User authenticated successfully, performing additional search.');
 				if (await ldap.searchAndCount(ldapUser.dn, {}) === 0) {
 					authLogger.info(`Bind successful but user ${ ldapUser.dn } was not found via search`);
 				}
@@ -175,10 +184,10 @@ export class LDAPManager {
 	}
 
 	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
-		logger.info('running onLDAPLogin');
+		logger.debug('running onLDAPLogin');
 
 		if (user) {
-			if (settings.getAs<boolean>('LDAP_Login_Fallback') === true && typeof password === 'string' && password.trim() !== '') {
+			if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
 				Accounts.setPassword(user._id, password, { logout: false });
 			}
 
@@ -190,13 +199,12 @@ export class LDAPManager {
 
 	private static async loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): Promise<LDAPLoginResult> {
 		if (user.ldap !== true && settings.get('LDAP_Merge_Existing_Users') !== true) {
-			logger.info('User exists without "ldap: true"');
+			logger.debug('User exists without "ldap: true"');
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
 		}
 
-		logger.info('Logging user');
-
-		const syncData = settings.getAs<boolean>('LDAP_Update_Data_On_Login');
+		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? false;
+		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
 		this.onLogin(ldapUser, updatedUser, password, ldap);
@@ -206,11 +214,7 @@ export class LDAPManager {
 	}
 
 	private static async syncUserForLogin(ldapUser: ILDAPEntry, existingUser?: IUser, usedUsername?: string | undefined): Promise<IUser | undefined> {
-		logger.info('Syncing user data');
-		if (existingUser) {
-			logger.debug({ msg: 'user', user: { email: existingUser.emails, _id: existingUser._id } });
-		}
-		logger.debug({ msg: 'ldapUser', ldapUser: ldapUser.object });
+		logger.debug({ msg: 'Syncing user data', ldapUser, user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
 
 		const userData = this.mapUserData(ldapUser, usedUsername);
 		const options = this.getConverterOptions();
@@ -220,7 +224,7 @@ export class LDAPManager {
 	}
 
 	private static getLdapUserUniqueID(ldapUser: ILDAPEntry): ILDAPUniqueIdentifierField | undefined {
-		let uniqueIdentifierField: string | string[] | undefined = settings.getAs<string | undefined>('LDAP_Unique_Identifier_Field');
+		let uniqueIdentifierField: string | string[] | undefined = settings.get<string>('LDAP_Unique_Identifier_Field');
 
 		if (uniqueIdentifierField) {
 			uniqueIdentifierField = uniqueIdentifierField.replace(/\s/g, '').split(',');
@@ -228,7 +232,7 @@ export class LDAPManager {
 			uniqueIdentifierField = [];
 		}
 
-		let userSearchField: string | string[] | undefined = getLDAPConditionalSetting('LDAP_User_Search_Field') as string;
+		let userSearchField: string | string[] | undefined = getLDAPConditionalSetting<string>('LDAP_User_Search_Field');
 
 		if (userSearchField) {
 			userSearchField = userSearchField.replace(/\s/g, '').split(',');
@@ -261,7 +265,7 @@ export class LDAPManager {
 		return ldapUser[key.trim()];
 	}
 
-	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string): string | undefined {
+	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string | undefined): string | undefined {
 		if (!attributeSetting) {
 			return;
 		}
@@ -288,12 +292,12 @@ export class LDAPManager {
 	}
 
 	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
-		const nameAttributes = getLDAPConditionalSetting('LDAP_Name_Field') as string;
+		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
 		return this.getLdapDynamicValue(ldapUser, nameAttributes);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {
-		const emailAttributes = getLDAPConditionalSetting('LDAP_Email_Field') as string;
+		const emailAttributes = getLDAPConditionalSetting<string>('LDAP_Email_Field');
 		if (emailAttributes) {
 			const attributeList: string[] = emailAttributes.replace(/\s/g, '').split(',');
 			const key = attributeList.find((field) => this.ldapKeyExists(ldapUser, field));
@@ -329,15 +333,18 @@ export class LDAPManager {
 
 	private static slugifyUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
 		if (getLDAPConditionalSetting('LDAP_Username_Field') !== '') {
-			return this.slugify(this.getLdapUsername(ldapUser));
+			const username = this.getLdapUsername(ldapUser);
+			if (username) {
+				return this.slugify(username);
+			}
 		}
 
 		return this.slugify(requestUsername);
 	}
 
-	private static getLdapUsername(ldapUser: ILDAPEntry): string {
+	private static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
 		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
-		return this.getLdapDynamicValue(ldapUser, usernameField) as string;
+		return this.getLdapDynamicValue(ldapUser, usernameField);
 	}
 
 	// This method will find existing users by LDAP id or by username.
@@ -350,7 +357,7 @@ export class LDAPManager {
 		return UsersRaw.findOneByUsername(slugifiedUsername);
 	}
 
-	private static fallbackToDefaultLogin(username: LoginUsername, password: string): Record<string, any> | undefined {
+	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {
 		if (typeof username === 'string') {
 			if (username.indexOf('@') === -1) {
 				username = { username };

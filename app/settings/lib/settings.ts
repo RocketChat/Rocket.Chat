@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { SettingValue } from '../../../definition/ISetting';
 
-export type SettingComposedValue = {key: string; value: SettingValue};
+export type SettingComposedValue<T extends SettingValue = SettingValue> = {key: string; value: T};
 export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
 
 interface ISettingRegexCallbacks {
@@ -17,34 +17,40 @@ export class SettingsBase {
 	private regexCallbacks = new Map<string, ISettingRegexCallbacks>();
 
 	// private ts = new Date()
-	public get(_id: RegExp, callback?: SettingCallback): SettingComposedValue[];
+	public get<T extends SettingValue = SettingValue>(_id: RegExp, callback?: SettingCallback): SettingComposedValue<T>[];
 
-	public get(_id: string, callback?: SettingCallback): SettingValue | void;
+	public get<T extends SettingValue = SettingValue>(_id: string, callback?: SettingCallback): T | undefined;
 
-	public get(_id: string | RegExp, callback?: SettingCallback): SettingValue | SettingComposedValue[] | void {
+	public get<T extends SettingValue = SettingValue>(_id: string | RegExp, callback?: SettingCallback): T | SettingComposedValue<T>[] | undefined {
 		if (callback != null) {
 			this.onload(_id, callback);
 			if (!Meteor.settings) {
 				return;
 			}
 			if (_id === '*') {
-				return Object.keys(Meteor.settings).forEach((key) => {
+				Object.keys(Meteor.settings).forEach((key) => {
 					const value = Meteor.settings[key];
 					callback(key, value);
 				});
+				return;
 			}
 			if (_.isRegExp(_id) && Meteor.settings) {
-				return Object.keys(Meteor.settings).forEach((key) => {
+				Object.keys(Meteor.settings).forEach((key) => {
 					if (!_id.test(key)) {
 						return;
 					}
 					const value = Meteor.settings[key];
 					callback(key, value);
 				});
+				return;
 			}
 
 			if (typeof _id === 'string') {
-				return Meteor.settings[_id] != null && callback(_id, Meteor.settings[_id]);
+				const value = Meteor.settings[_id];
+				if (value != null) {
+					callback(_id, Meteor.settings[_id]);
+				}
+				return;
 			}
 		}
 
@@ -53,7 +59,7 @@ export class SettingsBase {
 		}
 
 		if (_.isRegExp(_id)) {
-			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue[], key) => {
+			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue<T>[], key) => {
 				const value = Meteor.settings[key];
 				if (_id.test(key)) {
 					items.push({
@@ -66,10 +72,6 @@ export class SettingsBase {
 		}
 
 		return Meteor.settings && Meteor.settings[_id];
-	}
-
-	getAs<T>(_id: string): T {
-		return this.get(_id) as unknown as T;
 	}
 
 	set(_id: string, value: SettingValue, callback: () => void): void {

@@ -15,7 +15,7 @@ export class LDAPDataConverter extends VirtualDataConverter {
 		super(virtual, options);
 		this.setLogger(logger);
 
-		this.mergeExistingUsers = settings.getAs<boolean>('LDAP_Merge_Existing_Users');
+		this.mergeExistingUsers = settings.get<boolean>('LDAP_Merge_Existing_Users') ?? true;
 	}
 
 	findExistingUser(data: IImportUser): IUser | undefined {
