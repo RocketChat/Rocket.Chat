@@ -17,7 +17,6 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
-import { callbacks } from '../../../callbacks/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
@@ -73,7 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -104,8 +103,8 @@ export class SAML {
 			address: email,
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
-		const globalRoles = userObject.roles;
 
+		const { roles } = userObject;
 		let { username } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -114,7 +113,7 @@ export class SAML {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
 				active,
-				globalRoles,
+				globalRoles: roles,
 				emails,
 				services: {
 					saml: {
@@ -185,9 +184,8 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roleAttributeSync) {
-			// role sync is an enterprise feature, so it needs to be on EE folders
-			callbacks.run('SAML-rolesync', { updateData, globalRoles });
+		if (roles) {
+			updateData.roles = roles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {

@@ -5,7 +5,6 @@ import { settings } from '../../settings/server';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
 import { Logger } from '../../logger/server';
 import { SAMLUtils } from './lib/Utils';
-import { addEnterpriseSettings } from '../../../ee/server/authentication/settings';
 
 settings.addGroup('SAML');
 
@@ -20,7 +19,6 @@ settings.get(/^SAML_.+/, updateServices);
 
 const addSAMLSettings = (name: string): void => {
 	addSettings(name);
-	addEnterpriseSettings(name);
 };
 
 Meteor.startup(() => addSAMLSettings('Default'));

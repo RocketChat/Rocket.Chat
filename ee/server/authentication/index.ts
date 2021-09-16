@@ -1,2 +1,0 @@
-import './SAML';
-import './settings';

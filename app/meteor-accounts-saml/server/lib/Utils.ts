@@ -7,6 +7,7 @@ import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
+import { callbacks } from '../../../callbacks/server';
 
 // @ToDo remove this ts-ignore someday
 // @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
@@ -421,7 +422,7 @@ export class SAMLUtils {
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
-		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
+		const { defaultUserRole = 'user' } = this.globalSettings;
 
 		if (userDataMap.identifier.type === 'custom') {
 			if (!userDataMap.identifier.attribute) {
@@ -470,15 +471,6 @@ export class SAMLUtils {
 			userObject.username = this.normalizeUsername(profileUsername);
 		}
 
-		if (roleAttributeName && profile[roleAttributeName]) {
-			let value = profile[roleAttributeName] || '';
-			if (typeof value === 'string') {
-				value = value.split(',');
-			}
-
-			userObject.roles = this.ensureArray<string>(value);
-		}
-
 		if (profile.language) {
 			userObject.language = profile.language;
 		}
@@ -497,6 +489,8 @@ export class SAMLUtils {
 				userObject.customFields.set(fieldName, value);
 			}
 		}
+
+		callbacks.run('onMapSAMLUser', { profile, userObject });
 
 		return userObject;
 	}

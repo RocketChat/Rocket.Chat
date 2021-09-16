@@ -28,8 +28,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		customAuthnContext: settings.get(`${ service }_custom_authn_context`),
 		authnContextComparison: settings.get(`${ service }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service }_default_user_role`),
-		roleAttributeName: settings.get(`${ service }_role_attribute_name`),
-		roleAttributeSync: settings.get(`${ service }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service }_private_key`),
 			publicCert: settings.get(`${ service }_public_cert`),
@@ -51,7 +49,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		includePrivateChannelsInUpdate: settings.get(`${ service }_include_private_channels_update`),
 	};
 };
-
 
 export const configureSamlService = function(samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
@@ -77,7 +74,6 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		customAuthnContext: samlConfigs.customAuthnContext,
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
-		roleAttributeName: samlConfigs.roleAttributeName,
 		signatureValidationType: samlConfigs.signatureValidationType,
 		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
@@ -277,14 +273,6 @@ export const addSettings = function(name: string): void {
 		i18nLabel: 'SAML_Default_User_Role',
 		i18nDescription: 'SAML_Default_User_Role_Description',
 	});
-	settings.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_4_Roles',
-		i18nLabel: 'SAML_Role_Attribute_Name',
-		i18nDescription: 'SAML_Role_Attribute_Name_Description',
-	});
-
 
 	// Data Mapping Settings
 	settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
