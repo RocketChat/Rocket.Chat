@@ -229,6 +229,20 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	async getAgentAndAmountOngoingChats(userId) {
 		const aggregate = [
 			{ $match: { _id: userId, status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent' } },
@@ -585,6 +599,24 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+		const query = {
+			_id: userId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	async isAgentWithinBusinessHours(agentId) {

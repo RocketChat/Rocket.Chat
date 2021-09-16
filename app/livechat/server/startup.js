@@ -57,20 +57,9 @@ Meteor.startup(async () => {
 		return businessHourManager.stopManager();
 	});
 
-	let isBusinessHoursEnabled = false;
-	settings.get('Livechat_enable_business_hours', (_, value) => {
-		isBusinessHoursEnabled = value;
-	});
-
 	Accounts.onLogout(({ user }) => {
 		if (user?.roles?.includes('livechat-agent')) {
 			Livechat.setUserStatusLivechat(user._id, 'not-available');
-		}
-	});
-
-	Accounts.onLogin(({ user }) => {
-		if (user?.roles?.includes('livechat-agent') && !isBusinessHoursEnabled) {
-			Livechat.setUserStatusLivechat(user._id, 'available');
 		}
 	});
 });
