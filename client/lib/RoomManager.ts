@@ -2,11 +2,11 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { getConfig } from '../../app/ui-utils/client/config';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
