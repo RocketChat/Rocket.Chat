@@ -11,7 +11,7 @@ Migrations.add({
 		for (const app of apps) {
 			const zipFile = Buffer.from(app.zip, 'base64');
 			Promise.await(Apps._manager.update(zipFile, app.permissionsGranted, { loadApp: false }));
-			Promise.await(Apps._model.update({ id: app.id }, { $unset: { zip: 1, compiled: 1  } }));
+			Promise.await(Apps._model.update({ id: app.id }, { $unset: { zip: 1, compiled: 1 } }));
 		}
 	},
 });
