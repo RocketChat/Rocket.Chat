@@ -810,7 +810,7 @@ export const Livechat = {
 
 		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
-			this.setUserStatusLivechat(user._id, 'available');
+			this.setUserStatusLivechat(user._id, ['online', 'away', 'busy'].includes(user.status) ? 'available' : 'not-available');
 			return user;
 		}
 
