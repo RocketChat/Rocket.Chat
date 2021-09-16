@@ -46,7 +46,7 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 				'frame-src *',
 				'img-src * data:',
 				'media-src * data:',
-				`script-src 'self' 'unsafe-eval' ${ cdn_prefixes }`,
+				`script-src 'self' 'unsafe-eval' 'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34=' ${ cdn_prefixes }`,
 				`style-src 'self' 'unsafe-inline' ${ cdn_prefixes }`,
 			].join('; '),
 		);
