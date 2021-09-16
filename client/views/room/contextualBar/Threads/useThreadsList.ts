@@ -1,11 +1,11 @@
 import { useCallback, useMemo } from 'react';
 
-import { getConfig } from '../../../../../app/ui-utils/client/config';
 import { IUser } from '../../../../../definition/IUser';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { ThreadsList, ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
+import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useThreadsList = (
 	options: ThreadsListOptions,

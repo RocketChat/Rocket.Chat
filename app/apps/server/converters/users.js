@@ -42,6 +42,7 @@ export class AppUsersConverter {
 			updatedAt: user._updatedAt,
 			lastLoginAt: user.lastLogin,
 			appId: user.appId,
+			customFields: user.customFields,
 		};
 	}
 

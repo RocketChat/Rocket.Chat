@@ -1,7 +1,7 @@
 import { API } from '../../../api/server';
 import { Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
-import { logger } from '../lib/logger';
+import { serverLogger } from '../lib/logger';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
 
 const userFields = { _id: 1, username: 1, type: 1, emails: 1, name: 1 };
@@ -14,7 +14,7 @@ API.v1.addRoute('federation.users.search', { authRequired: false }, {
 
 		const { username, domain } = this.requestParams();
 
-		logger.server.debug(`federation.users.search => username=${ username } domain=${ domain }`);
+		serverLogger.debug(`federation.users.search => username=${ username } domain=${ domain }`);
 
 		const query = {
 			type: 'user',
@@ -41,7 +41,7 @@ API.v1.addRoute('federation.users.getByUsername', { authRequired: false }, {
 
 		const { username } = this.requestParams();
 
-		logger.server.debug(`federation.users.getByUsername => username=${ username }`);
+		serverLogger.debug(`federation.users.getByUsername => username=${ username }`);
 
 		const query = {
 			type: 'user',
