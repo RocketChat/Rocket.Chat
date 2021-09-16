@@ -868,7 +868,7 @@
   "Close": "Close",
   "Close_chat": "Close chat",
   "Close_room_description": "You are about to close this chat. Are you sure you want to continue?",
-  "Close_to_seat_limit_warning": "Once the seats usage reaches its limit, it will not be possible to add new members to this Workspace.",
+  "Close_to_seat_limit_warning": "New members cannot be created once the seat limit is met.",
   "close-livechat-room": "Close Omnichannel Room",
   "close-livechat-room_description": "Permission to close the current Omnichannel room",
   "close-others-livechat-room": "Close other Omnichannel Room",
