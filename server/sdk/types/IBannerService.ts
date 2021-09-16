@@ -8,5 +8,5 @@ export interface IBannerService {
 	discardDismissal(bannerId: string): Promise<boolean>;
 	getById(bannerId: string): Promise<null | IBanner>;
 	disable(bannerId: string): Promise<boolean>;
-	enable(bannerId: string, doc?: Partial<Omit<IBanner, '_id'>>, keepDismiss?: boolean): Promise<boolean>;
+	enable(bannerId: string, doc?: Partial<Omit<IBanner, '_id'>>): Promise<boolean>;
 }

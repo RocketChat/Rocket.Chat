@@ -129,7 +129,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return false;
 	}
 
-	async enable(bannerId: string, doc: Partial<Omit<IBanner, '_id'>> = {}, preserveDismiss = false): Promise<boolean> {
+	async enable(bannerId: string, doc: Partial<Omit<IBanner, '_id'>> = {}): Promise<boolean> {
 		const result = await this.Banners.findOneById(bannerId);
 
 		if (!result) {
@@ -137,11 +137,6 @@ export class BannerService extends ServiceClass implements IBannerService {
 		}
 
 		const { _id, ...banner } = result;
-
-		// TODO deprecate this
-		if (!preserveDismiss) {
-			this.discardDismissal(bannerId);
-		}
 
 		this.Banners.update({ _id }, { ...banner, ...doc, active: true }); // reenable the banner
 

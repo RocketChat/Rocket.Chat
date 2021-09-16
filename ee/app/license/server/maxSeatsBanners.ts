@@ -81,7 +81,7 @@ export const createSeatsLimitBanners = async (): Promise<void> => {
 };
 
 export const enableDangerBanner = (): void => {
-	Banner.enable(DANGER_BANNER_ID, makeDangerBanner(), false);
+	Banner.enable(DANGER_BANNER_ID, makeDangerBanner());
 };
 
 
@@ -94,7 +94,7 @@ export const disableDangerBannerDiscardingDismissal = async (): Promise<void> =>
 };
 
 export const enableWarningBanner = (seatsLeft: number): void => {
-	Banner.enable(WARNING_BANNER_ID, makeWarningBanner(seatsLeft), true);
+	Banner.enable(WARNING_BANNER_ID, makeWarningBanner(seatsLeft));
 };
 
 export const disableWarningBannerDiscardingDismissal = async (): Promise<void> => {
