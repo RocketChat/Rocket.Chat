@@ -3,8 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { handleError } from '../../../utils';
-import { settings } from '../../../settings';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { settings } from '../../../settings/client';
 
 const getMedia = () => navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 const createAndConnect = (url) => {

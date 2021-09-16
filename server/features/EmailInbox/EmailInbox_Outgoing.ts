@@ -130,6 +130,7 @@ callbacks.add('beforeSaveMessage', function(message: IMessage, room: any) {
 	}
 
 	if (message.file) {
+		message.attachments = message.attachments || [];
 		message.attachments.push({
 			actions: [{
 				type: 'button',

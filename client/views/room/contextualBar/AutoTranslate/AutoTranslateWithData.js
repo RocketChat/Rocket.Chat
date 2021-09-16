@@ -3,7 +3,7 @@ import React, { useMemo, useEffect, useState, memo } from 'react';
 
 import { useLanguage } from '../../../../contexts/TranslationContext';
 import { useUserSubscription } from '../../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useTabBarClose } from '../../providers/ToolboxProvider';
 import AutoTranslate from './AutoTranslate';

@@ -8,9 +8,10 @@ import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
 
 import { Info, getOplogInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations';
-import { settings } from '../../../settings';
-import { Statistics } from '../../../models';
+import { Migrations } from '../../../migrations/server';
+import { settings } from '../../../settings/server';
+import { Statistics } from '../../../models/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 
@@ -136,7 +137,7 @@ const updatePrometheusConfig = async () => {
 
 	if (!is.enabled) {
 		if (was.enabled) {
-			console.log('Disabling Prometheus');
+			SystemLogger.info('Disabling Prometheus');
 			server.close();
 			Meteor.clearInterval(timer);
 		}
@@ -144,7 +145,7 @@ const updatePrometheusConfig = async () => {
 		return;
 	}
 
-	console.log('Configuring Prometheus', is);
+	SystemLogger.debug({ msg: 'Configuring Prometheus', is });
 
 	if (!was.enabled) {
 		server.listen({
@@ -174,7 +175,7 @@ const updatePrometheusConfig = async () => {
 			gcStats()();
 		}
 	} catch (error) {
-		console.error(error);
+		SystemLogger.error(error);
 	}
 
 	Object.assign(was, is);
