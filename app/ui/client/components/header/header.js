@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 
-import { fireGlobalEvent } from '../../../../ui-utils';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+
 import './header.html';
 
 Template.header.helpers({
