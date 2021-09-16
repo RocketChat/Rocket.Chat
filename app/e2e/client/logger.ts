@@ -1,4 +1,4 @@
-import { getConfig } from '../../ui-utils/client/config';
+import { getConfig } from '../../../client/lib/utils/getConfig';
 
 let debug: boolean | undefined = undefined;
 

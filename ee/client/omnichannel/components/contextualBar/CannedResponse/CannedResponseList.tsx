@@ -56,7 +56,7 @@ const CannedResponseList: FC<{
 
 	const cannedId = useTabContext();
 
-	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver({
+	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
 
