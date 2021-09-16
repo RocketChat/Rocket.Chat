@@ -3748,10 +3748,6 @@
   "Setup_Wizard": "Kreator konfiguracji",
   "Setup_Wizard_Info": "Poprowadzimy Cię przez konfigurowanie pierwszego administratora, konfigurowanie organizacji i rejestrowanie serwera, aby otrzymywać bezpłatne powiadomienia push i wiele więcej.",
   "Share_Location_Title": "Udostępnić lokalizację?",
-<<<<<<< HEAD
-=======
-  "Canned_Responses": "Predefiniowane odpowiedzi",
->>>>>>> 0a293e547fcab88d548d14b6c8608b530b5d6f9d
   "New_CannedResponse": "Nowa predefiniowana odpowiedź",
   "Edit_CannedResponse": "Edycja predefiniowanej odpowiedzi",
   "Sharing": "Udostępnianie",
