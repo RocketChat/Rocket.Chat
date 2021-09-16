@@ -1,6 +1,7 @@
 import { Icon, Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
+import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import SeatsCapUsage from './SeatsCapUsage';
 
@@ -36,10 +37,12 @@ const ReachedSeatsCapModal = ({
 			<Modal.Footer>
 				<ButtonGroup align='end'>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button is='a' href={requestSeatsLink} onClick={onClose} primary>
-						<Icon name='new-window' size='x20' mie='x4' />
-						{t('Request')}
-					</Button>
+					<ExternalLink to={requestSeatsLink}>
+						<Button onClick={onClose} primary>
+							<Icon name='new-window' size='x20' mie='x4' />
+							{t('Request')}
+						</Button>
+					</ExternalLink>
 				</ButtonGroup>
 			</Modal.Footer>
 		</Modal>

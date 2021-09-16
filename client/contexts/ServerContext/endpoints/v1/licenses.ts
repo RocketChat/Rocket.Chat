@@ -2,9 +2,12 @@ import type { ILicense } from '../../../../../ee/app/license/server/license';
 
 export type LicensesEndpoints = {
 	'licenses.get': {
-		GET: (params: void) => { licenses: Array<ILicense> };
+		GET: () => { licenses: Array<ILicense> };
 	};
 	'licenses.maxActiveUsers': {
-		GET: (params: void) => { maxActiveUsers: number | null; activeUsers: number };
+		GET: () => { maxActiveUsers: number | null; activeUsers: number };
+	};
+	'licenses.requestSeatsLink': {
+		GET: () => { url: string };
 	};
 };

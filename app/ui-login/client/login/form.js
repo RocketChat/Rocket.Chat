@@ -10,7 +10,8 @@ import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { t, handleError } from '../../../utils';
+import { t } from '../../../utils';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 Template.loginForm.helpers({
 	userName() {
