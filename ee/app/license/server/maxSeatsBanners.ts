@@ -4,11 +4,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { IBanner, BannerPlatform } from '../../../../definition/IBanner';
 import { Banner } from '../../../../server/sdk';
+import { getSeatsRequestLink } from './getSeatsRequestLink';
 
 const WARNING_BANNER_ID = 'closeToSeatsLimit';
 const DANGER_BANNER_ID = 'reachedSeatsLimit';
 
-const ContactUrl = 'https://rocket.chat/contact';
 
 const makeWarningBanner = (seats: number): IBanner => ({
 	_id: WARNING_BANNER_ID,
@@ -24,7 +24,7 @@ const makeWarningBanner = (seats: number): IBanner => ({
 			blockId: 'attention',
 			text: {
 				type: TextObjectType.MARKDOWN,
-				text: TAPi18n.__('Close_to_seat_limit_banner_warning', { seats, url: ContactUrl }),
+				text: TAPi18n.__('Close_to_seat_limit_banner_warning', { seats, url: getSeatsRequestLink() }),
 				emoji: false,
 			},
 		}],
@@ -54,7 +54,7 @@ const makeDangerBanner = (): IBanner => ({
 			blockId: 'attention',
 			text: {
 				type: TextObjectType.MARKDOWN,
-				text: TAPi18n.__('Reached_seat_limit_banner_warning', { url: ContactUrl }),
+				text: TAPi18n.__('Reached_seat_limit_banner_warning', { url: getSeatsRequestLink() }),
 				emoji: false,
 			},
 		}],
