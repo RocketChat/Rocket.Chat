@@ -7,7 +7,7 @@ import ScrollableContentWrapper from '../../../../components/ScrollableContentWr
 import VerticalBar from '../../../../components/VerticalBar';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { goToRoomById } from '../../../../lib/goToRoomById';
+import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import Row from './Row';
 import { withData } from './withData';
 
@@ -84,7 +84,7 @@ function DiscussionList({
 					{!error && total > 0 && discussions.length > 0 && (
 						<Virtuoso
 							style={{
-								minHeight: blockSize,
+								height: blockSize,
 								width: inlineSize,
 								overflow: 'hidden',
 							}}

@@ -1,4 +1,4 @@
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { FederationRoomEvents, Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
@@ -80,13 +80,13 @@ async function afterCreateRoom(roomOwner, room) {
 			throw new Error('Channels cannot be federated');
 		}
 
-		logger.client.debug(() => `afterCreateRoom => roomOwner=${ JSON.stringify(roomOwner, null, 2) } room=${ JSON.stringify(room, null, 2) }`);
+		clientLogger.debug({ msg: 'afterCreateRoom', roomOwner, room });
 
 		await doAfterCreateRoom(room, users, subscriptions);
 	} catch (err) {
 		deleteRoom(room._id);
 
-		logger.client.error('afterCreateRoom => Could not create federated room:', err);
+		clientLogger.error({ msg: 'afterCreateRoom => Could not create federated room:', err });
 	}
 
 	return room;

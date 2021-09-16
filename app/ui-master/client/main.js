@@ -5,22 +5,22 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin } from '../../ui-utils';
+import { mainReady, iframeLogin } from '../../ui-utils';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
-import { fireGlobalEvent } from '../../ui-utils/client';
-
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import './main.html';
+import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 
 
 callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.main.helpers({
-	removeSidenav: () => Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
+	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
 		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			document.documentElement.classList.add('noscroll');
@@ -78,7 +78,7 @@ Template.main.helpers({
 		fireGlobalEvent('Custom_Script_Logged_In');
 	},
 	embeddedVersion: () => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			return 'embedded-view';
 		}
 	},

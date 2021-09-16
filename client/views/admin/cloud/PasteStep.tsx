@@ -27,7 +27,7 @@ const PasteStep: FC<PasteStepProps> = ({ onBackButtonClick, onFinish }) => {
 		setLoading(true);
 
 		try {
-			await registerManually({}, { cloudBlob: cloudKey });
+			await registerManually({ cloudBlob: cloudKey });
 			dispatchToastMessage({ type: 'success', message: t('Cloud_register_success') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });

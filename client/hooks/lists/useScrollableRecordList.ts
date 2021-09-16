@@ -25,7 +25,7 @@ export const useScrollableRecordList = <T extends IRocketChatRecord>(
 
 	useEffect(() => {
 		loadMoreItems(0);
-	}, [recordList, loadMoreItems, initialItemCount]);
+	}, [loadMoreItems]);
 
 	return { loadMoreItems, initialItemCount };
 };

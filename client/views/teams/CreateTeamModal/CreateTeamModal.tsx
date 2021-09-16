@@ -19,9 +19,9 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
-import { goToRoomById } from '../../../lib/goToRoomById';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
 
@@ -51,7 +51,7 @@ type CreateTeamModalState = {
 const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
-	const namesValidation = useSetting('UTF8_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
@@ -71,7 +71,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		readOnly: boolean;
 		broadcast: boolean;
 		encrypted: boolean;
-		members: IUser['username'][];
+		members: Exclude<IUser['username'], undefined>[];
 	};
 
 	const { handleMembers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;
@@ -281,7 +281,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Private_Label')}</Field.Label>
 							<Field.Description>
 								{type
@@ -294,7 +294,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24' disabled={!canChangeReadOnly}>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
 							<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
 						</Box>
@@ -307,7 +307,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field disabled={!canChangeEncrypted} mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Encrypted_Label')}</Field.Label>
 							<Field.Description>
 								{type
@@ -324,7 +324,7 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 				</Field>
 				<Field mbe='x24'>
 					<Box display='flex' justifyContent='space-between' alignItems='start'>
-						<Box display='flex' flexDirection='column'>
+						<Box display='flex' flexDirection='column' width='full'>
 							<Field.Label>{t('Teams_New_Broadcast_Label')}</Field.Label>
 							<Field.Description>{t('Teams_New_Broadcast_Description')}</Field.Description>
 						</Box>

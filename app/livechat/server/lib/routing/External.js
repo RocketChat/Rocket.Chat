@@ -4,6 +4,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 
 class ExternalQueue {
 	constructor() {
@@ -45,7 +46,7 @@ class ExternalQueue {
 					}
 				}
 			} catch (e) {
-				console.error('Error requesting agent from external queue.', e);
+				SystemLogger.error('Error requesting agent from external queue.', e);
 				break;
 			}
 		}

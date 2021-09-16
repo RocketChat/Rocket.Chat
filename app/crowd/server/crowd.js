@@ -11,7 +11,7 @@ import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
 import { deleteUser } from '../../lib/server/functions';
 
-const logger = new Logger('CROWD', {});
+const logger = new Logger('CROWD');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
@@ -37,7 +37,7 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 export class CROWD {
 	constructor() {
-		const AtlassianCrowd = require('atlassian-crowd');
+		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get('CROWD_URL');
 
 		this.options = {

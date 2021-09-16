@@ -5,7 +5,7 @@ import React, { useRef, useState, useMemo, useEffect } from 'react';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { getDateRange } from '../../../lib/getDateRange';
+import { getDateRange } from '../../../lib/utils/getDateRange';
 import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';
 import ChatDurationChart from './charts/ChatDurationChart';

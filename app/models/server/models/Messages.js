@@ -30,6 +30,8 @@ export class Messages extends Base {
 		// threads
 		this.tryEnsureIndex({ tmid: 1 }, { sparse: true });
 		this.tryEnsureIndex({ tcount: 1, tlm: 1 }, { sparse: true });
+		this.tryEnsureIndex({ rid: 1, tlm: -1 }, { partialFilterExpression: { tcount: { $exists: true } } }); // used for the List Threads
+		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
@@ -87,17 +89,6 @@ export class Messages extends Base {
 		const query = { _id };
 		const update = { $set: { otrAck } };
 		return this.update(query, update);
-	}
-
-	setGoogleVisionData(messageId, visionData) {
-		const updateObj = {};
-		for (const index in visionData) {
-			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${ index }`] = visionData[index];
-			}
-		}
-
-		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {

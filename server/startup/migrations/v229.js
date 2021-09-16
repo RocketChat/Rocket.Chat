@@ -1,17 +1,36 @@
+import { Settings } from '../../../app/models/server';
 import { Migrations } from '../../../app/migrations';
-import { Apps } from '../../../app/apps/server';
 
 Migrations.add({
 	version: 229,
 	up() {
-		Apps.initialize();
+		const oldNamesValidationSetting = Settings.findOneById(
+			'UTF8_Names_Validation',
+		);
+		const oldNamesValidationSettingValue = oldNamesValidationSetting?.value || '[0-9a-zA-Z-_.]+';
 
-		const apps = Apps._model.find().fetch();
+		Settings.upsert(
+			{
+				_id: 'UTF8_User_Names_Validation',
+			},
+			{
+				$set: {
+					value: oldNamesValidationSettingValue,
+				},
+			},
+		);
 
-		for (const app of apps) {
-			const zipFile = Buffer.from(app.zip, 'base64');
-			Promise.await(Apps._manager.update(zipFile, app.permissionsGranted, { loadApp: false }));
-			Promise.await(Apps._model.update({ id: app.id }, { $unset: { zip: 1, compiled: 1  } }));
-		}
+		Settings.upsert(
+			{
+				_id: 'UTF8_Channel_Names_Validation',
+			},
+			{
+				$set: {
+					value: oldNamesValidationSettingValue,
+				},
+			},
+		);
+
+		Settings.removeById('UTF8_Names_Validation');
 	},
 });

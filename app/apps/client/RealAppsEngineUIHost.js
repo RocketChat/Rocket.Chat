@@ -4,8 +4,8 @@ import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHo
 
 import { Rooms } from '../../models/client';
 import { APIClient } from '../../utils/client';
-import { baseURI } from '../../utils/client/lib/baseuri';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { baseURI } from '../../../client/lib/baseURI';
 
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	constructor() {
