@@ -1,11 +1,11 @@
 import React from 'react';
 
+import { Logger } from '../../../lib/Logger';
 import { ICallEventDelegate } from '../../components/voip/ICallEventDelegate';
 import { IConnectionDelegate } from '../../components/voip/IConnectionDelegate';
 import { IRegisterHandlerDelegate } from '../../components/voip/IRegisterHandlerDelegate';
 import { VoIPUser } from '../../components/voip/VoIPUser';
 import { VoIPUserConfiguration } from '../../components/voip/VoIPUserConfiguration';
-import { Logger } from '../../components/voip/utils/Logger';
 
 interface IState {
 	isReady?: boolean;

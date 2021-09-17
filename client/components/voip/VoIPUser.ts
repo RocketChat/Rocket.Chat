@@ -20,6 +20,7 @@ import {
 import { OutgoingRequestDelegate } from 'sip.js/lib/core';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
+import { Logger } from '../../../lib/Logger';
 import { CallState } from './Callstate';
 import { ICallEventDelegate } from './ICallEventDelegate';
 import { IConnectionDelegate } from './IConnectionDelegate';
@@ -27,7 +28,6 @@ import { IRegisterHandlerDelegate } from './IRegisterHandlerDelegate';
 import { Operation } from './Operations';
 import { VoIPUserConfiguration } from './VoIPUserConfiguration';
 import Stream from './media/Stream';
-import { Logger } from './utils/Logger';
 // User state is based on whether the User has sent an invite(UAC) or it
 // has received an invite (UAS)
 enum UserState {

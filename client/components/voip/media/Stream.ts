@@ -10,7 +10,7 @@
  * mixing of 2 streams in to 2, adding/removing tracks, getting a track information
  * detecting voice energy etc. Which will be implemented as when needed
  */
-import { Logger } from '../utils/Logger';
+import { Logger } from '../../../../lib/Logger';
 
 export default class Stream {
 	logger: Logger | undefined;
