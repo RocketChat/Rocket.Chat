@@ -41,7 +41,6 @@ export const useQuickActions = (
 	);
 
 	const [onHoldModalActive, setOnHoldModalActive] = useState(false);
-	const [email, setEmail] = useState('');
 
 	const visitorRoomId = room.v._id;
 	const rid = room._id;
@@ -54,16 +53,14 @@ export const useQuickActions = (
 		if (!visitorRoomId) {
 			return;
 		}
+
 		const {
 			visitor: { visitorEmails },
 		} = await getVisitorInfo({ visitorId: visitorRoomId });
-		if (visitorEmails?.length && visitorEmails[0].address) {
-			setEmail(visitorEmails[0].address);
-		} else {
-			setEmail('');
-		}
 
-		return 0;
+		if (visitorEmails?.length && visitorEmails[0].address) {
+			return visitorEmails[0].address;
+		}
 	});
 
 	useEffect(() => {
@@ -210,9 +207,9 @@ export const useQuickActions = (
 				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.Transcript:
-				await getVisitorEmail();
+				const visitorEmail = await getVisitorEmail();
 
-				if (!email) {
+				if (!visitorEmail) {
 					dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
 					break;
 				}
@@ -220,7 +217,7 @@ export const useQuickActions = (
 				setModal(
 					<TranscriptModal
 						room={room}
-						email={email}
+						email={visitorEmail}
 						onRequest={handleRequestTranscript}
 						onSend={handleSendTranscript}
 						onDiscard={handleDiscardTranscript}
