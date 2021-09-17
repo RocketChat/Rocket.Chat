@@ -45,6 +45,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	const handleSyncNowButtonClick = async (): Promise<void> => {
 		try {
 			await testConnection(undefined);
+			// #ToDo: Switch to modal.setModal
 			modal.open(
 				{
 					title: t('Execute_Synchronization_Now'),
@@ -72,7 +73,6 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		}
 	};
 
-
 	return (
 		<TabbedGroupPage
 			_id={_id}
@@ -91,7 +91,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 							onClick={handleSyncNowButtonClick}
 						/>
 					)}
-					<Button is='a' href='https://go.rocket.chat/i/ldap-doc' target='_blank'>{t('LDAP_Documentation')}</Button>
+					<Button is='a' href='https://go.rocket.chat/i/ldap-doc' target='_blank'>
+						{t('LDAP_Documentation')}
+					</Button>
 				</>
 			}
 		/>
