@@ -875,12 +875,6 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findLDAPUsers(options) {
-		const query = { ldap: true };
-
-		return this.find(query, options);
-	}
-
 	findCrowdUsers(options) {
 		const query = { crowd: true };
 
