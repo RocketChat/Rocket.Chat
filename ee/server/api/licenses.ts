@@ -5,7 +5,6 @@ import { Settings, Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
 import { getSeatsRequestLink } from '../../app/license/server/getSeatsRequestLink';
-import { Analytics } from '../../../server/sdk';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {
