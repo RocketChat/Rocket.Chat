@@ -288,6 +288,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxActiveUsers(): number {
+	return maxActiveUsers;
+}
+
 export function getLicenses(): IValidLicense[] {
 	return License.getLicenses();
 }

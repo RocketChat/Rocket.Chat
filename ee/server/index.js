@@ -1,4 +1,5 @@
 import './broker';
+import './startup';
 
 import '../app/models';
 import '../app/license/server/index';
