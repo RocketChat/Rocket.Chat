@@ -21,7 +21,7 @@ export class Logger {
 	}
 
 	private writeLog(level: LogLevel, log: any): void {
-		const logLine = `${new Date().toISOString()} ${LogLevel[level]}  ${this.module}::${log}`;
+		const logLine = `${ new Date().toISOString() } ${ LogLevel[level] }  ${ this.module }::${ log }`;
 		if (this.logLevel && this.logLevel < level) {
 			return;
 		}

@@ -37,11 +37,12 @@ export class CommandHandler {
 		const connection = new AMIConnection();
 		/* TODO(Amol) : This information must come from
 		 * an API/Database.
-		 * Currently hardcoded. Hence commenting the code*/
+		 * Currently hardcoded. Hence commenting the code
 		connection.connect('omni-asterisk.dev.rocket.chat',
 			'5038',
 			'amol',
 			'1234');
+		*/
 		this.connections.set(CommandType.AMI, connection);
 	}
 
