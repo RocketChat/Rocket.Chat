@@ -78,7 +78,12 @@ function UsersPage() {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const { value: data = {}, reload } = useEndpointData('users.list', query);
+	const { value: data = {}, reload: reloadList } = useEndpointData('users.list', query);
+
+	const reload = () => {
+		seatsCap?.reload();
+		reloadList();
+	};
 
 	return (
 		<Page flexDirection='row'>
@@ -112,9 +117,9 @@ function UsersPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					{context === 'info' && <UserInfoWithData uid={id} reloadTable={reload} />}
-					{context === 'edit' && <EditUserWithData uid={id} />}
-					{context === 'new' && <AddUser reloadTable={reload} />}
+					{context === 'info' && <UserInfoWithData uid={id} onReload={reload} />}
+					{context === 'edit' && <EditUserWithData uid={id} onReload={reload} />}
+					{context === 'new' && <AddUser onReload={reload} />}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
 			)}

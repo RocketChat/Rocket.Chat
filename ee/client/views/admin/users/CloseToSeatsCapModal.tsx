@@ -1,5 +1,5 @@
-import { Icon, Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps } from 'react';
+import { Modal, ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
+import React, { ReactElement } from 'react';
 
 import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
@@ -9,8 +9,6 @@ type CloseToSeatsCapModalProps = {
 	members: number;
 	limit: number;
 	title: string;
-	confirmText: string;
-	confirmIcon: ComponentProps<typeof Icon>['name'];
 	requestSeatsLink: string;
 	onConfirm: () => void;
 	onClose: () => void;
@@ -20,8 +18,6 @@ const CloseToSeatsCapModal = ({
 	members,
 	limit,
 	title,
-	confirmText,
-	confirmIcon,
 	onConfirm,
 	onClose,
 	requestSeatsLink,
@@ -44,8 +40,7 @@ const CloseToSeatsCapModal = ({
 				<ButtonGroup align='end'>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button onClick={onConfirm} primary>
-						<Icon name={confirmIcon} size='x20' mie='x4' />
-						{confirmText}
+						{t('Continue')}
 					</Button>
 				</ButtonGroup>
 			</Modal.Footer>
