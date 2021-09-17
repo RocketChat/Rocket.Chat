@@ -21,7 +21,6 @@ API.v1.addRoute('licenses.requestSeatsLink', { authRequired: true }, {
 		}
 
 		const url = getSeatsRequestLink();
-		Promise.await(Analytics.saveSeatRequest());
 
 		return API.v1.success({ url });
 	},
