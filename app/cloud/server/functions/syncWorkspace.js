@@ -8,6 +8,7 @@ import { Settings } from '../../../models';
 import { settings } from '../../../settings';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
 import { NPS, Banner } from '../../../../server/sdk';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
@@ -38,9 +39,9 @@ export function syncWorkspace(reconnectCheck = false) {
 		getWorkspaceLicense();
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to sync with Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return false;
