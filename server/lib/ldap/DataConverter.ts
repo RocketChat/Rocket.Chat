@@ -1,5 +1,5 @@
 import { VirtualDataConverter } from '../../../app/importer/server/classes/VirtualDataConverter';
-import { IImportUser } from '../../../app/importer/server/definitions/IImportUser';
+import { IImportUser } from '../../../definition/IImportUser';
 import type { IUser } from '../../../definition/IUser';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { Logger } from '../logger/Logger';

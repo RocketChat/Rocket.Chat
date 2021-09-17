@@ -1,5 +1,5 @@
-import { Base } from '../../../models/server';
-import { IImportUserRecord, IImportChannelRecord } from '../definitions/IImportRecord';
+import { Base } from './_Base';
+import { IImportUserRecord, IImportChannelRecord } from '../../../../definition/IImportRecord';
 
 class ImportDataModel extends Base {
 	constructor() {
@@ -85,4 +85,4 @@ class ImportDataModel extends Base {
 	}
 }
 
-export const ImportData = new ImportDataModel();
+export default new ImportDataModel();

@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
-import { ImportData } from '../models/ImportData';
-import { IImportUser } from '../definitions/IImportUser';
-import { IImportMessage, IImportMessageReaction } from '../definitions/IImportMessage';
-import { IImportChannel } from '../definitions/IImportChannel';
+import { ImportData as ImportDataRaw } from '../../../models/server/raw';
+import { IImportUser } from '../../../../definition/IImportUser';
+import { IImportMessage, IImportMessageReaction } from '../../../../definition/IImportMessage';
+import { IImportChannel } from '../../../../definition/IImportChannel';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../definitions/IImportRecord';
-import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
+import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
@@ -116,7 +116,7 @@ export class ImportDataConverter {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
+	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
 		ImportData.model.rawCollection().insert({
 			data,
 			dataType: type,
@@ -203,6 +203,7 @@ export class ImportDataConverter {
 	}
 
 	updateUserId(_id: string, userData: IImportUser): void {
+		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
 			$set: {
 				roles: userData.roles || ['user'],
@@ -284,8 +285,8 @@ export class ImportDataConverter {
 		return user;
 	}
 
-	getUsersToImport(): any {
-		return ImportData.find({ dataType: 'user' });
+	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
+		return ImportDataRaw.getAllUsers().toArray();
 	}
 
 	findExistingUser(data: IImportUser): IUser | undefined {
@@ -303,9 +304,9 @@ export class ImportDataConverter {
 		}
 	}
 
-	convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = this.getUsersToImport();
-		users.forEach(({ data, _id }: IImportUserRecord) => {
+	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+		const users = Promise.await(this.getUsersToImport());
+		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -342,7 +343,7 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				if (data.deleted && existingUser?.active) {
 					setUserActiveStatus(data._id, false, true);
-				} else if (data.deleted === false && existingUser && existingUser.active === false) {
+				} else if (data.deleted === false && existingUser?.active === false) {
 					setUserActiveStatus(data._id, true);
 				}
 
@@ -356,17 +357,7 @@ export class ImportDataConverter {
 		});
 	}
 
-	saveNewId(importId: string, newId: string): void {
-		ImportData.update({
-			_id: importId,
-		}, {
-			$set: {
-				id: newId,
-			},
-		});
-	}
-
-	saveError(importId: string, error: Error): void {
+	protected saveError(importId: string, error: Error): void {
 		this._logger.error(error);
 		ImportData.update({
 			_id: importId,
@@ -380,7 +371,7 @@ export class ImportDataConverter {
 		});
 	}
 
-	skipRecord(_id: string): void {
+	protected skipRecord(_id: string): void {
 		ImportData.update({
 			_id,
 		}, {
@@ -503,13 +494,13 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	getMessagesToImport(): any {
-		return ImportData.find({ dataType: 'message' });
+	protected async getMessagesToImport(): Promise<Array<IImportMessageRecord>> {
+		return ImportDataRaw.getAllMessages().toArray();
 	}
 
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
-		const messages = this.getMessagesToImport();
+		const messages = Promise.await(this.getMessagesToImport());
 		messages.forEach(({ data: m, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(m, 'message')) {
@@ -611,7 +602,7 @@ export class ImportDataConverter {
 		this.updateRoomId(room._id, roomData);
 	}
 
-	findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
 		const record = ImportData.findDMForImportedUsers(...users);
 		if (record) {
 			return record.data;
@@ -851,12 +842,12 @@ export class ImportDataConverter {
 		return Rooms.findOneByNonValidatedName(data.name, {});
 	}
 
-	getChannelsToImport(): any {
-		return ImportData.find({ dataType: 'channel' });
+	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
+		return ImportDataRaw.getAllChannels().toArray();
 	}
 
 	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const channels = this.getChannelsToImport();
+		const channels = Promise.await(this.getChannelsToImport());
 		channels.forEach(({ data: c, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(c, 'channel')) {
@@ -911,7 +902,7 @@ export class ImportDataConverter {
 		});
 	}
 
-	clearImportData(): void {
+	public clearImportData(): void {
 		// Using raw collection since its faster
 		Promise.await(ImportData.model.rawCollection().remove({}));
 	}

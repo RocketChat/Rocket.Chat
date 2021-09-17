@@ -2,11 +2,19 @@ import { IImportUser } from './IImportUser';
 import { IImportChannel } from './IImportChannel';
 import { IImportMessage } from './IImportMessage';
 
+export type IImportRecordType = 'user' | 'channel' | 'message';
+export type IImportData = IImportUser | IImportChannel | IImportMessage;
+
 export interface IImportRecord {
-	data: IImportUser | IImportChannel | IImportMessage;
-	dataType: 'user' | 'channel' | 'message';
+	data: IImportData;
+	dataType: IImportRecordType;
 	_id: string;
 	options?: {};
+	errors?: Array<{
+		message: string;
+		stack?: string;
+	}>;
+	skipped?: boolean;
 }
 
 export interface IImportUserRecord extends IImportRecord {

@@ -1,11 +1,16 @@
 import { Random } from 'meteor/random';
 
-import { IImportChannel } from '../definitions/IImportChannel';
+import type { IImportUserRecord, IImportChannelRecord, IImportMessageRecord, IImportRecord, IImportRecordType, IImportData } from '../../../../definition/IImportRecord';
+import { IImportChannel } from '../../../../definition/IImportChannel';
 import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
 
 export class VirtualDataConverter extends ImportDataConverter {
-	protected _objects: Record<string, Array<Record<string, any>>>;
+	protected _userRecords: Array<IImportUserRecord>;
+
+	protected _channelRecords: Array<IImportChannelRecord>;
+
+	protected _messageRecords: Array<IImportMessageRecord>;
 
 	protected useVirtual: boolean;
 
@@ -18,16 +23,39 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
+	public clearImportData(): void {
+		if (!this.useVirtual) {
+			return super.clearImportData();
+		}
+
+		this.clearVirtualData();
+	}
+
+	public clearSuccessfullyImportedData(): void {
+		if (!this.useVirtual) {
+			return super.clearSuccessfullyImportedData();
+		}
+
+		this.clearVirtualData();
+	}
+
+	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+		if (!this.useVirtual) {
+			return super.findDMForImportedUsers(...users);
+		}
+
+		// The original method is only used by the hipchat importer so we probably don't need to implement this on the virtual converter.
+		return undefined;
+	}
+
+	protected addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
 		}
 
-		if (!this._objects[type]) {
-			this._objects[type] = [];
-		}
+		const list = this.getObjectList(type);
 
-		this._objects[type].push({
+		list.push({
 			_id: Random.id(),
 			data,
 			dataType: type,
@@ -35,42 +63,15 @@ export class VirtualDataConverter extends ImportDataConverter {
 		});
 	}
 
-	getUsersToImport(): any {
+	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
 		if (!this.useVirtual) {
 			return super.getUsersToImport();
 		}
 
-		return this._objects.user || [];
+		return this._userRecords;
 	}
 
-	getVirtualRecordById(id: string): Record<string, any> | undefined {
-		for (const dataType in this._objects) {
-			if (!(dataType in this._objects)) {
-				continue;
-			}
-
-			const store = this._objects[dataType];
-			for (const record of store) {
-				if (record._id === id) {
-					return record;
-				}
-			}
-		}
-	}
-
-	saveNewId(importId: string, newId: string): void {
-		if (!this.useVirtual) {
-			return super.saveNewId(importId, newId);
-		}
-
-		const record = this.getVirtualRecordById(importId);
-
-		if (record) {
-			record.id = newId;
-		}
-	}
-
-	saveError(importId: string, error: Error): void {
+	protected saveError(importId: string, error: Error): void {
 		if (!this.useVirtual) {
 			return super.saveError(importId, error);
 		}
@@ -91,7 +92,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		});
 	}
 
-	skipRecord(_id: string): void {
+	protected skipRecord(_id: string): void {
 		if (!this.useVirtual) {
 			return super.skipRecord(_id);
 		}
@@ -103,52 +104,46 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	getMessagesToImport(): any {
+	protected getMessagesToImport(): any {
 		if (!this.useVirtual) {
 			return super.getMessagesToImport();
 		}
 
-		return this._objects.message || [];
+		return this._messageRecords;
 	}
 
-	findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
-		if (!this.useVirtual) {
-			return super.findDMForImportedUsers(...users);
-		}
-
-		// The original method is only used by the hipchat importer so we probably don't need to implement this on the virtual converter.
-		return undefined;
-	}
-
-	getChannelsToImport(): any {
+	protected getChannelsToImport(): any {
 		if (!this.useVirtual) {
 			return super.getChannelsToImport();
 		}
 
-		return this._objects.channel || [];
+		return this._channelRecords;
 	}
 
-	clearImportData(): void {
-		if (!this.useVirtual) {
-			return super.clearImportData();
+	private clearVirtualData(): void {
+		this._userRecords = [];
+		this._channelRecords = [];
+		this._messageRecords = [];
+	}
+
+	private getObjectList(type: IImportRecordType): Array<IImportRecord> {
+		switch (type) {
+			case 'user':
+				return this._userRecords;
+			case 'channel':
+				return this._channelRecords;
+			case 'message':
+				return this._messageRecords;
 		}
-
-		this.clearVirtualData();
 	}
 
-	clearVirtualData(): void {
-		this._objects = {
-			user: [],
-			channel: [],
-			message: [],
-		};
-	}
-
-	clearSuccessfullyImportedData(): void {
-		if (!this.useVirtual) {
-			return super.clearSuccessfullyImportedData();
+	private getVirtualRecordById(id: string): IImportRecord | undefined {
+		for (const store of [this._userRecords, this._channelRecords, this._messageRecords]) {
+			for (const record of store) {
+				if (record._id === id) {
+					return record;
+				}
+			}
 		}
-
-		this.clearVirtualData();
 	}
 }

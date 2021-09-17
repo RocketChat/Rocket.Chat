@@ -5,7 +5,7 @@ import { ILDAPEntry } from '../../../../definition/ldap/ILDAPEntry';
 import type { IUser } from '../../../../definition/IUser';
 import type { IRoom, ICreatedRoom } from '../../../../definition/IRoom';
 import type { IRole } from '../../../../definition/IRole';
-import { IImportUser } from '../../../../app/importer/server/definitions/IImportUser';
+import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { Roles, Rooms } from '../../../../app/models/server';

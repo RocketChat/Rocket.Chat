@@ -10,7 +10,7 @@ import { LDAPEEConnection } from '../lib/ldap/Connection';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
-import type { IImportUser } from '../../../app/importer/server/definitions/IImportUser';
+import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import { onLicense } from '../../app/license/server';
 
