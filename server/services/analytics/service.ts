@@ -22,4 +22,8 @@ export class AnalyticsService extends ServiceClass implements IAnalyticsService 
 		const result = await this.Analytics.findOne({ type: 'seat-request' });
 		return result ? result.count : 0;
 	}
+
+	async resetSeatRequestCount(): Promise<void> {
+		await this.Analytics.update({ type: 'seat-request' }, { $set: { count: 0 } }, { upsert: true });
+	}
 }
