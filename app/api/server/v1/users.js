@@ -316,8 +316,8 @@ API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 
 		if (user._id === this.userId) {
 			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
-		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
-			Meteor.runAsUser(user._id, () => Meteor.call('resetAvatar'));
+		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 		} else {
 			return API.v1.unauthorized();
 		}
@@ -333,8 +333,9 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			userId: Match.Maybe(String),
 			username: Match.Maybe(String),
 		}));
+		const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
 				method: 'users.setAvatar',
 			});
@@ -343,7 +344,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
-		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+		} else if (canEditOtherUserAvatar) {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
