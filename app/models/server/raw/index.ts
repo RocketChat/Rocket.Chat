@@ -69,6 +69,8 @@ import EmailMessageHistoryModel from '../models/EmailMessageHistory';
 import { EmailMessageHistoryRaw } from './EmailMessageHistory';
 import { api } from '../../../../server/sdk/api';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
+import VoipServerConfigurationModel from '../models/VoipServerConfiguration';
+import { VoipServerConfigurationRaw } from './VoipServerConfiguration';
 
 const trashCollection = trash.rawCollection();
 
@@ -106,6 +108,7 @@ export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), tra
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 export const EmailInbox = new EmailInboxRaw(EmailInboxModel.model.rawCollection(), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
+export const VoipServerConfiguration = new VoipServerConfigurationRaw(VoipServerConfigurationModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
