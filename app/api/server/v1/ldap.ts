@@ -1,8 +1,9 @@
-import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { LDAP } from '../../../../server/sdk';
+
 
 API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
 	post() {
@@ -19,7 +20,7 @@ API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
 		}
 
 		try {
-			Promise.await(LDAPManager.testConnection());
+			Promise.await(LDAP.testConnection());
 		} catch (error) {
 			SystemLogger.error(error);
 			throw new Error('Connection_failed');
