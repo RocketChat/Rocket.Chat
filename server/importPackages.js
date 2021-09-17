@@ -52,7 +52,6 @@ import '../app/message-mark-as-unread/server';
 import '../app/message-pin/server';
 import '../app/message-snippet/server';
 import '../app/message-star/server';
-import '../app/migrations';
 import '../app/nextcloud/server';
 import '../app/oauth2-server-config/server';
 import '../app/oembed/server';

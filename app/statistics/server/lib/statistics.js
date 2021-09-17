@@ -18,7 +18,7 @@ import {
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations/server';
+import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
 import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -168,7 +168,7 @@ export const statistics = {
 		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
-		statistics.migration = Migrations._getControl();
+		statistics.migration = getControl();
 		statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
