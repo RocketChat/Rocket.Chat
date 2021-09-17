@@ -62,11 +62,9 @@ export const useQuickActions = (
 		} else {
 			setEmail('');
 		}
-	});
 
-	useEffect(() => {
-		getVisitorEmail();
-	}, [visitorRoomId, getVisitorEmail]);
+		return 0;
+	});
 
 	useEffect(() => {
 		if (onHoldModalActive && roomLastMessage?.token) {
@@ -206,13 +204,13 @@ export const useQuickActions = (
 		}
 	}, [onHoldChat, closeModal, rid, t]);
 
-	const openModal = useMutableCallback((id: string) => {
+	const openModal = useMutableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(<ReturnChatQueueModal onMoveChat={handleMoveChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.Transcript:
-				getVisitorEmail();
+				await getVisitorEmail();
 
 				if (!email) {
 					dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
