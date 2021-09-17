@@ -11,6 +11,7 @@ import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
 import type { GroupsEndpoints } from './endpoints/v1/groups';
 import type { ImEndpoints } from './endpoints/v1/im';
 import type { LicensesEndpoints } from './endpoints/v1/licenses';
+import type { MiscEndpoints } from './endpoints/v1/misc';
 import type { OmnichannelEndpoints } from './endpoints/v1/omnichannel';
 import type { RoomsEndpoints } from './endpoints/v1/rooms';
 import type { StatisticsEndpoints } from './endpoints/v1/statistics';
@@ -33,7 +34,8 @@ type Endpoints = ChatEndpoints &
 	AppsEndpoints &
 	OmnichannelEndpoints &
 	StatisticsEndpoints &
-	LicensesEndpoints;
+	LicensesEndpoints &
+	MiscEndpoints;
 
 type Endpoint = UnionizeEndpoints<Endpoints>;
 

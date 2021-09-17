@@ -9,10 +9,12 @@ import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
-import { call, callMethod } from './callMethod';
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
+import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 
 window.currentTracker = undefined;
 
@@ -34,7 +36,7 @@ export const openRoom = async function(type, name, render = true) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			const room = roomTypes.findRoom(type, name, user) || await call('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
@@ -67,14 +69,14 @@ export const openRoom = async function(type, name, render = true) {
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
 			if (sub && sub.open === false) {
-				call('openRoom', room._id);
+				callWithErrorHandling('openRoom', room._id);
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
 				const messageId = FlowRouter.getQueryParam('msg');
 				const msg = { _id: messageId, rid: room._id };
 
-				const message = Messages.findOne({ _id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+				const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
 
 				if (message && (message.tmid || message.tcount)) {
 					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
@@ -90,7 +92,7 @@ export const openRoom = async function(type, name, render = true) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await call('createDirectMessage', ...name.split(', '));
+				const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
 				if (result) {
 					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}

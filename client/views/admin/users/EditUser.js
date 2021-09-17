@@ -26,7 +26,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -143,6 +143,7 @@ function EditUser({ data, roles, ...props }) {
 			if (avatarObj) {
 				await updateAvatar();
 			}
+			onReload();
 			goToUser(data._id);
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);

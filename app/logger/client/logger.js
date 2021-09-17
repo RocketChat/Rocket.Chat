@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { getConfig } from '../../ui-utils/client/config';
+import { getConfig } from '../../../client/lib/utils/getConfig';
 
 Template.log = !!(getConfig('debug') || getConfig('debug-template'));
 
