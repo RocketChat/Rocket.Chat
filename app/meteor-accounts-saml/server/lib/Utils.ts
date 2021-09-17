@@ -24,8 +24,6 @@ const globalSettings: ISAMLGlobalSettings = {
 	mailOverwrite: false,
 	immutableProperty: 'EMail',
 	defaultUserRole: 'user',
-	roleAttributeName: '',
-	roleAttributeSync: false,
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
 	usernameNormalize: 'None',
 	channelsAttributeUpdate: false,
@@ -75,7 +73,6 @@ export class SAMLUtils {
 		globalSettings.generateUsername = Boolean(samlConfigs.generateUsername);
 		globalSettings.nameOverwrite = Boolean(samlConfigs.nameOverwrite);
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
-		globalSettings.roleAttributeSync = Boolean(samlConfigs.roleAttributeSync);
 		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
 		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
 
@@ -89,10 +86,6 @@ export class SAMLUtils {
 
 		if (samlConfigs.defaultUserRole && typeof samlConfigs.defaultUserRole === 'string') {
 			globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
-		}
-
-		if (samlConfigs.roleAttributeName && typeof samlConfigs.roleAttributeName === 'string') {
-			globalSettings.roleAttributeName = samlConfigs.roleAttributeName;
 		}
 
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {

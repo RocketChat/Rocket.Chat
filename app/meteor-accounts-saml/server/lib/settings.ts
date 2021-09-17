@@ -39,8 +39,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		customAuthnContext: settings.get(`${ service }_custom_authn_context`),
 		authnContextComparison: settings.get(`${ service }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service }_default_user_role`),
-		roleAttributeName: settings.get(`${ service }_role_attribute_name`),
-		roleAttributeSync: settings.get(`${ service }_role_attribute_sync`),
 		secret: {
 			privateKey: settings.get(`${ service }_private_key`),
 			publicCert: settings.get(`${ service }_public_cert`),
@@ -87,8 +85,6 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		customAuthnContext: samlConfigs.customAuthnContext,
 		authnContextComparison: samlConfigs.authnContextComparison,
 		defaultUserRole: samlConfigs.defaultUserRole,
-		roleAttributeName: samlConfigs.roleAttributeName,
-		roleAttributeSync: samlConfigs.roleAttributeSync,
 		allowedClockDrift: parseInt(samlConfigs.allowedClockDrift) || 0,
 		signatureValidationType: samlConfigs.signatureValidationType,
 		identifierFormat: samlConfigs.identifierFormat,
