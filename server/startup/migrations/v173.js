@@ -1,12 +1,10 @@
-import {
-	Migrations,
-} from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import {
 	Rooms,
 } from '../../../app/models';
 import { MessageTypesValues } from '../../../app/lib/lib/MessageTypes';
 
-Migrations.add({
+addMigration({
 	version: 173,
 	up() {
 		Rooms.update({ sysMes: true }, { $unset: { sysMes: '' } }, { multi: true });

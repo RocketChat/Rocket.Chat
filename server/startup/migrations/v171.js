@@ -1,13 +1,11 @@
-import {
-	Migrations,
-} from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import {
 	Users,
 	Settings,
 } from '../../../app/models';
 
 
-Migrations.add({
+addMigration({
 	version: 171,
 	up() {
 		Settings.remove({ _id: 'Accounts_Default_User_Preferences_roomCounterSidebar' });

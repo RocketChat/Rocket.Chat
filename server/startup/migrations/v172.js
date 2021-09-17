@@ -1,11 +1,9 @@
-import {
-	Migrations,
-} from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import {
 	Settings,
 } from '../../../app/models';
 
-Migrations.add({
+addMigration({
 	version: 172,
 	up() {
 		const settings = Settings.find({ _id: /Message_HideType_.*/i }).fetch();
