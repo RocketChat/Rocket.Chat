@@ -1096,6 +1096,20 @@ export const Livechat = {
 		return true;
 	},
 
+	getRoomMessages({ rid }) {
+		check(rid, String);
+
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+
+		if (!isLivechat) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
+	},
+
 	requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
