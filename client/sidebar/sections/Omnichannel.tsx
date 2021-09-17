@@ -29,7 +29,7 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const voipCallIcon = {
 		title: voipCallAvailable ? t('Available') : t('Not_Available'),
 		color: voipCallAvailable ? 'success' : undefined,
-		icon: voipCallAvailable ? 'phone' : 'phone-off',
+		icon: voipCallAvailable ? 'phone' : 'phone-disabled',
 	};
 
 	const availableIcon = {
