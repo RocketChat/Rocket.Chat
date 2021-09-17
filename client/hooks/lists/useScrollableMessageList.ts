@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 
 import { IMessage } from '../../../definition/IMessage';
 import { Serialized } from '../../../definition/Serialized';
-import { mapMessageFromApi } from '../../lib/fromApi';
 import { MessageList } from '../../lib/lists/MessageList';
 import { RecordListBatchChanges } from '../../lib/lists/RecordList';
+import { mapMessageFromApi } from '../../lib/utils/mapMessageFromApi';
 import { useScrollableRecordList } from './useScrollableRecordList';
 
 export const useScrollableMessageList = (

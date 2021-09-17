@@ -69,7 +69,6 @@ import './methods/setUpConnection';
 import './methods/takeInquiry';
 import './methods/requestTranscript';
 import './methods/returnAsInquiry';
-import './methods/saveOfficeHours';
 import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import './methods/getTagsList';

@@ -91,9 +91,10 @@ export const ThreadList: FC<ThreadListProps> = function ThreadList({
 		[t],
 	);
 
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({
-		debounceDelay: 200,
-	});
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } =
+		useResizeObserver<HTMLElement>({
+			debounceDelay: 200,
+		});
 
 	const mid = useTabContext();
 	const jump = useQueryStringParameter('jump');
