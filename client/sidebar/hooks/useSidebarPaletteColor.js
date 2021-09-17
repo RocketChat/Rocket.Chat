@@ -4,7 +4,7 @@ import { useLayoutEffect, useEffect, useMemo } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { isIE11 } from '../../lib/utils/isIE11';
 
-const isInternetExplorer11 = isIE11();
+const isInternetExplorer11 = isIE11;
 
 const oldPallet = {
 	'color-dark-100': '#0c0d0f',

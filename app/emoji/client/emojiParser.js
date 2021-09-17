@@ -29,7 +29,7 @@ const emojiParser = (message) => {
 
 	let hasText = false;
 
-	if (!isIE11()) {
+	if (!isIE11) {
 		const filter = (node) => {
 			if (node.nodeType === Node.ELEMENT_NODE && (
 				node.classList.contains('emojione')

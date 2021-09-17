@@ -38,7 +38,7 @@ export const openToolTip = (title, anchor) => {
 	unregister = unregister || createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
 };
 
-document.body.addEventListener('mouseover', (() => {
+window.matchMedia('(hover: none)').matches || document.body.addEventListener('mouseover', (() => {
 	let timeout;
 	return (e) => {
 		timeout = timeout && clearTimeout(timeout);
