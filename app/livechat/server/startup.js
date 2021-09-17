@@ -57,9 +57,5 @@ Meteor.startup(async () => {
 		return businessHourManager.stopManager();
 	});
 
-	Accounts.onLogout(({ user }) => {
-		if (user?.roles?.includes('livechat-agent')) {
-			Livechat.setUserStatusLivechat(user._id, 'not-available');
-		}
-	});
+	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && Livechat.setUserStatusLivechat(user._id, 'not-available'));
 });
