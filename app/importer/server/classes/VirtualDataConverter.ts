@@ -104,7 +104,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	protected getMessagesToImport(): any {
+	protected async getMessagesToImport(): Promise<IImportMessageRecord[]> {
 		if (!this.useVirtual) {
 			return super.getMessagesToImport();
 		}
@@ -112,7 +112,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return this._messageRecords;
 	}
 
-	protected getChannelsToImport(): any {
+	protected async getChannelsToImport(): Promise<IImportChannelRecord[]> {
 		if (!this.useVirtual) {
 			return super.getChannelsToImport();
 		}
