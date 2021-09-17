@@ -102,17 +102,13 @@ type Query<T> = {
 
 type addSectionCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-}) => void;
-
-type addTabCallback = (this: {
-	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-	section(section: string, cb: addSectionCallback): void;
+	set(options: ISettingAddOptions, cb: addSectionCallback): void;
 }) => void;
 
 type addGroupCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-	section(section: string, cb: addSectionCallback, tab?: string): void;
-	tab(tab: string, cb: addTabCallback): void;
+	section(section: string, cb: addSectionCallback): void;
+	set(options: ISettingAddOptions, cb: addGroupCallback): void;
 }) => void;
 
 class Settings extends SettingsBase {
@@ -305,35 +301,36 @@ class Settings extends SettingsBase {
 		}
 
 		if (cb != null) {
-			cb.call({
-				add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-					options.group = _id;
-					return this.add(id, value, options);
-				},
-				section: (section: string, cb: addSectionCallback, tab?: string) => cb.call({
-					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-						options.group = _id;
-						options.section = section;
-						options.tab = tab;
-						return this.add(id, value, options);
-					},
-				}),
-				tab: (tab: string, cb: addTabCallback) => cb.call({
-					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-						options.group = _id;
-						options.tab = tab;
-						return this.add(id, value, options);
-					},
-					section: (section: string, cb: addSectionCallback) => cb.call({
-						add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-							options.group = _id;
-							options.section = section;
-							options.tab = tab;
-							return this.add(id, value, options);
-						},
-					}),
-				}),
-			});
+			const addWith = (preset: ISettingAddOptions) => (id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+				this.add(id, value, mergedOptions);
+			};
+			const sectionSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addSectionCallback): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+				cb.call({
+					add: addWith(mergedOptions),
+					set: sectionSetWith(mergedOptions),
+				});
+			};
+			const sectionWith = (preset: ISettingAddOptions) => (section: string, cb: addSectionCallback): void => {
+				const mergedOptions = Object.assign({}, preset, { section });
+				cb.call({
+					add: addWith(mergedOptions),
+					set: sectionSetWith(mergedOptions),
+				});
+			};
+
+			const groupSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addGroupCallback): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+
+				cb.call({
+					add: addWith(mergedOptions),
+					section: sectionWith(mergedOptions),
+					set: groupSetWith(mergedOptions),
+				});
+			};
+
+			groupSetWith({ group: _id })({}, cb);
 		}
 		return true;
 	}

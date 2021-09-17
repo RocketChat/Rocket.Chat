@@ -1,4 +1,5 @@
 import limax from 'limax';
+// #ToDo: #TODO: Remove Meteor dependencies
 import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
@@ -22,7 +23,7 @@ import { setUserAvatar } from '../../../app/lib/server/functions';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
-		logger.log({ msg: 'Init LDAP login', username });
+		logger.debug({ msg: 'Init LDAP login', username });
 
 		if (settings.get('LDAP_Enable') !== true) {
 			return this.fallbackToDefaultLogin(username, password);
@@ -72,7 +73,7 @@ export class LDAPManager {
 			}
 		} catch (error) {
 			connLogger.error(error);
-			throw new Meteor.Error(error.message);
+			throw error;
 		}
 	}
 
@@ -132,20 +133,20 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.info(`Search returned ${ users.length } records for ${ escapedUsername }`);
+				logger.debug(`Search returned ${ users.length } records for ${ escapedUsername }`);
 				throw new Error('User not found');
 			}
 
 			const [ldapUser] = users;
 			if (!await ldap.authenticate(ldapUser.dn, password)) {
-				logger.info(`Wrong password for ${ escapedUsername }`);
+				logger.debug(`Wrong password for ${ escapedUsername }`);
 			}
 
 			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if (await ldap.searchAndCount(ldapUser.dn, {}) === 0) {
-					authLogger.info(`Bind successful but user ${ ldapUser.dn } was not found via search`);
+					authLogger.debug(`Bind successful but user ${ ldapUser.dn } was not found via search`);
 				}
 			}
 
@@ -160,7 +161,7 @@ export class LDAPManager {
 	}
 
 	private static async loginNewUserFromLDAP(slugifiedUsername: string, ldapPass: string, ldapUser: ILDAPEntry, ldap: LDAPConnection): Promise<LDAPLoginResult> {
-		logger.info({ msg: 'User does not exist, creating', username: slugifiedUsername });
+		logger.debug({ msg: 'User does not exist, creating', username: slugifiedUsername });
 
 		let username: string | undefined;
 
@@ -253,7 +254,7 @@ export class LDAPManager {
 			};
 		}
 
-		connLogger.info('Failed to generate unique identifier for ldap entry');
+		connLogger.warn('Failed to generate unique identifier for ldap entry');
 		connLogger.debug(ldapUser);
 	}
 
@@ -366,7 +367,7 @@ export class LDAPManager {
 			}
 		}
 
-		logger.info({ msg: 'Fallback to default account system', username });
+		logger.debug({ msg: 'Fallback to default account system', username });
 
 		const loginRequest = {
 			user: username,
@@ -404,7 +405,9 @@ export class LDAPManager {
 			return;
 		}
 
-		logger.info('Syncing user avatar');
+		logger.debug('Syncing user avatar');
+		// #ToDo: Remove Meteor references here
+		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
 		Meteor.defer(() => Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest')));
 	}
 }

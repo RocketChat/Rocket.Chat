@@ -33,9 +33,10 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
-export interface ILoginUsername {
-	username?: string;
-	email?: string;
+export type ILoginUsername = {
+	username: string;
+} | {
+	email: string;
 }
 export type LoginUsername = string | ILoginUsername;
 

@@ -1,8 +1,7 @@
 import ldapjs from 'ldapjs';
-import Bunyan from 'bunyan';
 
 import { settings } from '../../../app/settings/server';
-import type { ILDAPConnectionOptions, LDAPLogLevel, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
+import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
 import { callbacks } from '../../../app/callbacks/server';
@@ -55,7 +54,6 @@ export class LDAPConnection {
 			host: settings.get<string>('LDAP_Host') ?? '',
 			port: settings.get<number>('LDAP_Port') ?? 389,
 			reconnect: settings.get<boolean>('LDAP_Reconnect') ?? false,
-			internalLogLevel: settings.get<LDAPLogLevel>('LDAP_Internal_Log_Level') ?? 'disabled',
 			timeout: settings.get<number>('LDAP_Timeout') ?? 60000,
 			connectionTimeout: settings.get<number>('LDAP_Connect_Timeout') ?? 1000,
 			idleTimeout: settings.get<number>('LDAP_Idle_Timeout') ?? 1000,
@@ -531,16 +529,8 @@ export class LDAPConnection {
 			connectTimeout: this.options.connectionTimeout,
 			idleTimeout: this.options.idleTimeout,
 			reconnect: this.options.reconnect,
+			log: connLogger,
 		};
-
-		if (this.options.internalLogLevel !== 'disabled') {
-			clientOptions.log = new Bunyan({
-				name: 'ldapjs',
-				component: 'client',
-				stream: process.stderr,
-				level: this.options.internalLogLevel,
-			});
-		}
 
 		const tlsOptions: Record<string, any> = {
 			rejectUnauthorized: this.options.rejectUnauthorized,

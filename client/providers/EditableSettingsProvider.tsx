@@ -137,8 +137,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 										section: 1,
 									},
 									sort: {
-										section: 1,
 										sorter: 1,
+										section: 1,
 										i18nLabel: 1,
 									},
 								},
@@ -166,8 +166,8 @@ const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps>
 										tab: 1,
 									},
 									sort: {
-										tab: 1,
 										sorter: 1,
+										tab: 1,
 										i18nLabel: 1,
 									},
 								},

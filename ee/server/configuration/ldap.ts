@@ -33,18 +33,16 @@ onLicense('ldap-enterprise', () => {
 		}
 	}), 500);
 
-	Meteor.startup(() => {
-		Meteor.defer(() => {
-			settings.get('LDAP_Background_Sync', addCronJob);
-			settings.get('LDAP_Background_Sync_Interval', addCronJob);
+	Meteor.defer(() => {
+		settings.get('LDAP_Background_Sync', addCronJob);
+		settings.get('LDAP_Background_Sync_Interval', addCronJob);
 
-			settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (_key, value) => {
-				try {
-					LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
-				} catch (error) {
-					logger.error(error);
-				}
-			});
+		settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (_key, value) => {
+			try {
+				LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
+			} catch (error) {
+				logger.error(error);
+			}
 		});
 	});
 

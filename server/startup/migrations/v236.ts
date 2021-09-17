@@ -67,34 +67,18 @@ Migrations.add({
 			}
 		}
 
-		if (isEE) {
-			copySettingValue('LDAP_Sync_User_Data_Roles', 'LDAP_Sync_User_Data_Groups');
-			copySettingValue('LDAP_Sync_User_Data_Roles_AutoRemove', 'LDAP_Sync_User_Data_Groups_AutoRemove');
-			copySettingValue('LDAP_Sync_User_Data_Roles_Filter', 'LDAP_Sync_User_Data_Groups_Filter');
-			copySettingValue('LDAP_Sync_User_Data_Roles_BaseDN', 'LDAP_Sync_User_Data_Groups_BaseDN');
-			copySettingValue('LDAP_Sync_User_Data_RolesMap', 'LDAP_Sync_User_Data_GroupsMap');
-			copySettingValue('LDAP_Sync_User_Data_Channels', 'LDAP_Sync_User_Data_Groups_AutoChannels');
-			copySettingValue('LDAP_Sync_User_Data_Channels_Admin', 'LDAP_Sync_User_Data_Groups_AutoChannels_Admin');
-			copySettingValue('LDAP_Sync_User_Data_ChannelsMap', 'LDAP_Sync_User_Data_Groups_AutoChannelsMap');
-			copySettingValue('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels', 'LDAP_Sync_User_Data_Groups_Enforce_AutoChannels');
+		copySettingValue('LDAP_Sync_User_Data_Roles', 'LDAP_Sync_User_Data_Groups');
+		copySettingValue('LDAP_Sync_User_Data_Roles_AutoRemove', 'LDAP_Sync_User_Data_Groups_AutoRemove');
+		copySettingValue('LDAP_Sync_User_Data_Roles_Filter', 'LDAP_Sync_User_Data_Groups_Filter');
+		copySettingValue('LDAP_Sync_User_Data_Roles_BaseDN', 'LDAP_Sync_User_Data_Groups_BaseDN');
+		copySettingValue('LDAP_Sync_User_Data_RolesMap', 'LDAP_Sync_User_Data_GroupsMap');
+		copySettingValue('LDAP_Sync_User_Data_Channels', 'LDAP_Sync_User_Data_Groups_AutoChannels');
+		copySettingValue('LDAP_Sync_User_Data_Channels_Admin', 'LDAP_Sync_User_Data_Groups_AutoChannels_Admin');
+		copySettingValue('LDAP_Sync_User_Data_ChannelsMap', 'LDAP_Sync_User_Data_Groups_AutoChannelsMap');
+		copySettingValue('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels', 'LDAP_Sync_User_Data_Groups_Enforce_AutoChannels');
 
-			copySettingValue('LDAP_Sync_User_Data_Channels_Filter', 'LDAP_Sync_User_Data_Groups_Filter');
-			copySettingValue('LDAP_Sync_User_Data_Channels_BaseDN', 'LDAP_Sync_User_Data_Groups_BaseDN');
-		} else {
-			Settings.remove({
-				_id: {
-					$in: [
-						'LDAP_Authentication',
-						'LDAP_Authentication_UserDN',
-						'LDAP_Authentication_Password',
-						'LDAP_Background_Sync',
-						'LDAP_Background_Sync_Interval',
-						'LDAP_Background_Sync_Import_New_Users',
-						'LDAP_Background_Sync_Keep_Existant_Users_Updated',
-					],
-				},
-			});
-		}
+		copySettingValue('LDAP_Sync_User_Data_Channels_Filter', 'LDAP_Sync_User_Data_Groups_Filter');
+		copySettingValue('LDAP_Sync_User_Data_Channels_BaseDN', 'LDAP_Sync_User_Data_Groups_BaseDN');
 
 		Settings.remove({
 			_id: {
@@ -118,6 +102,7 @@ Migrations.add({
 					'LDAP_Sync_User_Data_Groups_AutoChannels_Admin',
 					'LDAP_Sync_User_Data_Groups_AutoChannelsMap',
 					'LDAP_Sync_User_Data_Groups_Enforce_AutoChannels',
+					'LDAP_Internal_Log_Level',
 				],
 			},
 		});

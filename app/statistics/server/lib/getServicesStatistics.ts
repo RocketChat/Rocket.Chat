@@ -40,7 +40,7 @@ export function getServicesStatistics(): Record<string, unknown> {
 			ee: {
 				syncActiveState: settings.get('LDAP_Sync_User_Active_State'),
 				syncTeams: settings.get('LDAP_Enable_LDAP_Groups_To_RC_Teams'),
-				syncRoles: settings.get('LDAP_Enable_LDAP_Roles_To_RC_Roles'),
+				syncRoles: settings.get('LDAP_Sync_User_Data_Roles'),
 			},
 		},
 		saml: {

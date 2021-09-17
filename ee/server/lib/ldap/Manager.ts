@@ -185,7 +185,7 @@ export class LDAPEEManager extends LDAPManager {
 				if (Roles.addUserRoles(user._id, roleName)) {
 					this.broadcastRoleChange('added', roleName, user._id, username);
 				}
-				logger.info(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
+				logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
 				return;
 			}
 
@@ -200,7 +200,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static createRoomForSync(channel: string): IRoom | undefined {
-		logger.info(`Channel '${ channel }' doesn't exist, creating it.`);
+		logger.debug(`Channel '${ channel }' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
@@ -248,7 +248,7 @@ export class LDAPEEManager extends LDAPManager {
 						logger.error(`Can't add user to channel ${ channel } because it is a team.`);
 					} else {
 						addUserToRoom(room._id, user);
-						logger.info(`Synced user channel ${ room._id } from LDAP for ${ username }`);
+						logger.debug(`Synced user channel ${ room._id } from LDAP for ${ username }`);
 					}
 				} else if (syncUserChannelsRemove && !room.teamMain) {
 					const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
@@ -355,7 +355,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		userData.deleted = deleted;
-		logger.info(`${ deleted ? 'Deactivating' : 'Activating' } user ${ userData.name } (${ userData.username })`);
+		logger.debug(`${ deleted ? 'Deactivating' : 'Activating' } user ${ userData.name } (${ userData.username })`);
 	}
 
 	public static copyCustomFields(ldapUser: ILDAPEntry, userData: IImportUser): void {
@@ -368,7 +368,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (!customFieldsMap || !customFieldsSettings) {
 			if (customFieldsMap) {
-				logger.info('Skipping LDAP custom fields because there are no custom fields configured.');
+				logger.debug('Skipping LDAP custom fields because there are no custom fields configured.');
 			}
 			return;
 		}
