@@ -4,9 +4,8 @@ import React, { ReactElement } from 'react';
 import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useSetModal } from '../../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { useAbsoluteUrl } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../client/hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../client/lib/asyncState';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
 import SeatsCapUsage from './SeatsCapUsage';
@@ -20,11 +19,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 	activeUsers,
 	maxActiveUsers,
 }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	const { value, phase } = useEndpointData('licenses.requestSeatsLink');
-
-	const seatsLinkUrl = value?.url;
-
-	const disableButtons = !seatsLinkUrl || AsyncStatePhase.LOADING === phase;
+	const seatsLinkUrl = useAbsoluteUrl()('/requestSeats');
 
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
@@ -114,14 +109,14 @@ const UserPageHeaderContentWithSeatsCap = ({
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
-				<Button onClick={handleNewButtonClick} disabled={disableButtons}>
+				<Button onClick={handleNewButtonClick}>
 					<Icon size='x20' name='user-plus' /> {t('New')}
 				</Button>
-				<Button onClick={handleInviteButtonClick} disabled={disableButtons}>
+				<Button onClick={handleInviteButtonClick}>
 					<Icon size='x20' name='mail' /> {t('Invite')}
 				</Button>
 				<ExternalLink to={seatsLinkUrl || ''}>
-					<Button disabled={disableButtons}>
+					<Button>
 						<Icon size='x20' name='new-window' /> {t('Request_seats')}
 					</Button>
 				</ExternalLink>
