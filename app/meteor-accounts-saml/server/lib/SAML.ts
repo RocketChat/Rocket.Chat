@@ -216,7 +216,7 @@ export class SAML {
 			res.writeHead(200);
 			res.write(serviceProvider.generateServiceProviderMetadata());
 			res.end();
-		} catch (err) {
+		} catch (err: any) {
 			showErrorMessage(res, err);
 		}
 	}
@@ -300,7 +300,7 @@ export class SAML {
 
 						redirect(url);
 					});
-				} catch (e) {
+				} catch (e: any) {
 					SystemLogger.error(e);
 					redirect();
 				}
@@ -472,7 +472,7 @@ export class SAML {
 					}
 				}
 			}
-		} catch (err) {
+		} catch (err: any) {
 			SystemLogger.error(err);
 		}
 	}
