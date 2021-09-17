@@ -16,7 +16,7 @@ import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
-import { mapMessageFromApi } from '../../../../client/lib/fromApi';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 
 const subscriptionFields = {};
 
@@ -70,7 +70,7 @@ const ThreadComponent: FC<{
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
-	const ref = useRef<Element>(null);
+	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
