@@ -4,9 +4,10 @@ export const useSeatsCap = ():
 	| {
 			maxActiveUsers: number;
 			activeUsers: number;
+			reload: () => void;
 	  }
 	| undefined => {
-	const { value } = useEndpointData('licenses.maxActiveUsers');
+	const { value, reload } = useEndpointData('licenses.maxActiveUsers');
 
 	if (!value) {
 		return undefined;
@@ -15,5 +16,6 @@ export const useSeatsCap = ():
 	return {
 		activeUsers: value.activeUsers,
 		maxActiveUsers: value.maxActiveUsers ?? Number.POSITIVE_INFINITY,
+		reload,
 	};
 };

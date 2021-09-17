@@ -71,8 +71,6 @@ const UserPageHeaderContentWithSeatsCap = ({
 					members={activeUsers}
 					limit={maxActiveUsers}
 					title={t('Create_new_members')}
-					confirmText={t('Create')}
-					confirmIcon='user-plus'
 					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'new' });
@@ -97,8 +95,6 @@ const UserPageHeaderContentWithSeatsCap = ({
 					members={activeUsers}
 					limit={maxActiveUsers}
 					title={t('Invite_Users')}
-					confirmText={t('Invite')}
-					confirmIcon='mail'
 					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'invite' });
