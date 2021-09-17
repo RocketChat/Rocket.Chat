@@ -5,6 +5,7 @@ import { Settings, Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
 import { hasPermission } from '../../../app/authorization/server';
 import { getSeatsRequestLink } from '../../app/license/server/getSeatsRequestLink';
+import { Analytics } from '../../../server/sdk';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {
@@ -20,6 +21,7 @@ API.v1.addRoute('licenses.requestSeatsLink', { authRequired: true }, {
 		}
 
 		const url = getSeatsRequestLink();
+		Promise.await(Analytics.saveSeatRequest());
 
 		return API.v1.success({ url });
 	},
