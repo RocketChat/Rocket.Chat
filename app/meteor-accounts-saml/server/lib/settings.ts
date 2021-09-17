@@ -136,338 +136,285 @@ export const addSamlService = function(name: string): void {
 };
 
 export const addSettings = function(name: string): void {
-	settings.add(`SAML_Custom_${ name }`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		i18nLabel: 'Accounts_OAuth_Custom_Enable',
-	});
-	settings.add(`SAML_Custom_${ name }_provider`, 'provider-name', {
-		type: 'string',
-		group: 'SAML',
-		i18nLabel: 'SAML_Custom_Provider',
-	});
-	settings.add(`SAML_Custom_${ name }_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
-		type: 'string',
-		group: 'SAML',
-		i18nLabel: 'SAML_Custom_Entry_point',
-	});
-	settings.add(`SAML_Custom_${ name }_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
-		type: 'string',
-		group: 'SAML',
-		i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
-	});
-	settings.add(`SAML_Custom_${ name }_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
-		type: 'string',
-		group: 'SAML',
-		i18nLabel: 'SAML_Custom_Issuer',
-	});
-	settings.add(`SAML_Custom_${ name }_debug`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		i18nLabel: 'SAML_Custom_Debug',
-	});
+	settings.addGroup('SAML', function() {
+		this.set({
+			tab: 'SAML_Connection',
+		}, function() {
+			this.add(`SAML_Custom_${ name }`, false, {
+				type: 'boolean',
+				i18nLabel: 'Accounts_OAuth_Custom_Enable',
+			});
+			this.add(`SAML_Custom_${ name }_provider`, 'provider-name', {
+				type: 'string',
+				i18nLabel: 'SAML_Custom_Provider',
+			});
+			this.add(`SAML_Custom_${ name }_entry_point`, 'https://example.com/simplesaml/saml2/idp/SSOService.php', {
+				type: 'string',
+				i18nLabel: 'SAML_Custom_Entry_point',
+			});
+			this.add(`SAML_Custom_${ name }_idp_slo_redirect_url`, 'https://example.com/simplesaml/saml2/idp/SingleLogoutService.php', {
+				type: 'string',
+				i18nLabel: 'SAML_Custom_IDP_SLO_Redirect_URL',
+			});
+			this.add(`SAML_Custom_${ name }_issuer`, 'https://your-rocket-chat/_saml/metadata/provider-name', {
+				type: 'string',
+				i18nLabel: 'SAML_Custom_Issuer',
+			});
+			this.add(`SAML_Custom_${ name }_debug`, false, {
+				type: 'boolean',
+				i18nLabel: 'SAML_Custom_Debug',
+			});
 
-	// UI Settings
-	settings.add(`SAML_Custom_${ name }_button_label_text`, 'SAML', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_1_User_Interface',
-		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
-	});
-	settings.add(`SAML_Custom_${ name }_button_label_color`, '#FFFFFF', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_1_User_Interface',
-		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
-	});
-	settings.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_1_User_Interface',
-		i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
-	});
+			this.section('SAML_Section_2_Certificate', function() {
+				this.add(`SAML_Custom_${ name }_cert`, '', {
+					type: 'string',
+					i18nLabel: 'SAML_Custom_Cert',
+					multiline: true,
+					secret: true,
+				});
+				this.add(`SAML_Custom_${ name }_public_cert`, '', {
+					type: 'string',
+					multiline: true,
+					i18nLabel: 'SAML_Custom_Public_Cert',
+				});
+				this.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
+					type: 'select',
+					values: [
+						{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
+						{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
+						{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
+						{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
+					],
+					i18nLabel: 'SAML_Custom_signature_validation_type',
+					i18nDescription: 'SAML_Custom_signature_validation_type_description',
+				});
+				this.add(`SAML_Custom_${ name }_private_key`, '', {
+					type: 'string',
+					multiline: true,
+					i18nLabel: 'SAML_Custom_Private_Key',
+					secret: true,
+				});
+			});
+		});
 
-	// Certificate settings
-	settings.add(`SAML_Custom_${ name }_cert`, '', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_2_Certificate',
-		i18nLabel: 'SAML_Custom_Cert',
-		multiline: true,
-		secret: true,
-	});
-	settings.add(`SAML_Custom_${ name }_public_cert`, '', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_2_Certificate',
-		multiline: true,
-		i18nLabel: 'SAML_Custom_Public_Cert',
-	});
-	settings.add(`SAML_Custom_${ name }_signature_validation_type`, 'All', {
-		type: 'select',
-		values: [
-			{ key: 'Response', i18nLabel: 'SAML_Custom_signature_validation_response' },
-			{ key: 'Assertion', i18nLabel: 'SAML_Custom_signature_validation_assertion' },
-			{ key: 'Either', i18nLabel: 'SAML_Custom_signature_validation_either' },
-			{ key: 'All', i18nLabel: 'SAML_Custom_signature_validation_all' },
-		],
-		group: 'SAML',
-		section: 'SAML_Section_2_Certificate',
-		i18nLabel: 'SAML_Custom_signature_validation_type',
-		i18nDescription: 'SAML_Custom_signature_validation_type_description',
-	});
-	settings.add(`SAML_Custom_${ name }_private_key`, '', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_2_Certificate',
-		multiline: true,
-		i18nLabel: 'SAML_Custom_Private_Key',
-		secret: true,
-	});
+		this.set({
+			tab: 'SAML_General',
+		}, function() {
+			this.section('SAML_Section_1_User_Interface', function() {
+				this.add(`SAML_Custom_${ name }_button_label_text`, 'SAML', {
+					type: 'string',
+					i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Text',
+				});
+				this.add(`SAML_Custom_${ name }_button_label_color`, '#FFFFFF', {
+					type: 'string',
+					i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+				});
+				this.add(`SAML_Custom_${ name }_button_color`, '#1d74f5', {
+					type: 'string',
+					i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+				});
+			});
 
-	// Settings to customize behavior
-	settings.add(`SAML_Custom_${ name }_generate_username`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_Generate_Username',
-	});
-	settings.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
-		type: 'select',
-		values: [
-			{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
-			{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
-		],
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_Username_Normalize',
-	});
-	settings.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
-		type: 'select',
-		values: [
-			{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
-			{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
-		],
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_Immutable_Property',
-	});
-	settings.add(`SAML_Custom_${ name }_name_overwrite`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_name_overwrite',
-	});
-	settings.add(`SAML_Custom_${ name }_mail_overwrite`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_mail_overwrite',
-	});
-	settings.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
-		type: 'select',
-		values: [
-			{ key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session' },
-			{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
-		],
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_Logout_Behaviour',
-	});
-	settings.add(`SAML_Custom_${ name }_channels_update`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_channels_update',
-		i18nDescription: 'SAML_Custom_channels_update_description',
-	});
-	settings.add(`SAML_Custom_${ name }_include_private_channels_update`, false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_3_Behavior',
-		i18nLabel: 'SAML_Custom_include_private_channels_update',
-		i18nDescription: 'SAML_Custom_include_private_channels_update_description',
-	});
+			this.section('SAML_Section_3_Behavior', function() {
+				// Settings to customize behavior
+				this.add(`SAML_Custom_${ name }_generate_username`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Custom_Generate_Username',
+				});
+				this.add(`SAML_Custom_${ name }_username_normalize`, 'None', {
+					type: 'select',
+					values: [
+						{ key: 'None', i18nLabel: 'SAML_Custom_Username_Normalize_None' },
+						{ key: 'Lowercase', i18nLabel: 'SAML_Custom_Username_Normalize_Lowercase' },
+					],
+					i18nLabel: 'SAML_Custom_Username_Normalize',
+				});
+				this.add(`SAML_Custom_${ name }_immutable_property`, 'EMail', {
+					type: 'select',
+					values: [
+						{ key: 'Username', i18nLabel: 'SAML_Custom_Immutable_Property_Username' },
+						{ key: 'EMail', i18nLabel: 'SAML_Custom_Immutable_Property_EMail' },
+					],
+					i18nLabel: 'SAML_Custom_Immutable_Property',
+				});
+				this.add(`SAML_Custom_${ name }_name_overwrite`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Custom_name_overwrite',
+				});
+				this.add(`SAML_Custom_${ name }_mail_overwrite`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Custom_mail_overwrite',
+				});
+				this.add(`SAML_Custom_${ name }_logout_behaviour`, 'SAML', {
+					type: 'select',
+					values: [
+						{ key: 'SAML', i18nLabel: 'SAML_Custom_Logout_Behaviour_Terminate_SAML_Session' },
+						{ key: 'Local', i18nLabel: 'SAML_Custom_Logout_Behaviour_End_Only_RocketChat' },
+					],
+					i18nLabel: 'SAML_Custom_Logout_Behaviour',
+				});
+				this.add(`SAML_Custom_${ name }_channels_update`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Custom_channels_update',
+					i18nDescription: 'SAML_Custom_channels_update_description',
+				});
+				this.add(`SAML_Custom_${ name }_include_private_channels_update`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Custom_include_private_channels_update',
+					i18nDescription: 'SAML_Custom_include_private_channels_update_description',
+				});
 
-	// Roles Settings
-	settings.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_4_Roles',
-		i18nLabel: 'SAML_Default_User_Role',
-		i18nDescription: 'SAML_Default_User_Role_Description',
-	});
-	settings.add('SAML_Custom_Custom_Default_role_attribute_sync', false, {
-		type: 'boolean',
-		group: 'SAML',
-		section: 'SAML_Section_4_Roles',
-		i18nLabel: 'SAML_Role_Attribute_Sync',
-		i18nDescription: 'SAML_Role_Attribute_Sync_Description',
-		enterprise: true,
-		invalidValue: false,
-	});
-	settings.add('SAML_Custom_Custom_Default_role_attribute_name', '', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_4_Roles',
-		i18nLabel: 'SAML_Role_Attribute_Name',
-		i18nDescription: 'SAML_Role_Attribute_Name_Description',
-		enterprise: true,
-		invalidValue: '',
-	});
+				this.add(`SAML_Custom_${ name }_default_user_role`, 'user', {
+					type: 'string',
+					i18nLabel: 'SAML_Default_User_Role',
+					i18nDescription: 'SAML_Default_User_Role_Description',
+				});
 
+				this.add(`SAML_Custom_${ name }_allowed_clock_drift`, false, {
+					type: 'int',
+					invalidValue: 0,
+					i18nLabel: 'SAML_Allowed_Clock_Drift',
+					i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
+				});
+			});
 
-	// Data Mapping Settings
-	settings.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
-		type: 'string',
-		group: 'SAML',
-		section: 'SAML_Section_5_Mapping',
-		i18nLabel: 'SAML_Custom_user_data_fieldmap',
-		i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
-		multiline: true,
-	});
+			this.section('SAML_Section_5_Mapping', function() {
+				// Data Mapping Settings
+				this.add(`SAML_Custom_${ name }_user_data_fieldmap`, '{"username":"username", "email":"email", "name": "cn"}', {
+					type: 'string',
+					i18nLabel: 'SAML_Custom_user_data_fieldmap',
+					i18nDescription: 'SAML_Custom_user_data_fieldmap_description',
+					multiline: true,
+				});
+			});
+		});
 
-	// advanced
-	settings.add('SAML_Custom_Custom_Default_allowed_clock_drift', false, {
-		type: 'int',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: 0,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Allowed_Clock_Drift',
-		i18nDescription: 'SAML_Allowed_Clock_Drift_Description',
-	});
-	settings.add('SAML_Custom_Custom_Default_identifier_format', defaultIdentifierFormat, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Identifier_Format',
-		i18nDescription: 'SAML_Identifier_Format_Description',
-	});
-	settings.add('SAML_Custom_Custom_Default_NameId_template', defaultNameIDTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: '<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="__identifierFormat__" AllowCreate="true"></samlp:NameIDPolicy>',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_NameIdPolicy_Template',
-		i18nDescription: 'SAML_NameIdPolicy_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_custom_authn_context', defaultAuthnContext, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Custom_Authn_Context',
-		i18nDescription: 'SAML_Custom_Authn_Context_description',
-	});
-	settings.add('SAML_Custom_Custom_Default_authn_context_comparison', 'exact', {
-		type: 'select',
-		values: [
-			{ key: 'better', i18nLabel: 'Better' },
-			{ key: 'exact', i18nLabel: 'Exact' },
-			{ key: 'maximum', i18nLabel: 'Maximum' },
-			{ key: 'minimum', i18nLabel: 'Minimum' },
-		],
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: 'exact',
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
-	});
-	settings.add('SAML_Custom_Custom_Default_AuthnContext_template', defaultAuthnContextTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="__authnContextComparison__">
-		<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
-		  __authnContext__
-		</saml:AuthnContextClassRef>
-	  </samlp:RequestedAuthnContext>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_AuthnContext_Template',
-		i18nDescription: 'SAML_AuthnContext_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_AuthRequest_template', defaultAuthRequestTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="__callbackUrl__" Destination="__entryPoint__">
-		<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
-		__identifierFormatTag__
-		__authnContextTag__
-	  </samlp:AuthnRequest>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_AuthnRequest_Template',
-		i18nDescription: 'SAML_AuthnRequest_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_LogoutResponse_template', defaultLogoutResponseTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__inResponseToId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
-		<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
-		<samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
-	  </samlp:LogoutResponse>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_LogoutResponse_Template',
-		i18nDescription: 'SAML_LogoutResponse_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_LogoutRequest_template', defaultLogoutRequestTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
-		<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
-		<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="http://id.init8.net:8080/openam" SPNameQualifier="__issuer__" Format="__identifierFormat__">__nameID__</saml:NameID>
-		<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">__sessionIndex__</samlp:SessionIndex>
-	  </samlp:LogoutRequest>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_LogoutRequest_Template',
-		i18nDescription: 'SAML_LogoutRequest_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_MetadataCertificate_template', defaultMetadataCertificateTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `    <KeyDescriptor>
-		<ds:KeyInfo>
-		  <ds:X509Data>
-			<ds:X509Certificate>__certificate__</ds:X509Certificate>
-		  </ds:X509Data>
-		</ds:KeyInfo>
-		<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
-		<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
-		<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
-	  </KeyDescriptor>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_MetadataCertificate_Template',
-		i18nDescription: 'SAML_Metadata_Certificate_Template_Description',
-		multiline: true,
-	});
-	settings.add('SAML_Custom_Custom_Default_Metadata_template', defaultMetadataTemplate, {
-		type: 'string',
-		group: 'SAML',
-		enterprise: true,
-		invalidValue: `<?xml version="1.0"?>
-		<EntityDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="__issuer__">
-		  <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">__certificateTag__
-			<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="__sloLocation__" ResponseLocation="__sloLocation__"/>
-			<NameIDFormat>__identifierFormat__</NameIDFormat>
-			<AssertionConsumerService index="1" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="__callbackUrl__"/>
-		  </SPSSODescriptor>
-		</EntityDescriptor>`,
-		section: 'SAML_Section_6_Advanced',
-		i18nLabel: 'SAML_Metadata_Template',
-		i18nDescription: 'SAML_Metadata_Template_Description',
-		multiline: true,
+		this.set({
+			tab: 'SAML_Enterprise',
+			enterprise: true,
+			modules: ['SAML-enterprise'],
+		}, function() {
+			this.section('SAML_Section_4_Roles', function() {
+				// Roles Settings
+				this.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
+					type: 'boolean',
+					i18nLabel: 'SAML_Role_Attribute_Sync',
+					i18nDescription: 'SAML_Role_Attribute_Sync_Description',
+					invalidValue: false,
+				});
+				this.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
+					type: 'string',
+					i18nLabel: 'SAML_Role_Attribute_Name',
+					i18nDescription: 'SAML_Role_Attribute_Name_Description',
+					invalidValue: '',
+				});
+			});
+
+			this.section('SAML_Section_6_Advanced', function() {
+				this.add(`SAML_Custom_${ name }_identifier_format`, defaultIdentifierFormat, {
+					type: 'string',
+					invalidValue: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+					i18nLabel: 'SAML_Identifier_Format',
+					i18nDescription: 'SAML_Identifier_Format_Description',
+				});
+				this.add(`SAML_Custom_${ name }_NameId_template`, defaultNameIDTemplate, {
+					type: 'string',
+					invalidValue: '<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="__identifierFormat__" AllowCreate="true"></samlp:NameIDPolicy>',
+					i18nLabel: 'SAML_NameIdPolicy_Template',
+					i18nDescription: 'SAML_NameIdPolicy_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_custom_authn_context`, defaultAuthnContext, {
+					type: 'string',
+					invalidValue: 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+					i18nLabel: 'SAML_Custom_Authn_Context',
+					i18nDescription: 'SAML_Custom_Authn_Context_description',
+				});
+				this.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
+					type: 'select',
+					values: [
+						{ key: 'better', i18nLabel: 'Better' },
+						{ key: 'exact', i18nLabel: 'Exact' },
+						{ key: 'maximum', i18nLabel: 'Maximum' },
+						{ key: 'minimum', i18nLabel: 'Minimum' },
+					],
+					invalidValue: 'exact',
+					i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
+				});
+				this.add(`SAML_Custom_${ name }_AuthnContext_template`, defaultAuthnContextTemplate, {
+					type: 'string',
+					invalidValue: `<samlp:RequestedAuthnContext xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Comparison="__authnContextComparison__">
+					<saml:AuthnContextClassRef xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+					  __authnContext__
+					</saml:AuthnContextClassRef>
+				  </samlp:RequestedAuthnContext>`,
+					i18nLabel: 'SAML_AuthnContext_Template',
+					i18nDescription: 'SAML_AuthnContext_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_AuthRequest_template`, defaultAuthRequestTemplate, {
+					type: 'string',
+					invalidValue: `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="__callbackUrl__" Destination="__entryPoint__">
+					<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
+					__identifierFormatTag__
+					__authnContextTag__
+				  </samlp:AuthnRequest>`,
+					i18nLabel: 'SAML_AuthnRequest_Template',
+					i18nDescription: 'SAML_AuthnRequest_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_LogoutResponse_template`, defaultLogoutResponseTemplate, {
+					type: 'string',
+					invalidValue: `<samlp:LogoutResponse xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__inResponseToId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
+					<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
+					<samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
+				  </samlp:LogoutResponse>`,
+					i18nLabel: 'SAML_LogoutResponse_Template',
+					i18nDescription: 'SAML_LogoutResponse_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_LogoutRequest_template`, defaultLogoutRequestTemplate, {
+					type: 'string',
+					invalidValue: `<samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="__newId__" Version="2.0" IssueInstant="__instant__" Destination="__idpSLORedirectURL__">
+					<saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">__issuer__</saml:Issuer>
+					<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="http://id.init8.net:8080/openam" SPNameQualifier="__issuer__" Format="__identifierFormat__">__nameID__</saml:NameID>
+					<samlp:SessionIndex xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">__sessionIndex__</samlp:SessionIndex>
+				  </samlp:LogoutRequest>`,
+					i18nLabel: 'SAML_LogoutRequest_Template',
+					i18nDescription: 'SAML_LogoutRequest_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_MetadataCertificate_template`, defaultMetadataCertificateTemplate, {
+					type: 'string',
+					invalidValue: `    <KeyDescriptor>
+					<ds:KeyInfo>
+					  <ds:X509Data>
+						<ds:X509Certificate>__certificate__</ds:X509Certificate>
+					  </ds:X509Data>
+					</ds:KeyInfo>
+					<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
+					<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+					<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+				  </KeyDescriptor>`,
+					i18nLabel: 'SAML_MetadataCertificate_Template',
+					i18nDescription: 'SAML_Metadata_Certificate_Template_Description',
+					multiline: true,
+				});
+				this.add(`SAML_Custom_${ name }_Metadata_template`, defaultMetadataTemplate, {
+					type: 'string',
+					invalidValue: `<?xml version="1.0"?>
+					<EntityDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:SAML:2.0:metadata https://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="__issuer__">
+					  <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">__certificateTag__
+						<SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="__sloLocation__" ResponseLocation="__sloLocation__"/>
+						<NameIDFormat>__identifierFormat__</NameIDFormat>
+						<AssertionConsumerService index="1" isDefault="true" Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="__callbackUrl__"/>
+					  </SPSSODescriptor>
+					</EntityDescriptor>`,
+					i18nLabel: 'SAML_Metadata_Template',
+					i18nDescription: 'SAML_Metadata_Template_Description',
+					multiline: true,
+				});
+			});
+		});
 	});
 };
