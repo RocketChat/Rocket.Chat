@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
@@ -7,13 +7,8 @@ import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import UserRow from './UserRow';
 
-function UsersTable(props) {
+function UsersTable({ params, onChangeParams, sort, onChangeSort, ...props }) {
 	const t = useTranslation();
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState([
-		['name', 'asc'],
-		['usernames', 'asc'],
-	]);
 
 	const usersRoute = useRoute('admin-users');
 
@@ -51,9 +46,9 @@ function UsersTable(props) {
 				preparedSort.push(['active', sortDirection === 'asc' ? 'desc' : 'asc']);
 			}
 
-			setSort(preparedSort);
+			onChangeSort(preparedSort);
 		},
-		[sort],
+		[onChangeSort, sort],
 	);
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -120,7 +115,7 @@ function UsersTable(props) {
 			}
 			results={props.users}
 			total={props.total}
-			setParams={setParams}
+			setParams={onChangeParams}
 			params={params}
 			renderFilter={({ onChange, ...props }) => (
 				<FilterByText placeholder={t('Search_Users')} onChange={onChange} {...props} />

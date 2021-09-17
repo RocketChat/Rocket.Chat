@@ -9,11 +9,12 @@ import toastr from 'toastr';
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from '../../../lib';
 import { popout } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
+import { t } from '../../../utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
