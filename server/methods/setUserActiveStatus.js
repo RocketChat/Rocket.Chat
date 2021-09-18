@@ -21,8 +21,35 @@ Meteor.methods({
 			});
 		}
 
-		setUserActiveStatus(userId, active, confirmRelenquish);
+		const user = Meteor.users.findOne({
+			_id: userId,
+		}, {
+			fields: {
+				_id: 1,
+				roles: 1,
+				active: 1,
+			},
+		});
 
+		// Check if user is the last ACTIVE admin and Prevent removing last user from admin role
+		const userIsAdmin = user.roles.indexOf('admin') > -1;
+		if (userIsAdmin) {
+			const adminCount = Meteor.users.find({
+				roles: {
+					$in: ['admin'],
+				},
+				active: true,
+			}).count();
+			if (adminCount === 1 && userIsAdmin && user.active) {
+				throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+					method: 'removeUserFromRole',
+					action: 'Remove_last_admin',
+				});
+			}
+			setUserActiveStatus(userId, active, confirmRelenquish);
+			return true;
+		}
+		setUserActiveStatus(userId, active, confirmRelenquish);
 		return true;
 	},
 });
