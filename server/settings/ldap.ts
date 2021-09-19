@@ -130,7 +130,7 @@ settings.addGroup('LDAP', function() {
 			enableQuery,
 		});
 
-		this.add('LDAP_Update_Data_On_Login', false, {
+		this.add('LDAP_Update_Data_On_Login', true, {
 			type: 'boolean',
 			enableQuery,
 		});

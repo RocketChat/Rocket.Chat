@@ -194,7 +194,7 @@ export class LDAPManager {
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
 		}
 
-		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? false;
+		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true;
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
