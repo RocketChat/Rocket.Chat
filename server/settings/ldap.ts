@@ -233,7 +233,7 @@ settings.addGroup('LDAP', function() {
 			});
 		});
 
-		this.section('LDAP_DataSync_ActiveState', function() {
+		this.section('LDAP_DataSync_Advanced', function() {
 			this.add('LDAP_Sync_User_Active_State', 'disable', {
 				type: 'select',
 				values: [
@@ -243,8 +243,13 @@ settings.addGroup('LDAP', function() {
 				],
 				i18nDescription: 'LDAP_Sync_User_Active_State_Description',
 				enableQuery: { _id: 'LDAP_Enable', value: true },
-				enterprise: true,
 				invalidValue: 'none',
+			});
+
+			this.add('LDAP_User_Search_AttributesToQuery', '*,+', {
+				type: 'string',
+				enableQuery: { _id: 'LDAP_Enable', value: true },
+				invalidValue: '*,+',
 			});
 		});
 

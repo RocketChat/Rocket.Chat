@@ -5,7 +5,7 @@ import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
 import { callbacks } from '../../../app/callbacks/server';
-import { logger, connLogger, searchLogger, authLogger, bindLogger } from './Logger';
+import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 interface ILDAPEntryCallback<T> {
@@ -125,6 +125,7 @@ export class LDAPConnection {
 			filter: this.getUserFilter(escapedUsername),
 			scope: this.options.userSearchScope || 'sub',
 			sizeLimit: this.options.searchSizeLimit,
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (this.options.searchPageSize > 0) {
@@ -149,7 +150,7 @@ export class LDAPConnection {
 	public async searchById(id: string, attribute?: string): Promise<ILDAPEntry[]> {
 		const searchOptions: ldapjs.SearchOptions = {
 			scope: this.options.userSearchScope || 'sub',
-			attributes: ['*', '+'],
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (attribute) {
@@ -196,6 +197,7 @@ export class LDAPConnection {
 			filter: this.getUserFilter('*'),
 			scope: this.options.userSearchScope || 'sub',
 			sizeLimit: this.options.searchSizeLimit,
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (this.options.searchPageSize > 0) {
@@ -276,6 +278,8 @@ export class LDAPConnection {
 
 		Object.keys(values._raw).forEach((key) => {
 			values[key] = this.extractLdapAttribute(values._raw[key]);
+
+			mapLogger.debug({ msg: 'Extracted Attribute', key, type: typeof values[key], value: values[key] });
 		});
 
 		return values;
@@ -675,5 +679,18 @@ export class LDAPConnection {
 				this._connectionTimedOut = true;
 			}
 		}, clientOptions.connectTimeout);
+	}
+
+	private parseAttributeList(csv: string | undefined): Array<string> {
+		if (!csv) {
+			return ['*', '+'];
+		}
+
+		const list = csv.split(',').map((item) => item.trim());
+		if (!list?.length) {
+			return ['*', '+'];
+		}
+
+		return list;
 	}
 }

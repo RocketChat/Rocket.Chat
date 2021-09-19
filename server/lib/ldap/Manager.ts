@@ -205,7 +205,7 @@ export class LDAPManager {
 	}
 
 	private static async syncUserForLogin(ldapUser: ILDAPEntry, existingUser?: IUser, usedUsername?: string | undefined): Promise<IUser | undefined> {
-		logger.debug({ msg: 'Syncing user data', ldapUser, user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
+		logger.debug({ msg: 'Syncing user data', ldapUser: _.omit(ldapUser, '_raw'), user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
 
 		const userData = this.mapUserData(ldapUser, usedUsername);
 		const options = this.getConverterOptions();
