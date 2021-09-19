@@ -31,7 +31,7 @@ export class LDAPManager {
 
 		let ldapUser: ILDAPEntry | undefined;
 
-		const ldap = this.getNewConnection();
+		const ldap = new LDAPConnection();
 		try {
 			try {
 				await ldap.connect();
@@ -57,20 +57,10 @@ export class LDAPManager {
 		}
 	}
 
-	public static getNewConnection(): LDAPConnection {
-		const ClassRef = callbacks.run('getLDAPConnectionClass') || LDAPConnection;
-
-		return new ClassRef();
-	}
-
 	public static async testConnection(): Promise<void> {
 		try {
-			const ldap = LDAPManager.getNewConnection();
-			try {
-				await ldap.testConnection();
-			} finally {
-				ldap.disconnect();
-			}
+			const ldap = new LDAPConnection();
+			await ldap.testConnection();
 		} catch (error) {
 			connLogger.error(error);
 			throw error;

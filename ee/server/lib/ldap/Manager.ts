@@ -15,11 +15,10 @@ import {
 	Subscriptions as SubscriptionsRaw,
 } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
-import type { LDAPConnection } from '../../../../server/lib/ldap/Connection';
+import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { logger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
-import { LDAPEEConnection } from './Connection';
 import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Team } from '../../../../server/sdk';
@@ -31,7 +30,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		const ldap = new LDAPEEConnection();
+		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
 
 		try {

@@ -6,10 +6,8 @@ import { LDAPEE } from '../sdk';
 import { settings } from '../../../app/settings/server';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
-import { LDAPEEConnection } from '../lib/ldap/Connection';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
-import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import { onLicense } from '../../app/license/server';
@@ -45,10 +43,6 @@ onLicense('ldap-enterprise', () => {
 			}
 		});
 	});
-
-	callbacks.add('getLDAPConnectionClass', function(): typeof LDAPConnection {
-		return LDAPEEConnection;
-	}, callbacks.priority.HIGH, 'replaceLDAPConnectionClass');
 
 	callbacks.add('mapLDAPUserData', (userData: IImportUser, ldapUser: ILDAPEntry) => {
 		LDAPEEManager.copyCustomFields(ldapUser, userData);

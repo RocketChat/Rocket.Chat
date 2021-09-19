@@ -24,6 +24,17 @@ settings.addGroup('LDAP', function() {
 
 		this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery });
 
+		this.section('LDAP_Connection_Authentication', function() {
+			const enableAuthentication = [
+				enableQuery,
+				{ _id: 'LDAP_Authentication', value: true },
+			];
+
+			this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery, invalidValue: false });
+			this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
+			this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
+		});
+
 		this.section('LDAP_Connection_Encryption', function() {
 			this.add('LDAP_Encryption', 'plain', {
 				type: 'select',
@@ -191,17 +202,6 @@ settings.addGroup('LDAP', function() {
 		enterprise: true,
 		modules: ['ldap-enterprise'],
 	}, function() {
-		this.section('LDAP_Connection_Authentication', function() {
-			const enableAuthentication = [
-				enableQuery,
-				{ _id: 'LDAP_Authentication', value: true },
-			];
-
-			this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery, invalidValue: false });
-			this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
-			this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
-		});
-
 		this.section('LDAP_DataSync_BackgroundSync', function() {
 			this.add('LDAP_Background_Sync', false, {
 				type: 'boolean',
