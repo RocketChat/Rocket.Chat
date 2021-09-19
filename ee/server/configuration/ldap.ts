@@ -15,6 +15,7 @@ import { onLicense } from '../../app/license/server';
 onLicense('ldap-enterprise', () => {
 	// Configure background sync cronjob
 	const jobName = 'LDAP_Sync';
+	let lastSchedule: string;
 	const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
 		if (settings.get('LDAP_Background_Sync') !== true) {
 			logger.info('Disabling LDAP Background Sync');
@@ -26,6 +27,11 @@ onLicense('ldap-enterprise', () => {
 
 		const schedule = settings.get<string>('LDAP_Background_Sync_Interval');
 		if (schedule) {
+			if (schedule !== lastSchedule && cronJobs.nextScheduledAtDate(jobName)) {
+				cronJobs.remove(jobName);
+			}
+
+			lastSchedule = schedule;
 			logger.info('Enabling LDAP Background Sync');
 			cronJobs.add(jobName, schedule, () => Promise.await(LDAPEE.sync()), 'text');
 		}
