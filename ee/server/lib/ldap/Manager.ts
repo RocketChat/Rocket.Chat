@@ -17,7 +17,7 @@ import {
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
-import { logger } from '../../../../server/lib/ldap/Logger';
+import { logger, searchLogger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
 import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
@@ -25,7 +25,7 @@ import { Team } from '../../../../server/sdk';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true) {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync') !== true) {
 			return;
 		}
 
@@ -52,6 +52,25 @@ export class LDAPEEManager extends LDAPManager {
 			converter.convertUsers({
 				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void => Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
 			});
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
+	public static async syncAvatars(): Promise<void> {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync_Avatars') !== true) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.updateUserAvatars(ldap);
+			} finally {
+				ldap.disconnect();
+			}
 		} catch (error) {
 			logger.error(error);
 		}
@@ -481,6 +500,39 @@ export class LDAPEEManager extends LDAPManager {
 						const userData = this.mapUserData(ldapUser, user.username);
 						converter.addUser(userData);
 					}
+				}
+
+				resolve();
+			} catch (error) {
+				reject(error);
+			}
+		});
+	}
+
+	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
+		return new Promise(async (resolve, reject) => {
+			try {
+				const users = await UsersRaw.findLDAPUsers();
+				for await (const user of users) {
+					let ldapUser: ILDAPEntry | undefined;
+
+					if (user.services?.ldap?.id) {
+						ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+					} else if (user.username) {
+						ldapUser = await ldap.findOneByUsername(user.username);
+					}
+
+					if (!ldapUser) {
+						searchLogger.debug({
+							msg: 'existing LDAP user not found during Avatar Sync',
+							ldapId: user.services?.ldap?.id,
+							ldapAttribute: user.services?.ldap?.idAttribute,
+							username: user.username,
+						});
+						continue;
+					}
+
+					LDAPManager.syncUserAvatar(user, ldapUser);
 				}
 
 				resolve();

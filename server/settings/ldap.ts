@@ -231,6 +231,21 @@ settings.addGroup('LDAP', function() {
 				enableQuery: backgroundSyncQuery,
 				invalidValue: true,
 			});
+
+			this.add('LDAP_Background_Sync_Avatars', false, {
+				type: 'boolean',
+				enableQuery,
+				invalidValue: false,
+			});
+
+			this.add('LDAP_Background_Sync_Avatars_Interval', 'Every 24 hours', {
+				type: 'string',
+				enableQuery: [
+					enableQuery,
+					{ _id: 'LDAP_Background_Sync_Avatars', value: true },
+				],
+				invalidValue: 'Every 24 hours',
+			});
 		});
 
 		this.section('LDAP_DataSync_Advanced', function() {

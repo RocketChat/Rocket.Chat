@@ -67,6 +67,27 @@ export class LDAPManager {
 		}
 	}
 
+	public static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
+		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
+			return;
+		}
+
+		const avatar = this.getAvatarFromUser(ldapUser);
+		if (!avatar) {
+			return;
+		}
+
+		const hash = SHA256(avatar.toString());
+		if (user.avatarHash === hash) {
+			return;
+		}
+
+		logger.debug({ msg: 'Syncing user avatar', username: user.username });
+		// #ToDo: Remove Meteor references here
+		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
+		Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest'));
+	}
+
 	// This method will only find existing users that are already linked to LDAP
 	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
@@ -383,21 +404,5 @@ export class LDAPManager {
 		if (ldapUser._raw.jpegPhoto) {
 			return ldapUser._raw.jpegPhoto;
 		}
-	}
-
-	private static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
-		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
-			return;
-		}
-
-		const avatar = this.getAvatarFromUser(ldapUser);
-		if (!avatar) {
-			return;
-		}
-
-		logger.debug('Syncing user avatar');
-		// #ToDo: Remove Meteor references here
-		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
-		Meteor.defer(() => Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest')));
 	}
 }

@@ -10,36 +10,44 @@ import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
+import type { SettingCallback } from '../../../app/settings/lib/settings';
 import { onLicense } from '../../app/license/server';
 
 onLicense('ldap-enterprise', () => {
 	// Configure background sync cronjob
-	const jobName = 'LDAP_Sync';
-	let lastSchedule: string;
-	const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
-		if (settings.get('LDAP_Background_Sync') !== true) {
-			logger.info('Disabling LDAP Background Sync');
-			if (cronJobs.nextScheduledAtDate(jobName)) {
-				cronJobs.remove(jobName);
-			}
-			return;
-		}
+	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): SettingCallback {
+		let lastSchedule: string;
 
-		const schedule = settings.get<string>('LDAP_Background_Sync_Interval');
-		if (schedule) {
-			if (schedule !== lastSchedule && cronJobs.nextScheduledAtDate(jobName)) {
-				cronJobs.remove(jobName);
+		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
+			if (settings.get(enableSetting) !== true) {
+				logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
+				if (cronJobs.nextScheduledAtDate(jobName)) {
+					cronJobs.remove(jobName);
+				}
+				return;
 			}
 
-			lastSchedule = schedule;
-			logger.info('Enabling LDAP Background Sync');
-			cronJobs.add(jobName, schedule, () => Promise.await(LDAPEE.sync()), 'text');
-		}
-	}), 500);
+			const schedule = settings.get<string>(intervalSetting);
+			if (schedule) {
+				if (schedule !== lastSchedule && cronJobs.nextScheduledAtDate(jobName)) {
+					cronJobs.remove(jobName);
+				}
+
+				lastSchedule = schedule;
+				logger.info({ msg: 'Enabling LDAP Background Sync', jobName });
+				cronJobs.add(jobName, schedule, () => cb(), 'text');
+			}
+		}), 500);
+	}
+
+	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => Promise.await(LDAPEE.sync()));
+	const addAvatarCronJob = configureBackgroundSync('LDAP_AvatarSync', 'LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval', () => Promise.await(LDAPEE.syncAvatars()));
 
 	Meteor.defer(() => {
 		settings.get('LDAP_Background_Sync', addCronJob);
 		settings.get('LDAP_Background_Sync_Interval', addCronJob);
+		settings.get('LDAP_Background_Sync_Avatars', addAvatarCronJob);
+		settings.get('LDAP_Background_Sync_Avatars_Interval', addAvatarCronJob);
 
 		settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (_key, value) => {
 			try {
