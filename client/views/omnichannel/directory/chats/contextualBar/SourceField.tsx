@@ -51,15 +51,19 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		other: t('External'),
 	};
 
-	const sourceIcon = useRoomIcon(room);
+	const sourceIcon = useRoomIcon(room) as { name: string; color?: string | undefined };
+
+	const sourceName = sourceIcon?.name || '';
 
 	return (
 		<Field>
 			<Label>{t('Channel')}</Label>
 			<Info>
-				<Box display='flex'>
-					<Icon name={sourceIcon?.name} size='x24' />
-					<Label mis='x8'>{defaultTypesLabels[room.source.type] || roomSource}</Label>
+				<Box display='flex' alignItems='center'>
+					<Icon name={sourceName} size='x24' />
+					<Label mi='x8' mbe='0'>
+						{defaultTypesLabels[room.source.type] || roomSource}
+					</Label>
 					{defaultTypesVisitorData[room.source.type]}
 				</Box>
 			</Info>
