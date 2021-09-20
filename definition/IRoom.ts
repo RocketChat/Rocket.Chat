@@ -89,6 +89,13 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 		token?: string;
 		status: 'online' | 'busy' | 'away' | 'offline';
 	};
+	email?: {
+		// Data used when the room is created from an email, via email Integration.
+		inbox: string;
+		thread: string;
+		replyTo: string;
+		subject: string;
+	};
 	source: {
 		// The source, or client, which created the Omnichannel room
 		type: OmnichannelSourceType;

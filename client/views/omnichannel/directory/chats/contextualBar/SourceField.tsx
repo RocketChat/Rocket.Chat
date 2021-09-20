@@ -43,8 +43,8 @@ const SourceField: FC<SourceFieldProps> = ({ room }) => {
 		api: string;
 		other: string;
 	} = {
-		widget: room.u.username,
-		email: room.livechatData?.visitor?.email, // Properly type livechat data on Iroom
+		widget: '',
+		email: room?.email?.inbox, // Properly type livechat data on Iroom
 		sms: t('External'),
 		app: t('External'), // TODO: use app text
 		api: t('External'), // TODO: use app text
