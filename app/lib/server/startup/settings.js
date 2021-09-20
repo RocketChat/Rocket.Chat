@@ -1286,6 +1286,12 @@ settings.addGroup('Message', function() {
 			},
 		],
 	});
+
+	this.add('Message_Code_highlight', '', {
+		type: 'string',
+		public: true,
+		i18nDescription: 'Message_Code_highligh_Description',
+	});
 });
 
 settings.addGroup('Meta', function() {
