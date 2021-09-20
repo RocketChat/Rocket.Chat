@@ -8,12 +8,12 @@ export enum ServerType {
 export interface IVoipServerConfig extends IRocketChatRecord {
 	type: ServerType;
 	host: string;
+	serverName: string;
 	configData: IManagementConfigData | ICallServerConfigData;
 }
 
 export interface IManagementConfigData {
 	port: number;
-	serverName: string; // Internal name to be used in reports
 	username: string;
 	password: string;
 }
@@ -21,5 +21,4 @@ export interface IManagementConfigData {
 export interface ICallServerConfigData {
 	websocketPort: number;
 	websocketPath: string;
-	callServerName: string;
 }

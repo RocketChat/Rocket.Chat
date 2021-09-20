@@ -1,4 +1,5 @@
 import { Match, check } from 'meteor/check';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { API } from '../../api';
 import { hasPermission } from '../../../../authorization/server';
@@ -9,7 +10,7 @@ import { ICallServerConfigData, IManagementConfigData, ServerType } from '../../
 API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
-			return API.v1.unauthorized('error-no-permission-manage-voip-contact-center-settings'); // TODO: create translations
+			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
 		}
 
 		const config = Promise.await(Voip.getServerConfigData(ServerType.MANAGEMENT));
@@ -31,7 +32,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 		}));
 
 		if (!hasPermission(this.userId, 'manage-voip-contact-center-settings')) {
-			return API.v1.unauthorized('error-no-permission-manage-voip-contact-center-settings'); // TODO: create translations
+			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-contact-center-settings' }));
 		}
 
 		const { host, port, serverName, username, password } = this.bodyParams;
@@ -41,9 +42,9 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 		const result = Promise.await(Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
+			serverName,
 			configData: {
 				port,
-				serverName,
 				username,
 				password,
 			} as IManagementConfigData,
@@ -57,7 +58,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'manage-voip-call-settings')) {
-			return API.v1.unauthorized('error-no-permission-manage-voip-call-settings'); // TODO: create translations
+			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
 		}
 
 		const config = Promise.await(Voip.getServerConfigData(ServerType.CALL_SERVER));
@@ -71,26 +72,26 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			host: String,
+			serverName: String,
 			websocketPort: Number,
 			websocketPath: String,
-			callServerName: String,
 		}));
 
 		if (!hasPermission(this.userId, 'manage-voip-call-settings')) {
-			return API.v1.unauthorized('error-no-permission-manage-voip-call-settings'); // TODO: create translations
+			return API.v1.unauthorized(TAPi18n._('error-insufficient-permission', { permission: 'manage-voip-call-settings' }));
 		}
 
-		const { host, websocketPort, websocketPath, callServerName } = this.bodyParams;
+		const { host, websocketPort, websocketPath, serverName } = this.bodyParams;
 
 		Promise.await(Voip.deleteServerConfigDataIfAvailable(ServerType.CALL_SERVER));
 
 		const result = Promise.await(Voip.addServerConfigData({
 			type: ServerType.CALL_SERVER,
 			host,
+			serverName,
 			configData: {
 				websocketPort,
 				websocketPath,
-				callServerName,
 			} as ICallServerConfigData,
 		}));
 
