@@ -3,7 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import toastr from 'toastr';
 
-import { t, isEmail, handleError, roomTypes } from '../../../../../utils';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { t, isEmail, roomTypes } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
 import './visitorTranscript.html';
 

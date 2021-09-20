@@ -6,7 +6,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
-import { fireGlobalEvent } from './fireGlobalEvent';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { mainReady } from './mainReady';
 import { menu } from './menu';
@@ -15,9 +15,9 @@ import { callbacks } from '../../../callbacks';
 import { Notifications } from '../../../notifications';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models';
 import { CachedCollectionManager } from '../../../ui-cached-collection';
-import { getConfig } from '../config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ROOM_DATA_STREAM } from '../../../utils/stream/constants';
-import { call } from '..';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen')) || 5;
@@ -286,7 +286,7 @@ const loadMissedMessages = async function(rid) {
 
 
 	try {
-		const result = await call('loadMissedMessages', rid, lastMessage.ts);
+		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
 			const subscription = ChatSubscription.findOne({ rid });
 			return Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
