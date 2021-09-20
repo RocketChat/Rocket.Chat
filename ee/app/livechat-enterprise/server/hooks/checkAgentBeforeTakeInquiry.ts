@@ -1,21 +1,49 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../app/callbacks/server';
 import { Users } from '../../../../../app/models/server/raw';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { cbLogger } from '../lib/logger';
+import { Livechat } from '../../../../../app/livechat/server';
 
-callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, options }) => {
+callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({
+	agent,
+	inquiry,
+	options,
+}: {
+	agent: {
+		agentId: string;
+	};
+	inquiry: {
+		_id: string;
+		department: string;
+	};
+	options: {
+		forwardingToDepartment? : {
+			oldDepartmentId: string;
+			transferData: any;
+		};
+		clientAction? : boolean;
+	};
+}) => {
+	if (!inquiry?._id || !agent?.agentId) {
+		cbLogger.debug('Callback with error. No inquiry or agent provided');
+		return null;
+	}
+	const {
+		agentId,
+	} = agent;
+
+	if (!Livechat.checkOnlineAgents(null, agent)) {
+		cbLogger.debug('Callback with error. provided agent is not online');
+		return null;
+	}
+
 	if (!settings.get('Livechat_waiting_queue')) {
 		cbLogger.debug('Skipping callback. Disabled by setting');
 		return agent;
-	}
-
-	if (!inquiry || !agent) {
-		cbLogger.debug('Callback with error. No inquiry or agent provided');
-		return null;
 	}
 
 	if (allowAgentSkipQueue(agent)) {
@@ -23,10 +51,14 @@ callbacks.add('livechat.checkAgentBeforeTakeInquiry', async ({ agent, inquiry, o
 		return agent;
 	}
 
-	const { department: departmentId } = inquiry;
-	const { agentId } = agent;
+	const {
+		department: departmentId,
+	} = inquiry;
 
-	const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({ agentId, departmentId });
+	const maxNumberSimultaneousChat = getMaxNumberSimultaneousChat({
+		agentId,
+		departmentId,
+	});
 	if (maxNumberSimultaneousChat === 0) {
 		cbLogger.debug(`Callback success. Agent ${ agentId } max number simultaneous chats on range`);
 		return agent;
