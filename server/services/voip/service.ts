@@ -18,18 +18,39 @@ export class VoipService extends ServiceClass implements IVoipService {
 		this.VoipServerConfiguration = new VoipServerConfigurationRaw(db.collection('rocketchat_voip_server_configuration'));
 	}
 
-	async getServerConfigData(serverType: ServerType): Promise<IVoipServerConfig | null> {
-		switch (serverType) {
-			case ServerType.MANAGEMENT: {
-				return this.VoipServerConfiguration.findOne({ type: ServerType.MANAGEMENT });
-			}
-			case ServerType.CALL_SERVER: {
-				return this.VoipServerConfiguration.findOne({ type: ServerType.CALL_SERVER });
-			}
-			default: {
-				return null;
-			}
+	async addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+		const { type } = config;
+
+		const existingConfig = await this.getServerConfigData(type);
+		if (existingConfig) {
+			throw new Error(`Error! There already exists a record of type ${ type }`);
 		}
+
+		await this.VoipServerConfiguration.insertOne(config);
+
+		return true;
+	}
+
+	async updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
+		const { type } = config;
+
+		const existingConfig = await this.getServerConfigData(type);
+		if (!existingConfig) {
+			throw new Error(`Error! No record exists of type ${ type }`);
+		}
+
+		await this.VoipServerConfiguration.updateOne({ type }, config);
+
+		return true;
+	}
+
+	async deleteServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean> {
+		await this.VoipServerConfiguration.removeByType(serverType);
+		return true;
+	}
+
+	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
+		return this.VoipServerConfiguration.findOne({ type });
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface

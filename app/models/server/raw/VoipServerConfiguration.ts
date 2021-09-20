@@ -1,7 +1,7 @@
-import { Collection } from 'mongodb';
+import { Collection, DeleteWriteOpResultObject } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
-import { IVoipServerConfig } from '../../../../definition/IVoipServerConfig';
+import { IVoipServerConfig, ServerType } from '../../../../definition/IVoipServerConfig';
 
 export class VoipServerConfigurationRaw extends BaseRaw<IVoipServerConfig> {
 	constructor(
@@ -9,5 +9,9 @@ export class VoipServerConfigurationRaw extends BaseRaw<IVoipServerConfig> {
 		public readonly trash?: Collection<IVoipServerConfig>,
 	) {
 		super(col, trash);
+	}
+
+	removeByType(type: ServerType): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne({ type });
 	}
 }

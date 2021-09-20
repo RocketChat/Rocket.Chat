@@ -3,4 +3,7 @@ import { IVoipServerConfig, ServerType } from '../../../definition/IVoipServerCo
 export interface IVoipService {
 	getConfiguration(): any;
 	getServerConfigData(serverType: ServerType): Promise<IVoipServerConfig | null>;
+	addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
+	updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
+	deleteServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
 }
