@@ -10,14 +10,23 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import SectionSkeleton from './SectionSkeleton';
 import Setting from './Setting';
 
-function Section({ children, groupId, hasReset = true, help, sectionName, solo }) {
+function Section({
+	children = undefined,
+	groupId,
+	hasReset = true,
+	help = undefined,
+	sectionName,
+	tabName,
+	solo,
+}) {
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
 				group: groupId,
 				section: sectionName,
+				tab: tabName,
 			}),
-			[groupId, sectionName],
+			[groupId, sectionName, tabName],
 		),
 	);
 
