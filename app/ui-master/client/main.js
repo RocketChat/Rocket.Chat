@@ -95,12 +95,12 @@ Template.main.onCreated(function() {
 });
 
 Template.main.onRendered(function() {
-	// IOs prevent click if elements matches hover
-	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchstart', 'a', (e) => {
+	// iOS prevent click if elements matches hover
+	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchend', 'a', (e) => {
 		if (!e.target.matches(':hover')) {
 			return;
 		}
-		console.log(':hover');
+
 		e.target.click();
 	});
 
