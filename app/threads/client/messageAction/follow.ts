@@ -5,9 +5,10 @@ import toastr from 'toastr';
 
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { MessageAction, call } from '../../../ui-utils/client';
+import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { roomTypes } from '../../../utils/client';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -19,9 +20,9 @@ Meteor.startup(function() {
 			icon: 'bell',
 			label: 'Follow_message',
 			context: ['message', 'message-mobile', 'threads'],
-			async action(_, props) {
-				const { message = messageArgs(this).msg } = props;
-				call('followMessage', { mid: message._id }).then(() =>
+			async action() {
+				const { msg } = messageArgs(this);
+				callWithErrorHandling('followMessage', { mid: msg._id }).then(() =>
 					toastr.success(TAPi18n.__('You_followed_this_message')),
 				);
 			},

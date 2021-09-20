@@ -2,12 +2,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { getConfig } from '../../app/ui-utils/client/config';
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -156,8 +156,8 @@ const fields = {};
 export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T> => {
 	const { resolve, update, ...state } = useAsyncState<T>();
 	const uid = useUserId();
-	const subscription = (useUserSubscription(rid, fields) as unknown) as T;
-	const _room = (useUserRoom(rid, fields) as unknown) as T;
+	const subscription = useUserSubscription(rid, fields) as unknown as T;
+	const _room = useUserRoom(rid, fields) as unknown as T;
 
 	const room = uid ? subscription || _room : _room;
 

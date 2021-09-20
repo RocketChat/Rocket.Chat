@@ -8,8 +8,8 @@ import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
-
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const _setUsername = function(userId, u, fullUser) {
 	const username = s.trim(u);
@@ -18,7 +18,7 @@ export const _setUsername = function(userId, u, fullUser) {
 	}
 	let nameValidation;
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
 	} catch (error) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -45,7 +45,7 @@ export const _setUsername = function(userId, u, fullUser) {
 			});
 		}
 	} catch (e) {
-		console.error(e);
+		SystemLogger.error(e);
 	}
 	// Set new username*
 	Users.setUsername(user._id, username);

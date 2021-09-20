@@ -31,14 +31,15 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/chats-per-agent',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/chats-per-agent', params);
 
 	reloadRef.current.chatsPerAgentChart = reload;
 
-	const { agents = {} } = data ?? initialData;
+	const chartData = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -49,11 +50,14 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			Object.entries(agents).forEach(([name, value]) => {
-				updateChartData(name, [value.open, value.closed]);
-			});
+			if (chartData && chartData.success) {
+				delete chartData.success;
+				Object.entries(chartData).forEach(([name, value]) => {
+					updateChartData(name, [value.open, value.closed]);
+				});
+			}
 		}
-	}, [agents, state, t, updateChartData]);
+	}, [chartData, state, t, updateChartData]);
 
 	return <Chart ref={canvas} {...props} />;
 };

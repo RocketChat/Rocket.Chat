@@ -2,6 +2,7 @@ import { FilterQuery } from 'mongodb';
 
 export type SettingId = string;
 export type GroupId = SettingId;
+export type TabId = SettingId;
 export type SectionName = string;
 
 export enum SettingEditor {
@@ -9,8 +10,8 @@ export enum SettingEditor {
 	EXPRESSION = 'expression'
 }
 
-export type SettingValueMultiSelect = Array<{key: string; i18nLabel: string}>
-export type SettingValueRoomPick = Array<{_id: string; name: string}> | string
+export type SettingValueMultiSelect = string[];
+export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
 export type SettingValue = string | boolean | number | SettingValueMultiSelect | undefined;
 
 export interface ISettingSelectOption {
@@ -25,6 +26,7 @@ export interface ISetting {
 	env: boolean;
 	group?: GroupId;
 	section?: SectionName;
+	tab?: TabId;
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;
@@ -32,6 +34,7 @@ export interface ISetting {
 	packageEditor?: SettingEditor;
 	blocked: boolean;
 	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
+	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	sorter?: number;
 	properties?: unknown;
 	enterprise?: boolean;

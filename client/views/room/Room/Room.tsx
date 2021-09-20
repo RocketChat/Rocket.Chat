@@ -34,12 +34,10 @@ export const Room: FC<{}> = () => {
 
 	const isOpen = useMutableCallback(() => !!(tab && tab.template));
 
-	const tabBar = useMemo(() => ({ open, close, isOpen, openUserInfo }), [
-		open,
-		close,
-		isOpen,
-		openUserInfo,
-	]);
+	const tabBar = useMemo(
+		() => ({ open, close, isOpen, openUserInfo }),
+		[open, close, isOpen, openUserInfo],
+	);
 
 	return (
 		<RoomTemplate aria-label={t('Channel')} data-qa-rc-room={room._id}>

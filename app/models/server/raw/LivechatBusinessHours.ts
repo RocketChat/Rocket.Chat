@@ -1,8 +1,7 @@
-import { Collection, ObjectId } from 'mongodb';
+import { Collection, FindOneOptions, ObjectId, WithoutProjection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import {
-	IBusinessHourWorkHour,
 	ILivechatBusinessHour,
 	LivechatBusinessHourTypes,
 } from '../../../../definition/ILivechatBusinessHour';
@@ -20,7 +19,13 @@ export interface IWorkHoursCronJobsWrapper {
 export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 	public readonly col!: Collection<ILivechatBusinessHour>;
 
-	findOneDefaultBusinessHour(options?: any): Promise<ILivechatBusinessHour | undefined> {
+	async findOneDefaultBusinessHour(options?: undefined): Promise<ILivechatBusinessHour | null>;
+
+	async findOneDefaultBusinessHour(options: WithoutProjection<FindOneOptions<ILivechatBusinessHour>>): Promise<ILivechatBusinessHour | null>;
+
+	async findOneDefaultBusinessHour<P>(options: FindOneOptions<P extends ILivechatBusinessHour ? ILivechatBusinessHour : P>): Promise<P | null>;
+
+	findOneDefaultBusinessHour<P>(options?: any): Promise<ILivechatBusinessHour | P | null> {
 		return this.findOne({ type: LivechatBusinessHourTypes.DEFAULT }, options);
 	}
 
@@ -54,20 +59,6 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> {
 			_id: new ObjectId().toHexString(),
 			...{ ts: new Date() },
 			...data,
-		});
-	}
-
-	// TODO: Remove this function after remove the deprecated method livechat:saveOfficeHours
-	async updateDayOfGlobalBusinessHour(day: Omit<IBusinessHourWorkHour, 'code'>): Promise<any> {
-		return this.col.updateOne({
-			type: LivechatBusinessHourTypes.DEFAULT,
-			'workHours.day': day.day,
-		}, {
-			$set: {
-				'workHours.$.start': day.start,
-				'workHours.$.finish': day.finish,
-				'workHours.$.open': day.open,
-			},
 		});
 	}
 

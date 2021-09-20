@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks/server';
 import { metrics } from '../../../metrics/server';
 import * as CONSTANTS from '../../constants';
 import { canSendMessage } from '../../../authorization/server';
-import { SystemLogger } from '../../../logger/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 Meteor.methods({
 	'jitsi:updateTimeout': (rid, joiningNow = true) => {
@@ -50,9 +50,9 @@ Meteor.methods({
 
 			return jitsiTimeout || nextTimeOut;
 		} catch (error) {
-			SystemLogger.error('Error starting video call:', error);
+			SystemLogger.error('Error starting video call:', error.message);
 
-			throw new Meteor.Error('error-starting-video-call', error.message);
+			throw new Meteor.Error('error-starting-video-call', error.message, { method: 'jitsi:updateTimeout' });
 		}
 	},
 });

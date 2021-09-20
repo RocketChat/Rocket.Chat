@@ -68,7 +68,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 								<>
 									<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
 									<Feature label={t('Auditing')} enabled={hasAuditing} />
-									<Feature label={t('Canned_responses')} enabled={hasCannedResponses} />
+									<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
 									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
 								</>
 							)}
@@ -81,7 +81,7 @@ const LicenseCard = ({ statistics, isLoading }) => {
 								<Skeleton variant='rect' width='x112' height='x112' />
 							) : (
 								<UsagePieGraph
-									label={t('Users')}
+									label={t('Active_users')}
 									used={statistics?.activeUsers}
 									total={maxActiveUsers}
 									size={112}

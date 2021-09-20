@@ -138,13 +138,31 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	async findOneByLDAPId(id, attribute = undefined) {
+		const query = {
+			'services.ldap.id': id,
+		};
+
+		if (attribute) {
+			query['services.ldap.idAttribute'] = attribute;
+		}
+
+		return this.findOne(query);
+	}
+
+	async findLDAPUsers(options) {
+		const query = { ldap: true };
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
 			roles: roleName,
 		};
 
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
 	getDistinctFederationDomains() {

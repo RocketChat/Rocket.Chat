@@ -12,7 +12,6 @@ import { validateEmailDomain } from '../lib';
 import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 
 let html = '';
@@ -105,7 +104,7 @@ function validateUserData(userId, userData) {
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+		nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
@@ -305,7 +304,7 @@ export const saveUser = function(userId, userData) {
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
-		if (!saveUserIdentity(userId, {
+		if (!saveUserIdentity({
 			_id: userData._id,
 			username: userData.username,
 			name: userData.name,

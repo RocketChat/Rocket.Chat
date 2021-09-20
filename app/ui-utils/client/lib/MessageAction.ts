@@ -11,6 +11,7 @@ import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { TranslationKey } from '../../../../client/contexts/TranslationContext';
+import { IRoom } from '../../../../definition/IRoom';
 
 const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err: any, data: any) {
@@ -37,6 +38,7 @@ type MessageActionContext = 'message' | 'threads' | 'message-mobile'| 'pinned' |
 type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser;
+	room: IRoom;
 	subscription?: ISubscription;
 	context?: MessageActionContext;
 };

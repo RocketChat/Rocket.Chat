@@ -6,11 +6,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes } from '../../../utils/client';
 import { Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 import { MessageAction } from './MessageAction';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import ReactionList from '../../../../client/components/modals/ReactionList';
+import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -261,9 +264,8 @@ Meteor.startup(async function() {
 		action(_, { tabBar, rid, ...props }) {
 			const { message = messageArgs(this).msg } = props;
 
-			modal.open({
-				template: 'reactionList',
-				data: { reactions: message.reactions, tabBar, rid, onClose: () => modal.close() },
+			imperativeModal.open({ component: ReactionList,
+				props: { reactions, rid, tabBar, onClose: imperativeModal.close },
 			});
 		},
 		condition({ message: { reactions } }) {

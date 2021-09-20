@@ -11,7 +11,7 @@ import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { Rooms } from '../../../models/client';
 import { getCommonRoomEvents } from '../../../ui/client/views/app/lib/getCommonRoomEvents';
-import { goToRoomById } from '../../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../../client/lib/utils/goToRoomById';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

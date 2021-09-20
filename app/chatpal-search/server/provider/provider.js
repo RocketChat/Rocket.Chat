@@ -4,7 +4,6 @@ import { searchProviderService, SearchProvider } from '../../../search/server';
 import ChatpalLogger from '../utils/logger';
 import { Subscriptions, Rooms } from '../../../models';
 import { baseUrl } from '../utils/settings';
-
 import Index from './index';
 
 /**
@@ -287,8 +286,8 @@ class ChatpalProvider extends SearchProvider {
 
 			this._stats = server.stats;
 
-			ChatpalLogger.debug('config:', JSON.stringify(this._indexConfig, null, 2));
-			ChatpalLogger.debug('stats:', JSON.stringify(this._stats, null, 2));
+			ChatpalLogger.debug({ config: this._indexConfig });
+			ChatpalLogger.debug({ stats: this._stats });
 
 			this.index = new Index(this._indexConfig, this.indexFail || clear, this._stats.message.oldest || new Date().valueOf());
 

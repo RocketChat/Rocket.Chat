@@ -10,24 +10,30 @@ import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
-import { getUserEmailVerified } from '../../../lib/getUserEmailVerified';
+import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, ...props }) {
+export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const { value: data, phase: state, error, reload } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		error,
+		reload,
+	} = useEndpointData(
 		'users.info',
-		useMemo(() => ({ ...(uid && { userId: uid }), ...(username && { username }) }), [
-			uid,
-			username,
-		]),
+		useMemo(
+			() => ({ ...(uid && { userId: uid }), ...(username && { username }) }),
+			[uid, username],
+		),
 	);
 
 	const onChange = useMutableCallback(() => reload());
+	const onDelete = useMutableCallback(() => (reloadTable ? reloadTable() : null));
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
@@ -94,6 +100,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 						_id={data.user._id}
 						username={data.user.username}
 						onChange={onChange}
+						onDelete={onDelete}
 					/>
 				)
 			}

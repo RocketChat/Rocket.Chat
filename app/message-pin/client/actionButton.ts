@@ -6,11 +6,11 @@ import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils/client';
 import { settings } from '../../settings/client';
 import { hasAtLeastOnePermission } from '../../authorization/client';
 import { Rooms } from '../../models/client';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -28,14 +28,14 @@ Meteor.startup(function() {
 			});
 		},
 		condition({ message, subscription, room }) {
-			if (!settings.get('Message_AllowPinning') || msg.pinned || !subscription) {
+			if (!settings.get('Message_AllowPinning') || message.pinned || !subscription) {
 				return false;
 			}
 			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
 			if (isLivechatRoom) {
 				return false;
 			}
-			return hasAtLeastOnePermission('pin-message', msg.rid);
+			return hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 7,
 		group: 'menu',

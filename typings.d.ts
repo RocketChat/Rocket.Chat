@@ -3,6 +3,7 @@ declare module 'meteor/littledata:synced-cron';
 declare module 'meteor/promise';
 declare module 'meteor/ddp-common';
 declare module 'meteor/routepolicy';
+declare module 'meteor/logging';
 declare module 'xml-encryption';
 declare module 'webdav';
 
@@ -19,3 +20,9 @@ declare module 'meteor/konecty:user-presence' {
 declare const Package: {
 	'disable-oplog': object;
 };
+
+declare module 'meteor/meteorhacks:inject-initial' {
+	namespace Inject {
+		function rawBody(key: string, value: string): void;
+	}
+}

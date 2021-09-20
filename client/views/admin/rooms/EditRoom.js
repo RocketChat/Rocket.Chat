@@ -13,14 +13,14 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useMemo } from 'react';
 
 import { roomTypes, RoomSettingsEnum } from '../../../../app/utils/client';
-import DeleteChannelWarning from '../../../components/DeleteChannelWarning';
+import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
 
 const getInitialValues = (room) => ({
@@ -154,7 +154,16 @@ function EditRoom({ room, onChange }) {
 			setDeleted(true);
 		};
 
-		setModal(<DeleteChannelWarning onConfirm={onConfirm} onCancel={onCancel} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				onConfirm={onConfirm}
+				onCancel={onCancel}
+				confirmText={t('Yes_delete_it')}
+			>
+				{t('Delete_Room_Warning')}
+			</GenericModal>,
+		);
 	});
 
 	return (
