@@ -1,20 +1,13 @@
 import { Tracker } from 'meteor/tracker';
 
 import { createEphemeralPortal } from '../../../../client/lib/portals/createEphemeralPortal';
+import { createAnchor } from '../../../../client/lib/utils/createAnchor';
 
 const Dep = new Tracker.Dependency();
 
 let state;
 let dom;
 let unregister;
-
-const createAnchor = () => {
-	const div = document.createElement('div');
-	div.id = 'react-tooltip';
-	document.body.appendChild(div);
-	return div;
-};
-
 
 const props = () => {
 	Dep.depend();
@@ -29,7 +22,7 @@ export const closeTooltip = () => {
 };
 
 export const openToolTip = (title, anchor) => {
-	dom = dom || createAnchor();
+	dom = dom || createAnchor('react-tooltip');
 	state = {
 		title,
 		anchor,
