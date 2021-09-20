@@ -101,8 +101,8 @@ function ChatInfo({ id, route }) {
 		<>
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
-					{room && v && <ContactField contact={v} room={room} />}
 					{source && <SourceField room={room} />}
+					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
