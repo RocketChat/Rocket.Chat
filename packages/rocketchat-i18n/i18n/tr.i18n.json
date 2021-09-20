@@ -1859,6 +1859,7 @@
   "LDAP_Sync_Now": "Arka Plan Senkronize Edilsin",
   "LDAP_Sync_Now_Description": "** Arka Plan Senkronizasyonu ** yanlış olsa bile ** Eşzamanlı Aralığı ** beklemek yerine şu an ** Arka Plan Senkronizasyonu ** uygulayacaktır.<br/>Bu İşlem eşzamansızdır, lütfen bu işlem hakkında daha fazla bilgi için günlüklere bakın. süreç",
   "LDAP_Sync_User_Avatar": "Kullanıcı Avatarını Senkronize Et",
+  "LDAP_Sync_User_Data_Roles": "LDAP",
   "LDAP_Sync_User_Data_Channels_Admin": "Kanal Yöneticisi",
   "LDAP_Timeout": "Zaman aşımı (ms)",
   "LDAP_Timeout_Description": "Bir hata döndürmeden önce bir arama sonucunu kaç dakika bekleyecektir?",
