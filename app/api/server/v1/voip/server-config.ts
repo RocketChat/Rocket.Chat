@@ -39,7 +39,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 
 		Promise.await(Voip.deleteServerConfigDataIfAvailable(ServerType.MANAGEMENT));
 
-		const result = Promise.await(Voip.addServerConfigData({
+		Promise.await(Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
 			serverName,
@@ -50,7 +50,7 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 			} as IManagementConfigData,
 		}));
 
-		return API.v1.success({ result });
+		return API.v1.success();
 	},
 });
 
@@ -85,7 +85,7 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 
 		Promise.await(Voip.deleteServerConfigDataIfAvailable(ServerType.CALL_SERVER));
 
-		const result = Promise.await(Voip.addServerConfigData({
+		Promise.await(Voip.addServerConfigData({
 			type: ServerType.CALL_SERVER,
 			host,
 			serverName,
@@ -95,6 +95,6 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 			} as ICallServerConfigData,
 		}));
 
-		return API.v1.success({ result });
+		return API.v1.success();
 	},
 });
