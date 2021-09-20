@@ -33,6 +33,7 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 					email: 'mail',
 					sms: 'sms',
 					app: 'headset', // TODO: use app icon
+					api: 'headset', // TODO: use api icon
 					other: 'headset',
 				}[omnichannelRoom.source?.type as string] || 'headset';
 
