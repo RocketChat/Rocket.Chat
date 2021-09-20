@@ -376,7 +376,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			}
 
 			const isAnotherUser = this.userId !== user._id;
-			if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-info')) {
+			if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-avatar')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 		}
