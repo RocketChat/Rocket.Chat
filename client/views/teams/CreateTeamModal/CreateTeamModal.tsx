@@ -19,9 +19,9 @@ import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../hooks/useForm';
-import { goToRoomById } from '../../../lib/goToRoomById';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import TeamNameInput from './TeamNameInput';
 import UsersInput from './UsersInput';
 
@@ -71,7 +71,7 @@ const useCreateTeamModalState = (onClose: () => void): CreateTeamModalState => {
 		readOnly: boolean;
 		broadcast: boolean;
 		encrypted: boolean;
-		members: IUser['username'][];
+		members: Exclude<IUser['username'], undefined>[];
 	};
 
 	const { handleMembers, handleEncrypted, handleType, handleBroadcast, handleReadOnly } = handlers;

@@ -5,18 +5,20 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
-import { DateFormat } from '../../lib/client';
+import { timeAgo } from '../../../client/lib/utils/timeAgo';
+import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 import { MessageTypes, MessageAction } from '../../ui-utils/client';
 import { RoomRoles, UserRoles, Roles } from '../../models/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
-import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
 import { renderMentions } from '../../mentions/client/client';
-import { renderMessageBody } from '../../../client/lib/renderMessageBody';
+import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
 import { settings } from '../../settings/client';
+import { formatTime } from '../../../client/lib/utils/formatTime';
+import { formatDate } from '../../../client/lib/utils/formatDate';
+import './messageThread';
 import './message.html';
 
 const renderBody = (msg, settings) => {
@@ -203,11 +205,11 @@ Template.message.helpers({
 	time() {
 		const { msg, timeAgo: useTimeAgo } = this;
 
-		return useTimeAgo ? timeAgo(msg.ts) : DateFormat.formatTime(msg.ts);
+		return useTimeAgo ? timeAgo(msg.ts) : formatTime(msg.ts);
 	},
 	date() {
 		const { msg } = this;
-		return DateFormat.formatDate(msg.ts);
+		return formatDate(msg.ts);
 	},
 	isTemp() {
 		const { msg } = this;
@@ -250,7 +252,7 @@ Template.message.helpers({
 	},
 	editTime() {
 		const { msg } = this;
-		return msg.editedAt ? DateFormat.formatDateAndTime(msg.editedAt) : '';
+		return msg.editedAt ? formatDateAndTime(msg.editedAt) : '';
 	},
 	editedBy() {
 		const { msg } = this;

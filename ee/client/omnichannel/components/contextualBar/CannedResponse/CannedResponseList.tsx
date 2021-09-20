@@ -56,14 +56,14 @@ const CannedResponseList: FC<{
 
 	const cannedId = useTabContext();
 
-	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver({
+	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
 
 	return (
 		<>
 			<VerticalBar.Header>
-				<VerticalBar.Text>{t('Canned Responses')}</VerticalBar.Text>
+				<VerticalBar.Text>{t('Canned_Responses')}</VerticalBar.Text>
 				<VerticalBar.Close onClick={onClose} />
 			</VerticalBar.Header>
 
