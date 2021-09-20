@@ -63,6 +63,10 @@ export interface IRoom extends IRocketChatRecord {
 	muted?: string[];
 }
 
+export interface ICreatedRoom extends IRoom {
+	rid: string;
+}
+
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
 	uids: Array<string>;
