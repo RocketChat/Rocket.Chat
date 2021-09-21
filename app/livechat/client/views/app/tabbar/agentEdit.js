@@ -6,7 +6,8 @@ import toastr from 'toastr';
 import { getCustomFormTemplate } from '../customTemplates/register';
 import './agentEdit.html';
 import { hasPermission } from '../../../../../authorization';
-import { t, handleError, APIClient } from '../../../../../utils/client';
+import { t, APIClient } from '../../../../../utils/client';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 Template.agentEdit.helpers({
 	canEditDepartment() {

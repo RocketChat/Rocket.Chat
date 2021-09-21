@@ -7,8 +7,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { AccountBox } from '../../../ui-utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { baseURI } from '../../../utils/client/lib/baseuri.js';
 import { add, remove } from '../../../../client/views/room/lib/Toolbox/IframeButtons';
+import { baseURI } from '../../../../client/lib/baseURI';
 
 const commands = {
 	go(data) {

@@ -9,10 +9,10 @@ import { getRoles, hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
-import { validateUserRoles } from '../../../../ee/app/authorization/server/validateUserRoles';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import { callbacks } from '../../../callbacks/server';
 
 let html = '';
 let passwordChangedHtml = '';
@@ -98,7 +98,7 @@ function validateUserData(userId, userData) {
 	}
 
 	if (userData.roles) {
-		validateUserRoles(userId, userData);
+		callbacks.run('validateUserRoles', userData);
 	}
 
 	let nameValidation;
@@ -227,6 +227,69 @@ const handleNickname = (updateUser, nickname) => {
 	}
 };
 
+const saveNewUser = function(userData, sendPassword) {
+	validateEmailDomain(userData.email);
+
+	const roles = userData.roles || getNewUserRoles();
+	const isGuest = roles && roles.length === 1 && roles.includes('guest');
+
+	// insert user
+	const createUser = {
+		username: userData.username,
+		password: userData.password,
+		joinDefaultChannels: userData.joinDefaultChannels,
+		isGuest,
+	};
+	if (userData.email) {
+		createUser.email = userData.email;
+	}
+
+	const _id = Accounts.createUser(createUser);
+
+	const updateUser = {
+		$set: {
+			roles,
+			...typeof userData.name !== 'undefined' && { name: userData.name },
+			settings: userData.settings || {},
+		},
+	};
+
+	if (typeof userData.requirePasswordChange !== 'undefined') {
+		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+	}
+
+	if (typeof userData.verified === 'boolean') {
+		updateUser.$set['emails.0.verified'] = userData.verified;
+	}
+
+	handleBio(updateUser, userData.bio);
+	handleNickname(updateUser, userData.nickname);
+
+	Meteor.users.update({ _id }, updateUser);
+
+	if (userData.sendWelcomeEmail) {
+		_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
+	}
+
+	if (sendPassword) {
+		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+	}
+
+	userData._id = _id;
+
+	if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
+		const gravatarUrl = Gravatar.imageUrl(userData.email, { default: '404', size: 200, secure: true });
+
+		try {
+			setUserAvatar(userData, gravatarUrl, '', 'url');
+		} catch (e) {
+			// Ignore this error for now, as it not being successful isn't bad
+		}
+	}
+
+	return _id;
+};
+
 export const saveUser = function(userId, userData) {
 	validateUserData(userId, userData);
 	let sendPassword = false;
@@ -242,62 +305,7 @@ export const saveUser = function(userId, userData) {
 	}
 
 	if (!userData._id) {
-		validateEmailDomain(userData.email);
-
-		// insert user
-		const createUser = {
-			username: userData.username,
-			password: userData.password,
-			joinDefaultChannels: userData.joinDefaultChannels,
-		};
-		if (userData.email) {
-			createUser.email = userData.email;
-		}
-
-		const _id = Accounts.createUser(createUser);
-
-		const updateUser = {
-			$set: {
-				roles: userData.roles || getNewUserRoles(),
-				...typeof userData.name !== 'undefined' && { name: userData.name },
-				settings: userData.settings || {},
-			},
-		};
-
-		if (typeof userData.requirePasswordChange !== 'undefined') {
-			updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
-		}
-
-		if (typeof userData.verified === 'boolean') {
-			updateUser.$set['emails.0.verified'] = userData.verified;
-		}
-
-		handleBio(updateUser, userData.bio);
-		handleNickname(updateUser, userData.nickname);
-
-		Meteor.users.update({ _id }, updateUser);
-
-		if (userData.sendWelcomeEmail) {
-			_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
-		}
-
-		if (sendPassword) {
-			_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
-		}
-
-		userData._id = _id;
-
-		if (settings.get('Accounts_SetDefaultAvatar') === true && userData.email) {
-			const gravatarUrl = Gravatar.imageUrl(userData.email, { default: '404', size: 200, secure: true });
-
-			try {
-				setUserAvatar(userData, gravatarUrl, '', 'url');
-			} catch (e) {
-				// Ignore this error for now, as it not being successful isn't bad
-			}
-		}
-
-		return _id;
+		return saveNewUser(userData, sendPassword);
 	}
 
 	validateUserEditing(userId, userData);

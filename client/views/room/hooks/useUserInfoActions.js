@@ -17,7 +17,7 @@ import {
 	useUserSubscription,
 	useUserSubscriptionByName,
 } from '../../../contexts/UserContext';
-import { useEndpointActionExperimental } from '../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 import { useUserRoom } from './useUserRoom';

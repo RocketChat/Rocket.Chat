@@ -9,7 +9,7 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
-export function AddUser({ roles, ...props }) {
+export function AddUser({ roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-users');
@@ -93,6 +93,7 @@ export function AddUser({ roles, ...props }) {
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
+			onReload();
 		}
 	});
 

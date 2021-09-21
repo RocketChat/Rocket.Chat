@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { isIE11 } from '../../../../app/ui-utils/client/lib/isIE11';
+import { isIE11 } from '../../../lib/utils/isIE11';
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
 

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -6,12 +7,46 @@ import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import { useRoute, useRouteParameter } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AddUser } from './AddUser';
 import EditUserWithData from './EditUserWithData';
 import { InviteUsers } from './InviteUsers';
 import { UserInfoWithData } from './UserInfo';
 import UserPageHeaderContent from './UserPageHeaderContent';
 import UsersTable from './UsersTable';
+
+const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
+
+const useQuery = ({ text, itemsPerPage, current }, sortFields) =>
+	useMemo(
+		() => ({
+			fields: JSON.stringify({
+				name: 1,
+				username: 1,
+				emails: 1,
+				roles: 1,
+				status: 1,
+				avatarETag: 1,
+				active: 1,
+			}),
+			query: JSON.stringify({
+				$or: [
+					{ 'emails.address': { $regex: text || '', $options: 'i' } },
+					{ username: { $regex: text || '', $options: 'i' } },
+					{ name: { $regex: text || '', $options: 'i' } },
+				],
+			}),
+			sort: JSON.stringify(
+				sortFields.reduce((agg, [column, direction]) => {
+					agg[column] = sortDir(direction);
+					return agg;
+				}, {}),
+			),
+			...(itemsPerPage && { count: itemsPerPage }),
+			...(current && { offset: current }),
+		}),
+		[text, itemsPerPage, current, sortFields],
+	);
 
 function UsersPage() {
 	const context = useRouteParameter('context');
@@ -24,7 +59,7 @@ function UsersPage() {
 			return;
 		}
 
-		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers) {
+		if (seatsCap.activeUsers >= seatsCap.maxActiveUsers && !['edit', 'info'].includes(context)) {
 			usersRoute.push({});
 		}
 	}, [context, seatsCap, usersRoute]);
@@ -33,6 +68,21 @@ function UsersPage() {
 
 	const handleVerticalBarCloseButtonClick = () => {
 		usersRoute.push({});
+	};
+	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
+	const [sort, setSort] = useState([
+		['name', 'asc'],
+		['usernames', 'asc'],
+	]);
+
+	const debouncedParams = useDebouncedValue(params, 500);
+	const debouncedSort = useDebouncedValue(sort, 500);
+	const query = useQuery(debouncedParams, debouncedSort);
+	const { value: data = {}, reload: reloadList } = useEndpointData('users.list', query);
+
+	const reload = () => {
+		seatsCap?.reload();
+		reloadList();
 	};
 
 	return (
@@ -47,7 +97,14 @@ function UsersPage() {
 						))}
 				</Page.Header>
 				<Page.Content>
-					<UsersTable />
+					<UsersTable
+						users={data.users}
+						total={data.total}
+						params={params}
+						onChangeParams={setParams}
+						sort={sort}
+						onChangeSort={setSort}
+					/>
 				</Page.Content>
 			</Page>
 			{context && (
@@ -60,9 +117,9 @@ function UsersPage() {
 						<VerticalBar.Close onClick={handleVerticalBarCloseButtonClick} />
 					</VerticalBar.Header>
 
-					{context === 'info' && <UserInfoWithData uid={id} />}
-					{context === 'edit' && <EditUserWithData uid={id} />}
-					{context === 'new' && <AddUser />}
+					{context === 'info' && <UserInfoWithData uid={id} onReload={reload} />}
+					{context === 'edit' && <EditUserWithData uid={id} onReload={reload} />}
+					{context === 'new' && <AddUser onReload={reload} />}
 					{context === 'invite' && <InviteUsers />}
 				</VerticalBar>
 			)}

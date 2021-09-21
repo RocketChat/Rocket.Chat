@@ -1,8 +1,10 @@
 import { Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
+import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useSetModal } from '../../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
+import { useAbsoluteUrl } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
@@ -17,8 +19,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 	activeUsers,
 	maxActiveUsers,
 }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	// TODO
-	const requestSeatsLink = '';
+	const seatsLinkUrl = useAbsoluteUrl()('/requestSeats');
 
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
@@ -37,12 +38,15 @@ const UserPageHeaderContentWithSeatsCap = ({
 	};
 
 	const withPreventionOnReachedLimit = (fn: () => void) => (): void => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (hasReachedLimit()) {
 			setModal(
 				<ReachedSeatsCapModal
 					members={activeUsers}
 					limit={maxActiveUsers}
-					requestSeatsLink={requestSeatsLink}
+					requestSeatsLink={seatsLinkUrl}
 					onClose={closeModal}
 				/>,
 			);
@@ -53,15 +57,16 @@ const UserPageHeaderContentWithSeatsCap = ({
 	};
 
 	const handleNewButtonClick = withPreventionOnReachedLimit(() => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (isCloseToLimit()) {
 			setModal(
 				<CloseToSeatsCapModal
 					members={activeUsers}
 					limit={maxActiveUsers}
 					title={t('Create_new_members')}
-					confirmText={t('Create')}
-					confirmIcon='user-plus'
-					requestSeatsLink={requestSeatsLink}
+					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'new' });
 						closeModal();
@@ -76,15 +81,16 @@ const UserPageHeaderContentWithSeatsCap = ({
 	});
 
 	const handleInviteButtonClick = withPreventionOnReachedLimit(() => {
+		if (typeof seatsLinkUrl !== 'string') {
+			return;
+		}
 		if (isCloseToLimit()) {
 			setModal(
 				<CloseToSeatsCapModal
 					members={activeUsers}
 					limit={maxActiveUsers}
 					title={t('Invite_Users')}
-					confirmText={t('Invite')}
-					confirmIcon='mail'
-					requestSeatsLink={requestSeatsLink}
+					requestSeatsLink={seatsLinkUrl}
 					onConfirm={(): void => {
 						usersRoute.push({ context: 'invite' });
 						closeModal();
@@ -96,11 +102,6 @@ const UserPageHeaderContentWithSeatsCap = ({
 
 		usersRoute.push({ context: 'invite' });
 	});
-
-	const handleRequestSeats = (): void => {
-		// TODO
-		console.log('request seats');
-	};
 
 	return (
 		<>
@@ -114,9 +115,11 @@ const UserPageHeaderContentWithSeatsCap = ({
 				<Button onClick={handleInviteButtonClick}>
 					<Icon size='x20' name='mail' /> {t('Invite')}
 				</Button>
-				<Button onClick={handleRequestSeats}>
-					<Icon size='x20' name='new-window' /> {t('Request_seats')}
-				</Button>
+				<ExternalLink to={seatsLinkUrl || ''}>
+					<Button>
+						<Icon size='x20' name='new-window' /> {t('Request_seats')}
+					</Button>
+				</ExternalLink>
 			</ButtonGroup>
 		</>
 	);
