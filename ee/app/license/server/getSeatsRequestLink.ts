@@ -10,14 +10,14 @@ export const getSeatsRequestLink = (): string => {
 	const activeUsers = Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = Settings.findSetupWizardSettings().fetch();
 
-	const utmUrl = new URL(url);
-	utmUrl.searchParams.append('workspaceId', String(workspaceId?.value));
-	utmUrl.searchParams.append('activeUsers', String(activeUsers));
+	const newUrl = new URL(url);
+	workspaceId?.value && newUrl.searchParams.append('workspaceId', String(workspaceId.value));
+	activeUsers && newUrl.searchParams.append('activeUsers', String(activeUsers));
 	wizardSettings.forEach((setting) => {
-		if (['Industry', 'Country', 'Size'].includes(setting._id)) {
-			utmUrl.searchParams.append(setting._id.toLowerCase(), String(setting?.value));
+		if (['Industry', 'Country', 'Size'].includes(setting._id) && setting.value) {
+			newUrl.searchParams.append(setting._id.toLowerCase(), String(setting?.value));
 		}
 	});
 
-	return utmUrl.toString();
+	return newUrl.toString();
 };

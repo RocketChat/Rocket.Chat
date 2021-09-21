@@ -9,6 +9,7 @@ import {
 	disableDangerBannerDiscardingDismissal,
 	enableWarningBanner,
 	disableWarningBannerDiscardingDismissal,
+	createSeatsLimitBanners,
 } from './maxSeatsBanners';
 
 const EnterpriseLicenses = new EventEmitter();
@@ -340,15 +341,15 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 }
 
 export const handleMaxSeatsBanners = (): void => {
-	const maxActiveUsers = getMaxActiveUsers();
-
-	if (!maxActiveUsers) {
+	if (!isEnterprise()) {
 		disableWarningBannerDiscardingDismissal();
 		disableDangerBannerDiscardingDismissal();
 		return;
 	}
+	createSeatsLimitBanners();
 
 	const activeUsers = Users.getActiveLocalUserCount();
+	const maxActiveUsers = getMaxActiveUsers();
 
 	// callback runs before user is added, so we should add the user
 	// that is being created to the current value.
