@@ -1,9 +1,16 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { memo, useLayoutEffect, useRef } from 'react';
+import React, { memo, useContext, useLayoutEffect, useRef } from 'react';
 
-const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props }) => {
+const test = new WeakMap();
+
+window.test = test;
+
+// const ContextProvider = ({ children, contexts }) => {
+// 	contexts.reduce((C) => <C.provider value={useContext(C)} />, children);
+
+const BlazeTemplate = ({ context, name, flexShrink, overflow, onClick, children, ...props }) => {
 	const ref = useRef();
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -11,13 +18,13 @@ const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props
 		}
 
 		let view;
-
-		const timeout = setTimeout(() => {
-			view = Blaze.renderWithData(Template[name], props, ref.current);
-		}, 10);
+		// const timeout = setTimeout(() => {
+		view = Blaze.renderWithData(Template[name], props, ref.current);
+		// test.set(view, );
+		// }, 10);
 
 		return () => {
-			clearTimeout(timeout);
+			// clearTimeout(timeout);
 			view && Blaze.remove(view);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps

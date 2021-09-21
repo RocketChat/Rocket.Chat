@@ -1,5 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo, FC } from 'react';
+import React, { useMemo, FC, useContext } from 'react';
 
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -11,7 +11,7 @@ import { MessageList } from '../MessageList/MessageList';
 import BlazeTemplate from '../components/BlazeTemplate';
 import { RoomTemplate } from '../components/RoomTemplate/RoomTemplate';
 import VerticalBarOldActions from '../components/VerticalBarOldActions';
-import { useRoom } from '../contexts/RoomContext';
+import { RoomContext, useRoom } from '../contexts/RoomContext';
 import {
 	useTab,
 	useTabBarOpen,
@@ -48,10 +48,11 @@ export const Room: FC<{}> = () => {
 				{!isLayoutEmbedded && room.announcement && (
 					<Announcement announcement={room.announcement} />
 				)}
-				{earlyAdopter && <MessageList />}
+				{/* {earlyAdopter && <MessageList />} */}
 				<BlazeTemplate
 					onClick={hideFlexTab ? close : undefined}
 					name='roomOld'
+					context={[RoomContext]}
 					tabBar={tabBar}
 					rid={room._id}
 					_id={room._id}

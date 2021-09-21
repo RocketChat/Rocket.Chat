@@ -9,11 +9,13 @@ import {
 	useState,
 	Suspense,
 	FC,
+	cloneElement,
 } from 'react';
 
 export const createLazyElement = <Props extends {} = {}>(
 	factory: () => Promise<{ default: ComponentType<Props> }>,
 	getProps?: () => PropsWithoutRef<Props> | undefined,
+	context?: Element,
 ): ReactElement => {
 	const LazyComponent = lazy(factory);
 
@@ -33,8 +35,8 @@ export const createLazyElement = <Props extends {} = {}>(
 				computation.stop();
 			};
 		}, []);
-
-		return createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
+		const el = createElement(Suspense, { fallback: null }, createElement(LazyComponent, props));
+		return context !== undefined ? cloneElement(context, [], [el]) : el;
 	};
 
 	return createElement(WrappedComponent);

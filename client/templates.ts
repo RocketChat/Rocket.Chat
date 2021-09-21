@@ -24,6 +24,7 @@ createTemplateForComponent(
 	},
 );
 
+createTemplateForComponent('MessageList', () => import('./views/room/MessageList/MessageList'));
 createTemplateForComponent('MessageBody', () => import('./components/Message/MessageBodyRender'));
 
 createTemplateForComponent(

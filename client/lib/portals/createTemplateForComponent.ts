@@ -34,6 +34,15 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 
 	const template = new Blaze.Template(name, renderFunction);
 	template.onRendered(function (this: Blaze.TemplateInstance) {
+		function getRootParentView(view: Blaze.View): Blaze.View {
+			if (view.parentView && view.parentView) {
+				return getRootParentView(view.parentView);
+			}
+			return view;
+		}
+
+		const root = getRootParentView(this.view as Blaze.View);
+		const context = window.test?.get(root);
 		const props = new ReactiveVar(this.data as PropsWithoutRef<Props>);
 		this.autorun(() => {
 			props.set({
@@ -53,7 +62,7 @@ export const createTemplateForComponent = <Props extends {} = {}>(
 			return;
 		}
 
-		const portal = createLazyPortal(factory, () => props.get(), container);
+		const portal = createLazyPortal(factory, () => props.get(), container, context);
 
 		blazePortals.register(this, portal);
 	});

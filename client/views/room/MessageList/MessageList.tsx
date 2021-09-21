@@ -1,7 +1,7 @@
 import { Message as MessageTemplate, Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { isSameDay } from 'date-fns';
-import React, { FC, useCallback, useLayoutEffect, useRef, useState, useEffect } from 'react';
+import React, { FC, useCallback, useLayoutEffect, useRef, useState, useEffect , Fragment } from 'react';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -13,32 +13,48 @@ import Message from './components/Message';
 import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 
-export const MessageList: FC = () => {
-	const room = useRoom() as IRoom;
+export const MessageList: FC<{ rid: IRoom['_id'] }> = ({
+	rid,
+}) => {
+	// const room = useRoom() as IRoom;
 
 	const virtuoso = useRef<VirtuosoHandle>(null);
 
 
-	const messages = useMessages({ rid: room._id });
+	const messages = useMessages({ rid });
 
 	const prepending = useRef(0);
-	const [firstItemIndex, setFirstItemIndex] = useState(room.msgs);
+	// const [firstItemIndex, setFirstItemIndex] = useState(room.msgs);
 	const format = useFormatDateAndTime();
-	const { getMore } = useRoomContext();
+	// const { getMore } = useRoomContext();
 
-	useEffect(() => {
-		setFirstItemIndex(room.msgs - messages.length);
-		prepending.current = messages.length;
-	}, [room._id]);
+	// useEffect(() => {
+	// 	setFirstItemIndex(room.msgs - messages.length);
+	// 	prepending.current = messages.length;
+	// }, [room._id]);
 
-	const more = useMutableCallback(() => {
-		prepending.current = messages.length;
-		getMore();
+	// const more = useMutableCallback(() => {
+	// 	prepending.current = messages.length;
+	// 	getMore();
+	// });
+
+	// useLayoutEffect(() => {
+	// 	setFirstItemIndex(() => room.msgs - messages.length);
+	// }, [messages.length]);
+
+	return messages.map((message, index) => {
+		// const index = messages.findIndex((m) => m === message);
+		const previous = messages[index - 1];
+
+		const sequential = isMessageSequential(message, previous);
+
+		const newDay = !previous || !isSameDay(message.ts, previous.ts);
+
+		return <Fragment key={message._id}>
+				{newDay && <MessageTemplate.Divider>{format(message.ts)}</MessageTemplate.Divider>}
+				<Message sequential={sequential} message={message} />
+		</Fragment>;
 	});
-
-	useLayoutEffect(() => {
-		setFirstItemIndex(() => room.msgs - messages.length);
-	}, [messages.length]);
 
 	return (
 		messages.length > 0 && <Virtuoso
@@ -85,3 +101,5 @@ export const MessageList: FC = () => {
 		/>
 	);
 };
+
+export default MessageList;
