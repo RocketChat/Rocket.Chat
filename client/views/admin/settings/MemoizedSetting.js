@@ -27,8 +27,13 @@ const MemoizedSetting = ({
 	onChangeValue = () => {},
 	onChangeEditor = () => {},
 	className,
+	invisible,
 	...inputProps
 }) => {
+	if (invisible) {
+		return null;
+	}
+
 	const InputComponent =
 		{
 			boolean: BooleanSettingInput,
