@@ -248,7 +248,9 @@ describe('Sessions Aggregates', () => {
 		let mongod;
 		before(async function() {
 			this.timeout(120000);
-			mongod = await MongoMemoryServer.create({ binary: { version: '5.0.0' } });
+			const version = '5.0.0';
+			console.log(`Starting mongo version ${ version }`);
+			mongod = await MongoMemoryServer.create({ binary: { version } });
 			process.env.MONGO_URL = mongod.getUri();
 		});
 
@@ -258,6 +260,7 @@ describe('Sessions Aggregates', () => {
 	}
 
 	before(async () => {
+		console.log(`Connecting to mongo at ${ process.env.MONGO_URL }`);
 		const client = await MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
 		db = client.db('test');
 
