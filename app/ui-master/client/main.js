@@ -15,6 +15,7 @@ import { isSyncReady } from '../../../client/lib/userData';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import './main.html';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
 
 callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
@@ -94,6 +95,15 @@ Template.main.onCreated(function() {
 });
 
 Template.main.onRendered(function() {
+	// iOS prevent click if elements matches hover
+	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchend', 'a', (e) => {
+		if (!e.target.matches(':hover')) {
+			return;
+		}
+
+		e.target.click();
+	});
+
 	Tracker.autorun(function() {
 		const userId = Meteor.userId();
 
