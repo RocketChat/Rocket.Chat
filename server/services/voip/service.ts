@@ -44,6 +44,8 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return true;
 	}
 
+	// in-future, if we want to keep a track of duration during which a server config was active, then we'd need to modify the
+	// 		IVoipServerConfig interface and add columns like "valid_from_ts" and "valid_to_ts"
 	async deactivateServerConfigDataIfAvailable(type: ServerType): Promise<boolean> {
 		await this.VoipServerConfiguration.updateMany({ type, configActive: true }, { $set: { configActive: false } });
 		return true;
