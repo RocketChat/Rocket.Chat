@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo, useEffect, memo } from 'react';
 
-import { menu, SideNav, Layout } from '../../../../app/ui-utils/client';
+import { menu, SideNav } from '../../../../app/ui-utils/client';
 import PlanTag from '../../../components/PlanTag';
 import Sidebar from '../../../components/Sidebar';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useRoutePath, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { isLayoutEmbedded } from '../../../lib/utils/isLayoutEmbedded';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import AdminSidebarPages from './AdminSidebarPages';
 import AdminSidebarSettings from './AdminSidebarSettings';
@@ -21,7 +22,7 @@ function AdminSidebar() {
 	);
 
 	const closeAdminFlex = useCallback(() => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			menu.close();
 			return;
 		}

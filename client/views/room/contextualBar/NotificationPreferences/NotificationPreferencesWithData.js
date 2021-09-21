@@ -29,9 +29,6 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		desktopAlert:
 			(subscription.desktopPrefOrigin === 'subscription' && subscription.desktopNotifications) ||
 			'default',
-		desktopAudio:
-			(subscription.audioPrefOrigin === 'subscription' && subscription.audioNotifications) ||
-			'default',
 		desktopSound: subscription.audioNotificationValue || 'default',
 		mobileAlert:
 			(subscription.mobilePrefOrigin === 'subscription' && subscription.mobilePushNotifications) ||
@@ -68,7 +65,6 @@ const NotificationPreferencesWithData = ({ rid }) => {
 		notifications.muteGroupMentions = values.muteGroupMentions ? '1' : '0';
 		notifications.hideUnreadStatus = values.showCounter ? '0' : '1';
 		notifications.desktopNotifications = values.desktopAlert;
-		notifications.audioNotifications = values.desktopAudio;
 		notifications.audioNotificationValue = values.desktopSound;
 		notifications.mobilePushNotifications = values.mobileAlert;
 		notifications.emailNotifications = values.emailAlert;

@@ -10,7 +10,6 @@ export { createDirectRoom } from './createDirectRoom';
 export { deleteMessage } from './deleteMessage';
 export { deleteRoom } from './deleteRoom';
 export { deleteUser } from './deleteUser';
-export { getFullUserData } from './getFullUserData';
 export { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 export { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
