@@ -11,11 +11,11 @@ export const getSeatsRequestLink = (): string => {
 	const wizardSettings: WizardSettings = Settings.findSetupWizardSettings().fetch();
 
 	const utmUrl = new URL(url);
-	utmUrl.searchParams.append('workspaceId', String(workspaceId.value));
+	utmUrl.searchParams.append('workspaceId', String(workspaceId?.value));
 	utmUrl.searchParams.append('activeUsers', String(activeUsers));
 	wizardSettings.forEach((setting) => {
 		if (['Industry', 'Country', 'Size'].includes(setting._id)) {
-			utmUrl.searchParams.append(setting._id.toLowerCase(), String(setting.value));
+			utmUrl.searchParams.append(setting._id.toLowerCase(), String(setting?.value));
 		}
 	});
 

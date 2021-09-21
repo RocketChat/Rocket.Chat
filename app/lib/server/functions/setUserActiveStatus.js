@@ -62,6 +62,14 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 
 	Users.setUserActive(userId, active);
 
+	if (active && !user.active) {
+		callbacks.run('afterActivateUser', user);
+	}
+
+	if (!active && user.active) {
+		callbacks.run('afterDeactivateUser', user);
+	}
+
 	if (user.username) {
 		Subscriptions.setArchivedByUsername(user.username, !active);
 	}
