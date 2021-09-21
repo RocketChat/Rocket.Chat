@@ -1287,7 +1287,7 @@ settings.addGroup('Message', function() {
 		],
 	});
 
-	this.add('Message_Code_highlight', '', {
+	this.add('Message_Code_highlight', 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim', {
 		type: 'string',
 		public: true,
 		i18nDescription: 'Message_Code_highligh_Description',

@@ -1,8 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import hljs from 'highlight.js/lib/highlight';
+import clean from 'highlight.js/lib/languages/clean';
+import markdown from 'highlight.js/lib/languages/markdown';
 
-import { settings } from '../../settings';
-
+hljs.registerLanguage('clean', clean);
+hljs.registerLanguage('markdown', markdown);
 // eslint-disable-next-line complexity
 export const register = async (lang) => {
 	switch (lang) {
@@ -356,11 +357,3 @@ export const register = async (lang) => {
 };
 
 export default hljs;
-
-Meteor.startup(() => {
-	settings.get('Message_Code_highlight', (key, value) => {
-		value.split(',').forEach((language) => {
-			language && register(language);
-		});
-	});
-});
