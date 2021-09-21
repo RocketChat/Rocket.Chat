@@ -364,6 +364,8 @@ export const saveUser = function(userId, userData) {
 
 	Meteor.users.update({ _id: userData._id }, updateUser);
 
+	callbacks.run('afterSaveUser', userData);
+
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
