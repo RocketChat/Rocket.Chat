@@ -23,7 +23,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
-			throw new Error(`Error! There already exists a record of type ${ type }`);
+			throw new Error(`Error! There already exists an active record of type ${ type }`);
 		}
 
 		await this.VoipServerConfiguration.insertOne(config);
@@ -36,21 +36,21 @@ export class VoipService extends ServiceClass implements IVoipService {
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
-			throw new Error(`Error! No record exists of type ${ type }`);
+			throw new Error(`Error! No active record exists of type ${ type }`);
 		}
 
-		await this.VoipServerConfiguration.updateOne({ type }, config);
+		await this.VoipServerConfiguration.updateOne({ type, configActive: true }, config);
 
 		return true;
 	}
 
-	async deleteServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean> {
-		await this.VoipServerConfiguration.removeByType(serverType);
+	async deactivateServerConfigDataIfAvailable(type: ServerType): Promise<boolean> {
+		await this.VoipServerConfiguration.updateMany({ type, configActive: true }, { $set: { configActive: false } });
 		return true;
 	}
 
 	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
-		return this.VoipServerConfiguration.findOne({ type });
+		return this.VoipServerConfiguration.findOne({ type, configActive: true });
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface

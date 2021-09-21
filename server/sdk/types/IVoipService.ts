@@ -5,5 +5,5 @@ export interface IVoipService {
 	getServerConfigData(serverType: ServerType): Promise<IVoipServerConfig | null>;
 	addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
 	updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean>;
-	deleteServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
+	deactivateServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
 }

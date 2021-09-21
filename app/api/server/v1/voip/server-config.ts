@@ -37,12 +37,13 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 
 		const { host, port, serverName, username, password } = this.bodyParams;
 
-		Promise.await(Voip.deleteServerConfigDataIfAvailable(ServerType.MANAGEMENT));
+		Promise.await(Voip.deactivateServerConfigDataIfAvailable(ServerType.MANAGEMENT));
 
 		Promise.await(Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
 			serverName,
+			configActive: true,
 			configData: {
 				port,
 				username,
@@ -83,12 +84,13 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 
 		const { host, websocketPort, websocketPath, serverName } = this.bodyParams;
 
-		Promise.await(Voip.deleteServerConfigDataIfAvailable(ServerType.CALL_SERVER));
+		Promise.await(Voip.deactivateServerConfigDataIfAvailable(ServerType.CALL_SERVER));
 
 		Promise.await(Voip.addServerConfigData({
 			type: ServerType.CALL_SERVER,
 			host,
 			serverName,
+			configActive: true,
 			configData: {
 				websocketPort,
 				websocketPath,

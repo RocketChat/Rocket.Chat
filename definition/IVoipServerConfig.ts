@@ -10,6 +10,7 @@ export interface IVoipServerConfig extends IRocketChatRecord {
 	host: string;
 	serverName: string;
 	configData: IManagementConfigData | ICallServerConfigData;
+	configActive: boolean;
 }
 
 export interface IManagementConfigData {
