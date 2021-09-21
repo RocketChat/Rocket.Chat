@@ -7,16 +7,10 @@ import { createPortal } from 'react-dom';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { IUser } from '../../../../../../definition/IUser';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { createAnchor } from '../../../../../lib/utils/createAnchor';
 import { useWebRTC } from '../../../hooks/useWebRTC';
 import UserWebRTC from './UserWebRTC';
 import UserWebRTCButtons from './UserWebRTCButtons';
-
-const createAnchor = (): HTMLElement => {
-	const div = document.createElement('div');
-	div.id = 'react-webrtc';
-	document.body.appendChild(div);
-	return div;
-};
 
 const UserWebRTCWithData = (props: {
 	rid: IRoom['_id'];
@@ -48,7 +42,7 @@ const UserWebRTCWithData = (props: {
 				<UserWebRTC {...props} webRTCData={webRTCData} />
 				{webRTCData.isVideoActive() && <UserWebRTCButtons webRTCData={webRTCData} />}
 			</Box>,
-			createAnchor(),
+			createAnchor('react-webrtc'),
 		);
 	}
 
