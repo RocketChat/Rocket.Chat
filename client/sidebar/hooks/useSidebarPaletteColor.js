@@ -4,8 +4,6 @@ import { useLayoutEffect, useEffect, useMemo } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { isIE11 } from '../../lib/utils/isIE11';
 
-const isInternetExplorer11 = isIE11();
-
 const oldPallet = {
 	'color-dark-100': '#0c0d0f',
 	'color-dark-90': '#1e232a',
@@ -196,7 +194,7 @@ const getStyle = (
 			background-color: ${toVar(colors.sibebarSurface)};
 		}
 	`
-)(isInternetExplorer11 ? ':root' : modifier);
+)(isIE11 ? ':root' : modifier);
 
 const useSidebarPaletteColorIE11 = () => {
 	const colors = useTheme();
@@ -275,7 +273,7 @@ const useSidebarPaletteColorIE11 = () => {
 	}, [colors]);
 };
 
-export const useSidebarPaletteColor = isInternetExplorer11
+export const useSidebarPaletteColor = isIE11
 	? useSidebarPaletteColorIE11
 	: () => {
 			const colors = useTheme();

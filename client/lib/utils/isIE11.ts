@@ -1,4 +1,4 @@
-export const isIE11 = (): boolean => {
+export const isIE11: boolean = ((): boolean => {
 	const { userAgent } = window.navigator;
 	const msieIdx = userAgent.indexOf('MSIE');
 
@@ -12,4 +12,4 @@ export const isIE11 = (): boolean => {
 	}
 
 	return false;
-};
+})();
