@@ -105,6 +105,7 @@
 		"@types/xmldom": "^0.1.30",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^3.0.0",
+		"@types/uuid": "^8.3.1",
 		"autoprefixer": "^9.8.6",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.2.2",
