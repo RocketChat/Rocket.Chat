@@ -16,6 +16,7 @@ import './startup/presence';
 import './startup/serverRunning';
 import './startup/coreApps';
 import './configuration/accounts_meld';
+import './configuration/ldap';
 import './methods/OEmbedCacheCleanup';
 import './methods/addAllUserToRoom';
 import './methods/addRoomLeader';
@@ -76,6 +77,8 @@ import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
+import './stream/stdout';
 import './stream/streamBroadcast';
+import './settings/index';
 
 import './features/EmailInbox/index';
