@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { Logger } from '../../../lib/Logger';
 import { ICallEventDelegate } from '../../components/voip/ICallEventDelegate';
 import { IConnectionDelegate } from '../../components/voip/IConnectionDelegate';
@@ -16,6 +17,8 @@ class VoIPLayout
 	extends React.Component<{}, IState>
 	implements IRegisterHandlerDelegate, IConnectionDelegate, ICallEventDelegate
 {
+	extensionConfig: any;
+
 	userHandler: VoIPUser | undefined;
 
 	userName: React.RefObject<HTMLInputElement>;
@@ -44,6 +47,78 @@ class VoIPLayout
 		this.webSocketPath = React.createRef();
 		this.callTypeSelection = React.createRef();
 		this.logger = new Logger('VoIPLayout');
+		this.extensionConfig = null;
+	}
+
+	private async initUserAgent(): Promise<void> {
+		let extension = '80000';
+		if (this.userName.current && this.userName.current.value) {
+			extension = this.userName.current.value;
+		}
+		try {
+			this.extensionConfig = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+				extension,
+			});
+			this.logger?.info('list = ', JSON.stringify(this.extensionConfig));
+		} catch (error) {
+			this.logger?.error('error in API');
+			throw error;
+		}
+
+		if (this.extensionConfig.extension && this.userName.current) {
+			this.userName.current.textContent = this.extensionConfig.extension;
+			this.userName.current.disabled = true;
+			this.config.authUserName = this.extensionConfig.extension;
+		}
+		if (this.extensionConfig.password && this.password.current) {
+			this.password.current.value = this.extensionConfig.password;
+			this.password.current.disabled = true;
+			this.config.authPassword = this.extensionConfig.password;
+		}
+		if (this.extensionConfig.sipRegistrar && this.registrar.current) {
+			this.registrar.current.value = this.extensionConfig.sipRegistrar;
+			this.registrar.current.disabled = true;
+			this.config.sipRegistrarHostnameOrIP = this.extensionConfig.sipRegistrar;
+		}
+		if (this.extensionConfig.websocketUri && this.webSocketPath.current) {
+			this.webSocketPath.current.value = this.extensionConfig.websocketUri;
+			this.webSocketPath.current.disabled = true;
+			this.config.webSocketURI = this.extensionConfig.websocketUri;
+		}
+
+		this.config.enableVideo = this.state.enableVideo;
+		this.config.connectionDelegate = this;
+		this.config.iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+		const videoElement = document.getElementById('remote_video') as HTMLMediaElement;
+		if (videoElement) {
+			this.config.mediaElements = {
+				remoteStreamMediaElement: videoElement,
+			};
+		}
+		this.userHandler = new VoIPUser(this.config, this, this, this);
+		await this.userHandler?.init();
+	}
+
+	private async deInitUserAgent(): Promise<void> {
+		this.extensionConfig = null;
+		if (this.userName.current) {
+			this.userName.current.textContent = '';
+			this.userName.current.disabled = false;
+		}
+		if (this.password.current) {
+			this.password.current.textContent = '';
+			// this.password.current.disabled = false;
+		}
+		if (this.registrar.current) {
+			this.registrar.current.textContent = '';
+			// this.registrar.current.disabled = false;
+		}
+		if (this.webSocketPath.current) {
+			this.webSocketPath.current.textContent = '';
+			// this.webSocketPath.current.disabled = false;
+		}
+		this.config = {};
+		this.userHandler = undefined;
 	}
 
 	/* RegisterHandlerDeligate implementation begin */
@@ -164,44 +239,32 @@ class VoIPLayout
 		if (element) {
 			element.style.display = 'none';
 		}
-
-		if (this.userName.current?.textContent) {
-			this.config.authUserName = this.userName.current?.textContent;
-		} else {
-			this.config.authUserName = this.userName.current?.defaultValue;
+		if (!this.userHandler) {
+			try {
+				await this.initUserAgent();
+				this.setState({ isReady: true });
+			} catch (error) {
+				this.logger?.error('componentDidMount() Error in getting extension Info', error);
+				throw error;
+			}
 		}
-		if (this.password.current?.textContent) {
-			this.config.authPassword = this.password.current?.textContent;
-		} else {
-			this.config.authPassword = this.password.current?.defaultValue;
-		}
-		if (this.registrar.current?.textContent) {
-			this.config.sipRegistrarHostnameOrIP = this.registrar.current?.textContent;
-		} else {
-			this.config.sipRegistrarHostnameOrIP = this.registrar.current?.defaultValue;
-		}
-		if (this.webSocketPath.current?.textContent) {
-			this.config.webSocketURI = this.webSocketPath.current?.textContent;
-		} else {
-			this.config.webSocketURI = this.webSocketPath.current?.defaultValue;
-		}
-
-		this.config.enableVideo = this.state.enableVideo;
-		this.config.connectionDelegate = this;
-		this.config.iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
-		const videoElement = document.getElementById('remote_video') as HTMLMediaElement;
-		if (videoElement) {
-			this.config.mediaElements = {
-				remoteStreamMediaElement: videoElement,
-			};
-		}
-
-		this.userHandler = new VoIPUser(this.config, this, this, this);
-		this.setState({ isReady: true });
-		await this.userHandler?.init();
 	}
 
-	registerEndpoint(): void {
+	async registerEndpoint(): Promise<void> {
+		if (!this.userHandler) {
+			try {
+				await this.initUserAgent();
+			} catch (error) {
+				this.logger?.error('registerEndpoint() Error in getting extension Info', error);
+				throw error;
+			}
+		}
+		try {
+			const list = await APIClient.v1.get('connector.extension.list');
+			this.logger?.info('list = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger?.error('error in API');
+		}
 		if (this.callTypeSelection.current) {
 			this.callTypeSelection.current.disabled = true;
 		}
@@ -213,6 +276,7 @@ class VoIPLayout
 			this.callTypeSelection.current.disabled = false;
 		}
 		this.userHandler?.unregister();
+		this.deInitUserAgent();
 	}
 
 	async acceptCall(): Promise<any> {

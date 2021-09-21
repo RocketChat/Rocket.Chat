@@ -1,5 +1,6 @@
 import { Logger, LogLevel } from '../../../../../lib/Logger';
 import { IConnection } from './IConnection';
+import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 
 /**
  * This class serves as a a base class for the different kind of call server objects
@@ -103,7 +104,7 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any): Promise <any> {
+	executeCommand(_data: any): Promise <IVoipExtensionConfig | IVoipExtensionBase []> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});

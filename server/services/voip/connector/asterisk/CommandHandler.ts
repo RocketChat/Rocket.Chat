@@ -20,6 +20,7 @@ import { Logger } from '../../../../../lib/Logger';
 import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
+import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -38,11 +39,11 @@ export class CommandHandler {
 		/* TODO(Amol) : This information must come from
 		 * an API/Database.
 		 * Currently hardcoded. Hence commenting the code
+		 */
 		connection.connect('omni-asterisk.dev.rocket.chat',
 			'5038',
 			'amol',
 			'1234');
-		*/
 		this.connections.set(CommandType.AMI, connection);
 	}
 
@@ -54,7 +55,7 @@ export class CommandHandler {
 	 * This function returns a promise. Caller can wait for the promise to resolve
 	 * or rejected.
 	 */
-	executeCommand(commandToExecute: Commands, commandData: any): Promise<any> {
+	executeCommand(commandToExecute: Commands, commandData: any): Promise<IVoipExtensionConfig | IVoipExtensionBase []> {
 		this.logger?.debug(`executeCommand() executing ${ Commands[commandToExecute] }`);
 		const command = CommandFactory.getCommandObject(commandToExecute);
 		command.connection = this.connections.get(command.type) as IConnection;

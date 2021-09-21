@@ -31,12 +31,23 @@
 import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../../lib/Logger';
 import { Commands } from '../Commands';
+import { EndpointState, IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../../definition/IVoipExtension';
 
 export class PJSIPEndpoint extends Command {
 	constructor(command: string, parametersNeeded: boolean) {
 		super(command, parametersNeeded);
 		this._type = CommandType.AMI;
 		this.logger = new Logger('Endpoint');
+	}
+
+	private getState(endpointState: string): EndpointState {
+		let state: EndpointState = EndpointState.UNKNOWN;
+		if (endpointState.toLowerCase() === 'unavailable') {
+			state = EndpointState.UNREGISTERED;
+		} else if (endpointState.toLowerCase() === 'available') {
+			state = EndpointState.REGISTERED;
+		}
+		return state;
 	}
 
 	/**
@@ -53,7 +64,7 @@ export class PJSIPEndpoint extends Command {
 		}
 		const endPoint = {
 			name: event.objectname,
-			state: event.devicestate,
+			state: this.getState(event.devicestate),
 		};
 		const { result } = this;
 		if (result.endpoints) {
@@ -80,7 +91,7 @@ export class PJSIPEndpoint extends Command {
 		}
 		const { result } = this;
 		this.logger?.info(`onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }`);
-		this.returnResolve?.(result);
+		this.returnResolve?.(result.endpoints as IVoipExtensionBase []);
 	}
 
 	/**
@@ -112,7 +123,7 @@ export class PJSIPEndpoint extends Command {
 
 		if (event.event.toLowerCase() === 'endpointdetail') {
 			result.endpoint.name = event.objectname;
-			result.endpoint.state = event.devicestate;
+			result.endpoint.state = this.getState(event.devicestate);
 		} else if (event.event.toLowerCase() === 'authdetail') {
 			result.endpoint.password = event.password;
 			result.endpoint.authtype = event.authtype;
@@ -133,7 +144,7 @@ export class PJSIPEndpoint extends Command {
 		}
 		const { result } = this;
 		this.logger?.info(`onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }`);
-		this.returnResolve?.(result);
+		this.returnResolve?.(result.endpoint as IVoipExtensionConfig);
 	}
 
 	/**
@@ -163,7 +174,7 @@ export class PJSIPEndpoint extends Command {
 		}
 	}
 
-	async executeCommand(data: any): Promise <any> {
+	async executeCommand(data: any): Promise <IVoipExtensionConfig | IVoipExtensionBase []> {
 		let action = 'none';
 		this.logger?.debug('executeCommand() Executing ', JSON.stringify(data));
 		let amiCommand = {};
@@ -186,44 +197,4 @@ export class PJSIPEndpoint extends Command {
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);
 		return super.prepareCommandAndExecution(amiCommand, actionResultCallback, eventHandlerSetupCallback);
 	}
-	/*
-	async executeCommand(data: any): Promise <any> {
-		let action = 'none';
-		this.logger?.debug('executeCommand() Executing ', JSON.stringify(data));
-		let amiCommand = {};
-		// set up the specific action based on the value of |Commands|
-		if (this.commandText === Commands.extension_list.toString()) {
-			amiCommand = {
-				action: 'pjsipshowendpoints',
-			};
-		} else if (this.commandText === Commands.extension_info.toString()) {
-			action = 'pjsipshowendpoint';
-			// |pjsipshowendpoint| needs input parameter |endpoint| indicating
-			// which endpoint information is to be queried.
-			amiCommand = {
-				action,
-				endpoint: data.extension,
-			};
-		}
-
-		this.logger?.debug('executeCommand() Executing ', JSON.stringify(amiCommand));
-		const returnPromise = new Promise((_resolve, _reject) => {
-			// set up resolve and reject handles
-			this.returnResolve = _resolve;
-			this.returnReject = _reject;
-			// Setup necessary command event handlers based on the command
-			if (this.commandText === Commands.extension_list.toString()) {
-				this.connection.on?.('endpointlist', this.onEndpointList.bind(this));
-				this.connection.on?.('endpointlistcomplete', this.onEndpointListComplete.bind(this));
-			} else if (this.commandText === Commands.extension_info.toString()) {
-				this.connection.on?.('endpointdetail', this.onEndpointInfo.bind(this));
-				this.connection.on?.('authdetail', this.onEndpointInfo.bind(this));
-				this.connection.on?.('endpointdetailcomplete', this.onEndpointDetailComplete.bind(this));
-			}
-			const actionResultCallback = this.onActionResult.bind(this);
-			this.connection.executeCommand?.(amiCommand, actionResultCallback);
-		});
-		return returnPromise;
-	}
-	*/
 }
