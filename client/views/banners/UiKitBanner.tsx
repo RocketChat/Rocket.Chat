@@ -12,12 +12,13 @@ import { UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit'
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
 import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
 import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
+import MarkdownText from '../../components/MarkdownText';
 import * as banners from '../../lib/banners';
-import { renderMessageBody } from '../../lib/renderMessageBody';
 
 // TODO: move this to fuselage-ui-kit itself
-const mrkdwn = ({ text }: { text: string } = { text: '' }): ReactNode =>
-	text && <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
+const mrkdwn = ({ text }: { text: string } = { text: '' }): ReactNode => (
+	<MarkdownText variant='inline' content={text} />
+);
 
 bannerParser.mrkdwn = mrkdwn;
 
