@@ -9,12 +9,19 @@ import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
-	status: {
-		$exists: true,
-		$ne: 'offline',
-	},
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	$or: [{
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		roles: {
+			$ne: 'bot',
+		},
+	}, {
+		roles: 'bot',
+	}],
 	...extraFilters,
 	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
 });
