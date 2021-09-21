@@ -17,19 +17,18 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    
+
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        # testunit only works with mongoDB 4.0 , needs to be investigated and fixed
         mongodb-version: [
-          # "3.6",
-          "4.0", 
-          # "4.2", 
-          # "4.4",
-          # "5.0"
+          "3.6",
+          "4.0",
+          "4.2",
+          "4.4",
+          "5.0"
         ]
-    
+
     steps:
 
     - name: Github Info
