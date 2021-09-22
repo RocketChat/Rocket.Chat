@@ -24,13 +24,7 @@ export class Logger {
 	}
 
 	section(name: string): P.Logger {
-		const child = this.logger.child({ section: name });
-
-		logLevel.on('changed', (level) => {
-			child.level = getLevel(level);
-		});
-
-		return child;
+		return this.logger.child({ section: name });
 	}
 
 	level(newLevel: string): void {

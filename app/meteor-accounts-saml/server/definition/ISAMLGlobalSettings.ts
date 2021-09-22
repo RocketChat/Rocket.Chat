@@ -4,6 +4,8 @@ export interface ISAMLGlobalSettings {
 	mailOverwrite: boolean;
 	immutableProperty: string;
 	defaultUserRole: string;
+	roleAttributeName: string;
+	roleAttributeSync: boolean;
 	userDataFieldMap: string;
 	usernameNormalize: string;
 	channelsAttributeUpdate: boolean;

@@ -1,5 +1,4 @@
 import zlib from 'zlib';
-import { EventEmitter } from 'events';
 
 import _ from 'underscore';
 
@@ -8,12 +7,15 @@ import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
-import { Logger } from '../../../../server/lib/logger/Logger';
+
+// @ToDo remove this ts-ignore someday
+// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
+type NullableLogger = Logger | null;
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
 let relayState: string | null = null;
-let logger: Logger | undefined;
+let logger: NullableLogger = null;
 
 const globalSettings: ISAMLGlobalSettings = {
 	generateUsername: false,
@@ -21,6 +23,8 @@ const globalSettings: ISAMLGlobalSettings = {
 	mailOverwrite: false,
 	immutableProperty: 'EMail',
 	defaultUserRole: 'user',
+	roleAttributeName: '',
+	roleAttributeSync: false,
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
 	usernameNormalize: 'None',
 	channelsAttributeUpdate: false,
@@ -28,8 +32,6 @@ const globalSettings: ISAMLGlobalSettings = {
 };
 
 export class SAMLUtils {
-	public static events: EventEmitter;
-
 	public static get isDebugging(): boolean {
 		return debug;
 	}
@@ -51,7 +53,8 @@ export class SAMLUtils {
 	}
 
 	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
-		this.log(providerName, providerList);
+		this.log(providerName);
+		this.log(providerList);
 
 		return _.find(providerList, (providerOptions) => providerOptions.provider === providerName);
 	}
@@ -60,7 +63,7 @@ export class SAMLUtils {
 		providerList = list;
 	}
 
-	public static setLoggerInstance(instance: Logger): void {
+	public static setLoggerInstance(instance: NullableLogger): void {
 		logger = instance;
 	}
 
@@ -71,6 +74,7 @@ export class SAMLUtils {
 		globalSettings.generateUsername = Boolean(samlConfigs.generateUsername);
 		globalSettings.nameOverwrite = Boolean(samlConfigs.nameOverwrite);
 		globalSettings.mailOverwrite = Boolean(samlConfigs.mailOverwrite);
+		globalSettings.roleAttributeSync = Boolean(samlConfigs.roleAttributeSync);
 		globalSettings.channelsAttributeUpdate = Boolean(samlConfigs.channelsAttributeUpdate);
 		globalSettings.includePrivateChannelsInUpdate = Boolean(samlConfigs.includePrivateChannelsInUpdate);
 
@@ -84,6 +88,10 @@ export class SAMLUtils {
 
 		if (samlConfigs.defaultUserRole && typeof samlConfigs.defaultUserRole === 'string') {
 			globalSettings.defaultUserRole = samlConfigs.defaultUserRole;
+		}
+
+		if (samlConfigs.roleAttributeName && typeof samlConfigs.roleAttributeName === 'string') {
+			globalSettings.roleAttributeName = samlConfigs.roleAttributeName;
 		}
 
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {
@@ -131,15 +139,15 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	public static log(obj: any, ...args: Array<any>): void {
+	public static log(...args: Array<any>): void {
 		if (debug && logger) {
-			logger.debug(obj, ...args);
+			logger.debug(...args);
 		}
 	}
 
-	public static error(obj: any, ...args: Array<any>): void {
+	public static error(...args: Array<any>): void {
 		if (logger) {
-			logger.error(obj, ...args);
+			logger.error(...args);
 		}
 	}
 
@@ -413,7 +421,7 @@ export class SAMLUtils {
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
-		const { defaultUserRole = 'user' } = this.globalSettings;
+		const { defaultUserRole = 'user', roleAttributeName } = this.globalSettings;
 
 		if (userDataMap.identifier.type === 'custom') {
 			if (!userDataMap.identifier.attribute) {
@@ -462,6 +470,15 @@ export class SAMLUtils {
 			userObject.username = this.normalizeUsername(profileUsername);
 		}
 
+		if (roleAttributeName && profile[roleAttributeName]) {
+			let value = profile[roleAttributeName] || '';
+			if (typeof value === 'string') {
+				value = value.split(',');
+			}
+
+			userObject.roles = this.ensureArray<string>(value);
+		}
+
 		if (profile.language) {
 			userObject.language = profile.language;
 		}
@@ -481,10 +498,6 @@ export class SAMLUtils {
 			}
 		}
 
-		this.events.emit('mapUser', { profile, userObject });
-
 		return userObject;
 	}
 }
-
-SAMLUtils.events = new EventEmitter();

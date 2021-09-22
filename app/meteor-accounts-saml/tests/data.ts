@@ -9,6 +9,8 @@ export const serviceProviderOptions = {
 	customAuthnContext: 'Password',
 	authnContextComparison: 'Whatever',
 	defaultUserRole: 'user',
+	roleAttributeName: 'role',
+	roleAttributeSync: false,
 	allowedClockDrift: 0,
 	signatureValidationType: 'All',
 	identifierFormat: 'email',

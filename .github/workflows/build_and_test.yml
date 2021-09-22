@@ -117,6 +117,13 @@ jobs:
 
     - run: meteor npm run translation-check
 
+    - name: Launch MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: "4.0"
+
+    - run: meteor npm run testunit
+
     - run: meteor npm run typecheck
 
     - name: Build Storybook to sanity check components
@@ -185,7 +192,7 @@ jobs:
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.6", "4.0", "4.2", "4.4","5.0"]
+        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
 
     steps:
     - name: Launch MongoDB
@@ -242,10 +249,7 @@ jobs:
       run: |
         npm install
 
-    - name: Unit Test
-      run: npm run testunit
-
-    - name: E2E Test
+    - name: Test
       env:
         TEST_MODE: "true"
         MONGO_URL: mongodb://localhost:27017/rocketchat

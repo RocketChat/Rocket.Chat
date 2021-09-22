@@ -13,7 +13,6 @@ const bundles: IBundle = {
 		'push-privacy',
 		'scalability',
 		'teams-mention',
-		'saml-enterprise',
 	],
 	pro: [
 	],

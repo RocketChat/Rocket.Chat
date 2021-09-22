@@ -72,7 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -103,8 +103,8 @@ export class SAML {
 			address: email,
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
+		const globalRoles = userObject.roles;
 
-		const { roles } = userObject;
 		let { username } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -113,7 +113,7 @@ export class SAML {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
 				active,
-				globalRoles: roles,
+				globalRoles,
 				emails,
 				services: {
 					saml: {
@@ -184,8 +184,8 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roles) {
-			updateData.roles = roles;
+		if (roleAttributeSync) {
+			updateData.roles = globalRoles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
@@ -216,7 +216,7 @@ export class SAML {
 			res.writeHead(200);
 			res.write(serviceProvider.generateServiceProviderMetadata());
 			res.end();
-		} catch (err: any) {
+		} catch (err) {
 			showErrorMessage(res, err);
 		}
 	}
@@ -300,7 +300,7 @@ export class SAML {
 
 						redirect(url);
 					});
-				} catch (e: any) {
+				} catch (e) {
 					SystemLogger.error(e);
 					redirect();
 				}
@@ -472,7 +472,7 @@ export class SAML {
 					}
 				}
 			}
-		} catch (err: any) {
+		} catch (err) {
 			SystemLogger.error(err);
 		}
 	}
