@@ -353,6 +353,42 @@ export class LDAPEEManager extends LDAPManager {
 		return ldapUserGroups.filter((entry) => entry?.raw?.ou).map((entry) => (ldap.extractLdapAttribute(entry.raw.ou) as string)).flat();
 	}
 
+	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
+		// Account locked by "Draft-behera-ldap-password-policy"
+		if (ldapUser.pwdAccountLockedTime) {
+			return true;
+		}
+
+		// EDirectory: Account manually disabled by an admin
+		if (ldapUser.loginDisabled) {
+			return true;
+		}
+
+		// Oracle: Account must not be allowed to authenticate
+		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
+			return true;
+		}
+
+		// Active Directory - Account locked automatically by security policies
+		if (ldapUser.lockoutTime) {
+			// Automatic unlock is disabled
+			if (!ldapUser.lockoutDuration) {
+				return true;
+			}
+
+			// #ToDo: Account for timezones
+			const lockoutTime = new Date(Number(ldapUser.lockoutTime));
+			lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
+			// Account has not unlocked itself yet
+			if (lockoutTime.valueOf() > Date.now()) {
+				return true;
+			}
+		}
+
+		// #ToDo: Active Directory - Account disabled by an Admin
+		return false;
+	}
+
 	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
 		if (!ldapUser) {
 			return;
@@ -363,7 +399,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const deleted = Boolean(ldapUser.pwdAccountLockedTime);
+		const deleted = this.isUserDeactivated(ldapUser);
 		if (deleted === userData.deleted || (userData.deleted === undefined && !deleted)) {
 			return;
 		}
