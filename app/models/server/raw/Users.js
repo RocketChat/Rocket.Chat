@@ -138,6 +138,24 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	async findOneByLDAPId(id, attribute = undefined) {
+		const query = {
+			'services.ldap.id': id,
+		};
+
+		if (attribute) {
+			query['services.ldap.idAttribute'] = attribute;
+		}
+
+		return this.findOne(query);
+	}
+
+	async findLDAPUsers(options) {
+		const query = { ldap: true };
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
@@ -227,6 +245,20 @@ export class UsersRaw extends BaseRaw {
 				},
 			});
 		return result.value;
+	}
+
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -585,6 +617,24 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+		const query = {
+			_id: userId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	async isAgentWithinBusinessHours(agentId) {

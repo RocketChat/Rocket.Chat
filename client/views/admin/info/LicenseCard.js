@@ -67,7 +67,7 @@ const LicenseCard = () => {
 								<>
 									<Feature label={t('Omnichannel')} enabled={hasOmnichannel} />
 									<Feature label={t('Auditing')} enabled={hasAuditing} />
-									<Feature label={t('Canned_responses')} enabled={hasCannedResponses} />
+									<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
 									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
 								</>
 							)}
