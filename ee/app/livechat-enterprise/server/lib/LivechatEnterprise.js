@@ -271,7 +271,7 @@ function shouldQueueStart() {
 }
 
 settings.get('Livechat_enabled', (_, value) => {
-	value ? shouldQueueStart() : queueWorker.stop();
+	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 });
 
 settings.onload('Livechat_Routing_Method', shouldQueueStart);
