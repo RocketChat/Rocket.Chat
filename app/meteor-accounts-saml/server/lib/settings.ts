@@ -19,7 +19,7 @@ import {
 } from './constants';
 
 export const getSamlConfigs = function(service: string): Record<string, any> {
-	return {
+	const configs = {
 		buttonLabelText: settings.get(`${ service }_button_label_text`),
 		buttonLabelColor: settings.get(`${ service }_button_label_color`),
 		buttonColor: settings.get(`${ service }_button_color`),
@@ -36,8 +36,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		mailOverwrite: settings.get(`${ service }_mail_overwrite`),
 		issuer: settings.get(`${ service }_issuer`),
 		logoutBehaviour: settings.get(`${ service }_logout_behaviour`),
-		customAuthnContext: settings.get(`${ service }_custom_authn_context`),
-		authnContextComparison: settings.get(`${ service }_authn_context_comparison`),
 		defaultUserRole: settings.get(`${ service }_default_user_role`),
 		secret: {
 			privateKey: settings.get(`${ service }_private_key`),
@@ -48,17 +46,22 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		signatureValidationType: settings.get(`${ service }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service }_user_data_fieldmap`),
 		allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
-		identifierFormat: settings.get(`${ service }_identifier_format`),
-		nameIDPolicyTemplate: settings.get(`${ service }_NameId_template`),
-		authnContextTemplate: settings.get(`${ service }_AuthnContext_template`),
-		authRequestTemplate: settings.get(`${ service }_AuthRequest_template`),
-		logoutResponseTemplate: settings.get(`${ service }_LogoutResponse_template`),
-		logoutRequestTemplate: settings.get(`${ service }_LogoutRequest_template`),
-		metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
-		metadataTemplate: settings.get(`${ service }_Metadata_template`),
+		customAuthnContext: defaultAuthnContext,
+		authnContextComparison: 'exact',
+		identifierFormat: defaultIdentifierFormat,
+		nameIDPolicyTemplate: defaultNameIDTemplate,
+		authnContextTemplate: defaultAuthnContextTemplate,
+		authRequestTemplate: defaultAuthRequestTemplate,
+		logoutResponseTemplate: defaultLogoutResponseTemplate,
+		logoutRequestTemplate: defaultLogoutRequestTemplate,
+		metadataCertificateTemplate: defaultMetadataCertificateTemplate,
+		metadataTemplate: defaultMetadataTemplate,
 		channelsAttributeUpdate: settings.get(`${ service }_channels_update`),
 		includePrivateChannelsInUpdate: settings.get(`${ service }_include_private_channels_update`),
 	};
+
+	SAMLUtils.events.emit('loadConfigs', service, configs);
+	return configs;
 };
 
 export const configureSamlService = function(samlConfigs: Record<string, any>): IServiceProviderOptions {
@@ -74,7 +77,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 
 	SAMLUtils.updateGlobalSettings(samlConfigs);
 
-	return {
+	const serviceConfigs = {
 		provider: samlConfigs.clientConfig.provider,
 		entryPoint: samlConfigs.entryPoint,
 		idpSLORedirectURL: samlConfigs.idpSLORedirectURL,
@@ -97,6 +100,9 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		metadataTemplate: samlConfigs.metadataTemplate,
 		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
+
+	SAMLUtils.events.emit('configureService', { samlConfigs, serviceConfigs });
+	return serviceConfigs;
 };
 
 export const loadSamlServiceProviders = function(): void {
@@ -285,101 +291,6 @@ export const addSettings = function(name: string): void {
 			});
 		});
 
-		this.set({
-			tab: 'SAML_Enterprise',
-			enterprise: true,
-			modules: ['SAML-enterprise'],
-		}, function() {
-			this.section('SAML_Section_4_Roles', function() {
-				// Roles Settings
-				this.add(`SAML_Custom_${ name }_role_attribute_sync`, false, {
-					type: 'boolean',
-					i18nLabel: 'SAML_Role_Attribute_Sync',
-					i18nDescription: 'SAML_Role_Attribute_Sync_Description',
-					invalidValue: false,
-				});
-				this.add(`SAML_Custom_${ name }_role_attribute_name`, '', {
-					type: 'string',
-					i18nLabel: 'SAML_Role_Attribute_Name',
-					i18nDescription: 'SAML_Role_Attribute_Name_Description',
-					invalidValue: '',
-				});
-			});
-
-			this.section('SAML_Section_6_Advanced', function() {
-				this.add(`SAML_Custom_${ name }_identifier_format`, defaultIdentifierFormat, {
-					type: 'string',
-					invalidValue: defaultIdentifierFormat,
-					i18nLabel: 'SAML_Identifier_Format',
-					i18nDescription: 'SAML_Identifier_Format_Description',
-				});
-				this.add(`SAML_Custom_${ name }_NameId_template`, defaultNameIDTemplate, {
-					type: 'string',
-					invalidValue: defaultNameIDTemplate,
-					i18nLabel: 'SAML_NameIdPolicy_Template',
-					i18nDescription: 'SAML_NameIdPolicy_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_custom_authn_context`, defaultAuthnContext, {
-					type: 'string',
-					invalidValue: defaultAuthnContext,
-					i18nLabel: 'SAML_Custom_Authn_Context',
-					i18nDescription: 'SAML_Custom_Authn_Context_description',
-				});
-				this.add(`SAML_Custom_${ name }_authn_context_comparison`, 'exact', {
-					type: 'select',
-					values: [
-						{ key: 'better', i18nLabel: 'Better' },
-						{ key: 'exact', i18nLabel: 'Exact' },
-						{ key: 'maximum', i18nLabel: 'Maximum' },
-						{ key: 'minimum', i18nLabel: 'Minimum' },
-					],
-					invalidValue: 'exact',
-					i18nLabel: 'SAML_Custom_Authn_Context_Comparison',
-				});
-				this.add(`SAML_Custom_${ name }_AuthnContext_template`, defaultAuthnContextTemplate, {
-					type: 'string',
-					invalidValue: defaultAuthnContextTemplate,
-					i18nLabel: 'SAML_AuthnContext_Template',
-					i18nDescription: 'SAML_AuthnContext_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_AuthRequest_template`, defaultAuthRequestTemplate, {
-					type: 'string',
-					invalidValue: defaultAuthRequestTemplate,
-					i18nLabel: 'SAML_AuthnRequest_Template',
-					i18nDescription: 'SAML_AuthnRequest_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_LogoutResponse_template`, defaultLogoutResponseTemplate, {
-					type: 'string',
-					invalidValue: defaultLogoutResponseTemplate,
-					i18nLabel: 'SAML_LogoutResponse_Template',
-					i18nDescription: 'SAML_LogoutResponse_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_LogoutRequest_template`, defaultLogoutRequestTemplate, {
-					type: 'string',
-					invalidValue: defaultLogoutRequestTemplate,
-					i18nLabel: 'SAML_LogoutRequest_Template',
-					i18nDescription: 'SAML_LogoutRequest_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_MetadataCertificate_template`, defaultMetadataCertificateTemplate, {
-					type: 'string',
-					invalidValue: defaultMetadataCertificateTemplate,
-					i18nLabel: 'SAML_MetadataCertificate_Template',
-					i18nDescription: 'SAML_Metadata_Certificate_Template_Description',
-					multiline: true,
-				});
-				this.add(`SAML_Custom_${ name }_Metadata_template`, defaultMetadataTemplate, {
-					type: 'string',
-					invalidValue: defaultMetadataTemplate,
-					i18nLabel: 'SAML_Metadata_Template',
-					i18nDescription: 'SAML_Metadata_Template_Description',
-					multiline: true,
-				});
-			});
-		});
+		SAMLUtils.events.emit('addSettings', name);
 	});
 };

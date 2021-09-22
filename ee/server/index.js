@@ -11,6 +11,6 @@ import '../app/livechat-enterprise/server/index';
 import '../app/settings/server/index';
 import '../app/teams-mention/server/index';
 import './api';
-import './configuration/ldap';
-import './configuration/SAML';
+import './configuration/index';
 import './local-services/ldap/service';
+import './settings/index';

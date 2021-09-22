@@ -1,4 +1,5 @@
 import zlib from 'zlib';
+import { EventEmitter } from 'events';
 
 import _ from 'underscore';
 
@@ -7,16 +8,12 @@ import { ISAMLUser } from '../definition/ISAMLUser';
 import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
 import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
-import { callbacks } from '../../../callbacks/server';
-
-// @ToDo remove this ts-ignore someday
-// @ts-ignore skip checking if Logger exists to avoid having to import the Logger class here (it would bring a lot of baggage with its dependencies, affecting the unit tests)
-type NullableLogger = Logger | null;
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 let providerList: Array<IServiceProviderOptions> = [];
 let debug = false;
 let relayState: string | null = null;
-let logger: NullableLogger = null;
+let logger: Logger | undefined;
 
 const globalSettings: ISAMLGlobalSettings = {
 	generateUsername: false,
@@ -31,6 +28,8 @@ const globalSettings: ISAMLGlobalSettings = {
 };
 
 export class SAMLUtils {
+	public static events: EventEmitter;
+
 	public static get isDebugging(): boolean {
 		return debug;
 	}
@@ -52,8 +51,7 @@ export class SAMLUtils {
 	}
 
 	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
-		this.log(providerName);
-		this.log(providerList);
+		this.log(providerName, providerList);
 
 		return _.find(providerList, (providerOptions) => providerOptions.provider === providerName);
 	}
@@ -62,7 +60,7 @@ export class SAMLUtils {
 		providerList = list;
 	}
 
-	public static setLoggerInstance(instance: NullableLogger): void {
+	public static setLoggerInstance(instance: Logger): void {
 		logger = instance;
 	}
 
@@ -133,15 +131,15 @@ export class SAMLUtils {
 		return newTemplate;
 	}
 
-	public static log(...args: Array<any>): void {
+	public static log(obj: any, ...args: Array<any>): void {
 		if (debug && logger) {
-			logger.debug(...args);
+			logger.debug(obj, ...args);
 		}
 	}
 
-	public static error(...args: Array<any>): void {
+	public static error(obj: any, ...args: Array<any>): void {
 		if (logger) {
-			logger.error(...args);
+			logger.error(obj, ...args);
 		}
 	}
 
@@ -483,8 +481,10 @@ export class SAMLUtils {
 			}
 		}
 
-		callbacks.run('onMapSAMLUser', { profile, userObject });
+		this.events.emit('mapUser', { profile, userObject });
 
 		return userObject;
 	}
 }
+
+SAMLUtils.events = new EventEmitter();
