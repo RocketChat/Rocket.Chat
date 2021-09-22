@@ -20,7 +20,7 @@ const Inline: FC<{ value: ASTParagraph['value']; mentions?: UserMention[] }> = (
 		{value.map((block, idx) => {
 			switch (block.type) {
 				case 'IMAGE':
-					return <Image value={block.value} />;
+					return <Image key={idx} value={block.value} />;
 				case 'PLAIN_TEXT':
 					return block.value;
 				case 'BOLD':

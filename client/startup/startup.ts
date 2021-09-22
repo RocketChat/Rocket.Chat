@@ -100,8 +100,10 @@ Meteor.startup(() => {
 	});
 });
 Meteor.startup(() => {
-	const code = settings.get('Message_Code_highlight') as string;
-	code.split(',').forEach((language: string) => {
-		language.trim() && register(language.trim());
+	Tracker.autorun(() => {
+		const code = settings.get('Message_Code_highlight') as string | undefined;
+		code?.split(',').forEach((language: string) => {
+			language.trim() && register(language.trim());
+		});
 	});
 });
