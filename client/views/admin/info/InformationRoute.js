@@ -72,6 +72,10 @@ const InformationRoute = memo(function InformationRoute() {
 		downloadJsonAs(statistics, 'statistics');
 	};
 
+	if (!canViewStatistics) {
+		return <NotAuthorizedPage />;
+	}
+
 	if (error) {
 		return (
 			<Page>
@@ -91,21 +95,17 @@ const InformationRoute = memo(function InformationRoute() {
 		);
 	}
 
-	if (canViewStatistics) {
-		return (
-			<NewInformationPage
-				canViewStatistics={canViewStatistics}
-				isLoading={isLoading}
-				info={info}
-				statistics={statistics}
-				instances={instances}
-				onClickRefreshButton={handleClickRefreshButton}
-				onClickDownloadInfo={handleClickDownloadInfo}
-			/>
-		);
-	}
-
-	return <NotAuthorizedPage />;
+	return (
+		<NewInformationPage
+			canViewStatistics={canViewStatistics}
+			isLoading={isLoading}
+			info={info}
+			statistics={statistics}
+			instances={instances}
+			onClickRefreshButton={handleClickRefreshButton}
+			onClickDownloadInfo={handleClickDownloadInfo}
+		/>
+	);
 });
 
 export default InformationRoute;
