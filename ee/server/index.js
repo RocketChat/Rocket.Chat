@@ -13,5 +13,6 @@ import '../app/settings/server/index';
 import '../app/teams-mention/server/index';
 import './api';
 import './requestSeatsRoute';
+import './configuration/index';
 import './local-services/ldap/service';
-import './configuration/ldap';
+import './settings/index';
