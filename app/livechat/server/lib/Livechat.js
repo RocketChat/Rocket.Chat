@@ -810,7 +810,7 @@ export const Livechat = {
 
 		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
-			this.setUserStatusLivechat(user._id, 'available');
+			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
 		}
 
@@ -1094,6 +1094,20 @@ export const Livechat = {
 
 		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, { requestData: { type, visitor, user } });
 		return true;
+	},
+
+	getRoomMessages({ rid }) {
+		check(rid, String);
+
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+
+		if (!isLivechat) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
 	},
 
 	requestTranscript({ rid, email, subject, user }) {
