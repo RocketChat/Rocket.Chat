@@ -3,15 +3,18 @@ import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
 import Card from '../../../../../client/components/Card';
+import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import UsagePieGraph from '../../../../../client/views/admin/info/UsagePieGraph';
+import { useRequestSeatsLink } from '../users/useRequestSeatsLink';
 import { useSeatsCap } from '../users/useSeatsCap';
 
 const SeatsCard = (): ReactElement | null => {
 	const t = useTranslation();
 	const seatsCap = useSeatsCap();
+	const requestSeatsLink = useRequestSeatsLink();
 
-	const seatsLeft = seatsCap ? seatsCap.maxActiveUsers - seatsCap.activeUsers : false;
+	const seatsLeft = seatsCap && Math.max(seatsCap.maxActiveUsers - seatsCap.activeUsers, 0);
 
 	const isNearLimit = seatsCap && seatsCap.activeUsers / seatsCap.maxActiveUsers >= 0.8;
 
@@ -37,7 +40,7 @@ const SeatsCard = (): ReactElement | null => {
 								<Skeleton variant='rect' width='x112' height='x112' />
 							) : (
 								<UsagePieGraph
-									label={<Box color={color}>{`${seatsLeft} ${t('Seats_left')}`}</Box>}
+									label={<Box color={color}>{`${seatsLeft} ${t('Seats_Available')}`}</Box>}
 									used={seatsCap.activeUsers}
 									total={seatsCap.maxActiveUsers}
 									size={140}
@@ -50,9 +53,11 @@ const SeatsCard = (): ReactElement | null => {
 			</Card.Body>
 			<Card.Footer>
 				<ButtonGroup align='end'>
-					<Button small primary>
-						{t('Request_seats')}
-					</Button>
+					<ExternalLink to={requestSeatsLink}>
+						<Button small primary>
+							{t('Request_seats')}
+						</Button>
+					</ExternalLink>
 				</ButtonGroup>
 			</Card.Footer>
 		</Card>
