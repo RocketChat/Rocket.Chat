@@ -77,7 +77,7 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 
 	SAMLUtils.updateGlobalSettings(samlConfigs);
 
-	const serviceConfigs = {
+	return {
 		provider: samlConfigs.clientConfig.provider,
 		entryPoint: samlConfigs.entryPoint,
 		idpSLORedirectURL: samlConfigs.idpSLORedirectURL,
@@ -100,9 +100,6 @@ export const configureSamlService = function(samlConfigs: Record<string, any>): 
 		metadataTemplate: samlConfigs.metadataTemplate,
 		callbackUrl: Meteor.absoluteUrl(`_saml/validate/${ samlConfigs.clientConfig.provider }`),
 	};
-
-	SAMLUtils.events.emit('configureService', { samlConfigs, serviceConfigs });
-	return serviceConfigs;
 };
 
 export const loadSamlServiceProviders = function(): void {
