@@ -99,8 +99,9 @@ callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.M
 callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 Meteor.startup(() => {
+	createSeatsLimitBanners();
+
 	if (isEnterprise()) {
-		createSeatsLimitBanners();
 		handleMaxSeatsBanners();
 	}
 
