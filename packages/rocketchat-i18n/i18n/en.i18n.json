@@ -2836,6 +2836,7 @@
   "Message_BadWordsWhitelist": "Remove words from the Blacklist",
   "Message_BadWordsWhitelistDescription": "Add a comma-separated list of words to be removed from filter",
   "Message_Characther_Limit": "Message Character Limit",
+  "Message_Code_highlight": "Message Code highlight",
   "message_counter": "__counter__ message",
   "message_counter_plural": "__counter__ messages",
   "Message_DateFormat": "Date Format",
