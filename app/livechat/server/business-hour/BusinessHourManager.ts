@@ -5,6 +5,7 @@ import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
+import { Users } from '../../../models/server/raw';
 
 const cronJobDayDict: Record<string, number> = {
 	Sunday: 0,
@@ -84,6 +85,14 @@ export class BusinessHourManager {
 			return;
 		}
 		await this.createCronJobsForWorkHours();
+	}
+
+	async onLogin(agentId: string): Promise<any> {
+		if (!settings.get('Livechat_enable_business_hours')) {
+			return this.behavior.changeAgentActiveStatus(agentId, 'available');
+		}
+
+		return Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
 	}
 
 	private setupCallbacks(): void {
