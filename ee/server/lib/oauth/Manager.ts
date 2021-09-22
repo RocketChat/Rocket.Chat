@@ -1,11 +1,11 @@
-import { addUserRoles, removeUserFromRoles } from '../../../app/authorization/server';
-import { Roles, Rooms } from '../../../app/models/server';
-import { addUserToRoom, createRoom } from '../../../app/lib/server/functions';
-import { Logger } from '../../../app/logger/server';
+import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
+import { Roles, Rooms } from '../../../../app/models/server';
+import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
+import { Logger } from '../../../../app/logger/server';
 
 export const logger = new Logger('OAuth');
 
-export class EnterpriseOAuthHelpers {
+export class OAuthEEManager {
 	static mapSSOGroupsToChannels(user: Record<string, any>, identity: Record<string, any>, groupClaimName: string, channelsMap: Record<string, any> | undefined, channelsAdmin: string): void {
 		if (user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];

@@ -1,6 +1,6 @@
 import { capitalize } from '@rocket.chat/string-helpers';
 
-import { EnterpriseOAuthHelpers } from './helpers';
+import { OAuthEEManager } from '../lib/oauth/Manager';
 import { onLicense } from '../../app/license/server';
 import { callbacks } from '../../../app/callbacks/server';
 import { settings } from '../../../app/settings/server';
@@ -50,7 +50,7 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 	}
 }
 
-onLicense('oAuth-enterprise', () => {
+onLicense('oauth-enterprise', () => {
 	callbacks.add('afterOAuthUserHook', (auth: IUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
 
@@ -63,11 +63,11 @@ onLicense('oAuth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			EnterpriseOAuthHelpers.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim);
+			OAuthEEManager.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim);
 		}
 
 		if (settings.mapChannels) {
-			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 	});
 
@@ -82,11 +82,11 @@ onLicense('oAuth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			auth.user.roles = EnterpriseOAuthHelpers.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			auth.user.roles = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 		}
 
 		if (settings.mapChannels) {
-			EnterpriseOAuthHelpers.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 	});
 });
