@@ -12,8 +12,11 @@ import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { SettingCallback } from '../../../app/settings/lib/settings';
 import { onLicense } from '../../app/license/server';
+import { addSettings } from '../settings/ldap';
 
 onLicense('ldap-enterprise', () => {
+	addSettings();
+
 	// Configure background sync cronjob
 	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): SettingCallback {
 		let lastSchedule: string;
