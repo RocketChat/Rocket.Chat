@@ -21,10 +21,6 @@ export const aggregates = {
 				}],
 			},
 		}, {
-			$sort: {
-				_id: 1,
-			},
-		}, {
 			$project: {
 				userId: 1,
 				device: 1,
@@ -52,6 +48,10 @@ export const aggregates = {
 				sessions: { $sum: 1 },
 			},
 		}, {
+			$sort: {
+				time: -1,
+			},
+		}, {
 			$group: {
 				_id: {
 					userId: '$_id.userId',
@@ -69,6 +69,10 @@ export const aggregates = {
 						device: '$_id.device',
 					},
 				},
+			},
+		}, {
+			$sort: {
+				_id: 1,
 			},
 		}, {
 			$project: {
@@ -182,6 +186,10 @@ export const aggregates = {
 				time: {
 					$sum: '$time',
 				},
+			},
+		}, {
+			$sort: {
+				time: -1,
 			},
 		}, {
 			$group: {
@@ -313,6 +321,10 @@ export const aggregates = {
 				},
 			},
 		}, {
+			$sort: {
+				time: -1,
+			},
+		}, {
 			$project: {
 				_id: 0,
 				type: '$_id.type',
@@ -347,6 +359,10 @@ export const aggregates = {
 				time: {
 					$sum: '$devices.time',
 				},
+			},
+		}, {
+			$sort: {
+				time: -1,
 			},
 		}, {
 			$project: {
@@ -385,6 +401,10 @@ export const aggregates = {
 				},
 			},
 		}, {
+			$sort: {
+				time: -1,
+			},
+		}, {
 			$project: {
 				_id: 0,
 				name: '$_id.name',
@@ -420,6 +440,10 @@ export const aggregates = {
 				time: {
 					$sum: '$devices.time',
 				},
+			},
+		}, {
+			$sort: {
+				time: -1,
 			},
 		}, {
 			$project: {

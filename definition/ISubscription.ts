@@ -44,7 +44,6 @@ export interface ISubscription extends IRocketChatRecord {
 
 	code?: unknown;
 	archived?: unknown;
-	audioNotifications?: unknown;
 	audioNotificationValue?: unknown;
 	desktopNotifications?: unknown;
 	mobilePushNotifications?: unknown;

@@ -6,13 +6,14 @@ import _ from 'underscore';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings';
 import '../../ufs/GoogleStorage/server.js';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function(file, req, res) {
 	const forceDownload = typeof req.query.download !== 'undefined';
 
 	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
 		if (err) {
-			return console.error(err);
+			return SystemLogger.error(err);
 		}
 
 		if (!fileUrl) {
@@ -33,7 +34,7 @@ const get = function(file, req, res) {
 const copy = function(file, out) {
 	this.store.getRedirectURL(file, false, (err, fileUrl) => {
 		if (err) {
-			console.error(err);
+			SystemLogger.error(err);
 		}
 
 		if (fileUrl) {

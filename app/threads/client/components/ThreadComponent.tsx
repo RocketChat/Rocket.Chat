@@ -16,18 +16,16 @@ import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 
 const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: Parameters<typeof getMessage>[0]) => Promise<IMessage>>(async (params) => {
+	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(async (params) => {
 		const { message } = await getMessage(params);
-		return {
-			...message,
-			_updatedAt: new Date(message._updatedAt),
-		};
+		return mapMessageFromApi(message);
 	}, [getMessage]);
 
 	useEffect(() => {
@@ -72,7 +70,7 @@ const ThreadComponent: FC<{
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
-	const ref = useRef<Element>(null);
+	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);

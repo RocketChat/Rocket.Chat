@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { handleError } from '../../../utils/client';
+import { handleError } from '../../../../client/lib/utils/handleError';
 import { Messages, Subscriptions } from '../../../models/client';
 
 // Action Links namespace creation.
