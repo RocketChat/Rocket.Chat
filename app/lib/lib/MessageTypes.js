@@ -180,7 +180,7 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'room-set-read-only',
+		id: 'room-removed-read-only',
 		system: true,
 		message: 'room_removed_read_only',
 		data(message) {
@@ -190,7 +190,7 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
-		id: 'room-removed-read-only',
+		id: 'room-set-read-only',
 		system: true,
 		message: 'room_set_read_only',
 		data(message) {
