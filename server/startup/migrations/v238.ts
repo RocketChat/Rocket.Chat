@@ -1,11 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
-import { isEnterprise } from '../../../ee/app/license/server';
 import { Settings } from '../../../app/models/server/raw';
-// import { Banner } from '../../sdk';
-// import { BannerPlatform } from '../../../definition/IBanner';
-// import { IUser } from '../../../definition/IUser';
 import { settings } from '../../../app/settings/server';
 
 Migrations.add({
@@ -20,9 +16,7 @@ Migrations.add({
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
-		const isEE = isEnterprise();
-
-		if (!isEE && (isCustomOAuthEnabled || LDAPEnabled || SAMLEnabled)) {
+		if (isCustomOAuthEnabled || LDAPEnabled || SAMLEnabled) {
 			return;
 		}
 
