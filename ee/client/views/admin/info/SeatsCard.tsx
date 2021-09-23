@@ -40,7 +40,7 @@ const SeatsCard = (): ReactElement | null => {
 								<Skeleton variant='rect' width='x112' height='x112' />
 							) : (
 								<UsagePieGraph
-									label={<Box color={color}>{`${seatsLeft} ${t('Seats_Available')}`}</Box>}
+									label={<Box color={color}>{t('Seats_Available', { seatsLeft })}</Box>}
 									used={seatsCap.activeUsers}
 									total={seatsCap.maxActiveUsers}
 									size={140}
