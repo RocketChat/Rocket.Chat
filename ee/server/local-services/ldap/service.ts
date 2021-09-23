@@ -15,6 +15,10 @@ export class LDAPEEService extends ServiceClass implements ILDAPEEService {
 	async syncAvatars(): Promise<void> {
 		return LDAPEEManager.syncAvatars();
 	}
+
+	async syncLogout(): Promise<void> {
+		return LDAPEEManager.syncLogout();
+	}
 }
 
 api.registerService(new LDAPEEService());

@@ -75,6 +75,23 @@ export function addSettings(): void {
 				});
 			});
 
+			this.section('LDAP_DataSync_AutoLogout', function() {
+				this.add('LDAP_Sync_AutoLogout_Enabled', false, {
+					type: 'boolean',
+					enableQuery,
+					invalidValue: false,
+				});
+
+				this.add('LDAP_Sync_AutoLogout_Interval', 'Every 5 minutes', {
+					type: 'string',
+					enableQuery: [
+						enableQuery,
+						{ _id: 'LDAP_Sync_AutoLogout_Enabled', value: true },
+					],
+					invalidValue: '',
+				});
+			});
+
 			this.section('LDAP_DataSync_CustomFields', function() {
 				this.add('LDAP_Sync_Custom_Fields', false, {
 					type: 'boolean',

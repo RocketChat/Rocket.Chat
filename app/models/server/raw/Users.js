@@ -156,6 +156,18 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	async findConnectedLDAPUsers(options) {
+		const query = {
+			ldap: true,
+			'service.resume.loginTokens': {
+				$exists: true,
+				$ne: [],
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,

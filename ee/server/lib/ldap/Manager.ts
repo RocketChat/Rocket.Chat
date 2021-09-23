@@ -94,6 +94,25 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static async syncLogout(): Promise<void> {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync_Avatars') !== true) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.logoutDeactivatedUsers(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
 	private static async advancedSync(ldap: LDAPConnection, importUser: IImportUser, converter: LDAPDataConverter, isNewRecord: boolean): Promise<void> {
 		const user = converter.findExistingUser(importUser);
 		if (!user || user.username) {
@@ -376,7 +395,6 @@ export class LDAPEEManager extends LDAPManager {
 				return true;
 			}
 
-			// #ToDo: Account for timezones
 			const lockoutTime = new Date(Number(ldapUser.lockoutTime));
 			lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
 			// Account has not unlocked itself yet
@@ -385,7 +403,11 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		}
 
-		// #ToDo: Active Directory - Account disabled by an Admin
+		// Active Directory - Account disabled by an Admin
+		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -576,6 +598,37 @@ export class LDAPEEManager extends LDAPManager {
 				reject(error);
 			}
 		});
+	}
+
+	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
+		if (user.services?.ldap?.id) {
+			return ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+		}
+
+		if (user.username) {
+			return ldap.findOneByUsername(user.username);
+		}
+
+		searchLogger.debug({
+			msg: 'existing LDAP user not found during Sync',
+			ldapId: user.services?.ldap?.id,
+			ldapAttribute: user.services?.ldap?.idAttribute,
+			username: user.username,
+		});
+	}
+
+	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
+		const users = await UsersRaw.findConnectedLDAPUsers();
+		for await (const user of users) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
+			if (!ldapUser) {
+				continue;
+			}
+
+			if (this.isUserDeactivated(ldapUser)) {
+				UsersRaw.removeResumeService(user._id);
+			}
+		}
 	}
 
 	private static getCustomField(customFields: Record<string, any>, property: string): any {

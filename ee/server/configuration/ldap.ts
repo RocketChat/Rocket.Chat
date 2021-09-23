@@ -10,11 +10,12 @@ import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
+import type { SettingValue } from '../../../definition/ISetting';
 import type { SettingCallback } from '../../../app/settings/lib/settings';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
-onLicense('ldap-enterprise', () => {
+Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	addSettings();
 
 	// Configure background sync cronjob
@@ -22,9 +23,9 @@ onLicense('ldap-enterprise', () => {
 		let lastSchedule: string;
 
 		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
-			if (settings.get(enableSetting) !== true) {
-				logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
+			if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {
 				if (cronJobs.nextScheduledAtDate(jobName)) {
+					logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
 					cronJobs.remove(jobName);
 				}
 				return;
@@ -45,12 +46,21 @@ onLicense('ldap-enterprise', () => {
 
 	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => Promise.await(LDAPEE.sync()));
 	const addAvatarCronJob = configureBackgroundSync('LDAP_AvatarSync', 'LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval', () => Promise.await(LDAPEE.syncAvatars()));
+	const addLogoutCronJob = configureBackgroundSync('LDAP_AutoLogout', 'LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval', () => Promise.await(LDAPEE.syncLogout()));
 
 	Meteor.defer(() => {
 		settings.get('LDAP_Background_Sync', addCronJob);
 		settings.get('LDAP_Background_Sync_Interval', addCronJob);
 		settings.get('LDAP_Background_Sync_Avatars', addAvatarCronJob);
 		settings.get('LDAP_Background_Sync_Avatars_Interval', addAvatarCronJob);
+		settings.get('LDAP_Sync_AutoLogout_Enabled', addLogoutCronJob);
+		settings.get('LDAP_Sync_AutoLogout_Interval', addLogoutCronJob);
+
+		settings.get('LDAP_Enable', (key: string, value: SettingValue, initialLoad?: boolean) => {
+			addCronJob(key, value, initialLoad);
+			addAvatarCronJob(key, value, initialLoad);
+			addLogoutCronJob(key, value, initialLoad);
+		});
 
 		settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (_key, value) => {
 			try {
@@ -65,4 +75,4 @@ onLicense('ldap-enterprise', () => {
 		LDAPEEManager.copyCustomFields(ldapUser, userData);
 		LDAPEEManager.copyActiveState(ldapUser, userData);
 	}, callbacks.priority.MEDIUM, 'mapLDAPCustomFields');
-});
+}));
