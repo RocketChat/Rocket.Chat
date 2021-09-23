@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 236,
 	up() {
 		Settings.removeById('Canned Responses');

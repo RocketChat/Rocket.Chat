@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 import { NotificationQueue } from '../../../app/models/server/raw';
 
@@ -53,7 +53,7 @@ async function migrateNotifications() {
 	return notificationsCollection.rawCollection().drop();
 }
 
-Migrations.add({
+addMigration({
 	version: 187,
 	up() {
 		Settings.remove({ _id: 'Push_send_interval' });

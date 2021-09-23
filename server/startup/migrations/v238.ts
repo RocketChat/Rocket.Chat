@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 
-Migrations.add({
+addMigration({
 	version: 238,
 	up() {
 		const msg = 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SAML, and Custom Oauth will be available only in Enterprise Edition and Gold plan. Check the official announcement for more info: https://go.rocket.chat/i/authentication-changes';
