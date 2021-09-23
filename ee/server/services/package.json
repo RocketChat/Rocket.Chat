@@ -29,7 +29,7 @@
 		"express": "^4.17.1",
 		"jaeger-client": "^3.18.1",
 		"mem": "^6.1.1",
-		"moleculer": "^0.14.14",
+		"moleculer": "^0.14.17",
 		"mongodb": "^3.6.9",
 		"nats": "^1.4.12",
 		"pino": "^7.0.0-rc.6",
