@@ -32,6 +32,18 @@ const clearIntervalVariables = () => {
 	}
 };
 
+const cancelRecording = async (instance, rid, tmid) => {
+	clearIntervalVariables();
+
+	instance.time.set('00:00');
+
+	const blob = await stopRecording(rid, tmid);
+
+	instance.state.set(null);
+
+	return blob;
+};
+
 Template.messageBoxAudioMessage.onCreated(async function() {
 	this.state = new ReactiveVar(null);
 	this.time = new ReactiveVar('00:00');
@@ -62,6 +74,12 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 		}
 	} catch (error) {
 		console.warn(error);
+	}
+});
+
+Template.messageBoxAudioMessage.onDestroyed(async function() {
+	if (this.state.get() === 'recording') {
+		await cancelRecording(this);
 	}
 });
 
@@ -122,13 +140,7 @@ Template.messageBoxAudioMessage.events({
 	async 'click .js-audio-message-cancel'(event, instance) {
 		event.preventDefault();
 
-		clearIntervalVariables();
-
-		instance.time.set('00:00');
-
-		await stopRecording(this.rid, this.tmid);
-
-		instance.state.set(null);
+		await cancelRecording(instance, this.rid, this.tmid);
 	},
 
 	async 'click .js-audio-message-done'(event, instance) {
@@ -136,15 +148,9 @@ Template.messageBoxAudioMessage.events({
 
 		instance.state.set('loading');
 
-		clearIntervalVariables();
-
-		instance.time.set('00:00');
-
-		const blob = await stopRecording(this.rid, this.tmid);
-
-		instance.state.set(null);
-
 		const { rid, tmid } = this;
+		const blob = await cancelRecording(instance, rid, tmid);
+
 		await fileUpload([{ file: blob, type: 'video', name: `${ t('Audio record') }.mp3` }], { input: blob }, { rid, tmid });
 	},
 });

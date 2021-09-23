@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 
 import { UserAction } from '../../../ui';
 import { t } from '../../../utils';
-import { getConfig } from '../../../ui-utils/client/config';
+import { getConfig } from '../../../../client/lib/utils/getConfig';
 
 import './userActionIndicator.html';
 

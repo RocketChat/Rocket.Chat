@@ -60,6 +60,11 @@ export interface IRoom extends IRocketChatRecord {
 	hideUnreadStatus?: boolean;
 
 	sysMes?: string[];
+	muted?: string[];
+}
+
+export interface ICreatedRoom extends IRoom {
+	rid: string;
 }
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
@@ -82,6 +87,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	};
 	onHold?: boolean;
 	departmentId?: string;
+
+	lastMessage?: IMessage & { token?: string };
 
 	tags: any;
 	closedAt: any;

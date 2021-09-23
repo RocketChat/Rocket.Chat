@@ -7,6 +7,7 @@ import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
+import { SystemLogger } from '../../lib/logger/system';
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -16,8 +17,6 @@ interface IModelsParam {
 }
 
 export class NotificationsModule {
-	private debug = false
-
 	public readonly streamLogged: IStreamer;
 
 	public readonly streamAll: IStreamer;
@@ -221,7 +220,7 @@ export class NotificationsModule {
 
 				return user[key] === username;
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 				return false;
 			}
 		});
@@ -393,58 +392,34 @@ export class NotificationsModule {
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyAll', [eventName, ...args]);
-		}
 		return this.streamAll.emit(eventName, ...args);
 	}
 
 	notifyLogged(eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyLogged', [eventName, ...args]);
-		}
 		return this.streamLogged.emit(eventName, ...args);
 	}
 
 	notifyRoom(room: string, eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyRoom', [room, eventName, ...args]);
-		}
 		return this.streamRoom.emit(`${ room }/${ eventName }`, ...args);
 	}
 
 	notifyUser(userId: string, eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyUser', [userId, eventName, ...args]);
-		}
 		return this.streamUser.emit(`${ userId }/${ eventName }`, ...args);
 	}
 
 	notifyAllInThisInstance(eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyAll', [eventName, ...args]);
-		}
 		return this.streamAll.emitWithoutBroadcast(eventName, ...args);
 	}
 
 	notifyLoggedInThisInstance(eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyLogged', [eventName, ...args]);
-		}
 		return this.streamLogged.emitWithoutBroadcast(eventName, ...args);
 	}
 
 	notifyRoomInThisInstance(room: string, eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyRoomAndBroadcast', [room, eventName, ...args]);
-		}
 		return this.streamRoom.emitWithoutBroadcast(`${ room }/${ eventName }`, ...args);
 	}
 
 	notifyUserInThisInstance(userId: string, eventName: string, ...args: any[]): void {
-		if (this.debug === true) {
-			console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
-		}
 		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
 	}
 

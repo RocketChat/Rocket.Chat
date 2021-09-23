@@ -3,6 +3,7 @@ declare module 'meteor/littledata:synced-cron';
 declare module 'meteor/promise';
 declare module 'meteor/ddp-common';
 declare module 'meteor/routepolicy';
+declare module 'meteor/logging';
 declare module 'xml-encryption';
 declare module 'webdav';
 

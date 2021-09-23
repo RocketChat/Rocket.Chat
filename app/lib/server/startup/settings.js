@@ -259,24 +259,6 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Notification_RequireInteraction',
 			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
-		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
@@ -295,7 +277,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
+		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -1000,10 +982,15 @@ settings.addGroup('General', function() {
 		alert: 'This_feature_is_currently_in_alpha',
 	});
 	this.section('UTF8', function() {
-		this.add('UTF8_Names_Validation', '[0-9a-zA-Z-_.]+', {
+		this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 			type: 'string',
 			public: true,
-			i18nDescription: 'UTF8_Names_Validation_Description',
+			i18nDescription: 'UTF8_User_Names_Validation_Description',
+		});
+		this.add('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+', {
+			type: 'string',
+			public: true,
+			i18nDescription: 'UTF8_Channel_Names_Validation_Description',
 		});
 		return this.add('UTF8_Names_Slugify', true, {
 			type: 'boolean',
@@ -1078,6 +1065,28 @@ settings.addGroup('General', function() {
 			type: 'boolean',
 		});
 	});
+	this.section('Timezone', function() {
+		this.add('Default_Timezone_For_Reporting', 'server', {
+			type: 'select',
+			values: [{
+				key: 'server',
+				i18nLabel: 'Default_Server_Timezone',
+			}, {
+				key: 'custom',
+				i18nLabel: 'Default_Custom_Timezone',
+			}, {
+				key: 'user',
+				i18nLabel: 'Default_User_Timezone',
+			}],
+		});
+		this.add('Default_Custom_Timezone', '', {
+			type: 'timezone',
+			enableQuery: {
+				_id: 'Default_Timezone_For_Reporting',
+				value: 'custom',
+			},
+		});
+	});
 });
 
 settings.addGroup('Message', function() {
@@ -1087,6 +1096,35 @@ settings.addGroup('Message', function() {
 			public: true,
 			i18nDescription: 'Message_Attachments_GroupAttachDescription',
 		});
+
+		this.add('Message_Attachments_Thumbnails_Enabled', true, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_Attachments_Thumbnails_EnabledDesc',
+		});
+
+		this.add('Message_Attachments_Thumbnails_Width', 480, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
+
+		this.add('Message_Attachments_Thumbnails_Height', 360, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Message_Attachments_Thumbnails_Enabled',
+					value: true,
+				},
+			],
+		});
+
 		this.add('Message_Attachments_Strip_Exif', false, {
 			type: 'boolean',
 			public: true,
@@ -1554,14 +1592,6 @@ settings.addGroup('Logs', function() {
 				i18nLabel: '2_Erros_Information_and_Debug',
 			},
 		],
-		public: true,
-	});
-	this.add('Log_Package', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Log_File', false, {
-		type: 'boolean',
 		public: true,
 	});
 	this.add('Log_View_Limit', 1000, {

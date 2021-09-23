@@ -46,6 +46,7 @@ metrics.meteorSubscriptions = new client.Summary({
 
 metrics.messagesSent = new client.Counter({ name: 'rocketchat_message_sent', help: 'cumulated number of messages sent' });
 metrics.notificationsSent = new client.Counter({ name: 'rocketchat_notification_sent', labelNames: ['notification_type'], help: 'cumulated number of notifications sent' });
+metrics.messageRoundtripTime = new client.Gauge({ name: 'rocketchat_messages_roundtrip_time', help: 'time spent by a message from save to receive back' });
 
 metrics.ddpSessions = new client.Gauge({ name: 'rocketchat_ddp_sessions_count', help: 'number of open ddp sessions' });
 metrics.ddpAuthenticatedSessions = new client.Gauge({ name: 'rocketchat_ddp_sessions_auth', help: 'number of authenticated open ddp sessions' });

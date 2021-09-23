@@ -1,7 +1,7 @@
 import { EJSON } from 'meteor/ejson';
 import { Db, Collection } from 'mongodb';
 
-import { IStreamerConstructor } from './modules/streamer/streamer.module';
+import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -25,6 +25,8 @@ declare module 'meteor/accounts-base' {
 		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
 
 		function _generateStampedLoginToken(): {token: string; when: Date};
+
+		function _runLoginHandlers(methodInvocation: Function, loginRequest: Record<string, any>): Record<string, any> | undefined;
 	}
 }
 
@@ -40,7 +42,7 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
-		const Streamer: IStreamerConstructor;
+		const Streamer: IStreamerConstructor & IStreamer;
 
 		const server: any;
 

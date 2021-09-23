@@ -96,6 +96,7 @@ export const findBusiestsChatsInADayByHours = async ({ start }) => {
 		hours: await Sessions.getBusiestTimeWithinHoursPeriod({
 			start: yesterday.toDate(),
 			end: now.toDate(),
+			groupSize: 2,
 		}),
 	};
 };

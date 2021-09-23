@@ -33,7 +33,7 @@ import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
 
 const typeMap = {
@@ -260,7 +260,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 				...data,
 				...(joinCode && { joinCode: joinCodeRequired ? joinCode : '' }),
 				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes ? systemMessages : [],
+					systemMessages: hideSysMes && systemMessages,
 				}),
 			});
 

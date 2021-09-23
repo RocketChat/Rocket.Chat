@@ -115,6 +115,10 @@ API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	post() {
 		const { rooms, teamId, teamName } = this.bodyParams;
 
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
+
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');

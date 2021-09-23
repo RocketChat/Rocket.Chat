@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const buildMailURL = _.debounce(function() {
-	console.log('Updating process.env.MAIL_URL');
+	SystemLogger.info('Updating process.env.MAIL_URL');
 
 	if (settings.get('SMTP_Host')) {
 		process.env.MAIL_URL = `${ settings.get('SMTP_Protocol') }://`;

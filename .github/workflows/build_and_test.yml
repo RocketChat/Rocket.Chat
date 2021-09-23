@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
 
@@ -117,13 +117,6 @@ jobs:
 
     - run: meteor npm run translation-check
 
-    - name: Launch MongoDB
-      uses: wbari/start-mongoDB@v0.2
-      with:
-        mongoDBVersion: "4.0"
-
-    - run: meteor npm run testunit
-
     - run: meteor npm run typecheck
 
     - name: Build Storybook to sanity check components
@@ -186,13 +179,13 @@ jobs:
         path: /tmp/build
 
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     needs: build
 
     strategy:
       matrix:
         node-version: ["12.22.1"]
-        mongodb-version: ["3.4", "3.6", "4.0", "4.2"]
+        mongodb-version: ["3.6", "4.0", "4.2", "4.4","5.0"]
 
     steps:
     - name: Launch MongoDB
@@ -249,7 +242,10 @@ jobs:
       run: |
         npm install
 
-    - name: Test
+    - name: Unit Test
+      run: npm run testunit
+
+    - name: E2E Test
       env:
         TEST_MODE: "true"
         MONGO_URL: mongodb://localhost:27017/rocketchat
@@ -260,7 +256,7 @@ jobs:
         for i in $(seq 1 5); do (docker exec mongo mongo rocketchat --eval 'db.dropDatabase()') && npm run testci && s=0 && break || s=$? && sleep 1; done; (exit $s)
 
 #   notification:
-#     runs-on: ubuntu-latest
+#     runs-on: ubuntu-20.04
 #     needs: test
 
 #     steps:
@@ -274,7 +270,7 @@ jobs:
 #         token: ${{ secrets.GITHUB_TOKEN }}
 
   build-image-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
@@ -401,7 +397,7 @@ jobs:
         docker push $IMAGE_NAME
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: test
 
@@ -479,7 +475,7 @@ jobs:
         fi
 
   image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
@@ -556,7 +552,7 @@ jobs:
         docker push ${IMAGE}:develop
 
   services-image-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: deploy
 
     strategy:
