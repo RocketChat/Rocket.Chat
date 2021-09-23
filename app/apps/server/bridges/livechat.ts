@@ -180,10 +180,22 @@ export class AppLivechatBridge extends LivechatBridge {
 			type,
 		};
 
+		let userId;
+		let transferredTo;
+
+		if (targetAgent?.id) {
+			transferredTo = Users.findOneAgentById(targetAgent.id, { fields: { _id: 1, username: 1, name: 1 } });
+			if (!transferredTo) {
+				throw new Error('Invalid target agent, cannot transfer');
+			}
+
+			userId = transferredTo._id;
+		}
+
 		return Livechat.transfer(
 			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
+			{ userId, departmentId, transferredBy, transferredTo },
 		);
 	}
 
