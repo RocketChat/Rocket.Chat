@@ -1,4 +1,5 @@
 import './broker';
+import './startup';
 
 import '../app/models';
 import '../app/license/server/index';
@@ -11,5 +12,6 @@ import '../app/livechat-enterprise/server/index';
 import '../app/settings/server/index';
 import '../app/teams-mention/server/index';
 import './api';
+import './requestSeatsRoute';
 import './local-services/ldap/service';
 import './configuration/ldap';
