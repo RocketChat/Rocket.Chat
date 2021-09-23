@@ -4,11 +4,11 @@ import React, { ReactElement } from 'react';
 import ExternalLink from '../../../../../client/components/ExternalLink';
 import { useSetModal } from '../../../../../client/contexts/ModalContext';
 import { useRoute } from '../../../../../client/contexts/RouterContext';
-import { useAbsoluteUrl } from '../../../../../client/contexts/ServerContext';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';
 import SeatsCapUsage from './SeatsCapUsage';
+import { useRequestSeatsLink } from './useRequestSeatsLink';
 
 type UserPageHeaderContentWithSeatsCapProps = {
 	activeUsers: number;
@@ -19,7 +19,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 	activeUsers,
 	maxActiveUsers,
 }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	const seatsLinkUrl = useAbsoluteUrl()('/requestSeats');
+	const seatsLinkUrl = useRequestSeatsLink();
 
 	const t = useTranslation();
 	const usersRoute = useRoute('admin-users');
@@ -98,6 +98,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 					onClose={closeModal}
 				/>,
 			);
+			return;
 		}
 
 		usersRoute.push({ context: 'invite' });
@@ -105,7 +106,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 
 	return (
 		<>
-			<Margins inline='x8'>
+			<Margins inline='x16'>
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>

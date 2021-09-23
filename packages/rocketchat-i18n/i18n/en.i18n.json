@@ -3697,7 +3697,7 @@
   "Search_Provider": "Search Provider",
   "Search_Rooms": "Search Rooms",
   "Search_Users": "Search Users",
-  "Seats_left": "Seats Left",
+  "Seats_Available": "__seatsLeft__ Seats Available",
   "Seats_usage": "Seats Usage",
   "seconds": "seconds",
   "Secret_token": "Secret Token",

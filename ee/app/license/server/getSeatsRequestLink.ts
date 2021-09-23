@@ -6,18 +6,25 @@ type WizardSettings = Array<ISetting>;
 const url = 'https://rocket.chat/sales-contact';
 
 export const getSeatsRequestLink = (): string => {
-	const workspaceId = Settings.findOneById('Cloud_Workspace_Id');
+	const workspaceId: ISetting | undefined = Settings.findOneById('Cloud_Workspace_Id');
 	const activeUsers = Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = Settings.findSetupWizardSettings().fetch();
 
-	const utmUrl = new URL(url);
-	utmUrl.searchParams.append('workspaceId', String(workspaceId?.value));
-	utmUrl.searchParams.append('activeUsers', String(activeUsers));
-	wizardSettings.forEach((setting) => {
-		if (['Industry', 'Country', 'Size'].includes(setting._id)) {
-			utmUrl.searchParams.append(setting._id.toLowerCase(), String(setting?.value));
-		}
-	});
+	const newUrl = new URL(url);
 
-	return utmUrl.toString();
+	if (workspaceId?.value) {
+		newUrl.searchParams.append('workspaceId', String(workspaceId.value));
+	}
+
+	if (activeUsers) {
+		newUrl.searchParams.append('activeUsers', String(activeUsers));
+	}
+
+	wizardSettings
+		.filter(({ _id, value }) => ['Industry', 'Country', 'Size'].includes(_id) && value)
+		.forEach((setting) => {
+			newUrl.searchParams.append(setting._id.toLowerCase(), String(setting.value));
+		});
+
+	return newUrl.toString();
 };
