@@ -269,8 +269,6 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-
-
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
 
 		const setting = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
