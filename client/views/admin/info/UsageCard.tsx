@@ -1,7 +1,8 @@
-import { Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
+import { IStats } from '../../../../definition/IStats';
 import { useHasLicense } from '../../../../ee/client/hooks/useHasLicense';
 import Card from '../../../components/Card';
 import { UserStatus } from '../../../components/UserStatus';
@@ -10,8 +11,12 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 import TextSeparator from './TextSeparator';
 
-const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
-	const s = (fn) => (isLoading ? <Skeleton width='x40' /> : fn());
+type UsageCardProps = {
+	statistics: IStats;
+	vertical: boolean;
+};
+
+const UsageCard = ({ statistics, vertical }: UsageCardProps): ReactElement => {
 	const t = useTranslation();
 	const formatMemorySize = useFormatMemorySize();
 
@@ -36,7 +41,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='dialpad' /> {t('Total')}
 								</>
 							}
-							value={s(() => statistics.totalUsers)}
+							value={statistics.totalUsers}
 						/>
 						<TextSeparator
 							label={
@@ -47,7 +52,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									{t('Online')}
 								</>
 							}
-							value={s(() => statistics.onlineUsers)}
+							value={statistics.onlineUsers}
 						/>
 						<TextSeparator
 							label={
@@ -58,7 +63,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									{t('Busy')}
 								</>
 							}
-							value={s(() => statistics.busyUsers)}
+							value={statistics.busyUsers}
 						/>
 						<TextSeparator
 							label={
@@ -69,7 +74,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									{t('Away')}
 								</>
 							}
-							value={s(() => statistics.awayUsers)}
+							value={statistics.awayUsers}
 						/>
 						<TextSeparator
 							label={
@@ -80,35 +85,23 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									{t('Offline')}
 								</>
 							}
-							value={s(() => statistics.offlineUsers)}
+							value={statistics.offlineUsers}
 						/>
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Types_and_Distribution')}</Card.Col.Title>
-						<TextSeparator label={t('Connected')} value={s(() => statistics.totalConnectedUsers)} />
-						<TextSeparator
-							label={t('Stats_Active_Users')}
-							value={s(() => statistics.activeUsers)}
-						/>
-						<TextSeparator
-							label={t('Stats_Active_Guests')}
-							value={s(() => statistics.activeGuests)}
-						/>
-						<TextSeparator
-							label={t('Stats_Non_Active_Users')}
-							value={s(() => statistics.nonActiveUsers)}
-						/>
-						<TextSeparator label={t('Stats_App_Users')} value={s(() => statistics.appUsers)} />
+						<TextSeparator label={t('Connected')} value={statistics.totalConnectedUsers} />
+						<TextSeparator label={t('Stats_Active_Users')} value={statistics.activeUsers} />
+						<TextSeparator label={t('Stats_Active_Guests')} value={statistics.activeGuests} />
+						<TextSeparator label={t('Stats_Non_Active_Users')} value={statistics.nonActiveUsers} />
+						<TextSeparator label={t('Stats_App_Users')} value={statistics.appUsers} />
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Uploads')}</Card.Col.Title>
-						<TextSeparator
-							label={t('Stats_Total_Uploads')}
-							value={s(() => statistics.uploadsTotal)}
-						/>
+						<TextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<TextSeparator
 							label={t('Stats_Total_Uploads_Size')}
-							value={s(() => formatMemorySize(statistics.uploadsTotalSize))}
+							value={formatMemorySize(statistics.uploadsTotalSize)}
 						/>
 					</Card.Col.Section>
 				</Card.Col>
@@ -122,7 +115,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='dialpad' size='x16' /> {t('Stats_Total_Rooms')}
 								</>
 							}
-							value={s(() => statistics.totalRooms)}
+							value={statistics.totalRooms}
 						/>
 						<TextSeparator
 							label={
@@ -130,7 +123,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='hash' size='x16' /> {t('Stats_Total_Channels')}
 								</>
 							}
-							value={s(() => statistics.totalChannels)}
+							value={statistics.totalChannels}
 						/>
 						<TextSeparator
 							label={
@@ -138,7 +131,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='lock' size='x16' /> {t('Stats_Total_Private_Groups')}
 								</>
 							}
-							value={s(() => statistics.totalPrivateGroups)}
+							value={statistics.totalPrivateGroups}
 						/>
 						<TextSeparator
 							label={
@@ -146,7 +139,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='balloon' size='x16' /> {t('Stats_Total_Direct_Messages')}
 								</>
 							}
-							value={s(() => statistics.totalDirect)}
+							value={statistics.totalDirect}
 						/>
 						<TextSeparator
 							label={
@@ -154,7 +147,7 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='discussion' size='x16' /> {t('Total_Discussions')}
 								</>
 							}
-							value={s(() => statistics.totalDiscussions)}
+							value={statistics.totalDiscussions}
 						/>
 						<TextSeparator
 							label={
@@ -162,31 +155,28 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 									<Card.Icon name='headset' size='x16' /> {t('Stats_Total_Livechat_Rooms')}
 								</>
 							}
-							value={s(() => statistics.totalLivechat)}
+							value={statistics.totalLivechat}
 						/>
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Messages')}</Card.Col.Title>
-						<TextSeparator
-							label={t('Stats_Total_Messages')}
-							value={s(() => statistics.totalMessages)}
-						/>
-						<TextSeparator label={t('Total_Threads')} value={s(() => statistics.totalThreads)} />
+						<TextSeparator label={t('Stats_Total_Messages')} value={statistics.totalMessages} />
+						<TextSeparator label={t('Total_Threads')} value={statistics.totalThreads} />
 						<TextSeparator
 							label={t('Stats_Total_Messages_Channel')}
-							value={s(() => statistics.totalChannelMessages)}
+							value={statistics.totalChannelMessages}
 						/>
 						<TextSeparator
 							label={t('Stats_Total_Messages_PrivateGroup')}
-							value={s(() => statistics.totalPrivateGroupMessages)}
+							value={statistics.totalPrivateGroupMessages}
 						/>
 						<TextSeparator
 							label={t('Stats_Total_Messages_Direct')}
-							value={s(() => statistics.totalDirectMessages)}
+							value={statistics.totalDirectMessages}
 						/>
 						<TextSeparator
 							label={t('Stats_Total_Messages_Livechat')}
-							value={s(() => statistics.totalLivechatMessages)}
+							value={statistics.totalLivechatMessages}
 						/>
 					</Card.Col.Section>
 				</Card.Col>
@@ -200,6 +190,6 @@ const UsageCard = memo(function UsageCard({ statistics, isLoading, vertical }) {
 			</Card.Footer>
 		</Card>
 	);
-});
+};
 
-export default UsageCard;
+export default memo(UsageCard);

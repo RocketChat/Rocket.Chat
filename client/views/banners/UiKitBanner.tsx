@@ -1,14 +1,26 @@
 /* eslint-disable new-cap */
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
-import React, { Context, FC, useMemo } from 'react';
+import {
+	kitContext,
+	// @ts-ignore
+	bannerParser,
+	UiKitBanner as renderUiKitBannerBlocks,
+} from '@rocket.chat/fuselage-ui-kit';
+import React, { Context, FC, useMemo, ReactNode } from 'react';
 
-// import { useEndpoint } from '../../contexts/ServerContext';
 import { UiKitBannerProps, UiKitBannerPayload } from '../../../definition/UIKit';
 import { useUIKitHandleAction } from '../../UIKit/hooks/useUIKitHandleAction';
 import { useUIKitHandleClose } from '../../UIKit/hooks/useUIKitHandleClose';
 import { useUIKitStateManager } from '../../UIKit/hooks/useUIKitStateManager';
+import MarkdownText from '../../components/MarkdownText';
 import * as banners from '../../lib/banners';
+
+// TODO: move this to fuselage-ui-kit itself
+const mrkdwn = ({ text }: { text: string } = { text: '' }): ReactNode => (
+	<MarkdownText variant='inline' content={text} />
+);
+
+bannerParser.mrkdwn = mrkdwn;
 
 const UiKitBanner: FC<UiKitBannerProps> = ({ payload }) => {
 	const state = useUIKitStateManager<UiKitBannerPayload>(payload);
