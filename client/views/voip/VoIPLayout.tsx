@@ -259,12 +259,6 @@ class VoIPLayout
 				throw error;
 			}
 		}
-		try {
-			const list = await APIClient.v1.get('connector.extension.list');
-			this.logger?.info('list = ', JSON.stringify(list));
-		} catch (error) {
-			this.logger?.error('error in API');
-		}
 		if (this.callTypeSelection.current) {
 			this.callTypeSelection.current.disabled = true;
 		}
