@@ -1622,7 +1622,7 @@ settings.addGroup('Logs', function() {
 		});
 		// See the default port allocation at https://github.com/prometheus/prometheus/wiki/Default-port-allocations
 		this.add('Prometheus_Port', 9458, {
-			type: 'string',
+			type: 'int',
 			i18nLabel: 'Port',
 		});
 		this.add('Prometheus_Reset_Interval', 0, {

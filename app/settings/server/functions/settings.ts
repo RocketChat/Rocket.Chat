@@ -151,7 +151,62 @@ const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 
 };
 
 type ISettingAddOptions = Partial<ISetting>;
+
 class Settings extends SettingsBase {
+	static validate<T extends ISetting>(setting: T, value: T['value']): boolean {
+		switch (setting.type) {
+			case 'asset':
+				if (typeof value !== 'object') {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type ${ setting.type } but got ${ typeof value }`);
+				}
+				break;
+			case 'string':
+			case 'relativeUrl':
+			case 'password':
+			case 'language':
+			case 'color':
+			case 'font':
+			case 'code':
+			case 'action':
+			case 'roomPick':
+			case 'group':
+				if (typeof value !== 'string') {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type ${ setting.type } but got ${ typeof value }`);
+				}
+				break;
+			case 'boolean':
+				if (typeof value !== 'boolean') {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type boolean but got ${ typeof value }`);
+				}
+				break;
+			case 'int':
+				if (typeof value !== 'number') {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type int but got ${ typeof value }`);
+				}
+				break;
+			case 'multiSelect':
+				if (!Array.isArray(value)) {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type array but got ${ typeof value }`);
+				}
+				break;
+			case 'select':
+
+				if (typeof value !== 'string' && typeof value !== 'number') {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type select but got ${ typeof value }`);
+				}
+				break;
+			case 'date':
+				if (!(value instanceof Date)) {
+					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type date but got ${ typeof value }`);
+				}
+				break;
+			default:
+				return true;
+		}
+
+		return true;
+	}
+
 	private _sorter: {[key: string]: number} = {};
 
 	private initialLoad = true;
@@ -179,6 +234,12 @@ class Settings extends SettingsBase {
 		const settingStoredValue = Meteor.settings[_id] as ISetting['value'] | undefined;
 		const settingOverwritten = overwriteSetting(settingFromCode);
 
+		try {
+			Settings.validate(settingFromCode, settingFromCode.value);
+		} catch (e) {
+			SystemLogger.error(`Invalid setting code ${ _id }: ${ e.message }`);
+		}
+
 		const isOverwritten = settingFromCode !== settingOverwritten;
 
 		if (isOverwritten) {
@@ -188,8 +249,15 @@ class Settings extends SettingsBase {
 		}
 
 		if (settingStoredValue !== undefined) {
+			try {
+				Settings.validate(settingFromCode, settingStoredValue);
+			} catch (e) {
+				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
+			}
 			return;
 		}
+
+
 
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
 

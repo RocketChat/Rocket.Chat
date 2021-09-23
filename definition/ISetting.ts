@@ -9,10 +9,10 @@ export enum SettingEditor {
 	COLOR = 'color',
 	EXPRESSION = 'expression'
 }
-
+type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = string[];
 export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
-export type SettingValue = string | boolean | number | SettingValueMultiSelect | undefined;
+export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue;
 
 export interface ISettingSelectOption {
 	key: string;
@@ -61,6 +61,7 @@ export interface ISettingGroup {
 	i18nLabel: string;
 	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	i18nDescription: string;
+	value?: undefined;
 	type: 'group';
 }
 
@@ -84,6 +85,11 @@ export interface ISettingAction extends ISettingBase {
 	type: 'action';
 	actionText?: string;
 }
+export interface ISettingAsset extends ISettingBase {
+	type: 'asset';
+	value: AssetValue;
+}
+
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 
 export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
@@ -91,3 +97,5 @@ export const isSettingColor = (setting: ISettingBase): setting is ISettingColor 
 export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
 
 export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
+
+export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
