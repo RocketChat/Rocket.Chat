@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Subscriptions, Messages } from '../../../app/models/server/raw';
 
 
@@ -54,7 +54,7 @@ async function migrate() {
 	});
 }
 
-Migrations.add({
+addMigration({
 	version: 206,
 	up() {
 		Promise.await(migrate());
