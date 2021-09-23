@@ -1461,16 +1461,6 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
-	removeResumeService(_id) {
-		const update = {
-			$unset: {
-				'services.resume': '',
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
 	removeSamlServiceSession(_id) {
 		const update = {
 			$unset: {
