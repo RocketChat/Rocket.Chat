@@ -187,7 +187,7 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-		if (settingStoredValue !== undefined) {
+		if (Meteor.settings.hasOwnProperty(_id)) {
 			return;
 		}
 
