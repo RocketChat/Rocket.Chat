@@ -5,6 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks/server';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
@@ -55,7 +56,19 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
 	}
 
+	if (active && !user.active) {
+		callbacks.run('beforeActivateUser', user);
+	}
+
 	Users.setUserActive(userId, active);
+
+	if (active && !user.active) {
+		callbacks.run('afterActivateUser', user);
+	}
+
+	if (!active && user.active) {
+		callbacks.run('afterDeactivateUser', user);
+	}
 
 	if (user.username) {
 		Subscriptions.setArchivedByUsername(user.username, !active);

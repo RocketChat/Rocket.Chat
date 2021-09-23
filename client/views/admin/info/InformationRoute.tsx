@@ -1,30 +1,36 @@
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, ReactElement } from 'react';
 
+import { IStats } from '../../../../definition/IStats';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
-import NewInformationPage from './NewInformationPage';
+import InformationPage from './InformationPage';
 
-const InformationRoute = memo(function InformationRoute() {
+type fetchStatisticsCallback = ((params: { refresh: boolean }) => void) | (() => void);
+
+const InformationRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
 	const [isLoading, setLoading] = useState(true);
-	const [error, setError] = useState();
-	const [statistics, setStatistics] = useState({});
+	const [error, setError] = useState(false);
+	const [statistics, setStatistics] = useState<IStats>();
 	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState(() => () => ({}));
+	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(
+		() => (): void => undefined,
+	);
 	const getStatistics = useEndpoint('GET', 'statistics');
 	const getInstances = useMethod('instances/get');
 
 	useEffect(() => {
 		let didCancel = false;
 
-		const fetchStatistics = async ({ refresh = false } = {}) => {
+		const fetchStatistics = async ({ refresh = false } = {}): Promise<void> => {
 			setLoading(true);
 			setError(false);
 
@@ -50,14 +56,14 @@ const InformationRoute = memo(function InformationRoute() {
 
 		fetchStatistics();
 
-		return () => {
+		return (): void => {
 			didCancel = true;
 		};
 	}, [canViewStatistics, getInstances, getStatistics]);
 
 	const info = useServerInformation();
 
-	const handleClickRefreshButton = () => {
+	const handleClickRefreshButton = (): void => {
 		if (isLoading) {
 			return;
 		}
@@ -65,14 +71,18 @@ const InformationRoute = memo(function InformationRoute() {
 		fetchStatistics({ refresh: true });
 	};
 
-	const handleClickDownloadInfo = () => {
+	const handleClickDownloadInfo = (): void => {
 		if (isLoading) {
 			return;
 		}
 		downloadJsonAs(statistics, 'statistics');
 	};
 
-	if (error) {
+	if (isLoading) {
+		return <PageSkeleton />;
+	}
+
+	if (error || !statistics) {
 		return (
 			<Page>
 				<Page.Header title={t('Info')}>
@@ -83,9 +93,7 @@ const InformationRoute = memo(function InformationRoute() {
 					</ButtonGroup>
 				</Page.Header>
 				<Page.ScrollableContentWithShadow>
-					<Callout type='danger'>
-						{t('Error_loading_pages')} {/* : {error.message || error.stack}*/}
-					</Callout>
+					<Callout type='danger'>{t('Error_loading_pages')}</Callout>
 				</Page.ScrollableContentWithShadow>
 			</Page>
 		);
@@ -93,9 +101,8 @@ const InformationRoute = memo(function InformationRoute() {
 
 	if (canViewStatistics) {
 		return (
-			<NewInformationPage
+			<InformationPage
 				canViewStatistics={canViewStatistics}
-				isLoading={isLoading}
 				info={info}
 				statistics={statistics}
 				instances={instances}
@@ -106,6 +113,6 @@ const InformationRoute = memo(function InformationRoute() {
 	}
 
 	return <NotAuthorizedPage />;
-});
+};
 
-export default InformationRoute;
+export default memo(InformationRoute);
