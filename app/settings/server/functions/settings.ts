@@ -1,6 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { SettingsBase } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
@@ -24,7 +23,12 @@ if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
 	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
 
-export const SettingsEvents = new Emitter();
+export const SettingsEvents = new Emitter<{
+	'store-setting-value': [ISetting, { value: SettingValue }];
+	'fetch-settings': ISetting[];
+	'remove-setting-value': ISetting;
+	'after-initial-load': Meteor.Settings;
+}>();
 
 const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']): SettingValue => {
 	if (value.toLowerCase() === 'true') {
@@ -39,11 +43,6 @@ const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']):
 	return value;
 };
 
-export interface ISettingAddOptions extends Partial<ISetting> {
-	force?: boolean;
-	actionText?: string;
-	code?: 'application/json';
-}
 
 const overrideSetting = (setting: ISetting): ISetting => {
 	const overwriteValue = process.env[setting._id];
@@ -63,9 +62,28 @@ const overrideSetting = (setting: ISetting): ISetting => {
 		processEnvValue: value,
 		valueSource: 'processEnvValue',
 	};
-	$unset?: {
-		section?: 1;
-		tab?: 1;
+};
+
+const overwriteSetting = (setting: ISetting): ISetting => {
+	const overwriteValue = process.env[`OVERWRITE_SETTING_${ setting._id }`];
+	if (!overwriteValue) {
+		return setting;
+	}
+
+	const value = convertValue(overwriteValue, setting.type);
+
+	if (value === setting.value) {
+		return setting;
+	}
+
+	SystemLogger.log(`Overwriting setting ${ setting._id }`);
+
+	return {
+		...setting,
+		value,
+		processEnvValue: value,
+		// blocked: true, TODO: add this back
+		valueSource: 'processEnvValue',
 	};
 };
 
@@ -77,11 +95,10 @@ const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): I
 	blocked: blockedSettings.has(_id),
 	hidden: hiddenSettings.has(_id),
 	type: 'group',
+	...options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) },
 });
 
 export type ISettingAddGroupOptions = Partial<ISettingGroup>;
-
-
 
 // interface IUpdateOperator {
 // 	$set: ISettingAddOptions;
@@ -93,24 +110,17 @@ export type ISettingAddGroupOptions = Partial<ISettingGroup>;
 // 	};
 // }
 
-type QueryExpression = {
-	$exists: boolean;
-}
-
-type Query<T> = {
-	[P in keyof T]?: T[P] | QueryExpression;
-}
-
 type addSectionCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
-	set(options: ISettingAddOptions, cb: addSectionCallback): void;
+	with(options: ISettingAddOptions, cb: addSectionCallback): void;
 }) => void;
 
 type addGroupCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
 	section(section: string, cb: addSectionCallback): void;
-	set(options: ISettingAddOptions, cb: addGroupCallback): void;
+	with(options: ISettingAddOptions, cb: addGroupCallback): void;
 }) => void;
+
 
 const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>): ISetting => {
 	const { _id, value, sorter, ...options } = setting;
@@ -133,6 +143,7 @@ const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 
 		type: options.type || 'string',
 		env: options.env || false,
 		public: options.public || false,
+		...options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) },
 		...isSettingColor(setting as ISetting) && {
 			packageEditor: (setting as ISettingColor).editor,
 		},
@@ -145,60 +156,17 @@ class Settings extends SettingsBase {
 
 	private initialLoad = true;
 
-	private validateOptions(_id: string, value: SettingValue, options: ISettingAddOptions): void {
-		if (options.group && this._sorter[options.group] == null) {
-			this._sorter[options.group] = 0;
-		}
-		options.packageValue = value;
-		options.valueSource = 'packageValue';
-		options.hidden = options.hidden || false;
-		options.requiredOnWizard = options.requiredOnWizard || false;
-		options.secret = options.secret || false;
-		options.enterprise = options.enterprise || false;
-
-		if (options.enterprise && !('invalidValue' in options)) {
-			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
-			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
-		}
-
-		if (options.group && options.sorter == null) {
-			options.sorter = this._sorter[options.group]++;
-		}
-		if (options.enableQuery != null) {
-			options.enableQuery = JSON.stringify(options.enableQuery);
-		}
-		if (options.displayQuery != null) {
-			options.displayQuery = JSON.stringify(options.displayQuery);
-		}
-		if (options.i18nDescription == null) {
-			options.i18nDescription = `${ _id }_Description`;
-		}
-		if (blockedSettings.has(_id)) {
-			options.blocked = true;
-		}
-		if (hiddenSettings.has(_id)) {
-			options.hidden = true;
-		}
-		if (wizardRequiredSettings.has(_id)) {
-			options.requiredOnWizard = true;
-		}
-		if (options.autocomplete == null) {
-			options.autocomplete = true;
-		}
-	}
-
 	/*
 	* Add a setting
 	*/
-	add(_id: string, value: SettingValue, { editor, ...options }: ISettingAddOptions = {}): boolean {
+	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): void {
 		if (!_id || value == null) {
-			return false;
+			throw new Error('Invalid arguments');
 		}
 
-		this.validateOptions(_id, value, options);
-		options.blocked = options.blocked || false;
-		if (options.i18nLabel == null) {
-			options.i18nLabel = _id;
+		if (group) {
+			this._sorter[group] = this._sorter[group] || -1;
+			this._sorter[group]++;
 		}
 
 		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter, group, ...options });
@@ -219,23 +187,8 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-		if (!options.tab) {
-			updateOperations.$unset = {
-				tab: 1,
-			};
-			query.tab = {
-				$exists: false,
-			};
-		}
-
-		const existentSetting = SettingsModel.findOne(query);
-		if (existentSetting) {
-			if (existentSetting.editor || !updateOperations.$setOnInsert.editor) {
-				return true;
-			}
-
-			updateOperations.$set.editor = updateOperations.$setOnInsert.editor;
-			delete updateOperations.$setOnInsert.editor;
+		if (settingStoredValue !== undefined) {
+			return;
 		}
 
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
@@ -274,39 +227,40 @@ class Settings extends SettingsBase {
 			});
 		}
 
-		if (cb != null) {
-			const addWith = (preset: ISettingAddOptions) => (id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
-				const mergedOptions = Object.assign({}, preset, options);
-				this.add(id, value, mergedOptions);
-			};
-			const sectionSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addSectionCallback): void => {
-				const mergedOptions = Object.assign({}, preset, options);
-				cb.call({
-					add: addWith(mergedOptions),
-					set: sectionSetWith(mergedOptions),
-				});
-			};
-			const sectionWith = (preset: ISettingAddOptions) => (section: string, cb: addSectionCallback): void => {
-				const mergedOptions = Object.assign({}, preset, { section });
-				cb.call({
-					add: addWith(mergedOptions),
-					set: sectionSetWith(mergedOptions),
-				});
-			};
-
-			const groupSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addGroupCallback): void => {
-				const mergedOptions = Object.assign({}, preset, options);
-
-				cb.call({
-					add: addWith(mergedOptions),
-					section: sectionWith(mergedOptions),
-					set: groupSetWith(mergedOptions),
-				});
-			};
-
-			groupSetWith({ group: _id })({}, cb);
+		if (!callback) {
+			return;
 		}
-		return true;
+
+		const addWith = (preset: ISettingAddOptions) => (id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
+			const mergedOptions = { ...preset, ...options };
+			this.add(id, value, mergedOptions);
+		};
+		const sectionSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addSectionCallback): void => {
+			const mergedOptions = { ...preset, ...options };
+			cb.call({
+				add: addWith(mergedOptions),
+				with: sectionSetWith(mergedOptions),
+			});
+		};
+		const sectionWith = (preset: ISettingAddOptions) => (section: string, cb: addSectionCallback): void => {
+			const mergedOptions = { ...preset, section };
+			cb.call({
+				add: addWith(mergedOptions),
+				with: sectionSetWith(mergedOptions),
+			});
+		};
+
+		const groupSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addGroupCallback): void => {
+			const mergedOptions = { ...preset, ...options };
+
+			cb.call({
+				add: addWith(mergedOptions),
+				section: sectionWith(mergedOptions),
+				with: groupSetWith(mergedOptions),
+			});
+		};
+
+		return groupSetWith({ group: _id })({}, callback);
 	}
 
 	/*
@@ -360,7 +314,7 @@ class Settings extends SettingsBase {
 		const newData = {
 			value: record.value,
 		};
-		SettingsEvents.emit('store-setting-value', record, newData);
+		SettingsEvents.emit('store-setting-value', [record, newData]);
 		const { value } = newData;
 
 		Meteor.settings[record._id] = value;

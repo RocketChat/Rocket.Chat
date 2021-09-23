@@ -25,7 +25,7 @@ export function changeSettingValue(record: ISetting): undefined | { value: Setti
 	}
 }
 
-SettingsEvents.on('store-setting-value', (record: ISetting, newRecord: { value: SettingValue }) => {
+SettingsEvents.on('store-setting-value', ([record, newRecord]) => {
 	const changedValue = changeSettingValue(record);
 	if (changedValue) {
 		newRecord.value = changedValue.value;

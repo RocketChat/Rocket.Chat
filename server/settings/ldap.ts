@@ -5,7 +5,7 @@ settings.addGroup('LDAP', function() {
 	const adOnly = { _id: 'LDAP_Server_Type', value: 'ad' };
 	const ldapOnly = { _id: 'LDAP_Server_Type', value: '' };
 
-	this.set({ tab: 'LDAP_Connection' }, function() {
+	this.with({ tab: 'LDAP_Connection' }, function() {
 		this.add('LDAP_Enable', false, { type: 'boolean', public: true });
 
 		this.add('LDAP_Server_Type', 'ad', {
@@ -51,7 +51,7 @@ settings.addGroup('LDAP', function() {
 		});
 	});
 
-	this.set({ tab: 'LDAP_UserSearch' }, function() {
+	this.with({ tab: 'LDAP_UserSearch' }, function() {
 		this.add('LDAP_Find_User_After_Login', true, { type: 'boolean', enableQuery });
 
 		this.section('LDAP_UserSearch_Filter', function() {
@@ -108,7 +108,7 @@ settings.addGroup('LDAP', function() {
 		});
 	});
 
-	this.set({ tab: 'LDAP_DataSync' }, function() {
+	this.with({ tab: 'LDAP_DataSync' }, function() {
 		this.add('LDAP_Unique_Identifier_Field', 'objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber,uid', {
 			type: 'string',
 			enableQuery,
@@ -186,7 +186,7 @@ settings.addGroup('LDAP', function() {
 		});
 	});
 
-	this.set({
+	this.with({
 		tab: 'LDAP_Enterprise',
 		enterprise: true,
 		modules: ['ldap-enterprise'],

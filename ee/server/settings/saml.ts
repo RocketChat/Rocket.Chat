@@ -13,7 +13,7 @@ import {
 
 export const addSettings = function(name: string): void {
 	settings.addGroup('SAML', function() {
-		this.set({
+		this.with({
 			tab: 'SAML_Enterprise',
 			enterprise: true,
 			modules: ['saml-enterprise'],

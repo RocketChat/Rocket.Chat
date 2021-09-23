@@ -19,7 +19,7 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction;
 
 export interface ISettingBase {
 	_id: SettingId;
@@ -59,6 +59,7 @@ export interface ISettingGroup {
 	blocked: boolean;
 	ts?: Date;
 	i18nLabel: string;
+	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	i18nDescription: string;
 	type: 'group';
 }
@@ -69,11 +70,24 @@ export interface ISettingEnterprise extends ISettingBase {
 	invalidValue: SettingValue;
 }
 
-export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 export interface ISettingColor extends ISettingBase {
 	type: 'color';
 	editor: SettingEditor;
 	packageEditor?: SettingEditor;
 }
+export interface ISettingCode extends ISettingBase {
+	type: 'code';
+	code?: string;
+}
+
+export interface ISettingAction extends ISettingBase {
+	type: 'action';
+	actionText?: string;
+}
+export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 
 export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
+
+export const isSettingCode = (setting: ISettingBase): setting is ISettingCode => setting.type === 'code';
+
+export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';

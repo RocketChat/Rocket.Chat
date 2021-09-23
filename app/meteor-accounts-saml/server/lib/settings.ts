@@ -136,7 +136,7 @@ export const addSamlService = function(name: string): void {
 
 export const addSettings = function(name: string): void {
 	settings.addGroup('SAML', function() {
-		this.set({
+		this.with({
 			tab: 'SAML_Connection',
 		}, function() {
 			this.add(`SAML_Custom_${ name }`, false, {
@@ -196,7 +196,7 @@ export const addSettings = function(name: string): void {
 			});
 		});
 
-		this.set({
+		this.with({
 			tab: 'SAML_General',
 		}, function() {
 			this.section('SAML_Section_1_User_Interface', function() {
