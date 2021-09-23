@@ -16,13 +16,13 @@ export const saveQueueInquiry = (inquiry) => {
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
 	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
-	logger.debug(`Delegating inquiry with id ${ inquiry._id } to agent ${ defaultAgent?._id }`);
+	logger.debug(`Delegating inquiry with id ${ inquiry._id } to agent ${ defaultAgent?.username }`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
 	inquiry = LivechatInquiry.findOneById(inquiry._id);
 
 	if (inquiry.status === 'ready') {
-		logger.debug(`Inquiry with id ${ inquiry._id } is ready. Delegating to agent ${ inquiryAgent?._id }`);
+		logger.debug(`Inquiry with id ${ inquiry._id } is ready. Delegating to agent ${ inquiryAgent?.username }`);
 		return RoutingManager.delegateInquiry(inquiry, inquiryAgent);
 	}
 };

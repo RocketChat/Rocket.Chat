@@ -76,6 +76,22 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
 	}
 
+	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
+	}
+
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
+	}
+
+	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
+	}
+
+	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
+	}
+
 	unsetReactions(messageId) {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}

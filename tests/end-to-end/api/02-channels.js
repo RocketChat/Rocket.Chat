@@ -1322,7 +1322,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
 			});
 	});
 
