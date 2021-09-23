@@ -95,7 +95,7 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	public static async syncLogout(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync_Avatars') !== true) {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Sync_AutoLogout_Enabled') !== true) {
 			return;
 		}
 
@@ -542,15 +542,9 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers();
+		const users = await UsersRaw.findLDAPUsers().toArray();
 		for await (const user of users) {
-			let ldapUser: ILDAPEntry | undefined;
-
-			if (user.services?.ldap?.id) {
-				ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-			} else if (user.username) {
-				ldapUser = await ldap.findOneByUsername(user.username);
-			}
+			const ldapUser = await this.findLDAPUser(ldap, user);
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
@@ -560,23 +554,10 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findLDAPUsers();
+		const users = await UsersRaw.findLDAPUsers().toArray();
 		for await (const user of users) {
-			let ldapUser: ILDAPEntry | undefined;
-
-			if (user.services?.ldap?.id) {
-				ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-			} else if (user.username) {
-				ldapUser = await ldap.findOneByUsername(user.username);
-			}
-
+			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
-				searchLogger.debug({
-					msg: 'existing LDAP user not found during Avatar Sync',
-					ldapId: user.services?.ldap?.id,
-					ldapAttribute: user.services?.ldap?.idAttribute,
-					username: user.username,
-				});
 				continue;
 			}
 
@@ -602,7 +583,8 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
-		const users = await UsersRaw.findConnectedLDAPUsers();
+		const users = await UsersRaw.findConnectedLDAPUsers().toArray();
+
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
@@ -610,7 +592,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				UsersRaw.removeResumeService(user._id);
+				UsersRaw.unsetLoginTokens(user._id);
 			}
 		}
 	}
