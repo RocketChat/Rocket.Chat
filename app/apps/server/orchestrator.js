@@ -3,10 +3,9 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
-import { onFreshInstall } from '../../../server/lib/migrations';
-import { Logger } from '../../logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
-import { settings } from '../../settings';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
+import { settings } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
