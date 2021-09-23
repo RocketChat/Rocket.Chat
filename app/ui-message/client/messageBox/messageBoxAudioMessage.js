@@ -2,14 +2,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { AudioRecorder, fileUpload, USER_RECORDING, UserAction } from '../../../ui';
+import { AudioRecorder, fileUpload, USER_ACTIVITIES, UserAction } from '../../../ui';
 import { t } from '../../../utils';
 import './messageBoxAudioMessage.html';
 
 const startRecording = async (rid, tmid) => {
 	try {
 		await AudioRecorder.start();
-		UserAction.performContinuosly(rid, USER_RECORDING, { tmid });
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 	} catch (error) {
 		throw error;
 	}
@@ -17,7 +17,7 @@ const startRecording = async (rid, tmid) => {
 
 const stopRecording = async (rid, tmid) => {
 	const result = await new Promise((resolve) => AudioRecorder.stop(resolve));
-	UserAction.stop(rid, USER_RECORDING, { tmid });
+	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 	return result;
 };
 
@@ -79,7 +79,8 @@ Template.messageBoxAudioMessage.onCreated(async function() {
 
 Template.messageBoxAudioMessage.onDestroyed(async function() {
 	if (this.state.get() === 'recording') {
-		await cancelRecording(this);
+		const { rid, tmid } = this.data;
+		await cancelRecording(this, rid, tmid);
 	}
 });
 

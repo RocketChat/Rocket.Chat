@@ -1,19 +1,15 @@
-export interface IUser {
+export type IUser = {
 	_id: string;
 	username?: string;
 	name?: string;
 }
 
-export interface IExtras {
+export type IExtras = {
 	tmid?: string;
 }
 
-export type IActivity = { [key: string]: NodeJS.Timer }
+export type IActivity = Record<string, NodeJS.Timeout>
 
-export interface IRoomActivity {
-	[activity: string]: IActivity;
-}
+export type IRoomActivity = Record<string, IActivity>
 
-export interface IActionsObject {
-	[key: string]: IRoomActivity;
-}
+export type IActionsObject = Record<string, IRoomActivity>;

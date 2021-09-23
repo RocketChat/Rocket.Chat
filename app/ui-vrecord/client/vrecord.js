@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload, UserAction, USER_RECORDING } from '../../ui';
+import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -38,7 +38,7 @@ const stopVideoRecording = (rid, tmid) => {
 		clearInterval(recordingInterval.get());
 		recordingInterval.set(null);
 	}
-	UserAction.stop(rid, USER_RECORDING, { tmid });
+	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 };
 
 
@@ -61,7 +61,7 @@ Template.vrecDialog.events({
 			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
-			UserAction.performContinuosly(rid, USER_RECORDING, { tmid });
+			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			t.time.set('00:00');
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {

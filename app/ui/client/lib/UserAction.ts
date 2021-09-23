@@ -2,32 +2,30 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Session } from 'meteor/session';
+import { debounce } from 'lodash';
 
 import { settings } from '../../../settings/client';
 import { Notifications } from '../../../notifications/client';
-import { IExtras, IRoomActivity, IActionsObject, IUser, IActivity } from '../../../../definition/IUserAction';
+import { IExtras, IRoomActivity, IActionsObject, IUser } from '../../../../definition/IUserAction';
 
-const timeout = 15000;
-const renew = timeout / 3;
+const TIMEOUT = 15000;
+const RENEW = TIMEOUT / 3;
 
-export const USER_RECORDING = 'user-recording';
-export const USER_TYPING = 'user-typing';
-export const USER_UPLOADING = 'user-uploading';
 export const USER_ACTIVITY = 'user-activity';
-const TYPING = 'typing';
 
+export const USER_ACTIVITIES = {
+	USER_RECORDING: 'user-recording',
+	USER_TYPING: 'user-typing',
+	USER_UPLOADING: 'user-uploading',
+};
 
 const activityTimeouts = new Map();
 const activityRenews = new Map();
 const continuingIntervals = new Map();
+const roomActivities = new Map<string, Set<string>>();
 const rooms = new Map<string, Function>();
 
-const performingUsers = new ReactiveDict();
-// performingUsers stores in the form of
-// {
-// 	rid1: {'user-typing': { user-name1: timeout1, user-name2: timeout2}, 'user-recording': {user-name3: timeout3}},
-// 	tmid1: {'user-uploading': { user-name4: timeout4}},
-// }
+const performingUsers = new ReactiveDict<IActionsObject>();
 
 const shownName = function(user: IUser | null | undefined): string|undefined {
 	if (!user) {
@@ -39,83 +37,57 @@ const shownName = function(user: IUser | null | undefined): string|undefined {
 	return user.username;
 };
 
-const fireOldTypingEvent = function(): boolean {
-	return settings.get('Fire_Old_Typing_Event');
-};
+const emitActivities = debounce((rid: string, extras: IExtras): void => {
+	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
+	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user()), [...activities], extras);
+}, 500);
 
-// use 'typing' stream if the client wants to use older 'user action indicator' version.
-// otherwise use 'user-activity' stream.
-const stopActivity = (rid: string, activityType: string, extras: IExtras): void => {
-	const stream = activityType === USER_TYPING && fireOldTypingEvent() ? TYPING : USER_ACTIVITY;
-	Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), false, activityType, extras);
-};
+function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
+	rid = extras?.tmid || rid;
+	const roomActivities = performingUsers.get(rid) || {};
 
-const startActivity = (rid: string, activityType: string, extras: IExtras): void => {
-	const stream = activityType === USER_TYPING && fireOldTypingEvent() ? TYPING : USER_ACTIVITY;
-	Notifications.notifyRoom(rid, stream, shownName(Meteor.user()), true, activityType, extras);
-};
+	for (const [, activity] of Object.entries(USER_ACTIVITIES)) {
+		roomActivities[activity] = roomActivities[activity] || new Map();
+		const users = roomActivities[activity];
+		const timeout = users[username];
 
-function handleStreamAction(rid: string, username: string, actionType: string, isActive: boolean, extras: IExtras): void {
-	// actionType and extras will be null if Fire_Old_Typing_Event is true.
-	// actionType gets an object from livechat client.
-	const activityType = actionType && typeof actionType === 'string' ? actionType : USER_TYPING;
-	const id = extras?.tmid || rid;
-	const activities = performingUsers.all() || {};
-	const roomActivities = activities[id] as IRoomActivity || {};
+		if (timeout) {
+			clearTimeout(timeout);
+		}
 
-	if (Object.keys(roomActivities)?.length < 1) {
-		activities[id] = roomActivities;
+		if (activityTypes.includes(activity)) {
+			activityTypes.splice(activityTypes.indexOf(activity), 1);
+			users[username] = setTimeout(() => handleStreamAction(rid, username, activityTypes, extras), TIMEOUT);
+		} else {
+			delete users[username];
+		}
 	}
 
-	const users = roomActivities[activityType] || {};
-	if (Object.keys(users)?.length < 1) {
-		roomActivities[activityType] = users;
-	}
-
-	if (isActive === true) {
-		clearTimeout(users[username]);
-		users[username] = setTimeout(function() {
-			const activities = performingUsers.all();
-			const roomActivities = activities[id] as IRoomActivity;
-			const u = roomActivities[activityType];
-			delete u[username];
-			performingUsers.set(activities);
-		}, timeout);
-	} else {
-		clearTimeout(users[username]);
-		delete users[username];
-	}
-
-	performingUsers.set(activities);
+	performingUsers.set(rid, roomActivities);
 }
-
 export const UserAction = new class {
 	constructor() {
 		Tracker.autorun(() => Session.get('openedRoom') && this.addStream(Session.get('openedRoom')));
 	}
 
-
 	addStream(rid: string): void {
 		if (rooms.get(rid)) {
 			return;
 		}
-		const handler = function(username: string, activity: boolean, activityType: string, extras: object): void {
+		const handler = function(username: string, activityType: string[], extras?: object): void {
 			const user = Meteor.users.findOne(Meteor.userId() || undefined, { fields: { name: 1, username: 1 } });
 			if (username === shownName(user)) {
 				return;
 			}
-			handleStreamAction(rid, username, activityType, activity, extras);
+			handleStreamAction(rid, username, activityType, extras);
 		};
 		rooms.set(rid, handler);
-		// We have subscribed to new as well as older user-activity versions for compatiblity purpose.
-		// We can remove it once all clients support new user-activity.
-		Notifications.onRoom(rid, TYPING, handler);
 		Notifications.onRoom(rid, USER_ACTIVITY, handler);
 	}
 
-	performContinuosly(rid: string, activityType: string, extras: IExtras = {}): void {
-		const id = extras?.tmid || rid;
-		const key = `${ activityType }-${ id }`;
+	performContinuously(rid: string, activityType: string, extras: IExtras = {}): void {
+		const trid = extras?.tmid || rid;
+		const key = `${ activityType }-${ trid }`;
 
 		if (continuingIntervals.get(key)) {
 			return;
@@ -124,12 +96,12 @@ export const UserAction = new class {
 
 		continuingIntervals.set(key, setInterval(() => {
 			this.start(rid, activityType, extras);
-		}, renew));
+		}, RENEW));
 	}
 
 	start(rid: string, activityType: string, extras: IExtras = {}): void {
-		const id = extras?.tmid || rid;
-		const key = `${ activityType }-${ id }`;
+		const trid = extras?.tmid || rid;
+		const key = `${ activityType }-${ trid }`;
 
 		if (activityRenews.get(key)) {
 			return;
@@ -138,22 +110,26 @@ export const UserAction = new class {
 		activityRenews.set(key, setTimeout(() => {
 			clearTimeout(activityRenews.get(key));
 			activityRenews.delete(key);
-		}, renew));
+		}, RENEW));
 
-		startActivity(rid, activityType, extras);
+		const activities = roomActivities.get(trid) || new Set();
+		activities.add(activityType);
+		roomActivities.set(trid, activities);
+
+		emitActivities(rid, extras);
 
 		if (activityTimeouts.get(key)) {
 			clearTimeout(activityTimeouts.get(key));
 			activityTimeouts.delete(key);
 		}
 
-		activityTimeouts.set(key, setTimeout(() => this.stop(rid, activityType, extras), timeout));
+		activityTimeouts.set(key, setTimeout(() => this.stop(trid, activityType, extras), TIMEOUT));
 		activityTimeouts.get(key);
 	}
 
 	stop(rid: string, activityType: string, extras: IExtras): void {
-		const id = extras?.tmid || rid;
-		const key = `${ activityType }-${ id }`;
+		const trid = extras?.tmid || rid;
+		const key = `${ activityType }-${ trid }`;
 
 		if (activityTimeouts.get(key)) {
 			clearTimeout(activityTimeouts.get(key));
@@ -167,7 +143,11 @@ export const UserAction = new class {
 			clearInterval(continuingIntervals.get(key));
 			continuingIntervals.delete(key);
 		}
-		stopActivity(rid, activityType, extras);
+
+		const activities = roomActivities.get(trid) || new Set();
+		activities.delete(activityType);
+		roomActivities.set(trid, activities);
+		emitActivities(rid, extras);
 	}
 
 	cancel(rid: string): void {
@@ -175,22 +155,11 @@ export const UserAction = new class {
 			return;
 		}
 
-		Notifications.unRoom(rid, TYPING, rooms.get(rid));
 		Notifications.unRoom(rid, USER_ACTIVITY, rooms.get(rid));
 		rooms.delete(rid);
-
-		Object.values(performingUsers.all() || {}).forEach((roomActivities) => {
-			Object.values(roomActivities || {}).forEach((activity: IActivity) => {
-				Object.values(activity || {}).forEach((value) => {
-					clearTimeout(value);
-				});
-			});
-		});
-
-		performingUsers.clear();
 	}
 
-	get(roomId: string): IActionsObject {
-		return performingUsers.get(roomId) as IActionsObject;
+	get(roomId: string): IRoomActivity | undefined {
+		return performingUsers.get(roomId);
 	}
 }();

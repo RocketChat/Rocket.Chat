@@ -1009,13 +1009,6 @@ settings.addGroup('General', function() {
 			i18nDescription: 'Notifications_Max_Room_Members_Description',
 		});
 	});
-	this.section('User_Action_Indicators', function() {
-		this.add('Fire_Old_Typing_Event', true, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Fire_Old_Typing_Event_Description',
-		});
-	});
 	this.section('REST API', function() {
 		return this.add('API_User_Limit', 500, {
 			type: 'int',

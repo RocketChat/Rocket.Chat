@@ -3,7 +3,6 @@
 
 	width: 100%;
 	padding: 24px;
-	padding-top: 12px;
 
 	font-size: var(--message-box-text-size);
 
@@ -54,11 +53,15 @@
 	}
 
 	&__action {
-		display: flex;
+		position: absolute;
+		top: 4px;
+		left: 0;
+
+		margin-left: 24px;
 
 		color: var(--message-box-user-activity-color);
-		align-items: center;
-		flex-flow: row wrap;
+
+		font-size: var(--message-box-user-activity-text-size);
 
 		&-user {
 			color: var(--message-box-user-activity-user-color);
@@ -66,19 +69,15 @@
 			font-weight: bold;
 		}
 
-		&-indicator {
-			font-size: var(--message-box-user-activity-text-size);
+		&::after {
+			display: inline-block;
+			overflow: hidden;
 
-			&:last-child::after {
-				display: inline-block;
-				overflow: hidden;
+			width: 0;
 
-				width: 0;
-
-				content: "\2026"; /* ascii code for the ellipsis character */
-				animation: ellipsis steps(4, end) 1.5s infinite;
-				vertical-align: bottom;
-			}
+			content: "\2026"; /* ascii code for the ellipsis character */
+			animation: ellipsis steps(4, end) 1.5s infinite;
+			vertical-align: bottom;
 		}
 	}
 

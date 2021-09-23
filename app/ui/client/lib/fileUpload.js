@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
-import { UserAction, USER_UPLOADING } from '../index';
+import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/components/modals/FileUploadModal';
@@ -49,7 +49,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		},
 	});
 	if (Session.get('uploading').length) {
-		UserAction.performContinuosly(rid, USER_UPLOADING, { tmid });
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 	}
 
 	Tracker.autorun((computation) => {
@@ -72,7 +72,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
 
 		if (!Session.get('uploading').length) {
-			UserAction.stop(rid, USER_UPLOADING, { tmid });
+			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
 		return remainingUploads;
 	} catch (error) {
@@ -82,7 +82,7 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 			u.percentage = 0;
 		});
 		if (!uploads.length) {
-			UserAction.stop(rid, USER_UPLOADING, { tmid });
+			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 		}
 		Session.set('uploading', uploads);
 	}

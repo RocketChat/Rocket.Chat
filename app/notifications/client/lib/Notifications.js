@@ -69,7 +69,7 @@ class Notifications {
 	onRoom(room, eventName, callback) {
 		if (this.debug === true) {
 			this.streamRoom.on(room, function() {
-				console.log(`RocketChat.Notifications: onRoom ${ room }`, [room, eventName, callback]);
+				return console.log(`RocketChat.Notifications: onRoom ${ room }`, [room, eventName, callback]);
 			});
 		}
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
