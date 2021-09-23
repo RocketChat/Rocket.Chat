@@ -3,6 +3,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { UserStatus } from '../../../definition/UserStatus';
+import { isSettingColor } from '../../../definition/ISetting';
 
 const STATUS_MAP: {[k: string]: number} = {
 	[UserStatus.OFFLINE]: 0,
@@ -194,7 +195,7 @@ export class ListenersModule {
 			const value = {
 				_id: setting._id,
 				value: setting.value,
-				editor: setting.editor,
+				...isSettingColor(setting) && { editor: setting.editor },
 				properties: setting.properties,
 				enterprise: setting.enterprise,
 				requiredOnWizard: setting.requiredOnWizard,
