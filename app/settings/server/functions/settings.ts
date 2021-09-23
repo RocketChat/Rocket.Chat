@@ -156,6 +156,17 @@ class Settings extends SettingsBase {
 
 	private initialLoad = true;
 
+	constructor() {
+		super();
+
+		SettingsModel.find().forEach((record: ISetting) => {
+			this.storeSettingValue(record, true);
+			updateValue(record._id, { value: record.value });
+		});
+		this.initialLoad = false;
+		SettingsEvents.emit('after-initial-load', Meteor.settings);
+	}
+
 	/*
 	* Add a setting
 	*/
@@ -338,15 +349,6 @@ class Settings extends SettingsBase {
 		this.load(record._id, undefined, initialLoad);
 	}
 
-	init(): void {
-		SettingsModel.find().forEach((record: ISetting) => {
-			this.storeSettingValue(record, true);
-			updateValue(record._id, { value: record.value });
-		});
-		this.initialLoad = false;
-		SettingsEvents.emit('after-initial-load', Meteor.settings);
-	}
-
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {
 		if (this.initialLoad === false) {
 			return fn(Meteor.settings);
@@ -356,4 +358,3 @@ class Settings extends SettingsBase {
 }
 
 export const settings = new Settings();
-settings.init();
