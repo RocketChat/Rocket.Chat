@@ -542,62 +542,46 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		return new Promise(async (resolve, reject) => {
-			try {
-				const users = await UsersRaw.findLDAPUsers();
-				for await (const user of users) {
-					let ldapUser: ILDAPEntry | undefined;
+		const users = await UsersRaw.findLDAPUsers();
+		for await (const user of users) {
+			let ldapUser: ILDAPEntry | undefined;
 
-					if (user.services?.ldap?.id) {
-						ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-					} else if (user.username) {
-						ldapUser = await ldap.findOneByUsername(user.username);
-					}
-
-					if (ldapUser) {
-						const userData = this.mapUserData(ldapUser, user.username);
-						converter.addUser(userData);
-					}
-				}
-
-				resolve();
-			} catch (error) {
-				reject(error);
+			if (user.services?.ldap?.id) {
+				ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+			} else if (user.username) {
+				ldapUser = await ldap.findOneByUsername(user.username);
 			}
-		});
+
+			if (ldapUser) {
+				const userData = this.mapUserData(ldapUser, user.username);
+				converter.addUser(userData);
+			}
+		}
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
-		return new Promise(async (resolve, reject) => {
-			try {
-				const users = await UsersRaw.findLDAPUsers();
-				for await (const user of users) {
-					let ldapUser: ILDAPEntry | undefined;
+		const users = await UsersRaw.findLDAPUsers();
+		for await (const user of users) {
+			let ldapUser: ILDAPEntry | undefined;
 
-					if (user.services?.ldap?.id) {
-						ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-					} else if (user.username) {
-						ldapUser = await ldap.findOneByUsername(user.username);
-					}
-
-					if (!ldapUser) {
-						searchLogger.debug({
-							msg: 'existing LDAP user not found during Avatar Sync',
-							ldapId: user.services?.ldap?.id,
-							ldapAttribute: user.services?.ldap?.idAttribute,
-							username: user.username,
-						});
-						continue;
-					}
-
-					LDAPManager.syncUserAvatar(user, ldapUser);
-				}
-
-				resolve();
-			} catch (error) {
-				reject(error);
+			if (user.services?.ldap?.id) {
+				ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+			} else if (user.username) {
+				ldapUser = await ldap.findOneByUsername(user.username);
 			}
-		});
+
+			if (!ldapUser) {
+				searchLogger.debug({
+					msg: 'existing LDAP user not found during Avatar Sync',
+					ldapId: user.services?.ldap?.id,
+					ldapAttribute: user.services?.ldap?.idAttribute,
+					username: user.username,
+				});
+				continue;
+			}
+
+			LDAPManager.syncUserAvatar(user, ldapUser);
+		}
 	}
 
 	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
