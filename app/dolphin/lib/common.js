@@ -25,7 +25,7 @@ function DolphinOnCreateUser(options, user) {
 	if (user && user.services && user.services.dolphin && user.services.dolphin.NickName) {
 		user.username = user.services.dolphin.NickName;
 	}
-	return user;
+	return options;
 }
 
 if (Meteor.isServer) {
