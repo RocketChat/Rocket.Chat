@@ -67,7 +67,6 @@
 		}
 
 		&-indicator {
-
 			font-size: var(--message-box-user-activity-text-size);
 
 			&:last-child::after {
