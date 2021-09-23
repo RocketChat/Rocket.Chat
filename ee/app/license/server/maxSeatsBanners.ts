@@ -9,9 +9,6 @@ import { Banner } from '../../../../server/sdk';
 const WARNING_BANNER_ID = 'closeToSeatsLimit';
 const DANGER_BANNER_ID = 'reachedSeatsLimit';
 
-const url = Meteor.absoluteUrl('/requestSeats');
-
-
 const makeWarningBanner = (seats: number): IBanner => ({
 	_id: WARNING_BANNER_ID,
 	platform: [BannerPlatform.Web],
@@ -21,15 +18,20 @@ const makeWarningBanner = (seats: number): IBanner => ({
 		variant: 'warning',
 		viewId: '',
 		appId: 'banner-core',
-		blocks: [{
-			type: BlockType.SECTION,
-			blockId: 'attention',
-			text: {
-				type: TextObjectType.MARKDOWN,
-				text: TAPi18n.__('Close_to_seat_limit_banner_warning', { seats, url }),
-				emoji: false,
+		blocks: [
+			{
+				type: BlockType.SECTION,
+				blockId: 'attention',
+				text: {
+					type: TextObjectType.MARKDOWN,
+					text: TAPi18n.__('Close_to_seat_limit_banner_warning', {
+						seats,
+						url: Meteor.absoluteUrl('/requestSeats'),
+					}),
+					emoji: false,
+				},
 			},
-		}],
+		],
 	},
 	createdBy: {
 		_id: 'rocket.cat',
@@ -51,15 +53,19 @@ const makeDangerBanner = (): IBanner => ({
 		variant: 'danger',
 		viewId: '',
 		appId: 'banner-core',
-		blocks: [{
-			type: BlockType.SECTION,
-			blockId: 'attention',
-			text: {
-				type: TextObjectType.MARKDOWN,
-				text: TAPi18n.__('Reached_seat_limit_banner_warning', { url }),
-				emoji: false,
+		blocks: [
+			{
+				type: BlockType.SECTION,
+				blockId: 'attention',
+				text: {
+					type: TextObjectType.MARKDOWN,
+					text: TAPi18n.__('Reached_seat_limit_banner_warning', {
+						url: Meteor.absoluteUrl('/requestSeats'),
+					}),
+					emoji: false,
+				},
 			},
-		}],
+		],
 	},
 	createdBy: {
 		_id: 'rocket.cat',
@@ -73,7 +79,10 @@ const makeDangerBanner = (): IBanner => ({
 });
 
 export const createSeatsLimitBanners = async (): Promise<void> => {
-	const [warning, danger] = await Promise.all([Banner.getById(WARNING_BANNER_ID), Banner.getById(DANGER_BANNER_ID)]);
+	const [warning, danger] = await Promise.all([
+		Banner.getById(WARNING_BANNER_ID),
+		Banner.getById(DANGER_BANNER_ID),
+	]);
 	if (!warning) {
 		Banner.create(makeWarningBanner(0));
 	}
@@ -85,7 +94,6 @@ export const createSeatsLimitBanners = async (): Promise<void> => {
 export const enableDangerBanner = (): void => {
 	Banner.enable(DANGER_BANNER_ID, makeDangerBanner());
 };
-
 
 export const disableDangerBannerDiscardingDismissal = async (): Promise<void> => {
 	const banner = await Banner.getById(DANGER_BANNER_ID);
