@@ -86,7 +86,12 @@ function lock(): boolean {
 }
 
 export function addMigration(migration: IMigration): void {
-// TODO add validation
+	if (!migration?.version) {
+		throw new Error('Migration version is required');
+	}
+	if (!migration?.up) {
+		throw new Error('Migration up() is required');
+	}
 	migrations.add(migration);
 }
 
@@ -104,7 +109,7 @@ function getOrderedMigrations(): IMigration[] {
 }
 
 function showError(version: number, control: IControl, e: any): void {
-	console.error(showErrorBox('ERROR! SERVER STOPPED', [
+	showErrorBox('ERROR! SERVER STOPPED', [
 		'Your database migration failed:',
 		e.message,
 		'',
@@ -119,8 +124,7 @@ function showError(version: number, control: IControl, e: any): void {
 		`Date: ${ Info.commit.date }`,
 		`Branch: ${ Info.commit.branch }`,
 		`Tag: ${ Info.commit.tag }`,
-	].join('\n')));
-	console.log(e.stack);
+	].join('\n'));
 }
 
 // run the actual migration
@@ -150,6 +154,15 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		return true;
 	}
 
+	// version 0 means it is a fresh database, just set the control to latest known version and skip
+	if (currentVersion === 0) {
+		setControl({
+			locked: false,
+			version: orderedMigrations[orderedMigrations.length - 1].version,
+		});
+		return true;
+	}
+
 	const version = targetVersion === 'latest'
 		? orderedMigrations[orderedMigrations.length - 1].version
 		: targetVersion;
@@ -168,7 +181,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 			return migrateDatabase(targetVersion, subcommands);
 		}
 		const control = getControl(); // Side effect: upserts control document.
-		console.log(showErrorBox('ERROR! SERVER STOPPED', [
+		showErrorBox('ERROR! SERVER STOPPED', [
 			'Your database migration control is locked.',
 			'Please make sure you are running the latest version and try again.',
 			'If the problem persists, please contact support.',
@@ -181,7 +194,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 			`Date: ${ Info.commit.date }`,
 			`Branch: ${ Info.commit.branch }`,
 			`Tag: ${ Info.commit.tag }`,
-		].join('\n')));
+		].join('\n'));
 		process.exit(1);
 	}
 
@@ -197,6 +210,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 			migrate('up', migration);
 		} catch (e) {
 			showError(version, control, e);
+			log.error({ err: e });
 			process.exit(1);
 		}
 		log.info('Finished migrating.');
@@ -242,6 +256,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		}
 	} catch (e) {
 		showError(version, control, e);
+		log.error({ err: e });
 		process.exit(1);
 	}
 
