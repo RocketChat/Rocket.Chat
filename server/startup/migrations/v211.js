@@ -1,6 +1,6 @@
 import { Promise } from 'meteor/promise';
 
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Sessions } from '../../../app/models/server/raw';
 import { getMostImportantRole } from '../../../app/statistics/server/lib/getMostImportantRole';
 
@@ -46,7 +46,7 @@ async function migrateSessions() {
 	}
 }
 
-Migrations.add({
+addMigration({
 	version: 211,
 	up() {
 		Promise.await(migrateSessions());

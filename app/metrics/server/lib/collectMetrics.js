@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { Facts } from 'meteor/facts-base';
 
 import { Info, getOplogInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations/server';
+import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { Statistics } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -48,7 +48,7 @@ const setPrometheusData = async () => {
 	}
 
 	metrics.version.set({ version: statistics.version }, 1);
-	metrics.migration.set(Migrations._getControl().version);
+	metrics.migration.set(getControl().version);
 	metrics.instanceCount.set(statistics.instanceCount);
 	metrics.oplogEnabled.set({ enabled: statistics.oplogEnabled }, 1);
 
