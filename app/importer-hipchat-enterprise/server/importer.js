@@ -43,7 +43,7 @@ export class HipChatEnterpriseImporter extends Base {
 			this.logger.debug('parsing file contents');
 			return JSON.parse(dataString);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			return false;
 		}
 	}

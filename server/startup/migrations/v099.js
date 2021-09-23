@@ -6,10 +6,10 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 
 import { RocketChatFile } from '../../../app/file';
-import { SystemLogger } from '../../../app/logger';
 import { FileUpload } from '../../../app/file-upload';
 import { Migrations } from '../../../app/migrations';
 import { Uploads, Settings, Users } from '../../../app/models';
+import { showErrorBox } from '../../lib/logger/showBox';
 
 function log(...args) {
 	console.log('[AVATAR]', ...args);
@@ -139,7 +139,10 @@ Migrations.add({
 			} else if (Match.test(avatarsPath, String) && avatarsPath.length > 0) {
 				avatarStoreType = 'FileSystem';
 			} else {
-				SystemLogger.error_box('Can\'t define the avatar\'s storage type.\nIf you have avatars missing and they was stored in your file system\nrun the process including the following environment variables: \n  AVATARS_PATH=\'YOUR AVATAR\'S DIRECTORY\'\n  MIGRATION_VERSION=99,rerun', 'WARNING');
+				showErrorBox(
+					'WARNING',
+					'Can\'t define the avatar\'s storage type.\nIf you have avatars missing and they was stored in your file system\nrun the process including the following environment variables: \n  AVATARS_PATH=\'YOUR AVATAR\'S DIRECTORY\'\n  MIGRATION_VERSION=99,rerun',
+				);
 				return;
 			}
 		}

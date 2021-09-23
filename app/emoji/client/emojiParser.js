@@ -1,4 +1,4 @@
-import { isIE11 } from '../../ui-utils/client/lib/isIE11';
+import { isIE11 } from '../../../client/lib/utils/isIE11';
 import { emoji } from '../lib/rocketchat';
 
 /*
@@ -29,7 +29,7 @@ const emojiParser = (message) => {
 
 	let hasText = false;
 
-	if (!isIE11()) {
+	if (!isIE11) {
 		const filter = (node) => {
 			if (node.nodeType === Node.ELEMENT_NODE && (
 				node.classList.contains('emojione')

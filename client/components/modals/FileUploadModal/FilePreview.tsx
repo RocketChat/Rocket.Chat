@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { isIE11 } from '../../../../app/ui-utils/client/lib/isIE11';
+import { isIE11 } from '../../../lib/utils/isIE11';
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
 
@@ -25,7 +25,7 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 	if (!fileType) {
 		return false;
 	}
-	if (isIE11()) {
+	if (isIE11) {
 		return false;
 	}
 	// Avoid preview if file size bigger than 10mb

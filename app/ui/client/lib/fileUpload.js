@@ -4,9 +4,9 @@ import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils';
-import { prependReplies } from '../../../ui-utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import FileUploadModal from '../../../../client/components/modals/FileUploadModal';
+import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
 	const data = new FormData();
@@ -104,6 +104,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			component: FileUploadModal,
 			props: {
 				file: file.file,
+				fileName: file.name,
 				onClose: () => {
 					imperativeModal.close();
 					uploadNextFile();
