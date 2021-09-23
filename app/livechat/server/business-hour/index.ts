@@ -14,5 +14,5 @@ Meteor.startup(() => {
 	businessHourManager.registerBusinessHourBehavior(new BusinessHourBehaviorClass());
 	businessHourManager.registerBusinessHourType(new DefaultBusinessHour());
 
-	Accounts.onLogin(async ({ user }: { user: any }) => user?.roles?.includes('livechat-agent') && businessHourManager.onLogin(user._id));
+	Accounts.onLogin(async ({ user }: { user: any }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && businessHourManager.onLogin(user._id));
 });
