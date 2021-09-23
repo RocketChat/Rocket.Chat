@@ -214,7 +214,6 @@ class Settings extends SettingsBase {
 		const options = grupOptions instanceof Function ? getGroupDefaults(_id) : getGroupDefaults(_id, grupOptions);
 
 		const existentGroup = Meteor.settings[_id];
-
 		if (existentGroup === undefined) {
 			options.ts = new Date();
 			SettingsModel.upsert({
@@ -317,7 +316,7 @@ class Settings extends SettingsBase {
 		SettingsEvents.emit('store-setting-value', [record, newData]);
 		const { value } = newData;
 
-		Meteor.settings[record._id] = value;
+		Meteor.settings[record._id] = record.type === 'group' ? true : value;
 		if (record.env === true) {
 			process.env[record._id] = String(value);
 		}
