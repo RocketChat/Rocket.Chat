@@ -266,6 +266,7 @@ class Settings extends SettingsBase {
 			} catch (e) {
 				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
 			}
+			return;
 		}
 
 
