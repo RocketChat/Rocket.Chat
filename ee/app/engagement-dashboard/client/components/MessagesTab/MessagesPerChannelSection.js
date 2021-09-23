@@ -66,7 +66,10 @@ const MessagesPerChannelSection = () => {
 	}, [pieData, tableData]);
 
 	const downloadData = () => {
-		const data = pieData.origins.map(({ t, messages }) => [t, messages]);
+		const data = [
+			['Room Type', 'Messages'],
+			...pieData.origins.map(({ t, messages }) => [t, messages]),
+		];
 		downloadCsvAs(data, `MessagesPerChannelSection_start_${ params.start }_end_${ params.end }`);
 	};
 
