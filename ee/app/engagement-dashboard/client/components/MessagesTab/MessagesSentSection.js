@@ -83,7 +83,10 @@ const MessagesSentSection = () => {
 	}, [data, period]);
 
 	const downloadData = () => {
-		const data = values.map(({ date, newMessages }) => [date, newMessages]);
+		const data = [
+			['Date', 'Messages'],
+			...values.map(({ date, newMessages }) => [date, newMessages]),
+		];
 		downloadCsvAs(data, `MessagesSentSection_start_${ params.start }_end_${ params.end }`);
 	};
 
