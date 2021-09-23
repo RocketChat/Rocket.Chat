@@ -78,14 +78,14 @@ export class LDAPManager {
 		}
 
 		const hash = SHA256(avatar.toString());
-		if (user.avatarHash === hash) {
+		if (user.avatarETag === hash) {
 			return;
 		}
 
 		logger.debug({ msg: 'Syncing user avatar', username: user.username });
 		// #ToDo: Remove Meteor references here
 		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
-		Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest'));
+		Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash));
 	}
 
 	// This method will only find existing users that are already linked to LDAP

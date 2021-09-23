@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { SHA256 } from 'meteor/sha';
 
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
@@ -8,7 +7,7 @@ import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 
-export const setUserAvatar = function(user, dataURI, contentType, service) {
+export const setUserAvatar = function(user, dataURI, contentType, service, etag = null) {
 	let encoding;
 	let image;
 
@@ -54,7 +53,6 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 	}
 
 	const buffer = Buffer.from(image, encoding);
-	const hash = SHA256(buffer.toString());
 
 	const fileStore = FileUpload.getStore('Avatars');
 	fileStore.deleteByName(user.username);
@@ -67,8 +65,8 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 
 	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function() {
-			Users.setAvatarData(user._id, service, result.etag, hash);
-			api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
+			Users.setAvatarData(user._id, service, etag || result.etag);
+			api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: etag || result.etag });
 		}, 500);
 	});
 };
