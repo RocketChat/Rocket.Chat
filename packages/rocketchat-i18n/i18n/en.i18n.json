@@ -2842,6 +2842,8 @@
   "Message_BadWordsWhitelist": "Remove words from the Blacklist",
   "Message_BadWordsWhitelistDescription": "Add a comma-separated list of words to be removed from filter",
   "Message_Characther_Limit": "Message Character Limit",
+  "Message_Code_highlight": "Code highlighting languages list",
+  "Message_Code_highlight_Description": "Comma separated list of languages (all supported languages at https://github.com/highlightjs/highlight.js/tree/9.18.5#supported-languages) that will be used to highlight code blocks",
   "message_counter": "__counter__ message",
   "message_counter_plural": "__counter__ messages",
   "Message_DateFormat": "Date Format",
