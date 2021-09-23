@@ -686,12 +686,12 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	removeResumeService(userId) {
+	unsetLoginTokens(userId) {
 		return this.col.updateOne({
 			_id: userId,
 		}, {
-			$unset: {
-				'services.resume': 1,
+			$set: {
+				'services.resume.loginTokens': [],
 			},
 		});
 	}

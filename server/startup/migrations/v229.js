@@ -1,7 +1,7 @@
 import { Settings } from '../../../app/models/server';
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 
-Migrations.add({
+addMigration({
 	version: 229,
 	up() {
 		const oldNamesValidationSetting = Settings.findOneById(

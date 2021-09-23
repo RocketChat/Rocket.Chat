@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Messages } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 210,
 	up() {
 		Messages.tryDropIndex({ slackBotId: 1, slackTs: 1 });
