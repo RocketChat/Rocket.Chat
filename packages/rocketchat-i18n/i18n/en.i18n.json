@@ -2510,6 +2510,8 @@
   "LDAP_Search_Size_Limit_Description": "The maximum number of entries to return.<br/>**Attention** This number should greater than **Search Page Size**",
   "LDAP_Sync_Custom_Fields": "Sync Custom Fields",
   "LDAP_CustomFieldMap": "Custom Fields Mapping",
+  "LDAP_Sync_AutoLogout_Enabled": "Enable Auto Logout",
+  "LDAP_Sync_AutoLogout_Interval": "Auto Logout Interval",
   "LDAP_Sync_Now": "Sync Now",
   "LDAP_Sync_Now_Description": "This will start a **Background Sync** operation now, without waiting for the next scheduled Sync.\nThis action is asynchronous, please see the logs for more information.",
   "LDAP_Sync_User_Active_State": "Sync User Active State",

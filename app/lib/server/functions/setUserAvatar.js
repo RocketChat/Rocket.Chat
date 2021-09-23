@@ -12,7 +12,7 @@ export const setUserAvatar = function(user, dataURI, contentType, service, etag 
 	let image;
 
 	if (service === 'initials') {
-		return Users.setAvatarData(user._id, service, null, null);
+		return Users.setAvatarData(user._id, service, null);
 	} if (service === 'url') {
 		let result = null;
 
@@ -53,7 +53,6 @@ export const setUserAvatar = function(user, dataURI, contentType, service, etag 
 	}
 
 	const buffer = Buffer.from(image, encoding);
-
 	const fileStore = FileUpload.getStore('Avatars');
 	fileStore.deleteByName(user.username);
 
