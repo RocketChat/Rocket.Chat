@@ -1318,6 +1318,7 @@
   "Custom_User_Status_Has_Been_Deleted": "Custom User Status Has Been Deleted",
   "Custom_User_Status_Info": "Custom User Status Info",
   "Custom_User_Status_Updated_Successfully": "Custom User Status Updated Successfully",
+  "Customer_without_registered_email": "The customer does not have a registered email address",
   "Customize": "Customize",
   "CustomSoundsFilesystem": "Custom Sounds Filesystem",
   "Daily_Active_Users": "Daily Active Users",
