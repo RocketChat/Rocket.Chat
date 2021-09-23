@@ -3,6 +3,7 @@ import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
+import { onFreshInstall } from '../../../server/lib/migrations';
 import { Logger } from '../../logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
 import { settings } from '../../settings';
@@ -25,7 +26,6 @@ export class AppServerOrchestrator {
 
 	initialize() {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-		Permissions.create('manage-apps', ['admin']);
 
 		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
 			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;

@@ -140,7 +140,17 @@ export const upsertPermissions = () => {
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'remove-livechat-department',  roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-apps', roles: ['admin'] },
+		{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
+		{ _id: 'set-readonly', roles: ['admin', 'owner'] },
+		{ _id: 'set-react-when-readonly', roles: ['admin', 'owner'] },
+		{ _id: 'manage-cloud', roles: ['admin'] },
+		{ _id: 'manage-sounds', roles: ['admin'] },
+		{ _id: 'access-mailer', roles: ['admin'] },
+		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
+		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 	];
+
 
 	for (const permission of permissions) {
 		Permissions.create(permission._id, permission.roles);

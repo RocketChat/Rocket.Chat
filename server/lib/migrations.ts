@@ -270,3 +270,6 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 
 	return true;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const onFreshInstall = getControl().version !== 0 ? (): void => {} : (fn: () => unknown) => fn();
