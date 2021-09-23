@@ -1,25 +1,10 @@
 import { Mongo } from 'meteor/mongo';
 
 import { Migrations } from '../../../app/migrations/server';
-import { Settings } from '../../../app/models/server/raw';
-import { settings } from '../../../app/settings/server';
 
 Migrations.add({
 	version: 238,
 	up() {
-		const query = {
-			_id: { $in: [/^Accounts_OAuth_Custom-?([^-_]+)$/] },
-			value: true,
-		};
-
-		const isCustomOAuthEnabled = !!Promise.await(Settings.findOne(query));
-		const LDAPEnabled = settings.get('LDAP_Enable');
-		const SAMLEnabled = settings.get('SAML_Custom_Default');
-
-		if (isCustomOAuthEnabled || LDAPEnabled || SAMLEnabled) {
-			return;
-		}
-
 		const msg = 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SAML, and Custom Oauth will be available only in Enterprise Edition and Gold plan. Check the official announcement for more info: https://go.rocket.chat/i/authentication-changes';
 		const newMsg = 'Please note that after release 4.0 certain advanced authentication services features are available only in Enterprise Edition and Gold plan. Check the official announcement for more details: https://go.rocket.chat/i/authentication-changes';
 		const Banners = new Mongo.Collection('rocketchat_banner');
