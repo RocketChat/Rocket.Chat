@@ -214,7 +214,7 @@ class Settings extends SettingsBase {
 	constructor() {
 		super();
 
-		SettingsModel.find().forEach((record: ISetting) => {
+		SettingsModel.find().fetch().forEach((record: ISetting) => {
 			this.storeSettingValue(record, true);
 			updateValue(record._id, { value: record.value });
 		});
