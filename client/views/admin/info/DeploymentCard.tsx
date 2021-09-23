@@ -1,26 +1,33 @@
-import { Skeleton, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo } from 'react';
+import React, { memo, ReactElement } from 'react';
 
+import { IInstance } from '../../../../definition/IInstance';
+import { IServerInfo } from '../../../../definition/IServerInfo';
+import { IStats } from '../../../../definition/IStats';
 import Card from '../../../components/Card';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import InstancesModal from './InstancesModal';
 
-const DeploymentCard = memo(function DeploymentCard({ info, statistics, instances, isLoading }) {
+type DeploymentCardProps = {
+	info: IServerInfo;
+	instances: Array<IInstance>;
+	statistics: IStats;
+};
+
+const DeploymentCard = ({ info, statistics, instances }: DeploymentCardProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
 	const { commit = {} } = info;
 
-	const s = (fn) => (isLoading ? <Skeleton width='50%' /> : fn());
-
 	const appsEngineVersion = info && info.marketplaceApiVersion;
 
 	const handleInstancesModal = useMutableCallback(() => {
-		setModal(<InstancesModal instances={instances} onClose={() => setModal()} />);
+		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
 	});
 
 	return (
@@ -30,11 +37,11 @@ const DeploymentCard = memo(function DeploymentCard({ info, statistics, instance
 				<Card.Col>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Version')}</Card.Col.Title>
-						{s(() => statistics.version)}
+						{statistics.version}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Deployment_ID')}</Card.Col.Title>
-						{s(() => statistics.uniqueId)}
+						{statistics.uniqueId}
 					</Card.Col.Section>
 					{appsEngineVersion && (
 						<Card.Col.Section>
@@ -44,34 +51,28 @@ const DeploymentCard = memo(function DeploymentCard({ info, statistics, instance
 					)}
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Node_version')}</Card.Col.Title>
-						{s(() => statistics.process.nodeVersion)}
+						{statistics.process.nodeVersion}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('DB_Migration')}</Card.Col.Title>
-						{s(
-							() =>
-								`${statistics.migration.version} (${formatDateAndTime(
-									statistics.migration.lockedAt,
-								)})`,
-						)}
+						{`${statistics.migration.version} (${formatDateAndTime(
+							statistics.migration.lockedAt,
+						)})`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('MongoDB')}</Card.Col.Title>
-						{s(
-							() =>
-								`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} (oplog ${
-									statistics.oplogEnabled ? t('Enabled') : t('Disabled')
-								})`,
-						)}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} (oplog ${
+							statistics.oplogEnabled ? t('Enabled') : t('Disabled')
+						})`}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('Commit_details')}</Card.Col.Title>
-						{t('HEAD')}: ({s(() => (commit.hash ? commit.hash.slice(0, 9) : ''))}) <br />
-						{t('Branch')}: {s(() => commit.branch)}
+						{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
+						{t('Branch')}: {commit.branch}
 					</Card.Col.Section>
 					<Card.Col.Section>
 						<Card.Col.Title>{t('PID')}</Card.Col.Title>
-						{s(() => statistics.process.pid)}
+						{statistics.process.pid}
 					</Card.Col.Section>
 				</Card.Col>
 			</Card.Body>
@@ -87,6 +88,6 @@ const DeploymentCard = memo(function DeploymentCard({ info, statistics, instance
 			)}
 		</Card>
 	);
-});
+};
 
-export default DeploymentCard;
+export default memo(DeploymentCard);

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
+import { IServerInfo } from '../../../definition/IServerInfo';
 import type { Serialized } from '../../../definition/Serialized';
 import type { PathFor, Params, Return, Method } from './endpoints';
 import {
@@ -11,7 +12,7 @@ import {
 } from './methods';
 
 type ServerContextValue = {
-	info: {};
+	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
 		methodName: MethodName,
@@ -30,7 +31,7 @@ type ServerContextValue = {
 };
 
 export const ServerContext = createContext<ServerContextValue>({
-	info: {},
+	info: undefined,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {
 		throw new Error('not implemented');
@@ -39,7 +40,13 @@ export const ServerContext = createContext<ServerContextValue>({
 	getStream: () => () => (): void => undefined,
 });
 
-export const useServerInformation = (): {} => useContext(ServerContext).info;
+export const useServerInformation = (): IServerInfo => {
+	const { info } = useContext(ServerContext);
+	if (!info) {
+		throw new Error('useServerInformation: no info available');
+	}
+	return info;
+};
 
 export const useAbsoluteUrl = (): ((path: string) => string) =>
 	useContext(ServerContext).absoluteUrl;
