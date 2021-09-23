@@ -24,4 +24,8 @@ export interface ILDAPConnectionOptions {
 	groupFilterGroupMemberAttribute?: string;
 	groupFilterGroupMemberFormat?: string;
 	groupFilterGroupName?: string;
+	authentication: boolean;
+	authenticationUserDN: string;
+	authenticationPassword: string;
+	attributesToQuery: Array<string>;
 }
