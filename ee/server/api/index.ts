@@ -1,1 +1,2 @@
+import './ldap';
 import './licenses';

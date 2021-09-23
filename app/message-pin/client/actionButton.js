@@ -6,11 +6,11 @@ import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { Rooms } from '../../models/client';
 import { roomTypes } from '../../utils/client';
+import { handleError } from '../../../client/lib/utils/handleError';
 
 Meteor.startup(function() {
 	MessageAction.addButton({

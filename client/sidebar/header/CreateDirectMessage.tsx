@@ -6,7 +6,7 @@ import { IUser } from '../../../definition/IUser';
 import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
-import { goToRoomById } from '../../lib/goToRoomById';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
 
 type Username = IUser['username'];
 
