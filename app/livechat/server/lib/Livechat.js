@@ -81,7 +81,9 @@ export const Livechat = {
 			}
 		}
 
-		return Livechat.checkOnlineAgents(department);
+		const agentsOnline = Livechat.checkOnlineAgents(department);
+		Livechat.logger.debug(`Are online agents ${ department ? `for department ${ department }` : '' }?: ${ agentsOnline }`);
+		return agentsOnline;
 	},
 
 	getNextAgent(department) {

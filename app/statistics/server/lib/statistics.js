@@ -25,7 +25,7 @@ import { readSecondaryPreferred } from '../../../../server/database/readSecondar
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
-import { Team } from '../../../../server/sdk';
+import { Team, Analytics } from '../../../../server/sdk';
 
 const wizardFields = [
 	'Organization_Type',
@@ -211,6 +211,7 @@ export const statistics = {
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		statistics.enterprise = getEnterpriseStatistics();
+		Promise.await(Analytics.resetSeatRequestCount());
 
 		return statistics;
 	},
