@@ -1,7 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ComponentProps, ReactElement, ReactNode } from 'react';
 
-const CardIcon: FC<{ name: string }> = ({ name, children, ...props }) => (
+type CardIconProps = { children: ReactNode } | ComponentProps<typeof Icon>;
+
+const hasChildrenProp = (props: CardIconProps): props is { children: ReactNode } =>
+	'children' in props;
+
+const CardIcon = (props: CardIconProps): ReactElement => (
 	<Box
 		minWidth='x16'
 		display='inline-flex'
@@ -9,7 +14,7 @@ const CardIcon: FC<{ name: string }> = ({ name, children, ...props }) => (
 		alignItems='flex-end'
 		justifyContent='center'
 	>
-		{children || <Icon size='x16' name={name} {...props} />}
+		{hasChildrenProp(props) ? props.children : <Icon size='x16' {...props} />}
 	</Box>
 );
 
