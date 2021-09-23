@@ -24,7 +24,7 @@
 		"colorette": "^1.3.0",
 		"cookie": "^0.4.1",
 		"cookie-parser": "^1.4.5",
-		"ejson": "^2.2.1",
+		"ejson": "^2.2.2",
 		"eventemitter3": "^4.0.7",
 		"express": "^4.17.1",
 		"jaeger-client": "^3.18.1",
