@@ -64,6 +64,9 @@ export class AppServerOrchestrator {
 		return this._model;
 	}
 
+	/**
+	 * @returns {AppsPersistenceModel}
+	 */
 	getPersistenceModel() {
 		return this._persistModel;
 	}
@@ -112,6 +115,9 @@ export class AppServerOrchestrator {
 		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
+	/**
+	 * @returns {Logger}
+	 */
 	getRocketChatLogger() {
 		return this._rocketchatLogger;
 	}

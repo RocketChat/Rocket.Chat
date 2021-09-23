@@ -153,7 +153,7 @@ const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 
 type ISettingAddOptions = Partial<ISetting>;
 
 class Settings extends SettingsBase {
-	static validate<T extends ISetting>(setting: T, value: T['value']): boolean {
+	static validate<T extends ISetting>(setting: T, value: T['value'] | unknown): boolean {
 		switch (setting.type) {
 			case 'asset':
 				if (typeof value !== 'object') {
@@ -211,6 +211,17 @@ class Settings extends SettingsBase {
 
 	private initialLoad = true;
 
+	constructor() {
+		super();
+
+		SettingsModel.find().forEach((record: ISetting) => {
+			this.storeSettingValue(record, true);
+			updateValue(record._id, { value: record.value });
+		});
+		this.initialLoad = false;
+		SettingsEvents.emit('after-initial-load', Meteor.settings);
+	}
+
 	/*
 	* Add a setting
 	*/
@@ -248,13 +259,13 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-		if (settingStoredValue !== undefined) {
+
+		if (Meteor.settings.hasOwnProperty(_id)) {
 			try {
 				Settings.validate(settingFromCode, settingStoredValue);
 			} catch (e) {
 				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
 			}
-			return;
 		}
 
 
@@ -406,15 +417,6 @@ class Settings extends SettingsBase {
 		this.load(record._id, undefined, initialLoad);
 	}
 
-	init(): void {
-		SettingsModel.find().forEach((record: ISetting) => {
-			this.storeSettingValue(record, true);
-			updateValue(record._id, { value: record.value });
-		});
-		this.initialLoad = false;
-		SettingsEvents.emit('after-initial-load', Meteor.settings);
-	}
-
 	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {
 		if (this.initialLoad === false) {
 			return fn(Meteor.settings);
@@ -424,4 +426,3 @@ class Settings extends SettingsBase {
 }
 
 export const settings = new Settings();
-settings.init();
