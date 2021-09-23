@@ -34,7 +34,7 @@ function queueWrite(...args: any): boolean {
 
 	const [str] = args;
 	if (typeof str !== 'string') {
-		return false;
+		return true;
 	}
 
 	const date = new Date();

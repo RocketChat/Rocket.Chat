@@ -9,6 +9,7 @@ import { IBannerService } from '../../sdk/types/IBannerService';
 import { BannerPlatform, IBanner, IBannerDismiss } from '../../../definition/IBanner';
 import { api } from '../../sdk/api';
 import { IUser } from '../../../definition/IUser';
+import { Optional } from '../../../definition/utils';
 
 export class BannerService extends ServiceClass implements IBannerService {
 	protected name = 'banner';
@@ -27,26 +28,32 @@ export class BannerService extends ServiceClass implements IBannerService {
 		this.Users = new UsersRaw(db.collection('users'));
 	}
 
-	async create(doc: Omit<IBanner, '_id'>): Promise<IBanner> {
-		const bannerId = uuidv4();
+	async getById(bannerId: string): Promise<null | IBanner> {
+		return this.Banners.findOneById(bannerId);
+	}
+
+	async discardDismissal(bannerId: string): Promise<boolean> {
+		const result = await this.Banners.findOneById(bannerId);
+
+		if (!result) {
+			return false;
+		}
+
+		const { _id, ...banner } = result;
+
+		const snapshot = await this.create({ ...banner, snapshot: _id, active: false }); // create a snapshot
+
+		await this.BannersDismiss.updateMany({ bannerId }, { $set: { bannerId: snapshot._id } });
+		return true;
+	}
+
+	async create(doc: Optional<IBanner, '_id'>): Promise<IBanner> {
+		const bannerId = doc._id || uuidv4();
 
 		doc.view.appId = 'banner-core';
 		doc.view.viewId = bannerId;
 
-		const invalidPlatform = doc.platform?.some((platform) => !Object.values(BannerPlatform).includes(platform));
-		if (invalidPlatform) {
-			throw new Error('Invalid platform');
-		}
-
-		if (doc.startAt > doc.expireAt) {
-			throw new Error('Start date cannot be later than expire date');
-		}
-
-		if (doc.expireAt < new Date()) {
-			throw new Error('Cannot create banner already expired');
-		}
-
-		await this.Banners.insertOne({
+		await this.Banners.create({
 			...doc,
 			_id: bannerId,
 		});
@@ -61,7 +68,7 @@ export class BannerService extends ServiceClass implements IBannerService {
 		return banner;
 	}
 
-	async getNewBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
+	async getBannersForUser(userId: string, platform: BannerPlatform, bannerId?: string): Promise<IBanner[]> {
 		const user = await this.Users.findOneById<Pick<IUser, 'roles'>>(userId, { projection: { roles: 1 } });
 
 		const { roles } = user || { roles: [] };
@@ -109,6 +116,31 @@ export class BannerService extends ServiceClass implements IBannerService {
 
 		await this.BannersDismiss.insertOne(doc);
 
+		return true;
+	}
+
+	async disable(bannerId: string): Promise<boolean> {
+		const result = await this.Banners.disable(bannerId);
+
+		if (result) {
+			api.broadcast('banner.disabled', bannerId);
+			return true;
+		}
+		return false;
+	}
+
+	async enable(bannerId: string, doc: Partial<Omit<IBanner, '_id'>> = {}): Promise<boolean> {
+		const result = await this.Banners.findOneById(bannerId);
+
+		if (!result) {
+			return false;
+		}
+
+		const { _id, ...banner } = result;
+
+		this.Banners.update({ _id }, { ...banner, ...doc, active: true }); // reenable the banner
+
+		api.broadcast('banner.enabled', bannerId);
 		return true;
 	}
 }

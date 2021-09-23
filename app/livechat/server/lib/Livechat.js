@@ -81,7 +81,9 @@ export const Livechat = {
 			}
 		}
 
-		return Livechat.checkOnlineAgents(department);
+		const agentsOnline = Livechat.checkOnlineAgents(department);
+		Livechat.logger.debug(`Are online agents ${ department ? `for department ${ department }` : '' }?: ${ agentsOnline }`);
+		return agentsOnline;
 	},
 
 	getNextAgent(department) {
@@ -810,7 +812,7 @@ export const Livechat = {
 
 		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
-			this.setUserStatusLivechat(user._id, 'available');
+			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
 		}
 
