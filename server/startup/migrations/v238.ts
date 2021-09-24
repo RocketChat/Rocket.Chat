@@ -22,7 +22,7 @@ function repackageAppZip(app: any): Buffer {
 
 	const zipToRead = new AdmZip(Buffer.from(app.zip, 'base64'));
 
-	zipToRead.forEach((entry: any) => {
+	zipToRead.getEntries().forEach((entry: any) => {
 		if (!sourceFiles.includes(entry.entryName)) {
 			zip.addFile(entry.entryName, entry.getData());
 		}
