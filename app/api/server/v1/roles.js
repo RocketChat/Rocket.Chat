@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Roles, Users } from '../../../models';
 import { API } from '../api';
 import { getUsersInRole, hasPermission, hasRole } from '../../../authorization/server';
-import { settings } from '../../../settings/server/index';
+import { SettingsVersion4 } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
@@ -62,7 +62,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 
 		const roleId = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (SettingsVersion4.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'changed',
 				_id: roleId,
@@ -169,7 +169,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 
 		Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (SettingsVersion4.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'changed',
 				_id: roleData.roleId,
@@ -257,7 +257,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 
 		Roles.removeUserRoles(user._id, role.name, data.scope);
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (SettingsVersion4.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: role._id,

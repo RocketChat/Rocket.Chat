@@ -5,7 +5,7 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Settings } from '../../models';
-import { settings } from '../../settings/server';
+import { SettingsVersion4, settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 import './scripts';
 
@@ -17,7 +17,7 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	settings.get('Default_Referrer_Policy', (key, value) => {
+	SettingsVersion4.watch('Default_Referrer_Policy', (value) => {
 		if (!value) {
 			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
 		}
@@ -35,63 +35,63 @@ Meteor.startup(() => {
 			`);
 	}
 
-	settings.get('Assets_SvgFavicon_Enable', (key, value) => {
+	SettingsVersion4.watch('Assets_SvgFavicon_Enable', (value) => {
 		const standardFavicons = `
 			<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
 			<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
 
 		if (value) {
-			injectIntoHead(key,
+			injectIntoHead('Assets_SvgFavicon_Enable',
 				`${ standardFavicons }
 				<link rel="icon" sizes="any" type="image/svg+xml" href="assets/favicon.svg" />`);
 		} else {
-			injectIntoHead(key, standardFavicons);
+			injectIntoHead('Assets_SvgFavicon_Enable', standardFavicons);
 		}
 	});
 
-	settings.get('theme-color-sidebar-background', (key, value) => {
+	SettingsVersion4.watch('theme-color-sidebar-background', (value) => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key, `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
+		injectIntoHead('theme-color-sidebar-background', `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
 							+ `<meta name="theme-color" content="${ escapedValue }" />`);
 	});
 
-	settings.get('Site_Name', (key, value = 'Rocket.Chat') => {
+	SettingsVersion4.watch('Site_Name', (value = 'Rocket.Chat') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key,
+		injectIntoHead('Site_Name',
 			`<title>${ escapedValue }</title>`
 			+ `<meta name="application-name" content="${ escapedValue }">`
 			+ `<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_language', (key, value = '') => {
+	SettingsVersion4.watch('Meta_language', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key,
+		injectIntoHead('Meta_language',
 			`<meta http-equiv="content-language" content="${ escapedValue }">`
 			+ `<meta name="language" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_robots', (key, value = '') => {
+	SettingsVersion4.watch('Meta_robots', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key, `<meta name="robots" content="${ escapedValue }">`);
+		injectIntoHead('Meta_robots', `<meta name="robots" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_msvalidate01', (key, value = '') => {
+	SettingsVersion4.watch('Meta_msvalidate01', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key, `<meta name="msvalidate.01" content="${ escapedValue }">`);
+		injectIntoHead('Meta_msvalidate01', `<meta name="msvalidate.01" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_google-site-verification', (key, value = '') => {
+	SettingsVersion4.watch('Meta_google-site-verification', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key, `<meta name="google-site-verification" content="${ escapedValue }">`);
+		injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_fb_app_id', (key, value = '') => {
+	SettingsVersion4.watch('Meta_fb_app_id', (value = '') => {
 		const escapedValue = escapeHTML(value);
-		injectIntoHead(key, `<meta property="fb:app_id" content="${ escapedValue }">`);
+		injectIntoHead('Meta_fb_app_id', `<meta property="fb:app_id" content="${ escapedValue }">`);
 	});
 
-	settings.get('Meta_custom', (key, value = '') => {
-		injectIntoHead(key, value);
+	SettingsVersion4.watch('Meta_custom', (value = '') => {
+		injectIntoHead('Meta_custom', value);
 	});
 
 	const baseUrl = ((prefix) => {

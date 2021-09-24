@@ -6,7 +6,7 @@ import { DDP } from 'meteor/ddp';
 
 import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
+import { SettingsVersion4 } from '../../app/settings';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
@@ -88,7 +88,7 @@ function startMatrixBroadcast() {
 			connLogger.info({ msg: 'connecting in', instance });
 
 			connections[instance] = DDP.connect(instance, {
-				_dontPrintErrors: settings.get('Log_Level') !== '2',
+				_dontPrintErrors: SettingsVersion4.get('Log_Level') !== '2',
 			});
 
 			// remove not relevant info from instance record
@@ -157,7 +157,7 @@ function startStreamCastBroadcast(value) {
 	}
 
 	const connection = DDP.connect(value, {
-		_dontPrintErrors: settings.get('Log_Level') !== '2',
+		_dontPrintErrors: SettingsVersion4.get('Log_Level') !== '2',
 	});
 
 	connections[instance] = connection;
@@ -201,7 +201,7 @@ export function startStreamBroadcast() {
 
 	logger.info('startStreamBroadcast');
 
-	settings.get('Stream_Cast_Address', function(key, value) {
+	SettingsVersion4.watch('Stream_Cast_Address', function(value) {
 		// var connection, fn, instance;
 		const fn = function(instance, connection) {
 			connection.disconnect();
@@ -272,7 +272,7 @@ export function startStreamBroadcast() {
 	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
-	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+	SettingsVersion4.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
 		if (TroubleshootDisableInstanceBroadcast === value) { return; }
 		TroubleshootDisableInstanceBroadcast = value;
 

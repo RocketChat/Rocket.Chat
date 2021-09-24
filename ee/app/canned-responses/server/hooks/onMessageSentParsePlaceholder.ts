@@ -1,6 +1,6 @@
 import get from 'lodash.get';
 
-import { settings } from '../../../../../app/settings/server';
+import { SettingsVersion4 } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../app/callbacks/server';
 import { Users, LivechatVisitors, Rooms } from '../../../../../app/models/server';
 import { IMessage } from '../../../../../definition/IMessage';
@@ -59,7 +59,7 @@ const handleBeforeSaveMessage = (message: IMessage, room: IOmnichannelRoom): any
 	return message;
 };
 
-settings.get('Canned_Responses_Enable', function(_, value) {
+SettingsVersion4.watch('Canned_Responses_Enable', function(value) {
 	if (!value) {
 		callbacks.remove('beforeSaveMessage', 'canned-responses-replace-placeholders');
 		return;

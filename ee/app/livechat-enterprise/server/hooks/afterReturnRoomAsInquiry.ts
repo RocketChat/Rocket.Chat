@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatRooms } from '../../../../../app/models/server';
-import { settings } from '../../../../../app/settings/server';
+import { SettingsVersion4 } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 
 const unsetPredictedVisitorAbandonment = ({ room }: { room: any }): void => {
@@ -12,7 +12,7 @@ const unsetPredictedVisitorAbandonment = ({ room }: { room: any }): void => {
 	(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(room._id);
 };
 
-settings.get('Livechat_abandoned_rooms_action', (_, value) => {
+SettingsVersion4.watch('Livechat_abandoned_rooms_action', (value) => {
 	if (!value || value === 'none') {
 		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry');
 		return;

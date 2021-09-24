@@ -13,7 +13,7 @@ import UAParser from 'ua-parser-js';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { callbacks } from '../../../callbacks/server';
 import {
@@ -1273,6 +1273,6 @@ export const Livechat = {
 	},
 };
 
-settings.get('Livechat_history_monitor_type', (key, value) => {
+SettingsVersion4.watch('Livechat_history_monitor_type', (value) => {
 	Livechat.historyMonitorType = value;
 });

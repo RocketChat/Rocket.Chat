@@ -10,6 +10,9 @@ import { overwriteSetting } from './overwriteSetting';
 import { overrideSetting } from './overrideSetting';
 import { getSettingDefaults } from './getSettingDefaults';
 import { validateSetting } from './validateSetting';
+import { SettingsVersion4 } from '../Settingsv4';
+
+export { SettingsVersion4 };
 
 export const blockedSettings = new Set<string>();
 export const hiddenSettings = new Set<string>();
@@ -268,6 +271,7 @@ class Settings extends SettingsBase {
 		}
 
 		this.load(record._id, value, initialLoad);
+		SettingsVersion4.emit(record._id, value);
 	}
 
 	/*
@@ -291,5 +295,6 @@ class Settings extends SettingsBase {
 		SettingsEvents.once('after-initial-load', fn);
 	}
 }
+
 
 export const settings = new Settings();

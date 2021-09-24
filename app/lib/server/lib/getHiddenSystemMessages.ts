@@ -1,9 +1,9 @@
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { IRoom } from '../../../../definition/IRoom';
 
 const hideMessagesOfTypeServer = new Set<string>();
 
-settings.get('Hide_System_Messages', function(_key, values) {
+SettingsVersion4.watch('Hide_System_Messages', function(values) {
 	if (!values || !Array.isArray(values)) {
 		return;
 	}

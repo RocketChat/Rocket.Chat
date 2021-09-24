@@ -9,7 +9,7 @@ import { settings } from './settings';
 
 chai.use(spies);
 
-describe.only('Settings', () => {
+describe('Settings', () => {
 	beforeEach(() => {
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;

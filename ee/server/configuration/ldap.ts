@@ -1,17 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import _ from 'underscore';
 
 import { LDAPEE } from '../sdk';
-import { settings } from '../../../app/settings/server';
+import { settings, SettingsVersion4 } from '../../../app/settings/server';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
-import type { SettingValue } from '../../../definition/ISetting';
-import type { SettingCallback } from '../../../app/settings/lib/settings';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
@@ -19,7 +16,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	addSettings();
 
 	// Configure background sync cronjob
-	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): SettingCallback {
+	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
 		let lastSchedule: string;
 
 		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
@@ -44,31 +41,27 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 		}), 500);
 	}
 
-	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => Promise.await(LDAPEE.sync()));
-	const addAvatarCronJob = configureBackgroundSync('LDAP_AvatarSync', 'LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval', () => Promise.await(LDAPEE.syncAvatars()));
-	const addLogoutCronJob = configureBackgroundSync('LDAP_AutoLogout', 'LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval', () => Promise.await(LDAPEE.syncLogout()));
+	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => LDAPEE.sync());
+	const addAvatarCronJob = configureBackgroundSync('LDAP_AvatarSync', 'LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval', () => LDAPEE.syncAvatars());
+	const addLogoutCronJob = configureBackgroundSync('LDAP_AutoLogout', 'LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval', () => LDAPEE.syncLogout());
 
-	Meteor.defer(() => {
-		settings.get('LDAP_Background_Sync', addCronJob);
-		settings.get('LDAP_Background_Sync_Interval', addCronJob);
-		settings.get('LDAP_Background_Sync_Avatars', addAvatarCronJob);
-		settings.get('LDAP_Background_Sync_Avatars_Interval', addAvatarCronJob);
-		settings.get('LDAP_Sync_AutoLogout_Enabled', addLogoutCronJob);
-		settings.get('LDAP_Sync_AutoLogout_Interval', addLogoutCronJob);
 
-		settings.get('LDAP_Enable', (key: string, value: SettingValue, initialLoad?: boolean) => {
-			addCronJob(key, value, initialLoad);
-			addAvatarCronJob(key, value, initialLoad);
-			addLogoutCronJob(key, value, initialLoad);
-		});
+	SettingsVersion4.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
+	SettingsVersion4.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
+	SettingsVersion4.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
 
-		settings.get('LDAP_Groups_To_Rocket_Chat_Teams', (_key, value) => {
-			try {
-				LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
-			} catch (error) {
-				logger.error(error);
-			}
-		});
+	SettingsVersion4.watch('LDAP_Enable', () => {
+		addCronJob();
+		addAvatarCronJob();
+		addLogoutCronJob();
+	});
+
+	SettingsVersion4.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
+		try {
+			LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
+		} catch (error) {
+			logger.error(error);
+		}
 	});
 
 	callbacks.add('mapLDAPUserData', (userData: IImportUser, ldapUser: ILDAPEntry) => {

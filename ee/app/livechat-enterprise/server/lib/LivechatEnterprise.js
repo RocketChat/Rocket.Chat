@@ -10,7 +10,7 @@ import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings/server';
+import { settings, SettingsVersion4 } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
@@ -271,9 +271,9 @@ function shouldQueueStart() {
 }
 
 Meteor.startup(() => {
-	settings.get('Livechat_enabled', (_, value) => {
+	SettingsVersion4.watch('Livechat_enabled', (_, value) => {
 		value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 	});
 
-	settings.onload('Livechat_Routing_Method', shouldQueueStart);
+	SettingsVersion4.change('Livechat_Routing_Method', shouldQueueStart);
 });

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -218,6 +218,6 @@ export const RoutingManager = {
 	},
 };
 
-settings.get('Livechat_Routing_Method', function(key, value) {
+SettingsVersion4.watch('Livechat_Routing_Method', function(value) {
 	RoutingManager.setMethodName(value);
 });

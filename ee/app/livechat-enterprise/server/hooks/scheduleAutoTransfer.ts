@@ -1,6 +1,6 @@
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../app/callbacks/server';
-import { settings } from '../../../../../app/settings/server';
+import { SettingsVersion4 } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
 
@@ -74,7 +74,7 @@ const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
 	return room;
 };
 
-settings.get('Livechat_auto_transfer_chat_timeout', function(_, value) {
+SettingsVersion4.watch('Livechat_auto_transfer_chat_timeout', function(value) {
 	autoTransferTimeout = value as number;
 	if (!autoTransferTimeout || autoTransferTimeout === 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');

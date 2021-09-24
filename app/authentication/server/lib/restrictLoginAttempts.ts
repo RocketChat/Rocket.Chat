@@ -4,7 +4,7 @@ import { ILoginAttempt } from '../ILoginAttempt';
 import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
 import { IServerEventType } from '../../../../definition/IServerEvent';
 import { IUser } from '../../../../definition/IUser';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { addMinutesToADate } from '../../../utils/lib/date.helper';
 import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -14,7 +14,7 @@ import { Logger } from '../../../logger/server';
 const logger = new Logger('LoginProtection');
 
 export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
-	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
+	const channelToNotify = SettingsVersion4.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
@@ -44,10 +44,10 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 };
 
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
-	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
+	const whitelist = String(SettingsVersion4.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
 
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_Ip')
+	if (!SettingsVersion4.get('Block_Multiple_Failed_Logins_Enabled')
+		|| !SettingsVersion4.get('Block_Multiple_Failed_Logins_By_Ip')
 		|| whitelist.includes(ip)) {
 		return true;
 	}
@@ -61,7 +61,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
+	const attemptsUntilBlock = SettingsVersion4.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
@@ -73,11 +73,11 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
+	const minutesUntilUnblock = SettingsVersion4.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
+	if (SettingsVersion4.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
 		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 
@@ -85,8 +85,8 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 };
 
 export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolean> => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')
-		|| !settings.get('Block_Multiple_Failed_Logins_By_User')) {
+	if (!SettingsVersion4.get('Block_Multiple_Failed_Logins_Enabled')
+		|| !SettingsVersion4.get('Block_Multiple_Failed_Logins_By_User')) {
 		return true;
 	}
 
@@ -104,7 +104,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(user.lastLogin));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
+	const attemptsUntilBlock = SettingsVersion4.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLogin < attemptsUntilBlock) {
 		return true;
@@ -116,11 +116,11 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
-	const minutesUntilUnblock = settings.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
+	const minutesUntilUnblock = SettingsVersion4.get('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes') as number;
 	const willBeBlockedUntil = addMinutesToADate(new Date(lastAttemptAt), minutesUntilUnblock);
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
-	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
+	if (SettingsVersion4.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
 		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 

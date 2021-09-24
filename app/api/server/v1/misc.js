@@ -9,7 +9,7 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
@@ -38,11 +38,11 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 	get() {
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
-		if (!settings.get('API_Enable_Shields')) {
+		if (!SettingsVersion4.get('API_Enable_Shields')) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/shield.svg' });
 		}
 
-		const types = settings.get('API_Shield_Types');
+		const types = SettingsVersion4.get('API_Shield_Types');
 		if (type && (types !== '*' && !types.split(',').map((t) => t.trim()).includes(type))) {
 			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', { route: '/api/v1/shield.svg' });
 		}
@@ -70,13 +70,13 @@ API.v1.addRoute('shield.svg', { authRequired: false, rateLimiterOptions: { numRe
 				text = `#${ channel }`;
 				break;
 			case 'user':
-				if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+				if (SettingsVersion4.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
 				const user = this.getUserFromParams();
 
 				// Respect the server's choice for using their real names or not
-				if (user.name && settings.get('UI_Use_Real_Name')) {
+				if (user.name && SettingsVersion4.get('UI_Use_Real_Name')) {
 					text = `${ user.name }`;
 				} else {
 					text = `@${ user.username }`;
@@ -241,7 +241,7 @@ const methodCall = () => ({
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
 			SystemLogger.error(`Exception while invoking method ${ method }`, error.message);
-			if (settings.get('Log_Level') === '2') {
+			if (SettingsVersion4.get('Log_Level') === '2') {
 				Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
 			}
 			return API.v1.success(mountResult({ id, error }));

@@ -12,7 +12,7 @@ import jschardet from 'jschardet';
 
 import { OEmbedCache, Messages } from '../../models';
 import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
+import { settings, SettingsVersion4 } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
@@ -302,7 +302,7 @@ OEmbed.rocketUrlParser = function(message) {
 	return message;
 };
 
-settings.get('API_Embed', function(key, value) {
+SettingsVersion4.watch('API_Embed', function(value) {
 	if (value) {
 		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
 	}

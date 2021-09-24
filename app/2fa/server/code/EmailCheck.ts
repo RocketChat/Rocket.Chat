@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
@@ -20,7 +20,7 @@ export class EmailCheck implements ICodeCheck {
 	}
 
 	public isEnabled(user: IUser): boolean {
-		if (!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
+		if (!SettingsVersion4.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
 			return false;
 		}
 
@@ -32,13 +32,13 @@ export class EmailCheck implements ICodeCheck {
 	}
 
 	private send2FAEmail(address: string, random: string, user: IUser): void {
-		const language = user.language || settings.get('Language') || 'en';
+		const language = user.language || SettingsVersion4.get('Language') || 'en';
 
 		const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 		Mailer.send({
 			to: address,
-			from: settings.get('From_Email'),
+			from: SettingsVersion4.get('From_Email'),
 			subject: 'Authentication code',
 			replyTo: undefined,
 			data: {
@@ -99,7 +99,7 @@ ${ t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email') }
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
 		const expire = new Date();
-		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
+		const expirationInSeconds = parseInt(SettingsVersion4.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 

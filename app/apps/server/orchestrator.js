@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
-import { settings } from '../../settings/server';
+import { settings, SettingsVersion4 } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -264,7 +264,7 @@ settings.addGroup('General', function() {
 	});
 });
 
-settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
+SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageType = value;
 	} else {
@@ -272,7 +272,7 @@ settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
 	}
 });
 
-settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
+SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageFilesystemPath = value;
 	} else {
@@ -280,7 +280,7 @@ settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value)
 	}
 });
 
-settings.get('Apps_Framework_enabled', (key, isEnabled) => {
+SettingsVersion4.watch('Apps_Framework_enabled', (isEnabled) => {
 	// In case this gets called before `Meteor.startup`
 	if (!Apps.isInitialized()) {
 		return;
@@ -293,7 +293,7 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	}
 });
 
-settings.get('Apps_Logs_TTL', (key, value) => {
+SettingsVersion4.watch('Apps_Logs_TTL', (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}

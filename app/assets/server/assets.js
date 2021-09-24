@@ -7,7 +7,7 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings } from '../../settings/server';
+import { settings, SettingsVersion4 } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
@@ -310,7 +310,7 @@ export const RocketChatAssets = new class {
 	}
 
 	getURL(assetName, options = { cdn: false, full: true }) {
-		const asset = settings.get(assetName);
+		const asset = SettingsVersion4.get(assetName);
 		const url = asset.url || asset.defaultUrl;
 
 		return getURL(url, options);
@@ -340,7 +340,7 @@ function addAssetToSetting(asset, value) {
 		wizard: value.wizard,
 	});
 
-	const currentValue = settings.get(key);
+	const currentValue = SettingsVersion4.get(key);
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
 		currentValue.defaultUrl = assets[asset].defaultUrl;

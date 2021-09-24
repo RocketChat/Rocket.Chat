@@ -6,7 +6,7 @@ import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings';
+import { settings, SettingsVersion4 } from '../../settings';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
 
@@ -130,7 +130,7 @@ export const theme = new class {
 }();
 
 Meteor.startup(() => {
-	settings.get('css', (key, value = '') => {
+	SettingsVersion4.watch('css', (value = '') => {
 		currentHash = crypto.createHash('sha1').update(value).digest('hex');
 		currentSize = value.length;
 		addStyle('css-theme', value);

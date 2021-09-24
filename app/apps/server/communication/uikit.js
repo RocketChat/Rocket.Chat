@@ -7,7 +7,7 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Users } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { Apps } from '../orchestrator';
 import { UiKitCoreApp } from '../../../../server/sdk';
 
@@ -18,15 +18,15 @@ apiServer.disable('x-powered-by');
 let corsEnabled = false;
 let allowListOrigins = [];
 
-settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
+SettingsVersion4.watch('API_Enable_CORS', (value) => { corsEnabled = value; });
 
-settings.get('API_CORS_Origin', (_, value) => {
+SettingsVersion4.watch('API_CORS_Origin', (value) => {
 	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
 });
 
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || !corsEnabled || allowListOrigins.includes('*') || allowListOrigins.includes(origin) || origin === settings.get('Site_Url')) {
+		if (!origin || !corsEnabled || allowListOrigins.includes('*') || allowListOrigins.includes(origin) || origin === SettingsVersion4.get('Site_Url')) {
 			callback(null, true);
 		} else {
 			callback('Not allowed by CORS', false);
@@ -47,11 +47,11 @@ const unauthorized = (res) => res.status(401).send({
 Meteor.startup(() => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
-		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
-		max: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
+		windowMs: SettingsVersion4.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+		max: SettingsVersion4.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
 		skip: () =>
-			settings.get('API_Enable_Rate_Limiter') !== true
-			|| (process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),
+			SettingsVersion4.get('API_Enable_Rate_Limiter') !== true
+			|| (process.env.NODE_ENV === 'development' && SettingsVersion4.get('API_Enable_Rate_Limiter_Dev') !== true),
 	});
 	router.use(apiLimiter);
 });

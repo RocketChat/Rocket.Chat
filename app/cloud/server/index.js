@@ -8,14 +8,14 @@ import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { settings } from '../../settings/server';
+import { SettingsVersion4 } from '../../settings/server';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
 Meteor.startup(function() {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
-	settings.get('Troubleshoot_Disable_Workspace_Sync', (key, value) => {
+	SettingsVersion4.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
 		if (TroubleshootDisableWorkspaceSync === value) { return; }
 		TroubleshootDisableWorkspaceSync = value;
 

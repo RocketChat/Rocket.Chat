@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
+import { settings, SettingsVersion4 } from '../../settings';
 import { Logger } from '../../logger';
 
 
@@ -12,11 +12,11 @@ const logger = new Logger('CORS');
 
 // Deprecated setting
 let Support_Cordova_App = false;
-settings.get('Support_Cordova_App', (key, value) => {
+SettingsVersion4.watch('Support_Cordova_App', (key, value) => {
 	Support_Cordova_App = value;
 });
 
-settings.get('Enable_CSP', (_, enabled) => {
+SettingsVersion4.watch('Enable_CSP', (_, enabled) => {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
 });
 
@@ -27,14 +27,14 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	// X-Content-Type-Options header to prevent MIME Sniffing
 	res.setHeader('X-Content-Type-Options', 'nosniff');
 
-	if (settings.get('Iframe_Restrict_Access')) {
-		res.setHeader('X-Frame-Options', settings.get('Iframe_X_Frame_Options'));
+	if (SettingsVersion4.get('Iframe_Restrict_Access')) {
+		res.setHeader('X-Frame-Options', SettingsVersion4.get('Iframe_X_Frame_Options'));
 	}
 
-	if (settings.get('Enable_CSP')) {
+	if (SettingsVersion4.get('Enable_CSP')) {
 		const cdn_prefixes = [
-			settings.get('CDN_PREFIX'),
-			settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX'),
+			SettingsVersion4.get('CDN_PREFIX'),
+			SettingsVersion4.get('CDN_PREFIX_ALL') ? null : SettingsVersion4.get('CDN_JSCSS_PREFIX'),
 		].filter(Boolean).join(' ');
 
 		res.setHeader(
@@ -88,7 +88,7 @@ WebApp.httpServer.addListener('request', function(req, res, ...args) {
 		}
 	};
 
-	if (settings.get('Force_SSL') !== true) {
+	if (SettingsVersion4.get('Force_SSL') !== true) {
 		next();
 		return;
 	}

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
 
-import { settings } from '../../../settings';
+import { SettingsVersion4 } from '../../../settings';
 import { Uploads } from '../../../models';
 
 let protectedFiles;
 
-settings.get('FileUpload_ProtectFiles', function(key, value) {
+SettingsVersion4.watch('FileUpload_ProtectFiles', function(key, value) {
 	protectedFiles = value;
 });
 

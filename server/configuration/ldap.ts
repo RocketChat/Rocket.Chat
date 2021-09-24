@@ -3,7 +3,7 @@ import { Promise } from 'meteor/promise';
 
 import { callbacks } from '../../app/callbacks/server';
 import { LDAP } from '../sdk';
-import { settings } from '../../app/settings/server';
+import { SettingsVersion4 } from '../../app/settings/server';
 
 // Register ldap login handler
 Accounts.registerLoginHandler('ldap', function(loginRequest: Record<string, any>) {
@@ -16,7 +16,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest: Record<string, any>
 
 // Prevent password logins by LDAP users when LDAP is enabled
 let ldapEnabled: boolean;
-settings.get('LDAP_Enable', (_key, value) => {
+SettingsVersion4.watch('LDAP_Enable', (value) => {
 	if (ldapEnabled === value) {
 		return;
 	}
@@ -38,7 +38,7 @@ settings.get('LDAP_Enable', (_key, value) => {
 
 		// LDAP users can still login locally when login fallback is enabled
 		if (login.user.services?.ldap?.id) {
-			login.allowed = settings.get<boolean>('LDAP_Login_Fallback') ?? false;
+			login.allowed = SettingsVersion4.get<boolean>('LDAP_Login_Fallback') ?? false;
 		}
 
 		return login;

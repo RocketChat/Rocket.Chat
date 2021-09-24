@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Users, Rooms } from '../../models';
-import { settings } from '../../settings';
+import { SettingsVersion4 } from '../../settings';
 import { hasRole } from '../../authorization';
 
 /**
@@ -151,7 +151,7 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-settings.get('BotHelpers_userFields', function(settingKey, settingValue) {
+SettingsVersion4.watch('BotHelpers_userFields', function(settingValue) {
 	botHelpers.setupCursors(settingValue);
 });
 

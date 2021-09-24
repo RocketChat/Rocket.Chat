@@ -9,7 +9,7 @@ import _ from 'underscore';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
-import { settings } from '../../settings/server';
+import { SettingsVersion4 } from '../../settings/server';
 import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
@@ -19,8 +19,8 @@ const logger = new Logger('API');
 
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
-	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
-	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+	numRequestsAllowed: SettingsVersion4.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	intervalTimeInMS: SettingsVersion4.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
 let prometheusAPIUserAgent = false;
 
@@ -208,8 +208,8 @@ export class APIClass extends Restivus {
 
 	shouldVerifyRateLimit(route, userId) {
 		return rateLimiterDictionary.hasOwnProperty(route)
-			&& settings.get('API_Enable_Rate_Limiter') === true
-			&& (process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
+			&& SettingsVersion4.get('API_Enable_Rate_Limiter') === true
+			&& (process.env.NODE_ENV !== 'development' || SettingsVersion4.get('API_Enable_Rate_Limiter_Dev') === true)
 			&& !(userId && hasPermission(userId, 'api-bypass-rate-limit'));
 	}
 
@@ -495,7 +495,7 @@ export class APIClass extends Restivus {
 				ldapPass: auth.password,
 				ldapOptions: {},
 			};
-			if (settings.get('LDAP_Enable') && !code) {
+			if (SettingsVersion4.get('LDAP_Enable') && !code) {
 				return objectToLDAPLogin;
 			}
 
@@ -503,7 +503,7 @@ export class APIClass extends Restivus {
 				return {
 					totp: {
 						code,
-						login: settings.get('LDAP_Enable') ? objectToLDAPLogin : auth,
+						login: SettingsVersion4.get('LDAP_Enable') ? objectToLDAPLogin : auth,
 					},
 				};
 			}
@@ -678,14 +678,14 @@ const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
 		return;
 	}
 
-	if (!settings.get('API_Enable_CORS')) {
+	if (!SettingsVersion4.get('API_Enable_CORS')) {
 		this.response.writeHead(405);
 		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
 		this.done();
 		return;
 	}
 
-	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
+	const CORSOriginSetting = String(SettingsVersion4.get('API_CORS_Origin'));
 
 	const defaultHeaders = {
 		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
@@ -744,11 +744,11 @@ const createApis = function _createApis() {
 createApis();
 
 // register the API to be re-created once the CORS-setting changes.
-settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
+SettingsVersion4.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
 	createApis();
 });
 
-settings.get('Accounts_CustomFields', (key, value) => {
+SettingsVersion4.watch('Accounts_CustomFields', (value) => {
 	if (!value) {
 		return API.v1.setLimitedCustomFields([]);
 	}
@@ -761,16 +761,16 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
+SettingsVersion4.watch('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
+SettingsVersion4.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('Prometheus_API_User_Agent', (key, value) => {
+SettingsVersion4.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
 });

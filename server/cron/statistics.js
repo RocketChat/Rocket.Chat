@@ -3,14 +3,14 @@ import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics';
-import { settings } from '../../app/settings';
+import { SettingsVersion4 } from '../../app/settings';
 
 function generateStatistics(logger) {
 	const cronStatistics = statistics.save();
 
 	cronStatistics.host = Meteor.absoluteUrl();
 
-	if (!settings.get('Statistics_reporting')) {
+	if (!SettingsVersion4.get('Statistics_reporting')) {
 		return;
 	}
 
@@ -33,14 +33,14 @@ function generateStatistics(logger) {
 }
 
 export function statsCron(SyncedCron, logger) {
-	if (settings.get('Troubleshoot_Disable_Statistics_Generator')) {
+	if (SettingsVersion4.get('Troubleshoot_Disable_Statistics_Generator')) {
 		return;
 	}
 
 	const name = 'Generate and save statistics';
 
 	let previousValue;
-	settings.get('Troubleshoot_Disable_Statistics_Generator', (key, value) => {
+	SettingsVersion4.watch('Troubleshoot_Disable_Statistics_Generator', (value) => {
 		if (value === previousValue) {
 			return;
 		}

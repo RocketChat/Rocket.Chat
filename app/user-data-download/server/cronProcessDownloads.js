@@ -9,7 +9,7 @@ import archiver from 'archiver';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { settings } from '../../settings/server';
+import { settings, SettingsVersion4 } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
@@ -586,21 +586,19 @@ async function processDataDownloads() {
 const name = 'Generate download files for user data';
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
-		let TroubleshootDisableDataExporterProcessor;
-		settings.get('Troubleshoot_Disable_Data_Exporter_Processor', (key, value) => {
-			if (TroubleshootDisableDataExporterProcessor === value) { return; }
-			TroubleshootDisableDataExporterProcessor = value;
+	let TroubleshootDisableDataExporterProcessor;
+	SettingsVersion4.watch('Troubleshoot_Disable_Data_Exporter_Processor', (value) => {
+		if (TroubleshootDisableDataExporterProcessor === value) { return; }
+		TroubleshootDisableDataExporterProcessor = value;
 
-			if (value) {
-				return SyncedCron.remove(name);
-			}
+		if (value) {
+			return SyncedCron.remove(name);
+		}
 
-			SyncedCron.add({
-				name,
-				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
-				job: processDataDownloads,
-			});
+		SyncedCron.add({
+			name,
+			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+			job: processDataDownloads,
 		});
 	});
 });

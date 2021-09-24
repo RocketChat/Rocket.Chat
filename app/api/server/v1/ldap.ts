@@ -1,5 +1,5 @@
 import { hasRole } from '../../../authorization/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { API } from '../api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { LDAP } from '../../../../server/sdk';
@@ -15,7 +15,7 @@ API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
 			throw new Error('error-not-authorized');
 		}
 
-		if (settings.get('LDAP_Enable') !== true) {
+		if (SettingsVersion4.get<boolean>('LDAP_Enable') !== true) {
 			throw new Error('LDAP_disabled');
 		}
 

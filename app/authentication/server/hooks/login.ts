@@ -4,10 +4,10 @@ import { ILoginAttempt } from '../ILoginAttempt';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../lib/restrictLoginAttempts';
 import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
 import { callbacks } from '../../../callbacks/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 
 Accounts.onLoginFailure((login: ILoginAttempt) => {
-	if (settings.get('Block_Multiple_Failed_Logins_Enabled')) {
+	if (SettingsVersion4.get('Block_Multiple_Failed_Logins_Enabled')) {
 		saveFailedLoginAttempts(login);
 	}
 
@@ -15,7 +15,7 @@ Accounts.onLoginFailure((login: ILoginAttempt) => {
 });
 
 callbacks.add('afterValidateLogin', (login: ILoginAttempt) => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')) {
+	if (!SettingsVersion4.get('Block_Multiple_Failed_Logins_Enabled')) {
 		return;
 	}
 

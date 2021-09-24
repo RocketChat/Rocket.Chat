@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings, SettingsVersion4 } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 import { addLicense } from './license';
 
@@ -20,7 +20,7 @@ Meteor.startup(function() {
 	});
 });
 
-settings.get('Enterprise_License', (key, license) => {
+SettingsVersion4.watch('Enterprise_License', (license) => {
 	if (!license || String(license).trim() === '') {
 		return;
 	}
@@ -35,7 +35,7 @@ settings.get('Enterprise_License', (key, license) => {
 
 if (process.env.ROCKETCHAT_LICENSE) {
 	Meteor.startup(() => {
-		if (settings.get('Enterprise_License')) {
+		if (SettingsVersion4.get('Enterprise_License')) {
 			console.warn('Rocket.Chat Enterprise: The license from your environment variable was ignored, please use only the admin setting from now on.');
 			return;
 		}

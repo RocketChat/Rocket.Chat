@@ -3,7 +3,7 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import _ from 'underscore';
 
 import { smarsh } from './lib/rocketchat';
-import { settings } from '../../settings';
+import { SettingsVersion4 } from '../../settings/server';
 
 const smarshJobName = 'Smarsh EML Connector';
 
@@ -12,22 +12,17 @@ const _addSmarshSyncedCronJob = _.debounce(Meteor.bindEnvironment(function __add
 		SyncedCron.remove(smarshJobName);
 	}
 
-	if (settings.get('Smarsh_Enabled') && settings.get('Smarsh_Email') !== '' && settings.get('From_Email') !== '') {
+	if (SettingsVersion4.get('Smarsh_Enabled') && SettingsVersion4.get('Smarsh_Email') !== '' && SettingsVersion4.get('From_Email') !== '') {
 		SyncedCron.add({
 			name: smarshJobName,
-			schedule: (parser) => parser.text(settings.get('Smarsh_Interval').replace(/_/g, ' ')),
+			schedule: (parser) => parser.text(SettingsVersion4.get('Smarsh_Interval').replace(/_/g, ' ')),
 			job: smarsh.generateEml,
 		});
 	}
 }), 500);
 
 Meteor.startup(() => {
-	Meteor.defer(() => {
-		_addSmarshSyncedCronJob();
+	_addSmarshSyncedCronJob();
 
-		settings.get('Smarsh_Interval', _addSmarshSyncedCronJob);
-		settings.get('Smarsh_Enabled', _addSmarshSyncedCronJob);
-		settings.get('Smarsh_Email', _addSmarshSyncedCronJob);
-		settings.get('From_Email', _addSmarshSyncedCronJob);
-	});
+	SettingsVersion4.watchMultiple(['Smarsh_Enabled', 'Smarsh_Email', 'From_Email', 'Smarsh_Interval'], _addSmarshSyncedCronJob);
 });

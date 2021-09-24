@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import Bugsnag from '@bugsnag/js';
 
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { Info } from '../../../utils/server';
 import { Logger } from '../../../logger/server';
 
 const logger = new Logger('bugsnag');
 
-settings.get('Bugsnag_api_key', (key, value) => {
+SettingsVersion4.watch('Bugsnag_api_key', (value) => {
 	if (value) {
 		Bugsnag.start({
 			apiKey: value,

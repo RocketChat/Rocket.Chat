@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { SettingsVersion4 } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -122,7 +122,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 
 const createFileSystemStore = _.debounce(function() {
 	const options = {
-		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
+		path: SettingsVersion4.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
 
 	FileSystemUploads.store = FileUpload.configureUploadsStore('Local', FileSystemUploads.name, options);
@@ -133,4 +133,4 @@ const createFileSystemStore = _.debounce(function() {
 	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
 }, 500);
 
-settings.get('FileUpload_FileSystemPath', createFileSystemStore);
+SettingsVersion4.watch('FileUpload_FileSystemPath', createFileSystemStore);

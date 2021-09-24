@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings';
+import { SettingsVersion4 } from '../../../settings';
 import { Users, Rooms } from '../../../models';
 import { sendMessage } from '../../../lib';
 
@@ -13,7 +13,7 @@ class ErrorHandler {
 		Meteor.startup(() => {
 			this.registerHandlers();
 
-			settings.get('Log_Exceptions_to_Channel', (key, value) => {
+			SettingsVersion4.watch('Log_Exceptions_to_Channel', (value) => {
 				this.rid = null;
 				const roomName = value.trim();
 				if (roomName) {

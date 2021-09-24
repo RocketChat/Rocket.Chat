@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { SettingsVersion4 } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
@@ -234,12 +234,12 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	mentionIds.push(...usersInThread);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
-	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
+	if (mentionIds.length > 0 && SettingsVersion4.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
 
 	// Don't fetch all users if room exceeds max members
-	const maxMembersForNotification = settings.get('Notifications_Max_Room_Members');
+	const maxMembersForNotification = SettingsVersion4.get('Notifications_Max_Room_Members');
 	const roomMembersCount = Subscriptions.findByRoomId(room._id).count();
 	const disableAllMessageNotifications = roomMembersCount > maxMembersForNotification && maxMembersForNotification !== 0;
 
@@ -276,7 +276,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		}
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${ kind }Notifications`;
-		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${ serverField }`);
+		const serverPreference = SettingsVersion4.get(`Accounts_Default_User_Preferences_${ serverField }`);
 		if ((room.t === 'd' && serverPreference !== 'nothing') || (!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))) {
 			query.$or.push({
 				[notificationField]: { $exists: false },
@@ -393,7 +393,7 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+SettingsVersion4.watch('Troubleshoot_Disable_Notifications', (key, value) => {
 	if (TroubleshootDisableNotifications === value) { return; }
 	TroubleshootDisableNotifications = value;
 

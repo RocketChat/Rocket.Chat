@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../settings';
+import { settings, SettingsVersion4 } from '../../settings/server';
 
 settings.addGroup('OAuth', function() {
 	this.section('Apple', function() {
@@ -10,8 +10,8 @@ settings.addGroup('OAuth', function() {
 	});
 });
 
-const configureService = _.debounce(Meteor.bindEnvironment(() => {
-	if (!settings.get('Accounts_OAuth_Apple')) {
+const configureService = _.debounce(Meteor.bindEnvironment((enabled) => {
+	if (!enabled) {
 		return ServiceConfiguration.configurations.remove({
 			service: 'apple',
 		});
@@ -23,13 +23,11 @@ const configureService = _.debounce(Meteor.bindEnvironment(() => {
 		$set: {
 			// We'll hide this button on Web Client
 			showButton: false,
-			enabled: settings.get('Accounts_OAuth_Apple'),
+			enabled: SettingsVersion4.get('Accounts_OAuth_Apple'),
 		},
 	});
 }), 1000);
 
 Meteor.startup(() => {
-	settings.get('Accounts_OAuth_Apple', () => {
-		configureService();
-	});
+	SettingsVersion4.watch('Accounts_OAuth_Apple', configureService);
 });

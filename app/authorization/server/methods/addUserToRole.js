@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Users, Roles } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 
@@ -49,7 +49,7 @@ Meteor.methods({
 
 		const add = Roles.addUserRoles(user._id, roleName, scope);
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (SettingsVersion4.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: roleName,

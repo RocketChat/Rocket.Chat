@@ -1,7 +1,7 @@
 import { debounce } from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settings, SettingsVersion4 } from '../../../settings/server';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
@@ -105,6 +105,5 @@ function enableOrDisable(key, value) {
 }
 
 // Add settings listeners
-settings.get('FEDERATION_Enabled', enableOrDisable);
-settings.get('FEDERATION_Domain', updateSettings);
-settings.get('FEDERATION_Discovery_Method', updateSettings);
+SettingsVersion4.watch('FEDERATION_Enabled', enableOrDisable);
+SettingsVersion4.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);
