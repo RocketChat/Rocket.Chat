@@ -4,7 +4,7 @@ export function addSettings(): void {
 	settings.addGroup('LDAP', function() {
 		const enableQuery = { _id: 'LDAP_Enable', value: true };
 
-		this.set({
+		this.with({
 			tab: 'LDAP_Enterprise',
 			enterprise: true,
 			modules: ['ldap-enterprise'],
