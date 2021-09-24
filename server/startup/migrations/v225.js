@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings, Users } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 225,
 	up() {
 		const hideAvatarsSetting = Settings.findOneById('Accounts_Default_User_Preferences_hideAvatars');

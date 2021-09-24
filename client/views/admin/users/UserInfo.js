@@ -14,7 +14,7 @@ import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import UserInfo from '../../room/contextualBar/UserInfo/UserInfo';
 import { UserInfoActions } from './UserInfoActions';
 
-export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
+export function UserInfoWithData({ uid, username, onReload, ...props }) {
 	const t = useTranslation();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -23,7 +23,7 @@ export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 		value: data,
 		phase: state,
 		error,
-		reload,
+		reload: reloadUserInfo,
 	} = useEndpointData(
 		'users.info',
 		useMemo(
@@ -32,11 +32,14 @@ export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 		),
 	);
 
-	const onChange = useMutableCallback(() => reload());
-	const onDelete = useMutableCallback(() => (reloadTable ? reloadTable() : null));
+	const onChange = useMutableCallback(() => {
+		onReload();
+		reloadUserInfo();
+	});
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
+
 		const {
 			name,
 			username,
@@ -48,6 +51,7 @@ export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 			lastLogin,
 			nickname,
 		} = user;
+
 		return {
 			name,
 			username,
@@ -100,7 +104,6 @@ export function UserInfoWithData({ uid, username, reloadTable, ...props }) {
 						_id={data.user._id}
 						username={data.user.username}
 						onChange={onChange}
-						onDelete={onDelete}
 					/>
 				)
 			}

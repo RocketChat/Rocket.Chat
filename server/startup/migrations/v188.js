@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Permissions } from '../../../app/models/server';
 
 const newRolePermissions = [
@@ -8,7 +8,7 @@ const newRolePermissions = [
 
 const roleName = 'guest';
 
-Migrations.add({
+addMigration({
 	version: 188,
 	up() {
 		Permissions.update({ _id: { $in: newRolePermissions } }, { $addToSet: { roles: roleName } }, { multi: true });

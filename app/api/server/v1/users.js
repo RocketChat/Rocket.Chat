@@ -925,7 +925,7 @@ API.v1.addRoute('users.logout', { authRequired: true }, {
 		}
 
 		// this method logs the user out automatically, if successful returns 1, otherwise 0
-		if (!Users.removeResumeService(userId)) {
+		if (!Users.unsetLoginTokens(userId)) {
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
 

@@ -239,7 +239,7 @@ const DATA = {
 		lastActivityAt: new Date('2019-05-03T02:59:59.999Z'),
 	}],
 	sessions_dates,
-}; // require('./fixtures/testData.json')
+};
 
 describe('Sessions Aggregates', () => {
 	let db;
@@ -251,7 +251,7 @@ describe('Sessions Aggregates', () => {
 			const version = '5.0.0';
 			console.log(`Starting mongo version ${ version }`);
 			mongod = await MongoMemoryServer.create({ binary: { version } });
-			process.env.MONGO_URL = mongod.getUri();
+			process.env.MONGO_URL = await mongod.getUri();
 		});
 
 		after(async () => {
@@ -261,7 +261,7 @@ describe('Sessions Aggregates', () => {
 
 	before(async () => {
 		console.log(`Connecting to mongo at ${ process.env.MONGO_URL }`);
-		const client = await MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true });
+		const client = await MongoClient.connect(process.env.MONGO_URL, { useUnifiedTopology: true, useNewUrlParser: true });
 		db = client.db('test');
 
 		after(() => {

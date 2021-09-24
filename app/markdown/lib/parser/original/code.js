@@ -4,7 +4,7 @@
  */
 import { unescapeHTML } from '@rocket.chat/string-helpers';
 
-import hljs from '../../hljs';
+import hljs, { register } from '../../hljs';
 import { addAsToken } from './token';
 
 const inlinecode = (message) => {
@@ -40,7 +40,17 @@ const codeblocks = (message) => {
 				const emptyLanguage = lang === '' ? unescapeHTML(codeMatch[1] + codeMatch[2]) : unescapeHTML(codeMatch[2]);
 				const code = singleLine ? unescapeHTML(codeMatch[1]) : emptyLanguage;
 
-				const result = lang === '' ? hljs.highlightAuto(lang + code) : hljs.highlight(lang, code);
+				const result = (() => {
+					if (lang) {
+						try {
+							register(lang);
+							return hljs.highlight(lang, code);
+						} catch (error) {
+							console.error(error);
+						}
+					}
+					return hljs.highlightAuto(lang + code);
+				})();
 				const token = addAsToken(
 					message,
 					`<pre><code class='code-colors hljs ${ result.language }'><span class='copyonly'>\`\`\`<br></span>${ result.value }<span class='copyonly'><br>\`\`\`</span></code></pre>`,
