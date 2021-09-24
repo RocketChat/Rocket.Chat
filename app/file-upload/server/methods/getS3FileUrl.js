@@ -6,7 +6,7 @@ import { Uploads } from '../../../models';
 
 let protectedFiles;
 
-SettingsVersion4.watch('FileUpload_ProtectFiles', function(key, value) {
+SettingsVersion4.watch('FileUpload_ProtectFiles', function(value) {
 	protectedFiles = value;
 });
 

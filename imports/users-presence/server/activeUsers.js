@@ -26,7 +26,7 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 };
 
 let TroubleshootDisablePresenceBroadcast;
-SettingsVersion4.watch('Troubleshoot_Disable_Presence_Broadcast', (key, value) => {
+SettingsVersion4.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
 	if (TroubleshootDisablePresenceBroadcast === value) { return; }
 	TroubleshootDisablePresenceBroadcast = value;
 

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings, SettingsVersion4 } from '../../settings';
+import { SettingsVersion4 } from '../../settings';
 import { Logger } from '../../logger';
 
 
@@ -12,11 +12,11 @@ const logger = new Logger('CORS');
 
 // Deprecated setting
 let Support_Cordova_App = false;
-SettingsVersion4.watch('Support_Cordova_App', (key, value) => {
+SettingsVersion4.watch('Support_Cordova_App', (value) => {
 	Support_Cordova_App = value;
 });
 
-SettingsVersion4.watch('Enable_CSP', (_, enabled) => {
+SettingsVersion4.watch('Enable_CSP', (enabled) => {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
 });
 
