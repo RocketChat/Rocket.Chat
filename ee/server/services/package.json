@@ -37,7 +37,7 @@
 		"sodium-plus": "^0.9.0",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
-		"ws": "^7.5.1"
+		"ws": "^8.2.2"
 	},
 	"devDependencies": {
 		"@types/cookie": "^0.4.1",
