@@ -2472,6 +2472,7 @@
   "LDAP_BaseDN_Description": "The fully qualified Distinguished Name (DN) of an LDAP subtree you want to search for users and groups. You can add as many as you like; however, each group must be defined in the same domain base as the users that belong to it. Example: `ou=Users+ou=Projects,dc=Example,dc=com`. If you specify restricted user groups, only users that belong to those groups will be in scope. We recommend that you specify the top level of your LDAP directory tree as your domain base and use search filter to control access.",
   "LDAP_CA_Cert": "CA Cert",
   "LDAP_Connect_Timeout": "Connection Timeout (ms)",
+  "LDAP_DataSync_AutoLogout": "Auto Logout Deactivated Users",
   "LDAP_Default_Domain": "Default Domain",
   "LDAP_Default_Domain_Description": "If provided the Default Domain will be used to create an unique email for users where email was not imported from LDAP. The email will be mounted as `username@default_domain` or `unique_id@default_domain`.<br/>Example: `rocket.chat`",
   "LDAP_Enable": "Enable",
