@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Users, Subscriptions, Roles } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
@@ -273,26 +273,6 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 		);
 
 		const { sortedResults: users, totalCount: [{ total } = { total: 0 }] } = result[0];
-
-		if (users) {
-			const roles = users.map(({ roles }) => [...roles]);
-			users.rolesId = roles;
-
-			const rolesArr = [];
-			for (let i = 0; i < roles.length; i++) {
-				const rolesArrInner = [];
-				for (let j = 0; j < roles[i].length; j++) {
-					rolesArrInner.push(...Roles.find({ _id: roles[i][j] }, { fields: { name: 1, description: 1 } }).fetch().map(({ name, description }) => description || name));
-				}
-				rolesArr.push(rolesArrInner);
-			}
-
-			for (let i = 0; i < roles.length; i++) {
-				for (let j = 0; j < roles[i].length; j++) {
-					users[i].roles[j] = rolesArr[i][j];
-				}
-			}
-		}
 
 		return API.v1.success({
 			users,
