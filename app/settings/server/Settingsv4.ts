@@ -3,8 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { ISetting, SettingValue } from '../../../definition/ISetting';
-import { SystemLogger } from '/server/lib/logger/system';
-
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 /**
  * class responsible for setting up the settings, cache and propagation changes
@@ -33,7 +32,6 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 
 	public watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void {
 		if (!this.ready) {
-			console.log('watchMultiple: Settings not initialized yet. watching ready: ', _id);
 			const cancel = new Set<() => void>();
 			const cancelFn = () => {
 				cancel.add(this.watchMultiple(_id, callback));
@@ -63,7 +61,6 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	*/
 	public watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
 		if (!this.ready) {
-			console.log('watch: Settings not initialized yet. watching ready: ', _id);
 			const cancel = new Set<() => void>();
 			const cancelFn = () => {
 				cancel.add(this.watch(_id, callback));
@@ -95,7 +92,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* keep track of changes for a setting
 	*/
 	public change<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
-		return this.on(_id, _.debounce(callback, 100));
+		return this.on(_id, _.debounce(callback, 100) as any);
 	}
 
 	public changeMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], fn: (settings: T[]) => void): () => void {
@@ -112,6 +109,22 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* keep track of changes for a setting
 	*/
 	public changeOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
-		return this.once(_id, _.debounce(callback, 100));
+		return this.once(_id, _.debounce(callback, 100) as any);
+	}
+
+	public set<T extends SettingValue = SettingValue>(_id: ISetting['_id'], value: T): void {
+		if (Meteor.settings[_id] === value) {
+			return;
+		}
+
+		// const old = Meteor.settings[_id];
+
+		Meteor.settings[_id] = value;
+
+		if (!this.ready) {
+			return;
+		}
+
+		this.emit(_id, value/* , old */);
 	}
 }();

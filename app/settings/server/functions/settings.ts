@@ -272,7 +272,7 @@ class Settings extends SettingsBase {
 		}
 
 		this.load(record._id, value, initialLoad);
-		SettingsVersion4.emit(record._id, value);
+		SettingsVersion4.set(record._id, value);
 	}
 
 	/*
