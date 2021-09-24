@@ -47,7 +47,7 @@ const Body: FC<BodyProps> = ({ tokens, mentions }) => {
 				}
 
 				if (block.type === 'CODE') {
-					return <Code value={block.value} key={index} />;
+					return <Code {...block} key={index} />;
 				}
 
 				if (block.type === 'HEADING') {

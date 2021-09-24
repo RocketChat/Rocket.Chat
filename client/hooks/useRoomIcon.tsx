@@ -25,8 +25,20 @@ export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: st
 		case 'c':
 			return { name: 'hash' };
 		case 'l':
+			const omnichannelRoom = room as IOmnichannelRoom;
+
+			const icon =
+				{
+					widget: 'livechat',
+					email: 'mail',
+					sms: 'sms',
+					app: 'headset', // TODO: use app icon
+					api: 'headset', // TODO: use api icon
+					other: 'headset',
+				}[omnichannelRoom.source?.type as string] || 'headset';
+
 			return {
-				name: 'headset',
+				name: icon,
 				color: colors[(room as unknown as IOmnichannelRoom)?.v.status || 'offline'],
 			};
 		case 'd':
