@@ -20,8 +20,6 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	setInitialized(): void {
 		this.ready = true;
 		this.emit('ready');
-
-		console.log('Settings initialized');
 	}
 
 	public get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T {
@@ -35,7 +33,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 		const cb = Meteor.bindEnvironment(callback);
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
-			const cancelFn = () => {
+			const cancelFn = (): void => {
 				cancel.add(this.watchMultiple(_id, cb));
 				cancel.delete(cancelFn);
 			};
@@ -65,7 +63,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 		const cb = Meteor.bindEnvironment(callback);
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
-			const cancelFn = () => {
+			const cancelFn = (): void => {
 				cancel.add(this.watch(_id, cb));
 				cancel.delete(cancelFn);
 			};
