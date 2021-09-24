@@ -14,6 +14,7 @@ const bundles: IBundle = {
 		'scalability',
 		'teams-mention',
 		'saml-enterprise',
+		'oauth-enterprise',
 	],
 	pro: [
 	],
