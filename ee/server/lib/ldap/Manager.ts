@@ -15,23 +15,22 @@ import {
 	Subscriptions as SubscriptionsRaw,
 } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
-import type { LDAPConnection } from '../../../../server/lib/ldap/Connection';
+import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
-import { logger } from '../../../../server/lib/ldap/Logger';
+import { logger, searchLogger } from '../../../../server/lib/ldap/Logger';
 import { templateVarHandler } from '../../../../app/utils/lib/templateVarHandler';
-import { LDAPEEConnection } from './Connection';
 import { api } from '../../../../server/sdk/api';
 import { addUserToRoom, removeUserFromRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Team } from '../../../../server/sdk';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
-		if (settings.get('LDAP_Enable') !== true) {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync') !== true) {
 			return;
 		}
 
 		const options = this.getConverterOptions();
-		const ldap = new LDAPEEConnection();
+		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
 
 		try {
@@ -58,6 +57,25 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static async syncAvatars(): Promise<void> {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Background_Sync_Avatars') !== true) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.updateUserAvatars(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (error) {
+			logger.error(error);
+		}
+	}
+
 	public static validateLDAPTeamsMappingChanges(json: string): void {
 		if (!json) {
 			return;
@@ -73,6 +91,25 @@ export class LDAPEEManager extends LDAPManager {
 		const validStructureMapping = mappedRocketChatTeams.every(mustBeAnArrayOfStrings);
 		if (!validStructureMapping) {
 			throw new Error('Please verify your mapping for LDAP X RocketChat Teams. The structure is invalid, the structure should be an object like: {key: LdapTeam, value: [An array of rocket.chat teams]}');
+		}
+	}
+
+	public static async syncLogout(): Promise<void> {
+		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Sync_AutoLogout_Enabled') !== true) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				await this.logoutDeactivatedUsers(ldap);
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (error) {
+			logger.error(error);
 		}
 	}
 
@@ -335,6 +372,45 @@ export class LDAPEEManager extends LDAPManager {
 		return ldapUserGroups.filter((entry) => entry?.raw?.ou).map((entry) => (ldap.extractLdapAttribute(entry.raw.ou) as string)).flat();
 	}
 
+	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
+		// Account locked by "Draft-behera-ldap-password-policy"
+		if (ldapUser.pwdAccountLockedTime) {
+			return true;
+		}
+
+		// EDirectory: Account manually disabled by an admin
+		if (ldapUser.loginDisabled) {
+			return true;
+		}
+
+		// Oracle: Account must not be allowed to authenticate
+		if (ldapUser.orclIsEnabled && ldapUser.orclIsEnabled !== 'ENABLED') {
+			return true;
+		}
+
+		// Active Directory - Account locked automatically by security policies
+		if (ldapUser.lockoutTime) {
+			// Automatic unlock is disabled
+			if (!ldapUser.lockoutDuration) {
+				return true;
+			}
+
+			const lockoutTime = new Date(Number(ldapUser.lockoutTime));
+			lockoutTime.setMinutes(lockoutTime.getMinutes() + Number(ldapUser.lockoutDuration));
+			// Account has not unlocked itself yet
+			if (lockoutTime.valueOf() > Date.now()) {
+				return true;
+			}
+		}
+
+		// Active Directory - Account disabled by an Admin
+		if (ldapUser.userAccountControl && (ldapUser.userAccountControl & 2) === 2) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public static copyActiveState(ldapUser: ILDAPEntry, userData: IImportUser): void {
 		if (!ldapUser) {
 			return;
@@ -345,7 +421,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const deleted = Boolean(ldapUser.pwdAccountLockedTime);
+		const deleted = this.isUserDeactivated(ldapUser);
 		if (deleted === userData.deleted || (userData.deleted === undefined && !deleted)) {
 			return;
 		}
@@ -466,29 +542,59 @@ export class LDAPEEManager extends LDAPManager {
 	}
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
-		return new Promise(async (resolve, reject) => {
-			try {
-				const users = await UsersRaw.findLDAPUsers();
-				for await (const user of users) {
-					let ldapUser: ILDAPEntry | undefined;
+		const users = await UsersRaw.findLDAPUsers().toArray();
+		for await (const user of users) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
 
-					if (user.services?.ldap?.id) {
-						ldapUser = await ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
-					} else if (user.username) {
-						ldapUser = await ldap.findOneByUsername(user.username);
-					}
-
-					if (ldapUser) {
-						const userData = this.mapUserData(ldapUser, user.username);
-						converter.addUser(userData);
-					}
-				}
-
-				resolve();
-			} catch (error) {
-				reject(error);
+			if (ldapUser) {
+				const userData = this.mapUserData(ldapUser, user.username);
+				converter.addUser(userData);
 			}
+		}
+	}
+
+	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
+		const users = await UsersRaw.findLDAPUsers().toArray();
+		for await (const user of users) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
+			if (!ldapUser) {
+				continue;
+			}
+
+			LDAPManager.syncUserAvatar(user, ldapUser);
+		}
+	}
+
+	private static async findLDAPUser(ldap: LDAPConnection, user: IUser): Promise<ILDAPEntry | undefined> {
+		if (user.services?.ldap?.id) {
+			return ldap.findOneById(user.services.ldap.id, user.services.ldap.idAttribute);
+		}
+
+		if (user.username) {
+			return ldap.findOneByUsername(user.username);
+		}
+
+		searchLogger.debug({
+			msg: 'existing LDAP user not found during Sync',
+			ldapId: user.services?.ldap?.id,
+			ldapAttribute: user.services?.ldap?.idAttribute,
+			username: user.username,
 		});
+	}
+
+	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
+		const users = await UsersRaw.findConnectedLDAPUsers().toArray();
+
+		for await (const user of users) {
+			const ldapUser = await this.findLDAPUser(ldap, user);
+			if (!ldapUser) {
+				continue;
+			}
+
+			if (this.isUserDeactivated(ldapUser)) {
+				UsersRaw.unsetLoginTokens(user._id);
+			}
+		}
 	}
 
 	private static getCustomField(customFields: Record<string, any>, property: string): any {

@@ -19,6 +19,7 @@ import {
 	LivechatRooms,
 } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -45,7 +46,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 		});
 
 		return msg._id;
@@ -81,7 +88,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 			extraParams: undefined,
 		});
 
@@ -167,10 +180,22 @@ export class AppLivechatBridge extends LivechatBridge {
 			type,
 		};
 
+		let userId;
+		let transferredTo;
+
+		if (targetAgent?.id) {
+			transferredTo = Users.findOneAgentById(targetAgent.id, { fields: { _id: 1, username: 1, name: 1 } });
+			if (!transferredTo) {
+				throw new Error('Invalid target agent, cannot transfer');
+			}
+
+			userId = transferredTo._id;
+		}
+
 		return Livechat.transfer(
 			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
+			{ userId, departmentId, transferredBy, transferredTo },
 		);
 	}
 

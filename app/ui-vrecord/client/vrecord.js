@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 
 import { VRecDialog } from './VRecDialog';
-import { VideoRecorder, fileUpload } from '../../ui';
+import { VideoRecorder, fileUpload, UserAction, USER_ACTIVITIES } from '../../ui';
 
 Template.vrecDialog.helpers({
 	recordIcon() {
@@ -33,26 +33,35 @@ Template.vrecDialog.helpers({
 
 const recordingInterval = new ReactiveVar(null);
 
+const stopVideoRecording = (rid, tmid) => {
+	if (recordingInterval.get()) {
+		clearInterval(recordingInterval.get());
+		recordingInterval.set(null);
+	}
+	UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+};
+
+
 Template.vrecDialog.events({
 	'click .vrec-dialog .cancel'(e, t) {
+		const rid = t.rid.get();
+		const tmid = t.tmid.get();
+
 		VideoRecorder.stop();
 		VRecDialog.close();
 		t.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid, tmid);
 	},
 
 	'click .vrec-dialog .record'(e, t) {
+		const rid = t.rid.get();
+		const tmid = t.tmid.get();
 		if (VideoRecorder.recording.get()) {
 			VideoRecorder.stopRecording();
-			if (recordingInterval.get()) {
-				clearInterval(recordingInterval.get());
-				recordingInterval.set(null);
-			}
+			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
+			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			t.time.set('00:00');
 			const startTime = new Date();
 			recordingInterval.set(setInterval(() => {
@@ -73,10 +82,7 @@ Template.vrecDialog.events({
 		};
 		VideoRecorder.stop(cb);
 		instance.time.set('');
-		if (recordingInterval.get()) {
-			clearInterval(recordingInterval.get());
-			recordingInterval.set(null);
-		}
+		stopVideoRecording(rid, tmid);
 	},
 });
 
@@ -124,5 +130,6 @@ Template.vrecDialog.onCreated(function() {
 });
 
 Template.vrecDialog.onDestroyed(function() {
+	VRecDialog.close(this.rid.get());
 	$(window).off('resize', this.remove);
 });

@@ -119,8 +119,14 @@ class Settings extends SettingsBase {
 	private initialLoad = false;
 
 	private validateOptions(_id: string, value: SettingValue, options: ISettingAddOptions): void {
-		if (options.group && this._sorter[options.group] == null) {
-			this._sorter[options.group] = 0;
+		const sorterKey = options.group && options.section ? `${ options.group }_${ options.section }` : options.group;
+		if (sorterKey && this._sorter[sorterKey] == null) {
+			if (options.group && options.section) {
+				const currentGroupValue = this._sorter[options.group] || 0;
+				this._sorter[sorterKey] = currentGroupValue * 1000;
+			} else {
+				this._sorter[sorterKey] = 0;
+			}
 		}
 		options.packageValue = value;
 		options.valueSource = 'packageValue';
@@ -134,8 +140,8 @@ class Settings extends SettingsBase {
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 		}
 
-		if (options.group && options.sorter == null) {
-			options.sorter = this._sorter[options.group]++;
+		if (sorterKey && options.sorter == null) {
+			options.sorter = this._sorter[sorterKey]++;
 		}
 		if (options.enableQuery != null) {
 			options.enableQuery = JSON.stringify(options.enableQuery);
