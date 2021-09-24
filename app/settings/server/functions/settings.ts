@@ -4,12 +4,16 @@ import { Meteor } from 'meteor/meteor';
 import { SettingsBase } from '../../lib/settings';
 import SettingsModel from '../../../models/server/models/Settings';
 import { updateValue } from '../raw';
-import { ISetting, ISettingColor, ISettingGroup, isSettingColor, isSettingEnterprise, SettingValue } from '../../../../definition/ISetting';
+import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '../../../../definition/ISetting';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { overwriteSetting } from './overwriteSetting';
+import { overrideSetting } from './overrideSetting';
+import { getSettingDefaults } from './getSettingDefaults';
+import { validateSetting } from './validateSetting';
 
-const blockedSettings = new Set<string>();
-const hiddenSettings = new Set<string>();
-const wizardRequiredSettings = new Set<string>();
+export const blockedSettings = new Set<string>();
+export const hiddenSettings = new Set<string>();
+export const wizardRequiredSettings = new Set<string>();
 
 if (process.env.SETTINGS_BLOCKED) {
 	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
@@ -30,62 +34,6 @@ export const SettingsEvents = new Emitter<{
 	'after-initial-load': Meteor.Settings;
 }>();
 
-const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']): SettingValue => {
-	if (value.toLowerCase() === 'true') {
-		return true;
-	}
-	if (value.toLowerCase() === 'false') {
-		return false;
-	}
-	if (type === 'int') {
-		return parseInt(value);
-	}
-	return value;
-};
-
-
-const overrideSetting = (setting: ISetting): ISetting => {
-	const overwriteValue = process.env[setting._id];
-	if (!overwriteValue) {
-		return setting;
-	}
-
-	const value = convertValue(overwriteValue, setting.type);
-
-	if (value === setting.value) {
-		return setting;
-	}
-
-	return {
-		...setting,
-		value,
-		processEnvValue: value,
-		valueSource: 'processEnvValue',
-	};
-};
-
-const overwriteSetting = (setting: ISetting): ISetting => {
-	const overwriteValue = process.env[`OVERWRITE_SETTING_${ setting._id }`];
-	if (!overwriteValue) {
-		return setting;
-	}
-
-	const value = convertValue(overwriteValue, setting.type);
-
-	if (value === setting.value) {
-		return setting;
-	}
-
-	SystemLogger.log(`Overwriting setting ${ setting._id }`);
-
-	return {
-		...setting,
-		value,
-		processEnvValue: value,
-		// blocked: true, TODO: add this back
-		valueSource: 'processEnvValue',
-	};
-};
 
 const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): ISettingGroup => ({
 	_id,
@@ -122,91 +70,11 @@ type addGroupCallback = (this: {
 }) => void;
 
 
-const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>): ISetting => {
-	const { _id, value, sorter, ...options } = setting;
-	return {
-		_id,
-		value,
-		packageValue: value,
-		valueSource: 'packageValue',
-		secret: false,
-		enterprise: false,
-		i18nDescription: `${ _id }_Description`,
-		autocomplete: true,
-		...sorter && { sorter },
-		...options,
-		...options.enableQuery && { enableQuery: JSON.stringify(options.enableQuery) },
-		i18nLabel: options.i18nLabel || _id,
-		hidden: options.hidden || hiddenSettings.has(_id),
-		blocked: options.blocked || blockedSettings.has(_id),
-		requiredOnWizard: options.requiredOnWizard || wizardRequiredSettings.has(_id),
-		type: options.type || 'string',
-		env: options.env || false,
-		public: options.public || false,
-		...options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) },
-		...isSettingColor(setting as ISetting) && {
-			packageEditor: (setting as ISettingColor).editor,
-		},
-	};
-};
-
 type ISettingAddOptions = Partial<ISetting>;
 
+
+type Action = 'added' | 'update' | 'remove' | 'overwrite' | 'override' | 'none';
 class Settings extends SettingsBase {
-	static validate<T extends ISetting>(setting: T, value: T['value'] | unknown): boolean {
-		switch (setting.type) {
-			case 'asset':
-				if (typeof value !== 'object') {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type ${ setting.type } but got ${ typeof value }`);
-				}
-				break;
-			case 'string':
-			case 'relativeUrl':
-			case 'password':
-			case 'language':
-			case 'color':
-			case 'font':
-			case 'code':
-			case 'action':
-			case 'roomPick':
-			case 'group':
-				if (typeof value !== 'string') {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type ${ setting.type } but got ${ typeof value }`);
-				}
-				break;
-			case 'boolean':
-				if (typeof value !== 'boolean') {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type boolean but got ${ typeof value }`);
-				}
-				break;
-			case 'int':
-				if (typeof value !== 'number') {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type int but got ${ typeof value }`);
-				}
-				break;
-			case 'multiSelect':
-				if (!Array.isArray(value)) {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type array but got ${ typeof value }`);
-				}
-				break;
-			case 'select':
-
-				if (typeof value !== 'string' && typeof value !== 'number') {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type select but got ${ typeof value }`);
-				}
-				break;
-			case 'date':
-				if (!(value instanceof Date)) {
-					throw new Meteor.Error('invalid-setting-value', `Setting ${ setting._id } is of type date but got ${ typeof value }`);
-				}
-				break;
-			default:
-				return true;
-		}
-
-		return true;
-	}
-
 	private _sorter: {[key: string]: number} = {};
 
 	private initialLoad = true;
@@ -225,7 +93,7 @@ class Settings extends SettingsBase {
 	/*
 	* Add a setting
 	*/
-	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): void {
+	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): Action {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -235,7 +103,7 @@ class Settings extends SettingsBase {
 			this._sorter[group]++;
 		}
 
-		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter, group, ...options });
+		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter, group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
 
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
@@ -246,27 +114,29 @@ class Settings extends SettingsBase {
 		const settingOverwritten = overwriteSetting(settingFromCode);
 
 		try {
-			Settings.validate(settingFromCode, settingFromCode.value);
+			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
 			SystemLogger.error(`Invalid setting code ${ _id }: ${ e.message }`);
 		}
 
 		const isOverwritten = settingFromCode !== settingOverwritten;
 
+		const { _id: _, ...settingProps } = settingOverwritten;
 		if (isOverwritten) {
-			const { _id: _, ...settingProps } = settingOverwritten;
-			settingStoredValue !== settingOverwritten.value && SettingsModel.upsert({ _id }, settingProps);
-			return;
+			if (settingStoredValue !== settingOverwritten.value && SettingsModel.upsert({ _id }, settingProps)) {
+				return 'overwrite';
+			}
+			return 'none';
 		}
 
 
 		if (Meteor.settings.hasOwnProperty(_id)) {
 			try {
-				Settings.validate(settingFromCode, settingStoredValue);
+				validateSetting(settingFromCode._id, settingFromCode.type, settingStoredValue);
 			} catch (e) {
 				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
 			}
-			return;
+			return 'none';
 		}
 
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
@@ -274,6 +144,7 @@ class Settings extends SettingsBase {
 		const setting = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
 
 		SettingsModel.insert(setting); // no need to emit unless we remove the oplog
+		return isOverwritten ? 'override' : 'added';
 	}
 
 	/*
