@@ -66,12 +66,12 @@ export const Livechat = {
 
 	online(department) {
 		Livechat.logger.debug(`Checking online agents ${ department ? `for department ${ department }` : '' }`);
-		if (settings.get('Livechat_accept_chats_with_no_agents')) {
+		if (SettingsVersion4.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
 			return true;
 		}
 
-		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+		if (SettingsVersion4.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${ department }`);
 			const botAgents = Livechat.getBotAgents(department);
 			const onlineBots = botAgents.count();
@@ -209,7 +209,7 @@ export const Livechat = {
 			return;
 		}
 
-		const editAllowed = settings.get('Message_AllowEditing');
+		const editAllowed = SettingsVersion4.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
 
 		if (!editAllowed || !editOwn) {
@@ -230,7 +230,7 @@ export const Livechat = {
 			return;
 		}
 
-		const deleteAllowed = settings.get('Message_AllowDeleting');
+		const deleteAllowed = SettingsVersion4.get('Message_AllowDeleting');
 		const editOwn = msg.u && msg.u._id === guest._id;
 
 		if (!deleteAllowed || !editOwn) {
@@ -298,7 +298,7 @@ export const Livechat = {
 				...id && { _id: id },
 			};
 
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+			if (SettingsVersion4.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 				Livechat.logger.debug(`Saving connection data for visitor ${ token }`);
 				const connection = this.connection || connectionData;
 				if (connection && connection.httpHeaders) {
@@ -492,7 +492,7 @@ export const Livechat = {
 	},
 
 	enabled() {
-		return settings.get('Livechat_enabled');
+		return SettingsVersion4.get('Livechat_enabled');
 	},
 
 	getInitSettings() {
@@ -532,7 +532,7 @@ export const Livechat = {
 			rcSettings[setting._id] = setting.value;
 		});
 
-		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
+		rcSettings.Livechat_history_monitor_type = SettingsVersion4.get('Livechat_history_monitor_type');
 
 		rcSettings.Livechat_Show_Connecting = this.showConnecting();
 
@@ -623,7 +623,7 @@ export const Livechat = {
 			extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
 		}
 
-		if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
+		if (!SettingsVersion4.get('Livechat_Visitor_navigation_as_a_message')) {
 			extraData._hidden = true;
 		}
 
@@ -726,11 +726,11 @@ export const Livechat = {
 		if (!attempts) {
 			return;
 		}
-		const secretToken = settings.get('Livechat_secret_token');
+		const secretToken = SettingsVersion4.get('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options = { data: postData, ...secretToken !== '' && secretToken !== undefined && { headers } };
 		try {
-			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
+			return HTTP.post(SettingsVersion4.get('Livechat_webhookUrl'), options);
 		} catch (e) {
 			Livechat.webhookLogger.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
@@ -1040,7 +1040,7 @@ export const Livechat = {
 		const room = LivechatRooms.findOneById(rid);
 
 		const visitor = LivechatVisitors.getVisitorByToken(token, { fields: { _id: 1, token: 1, language: 1, username: 1, name: 1 } });
-		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
+		const userLanguage = (visitor && visitor.language) || SettingsVersion4.get('Language') || 'en';
 		const timezone = getTimezone(user);
 		Livechat.logger.debug(`Transcript will be sent using ${ timezone } as timezone`);
 
@@ -1049,7 +1049,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
-		const showAgentInfo = settings.get('Livechat_show_agent_info');
+		const showAgentInfo = SettingsVersion4.get('Livechat_show_agent_info');
 		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
 		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } });
 
@@ -1072,12 +1072,12 @@ export const Livechat = {
 
 		html = `${ html }</div>`;
 
-		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+		let fromEmail = SettingsVersion4.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
 		if (fromEmail) {
 			fromEmail = fromEmail[0];
 		} else {
-			fromEmail = settings.get('From_Email');
+			fromEmail = SettingsVersion4.get('From_Email');
 		}
 
 		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
@@ -1156,7 +1156,7 @@ export const Livechat = {
 	},
 
 	sendOfflineMessage(data = {}) {
-		if (!settings.get('Livechat_display_offline_form')) {
+		if (!SettingsVersion4.get('Livechat_display_offline_form')) {
 			return false;
 		}
 
@@ -1173,15 +1173,15 @@ export const Livechat = {
 			<p><strong>Message:</strong><br>${ emailMessage }</p>`,
 		);
 
-		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+		let fromEmail = SettingsVersion4.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
 
 		if (fromEmail) {
 			fromEmail = fromEmail[0];
 		} else {
-			fromEmail = settings.get('From_Email');
+			fromEmail = SettingsVersion4.get('From_Email');
 		}
 
-		if (settings.get('Livechat_validate_offline_email')) {
+		if (SettingsVersion4.get('Livechat_validate_offline_email')) {
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
@@ -1191,7 +1191,7 @@ export const Livechat = {
 			}
 		}
 
-		let emailTo = settings.get('Livechat_offline_email');
+		let emailTo = SettingsVersion4.get('Livechat_offline_email');
 		if (department && department !== '') {
 			const dep = LivechatDepartment.findOneByIdOrName(department);
 			emailTo = dep.email || emailTo;
@@ -1211,7 +1211,7 @@ export const Livechat = {
 
 	notifyAgentStatusChanged(userId, status) {
 		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
-		if (!settings.get('Livechat_show_agent_info')) {
+		if (!SettingsVersion4.get('Livechat_show_agent_info')) {
 			return;
 		}
 

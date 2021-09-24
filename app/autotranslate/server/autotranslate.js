@@ -80,7 +80,6 @@ export class TranslationProviderRegistry {
 
 		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
 	}
-
 }
 
 /**
