@@ -6,19 +6,19 @@ import { callbacks } from '../../../app/callbacks/server';
 import { settings } from '../../../app/settings/server';
 import { Logger } from '../../../app/logger/server';
 
-interface IUserService {
+interface IOAuthUserService {
 	serviceName: string;
 	serviceData: Record<string, any>;
 	user: Record<string, any>;
 }
 
-interface IUserIdentity {
+interface IOAuthUserIdentity {
 	serviceName: string;
 	identity: Record<string, any>;
 	user: Record<string, any>;
 }
 
-interface ISettings {
+interface IOAuthSettings {
 	mapChannels: string;
 	mergeRoles: string;
 	rolesClaim: string;
@@ -29,7 +29,7 @@ interface ISettings {
 
 const logger = new Logger('EECustomOAuth');
 
-function getOAuthSettings(serviceName: string): ISettings {
+function getOAuthSettings(serviceName: string): IOAuthSettings {
 	return {
 		mapChannels: settings.get(`Accounts_OAuth_Custom-${ serviceName }-map_channels`) as string,
 		mergeRoles: settings.get(`Accounts_OAuth_Custom-${ serviceName }-merge_roles`) as string,
@@ -51,42 +51,31 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 }
 
 onLicense('oauth-enterprise', () => {
-	callbacks.add('afterOAuthUserHook', (auth: IUserService) => {
+	callbacks.add('afterProcessOAuthUser', (auth: IOAuthUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
-
 		const settings = getOAuthSettings(auth.serviceName);
 
-		let channelsMap;
-
 		if (settings.mapChannels) {
-			channelsMap = getChannelsMap(settings.channelsMap);
+			const channelsMap = getChannelsMap(settings.channelsMap);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 
 		if (settings.mergeRoles) {
 			OAuthEEManager.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim);
 		}
-
-		if (settings.mapChannels) {
-			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
-		}
 	});
 
-	callbacks.add('afterValidateNewOAuthUser', (auth: IUserIdentity) => {
+	callbacks.add('afterValidateNewOAuthUser', (auth: IOAuthUserIdentity) => {
 		auth.serviceName = capitalize(auth.serviceName);
-
 		const settings = getOAuthSettings(auth.serviceName);
 
-		let channelsMap;
 		if (settings.mapChannels) {
-			channelsMap = getChannelsMap(settings.channelsMap);
+			const channelsMap = getChannelsMap(settings.channelsMap);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 
 		if (settings.mergeRoles) {
 			auth.user.roles = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
-		}
-
-		if (settings.mapChannels) {
-			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 	});
 });
