@@ -6,6 +6,7 @@ import { Messages } from '../../../../models';
 import { settings as rcSettings } from '../../../../settings';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/video.call/:token', {
 	get() {
@@ -26,7 +27,13 @@ API.v1.addRoute('livechat/video.call/:token', {
 			}
 
 			const rid = this.queryParams.rid || Random.id();
-			const roomInfo = { jitsiTimeout: new Date(Date.now() + 3600 * 1000) };
+			const roomInfo = {
+				jitsiTimeout: new Date(Date.now() + 3600 * 1000),
+				source: {
+					type: OmnichannelSourceType.API,
+					alias: 'video-call',
+				},
+			};
 			const { room } = getRoom({ guest, rid, roomInfo });
 			const config = settings();
 			if (!config.theme || !config.theme.actionLinks) {
@@ -50,7 +57,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 				timeout: new Date(Date.now() + 3600 * 1000),
 			};
 
-			return API.v1.success({ videoCall });
+			return API.v1.success(this.deprecationWarning({ videoCall }));
 		} catch (e) {
 			return API.v1.failure(e);
 		}

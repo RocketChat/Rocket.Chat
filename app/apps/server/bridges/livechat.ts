@@ -19,6 +19,7 @@ import {
 	LivechatRooms,
 } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -45,7 +46,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 		});
 
 		return msg._id;
@@ -81,7 +88,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 			extraParams: undefined,
 		});
 
