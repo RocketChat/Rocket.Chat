@@ -24,6 +24,17 @@ settings.addGroup('LDAP', function() {
 
 		this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery });
 
+		this.section('LDAP_Connection_Authentication', function() {
+			const enableAuthentication = [
+				enableQuery,
+				{ _id: 'LDAP_Authentication', value: true },
+			];
+
+			this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery, invalidValue: false });
+			this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
+			this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
+		});
+
 		this.section('LDAP_Connection_Encryption', function() {
 			this.add('LDAP_Encryption', 'plain', {
 				type: 'select',
@@ -103,7 +114,7 @@ settings.addGroup('LDAP', function() {
 			this.add('LDAP_Group_Filter_ObjectClass', 'groupOfUniqueNames', { type: 'string', enableQuery: groupFilterQuery });
 			this.add('LDAP_Group_Filter_Group_Id_Attribute', 'cn', { type: 'string', enableQuery: groupFilterQuery });
 			this.add('LDAP_Group_Filter_Group_Member_Attribute', 'uniqueMember', { type: 'string', enableQuery: groupFilterQuery });
-			this.add('LDAP_Group_Filter_Group_Member_Format', 'uniqueMember', { type: 'string', enableQuery: groupFilterQuery });
+			this.add('LDAP_Group_Filter_Group_Member_Format', '', { type: 'string', enableQuery: groupFilterQuery });
 			this.add('LDAP_Group_Filter_Group_Name', 'ROCKET_CHAT', { type: 'string', enableQuery: groupFilterQuery });
 		});
 	});
@@ -119,7 +130,7 @@ settings.addGroup('LDAP', function() {
 			enableQuery,
 		});
 
-		this.add('LDAP_Update_Data_On_Login', false, {
+		this.add('LDAP_Update_Data_On_Login', true, {
 			type: 'boolean',
 			enableQuery,
 		});
@@ -182,194 +193,6 @@ settings.addGroup('LDAP', function() {
 			this.add('LDAP_Avatar_Field', '', {
 				type: 'string',
 				enableQuery,
-			});
-		});
-	});
-
-	this.with({
-		tab: 'LDAP_Enterprise',
-		enterprise: true,
-		modules: ['ldap-enterprise'],
-	}, function() {
-		this.section('LDAP_Connection_Authentication', function() {
-			const enableAuthentication = [
-				enableQuery,
-				{ _id: 'LDAP_Authentication', value: true },
-			];
-
-			this.add('LDAP_Authentication', false, { type: 'boolean', enableQuery, invalidValue: false });
-			this.add('LDAP_Authentication_UserDN', '', { type: 'string', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
-			this.add('LDAP_Authentication_Password', '', { type: 'password', enableQuery: enableAuthentication, secret: true, invalidValue: '' });
-		});
-
-		this.section('LDAP_DataSync_BackgroundSync', function() {
-			this.add('LDAP_Background_Sync', false, {
-				type: 'boolean',
-				enableQuery,
-				invalidValue: false,
-			});
-
-			const backgroundSyncQuery = [
-				enableQuery,
-				{ _id: 'LDAP_Background_Sync', value: true },
-			];
-
-			this.add('LDAP_Background_Sync_Interval', 'Every 24 hours', {
-				type: 'string',
-				enableQuery: backgroundSyncQuery,
-				invalidValue: 'Every 24 hours',
-			});
-
-			this.add('LDAP_Background_Sync_Import_New_Users', true, {
-				type: 'boolean',
-				enableQuery: backgroundSyncQuery,
-				invalidValue: true,
-			});
-
-			this.add('LDAP_Background_Sync_Keep_Existant_Users_Updated', true, {
-				type: 'boolean',
-				enableQuery: backgroundSyncQuery,
-				invalidValue: true,
-			});
-		});
-
-		this.section('LDAP_DataSync_ActiveState', function() {
-			this.add('LDAP_Sync_User_Active_State', 'disable', {
-				type: 'select',
-				values: [
-					{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
-					{ key: 'disable', i18nLabel: 'LDAP_Sync_User_Active_State_Disable' },
-					{ key: 'both', i18nLabel: 'LDAP_Sync_User_Active_State_Both' },
-				],
-				i18nDescription: 'LDAP_Sync_User_Active_State_Description',
-				enableQuery: { _id: 'LDAP_Enable', value: true },
-				enterprise: true,
-				invalidValue: 'none',
-			});
-		});
-
-		this.section('LDAP_DataSync_CustomFields', function() {
-			this.add('LDAP_Sync_Custom_Fields', false, {
-				type: 'boolean',
-				enableQuery,
-				invalidValue: false,
-			});
-
-			this.add('LDAP_CustomFieldMap', '{}', {
-				type: 'code',
-				multiline: true,
-				enableQuery: [
-					enableQuery,
-					{ _id: 'LDAP_Sync_Custom_Fields', value: true },
-				],
-				invalidValue: '{}',
-			});
-		});
-
-		this.section('LDAP_DataSync_Roles', function() {
-			this.add('LDAP_Sync_User_Data_Roles', false, {
-				type: 'boolean',
-				enableQuery,
-				invalidValue: false,
-			});
-			const syncRolesQuery = [
-				enableQuery,
-				{ _id: 'LDAP_Sync_User_Data_Roles', value: true },
-			];
-			this.add('LDAP_Sync_User_Data_Roles_AutoRemove', false, {
-				type: 'boolean',
-				enableQuery: syncRolesQuery,
-				invalidValue: false,
-			});
-
-			this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
-				type: 'string',
-				enableQuery: syncRolesQuery,
-				invalidValue: '',
-			});
-
-			this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
-				type: 'string',
-				enableQuery: syncRolesQuery,
-				invalidValue: '',
-			});
-
-			this.add('LDAP_Sync_User_Data_RolesMap', '{\n\t"rocket-admin": "admin",\n\t"tech-support": "support"\n}', {
-				type: 'code',
-				multiline: true,
-				public: false,
-				code: 'application/json',
-				enableQuery: syncRolesQuery,
-				invalidValue: '',
-			});
-		});
-
-		this.section('LDAP_DataSync_Channels', function() {
-			this.add('LDAP_Sync_User_Data_Channels', false, {
-				type: 'boolean',
-				enableQuery,
-				invalidValue: false,
-			});
-
-			const syncChannelsQuery = [
-				enableQuery,
-				{ _id: 'LDAP_Sync_User_Data_Channels', value: true },
-			];
-
-			this.add('LDAP_Sync_User_Data_Channels_Admin', 'rocket.cat', {
-				type: 'string',
-				enableQuery: syncChannelsQuery,
-				invalidValue: 'rocket.cat',
-			});
-
-			this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
-				type: 'string',
-				enableQuery: syncChannelsQuery,
-				invalidValue: '',
-			});
-
-			this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
-				type: 'string',
-				enableQuery: syncChannelsQuery,
-				invalidValue: '',
-			});
-
-			this.add('LDAP_Sync_User_Data_ChannelsMap', '{\n\t"employee": "general",\n\t"techsupport": [\n\t\t"helpdesk",\n\t\t"support"\n\t]\n}', {
-				type: 'code',
-				multiline: true,
-				public: false,
-				code: 'application/json',
-				enableQuery: syncChannelsQuery,
-				invalidValue: '',
-			});
-
-			this.add('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels', false, {
-				type: 'boolean',
-				enableQuery: syncChannelsQuery,
-				invalidValue: false,
-			});
-		});
-
-		this.section('LDAP_DataSync_Teams', function() {
-			this.add('LDAP_Enable_LDAP_Groups_To_RC_Teams', false, {
-				type: 'boolean',
-				enableQuery: { _id: 'LDAP_Enable', value: true },
-				invalidValue: false,
-			});
-			this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
-				type: 'code',
-				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
-				invalidValue: '{}',
-			});
-			this.add('LDAP_Validate_Teams_For_Each_Login', false, {
-				type: 'boolean',
-				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
-				invalidValue: false,
-			});
-			this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))', {
-				type: 'string',
-				enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
-				invalidValue: '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))',
 			});
 		});
 	});
