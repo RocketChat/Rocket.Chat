@@ -2,8 +2,8 @@ import { Badge } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { roomTypes } from '../../../app/utils/client';
+import { useLayout } from '../../contexts/LayoutContext';
 import RoomMenu from '../RoomMenu';
-import { useSidebarClose } from '../hooks/useSidebarClose';
 import SidebarIcon from './SidebarIcon';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
@@ -38,7 +38,7 @@ function SideBarItemTemplateWithData({
 	sidebarViewMode,
 	isAnonymous,
 }) {
-	const { closeSidebar } = useSidebarClose();
+	const { sidebar } = useLayout();
 
 	const href = roomTypes.getRouteLink(room.t, room);
 	const title = roomTypes.getRoomName(room.t, room);
@@ -93,7 +93,7 @@ function SideBarItemTemplateWithData({
 			threadUnread={threadUnread}
 			selected={selected}
 			href={href}
-			onClick={() => !selected && closeSidebar()}
+			onClick={() => !selected && sidebar.toggle()}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}

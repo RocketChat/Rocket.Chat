@@ -1,10 +1,10 @@
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 import Line from './Line';
 import Wrapper from './Wrapper';
 
-function BurgerIcon({ children, open }) {
+const BurgerIcon = ({ children, open }: { children?: ReactNode; open?: boolean }): ReactElement => {
 	const isReducedMotionPreferred = usePrefersReducedMotion();
 
 	return (
@@ -15,6 +15,6 @@ function BurgerIcon({ children, open }) {
 			{children}
 		</Wrapper>
 	);
-}
+};
 
 export default BurgerIcon;
