@@ -76,8 +76,6 @@ type addGroupCallback = (this: {
 
 type ISettingAddOptions = Partial<ISetting>;
 
-
-type Action = 'added' | 'update' | 'remove' | 'overwrite' | 'override' | 'none';
 class Settings extends SettingsBase {
 	private _sorter: {[key: string]: number} = {};
 
