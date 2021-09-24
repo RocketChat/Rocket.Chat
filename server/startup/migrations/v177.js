@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 177,
 	up() {
 		// Disable auto opt in for existent installations

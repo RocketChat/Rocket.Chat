@@ -10,9 +10,12 @@ import type { DnsEndpoints } from './endpoints/v1/dns';
 import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
 import type { GroupsEndpoints } from './endpoints/v1/groups';
 import type { ImEndpoints } from './endpoints/v1/im';
+import type { LDAPEndpoints } from './endpoints/v1/ldap';
+import type { LicensesEndpoints } from './endpoints/v1/licenses';
 import type { MiscEndpoints } from './endpoints/v1/misc';
 import type { OmnichannelEndpoints } from './endpoints/v1/omnichannel';
 import type { RoomsEndpoints } from './endpoints/v1/rooms';
+import type { StatisticsEndpoints } from './endpoints/v1/statistics';
 import type { TeamsEndpoints } from './endpoints/v1/teams';
 import type { UsersEndpoints } from './endpoints/v1/users';
 
@@ -25,12 +28,15 @@ type Endpoints = ChatEndpoints &
 	EmojiCustomEndpoints &
 	GroupsEndpoints &
 	ImEndpoints &
+	LDAPEndpoints &
 	RoomsEndpoints &
 	TeamsEndpoints &
 	UsersEndpoints &
 	EngagementDashboardEndpoints &
 	AppsEndpoints &
 	OmnichannelEndpoints &
+	StatisticsEndpoints &
+	LicensesEndpoints &
 	MiscEndpoints;
 
 type Endpoint = UnionizeEndpoints<Endpoints>;

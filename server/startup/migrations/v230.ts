@@ -1,9 +1,9 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Permissions } from '../../../app/models/server';
 
 const roleName = 'app';
 
-Migrations.add({
+addMigration({
 	version: 230,
 	up() {
 		Permissions.update({ _id: 'start-discussion' }, { $addToSet: { roles: roleName } });

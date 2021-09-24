@@ -21,12 +21,11 @@ import { isEmail } from '../../../../app/utils/client';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { formsSubscription } from '../additionalForms';
@@ -135,10 +134,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	});
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpointAction(
-		'POST',
-		`livechat/department/${id}/agents`,
-	);
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `livechat/department/${id}/agents`);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -223,7 +219,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		try {
 			if (id) {
 				await saveDepartmentInfo(id, payload, []);
-				await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
+					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				}
 			} else {
 				await saveDepartmentInfo(id, payload, agentList);
 			}

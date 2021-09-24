@@ -1,0 +1,16 @@
+import { LDAPManager } from '../../lib/ldap/Manager';
+import { ILDAPService } from '../../sdk/types/ILDAPService';
+import { ServiceClass } from '../../sdk/types/ServiceClass';
+import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
+
+export class LDAPService extends ServiceClass implements ILDAPService {
+	protected name = 'ldap';
+
+	async loginRequest(username: string, password: string): Promise<LDAPLoginResult> {
+		return LDAPManager.login(username, password);
+	}
+
+	async testConnection(): Promise<void> {
+		return LDAPManager.testConnection();
+	}
+}
