@@ -28,6 +28,13 @@ class SettingsClass {
 		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)));
 	}
 
+	insert(doc: any): void {
+		Meteor.settings[doc._id] = doc.value;
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { settings } = require('./settings');
+		settings.load(doc._id, doc.value, false);
+	}
+
 	upsert(query: any, update: any): void {
 		const existent = this.findOne(query);
 
