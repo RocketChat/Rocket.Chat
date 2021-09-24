@@ -10,6 +10,7 @@ import { SystemLogger } from '../../../server/lib/logger/system';
  * @class Settings
  **/
 
+const store = new Map<string, SettingValue>();
 export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	ready: undefined;
 	[k: string]: SettingValue;
@@ -27,14 +28,15 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 		if (!this.ready && process.env.NODE_ENV === 'development') {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
 		}
-		return Meteor.settings[_id];
+		return store.get(_id) as T;
 	}
 
 	public watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void {
+		const cb = Meteor.bindEnvironment(callback);
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
 			const cancelFn = () => {
-				cancel.add(this.watchMultiple(_id, callback));
+				cancel.add(this.watchMultiple(_id, cb));
 				cancel.delete(cancelFn);
 			};
 			cancel.add(this.once('ready', cancelFn));
@@ -43,12 +45,12 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 			};
 		}
 
-		if (_id.every((id) => Meteor.settings.hasOwnProperty(id))) {
-			const settings = _id.map((id) => Meteor.settings[id]);
-			callback(settings);
+		if (_id.every((id) => store.has(id))) {
+			const settings = _id.map((id) => store.get(id));
+			cb(settings as T[]);
 		}
 		const mergeFunction = _.debounce((): void => {
-			callback(_id.map((id) => Meteor.settings[id]));
+			cb(_id.map((id) => store.get(id)) as T[]);
 		}, 100);
 		const fns = _id.map((id) => this.change(id, mergeFunction));
 		return (): void => {
@@ -60,10 +62,11 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* get the setting and keep track of changes for a setting
 	*/
 	public watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
+		const cb = Meteor.bindEnvironment(callback);
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
 			const cancelFn = () => {
-				cancel.add(this.watch(_id, callback));
+				cancel.add(this.watch(_id, cb));
 				cancel.delete(cancelFn);
 			};
 			cancel.add(this.once('ready', cancelFn));
@@ -72,7 +75,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 			};
 		}
 
-		Meteor.settings.hasOwnProperty(_id) && callback(Meteor.settings[_id]);
+		store.has(_id) && cb(store.get(_id) as T);
 		return this.change(_id, callback);
 	}
 
@@ -80,8 +83,9 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* get the setting and keep track of changes for a setting
 	*/
 	public watchOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
-		if (Meteor.settings.hasOwnProperty(_id)) {
-			callback(Meteor.settings[_id]);
+		const cb = Meteor.bindEnvironment(callback);
+		if (store.has(_id)) {
+			cb(store.get(_id) as T);
 			return (): void => undefined;
 		}
 		return this.changeOnce(_id, callback);
@@ -92,12 +96,13 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* keep track of changes for a setting
 	*/
 	public change<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
-		return this.on(_id, _.debounce(callback, 100) as any);
+		return this.on(_id, _.debounce(Meteor.bindEnvironment(callback), 100) as any);
 	}
 
-	public changeMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], fn: (settings: T[]) => void): () => void {
+	public changeMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void {
+		const fn = Meteor.bindEnvironment(callback);
 		const mergeFunction = _.debounce((): void => {
-			fn(_id.map((id) => Meteor.settings[id]));
+			fn(_id.map((id) => store.get(id)) as T[]);
 		}, 100);
 		const fns = _id.map((id) => this.change(id, mergeFunction));
 		return (): void => {
@@ -109,19 +114,22 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* keep track of changes for a setting
 	*/
 	public changeOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void): () => void {
-		return this.once(_id, _.debounce(callback, 100) as any);
+		return this.once(_id, _.debounce(Meteor.bindEnvironment(callback), 100) as any);
 	}
 
 	public set<T extends SettingValue = SettingValue>(_id: ISetting['_id'], value: T): void {
-		if (Meteor.settings[_id] === value) {
+		if (store.get(_id) === value) {
 			return;
 		}
 
 		// const old = Meteor.settings[_id];
 
-		Meteor.settings[_id] = value;
+		store.set(_id, value);
 
 		if (!this.ready) {
+			this.once('ready', () => {
+				this.emit(_id, value);
+			});
 			return;
 		}
 

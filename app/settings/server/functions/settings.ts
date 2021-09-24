@@ -98,7 +98,7 @@ class Settings extends SettingsBase {
 	/*
 	* Add a setting
 	*/
-	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): Action {
+	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): void {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -130,9 +130,8 @@ class Settings extends SettingsBase {
 		if (isOverwritten) {
 			if (settingStoredValue !== settingOverwritten.value) {
 				SettingsModel.upsert({ _id }, settingProps);
-				return 'overwrite';
 			}
-			return 'none';
+			return;
 		}
 
 
@@ -142,7 +141,7 @@ class Settings extends SettingsBase {
 			} catch (e) {
 				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
 			}
-			return 'none';
+			return;
 		}
 
 		const settingOverwrittenDefault = overrideSetting(settingFromCode);
@@ -150,7 +149,6 @@ class Settings extends SettingsBase {
 		const setting = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
 
 		SettingsModel.insert(setting); // no need to emit unless we remove the oplog
-		return isOverwritten ? 'override' : 'added';
 	}
 
 	/*
@@ -174,6 +172,7 @@ class Settings extends SettingsBase {
 		if (!Meteor.settings.hasOwnProperty(_id)) {
 			options.ts = new Date();
 			SettingsModel.insert(options);
+			this.storeSettingValue(options as ISetting, true);
 		}
 
 		if (!callback) {
@@ -271,8 +270,8 @@ class Settings extends SettingsBase {
 			process.env[record._id] = String(value);
 		}
 
-		this.load(record._id, value, initialLoad);
-		SettingsVersion4.set(record._id, value);
+		this.load(record._id, Meteor.settings[record._id], initialLoad);
+		SettingsVersion4.set(record._id, Meteor.settings[record._id]);
 	}
 
 	/*
