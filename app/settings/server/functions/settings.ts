@@ -103,12 +103,14 @@ class Settings extends SettingsBase {
 			throw new Error('Invalid arguments');
 		}
 
-		if (group) {
-			this._sorter[group] = this._sorter[group] || -1;
-			this._sorter[group]++;
+		const sorterKey = group && options.section ? `${ group }_${ options.section }` : group;
+
+		if (sorterKey) {
+			this._sorter[sorterKey] = this._sorter[sorterKey] || -1;
+			this._sorter[sorterKey]++;
 		}
 
-		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter, group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
+		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]), group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
