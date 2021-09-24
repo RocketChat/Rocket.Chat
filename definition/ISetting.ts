@@ -35,7 +35,7 @@ export interface ISettingBase {
 	blocked: boolean;
 	enableQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
-	sorter?: number;
+	sorter: number;
 	properties?: unknown;
 	enterprise?: boolean;
 	requiredOnWizard?: boolean;
@@ -58,6 +58,7 @@ export interface ISettingGroup {
 	hidden: boolean;
 	blocked: boolean;
 	ts?: Date;
+	sorter: number;
 	i18nLabel: string;
 	displayQuery?: string | FilterQuery<ISetting> | FilterQuery<ISetting>[];
 	i18nDescription: string;

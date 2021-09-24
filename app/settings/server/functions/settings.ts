@@ -40,6 +40,7 @@ const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): I
 	i18nLabel: _id,
 	i18nDescription: `${ _id }_Description`,
 	...options,
+	sorter: options.sorter || 0,
 	blocked: blockedSettings.has(_id),
 	hidden: hiddenSettings.has(_id),
 	type: 'group',
@@ -104,7 +105,6 @@ class Settings extends SettingsBase {
 		}
 
 		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter, group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
-
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
@@ -112,7 +112,6 @@ class Settings extends SettingsBase {
 
 		const settingStoredValue = Meteor.settings[_id] as ISetting['value'] | undefined;
 		const settingOverwritten = overwriteSetting(settingFromCode);
-
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
@@ -123,7 +122,8 @@ class Settings extends SettingsBase {
 
 		const { _id: _, ...settingProps } = settingOverwritten;
 		if (isOverwritten) {
-			if (settingStoredValue !== settingOverwritten.value && SettingsModel.upsert({ _id }, settingProps)) {
+			if (settingStoredValue !== settingOverwritten.value) {
+				SettingsModel.upsert({ _id }, settingProps);
 				return 'overwrite';
 			}
 			return 'none';
@@ -153,26 +153,23 @@ class Settings extends SettingsBase {
 	addGroup(_id: string, cb: addGroupCallback): void;
 
 	// eslint-disable-next-line no-dupe-class-members
-	addGroup(_id: string, grupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): void {
-		if (!_id || (grupOptions instanceof Function && cb)) {
+	addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): void {
+		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
 		}
 
-		const callback = grupOptions instanceof Function ? grupOptions : cb;
+		if (_id) {
+			this._sorter[_id] = this._sorter[_id] || -1;
+			this._sorter[_id]++;
+		}
 
-		const options = grupOptions instanceof Function ? getGroupDefaults(_id) : getGroupDefaults(_id, grupOptions);
+		const callback = groupOptions instanceof Function ? groupOptions : cb;
 
-		const existentGroup = Meteor.settings[_id];
-		if (existentGroup === undefined) {
+		const options = groupOptions instanceof Function ? getGroupDefaults(_id, { sorter: this._sorter[_id] }) : getGroupDefaults(_id, { ...groupOptions, sorter: this._sorter[_id] });
+
+		if (!Meteor.settings.hasOwnProperty(_id)) {
 			options.ts = new Date();
-			SettingsModel.upsert({
-				_id,
-			}, {
-				$set: options,
-				$setOnInsert: {
-					createdAt: new Date(),
-				},
-			});
+			SettingsModel.insert(options);
 		}
 
 		if (!callback) {

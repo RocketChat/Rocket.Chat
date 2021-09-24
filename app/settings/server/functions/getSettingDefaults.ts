@@ -11,7 +11,7 @@ export const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '
 		enterprise: false,
 		i18nDescription: `${ _id }_Description`,
 		autocomplete: true,
-		...sorter && { sorter },
+		sorter: sorter || 0,
 		...options,
 		...options.enableQuery && { enableQuery: JSON.stringify(options.enableQuery) },
 		i18nLabel: options.i18nLabel || _id,

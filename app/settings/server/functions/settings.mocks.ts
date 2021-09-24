@@ -14,6 +14,8 @@ class SettingsClass {
 
 	public upsertCalls = 0;
 
+	public insertCalls = 0;
+
 	private checkQueryMatch(key: string, data: Dictionary, queryValue: any): boolean {
 		if (typeof queryValue === 'object') {
 			if (queryValue.$exists !== undefined) {
@@ -30,15 +32,17 @@ class SettingsClass {
 
 	insert(doc: any): void {
 		Meteor.settings[doc._id] = doc.value;
+		this.data.set(doc._id, doc);
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const { settings } = require('./settings');
 		settings.load(doc._id, doc.value, false);
+		this.insertCalls++;
 	}
 
 	upsert(query: any, update: any): void {
 		const existent = this.findOne(query);
 
-		const data = { ...existent, ...query, ...update.$set };
+		const data = { ...existent, ...query, ...update, ...update.$set };
 
 		if (!existent) {
 			Object.assign(data, update.$setOnInsert);

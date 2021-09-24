@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { getSettingDefaults } from './getSettingDefaults';
 import { overrideGenerator } from './overrideGenerator';
 
-describe.only('overrideGenerator', () => {
+describe('overrideGenerator', () => {
 	it('should return a new object with the new value', () => {
 		const overwrite = overrideGenerator(() => 'value');
 

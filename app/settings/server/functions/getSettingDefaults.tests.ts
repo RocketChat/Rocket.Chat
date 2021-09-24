@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import { getSettingDefaults } from './getSettingDefaults';
 
-describe.only('getSettingDefaults', () => {
+describe('getSettingDefaults', () => {
 	it('should return based on _id type value', () => {
 		const setting = getSettingDefaults({ _id: 'test', value: 'test', type: 'string' });
 
@@ -60,6 +60,16 @@ describe.only('getSettingDefaults', () => {
 
 	it('should return a blocked setting set by env', () => {
 		const setting = getSettingDefaults({ _id: 'test', value: 'test', type: 'string' }, new Set(['test']));
+
+		expect(setting).to.be.an('object');
+		expect(setting).to.have.property('_id');
+
+		expect(setting).to.have.property('blocked').to.be.equal(true);
+	});
+
+
+	it('should return a package value', () => {
+		const setting = getSettingDefaults({ _id: 'test', value: true, type: 'string' }, new Set(['test']));
 
 		expect(setting).to.be.an('object');
 		expect(setting).to.have.property('_id');

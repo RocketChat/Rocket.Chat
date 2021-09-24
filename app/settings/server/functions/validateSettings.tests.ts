@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import { validateSetting } from './validateSetting';
 
-describe.only('validateSettings', () => {
+describe('validateSettings', () => {
 	it('should validate the type string', () => {
 		expect(() => validateSetting('test', 'string', 'value')).to.not.throw();
 	});
