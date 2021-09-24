@@ -1,6 +1,6 @@
 import AdmZip from 'adm-zip';
-
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+
 import { addMigration } from '../../lib/migrations';
 import { Apps } from '../../../app/apps/server';
 
