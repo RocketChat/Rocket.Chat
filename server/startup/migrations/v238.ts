@@ -1,13 +1,19 @@
-import { Mongo } from 'meteor/mongo';
+import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 
 import { addMigration } from '../../lib/migrations';
+import { Apps } from '../../../app/apps/server';
 
 addMigration({
 	version: 238,
 	up() {
-		const msg = 'Please notice that after the next release (4.0) advanced functionalities of LDAP, SAML, and Custom Oauth will be available only in Enterprise Edition and Gold plan. Check the official announcement for more info: https://go.rocket.chat/i/authentication-changes';
-		const newMsg = 'Please note that after release 4.0 certain advanced authentication services features are available only in Enterprise Edition and Gold plan. Check the official announcement for more details: https://go.rocket.chat/i/authentication-changes';
-		const Banners = new Mongo.Collection('rocketchat_banner');
-		Banners.update({ 'view.blocks': { text: { text: msg } } }, { $set: { 'view.blocks': { text: { text: newMsg } } } }, { multi: true });
+		Apps.initialize();
+
+		const apps = Apps._model.find().fetch();
+
+		for (const app of apps) {
+			const zipFile = Buffer.from(app.zip, 'base64');
+			Promise.await((Apps._manager as AppManager).update(zipFile, app.permissionsGranted, { loadApp: false }));
+			Promise.await(Apps._model.update({ id: app.id }, { $unset: { zip: 1, compiled: 1 } }));
+		}
 	},
 });
