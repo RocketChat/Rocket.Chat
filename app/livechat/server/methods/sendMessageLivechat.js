@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 
 import { LivechatVisitors } from '../../../models';
 import { Livechat } from '../lib/Livechat';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 Meteor.methods({
 	sendMessageLivechat({ token, _id, rid, msg, file, attachments }, agent) {
@@ -40,6 +41,11 @@ Meteor.methods({
 				attachments,
 			},
 			agent,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.API,
+				},
+			},
 		});
 	},
 });
