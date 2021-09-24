@@ -2,6 +2,7 @@ import React, { useState, useEffect, FC, useMemo, useCallback, memo } from 'reac
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
+import { Rooms } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { IRoom } from '../../definition/IRoom';
@@ -92,7 +93,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				return undefined;
 			}
 
-			return LivechatInquiry.find(
+			const inquires = LivechatInquiry.find(
 				{
 					status: 'queued',
 					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': user?._id }],
@@ -106,6 +107,19 @@ const OmnichannelProvider: FC = ({ children }) => {
 					limit: omnichannelPoolMaxIncoming,
 				},
 			).fetch();
+
+			return inquires.map((inquire) => {
+				const { source } = Rooms.findOne(
+					{
+						_id: inquire.rid,
+					},
+					{
+						source: 1,
+					},
+				);
+
+				return { ...inquire, source };
+			});
 		}, [manuallySelected, omnichannelPoolMaxIncoming, user?._id]),
 	);
 
