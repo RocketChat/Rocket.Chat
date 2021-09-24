@@ -6,6 +6,10 @@ type Dictionary = {
 }
 
 class SettingsClass {
+	find(): any[] {
+		return [];
+	}
+
 	public data = new Map<string, Dictionary>()
 
 	public upsertCalls = 0;
