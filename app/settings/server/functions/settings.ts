@@ -164,14 +164,12 @@ class Settings extends SettingsBase {
 			throw new Error('Invalid arguments');
 		}
 
-		if (_id) {
-			this._sorter[_id] = this._sorter[_id] || -1;
-			this._sorter[_id]++;
-		}
+		this._sorter[_id] = this._sorter[_id] || -1;
+		this._sorter[_id]++;
 
 		const callback = groupOptions instanceof Function ? groupOptions : cb;
 
-		const options = groupOptions instanceof Function ? getGroupDefaults(_id, { sorter: this._sorter[_id] }) : getGroupDefaults(_id, { ...groupOptions, sorter: this._sorter[_id] });
+		const options = groupOptions instanceof Function ? getGroupDefaults(_id, { sorter: this._sorter[_id] }) : getGroupDefaults(_id, { sorter: this._sorter[_id], ...groupOptions });
 
 		if (!Meteor.settings.hasOwnProperty(_id)) {
 			options.ts = new Date();
