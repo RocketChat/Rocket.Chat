@@ -270,8 +270,10 @@ function shouldQueueStart() {
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
 }
 
-settings.get('Livechat_enabled', (_, value) => {
-	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
-});
+Meteor.startup(() => {
+	settings.get('Livechat_enabled', (_, value) => {
+		value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
+	});
 
-settings.onload('Livechat_Routing_Method', shouldQueueStart);
+	settings.onload('Livechat_Routing_Method', shouldQueueStart);
+});
