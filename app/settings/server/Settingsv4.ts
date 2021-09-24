@@ -10,6 +10,8 @@ import { SystemLogger } from '../../../server/lib/logger/system';
  * @class Settings
  **/
 
+const warn = process.env.NODE_ENV === 'development' || process.env.TEST_MODE;
+
 const store = new Map<string, SettingValue>();
 export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	ready: undefined;
@@ -20,10 +22,11 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	setInitialized(): void {
 		this.ready = true;
 		this.emit('ready');
+		SystemLogger.info('Settings initalized');
 	}
 
 	public get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T {
-		if (!this.ready && process.env.NODE_ENV === 'development') {
+		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
 		}
 		return store.get(_id) as T;
@@ -126,7 +129,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 
 		if (!this.ready) {
 			this.once('ready', () => {
-				this.emit(_id, value);
+				this.emit(_id, store.get(_id));
 			});
 			return;
 		}
