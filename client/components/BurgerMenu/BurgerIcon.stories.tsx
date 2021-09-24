@@ -1,3 +1,4 @@
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import { centeredDecorator } from '../../../.storybook/decorators';
@@ -10,8 +11,8 @@ export default {
 	decorators: [centeredDecorator],
 };
 
-export const Normal = () => <BurgerIcon />;
+export const Normal: Story = () => <BurgerIcon />;
 
-export const Open = () => <BurgerIcon open />;
+export const Open: Story = () => <BurgerIcon open />;
 
-export const Transitioning = () => <BurgerIcon open={useAutoToggle()} />;
+export const Transitioning: Story = () => <BurgerIcon open={useAutoToggle()} />;
