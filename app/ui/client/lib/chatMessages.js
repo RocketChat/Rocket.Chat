@@ -9,7 +9,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { KonchatNotification } from './notification';
-import { MsgTyping } from './msgTyping';
+import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
 import { t, slashCommands } from '../../../utils/client';
 import {
@@ -255,7 +255,7 @@ export class ChatMessages {
 	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
-		MsgTyping.stop(rid);
+		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 
 		if (!ChatSubscription.findOne({ rid })) {
 			await callWithErrorHandling('joinRoom', rid);
@@ -580,9 +580,9 @@ export class ChatMessages {
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
 			if (input.value.trim()) {
-				MsgTyping.start(rid);
+				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			} else {
-				MsgTyping.stop(rid);
+				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			}
 		}
 
@@ -590,6 +590,6 @@ export class ChatMessages {
 	}
 
 	onDestroyed(rid) {
-		MsgTyping.cancel(rid);
+		UserAction.cancel(rid);
 	}
 }

@@ -7,7 +7,7 @@ import { IBanner, BannerPlatform } from '../../definition/IBanner';
 import * as banners from '../lib/banners';
 
 const fetchInitialBanners = async (): Promise<void> => {
-	const response = (await APIClient.get('v1/banners.getNew', {
+	const response = (await APIClient.get('v1/banners', {
 		platform: BannerPlatform.Web,
 	})) as {
 		banners: IBanner[];
@@ -21,13 +21,16 @@ const fetchInitialBanners = async (): Promise<void> => {
 	}
 };
 
-const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
-	const response = (await APIClient.get('v1/banners.getNew', {
+const handleBanner = async (event: { bannerId: string }): Promise<void> => {
+	const response = (await APIClient.get(`v1/banners/${event.bannerId}`, {
 		platform: BannerPlatform.Web,
-		bid: event.bannerId,
 	})) as {
 		banners: IBanner[];
 	};
+
+	if (!response.banners.length) {
+		return banners.closeById(event.bannerId);
+	}
 
 	for (const banner of response.banners) {
 		banners.open({
@@ -40,10 +43,10 @@ const handleNewBanner = async (event: { bannerId: string }): Promise<void> => {
 const watchBanners = (): (() => void) => {
 	fetchInitialBanners();
 
-	Notifications.onLogged('new-banner', handleNewBanner);
+	Notifications.onLogged('banner-changed', handleBanner);
 
 	return (): void => {
-		Notifications.unLogged(handleNewBanner);
+		Notifications.unLogged(handleBanner);
 		banners.clear();
 	};
 };

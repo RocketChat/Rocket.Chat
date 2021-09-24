@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import Uploads from '../../../app/models/server/models/Uploads';
 
-Migrations.add({
+addMigration({
 	version: 202,
 	up() {
 		Promise.await(Uploads.model.rawCollection().updateMany({

@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Subscriptions, Rooms } from '../../../app/models/server/raw';
 
 const updateSubscriptions = async () => {
@@ -42,7 +42,7 @@ const updateSubscriptions = async () => {
 	}
 };
 
-Migrations.add({
+addMigration({
 	version: 213,
 	up() {
 		Promise.await((async () => {

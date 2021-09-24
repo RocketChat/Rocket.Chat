@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { settings } from '../../../app/settings/server';
 import { Settings } from '../../../app/models/server';
 import { isEnterprise } from '../../../ee/app/license/server';
@@ -12,7 +12,7 @@ function copySettingValue(newName: string, oldName: string): void {
 	Settings.upsert({ _id: newName }, { $set: { value } });
 }
 
-Migrations.add({
+addMigration({
 	version: 237,
 	up() {
 		const isEE = isEnterprise();

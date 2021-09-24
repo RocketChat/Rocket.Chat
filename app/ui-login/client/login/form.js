@@ -141,21 +141,26 @@ Template.loginForm.events({
 			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'error-user-is-not-activated') {
-						return toastr.error(t('Wait_activation_warning'));
-					} if (error.error === 'error-invalid-email') {
-						instance.typedEmail = formData.emailOrUsername;
-						return instance.state.set('email-verification');
-					} if (error.error === 'error-user-is-not-activated') {
-						toastr.error(t('Wait_activation_warning'));
-					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
-						toastr.error(t('App_user_not_allowed_to_login'));
-					} else if (error.error === 'error-login-blocked-for-ip') {
-						toastr.error(t('Error_login_blocked_for_ip'));
-					} else if (error.error === 'error-login-blocked-for-user') {
-						toastr.error(t('Error_login_blocked_for_user'));
-					} else {
-						return toastr.error(t('User_not_found_or_incorrect_password'));
+					switch (error.error) {
+						case 'error-user-is-not-activated':
+							return toastr.error(t('Wait_activation_warning'));
+						case 'error-invalid-email':
+							instance.typedEmail = formData.emailOrUsername;
+							return instance.state.set('email-verification');
+						case 'error-app-user-is-not-allowed-to-login':
+							toastr.error(t('App_user_not_allowed_to_login'));
+							break;
+						case 'error-login-blocked-for-ip':
+							toastr.error(t('Error_login_blocked_for_ip'));
+							break;
+						case 'error-login-blocked-for-user':
+							toastr.error(t('Error_login_blocked_for_user'));
+							break;
+						case 'error-license-user-limit-reached':
+							toastr.error(t('error-license-user-limit-reached'));
+							break;
+						default:
+							return toastr.error(t('User_not_found_or_incorrect_password'));
 					}
 				}
 				Session.set('forceLogin', false);

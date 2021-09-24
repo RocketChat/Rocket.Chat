@@ -47,7 +47,7 @@ import './lib/Tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';
-export { MsgTyping } from './lib/msgTyping';
+export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';
 export { Login, Button } from './lib/rocket';
 export { AudioRecorder } from './lib/recorderjs/audioRecorder';
