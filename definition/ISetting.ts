@@ -55,7 +55,7 @@ export interface ISettingBase {
 
 export interface ISettingGroup {
 	_id: string;
-	hidden: boolean;
+	hidden: undefined;
 	blocked: boolean;
 	ts?: Date;
 	sorter: number;

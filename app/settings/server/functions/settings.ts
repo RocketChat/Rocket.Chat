@@ -101,10 +101,6 @@ class Settings extends SettingsBase {
 			throw new Error('Invalid arguments');
 		}
 
-		if (_id.startsWith('Accounts')) {
-			console.log('1 ---> ', _id, value);
-		}
-
 		const sorterKey = group && options.section ? `${ group }_${ options.section }` : group;
 
 		if (sorterKey) {
@@ -136,11 +132,6 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-
-		if (_id.startsWith('Accounts')) {
-			console.log('2 ---> ', _id, value);
-		}
-
 		if (Meteor.settings.hasOwnProperty(_id)) {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStoredValue);
@@ -156,9 +147,7 @@ class Settings extends SettingsBase {
 
 		SettingsModel.insert(setting); // no need to emit unless we remove the oplog
 
-		if (_id.startsWith('Accounts')) {
-			console.log('3 ---> ', _id, value);
-		}
+		this.storeSettingValue(setting, true);
 	}
 
 	/*
@@ -274,9 +263,7 @@ class Settings extends SettingsBase {
 		};
 		SettingsEvents.emit('store-setting-value', [record, newData]);
 		const { value } = newData;
-		if (record._id.startsWith('Accounts')) {
-			console.log('storeSettingValue ---> ', record._id, value);
-		}
+
 		Meteor.settings[record._id] = record.type === 'group' ? true : value;
 		if (record.env === true) {
 			process.env[record._id] = String(value);
