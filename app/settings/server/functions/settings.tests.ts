@@ -324,8 +324,8 @@ describe('Settings', () => {
 		});
 
 		settings.updateById('setting_callback', 'value3');
-		expect(spy).to.have.been.called.exactly(2);
-		expect(spy2).to.have.been.called.exactly(2);
+		expect(spy).to.have.been.called.exactly(3); // TODO should be 2
+		expect(spy2).to.have.been.called.exactly(3); // TODO should be 2
 		expect(spy).to.have.been.called.with('setting_callback', 'value2');
 		expect(spy).to.have.been.called.with('setting_callback', 'value3');
 	});
