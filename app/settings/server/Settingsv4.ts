@@ -125,6 +125,9 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 
 		// const old = Meteor.settings[_id];
 
+		if (_id.startsWith('Accounts')) {
+			console.log('SettingsVersion4 ---> ', _id, value);
+		}
 		store.set(_id, value);
 
 		if (!this.ready) {
