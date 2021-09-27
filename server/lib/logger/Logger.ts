@@ -12,7 +12,7 @@ const getLevel = (level: LogLevelSetting): string => {
 	}
 };
 
-let defaultLevel = 'info';
+let defaultLevel = 'warn';
 
 logLevel.once('changed', (level) => { defaultLevel = getLevel(level); });
 

@@ -13,7 +13,7 @@ function logMethod(this: P.Logger, args: unknown[], method: any): void {
 	return method.apply(this, args);
 }
 
-export function getPino(name: string, level = 'info'): P.Logger {
+export function getPino(name: string, level = 'warn'): P.Logger {
 	return pino({
 		name,
 		hooks: { logMethod },
