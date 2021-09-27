@@ -62,6 +62,8 @@ export const statusLiveStream = ({
 	clientSecret,
 	status,
 }) => {
+	const google = Promise.await(import('googleapis')).default;
+	const { OAuth2 } = google.auth;
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -86,6 +88,8 @@ export const setBroadcastStatus = ({
 	clientSecret,
 	status,
 }) => {
+	const google = Promise.await(import('googleapis')).default;
+	const { OAuth2 } = google.auth;
 	const auth = new OAuth2(clientId, clientSecret);
 
 	auth.setCredentials({
@@ -109,6 +113,8 @@ export const createLiveStream = async ({
 	clientId,
 	clientSecret,
 }) => {
+	const google = Promise.await(import('googleapis')).default;
+	const { OAuth2 } = google.auth;
 	const auth = new OAuth2(clientId, clientSecret);
 	auth.setCredentials({
 		access_token,
