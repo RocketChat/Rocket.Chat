@@ -1,4 +1,5 @@
 import { action } from '@storybook/addon-actions';
+import { Story } from '@storybook/react';
 import React from 'react';
 
 import { centeredDecorator } from '../../../.storybook/decorators';
@@ -10,8 +11,8 @@ export default {
 	decorators: [centeredDecorator],
 };
 
-export const Basic = () => <BurgerMenuButton onClick={action('click')} />;
+export const Basic: Story = () => <BurgerMenuButton onClick={action('click')} />;
 
-export const Open = () => <BurgerMenuButton open onClick={action('click')} />;
+export const Open: Story = () => <BurgerMenuButton open onClick={action('click')} />;
 
-export const WithBadge = () => <BurgerMenuButton badge='99' onClick={action('click')} />;
+export const WithBadge: Story = () => <BurgerMenuButton badge={99} onClick={action('click')} />;

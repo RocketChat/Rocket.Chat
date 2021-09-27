@@ -1,5 +1,6 @@
 import { EJSON } from 'meteor/ejson';
 import { Db, Collection } from 'mongodb';
+import * as mongodb from 'mongodb';
 
 import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
@@ -109,6 +110,13 @@ declare module 'meteor/mongo' {
 	}
 
 	namespace MongoInternals {
+		export const NpmModules: {
+			mongodb: {
+				version: string;
+				module: typeof mongodb;
+			};
+		};
+
 		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
 
 		class ConnectionClass {}

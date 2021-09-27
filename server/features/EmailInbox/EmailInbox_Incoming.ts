@@ -10,6 +10,7 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
+import { OmnichannelSourceType } from '../../../definition/IRoom';
 
 type FileAttachment = {
 	title: string;
@@ -186,6 +187,11 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				thread,
 				replyTo: email.from.value[0].address,
 				subject: email.subject,
+			},
+			source: {
+				type: OmnichannelSourceType.EMAIL,
+				id: inbox,
+				alias: 'email-inbox',
 			},
 		},
 		agent: undefined,

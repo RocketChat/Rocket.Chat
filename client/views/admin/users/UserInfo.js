@@ -39,6 +39,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 
 	const user = useMemo(() => {
 		const { user } = data || { user: {} };
+
 		const {
 			name,
 			username,
@@ -50,6 +51,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 			lastLogin,
 			nickname,
 		} = user;
+
 		return {
 			name,
 			username,

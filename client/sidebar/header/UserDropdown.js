@@ -10,6 +10,7 @@ import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
+import { useLayout } from '../../contexts/LayoutContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -49,6 +50,7 @@ const UserDropdown = ({ user, onClose }) => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
+	const { sidebar } = useLayout();
 
 	const logout = useLogout();
 
@@ -86,6 +88,7 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
+		sidebar.toggle();
 		popover.close();
 	});
 
