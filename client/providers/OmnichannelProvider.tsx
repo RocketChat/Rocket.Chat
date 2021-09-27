@@ -109,7 +109,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 			).fetch();
 
 			return inquires.map((inquire) => {
-				const { source } = Rooms.findOne(
+				const room = Rooms.findOne(
 					{
 						_id: inquire.rid,
 					},
@@ -117,6 +117,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 						source: 1,
 					},
 				);
+
+				const source = room?.source;
 
 				return { ...inquire, source };
 			});
