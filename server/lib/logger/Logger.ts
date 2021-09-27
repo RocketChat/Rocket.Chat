@@ -12,11 +12,15 @@ const getLevel = (level: LogLevelSetting): string => {
 	}
 };
 
+let defaultLevel = 'info';
+
+logLevel.once('changed', (level) => { defaultLevel = getLevel(level); });
+
 export class Logger {
 	readonly logger: P.Logger;
 
 	constructor(loggerLabel: string) {
-		this.logger = getPino(loggerLabel);
+		this.logger = getPino(loggerLabel, defaultLevel);
 
 		logLevel.on('changed', (level) => {
 			this.logger.level = getLevel(level);

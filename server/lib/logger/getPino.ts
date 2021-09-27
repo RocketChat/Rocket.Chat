@@ -13,7 +13,7 @@ function logMethod(this: P.Logger, args: unknown[], method: any): void {
 	return method.apply(this, args);
 }
 
-export function getPino(name: string): P.Logger {
+export function getPino(name: string, level = 'info'): P.Logger {
 	return pino({
 		name,
 		hooks: { logMethod },
@@ -22,6 +22,7 @@ export function getPino(name: string): P.Logger {
 			method: 35,
 			subscription: 35,
 		},
+		level,
 		timestamp: pino.stdTimeFunctions.isoTime,
 		...process.env.NODE_ENV !== 'production' ? { prettyPrint: { colorize: true } } : {},
 	});
