@@ -8,9 +8,9 @@ export enum ServerType {
 export interface IVoipServerConfig extends IRocketChatRecord {
 	type: ServerType;
 	host: string;
-	serverName: string;
+	name: string;
 	configData: IManagementConfigData | ICallServerConfigData;
-	configActive: boolean;
+	active: boolean;
 }
 
 export interface IManagementConfigData {

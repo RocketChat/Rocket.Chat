@@ -26,7 +26,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 			throw new Error(`Error! There already exists an active record of type ${ type }`);
 		}
 
-		await this.VoipServerConfiguration.insertOne(config);
+		return !!await this.VoipServerConfiguration.insertOne(config);
 
 		return true;
 	}

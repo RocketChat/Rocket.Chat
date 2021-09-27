@@ -11,7 +11,7 @@ export class VoipServerConfigurationRaw extends BaseRaw<IVoipServerConfig> {
 		super(col, trash);
 	}
 
-	removeByType(type: ServerType): Promise<DeleteWriteOpResultObject> {
+	removeOneByType(type: ServerType): Promise<DeleteWriteOpResultObject> {
 		return this.col.deleteOne({ type });
 	}
 }
