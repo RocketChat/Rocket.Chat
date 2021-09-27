@@ -2,10 +2,9 @@ import { HTTP } from 'meteor/http';
 import { Base64 } from 'meteor/base64';
 
 import { settings } from '../../../settings';
-import { SMS } from '../SMS';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-class Mobex {
+export class Mobex {
 	constructor() {
 		this.address = settings.get('SMS_Mobex_gateway_address');
 		this.restAddress = settings.get('SMS_Mobex_restful_address');
@@ -158,5 +157,3 @@ class Mobex {
 		};
 	}
 }
-
-SMS.registerService('mobex', Mobex);

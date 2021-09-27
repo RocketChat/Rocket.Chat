@@ -1,5 +1,4 @@
 import { Match, check } from 'meteor/check';
-import Twit from 'twit';
 import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
@@ -15,6 +14,7 @@ const whitelistedFields = [
 ];
 
 const getIdentity = function(accessToken, appId, appSecret, accessTokenSecret) {
+	const Twit = Promise.await(import('twit')).default;
 	const Twitter = new Twit({
 		consumer_key: appId,
 		consumer_secret: appSecret,

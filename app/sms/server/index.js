@@ -1,5 +1,5 @@
 import './settings';
-import './services/twilio';
+import './services/register';
 import './services/voxtelesys';
 import './services/mobex';
 

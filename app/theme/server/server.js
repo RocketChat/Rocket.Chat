@@ -1,8 +1,6 @@
 import crypto from 'crypto';
 
 import _ from 'underscore';
-import less from 'less';
-import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
@@ -57,11 +55,13 @@ export const theme = new class {
 
 		content.push(this.customCSS);
 		content = content.join('\n');
+		const Autoprefixer = Promise.await(import('less-plugin-autoprefixer')).default;
 		const options = {
 			compress: true,
 			plugins: [new Autoprefixer()],
 		};
 		const start = Date.now();
+		const less = Promise.await(import('less')).default;
 		return less.render(content, options, function(err, data) {
 			logger.info({ stop_rendering: Date.now() - start });
 			if (err != null) {

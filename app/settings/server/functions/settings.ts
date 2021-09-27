@@ -76,6 +76,7 @@ type addGroupCallback = (this: {
 
 type ISettingAddOptions = Partial<ISetting>;
 
+
 class Settings extends SettingsBase {
 	private _sorter: {[key: string]: number} = {};
 
@@ -84,8 +85,14 @@ class Settings extends SettingsBase {
 	constructor() {
 		super();
 
-		SettingsModel.find().forEach((record: ISetting) => {
-			this.storeSettingValue(record, true);
+		SettingsModel.find({}, { projection: {
+			type: 1,
+			value: 1,
+			enterprise: 1,
+			invalidValue: 1,
+			modules: 1,
+		} }).forEach((record: Pick<ISetting, '_id' | 'type' | 'value' | 'enterprise' | 'invalidValue' | 'modules'>) => {
+			this.storeSettingValue(record as ISetting, true);
 			updateValue(record._id, { value: record.value });
 		});
 		this.initialLoad = false;

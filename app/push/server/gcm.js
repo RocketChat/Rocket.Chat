@@ -1,4 +1,3 @@
-import gcm from 'node-gcm';
 import { EJSON } from 'meteor/ejson';
 
 import { logger } from './logger';
@@ -71,6 +70,8 @@ export const sendGCM = function({ userTokens, notification, _replaceToken, _remo
 	if (notification.contentAvailable != null) {
 		data['content-available'] = notification.contentAvailable;
 	}
+
+	const gcm = Promise.await(import('node-gcm')).default;
 
 	const message = new gcm.Message({
 		collapseKey: notification.from,

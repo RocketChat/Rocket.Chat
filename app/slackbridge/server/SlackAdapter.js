@@ -2,7 +2,6 @@ import url from 'url';
 import http from 'http';
 import https from 'https';
 
-import { RTMClient } from '@slack/client';
 import { Meteor } from 'meteor/meteor';
 
 import { slackLogger } from './logger';
@@ -43,6 +42,8 @@ export default class SlackAdapter {
 	 */
 	connect(apiToken) {
 		this.apiToken = apiToken;
+
+		const { RTMClient } = Promise.await(import('@slack/client'));
 
 		if (RTMClient != null) {
 			RTMClient.disconnect;

@@ -4,7 +4,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 
 import { settings } from '../../../settings';
-import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
@@ -16,7 +15,7 @@ const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage
 	msg,
 });
 
-class Voxtelesys {
+export class Voxtelesys {
 	constructor() {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');
@@ -132,5 +131,3 @@ class Voxtelesys {
 		};
 	}
 }
-
-SMS.registerService('voxtelesys', Voxtelesys);

@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { SettingsVersion4 } from '../../settings';
+import { SettingsVersion4 } from '../../settings/server/Settingsv4';
 import { Logger } from '../../logger';
 
 

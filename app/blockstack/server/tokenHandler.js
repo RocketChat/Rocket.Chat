@@ -1,4 +1,3 @@
-import { decodeToken } from 'blockstack';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -22,6 +21,7 @@ export const handleAccessToken = (loginRequest) => {
 
 	// Decode auth response for user attributes
 	const { username, profile } = loginRequest.userData;
+	const { decodeToken } = Promise.await(import('blockstack'));
 	const decodedToken = decodeToken(loginRequest.authResponse).payload;
 
 	profile.username = username;

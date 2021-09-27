@@ -15,7 +15,7 @@ const notifyAgent = (userId, rid, msg) => api.broadcast('notify.ephemeralMessage
 	msg,
 });
 
-class Twilio {
+export class Twilio {
 	constructor() {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');

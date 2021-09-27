@@ -3,7 +3,6 @@ import { Email } from 'meteor/email';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import s from 'underscore.string';
-import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
@@ -69,6 +68,9 @@ export const wrap = (html, data = {}) => {
 };
 export const inlinecss = (html) => {
 	const css = Settings.get('email_style');
+
+	const juice = Promise.await(import('juice')).default;
+
 	return css ? juice.inlineContent(html, css) : html;
 };
 export const getTemplate = (template, fn, escape = true) => {

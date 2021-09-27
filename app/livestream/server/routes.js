@@ -1,13 +1,11 @@
-import google from 'googleapis';
-
 import { settings } from '../../settings';
 import { Users } from '../../models';
 import { API } from '../../api/server';
 
-const { OAuth2 } = google.auth;
-
 API.v1.addRoute('livestream/oauth', {
 	get: function functionName() {
+		const google = Promise.await(import('googleapis')).default;
+		const { OAuth2 } = google.auth;
 		const clientAuth = new OAuth2(
 			settings.get('Broadcasting_client_id'),
 			settings.get('Broadcasting_client_secret'),
@@ -37,6 +35,9 @@ API.v1.addRoute('livestream/oauth/callback', {
 		const { code, state } = this.queryParams;
 
 		const { userId } = JSON.parse(state);
+
+		const google = Promise.await(import('googleapis')).default;
+		const { OAuth2 } = google.auth;
 
 		const clientAuth = new OAuth2(
 			settings.get('Broadcasting_client_id'),
