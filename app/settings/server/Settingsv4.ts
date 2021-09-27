@@ -22,7 +22,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	setInitialized(): void {
 		this.ready = true;
 		this.emit('ready');
-		SystemLogger.info('Settings initalized');
+		SystemLogger.debug('Settings initalized');
 	}
 
 	public get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T {
