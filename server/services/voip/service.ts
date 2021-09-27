@@ -21,38 +21,40 @@ export class VoipService extends ServiceClass implements IVoipService {
 	async addServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
 
+		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
+
 		const existingConfig = await this.getServerConfigData(type);
 		if (existingConfig) {
 			throw new Error(`Error! There already exists an active record of type ${ type }`);
 		}
 
 		return !!await this.VoipServerConfiguration.insertOne(config);
-
-		return true;
 	}
 
 	async updateServerConfigData(config: Omit<IVoipServerConfig, '_id' | '_updatedAt'>): Promise<boolean> {
 		const { type } = config;
+
+		Promise.await(this.deactivateServerConfigDataIfAvailable(type));
 
 		const existingConfig = await this.getServerConfigData(type);
 		if (!existingConfig) {
 			throw new Error(`Error! No active record exists of type ${ type }`);
 		}
 
-		await this.VoipServerConfiguration.updateOne({ type, configActive: true }, config);
+		await this.VoipServerConfiguration.updateOne({ type, active: true }, config);
 
 		return true;
 	}
 
 	// in-future, if we want to keep a track of duration during which a server config was active, then we'd need to modify the
-	// 		IVoipServerConfig interface and add columns like "valid_from_ts" and "valid_to_ts"
+	// IVoipServerConfig interface and add columns like "valid_from_ts" and "valid_to_ts"
 	async deactivateServerConfigDataIfAvailable(type: ServerType): Promise<boolean> {
-		await this.VoipServerConfiguration.updateMany({ type, configActive: true }, { $set: { configActive: false } });
+		await this.VoipServerConfiguration.updateMany({ type, active: true }, { $set: { active: false } });
 		return true;
 	}
 
 	async getServerConfigData(type: ServerType): Promise<IVoipServerConfig | null> {
-		return this.VoipServerConfiguration.findOne({ type, configActive: true });
+		return this.VoipServerConfiguration.findOne({ type, active: true });
 	}
 
 	// this is a dummy function to avoid having an empty IVoipService interface

@@ -42,8 +42,8 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 		Promise.await(Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
-			serverName,
-			configActive: true,
+			name: serverName,
+			active: true,
 			configData: {
 				port,
 				username,
@@ -84,13 +84,11 @@ API.v1.addRoute('voipServerConfig.callServer', { authRequired: true }, {
 
 		const { host, websocketPort, websocketPath, serverName } = this.bodyParams;
 
-		Promise.await(Voip.deactivateServerConfigDataIfAvailable(ServerType.CALL_SERVER));
-
 		Promise.await(Voip.addServerConfigData({
 			type: ServerType.CALL_SERVER,
 			host,
-			serverName,
-			configActive: true,
+			name: serverName,
+			active: true,
 			configData: {
 				websocketPort,
 				websocketPath,
