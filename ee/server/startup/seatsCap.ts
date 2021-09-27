@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../app/callbacks/server';
-import { canAddNewUser, getMaxActiveUsers, isEnterprise, onValidateLicenses } from '../../app/license/server/license';
+import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
 import { createSeatsLimitBanners, disableDangerBannerDiscardingDismissal, disableWarningBannerDiscardingDismissal, enableDangerBanner, enableWarningBanner } from '../../app/license/server/maxSeatsBanners';
 import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
 import { Users } from '../../../app/models/server';
@@ -101,9 +101,7 @@ callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MED
 Meteor.startup(() => {
 	createSeatsLimitBanners();
 
-	if (isEnterprise()) {
-		handleMaxSeatsBanners();
-	}
+	handleMaxSeatsBanners();
 
 	onValidateLicenses(handleMaxSeatsBanners);
 });
