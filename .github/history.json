@@ -65571,6 +65571,91 @@
           ]
         }
       ]
+    },
+    "3.18.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23135",
+          "title": "Release 3.18.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "KevLehman",
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23286",
+          "title": "Regression: Fix app storage migration",
+          "userLogin": "thassiov",
+          "description": "The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.\r\n\r\nAs the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.\r\n\r\nThe fix extract the data from old apps and creates new zip files with the compiled `js` already present.",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23278",
+          "title": "Regression: Seats Cap banner not being disabled if not enterprise",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
