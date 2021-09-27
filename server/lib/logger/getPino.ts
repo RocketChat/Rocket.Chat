@@ -21,6 +21,7 @@ export function getPino(name: string, level = 'info'): P.Logger {
 			http: 35,
 			method: 35,
 			subscription: 35,
+			startup: 51,
 		},
 		level,
 		timestamp: pino.stdTimeFunctions.isoTime,

@@ -65,6 +65,14 @@ export class Logger {
 		this.logger.info(msg, ...args);
 	}
 
+	startup<T extends object>(obj: T, ...args: any[]): void;
+
+	startup(msg: string, ...args: any[]): void;
+
+	startup(msg: string, ...args: any[]): void {
+		this.logger.startup(msg, ...args);
+	}
+
 	success<T extends object>(obj: T, ...args: any[]): void;
 
 	success(msg: string, ...args: any[]): void;
