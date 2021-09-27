@@ -1,6 +1,30 @@
 
 # 4.0.0 (Under Release Candidate Process)
 
+## 4.0.0-rc.1
+`2021-09-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Fix app storage migration ([#23286](https://github.com/RocketChat/Rocket.Chat/pull/23286))
+
+  The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.
+
+  As the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.
+
+  The fix extract the data from old apps and creates new zip files with the compiled `js` already present.
+
+- Regression: Seats Cap banner not being disabled if not enterprise ([#23278](https://github.com/RocketChat/Rocket.Chat/pull/23278))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@thassiov](https://github.com/thassiov)
+
 ## 4.0.0-rc.0
 `2021-09-24  ·  12 ️️️⚠️  ·  4 🎉  ·  12 🚀  ·  25 🐛  ·  48 🔍  ·  26 👩‍💻👨‍💻`
 
@@ -77,7 +101,7 @@
 
   This PR adds new fields to the room schema that aids in the identification of the source that created an Omnichannel room, which can be either via livechat widget, SMS, app, etc.
 
-- Seats Cap ([#23017](https://github.com/RocketChat/Rocket.Chat/pull/23017))
+- Seats Cap ([#23017](https://github.com/RocketChat/Rocket.Chat/pull/23017) by [@g-thome](https://github.com/g-thome))
 
   - Adding New Members
     - Awareness of seats usage while adding new members
@@ -115,7 +139,7 @@
 
 - Add missing pt-BR translations, fix typos and unify language ([#23176](https://github.com/RocketChat/Rocket.Chat/pull/23176) by [@gabrieloliverio](https://github.com/gabrieloliverio))
 
-- Better text for auth banner ([#23256](https://github.com/RocketChat/Rocket.Chat/pull/23256))
+- Better text for auth banner ([#23256](https://github.com/RocketChat/Rocket.Chat/pull/23256) by [@g-thome](https://github.com/g-thome))
 
   Change the text in the banner warning for auth changes
 
@@ -316,7 +340,7 @@
 
 - Regression: `renderEmoji` helper referred as a template ([#23212](https://github.com/RocketChat/Rocket.Chat/pull/23212))
 
-- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091))
+- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091) by [@g-thome](https://github.com/g-thome))
 
   Dimisses auth banners assigned to EE admins and prevents new ones from appearing.
 
@@ -347,6 +371,7 @@
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@g-thome](https://github.com/g-thome)
 - [@gabrieloliverio](https://github.com/gabrieloliverio)
 - [@lucassartor](https://github.com/lucassartor)
 - [@sumukhah](https://github.com/sumukhah)
@@ -358,7 +383,6 @@
 - [@casalsgh](https://github.com/casalsgh)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -373,6 +397,47 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 3.18.1
+`2021-09-06  ·  1 🚀  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.4, 3.6, 4.0, 4.2`
+- Apps-Engine: `1.27.1`
+
+### 🚀 Improvements
+
+
+- Change HTTP and Method logs to level INFO ([#23100](https://github.com/RocketChat/Rocket.Chat/pull/23100))
+
+### 🐛 Bug fixes
+
+
+- Change way emails are validated on livechat registerGuest method ([#23089](https://github.com/RocketChat/Rocket.Chat/pull/23089))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091) by [@g-thome](https://github.com/g-thome))
+
+  Dimisses auth banners assigned to EE admins and prevents new ones from appearing.
+
+- Release 3.18.1 ([#23135](https://github.com/RocketChat/Rocket.Chat/pull/23135) by [@g-thome](https://github.com/g-thome))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@g-thome](https://github.com/g-thome)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@casalsgh](https://github.com/casalsgh)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.18.0
 `2021-08-31  ·  5 🎉  ·  7 🚀  ·  20 🐛  ·  19 🔍  ·  25 👩‍💻👨‍💻`
@@ -392,7 +457,7 @@
   - Moved old settings to new "Queue Management" section  
   - Fix issue when closing a livechat room that caused client to not to know if room was open or not
 
-- Banner for the updates regarding authentication services ([#23055](https://github.com/RocketChat/Rocket.Chat/pull/23055))
+- Banner for the updates regarding authentication services ([#23055](https://github.com/RocketChat/Rocket.Chat/pull/23055) by [@g-thome](https://github.com/g-thome))
 
   Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.
 
@@ -502,7 +567,7 @@
 
 - User presence being processes even if presence monitor was disabled ([#22927](https://github.com/RocketChat/Rocket.Chat/pull/22927))
 
-- users registered via third party apps bypass custom required fields ([#22396](https://github.com/RocketChat/Rocket.Chat/pull/22396))
+- users registered via third party apps bypass custom required fields ([#22396](https://github.com/RocketChat/Rocket.Chat/pull/22396) by [@g-thome](https://github.com/g-thome))
 
   moves the custom fields from the initial registration form to the "pick a username" screen so that everyone is forced to fill the custom required fields
 
@@ -573,6 +638,7 @@
 - [@aditya-mitra](https://github.com/aditya-mitra)
 - [@eltociear](https://github.com/eltociear)
 - [@epif4nio](https://github.com/epif4nio)
+- [@g-thome](https://github.com/g-thome)
 - [@hrahul2605](https://github.com/hrahul2605)
 - [@jsm84](https://github.com/jsm84)
 - [@nmagedman](https://github.com/nmagedman)
@@ -584,7 +650,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ggazzo](https://github.com/ggazzo)
 - [@marceloschmidt](https://github.com/marceloschmidt)
@@ -706,7 +771,7 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/123525502-8558bd80-d6a7-11eb-8211-12633cb3b5c6.png)
 
-- Federation setup ([#22208](https://github.com/RocketChat/Rocket.Chat/pull/22208))
+- Federation setup ([#22208](https://github.com/RocketChat/Rocket.Chat/pull/22208) by [@g-thome](https://github.com/g-thome))
 
 - Logout other user endpoint ([#22661](https://github.com/RocketChat/Rocket.Chat/pull/22661))
 
@@ -952,7 +1017,7 @@
 
 - Sort AutocompleteDepartmentsMultiple ([#22419](https://github.com/RocketChat/Rocket.Chat/pull/22419))
 
-- status message won't show up for other users ([#22110](https://github.com/RocketChat/Rocket.Chat/pull/22110))
+- status message won't show up for other users ([#22110](https://github.com/RocketChat/Rocket.Chat/pull/22110) by [@g-thome](https://github.com/g-thome))
 
   replace the current blaze block that queries the local session store by a react component that fetches memoized user data
 
@@ -1045,7 +1110,7 @@
    - Fix 1 day delay in '7 days' and '30 days' periods;
    - Update tooltip theme.
 
-- Regression: Federation warnings on ci ([#22765](https://github.com/RocketChat/Rocket.Chat/pull/22765))
+- Regression: Federation warnings on ci ([#22765](https://github.com/RocketChat/Rocket.Chat/pull/22765) by [@g-thome](https://github.com/g-thome))
 
   fix some linting warnings on federation modal
 
@@ -1123,6 +1188,7 @@
 - [@cprice-kgi](https://github.com/cprice-kgi)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@ericrosenthal](https://github.com/ericrosenthal)
+- [@g-thome](https://github.com/g-thome)
 - [@lucassartor](https://github.com/lucassartor)
 - [@nmagedman](https://github.com/nmagedman)
 - [@rafaelblink](https://github.com/rafaelblink)
@@ -1136,7 +1202,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ggazzo](https://github.com/ggazzo)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
@@ -1185,9 +1250,12 @@
 
 - Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
 
-### 👩‍💻👨‍💻 Core Team 🤓
+### 👩‍💻👨‍💻 Contributors 😍
 
 - [@g-thome](https://github.com/g-thome)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
 - [@ggazzo](https://github.com/ggazzo)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -1819,7 +1887,7 @@
 
   - Add support to queries within the `name`, `username` and `status` parameters.
 
-- Add team members to channel when set as auto join ([#22056](https://github.com/RocketChat/Rocket.Chat/pull/22056))
+- Add team members to channel when set as auto join ([#22056](https://github.com/RocketChat/Rocket.Chat/pull/22056) by [@g-thome](https://github.com/g-thome))
 
   Create a channels.autojoin endpoint to set a channel as autojoin. Also make it so that old team members join this channel automatically
 
@@ -2292,7 +2360,7 @@
 
 - Release 3.14.4 ([#22181](https://github.com/RocketChat/Rocket.Chat/pull/22181))
 
-- Remove memory leak from userData ([#22094](https://github.com/RocketChat/Rocket.Chat/pull/22094))
+- Remove memory leak from userData ([#22094](https://github.com/RocketChat/Rocket.Chat/pull/22094) by [@g-thome](https://github.com/g-thome))
 
 - String helpers ([#21988](https://github.com/RocketChat/Rocket.Chat/pull/21988))
 
@@ -2314,6 +2382,7 @@
 - [@bhavayAnand9](https://github.com/bhavayAnand9)
 - [@dependabot-preview[bot]](https://github.com/dependabot-preview[bot])
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@g-thome](https://github.com/g-thome)
 - [@lucassartor](https://github.com/lucassartor)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@renancleyson-dev](https://github.com/renancleyson-dev)
@@ -2329,7 +2398,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -2448,10 +2516,13 @@
 
 </details>
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@g-thome](https://github.com/g-thome)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
-- [@g-thome](https://github.com/g-thome)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.14.1
@@ -2577,7 +2648,7 @@
   ![Password_Change](https://user-images.githubusercontent.com/36537004/115035168-ac726200-9ea2-11eb-93c6-fc8182ba5f3f.png)
   ![Password_History](https://user-images.githubusercontent.com/36537004/115035175-ad0af880-9ea2-11eb-9f40-94c6327a9854.png)
 
-- REST endpoint `teams.update` ([#21134](https://github.com/RocketChat/Rocket.Chat/pull/21134))
+- REST endpoint `teams.update` ([#21134](https://github.com/RocketChat/Rocket.Chat/pull/21134) by [@g-thome](https://github.com/g-thome))
 
   add teams.update endpoint
 
@@ -2602,7 +2673,7 @@
   ![change-channel](https://user-images.githubusercontent.com/36537004/110143057-96f31e00-7db5-11eb-994a-39ae9e63392e.png)
   ![change-username](https://user-images.githubusercontent.com/36537004/110143065-98244b00-7db5-11eb-9d13-afc5dc9866de.png)
 
-- add permission check when adding a channel to a team ([#21689](https://github.com/RocketChat/Rocket.Chat/pull/21689))
+- add permission check when adding a channel to a team ([#21689](https://github.com/RocketChat/Rocket.Chat/pull/21689) by [@g-thome](https://github.com/g-thome))
 
   add permission check for each room
 
@@ -2744,7 +2815,7 @@
   Reactions should come before reply button.
   ![image](https://user-images.githubusercontent.com/40830821/113748926-6f0e1780-96df-11eb-93a5-ddcfa891413e.png)
 
-- Message link null corrupts message rendering ([#21579](https://github.com/RocketChat/Rocket.Chat/pull/21579))
+- Message link null corrupts message rendering ([#21579](https://github.com/RocketChat/Rocket.Chat/pull/21579) by [@g-thome](https://github.com/g-thome))
 
   Additional checks on message_link field before rendering message contents
 
@@ -2851,7 +2922,7 @@
 
 - Bump Livechat Version ([#21694](https://github.com/RocketChat/Rocket.Chat/pull/21694))
 
-- Chore: Add tests for teams.update REST endpoint ([#21653](https://github.com/RocketChat/Rocket.Chat/pull/21653))
+- Chore: Add tests for teams.update REST endpoint ([#21653](https://github.com/RocketChat/Rocket.Chat/pull/21653) by [@g-thome](https://github.com/g-thome))
 
   add more tests to this endpoint
 
@@ -2944,6 +3015,7 @@
 - [@Jeanstaquet](https://github.com/Jeanstaquet)
 - [@Kartik18g](https://github.com/Kartik18g)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
+- [@g-thome](https://github.com/g-thome)
 - [@im-adithya](https://github.com/im-adithya)
 - [@joshi008](https://github.com/joshi008)
 - [@lolimay](https://github.com/lolimay)
@@ -2960,7 +3032,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@ggazzo](https://github.com/ggazzo)
 - [@graywolf336](https://github.com/graywolf336)
@@ -3182,7 +3253,7 @@
 
 - Quick action buttons for Omnichannel ([#21123](https://github.com/RocketChat/Rocket.Chat/pull/21123) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Teams ([#20966](https://github.com/RocketChat/Rocket.Chat/pull/20966))
+- Teams ([#20966](https://github.com/RocketChat/Rocket.Chat/pull/20966) by [@g-thome](https://github.com/g-thome))
 
   ## Teams
 
@@ -3507,7 +3578,7 @@
 
 - Regression: Add isLastOwner property on teams.listRoomsOfUser endpoint ([#21323](https://github.com/RocketChat/Rocket.Chat/pull/21323))
 
-- Regression: Add number of team members to teams.list and teams.listAll ([#21361](https://github.com/RocketChat/Rocket.Chat/pull/21361))
+- Regression: Add number of team members to teams.list and teams.listAll ([#21361](https://github.com/RocketChat/Rocket.Chat/pull/21361) by [@g-thome](https://github.com/g-thome))
 
 - Regression: Add scope to permission checks in Team's endpoints ([#21369](https://github.com/RocketChat/Rocket.Chat/pull/21369))
 
@@ -3654,6 +3725,7 @@
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@cyberShaw](https://github.com/cyberShaw)
 - [@fcecagno](https://github.com/fcecagno)
+- [@g-thome](https://github.com/g-thome)
 - [@im-adithya](https://github.com/im-adithya)
 - [@lolimay](https://github.com/lolimay)
 - [@lucassartor](https://github.com/lucassartor)
@@ -3672,7 +3744,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -3738,10 +3809,13 @@
 
 - Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@g-thome](https://github.com/g-thome)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
-- [@g-thome](https://github.com/g-thome)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
@@ -3807,7 +3881,7 @@
 
   ![image](https://user-images.githubusercontent.com/27704687/106945019-1386d400-6706-11eb-90db-c12b50f260d5.png)
 
-- Statistics about language usage ([#20832](https://github.com/RocketChat/Rocket.Chat/pull/20832))
+- Statistics about language usage ([#20832](https://github.com/RocketChat/Rocket.Chat/pull/20832) by [@g-thome](https://github.com/g-thome))
 
   track what languages get picked the most as preferred ui language.
 
@@ -3965,7 +4039,7 @@
 
   https://user-images.githubusercontent.com/55157259/106183033-b353d780-61c5-11eb-8aab-1dbb62b02ff8.mp4
 
-- CORS config not accepting multiple origins ([#20696](https://github.com/RocketChat/Rocket.Chat/pull/20696))
+- CORS config not accepting multiple origins ([#20696](https://github.com/RocketChat/Rocket.Chat/pull/20696) by [@g-thome](https://github.com/g-thome))
 
   always include only one value in access-control-allow-origin
 
@@ -4131,7 +4205,7 @@
 
   Changed the height of the div container.
 
-- Room owner not being able to override global retention policy ([#20727](https://github.com/RocketChat/Rocket.Chat/pull/20727))
+- Room owner not being able to override global retention policy ([#20727](https://github.com/RocketChat/Rocket.Chat/pull/20727) by [@g-thome](https://github.com/g-thome))
 
   use correct permissions to check if room owner can override global retention policy
 
@@ -4293,6 +4367,7 @@
 - [@abrom](https://github.com/abrom)
 - [@aditya-mitra](https://github.com/aditya-mitra)
 - [@bhavayAnand9](https://github.com/bhavayAnand9)
+- [@g-thome](https://github.com/g-thome)
 - [@im-adithya](https://github.com/im-adithya)
 - [@lolimay](https://github.com/lolimay)
 - [@lucassartor](https://github.com/lucassartor)
@@ -4307,7 +4382,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -4356,13 +4430,16 @@
 
 - Prevent Message Attachment rendering ([#20860](https://github.com/RocketChat/Rocket.Chat/pull/20860))
 
-- Room owner not being able to override global retention policy ([#20727](https://github.com/RocketChat/Rocket.Chat/pull/20727))
+- Room owner not being able to override global retention policy ([#20727](https://github.com/RocketChat/Rocket.Chat/pull/20727) by [@g-thome](https://github.com/g-thome))
 
   use correct permissions to check if room owner can override global retention policy
 
-### 👩‍💻👨‍💻 Core Team 🤓
+### 👩‍💻👨‍💻 Contributors 😍
 
 - [@g-thome](https://github.com/g-thome)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
 - [@ggazzo](https://github.com/ggazzo)
 - [@renatobecker](https://github.com/renatobecker)
 
@@ -5056,11 +5133,11 @@
 
 - Omnichannel Contact Center (Directory) ([#19931](https://github.com/RocketChat/Rocket.Chat/pull/19931) by [@rafaelblink](https://github.com/rafaelblink))
 
-- REST Endpoint `instances.get` ([#19926](https://github.com/RocketChat/Rocket.Chat/pull/19926))
+- REST Endpoint `instances.get` ([#19926](https://github.com/RocketChat/Rocket.Chat/pull/19926) by [@g-thome](https://github.com/g-thome))
 
   Returns an array of instances on the cluster.
 
-- REST endpoints to add and retrieve Enterprise licenses ([#19925](https://github.com/RocketChat/Rocket.Chat/pull/19925))
+- REST endpoints to add and retrieve Enterprise licenses ([#19925](https://github.com/RocketChat/Rocket.Chat/pull/19925) by [@g-thome](https://github.com/g-thome))
 
 - Update Checker Description ([#19892](https://github.com/RocketChat/Rocket.Chat/pull/19892))
 
@@ -5110,9 +5187,9 @@
 
 - File Tab Order ([#19729](https://github.com/RocketChat/Rocket.Chat/pull/19729))
 
-- Forgot password endpoint return status ([#19842](https://github.com/RocketChat/Rocket.Chat/pull/19842))
+- Forgot password endpoint return status ([#19842](https://github.com/RocketChat/Rocket.Chat/pull/19842) by [@g-thome](https://github.com/g-thome))
 
-- Group DMs title when user changes his/her name ([#19834](https://github.com/RocketChat/Rocket.Chat/pull/19834))
+- Group DMs title when user changes his/her name ([#19834](https://github.com/RocketChat/Rocket.Chat/pull/19834) by [@g-thome](https://github.com/g-thome))
 
 - Hightlights validation on Account Preferences page ([#19902](https://github.com/RocketChat/Rocket.Chat/pull/19902) by [@aKn1ghtOut](https://github.com/aKn1ghtOut))
 
@@ -5120,7 +5197,7 @@
   Once set, the "Highlighted Words" setting cannot be reset to an empty string. This was fixed by changing the string validation from checking the length to checking the type of variable.
   Secondly, it tracks the changes to correctly identify if changes after the last "save changes" action have been made, using an "updates" state variable, instead of just comparing against the initialValue that does not change on clicking "save changes".
 
-- Image preview for image URLs on messages ([#19734](https://github.com/RocketChat/Rocket.Chat/pull/19734))
+- Image preview for image URLs on messages ([#19734](https://github.com/RocketChat/Rocket.Chat/pull/19734) by [@g-thome](https://github.com/g-thome))
 
 - Issue with oembed ([#19923](https://github.com/RocketChat/Rocket.Chat/pull/19923))
 
@@ -5198,9 +5275,9 @@
 
 - Message parsing and rendering - Phase 1 ([#19654](https://github.com/RocketChat/Rocket.Chat/pull/19654))
 
-- Regression:  "My Account" page doesn't load ([#19753](https://github.com/RocketChat/Rocket.Chat/pull/19753))
+- Regression:  "My Account" page doesn't load ([#19753](https://github.com/RocketChat/Rocket.Chat/pull/19753) by [@g-thome](https://github.com/g-thome))
 
-- Regression: Add currently running instance to instances.get endpoint ([#19955](https://github.com/RocketChat/Rocket.Chat/pull/19955))
+- Regression: Add currently running instance to instances.get endpoint ([#19955](https://github.com/RocketChat/Rocket.Chat/pull/19955) by [@g-thome](https://github.com/g-thome))
 
 - Regression: Add Members showing the wrong template ([#19748](https://github.com/RocketChat/Rocket.Chat/pull/19748))
 
@@ -5240,7 +5317,7 @@
   The Omnichannel `Custom Fields` form is not working anymore after some refactorings on client-side.
   When the user clicks on `Custom Field` in the Omnichannel menu, a blank page appears.
 
-- Regression: polishing licenses endpoints  ([#19981](https://github.com/RocketChat/Rocket.Chat/pull/19981))
+- Regression: polishing licenses endpoints  ([#19981](https://github.com/RocketChat/Rocket.Chat/pull/19981) by [@g-thome](https://github.com/g-thome))
 
 - Regression: roomInfo folder structure ([#19787](https://github.com/RocketChat/Rocket.Chat/pull/19787))
 
@@ -5265,6 +5342,7 @@
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
 - [@andykrohg](https://github.com/andykrohg)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@g-thome](https://github.com/g-thome)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@youssef-md](https://github.com/youssef-md)
 
@@ -5273,7 +5351,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -5357,18 +5434,18 @@
 
 - Download my data with file uploads ([#19862](https://github.com/RocketChat/Rocket.Chat/pull/19862))
 
-- Forgot password endpoint return status ([#19842](https://github.com/RocketChat/Rocket.Chat/pull/19842))
+- Forgot password endpoint return status ([#19842](https://github.com/RocketChat/Rocket.Chat/pull/19842) by [@g-thome](https://github.com/g-thome))
 
 - Some apps were not correctly enabled during startup in HA environments ([#19763](https://github.com/RocketChat/Rocket.Chat/pull/19763))
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
+- [@g-thome](https://github.com/g-thome)
 - [@rafaelblink](https://github.com/rafaelblink)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@g-thome](https://github.com/g-thome)
 - [@renatobecker](https://github.com/renatobecker)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@thassiov](https://github.com/thassiov)
@@ -5387,7 +5464,7 @@
 
 - Exception on certain login cases including SAML
 
-- Image preview for image URLs on messages ([#19734](https://github.com/RocketChat/Rocket.Chat/pull/19734))
+- Image preview for image URLs on messages ([#19734](https://github.com/RocketChat/Rocket.Chat/pull/19734) by [@g-thome](https://github.com/g-thome))
 
 - Sidebar presence will now correctly update for Omnichannel rooms ([#19746](https://github.com/RocketChat/Rocket.Chat/pull/19746))
 
@@ -5395,10 +5472,13 @@
 
 - Startup error when using MongoDB with a password containing special characters ([#19749](https://github.com/RocketChat/Rocket.Chat/pull/19749))
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@g-thome](https://github.com/g-thome)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@alansikora](https://github.com/alansikora)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
@@ -5484,7 +5564,7 @@
 
 - Omnichannel Analytics page doesn't have field labels ([#19400](https://github.com/RocketChat/Rocket.Chat/pull/19400) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Outgoing integrations without trigger words or with multiple commas ([#19488](https://github.com/RocketChat/Rocket.Chat/pull/19488))
+- Outgoing integrations without trigger words or with multiple commas ([#19488](https://github.com/RocketChat/Rocket.Chat/pull/19488) by [@g-thome](https://github.com/g-thome))
 
 - Prevent headerRoom's click to open room/direct info ([#19596](https://github.com/RocketChat/Rocket.Chat/pull/19596))
 
@@ -5498,7 +5578,7 @@
 
 - Save button enabled by default in Omnichannel Business Hours Form ([#19493](https://github.com/RocketChat/Rocket.Chat/pull/19493) by [@rafaelblink](https://github.com/rafaelblink))
 
-- Settings may not update internal cache immediately ([#19628](https://github.com/RocketChat/Rocket.Chat/pull/19628))
+- Settings may not update internal cache immediately ([#19628](https://github.com/RocketChat/Rocket.Chat/pull/19628) by [@g-thome](https://github.com/g-thome))
 
 - Setup Wizard User Creation Locking up ([#19509](https://github.com/RocketChat/Rocket.Chat/pull/19509))
 
@@ -5538,7 +5618,7 @@
 
 - Fix Docker preview image build ([#19627](https://github.com/RocketChat/Rocket.Chat/pull/19627))
 
-- Fix permission duplicated error on startup causing CI to halt ([#19653](https://github.com/RocketChat/Rocket.Chat/pull/19653))
+- Fix permission duplicated error on startup causing CI to halt ([#19653](https://github.com/RocketChat/Rocket.Chat/pull/19653) by [@g-thome](https://github.com/g-thome))
 
 - Improve performance of migration 211 (adding mostImportantRole to sessions) ([#19700](https://github.com/RocketChat/Rocket.Chat/pull/19700))
 
@@ -5580,7 +5660,7 @@
 
 - Regression: Verticalbar size ([#19670](https://github.com/RocketChat/Rocket.Chat/pull/19670))
 
-- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705))
+- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705) by [@g-thome](https://github.com/g-thome))
 
 - Report DAU and MAU by role ([#19657](https://github.com/RocketChat/Rocket.Chat/pull/19657))
 
@@ -5596,6 +5676,7 @@
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@antkaz](https://github.com/antkaz)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@g-thome](https://github.com/g-thome)
 - [@mrfigueiredo](https://github.com/mrfigueiredo)
 - [@rafaelblink](https://github.com/rafaelblink)
 - [@robertfromont](https://github.com/robertfromont)
@@ -5607,7 +5688,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@g-thome](https://github.com/g-thome)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -5688,21 +5768,24 @@
 ### 🐛 Bug fixes
 
 
-- Room avatar update event doesn't properly broadcast room id ([#19684](https://github.com/RocketChat/Rocket.Chat/pull/19684))
+- Room avatar update event doesn't properly broadcast room id ([#19684](https://github.com/RocketChat/Rocket.Chat/pull/19684) by [@g-thome](https://github.com/g-thome))
 
-- Server crash while reading settings for allowed and blocked email domain lists ([#19683](https://github.com/RocketChat/Rocket.Chat/pull/19683))
+- Server crash while reading settings for allowed and blocked email domain lists ([#19683](https://github.com/RocketChat/Rocket.Chat/pull/19683) by [@g-thome](https://github.com/g-thome))
 
 <details>
 <summary>🔍 Minor changes</summary>
 
 
-- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705))
+- Release 3.8.2 ([#19705](https://github.com/RocketChat/Rocket.Chat/pull/19705) by [@g-thome](https://github.com/g-thome))
 
 </details>
 
-### 👩‍💻👨‍💻 Core Team 🤓
+### 👩‍💻👨‍💻 Contributors 😍
 
 - [@g-thome](https://github.com/g-thome)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.1
