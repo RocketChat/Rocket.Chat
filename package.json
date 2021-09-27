@@ -64,6 +64,7 @@
 		"@storybook/addon-postcss": "^2.0.0",
 		"@storybook/addons": "^6.3.6",
 		"@storybook/react": "^6.3.8",
+		"@types/adm-zip": "^0.4.34",
 		"@types/agenda": "^2.0.9",
 		"@types/bad-words": "^3.0.1",
 		"@types/bcrypt": "^5.0.0",
