@@ -263,7 +263,6 @@ const appsRoutes = (orch) => (req, res) => {
 
 				res.sendStatus(200);
 			} catch (e) {
-				console.error(e);
 				res.status(500).send(e.message);
 			}
 			break;
@@ -296,6 +295,10 @@ const appsRoutes = (orch) => (req, res) => {
 				res.status(500).send(e.message);
 			}
 			break;
+		}
+
+		default: {
+			res.status(500).send({ error: 'Unknown action' });
 		}
 	}
 

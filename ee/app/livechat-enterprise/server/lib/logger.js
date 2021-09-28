@@ -1,10 +1,8 @@
-import { Logger } from '../../../../../app/logger/server/server';
+import { Logger } from '../../../../../app/logger/server';
 
-export const logger = new Logger('LivechatEnterprise', {
-	sections: {
-		queries: 'Queries',
-		queue: 'Queue',
-		helper: 'Helper',
-		cb: 'Callbacks',
-	},
-});
+export const logger = new Logger('LivechatEnterprise');
+
+export const queriesLogger = logger.section('Queries');
+export const queueLogger = logger.section('Queue');
+export const helperLogger = logger.section('Helper');
+export const cbLogger = logger.section('Callbacks');
