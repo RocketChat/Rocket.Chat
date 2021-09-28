@@ -11,7 +11,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { t, roomTypes, getUserPreference } from '../../../../utils/client';
-// import { WebRTC } from '../../../../webrtc/client';
+import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
 	RoomHistoryManager,
@@ -971,19 +971,16 @@ Meteor.startup(() => {
 		// salva a data da renderização para exibir alertas de novas mensagens
 		$.data(this.firstNode, 'renderedAt', new Date());
 
-		// const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
-		// if (webrtc) {
-		// 	this.autorun(() => {
-		// 		const remoteItems = webrtc.remoteItems.get();
-		// 		if (remoteItems && remoteItems.length > 0) {
-		// 			this.tabBar.open('user-info');
-		// 		}
+		const webrtc = WebRTC.getInstanceByRoomId(template.data._id);
+		if (webrtc) {
+			this.autorun(() => {
+				const remoteItems = webrtc.remoteItems.get();
+				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
+					return this.tabBar.openUserInfo();
+				}
+			});
+		}
 
-		// 		if (webrtc.localUrl.get()) {
-		// 			this.tabBar.open('user-info');
-		// 		}
-		// 	});
-		// }
 		callbacks.add('streamNewMessage', (msg) => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 				return;
