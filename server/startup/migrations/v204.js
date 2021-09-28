@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { LivechatDepartmentAgents, LivechatDepartment } from '../../../app/models/server';
 
 const updateEnabledProperty = (departmentIds) => {
@@ -15,7 +15,7 @@ const updateEnabledProperty = (departmentIds) => {
 		});
 };
 
-Migrations.add({
+addMigration({
 	version: 204,
 	up() {
 		const departmentIds = [...new Set(LivechatDepartmentAgents

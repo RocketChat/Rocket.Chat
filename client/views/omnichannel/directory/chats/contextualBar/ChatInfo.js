@@ -22,6 +22,7 @@ import AgentField from './AgentField';
 import ContactField from './ContactField';
 import DepartmentField from './DepartmentField';
 import PriorityField from './PriorityField';
+import SourceField from './SourceField';
 import VisitorClientInfo from './VisitorClientInfo';
 
 function ChatInfo({ id, route }) {
@@ -48,6 +49,7 @@ function ChatInfo({ id, route }) {
 		responseBy,
 		priorityId,
 		livechatData,
+		source,
 	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -99,6 +101,7 @@ function ChatInfo({ id, route }) {
 		<>
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
+					{source && <SourceField room={room} />}
 					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}

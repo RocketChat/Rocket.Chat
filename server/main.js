@@ -47,7 +47,6 @@ import './methods/loadNextMessages';
 import './methods/loadSurroundingMessages';
 import './methods/logoutCleanUp';
 import './methods/messageSearch';
-import './methods/migrate';
 import './methods/muteUserInRoom';
 import './methods/openRoom';
 import './methods/readMessages';

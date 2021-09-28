@@ -15,19 +15,39 @@ Meteor.startup(() => {
 			currentGallery.listen('destroy', () => {
 				currentGallery = null;
 			});
+
+			// currentGallery.listen('imageLoadComplete', function(index, item) {
+			// 	if (item.h < 1 || item.w < 1) {
+			//   const img = new Image();
+			// 	  img.onload = () => {
+			// 		item.w = img.width;
+			// 		item.h = img.height;
+			// 		gallery.invalidateCurrItems();
+			// 		gallery.updateSize(true);
+			// 	  }
+			// 	  img.src = item.src;
+			// 	}
+			// });
 			currentGallery.init();
 		}
 	};
 
 	const defaultGalleryOptions = {
 		bgOpacity: 0.7,
-		showHideOpacity: true,
-		counterEl: false,
-		shareEl: false,
-		clickToCloseNonZoomable: false,
+		// showHideOpacity: true,
+		// counterEl: false,
+		// shareEl: false,
+		scaleMode: 'fit',
+		// clickToCloseNonZoomable: false,
+		hideAnimationDuration: 0,
+		showAnimationDuration: 0,
 	};
 
-	const createEventListenerFor = (className) => (event) => {
+	const createEventListenerFor = (className) => async (event) => {
+		if (typeof event.currentTarget.getAttribute('download') === 'string') {
+			return;
+		}
+
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -40,61 +60,23 @@ Meteor.startup(() => {
 			},
 		};
 
-		const items = Array.from(document.querySelectorAll(className))
+		const items = await Promise.all(Array.from(document.querySelectorAll(className))
 			.map((element, i) => {
 				if (element === event.currentTarget) {
 					galleryOptions.index = i;
 				}
 
 				const item = {
-					src: element.src,
-					w: element.naturalWidth,
-					h: element.naturalHeight,
+					src: element.dataset.src || element.src || element.href,
+					w: element.dataset.width || element.naturalWidth,
+					h: element.dataset.height || element.naturalHeight,
 					title: element.dataset.title || element.title,
 					description: element.dataset.description,
 				};
 
-				if (element.dataset.src || element.href) {
-					// use stored sizes if available
-					if (element.dataset.width && element.dataset.height) {
-						return {
-							...item,
-							h: element.dataset.height,
-							w: element.dataset.width,
-							src: element.dataset.src || element.href,
-						};
-					}
-
-					const img = new Image();
-
-					img.addEventListener('load', () => {
-						if (!currentGallery) {
-							return;
-						}
-
-						// stores loaded sizes on original image element
-						element.dataset.width = img.naturalWidth;
-						element.dataset.height = img.naturalHeight;
-
-						delete currentGallery.items[i].html;
-						currentGallery.items[i].src = img.src;
-						currentGallery.items[i].w = img.naturalWidth;
-						currentGallery.items[i].h = img.naturalHeight;
-						currentGallery.invalidateCurrItems();
-						currentGallery.updateSize(true);
-					});
-
-					img.src = element.dataset.src || element.href;
-
-					return {
-						...item,
-						msrc: element.src,
-						src: element.dataset.src || element.href,
-					};
-				}
-
 				return item;
-			});
+			}));
+		console.log(items, galleryOptions);
 
 		initGallery(items, galleryOptions);
 	};

@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Avatars } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 203,
 	up() {
 		Avatars.tryDropIndex({ name: 1 });
