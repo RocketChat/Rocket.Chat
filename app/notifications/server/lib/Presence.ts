@@ -1,6 +1,6 @@
 import { DDPCommon } from 'meteor/ddp-common';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
+import { Meteor, Subscription } from 'meteor/meteor';
 
 import { IUser } from '../../../../definition/IUser';
 
