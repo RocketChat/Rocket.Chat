@@ -3,7 +3,7 @@ import React, { ComponentProps, FC, ReactNode } from 'react';
 
 type FieldProps = {
 	short?: boolean;
-	title: string;
+	title: ReactNode;
 	value: ReactNode;
 } & Omit<ComponentProps<typeof Box>, 'title' | 'value'>;
 

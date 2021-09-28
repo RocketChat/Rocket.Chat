@@ -87,6 +87,7 @@ function Setting({ className, settingId, sectionChanged }) {
 		i18nLabel,
 		i18nDescription,
 		alert,
+		invisible,
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || _id || t(_id);
@@ -122,6 +123,7 @@ function Setting({ className, settingId, sectionChanged }) {
 			onChangeValue={onChangeValue}
 			onChangeEditor={onChangeEditor}
 			onResetButtonClick={onResetButtonClick}
+			invisible={invisible}
 		/>
 	);
 }

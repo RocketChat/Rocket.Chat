@@ -1,7 +1,7 @@
 import { MongoInternals } from 'meteor/mongo';
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Rooms } from '../../../app/models/server/raw';
 import { TeamRaw } from '../../../app/models/server/raw/Team';
 import { TEAM_TYPE } from '../../../definition/ITeam';
@@ -21,7 +21,7 @@ async function migrateTeamNames(fut) {
 	fut.return();
 }
 
-Migrations.add({
+addMigration({
 	version: 221,
 	up() {
 		const fut = new Future();

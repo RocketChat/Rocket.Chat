@@ -1,12 +1,12 @@
 import React, { FC, useMemo } from 'react';
 
+import BurgerMenu from '../../../../components/BurgerMenu';
 import TemplateHeader from '../../../../components/Header';
 import { useLayout } from '../../../../contexts/LayoutContext';
 import { useCurrentRoute } from '../../../../contexts/RouterContext';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import { ToolboxActionConfig } from '../../lib/Toolbox';
 import { ToolboxContext, useToolboxContext } from '../../lib/Toolbox/ToolboxContext';
-import Burger from '../Burger';
 import RoomHeader, { RoomHeaderProps } from '../RoomHeader';
 import BackButton from './BackButton';
 import QuickActions from './QuickActions';
@@ -24,7 +24,7 @@ const OmnichannelRoomHeader: FC<RoomHeaderProps> = ({ slots: parentSlot }) => {
 			...parentSlot,
 			start: (!!isMobile || name === 'omnichannel-directory') && (
 				<TemplateHeader.ToolBox>
-					{isMobile && <Burger />}
+					{isMobile && <BurgerMenu />}
 					{name === 'omnichannel-directory' && <BackButton />}
 				</TemplateHeader.ToolBox>
 			),

@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Permissions } from '../../../app/models/server';
 
 const appRolePermissions = [
@@ -15,7 +15,7 @@ const appRolePermissions = [
 	'view-joined-room',
 ];
 
-Migrations.add({
+addMigration({
 	version: 174,
 	up() {
 		Permissions.update({ _id: { $in: appRolePermissions } }, { $addToSet: { roles: 'app' } }, { multi: true });

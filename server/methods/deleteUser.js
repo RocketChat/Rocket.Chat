@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
+import { callbacks } from '../../app/callbacks/server';
 import { deleteUser } from '../../app/lib/server';
 
 Meteor.methods({
@@ -46,6 +47,8 @@ Meteor.methods({
 		}
 
 		deleteUser(userId, confirmRelinquish);
+
+		callbacks.run('afterDeleteUser', user);
 
 		return true;
 	},

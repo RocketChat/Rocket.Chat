@@ -1,8 +1,8 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { theme } from '../../../app/theme/server/server';
 import { Settings } from '../../../app/models';
 
-Migrations.add({
+addMigration({
 	version: 175,
 	up() {
 		Object.entries(theme.variables)
