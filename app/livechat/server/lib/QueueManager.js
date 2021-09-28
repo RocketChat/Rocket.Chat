@@ -51,7 +51,7 @@ export const QueueManager = {
 		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		logger.debug(`Room for visitor ${ guest._id } created with id ${ room._id }`);
 
-		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData }));
+		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData: { ...extraData, source: roomInfo.source } }));
 		logger.debug(`Generated inquiry for visitor ${ guest._id } with id ${ inquiry._id } [Not queued]`);
 
 		LivechatRooms.updateRoomCount();
@@ -63,7 +63,7 @@ export const QueueManager = {
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
-		const { _id: rid, open, closedAt, fname: name, servedBy, v, departmentId: department, lastMessage: message } = archivedRoom;
+		const { _id: rid, open, closedAt, fname: name, servedBy, v, departmentId: department, lastMessage: message, source = {} } = archivedRoom;
 
 		if (!rid || !closedAt || !!open) {
 			return archivedRoom;
@@ -89,7 +89,7 @@ export const QueueManager = {
 
 		LivechatRooms.unarchiveOneById(rid);
 		const room = LivechatRooms.findOneById(rid);
-		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message }));
+		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		logger.debug(`Generated inquiry for visitor ${ v._id } with id ${ inquiry._id } [Not queued]`);
 
 		await queueInquiry(room, inquiry, defaultAgent);
