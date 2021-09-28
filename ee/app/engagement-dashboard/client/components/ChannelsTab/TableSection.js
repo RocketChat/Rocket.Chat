@@ -75,13 +75,16 @@ const TableSection = () => {
 	}, [data]);
 
 	const downloadData = () => {
-		const data = channels.map(({
-			createdAt,
-			messagesCount,
-			name,
-			t,
-			updatedAt,
-		}) => [t, name, messagesCount, updatedAt, createdAt]);
+		const data = [
+			['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date'],
+			...channels.map(({
+				createdAt,
+				messagesCount,
+				name,
+				t,
+				updatedAt,
+			}) => [t, name, messagesCount, updatedAt, createdAt]),
+		];
 		downloadCsvAs(data, `Channels_start_${ params.start }_end_${ params.end }`);
 	};
 

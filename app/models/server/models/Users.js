@@ -9,12 +9,19 @@ import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
-	status: {
-		$exists: true,
-		$ne: 'offline',
-	},
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	$or: [{
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		roles: {
+			$ne: 'bot',
+		},
+	}, {
+		roles: 'bot',
+	}],
 	...extraFilters,
 	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
 });
@@ -875,12 +882,6 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
-	findLDAPUsers(options) {
-		const query = { ldap: true };
-
-		return this.find(query, options);
-	}
-
 	findCrowdUsers(options) {
 		const query = { crowd: true };
 
@@ -1454,16 +1455,6 @@ export class Users extends Base {
 		const update = {
 			$unset: {
 				[`banners.${ banner.id }`]: true,
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
-	removeResumeService(_id) {
-		const update = {
-			$unset: {
-				'services.resume': '',
 			},
 		};
 

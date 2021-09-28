@@ -20,6 +20,8 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 export type EventSignatures = {
 	'banner.new'(bannerId: string): void;
+	'banner.enabled'(bannerId: string): void;
+	'banner.disabled'(bannerId: string): void;
 	'emoji.deleteCustom'(emoji: IEmoji): void;
 	'emoji.updateCustom'(emoji: IEmoji): void;
 	'license.module'(data: { module: string; valid: boolean }): void;

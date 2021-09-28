@@ -259,7 +259,7 @@ const queueWorker = {
 	},
 };
 
-settings.onload('Livechat_Routing_Method', function() {
+function shouldQueueStart() {
 	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
 	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
 		routingSupportsAutoAssign
@@ -268,4 +268,10 @@ settings.onload('Livechat_Routing_Method', function() {
 	} queue`);
 
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+}
+
+settings.get('Livechat_enabled', (_, value) => {
+	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 });
+
+settings.onload('Livechat_Routing_Method', shouldQueueStart);

@@ -3,10 +3,9 @@ import _ from 'underscore';
 import {
 	Base,
 	ProgressStep,
-	ImportData,
 	ImporterWebsocket,
 } from '../../importer/server';
-import { Messages } from '../../models';
+import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';

@@ -1,6 +1,9 @@
 import { pino } from 'pino';
 import type { P } from 'pino';
 
+// make sure log queue is set up, so pino uses the overwritten process.stdout.write
+import './logQueue';
+
 // add support to multiple params on the log commands, i.e.:
 // logger.info('user', Meteor.user()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
 function logMethod(this: P.Logger, args: unknown[], method: any): void {

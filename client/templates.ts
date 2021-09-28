@@ -199,7 +199,7 @@ createTemplateForComponent(
 	},
 );
 
-createTemplateForComponent('Burger', () => import('./views/room/Header/Burger'));
+createTemplateForComponent('Burger', () => import('./components/BurgerMenu'));
 
 createTemplateForComponent(
 	'resetPassword',

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { roomTypes } from '../../utils';
@@ -9,6 +10,7 @@ import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivity
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermission } from '../../authorization/server';
+import { Livechat } from './lib/Livechat';
 
 import './roomAccessValidator.internalService';
 
@@ -54,4 +56,6 @@ Meteor.startup(async () => {
 		}
 		return businessHourManager.stopManager();
 	});
+
+	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechat(user._id, 'not-available'));
 });
