@@ -91,7 +91,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 							onClick={handleSyncNowButtonClick}
 						/>
 					)}
-					<Button is='a' href='https://go.rocket.chat/i/ldap-doc' target='_blank'>
+					<Button is='a' href='https://go.rocket.chat/i/ldap-docs' target='_blank'>
 						{t('LDAP_Documentation')}
 					</Button>
 				</>
