@@ -1,74 +1,37 @@
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import React, { useState, useEffect, memo, ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 
-import { IStats } from '../../../../definition/IStats';
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { usePermission } from '../../../contexts/AuthorizationContext';
-import { useMethod, useServerInformation, useEndpoint } from '../../../contexts/ServerContext';
+import { useServerInformation } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { downloadJsonAs } from '../../../lib/download';
+import { getServerInstances } from '../../../queries/getServerInstances';
+import { getServerStatistics } from '../../../queries/getServerStatistics';
 import InformationPage from './InformationPage';
-
-type fetchStatisticsCallback = ((params: { refresh: boolean }) => void) | (() => void);
 
 const InformationRoute = (): ReactElement => {
 	const t = useTranslation();
 	const canViewStatistics = usePermission('view-statistics');
 
-	const [isLoading, setLoading] = useState(true);
-	const [error, setError] = useState(false);
-	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState([]);
-	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(
-		() => (): void => undefined,
-	);
-	const getStatistics = useEndpoint('GET', 'statistics');
-	const getInstances = useMethod('instances/get');
-
-	useEffect(() => {
-		let didCancel = false;
-
-		const fetchStatistics = async ({ refresh = false } = {}): Promise<void> => {
-			setLoading(true);
-			setError(false);
-
-			try {
-				const [statistics, instances] = await Promise.all([
-					getStatistics({ refresh }),
-					getInstances(),
-				]);
-
-				if (didCancel) {
-					return;
-				}
-				setStatistics(statistics);
-				setInstances(instances);
-			} catch (error) {
-				setError(error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		setFetchStatistics(() => fetchStatistics);
-
-		fetchStatistics();
-
-		return (): void => {
-			didCancel = true;
-		};
-	}, [canViewStatistics, getInstances, getStatistics]);
-
 	const info = useServerInformation();
+	const { isLoading: isLoadingStatistics, data: statistics } = useQuery(
+		'serverStatistics',
+		getServerStatistics,
+	);
+	const { isLoading: isLoadingInstances, data: instances } = useQuery(
+		'serverInstances',
+		getServerInstances,
+	);
 
+	const isLoading = isLoadingStatistics || isLoadingInstances;
+
+	const queryClient = useQueryClient();
 	const handleClickRefreshButton = (): void => {
-		if (isLoading) {
-			return;
-		}
-
-		fetchStatistics({ refresh: true });
+		queryClient.invalidateQueries(['serverStatistics', 'serverInstances']);
 	};
 
 	const handleClickDownloadInfo = (): void => {
@@ -82,7 +45,7 @@ const InformationRoute = (): ReactElement => {
 		return <PageSkeleton />;
 	}
 
-	if (error || !statistics) {
+	if (!statistics || !instances) {
 		return (
 			<Page>
 				<Page.Header title={t('Info')}>
