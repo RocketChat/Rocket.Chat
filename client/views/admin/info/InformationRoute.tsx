@@ -19,11 +19,11 @@ const InformationRoute = (): ReactElement => {
 
 	const info = useServerInformation();
 	const { isLoading: isLoadingStatistics, data: statistics } = useQuery(
-		'serverStatistics',
+		'server/statistics',
 		getServerStatistics,
 	);
 	const { isLoading: isLoadingInstances, data: instances } = useQuery(
-		'serverInstances',
+		'server/instances',
 		getServerInstances,
 	);
 
@@ -31,7 +31,8 @@ const InformationRoute = (): ReactElement => {
 
 	const queryClient = useQueryClient();
 	const handleClickRefreshButton = (): void => {
-		queryClient.invalidateQueries(['serverStatistics', 'serverInstances']);
+		queryClient.invalidateQueries('server/statistics');
+		queryClient.invalidateQueries('server/instances');
 	};
 
 	const handleClickDownloadInfo = (): void => {
