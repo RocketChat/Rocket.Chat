@@ -4,7 +4,6 @@ import { settings } from '../../../app/settings/server';
 import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
-import { callbacks } from '../../../app/callbacks/server';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
@@ -550,8 +549,8 @@ export class LDAPConnection {
 		this.usingAuthentication = true;
 	}
 
-	protected async runBeforeSearch(searchOptions: ldapjs.SearchOptions): Promise<void> {
-		callbacks.run('beforeLDAPSearch', searchOptions, this);
+	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
+		this.maybeBindDN();
 	}
 
 	/*

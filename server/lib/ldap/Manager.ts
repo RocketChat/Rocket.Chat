@@ -67,6 +67,24 @@ export class LDAPManager {
 		}
 	}
 
+	public static async testSearch(username: string): Promise<void> {
+		const escapedUsername = ldapEscape.filter`${ username }`;
+		const ldap = new LDAPConnection();
+
+		try {
+			await ldap.connect();
+
+			const users = await ldap.searchByUsername(escapedUsername);
+			if (users.length !== 1) {
+				logger.debug(`Search returned ${ users.length } records for ${ escapedUsername }`);
+				throw new Error('User not found');
+			}
+		} catch (error) {
+			logger.error(error);
+			throw error;
+		}
+	}
+
 	public static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
 		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
 			return;
