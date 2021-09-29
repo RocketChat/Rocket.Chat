@@ -9,7 +9,7 @@ import _ from 'underscore';
 import { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
 import { ILDAPUniqueIdentifierField } from '../../../definition/ldap/ILDAPUniqueIdentifierField';
-import { IUser, /* IUserEmail,*/ LoginUsername } from '../../../definition/IUser';
+import { IUser, LoginUsername } from '../../../definition/IUser';
 import { IImportUser } from '../../../definition/IImportUser';
 import { settings } from '../../../app/settings/server';
 import { Users as UsersRaw } from '../../../app/models/server/raw';
@@ -205,7 +205,7 @@ export class LDAPManager {
 	private static async addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): Promise<LDAPLoginResult> {
 		const user = await this.syncUserForLogin(ldapUser, undefined, username);
 
-		this.onLogin(ldapUser, user, password, ldap);
+		this.onLogin(ldapUser, user, password, ldap, true);
 		if (user) {
 			return {
 				userId: user._id,
@@ -213,18 +213,18 @@ export class LDAPManager {
 		}
 	}
 
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
-		logger.debug('running onLDAPLogin');
-
-		if (user) {
-			if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-				Accounts.setPassword(user._id, password, { logout: false });
-			}
-
-			this.syncUserAvatar(user, ldapUser);
+	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
+		if (!user) {
+			return;
 		}
 
-		callbacks.run('onLDAPLogin', { user, ldapUser }, ldap);
+		logger.debug('running onLDAPLogin');
+		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
+			Accounts.setPassword(user._id, password, { logout: false });
+		}
+
+		this.syncUserAvatar(user, ldapUser);
+		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
 	}
 
 	private static async loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): Promise<LDAPLoginResult> {
@@ -237,7 +237,7 @@ export class LDAPManager {
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
-		this.onLogin(ldapUser, updatedUser, password, ldap);
+		this.onLogin(ldapUser, updatedUser, password, ldap, false);
 		return {
 			userId: user._id,
 		};
