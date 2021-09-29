@@ -1,6 +1,33 @@
 
 # 4.0.0 (Under Release Candidate Process)
 
+## 4.0.0-rc.3
+`2021-09-29  ·  1 ️️️⚠️  ·  3 🔍  ·  4 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+
+- Remove cordova compatibility setting ([#23302](https://github.com/RocketChat/Rocket.Chat/pull/23302))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Change some logs to new format ([#23307](https://github.com/RocketChat/Rocket.Chat/pull/23307))
+
+- Regression: Fix Bugsnag not started error ([#23308](https://github.com/RocketChat/Rocket.Chat/pull/23308))
+
+- Regression: LDAP Issues ([#23306](https://github.com/RocketChat/Rocket.Chat/pull/23306))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@ostjen](https://github.com/ostjen)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.0.0-rc.2
 `2021-09-29  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
 
