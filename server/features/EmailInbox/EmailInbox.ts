@@ -29,7 +29,7 @@ export async function configureEmailInboxes(): Promise<void> {
 	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
-		logger.info('Setting up email interceptor for', emailInboxRecord.email);
+		logger.info(`Setting up email interceptor for ${ emailInboxRecord.email }`);
 
 		const imap = new IMAPInterceptor({
 			password: emailInboxRecord.imap.password,
@@ -58,7 +58,7 @@ export async function configureEmailInboxes(): Promise<void> {
 				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
 			} catch (e: any) {
 				// In case the email message history has been received by other instance..
-				logger.error(e.message);
+				logger.error(e);
 			}
 		}));
 

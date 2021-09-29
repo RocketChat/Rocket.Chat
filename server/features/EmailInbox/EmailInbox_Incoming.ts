@@ -36,14 +36,22 @@ function getGuestByEmail(email: string, name: string, department?: string): any 
 	if (guest) {
 		(logger as any).debug(`Guest with email ${ email } found with id ${ guest._id }`);
 		if (guest.department !== department) {
-			(logger as any).debug(`Switching departments for guest ${ guest._id }. Previous: ${ guest.department } New: ${ department }`);
+			(logger as any).debug({
+				msg: 'Switching departments for guest',
+				guest,
+				previousDepartment: guest.department,
+				newDepartment: department,
+			});
 			Livechat.setDepartmentForGuest({ token: guest.token, department });
 			return LivechatVisitors.findOneById(guest._id, {});
 		}
 		return guest;
 	}
 
-	(logger as any).debug(`Creating a new Omnichannel guest for visitor with email ${ email }`);
+	(logger as any).debug({
+		msg: 'Creating a new Omnichannel guest for visitor with email',
+		email,
+	});
 	const userId = Livechat.registerGuest({
 		token: Random.id(),
 		name: name || email,
@@ -126,7 +134,13 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	(logger as any).debug(`Guest ${ guest._id } obtained. Attempting to find or create a room on department ${ department }`);
 	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
-	(logger as any).debug(`Room ${ room?._id } found for guest ${ guest._id }`);
+
+	(logger as any).debug({
+		msg: 'Room found for guest',
+		room,
+		guest,
+	});
+
 	if (room?.closedAt) {
 		(logger as any).debug(`Room ${ room?._id } is closed. Reopening`);
 		room = await QueueManager.unarchiveRoom(room);
@@ -214,8 +228,10 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			},
 		});
-	}).catch((error) => {
-		console.log(error);
-		(Livechat.logger as any).error('Error receiving Email: %s', error.message);
+	}).catch((err) => {
+		Livechat.logger.error({
+			msg: 'Error receiving email',
+			err,
+		});
 	});
 }
