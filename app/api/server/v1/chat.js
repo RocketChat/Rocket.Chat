@@ -2,7 +2,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Messages } from '../../../models';
+import { Messages, Subscriptions } from '../../../models';
 import { canAccessRoom, hasPermission } from '../../../authorization';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
@@ -360,6 +360,21 @@ API.v1.addRoute('chat.ignoreUser', { authRequired: true }, {
 		Meteor.runAsUser(this.userId, () => Meteor.call('ignoreUser', { rid, userId, ignore }));
 
 		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('chat.getIgnoredUsers', { authRequired: true }, {
+	get() {
+		const { rid } = this.queryParams;
+		if (!rid || !rid.trim()) {
+			throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.', { method: 'getIgnoredUsers' });
+		}
+
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { fields: { ignored: 1, _id: 0 } });
+
+		return API.v1.success({
+			ignoredUsers: subscription.ignored || [],
+		});
 	},
 });
 
