@@ -1,4 +1,4 @@
-import { Button, Box, TextInput, Field, Flex } from '@rocket.chat/fuselage';
+import { Button, Box, TextInput, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { FormEvent, memo, useMemo } from 'react';
 
@@ -67,7 +67,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 					onConfirm={confirmSync}
 					onClose={closeModal}
 				>
-					<Box>{t('LDAP_Sync_Now_Description')}</Box>
+					{t('LDAP_Sync_Now_Description')}
 				</GenericModal>,
 			);
 		} catch (error) {
@@ -102,11 +102,9 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 					onClose={closeModal}
 				>
 					<Field>
-						<Flex.Container>
-							<Box>
-								<Field.Label>{t('LDAP_Username_To_Search')}</Field.Label>
-							</Box>
-						</Flex.Container>
+						<Box display='flex'>
+							<Field.Label>{t('LDAP_Username_To_Search')}</Field.Label>
+						</Box>
 
 						<Field.Row>
 							<TextInput onChange={handleChangeUsername} />

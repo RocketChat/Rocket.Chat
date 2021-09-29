@@ -2556,7 +2556,6 @@
   "LDAP_Unique_Identifier_Field": "Unique Identifier Field",
   "LDAP_Unique_Identifier_Field_Description": "Which field will be used to link the LDAP user and the Rocket.Chat user. You can inform multiple values separated by comma to try to get the value from LDAP record.<br/>Default value is `objectGUID,ibm-entryUUID,GUID,dominoUNID,nsuniqueId,uidNumber`",
   "LDAP_User_Found": "LDAP User Found",
-  "LDAP_User_Not_Found": "LDAP User Not Found",
   "LDAP_User_Search_AttributesToQuery": "Attributes to Query",
   "LDAP_User_Search_AttributesToQuery_Description": "Specify which attributes should be returned on LDAP queries, separating them with commas. Defaults to everything. `*` represents all regular attributes and `+` represents all operational attributes. Make sure to include every attribute that is used by every Rocket.Chat sync option.",
   "LDAP_User_Search_Field": "Search Field",

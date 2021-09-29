@@ -51,12 +51,7 @@ API.v1.addRoute('ldap.testSearch', { authRequired: true }, {
 			throw new Error('LDAP_disabled');
 		}
 
-		try {
-			Promise.await(LDAP.testSearch(this.bodyParams.username));
-		} catch (error) {
-			SystemLogger.error(error);
-			throw new Error('LDAP_User_Not_Found');
-		}
+		Promise.await(LDAP.testSearch(this.bodyParams.username));
 
 		return API.v1.success({
 			message: 'LDAP_User_Found',
