@@ -242,7 +242,7 @@ const methodCall = () => ({
 		} catch (error) {
 			SystemLogger.error(`Exception while invoking method ${ method }`, error.message);
 			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${ method }`, error.stack);
+				Meteor._debug(`Exception while invoking method ${ method }`, error);
 			}
 			return API.v1.success(mountResult({ id, error }));
 		}
