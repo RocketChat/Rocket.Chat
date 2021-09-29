@@ -65656,6 +65656,48 @@
           ]
         }
       ]
+    },
+    "4.0.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23297",
+          "title": "Regression: Create new loggers based on server log level",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23304",
+          "title": "Regression: Fix channel icons on queue",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "KevLehman",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
