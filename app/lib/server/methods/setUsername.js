@@ -30,7 +30,7 @@ Meteor.methods({
 
 		let nameValidation;
 		try {
-			nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+			nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
@@ -43,7 +43,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-field-unavailable', `<strong>${ _.escape(username) }</strong> is already in use :(`, { method: 'setUsername', field: username });
 		}
 
-		if (!saveUserIdentity(user._id, { _id: user._id, username })) {
+		if (!saveUserIdentity({ _id: user._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', { method: 'setUsername' });
 		}
 

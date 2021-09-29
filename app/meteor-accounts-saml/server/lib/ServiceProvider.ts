@@ -24,12 +24,16 @@ import {
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
 
+	syncRequestToUrl: (request: string, operation: string) => void;
+
 	constructor(serviceProviderOptions: IServiceProviderOptions) {
 		if (!serviceProviderOptions) {
 			throw new Error('SAMLServiceProvider instantiated without an options object');
 		}
 
 		this.serviceProviderOptions = serviceProviderOptions;
+
+		this.syncRequestToUrl = Meteor.wrapAsync(this.requestToUrl, this);
 	}
 
 	private signRequest(xml: string): string {
@@ -151,10 +155,6 @@ export class SAMLServiceProvider {
 		});
 	}
 
-	public syncRequestToUrl(request: string, operation: string): void {
-		return Meteor.wrapAsync(this.requestToUrl, this)(request, operation);
-	}
-
 	public getAuthorizeUrl(callback: (err: string | object | null, url?: string) => void): void {
 		const request = this.generateAuthorizeRequest();
 		SAMLUtils.log('-----REQUEST------');
@@ -182,7 +182,7 @@ export class SAMLServiceProvider {
 	}
 
 	public validateResponse(samlResponse: string, callback: IResponseValidateCallback): void {
-		const xml = new Buffer(samlResponse, 'base64').toString('utf8');
+		const xml = Buffer.from(samlResponse, 'base64').toString('utf8');
 
 		const parser = new ResponseParser(this.serviceProviderOptions);
 		return parser.validate(xml, callback);

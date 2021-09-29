@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Rooms } from '../../../app/models/server';
 
 const batchSize = 5000;
@@ -65,7 +65,7 @@ async function migrateDMs(models, total, current) {
 	return batch;
 }
 
-Migrations.add({
+addMigration({
 	version: 179,
 	up() {
 		const fut = new Future();

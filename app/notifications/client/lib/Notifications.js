@@ -75,8 +75,9 @@ class Notifications {
 		return this.streamRoom.on(`${ room }/${ eventName }`, callback);
 	}
 
-	onUser(eventName, callback) {
-		return this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
+	async onUser(eventName, callback) {
+		await this.streamUser.on(`${ Meteor.userId() }/${ eventName }`, callback);
+		return () => this.unUser(eventName, callback);
 	}
 
 	unAll(callback) {

@@ -16,18 +16,16 @@ import ThreadView from './ThreadView';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
 import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
+import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
 
 const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
 	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: Mongo.Query<IMessage>) => Promise<IMessage>>(async (params) => {
+	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(async (params) => {
 		const { message } = await getMessage(params);
-		return {
-			...message,
-			_updatedAt: new Date(message._updatedAt),
-		};
+		return mapMessageFromApi(message);
 	}, [getMessage]);
 
 	useEffect(() => {
@@ -59,10 +57,12 @@ const ThreadComponent: FC<{
 	mid: string;
 	jump: unknown;
 	room: IRoom;
+	onClickBack: (e: unknown) => void;
 }> = ({
 	mid,
 	jump,
 	room,
+	onClickBack,
 }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
@@ -70,7 +70,7 @@ const ThreadComponent: FC<{
 
 	const openUserInfo = useTabBarOpenUserInfo();
 
-	const ref = useRef<Element>(null);
+	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
 	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
@@ -98,7 +98,7 @@ const ThreadComponent: FC<{
 	}, [dispatchToastMessage, followMessage, unfollowMessage, mid]);
 
 	const handleClose = useCallback(() => {
-		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name });
+		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
 	}, [channelRoute, room._id, room.t, room.name]);
 
 	const [viewData, setViewData] = useState(() => ({
@@ -150,6 +150,7 @@ const ThreadComponent: FC<{
 		onToggleExpand={(expanded): void => setExpand(!expanded)}
 		onToggleFollow={(following): void => setFollowing(!following)}
 		onClose={handleClose}
+		onClickBack={onClickBack}
 	/>;
 };
 

@@ -1,4 +1,4 @@
-import { FunctionComponent, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const getModalRoot = (): Element => {
@@ -14,9 +14,9 @@ const getModalRoot = (): Element => {
 	return newElement;
 };
 
-const ModalPortal: FunctionComponent = ({ children }) => {
+const ModalPortal: FC = ({ children }) => {
 	const [modalRoot] = useState(getModalRoot);
 	return createPortal(children, modalRoot);
 };
 
-export default memo(ModalPortal);
+export default memo<typeof ModalPortal>(ModalPortal);

@@ -3,7 +3,9 @@ import { isEmptyArray } from './comparisons';
 import { createLookupFunction } from './lookups';
 import { Sort } from './types';
 
-const createSortSpecParts = <T>(spec: Sort): {
+const createSortSpecParts = <T>(
+	spec: Sort,
+): {
 	lookup: (doc: T) => unknown[];
 	ascending: boolean;
 }[] => {
@@ -30,26 +32,28 @@ const createSortSpecParts = <T>(spec: Sort): {
 };
 
 const reduceValue = (branchValues: unknown[], ascending: boolean): unknown =>
-	([] as unknown[]).concat(
-		...branchValues.map<unknown[]>((branchValue) => {
-			if (!Array.isArray(branchValue)) {
-				return [branchValue];
+	([] as unknown[])
+		.concat(
+			...branchValues.map<unknown[]>((branchValue) => {
+				if (!Array.isArray(branchValue)) {
+					return [branchValue];
+				}
+
+				if (isEmptyArray(branchValue)) {
+					return [undefined];
+				}
+
+				return branchValue;
+			}),
+		)
+		.reduce((reduced, value) => {
+			const cmp = compareBSONValues(reduced, value);
+			if ((ascending && cmp > 0) || (!ascending && cmp < 0)) {
+				return value;
 			}
 
-			if (isEmptyArray(branchValue)) {
-				return [undefined];
-			}
-
-			return branchValue;
-		}),
-	).reduce((reduced, value) => {
-		const cmp = compareBSONValues(reduced, value);
-		if ((ascending && cmp > 0) || (!ascending && cmp < 0)) {
-			return value;
-		}
-
-		return reduced;
-	});
+			return reduced;
+		});
 
 export const compileSort = (spec: Sort): ((a: unknown, b: unknown) => number) => {
 	const sortSpecParts = createSortSpecParts(spec);

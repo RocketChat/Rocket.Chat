@@ -150,9 +150,7 @@ class NetworkBroker implements IBroker {
 				}
 
 				map[eventName] = (data: Parameters<EventSignatures[typeof eventName]>): any => {
-					if (this.allowed) {
-						return instance.emit(eventName, ...data);
-					}
+					this.allowed.then((allowed) => allowed && instance.emit(eventName, ...data));
 				};
 
 				return map;

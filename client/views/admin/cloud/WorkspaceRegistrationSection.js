@@ -2,9 +2,9 @@ import { Box, Button, ButtonGroup, Field, Margins, TextInput } from '@rocket.cha
 import { useSafely, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 
 function WorkspaceRegistrationSection({
 	token: initialToken,
@@ -53,25 +53,34 @@ function WorkspaceRegistrationSection({
 
 	const tokenInputId = useUniqueId();
 
-	return <Box marginBlock='neg-x24' {...props}>
-		<Margins block='x24'>
-			<Box withRichContent color='neutral-800'>
-				<p>{t('Cloud_token_instructions')}</p>
-			</Box>
+	return (
+		<Box marginBlock='neg-x24' {...props}>
+			<Margins block='x24'>
+				<Box withRichContent color='neutral-800'>
+					<p>{t('Cloud_token_instructions')}</p>
+				</Box>
 
-			<Field>
-				<Field.Label htmlFor={tokenInputId}>{t('Token')}</Field.Label>
-				<Field.Row>
-					<TextInput id={tokenInputId} disabled={isProcessing} value={token} onChange={handleTokenChange} />
-				</Field.Row>
-				<Field.Hint>{t('Cloud_manually_input_token')}</Field.Hint>
-			</Field>
+				<Field>
+					<Field.Label htmlFor={tokenInputId}>{t('Token')}</Field.Label>
+					<Field.Row>
+						<TextInput
+							id={tokenInputId}
+							disabled={isProcessing}
+							value={token}
+							onChange={handleTokenChange}
+						/>
+					</Field.Row>
+					<Field.Hint>{t('Cloud_manually_input_token')}</Field.Hint>
+				</Field>
 
-			<ButtonGroup>
-				<Button primary disabled={isProcessing} onClick={handleConnectButtonClick}>{t('Connect')}</Button>
-			</ButtonGroup>
-		</Margins>
-	</Box>;
+				<ButtonGroup>
+					<Button primary disabled={isProcessing} onClick={handleConnectButtonClick}>
+						{t('Connect')}
+					</Button>
+				</ButtonGroup>
+			</Margins>
+		</Box>
+	);
 }
 
 export default WorkspaceRegistrationSection;

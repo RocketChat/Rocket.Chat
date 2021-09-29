@@ -10,15 +10,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
+import { t, roomTypes, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
@@ -29,6 +27,10 @@ import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
+import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
@@ -38,7 +40,7 @@ const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteo
 export const openProfileTab = (e, tabBar, username) => {
 	e.stopPropagation();
 
-	if (Layout.isEmbedded()) {
+	if (isLayoutEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		return;
@@ -271,7 +273,7 @@ Template.roomOld.helpers({
 	messageboxData() {
 		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
@@ -350,7 +352,7 @@ Template.roomOld.helpers({
 	},
 
 	hideAvatar() {
-		return getUserPreference(Meteor.userId(), 'hideAvatars') ? 'hide-avatars' : undefined;
+		return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
 	},
 	canPreview() {
 		const { room, state } = Template.instance();
@@ -781,16 +783,40 @@ Meteor.startup(() => {
 		callbacks.remove('streamNewMessage', this.data._id);
 	});
 
+	const isAtBottom = function(element, scrollThreshold = 0) {
+		return element.scrollTop + scrollThreshold >= element.scrollHeight - element.clientHeight;
+	};
+
 	Template.roomOld.onRendered(function() {
 		const { _id: rid } = this.data;
 
 		if (!chatMessages[rid]) {
 			chatMessages[rid] = new ChatMessages();
 		}
+
+		const wrapper = this.find('.wrapper');
+
+		const store = NewRoomManager.getStore(rid);
+
+		const afterMessageGroup = () => {
+			if (store.scroll && !store.atBottom) {
+				wrapper.scrollTop = store.scroll;
+			} else {
+				this.sendToBottom();
+			}
+			wrapper.removeEventListener('MessageGroup', afterMessageGroup);
+
+			wrapper.addEventListener('scroll', _.throttle(() => {
+				store.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
+			}, 30));
+		};
+
+		wrapper.addEventListener('MessageGroup', afterMessageGroup);
+
 		chatMessages[rid].initializeWrapper(this.find('.wrapper'));
 		chatMessages[rid].initializeInput(this.find('.js-input-message'), { rid });
 
-		const wrapper = this.find('.wrapper');
+
 		const wrapperUl = this.find('.wrapper > ul');
 		const newMessage = this.find('.new-message');
 
@@ -799,7 +825,7 @@ Meteor.startup(() => {
 		const messageBox = $('.messages-box');
 
 		template.isAtBottom = function(scrollThreshold = 0) {
-			if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
+			if (isAtBottom(wrapper, scrollThreshold)) {
 				newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 				return true;
 			}
@@ -836,7 +862,6 @@ Meteor.startup(() => {
 		});
 
 		Tracker.afterFlush(() => {
-			template.sendToBottomIfNecessary();
 			wrapper.addEventListener('scroll', wheelHandler);
 		});
 
@@ -888,9 +913,10 @@ Meteor.startup(() => {
 				return;
 			}
 
-			const room = Rooms.findOne({ _id: rid });
+			let room = Rooms.findOne({ _id: rid }, { fields: { t: 1 } });
 
 			if (room?.t === 'l') {
+				room = Tracker.nonreactive(() => Rooms.findOne({ _id: rid }));
 				roomTypes.getConfig(room.t).openCustomProfileTab(this, room, room.v.username);
 			}
 		});

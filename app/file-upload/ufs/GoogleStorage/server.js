@@ -3,6 +3,8 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from 'meteor/random';
 import { Storage } from '@google-cloud/storage';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+
 /**
  * GoogleStorage store
  * @param options
@@ -70,7 +72,7 @@ export class GoogleStorageStore extends UploadFS.Store {
 			const file = this.getCollection().findOne({ _id: fileId });
 			this.bucket.file(this.getPath(file)).delete(function(err, data) {
 				if (err) {
-					console.error(err);
+					SystemLogger.error(err);
 				}
 
 				callback && callback(err, data);

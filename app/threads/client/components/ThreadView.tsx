@@ -1,26 +1,28 @@
-import React, { useCallback, useMemo, forwardRef } from 'react';
+import React, { ComponentProps, useCallback, useMemo, forwardRef } from 'react';
 import { Modal, Box } from '@rocket.chat/fuselage';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useLayoutContextualBarExpanded } from '../../../../client/providers/LayoutProvider';
 import VerticalBar from '../../../../client/components/VerticalBar';
 
-type ThreadViewProps = {
+type ThreadViewProps = ComponentProps<typeof Box> & {
 	title: string;
 	expanded: boolean;
 	following: boolean;
 	onToggleExpand: (expanded: boolean) => void;
 	onToggleFollow: (following: boolean) => void;
 	onClose: () => void;
+	onClickBack: (e: unknown) => void;
 };
 
-const ThreadView = forwardRef<Element, ThreadViewProps>(({
+const ThreadView = forwardRef<HTMLElement, ThreadViewProps>(({
 	title,
 	expanded,
 	following,
 	onToggleExpand,
 	onToggleFollow,
 	onClose,
+	onClickBack,
 }, ref) => {
 	const hasExpand = useLayoutContextualBarExpanded();
 
@@ -60,14 +62,14 @@ const ThreadView = forwardRef<Element, ThreadViewProps>(({
 				display='flex'
 				flexDirection='column'
 				width={'full'}
-				maxWidth={hasExpand && expanded ? 855 : null}
+				maxWidth={hasExpand && expanded ? 855 : undefined}
 				overflow='hidden'
 				zIndex={100}
 				insetBlock={0}
 				style={style} // workaround due to a RTL bug in Fuselage
 			>
 				<VerticalBar.Header>
-					<VerticalBar.Icon name='thread' />
+					{onClickBack && <VerticalBar.Action onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' /> }
 					<VerticalBar.Text dangerouslySetInnerHTML={{ __html: title }} />
 					{hasExpand && <VerticalBar.Action title={expandLabel} name={expandIcon} onClick={handleExpandActionClick} />}
 					<VerticalBar.Actions>

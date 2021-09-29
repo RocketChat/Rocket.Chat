@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Rooms, Subscriptions, Messages } from '../../../models';
-import { settings } from '../../../settings';
-import { roomTypes, RoomSettingsEnum } from '../../../utils';
+import { Rooms, Subscriptions, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
 
 export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
@@ -33,7 +33,11 @@ export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
 	}
 
 	const result = Rooms.setTypeById(rid, roomType) && Subscriptions.updateTypeByRoomId(rid, roomType);
-	if (result && sendMessage) {
+	if (!result) {
+		return result;
+	}
+
+	if (sendMessage) {
 		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('Channel', {

@@ -335,9 +335,9 @@
 	--message-box-placeholder-color: var(--color-gray-medium);
 	--message-box-markdown-color: var(--color-gray);
 	--message-box-markdown-hover-color: var(--color-dark);
-	--message-box-user-typing-color: var(--color-gray);
-	--message-box-user-typing-text-size: 0.75rem;
-	--message-box-user-typing-user-color: var(--color-dark);
+	--message-box-user-activity-color: var(--color-gray);
+	--message-box-user-activity-text-size: 0.75rem;
+	--message-box-user-activity-user-color: var(--color-dark);
 	--message-box-container-border-color: var(--color-gray-medium);
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);

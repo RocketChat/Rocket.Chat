@@ -1,4 +1,4 @@
-import { escapeHTML } from '../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 const userTemplateDefault = ({ prefix, className, mention, title, label, type = 'username' }) => `${ prefix }<a class="${ className }" data-${ type }="${ mention }"${ title ? ` title="${ title }"` : '' }>${ label }</a>`;
 const roomTemplateDefault = ({ prefix, reference, mention }) => `${ prefix }<a class="mention-link mention-link--room" data-channel="${ reference }">${ `#${ mention }` }</a>`;
@@ -66,18 +66,27 @@ export class MentionsParser {
 				return this.userTemplate({ prefix, className, mention, label: mention, type: 'group' });
 			}
 
+			const filterUser = ({ username, type }) => (!type || type === 'user') && username === mention;
+			const filterTeam = ({ name, type }) => type === 'team' && name === mention;
+
+			const [mentionObj] = (mentions || []).filter((m) => filterUser(m) || filterTeam(m));
+
 			const label = temp
 				? mention && escapeHTML(mention)
-				: (mentions || [])
-					.filter(({ username }) => username === mention)
-					.map(({ name, username }) => (this.useRealName ? name : username))
-					.map((label) => label && escapeHTML(label))[0];
+				: mentionObj && escapeHTML(mentionObj.type === 'team' || this.useRealName ? mentionObj.name : mentionObj.username);
 
 			if (!label) {
 				return match;
 			}
 
-			return this.userTemplate({ prefix, className, mention, label, title: this.useRealName ? mention : label });
+			return this.userTemplate({
+				prefix,
+				className,
+				mention,
+				label,
+				type: mentionObj?.type === 'team' ? 'team' : 'username',
+				title: this.useRealName ? mention : label,
+			});
 		})
 
 	replaceChannels = (msg, { temp, channels }) => msg

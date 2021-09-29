@@ -1,9 +1,9 @@
 import _ from 'underscore';
 import s from 'underscore.string';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const fillTypeGroup = (fileData) => {
 	if (!fileData.type) {

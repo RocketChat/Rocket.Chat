@@ -7,6 +7,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../..
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 const getUploadFile = (details, fileUrl) => {
 	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
@@ -73,6 +74,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const visitor = defineVisitor(sms.from);
 		const { token } = visitor;
 		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
 
@@ -82,8 +84,17 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				sms: {
 					from: sms.to,
 				},
+				source: {
+					type: OmnichannelSourceType.SMS,
+					alias: this.urlParams.service,
+				},
 			},
 		};
+
+		// create an empty room first place, so attachments have a place to live
+		if (!roomExists) {
+			Promise.await(Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined));
+		}
 
 		let file;
 		let attachments;
@@ -98,27 +109,44 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				visitorToken: token,
 			};
 
-			const uploadedFile = getUploadFile(details, smsUrl);
-			file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+			let attachment;
+			try {
+				const uploadedFile = getUploadFile(details, smsUrl);
+				file = { _id: uploadedFile._id, name: uploadedFile.name, type: uploadedFile.type };
+				const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
-			const url = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
+				attachment = {
+					title: file.name,
+					type: 'file',
+					description: file.description,
+					title_link: fileUrl,
+				};
 
-			const attachment = {
-				message_link: url,
-			};
-
-			switch (contentType.substr(0, contentType.indexOf('/'))) {
-				case 'image':
-					attachment.image_url = url;
-					break;
-				case 'video':
-					attachment.video_url = url;
-					break;
-				case 'audio':
-					attachment.audio_url = url;
-					break;
+				if (/^image\/.+/.test(file.type)) {
+					attachment.image_url = fileUrl;
+					attachment.image_type = file.type;
+					attachment.image_size = file.size;
+					attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+				} else if (/^audio\/.+/.test(file.type)) {
+					attachment.audio_url = fileUrl;
+					attachment.audio_type = file.type;
+					attachment.audio_size = file.size;
+				} else if (/^video\/.+/.test(file.type)) {
+					attachment.video_url = fileUrl;
+					attachment.video_type = file.type;
+					attachment.video_size = file.size;
+				}
+			} catch (e) {
+				Livechat.logger.error(`Attachment upload failed: ${ e.message }`);
+				attachment = {
+					fields: [{
+						title: 'User upload failed',
+						value: 'An attachment was received, but upload to server failed',
+						short: true,
+					}],
+					color: 'yellow',
+				};
 			}
-
 			attachments = [attachment];
 		}
 

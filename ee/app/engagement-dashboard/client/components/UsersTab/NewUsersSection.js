@@ -13,8 +13,9 @@ import { downloadCsvAs } from '../../../../../../client/lib/download';
 
 const TICK_WIDTH = 45;
 
-export function NewUsersSection() {
+const NewUsersSection = ({ timezone }) => {
 	const t = useTranslation();
+	const utc = timezone === 'utc';
 
 	const periodOptions = useMemo(() => [
 		['last 7 days', t('Last_7_days')],
@@ -30,23 +31,35 @@ export function NewUsersSection() {
 		switch (periodId) {
 			case 'last 7 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
+					end: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
 			case 'last 30 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
+					end: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 
 			case 'last 90 days':
 				return {
-					start: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
+					start: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
+					end: utc
+						? moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days').utc()
+						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
 				};
 		}
-	}, [periodId]);
+	}, [periodId, utc]);
 
 	const handlePeriodChange = (periodId) => setPeriodId(periodId);
 
@@ -55,7 +68,7 @@ export function NewUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const { value: data } = useEndpointData('engagement-dashboard/users/new-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/new-users', useMemo(() => params, [params]));
 
 	const { ref: sizeRef, contentBoxSize: { inlineSize = 600 } = {} } = useResizeObserver();
 
@@ -67,7 +80,7 @@ export function NewUsersSection() {
 			return null;
 		}
 
-		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').toISOString());
+		const values = Array.from({ length: arrayLength }, (_, i) => moment(period.start).add(i, 'days').format('YYYY-MM-DD'));
 
 		const relation = Math.ceil(values.length / maxTicks);
 
@@ -89,11 +102,13 @@ export function NewUsersSection() {
 		}
 
 		const values = Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) => ({
-			date: moment(period.start).add(i, 'days').toISOString(),
+			date: moment(period.start).add(i, 'days').format('YYYY-MM-DD'),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
-			const i = moment(day).diff(period.start, 'days');
+			const i = utc
+				? moment(day).utc().diff(period.start, 'days')
+				: moment(day).diff(period.start, 'days');
 			if (i >= 0) {
 				values[i].newUsers += users;
 			}
@@ -106,10 +121,13 @@ export function NewUsersSection() {
 			data.yesterday.variation,
 			values,
 		];
-	}, [data, period]);
+	}, [data, period, utc]);
 
 	const downloadData = () => {
-		const data = values.map(({ data, newUsers }) => [data, newUsers]);
+		const data = [
+			['Date', 'New Users'],
+			...values.map(({ date, newUsers }) => [date, newUsers]),
+		];
 		downloadCsvAs(data, `NewUsersSection_start_${ params.start }_end_${ params.end }`);
 	};
 
@@ -136,7 +154,11 @@ export function NewUsersSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }} ref={sizeRef}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
@@ -190,11 +212,10 @@ export function NewUsersSection() {
 											},
 										},
 										tooltip: {
-											container: {
-												backgroundColor: '#1F2329',
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-											},
+											backgroundColor: '#1F2329',
+											boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+											borderRadius: 2,
+											padding: 4,
 										},
 									}}
 									tooltip={({ value, indexValue }) => <Box fontScale='p2' color='alternative'>
@@ -208,4 +229,6 @@ export function NewUsersSection() {
 				: <Box ref={sizeRef}><Skeleton variant='rect' height={240}/></Box>}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default NewUsersSection;

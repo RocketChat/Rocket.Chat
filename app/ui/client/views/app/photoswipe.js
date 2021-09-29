@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-
-import { escapeHTML } from '../../../../../lib/escapeHTML';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 Meteor.startup(() => {
 	let currentGallery = null;
@@ -12,7 +11,7 @@ Meteor.startup(() => {
 		if (!currentGallery) {
 			const PhotoSwipe = PhotoSwipeImport.default;
 			const PhotoSwipeUI_Default = PhotoSwipeUI_DefaultImport.default;
-			currentGallery = await new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
+			currentGallery = new PhotoSwipe(document.getElementById('pswp'), PhotoSwipeUI_Default, items, options);
 			currentGallery.listen('destroy', () => {
 				currentGallery = null;
 			});
@@ -25,6 +24,7 @@ Meteor.startup(() => {
 		showHideOpacity: true,
 		counterEl: false,
 		shareEl: false,
+		clickToCloseNonZoomable: false,
 	};
 
 	const createEventListenerFor = (className) => (event) => {
@@ -46,13 +46,35 @@ Meteor.startup(() => {
 					galleryOptions.index = i;
 				}
 
+				const item = {
+					src: element.src,
+					w: element.naturalWidth,
+					h: element.naturalHeight,
+					title: element.dataset.title || element.title,
+					description: element.dataset.description,
+				};
+
 				if (element.dataset.src || element.href) {
+					// use stored sizes if available
+					if (element.dataset.width && element.dataset.height) {
+						return {
+							...item,
+							h: element.dataset.height,
+							w: element.dataset.width,
+							src: element.dataset.src || element.href,
+						};
+					}
+
 					const img = new Image();
 
 					img.addEventListener('load', () => {
 						if (!currentGallery) {
 							return;
 						}
+
+						// stores loaded sizes on original image element
+						element.dataset.width = img.naturalWidth;
+						element.dataset.height = img.naturalHeight;
 
 						delete currentGallery.items[i].html;
 						currentGallery.items[i].src = img.src;
@@ -65,19 +87,13 @@ Meteor.startup(() => {
 					img.src = element.dataset.src || element.href;
 
 					return {
-						html: '',
-						title: element.dataset.title || element.title,
-						description: element.dataset.description,
+						...item,
+						msrc: element.src,
+						src: element.dataset.src || element.href,
 					};
 				}
 
-				return {
-					src: element.src,
-					w: element.naturalWidth,
-					h: element.naturalHeight,
-					title: element.dataset.title || element.title,
-					description: element.dataset.description,
-				};
+				return item;
 			});
 
 		initGallery(items, galleryOptions);

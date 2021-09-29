@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models';
 
-Migrations.add({
+addMigration({
 	version: 207,
 	up() {
 		Settings.removeById('theme-color-tertiary-background-color');

@@ -63,5 +63,57 @@
 		"contributors": [
 			"sampaiodiego"
 		]
+	}],
+	"3.12.2": [{
+		"title": "[FIX] Bump Livechat widget",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego"
+		]
+	}, {
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"g-thome",
+			"KevLehman",
+			"matheusbsilva137"
+		]
+	}],
+	"3.13.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"KevLehman",
+			"renatobecker"
+		]
+	}],
+	"3.14.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"KevLehman",
+			"g-thome"
+		]
+	}],
+	"3.14.4": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "ggazzo",
+		"contributors": [
+			"ggazzo"
+		]
+	}],
+	"3.16.3": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"g-thome",
+			"ggazzo",
+			"sampaiodiego",
+			"matheusbsilva137",
+			"pierre-lehnen-rc"
+		]
 	}]
 }
