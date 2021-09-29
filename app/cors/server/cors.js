@@ -10,12 +10,6 @@ import { Logger } from '../../logger';
 
 const logger = new Logger('CORS');
 
-// Deprecated setting
-let Support_Cordova_App = false;
-SettingsVersion4.watch('Support_Cordova_App', (value) => {
-	Support_Cordova_App = value;
-});
-
 SettingsVersion4.watch('Enable_CSP', (enabled) => {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
 });
@@ -52,20 +46,6 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 		);
 	}
 
-	// Deprecated behavior
-	if (Support_Cordova_App === true) {
-		if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
-			res.setHeader('Access-Control-Allow-Origin', '*');
-		}
-
-		const { setHeader } = res;
-		res.setHeader = function(key, val, ...args) {
-			if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
-				return;
-			}
-			return setHeader.apply(this, [key, val, ...args]);
-		};
-	}
 
 	return next();
 });
