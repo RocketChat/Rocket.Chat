@@ -101,18 +101,21 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 	}, [data, period.end, period.start, utc]);
 
 	const downloadData = () => {
-		const _data = data.week.map(({
-			users,
-			hour,
-			day,
-			month,
-			year,
-		}) => ({
-			date: moment([year, month - 1, day, hour, 0, 0, 0]),
-			users,
-		}))
-			.sort((a, b) => a > b)
-			.map(({ date, users }) => [date.toISOString(), users]);
+		const _data = [
+			['Date', 'Users'],
+			...data.week.map(({
+				users,
+				hour,
+				day,
+				month,
+				year,
+			}) => ({
+				date: moment([year, month - 1, day, hour, 0, 0, 0]),
+				users,
+			}))
+				.sort((a, b) => a > b)
+				.map(({ date, users }) => [date.toISOString(), users]),
+		];
 		downloadCsvAs(_data, `UsersByTimeOfTheDaySection_start_${ params.start }_end_${ params.end }`);
 	};
 	return <Section

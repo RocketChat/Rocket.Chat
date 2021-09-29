@@ -30,7 +30,7 @@ import {
 } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
-import './messageBoxTyping';
+import './userActionIndicator.ts';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';

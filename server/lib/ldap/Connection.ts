@@ -4,8 +4,7 @@ import { settings } from '../../../app/settings/server';
 import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
-import { callbacks } from '../../../app/callbacks/server';
-import { logger, connLogger, searchLogger, authLogger } from './Logger';
+import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 interface ILDAPEntryCallback<T> {
@@ -43,6 +42,8 @@ export class LDAPConnection {
 
 	private _connectionCallback: ILDAPCallback;
 
+	private usingAuthentication: boolean;
+
 	constructor() {
 		this.ldapjs = ldapjs;
 
@@ -73,6 +74,10 @@ export class LDAPConnection {
 			groupFilterGroupMemberAttribute: settings.get<string>('LDAP_Group_Filter_Group_Member_Attribute'),
 			groupFilterGroupMemberFormat: settings.get<string>('LDAP_Group_Filter_Group_Member_Format'),
 			groupFilterGroupName: settings.get<string>('LDAP_Group_Filter_Group_Name'),
+			authentication: settings.get<boolean>('LDAP_Authentication') ?? false,
+			authenticationUserDN: settings.get<string>('LDAP_Authentication_UserDN') ?? '',
+			authenticationPassword: settings.get<string>('LDAP_Authentication_Password') ?? '',
+			attributesToQuery: this.parseAttributeList(settings.get<string>('LDAP_User_Search_AttributesToQuery')),
 		};
 
 		if (!this.options.host) {
@@ -96,6 +101,7 @@ export class LDAPConnection {
 	}
 
 	public disconnect(): void {
+		this.usingAuthentication = false;
 		this.connected = false;
 		connLogger.info('Disconnecting');
 
@@ -105,7 +111,12 @@ export class LDAPConnection {
 	}
 
 	public async testConnection(): Promise<void> {
-		await this.connect();
+		try {
+			await this.connect();
+			await this.maybeBindDN();
+		} finally {
+			this.disconnect();
+		}
 	}
 
 	public async searchByUsername(escapedUsername: string): Promise<ILDAPEntry[]> {
@@ -113,6 +124,7 @@ export class LDAPConnection {
 			filter: this.getUserFilter(escapedUsername),
 			scope: this.options.userSearchScope || 'sub',
 			sizeLimit: this.options.searchSizeLimit,
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (this.options.searchPageSize > 0) {
@@ -137,7 +149,7 @@ export class LDAPConnection {
 	public async searchById(id: string, attribute?: string): Promise<ILDAPEntry[]> {
 		const searchOptions: ldapjs.SearchOptions = {
 			scope: this.options.userSearchScope || 'sub',
-			attributes: ['*', '+'],
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (attribute) {
@@ -184,6 +196,7 @@ export class LDAPConnection {
 			filter: this.getUserFilter('*'),
 			scope: this.options.userSearchScope || 'sub',
 			sizeLimit: this.options.searchSizeLimit,
+			attributes: this.options.attributesToQuery,
 		};
 
 		if (this.options.searchPageSize > 0) {
@@ -264,6 +277,8 @@ export class LDAPConnection {
 
 		Object.keys(values._raw).forEach((key) => {
 			values[key] = this.extractLdapAttribute(values._raw[key]);
+
+			mapLogger.debug({ msg: 'Extracted Attribute', key, type: typeof values[key], value: values[key] });
 		});
 
 		return values;
@@ -515,8 +530,27 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async runBeforeSearch(searchOptions: ldapjs.SearchOptions): Promise<void> {
-		callbacks.run('beforeLDAPSearch', searchOptions, this);
+	protected async maybeBindDN(): Promise<void> {
+		if (this.usingAuthentication) {
+			return;
+		}
+
+		if (!this.options.authentication) {
+			return;
+		}
+
+		if (!this.options.authenticationUserDN) {
+			logger.error('Invalid UserDN for authentication');
+			return;
+		}
+
+		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
+		await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
+		this.usingAuthentication = true;
+	}
+
+	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
+		this.maybeBindDN();
 	}
 
 	/*
@@ -644,5 +678,18 @@ export class LDAPConnection {
 				this._connectionTimedOut = true;
 			}
 		}, clientOptions.connectTimeout);
+	}
+
+	private parseAttributeList(csv: string | undefined): Array<string> {
+		if (!csv) {
+			return ['*', '+'];
+		}
+
+		const list = csv.split(',').map((item) => item.trim());
+		if (!list?.length) {
+			return ['*', '+'];
+		}
+
+		return list;
 	}
 }

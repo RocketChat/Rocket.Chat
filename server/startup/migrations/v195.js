@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Permissions, Settings } from '../../../app/models/server';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
@@ -75,7 +75,7 @@ const migrateCollection = () => {
 	}
 };
 
-Migrations.add({
+addMigration({
 	version: 195,
 	up() {
 		Settings.remove({ _id: 'Livechat_enable_office_hours' });
