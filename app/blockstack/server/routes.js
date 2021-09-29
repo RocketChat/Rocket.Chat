@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../settings';
+import { SettingsVersion4 } from '../../settings/server';
 import { RocketChatAssets } from '../../assets/server';
 
 WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(function(req, res) {
-	const name = settings.get('Site_Name');
+	const name = SettingsVersion4.get('Site_Name');
 	const startUrl = Meteor.absoluteUrl();
-	const description = settings.get('Blockstack_Auth_Description');
+	const description = SettingsVersion4.get('Blockstack_Auth_Description');
 	const iconUrl = RocketChatAssets.getURL('Assets_favicon_192');
 
 	res.writeHead(200, {

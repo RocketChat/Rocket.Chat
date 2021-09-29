@@ -90,7 +90,7 @@ class Settings extends SettingsBase {
 		});
 		this.initialLoad = false;
 		SettingsEvents.emit('after-initial-load', Meteor.settings);
-		SettingsVersion4.setInitialized();
+		SettingsVersion4.initilized();
 	}
 
 	/*

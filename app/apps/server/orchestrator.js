@@ -121,7 +121,7 @@ export class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return settings.get('Apps_Framework_enabled');
+		return SettingsVersion4.get('Apps_Framework_enabled');
 	}
 
 	isLoaded() {
@@ -129,7 +129,7 @@ export class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
+		return SettingsVersion4.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
 	/**

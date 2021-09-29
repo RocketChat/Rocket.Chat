@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings } from '../../settings';
+import { settings, SettingsVersion4 } from '../../settings';
 
 const defaults = {
 	enable: false,
@@ -37,10 +37,10 @@ Meteor.startup(() => {
 
 // Helper to return all Blockstack settings
 const getSettings = () => Object.assign({}, defaults, {
-	enable: settings.get('Blockstack_Enable'),
-	authDescription: settings.get('Blockstack_Auth_Description'),
-	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
-	generateUsername: settings.get('Blockstack_Generate_Username'),
+	enable: SettingsVersion4.get('Blockstack_Enable'),
+	authDescription: SettingsVersion4.get('Blockstack_Auth_Description'),
+	buttonLabelText: SettingsVersion4.get('Blockstack_ButtonLabelText'),
+	generateUsername: SettingsVersion4.get('Blockstack_Generate_Username'),
 });
 
 const configureService = _.debounce(Meteor.bindEnvironment(() => {

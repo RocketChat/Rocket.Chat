@@ -133,7 +133,7 @@ export class AutoTranslate {
 	tokenizeURLs(message) {
 		let count = message.tokens.length;
 
-		const schemes = settings.get('Markdown_SupportSchemesForLink').split(',').join('|');
+		const schemes = SettingsVersion4.get('Markdown_SupportSchemesForLink').split(',').join('|');
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${ schemes }):\\/\\/[^\\)]+\\))`, 'gm'), function(match, pre, text, post) {

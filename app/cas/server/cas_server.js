@@ -9,7 +9,7 @@ import fiber from 'fibers';
 import CAS from 'cas';
 
 import { logger } from './cas_rocketchat';
-import { settings } from '../../settings';
+import { SettingsVersion4 } from '../../settings';
 import { Rooms, CredentialTokens } from '../../models/server';
 import { _setRealName } from '../../lib';
 import { createRoom } from '../../lib/server/functions/createRoom';
@@ -24,7 +24,7 @@ const closePopup = function(res) {
 
 const casTicket = function(req, token, callback) {
 	// get configuration
-	if (!settings.get('CAS_enabled')) {
+	if (!SettingsVersion4.get('CAS_enabled')) {
 		logger.error('Got ticket validation request, but CAS is not enabled');
 		callback();
 	}
@@ -32,8 +32,8 @@ const casTicket = function(req, token, callback) {
 	// get ticket and validate.
 	const parsedUrl = url.parse(req.url, true);
 	const ticketId = parsedUrl.query.ticket;
-	const baseUrl = settings.get('CAS_base_url');
-	const cas_version = parseFloat(settings.get('CAS_version'));
+	const baseUrl = SettingsVersion4.get('CAS_base_url');
+	const cas_version = parseFloat(SettingsVersion4.get('CAS_version'));
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug(`Using CAS_base_url: ${ baseUrl }`);
 
@@ -121,12 +121,12 @@ Accounts.registerLoginHandler(function(options) {
 	}
 
 	const result = credentials.userInfo;
-	const syncUserDataFieldMap = settings.get('CAS_Sync_User_Data_FieldMap').trim();
-	const cas_version = parseFloat(settings.get('CAS_version'));
-	const sync_enabled = settings.get('CAS_Sync_User_Data_Enabled');
-	const trustUsername = settings.get('CAS_trust_username');
-	const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
-	const userCreationEnabled = settings.get('CAS_Creation_User_Enabled');
+	const syncUserDataFieldMap = SettingsVersion4.get('CAS_Sync_User_Data_FieldMap').trim();
+	const cas_version = parseFloat(SettingsVersion4.get('CAS_version'));
+	const sync_enabled = SettingsVersion4.get('CAS_Sync_User_Data_Enabled');
+	const trustUsername = SettingsVersion4.get('CAS_trust_username');
+	const verified = SettingsVersion4.get('Accounts_Verify_Email_For_External_Accounts');
+	const userCreationEnabled = SettingsVersion4.get('CAS_Creation_User_Enabled');
 
 	// We have these
 	const ext_attrs = {

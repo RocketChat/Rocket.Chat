@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Roles } from '../../../models/server';
-import { settings } from '../../../settings/server';
+import { SettingsVersion4 } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 
@@ -25,7 +25,7 @@ Meteor.methods({
 		}
 
 		const update = Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
-		if (settings.get('UI_DisplayRoles')) {
+		if (SettingsVersion4.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'changed',
 				_id: roleData.name,
