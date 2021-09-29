@@ -91,7 +91,7 @@ settings.addGroup('FileUpload', function() {
 			},
 		});
 		this.add('FileUpload_S3_AWSAccessKeyId', '', {
-			type: 'string',
+			type: 'password',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
@@ -99,7 +99,7 @@ settings.addGroup('FileUpload', function() {
 			secret: true,
 		});
 		this.add('FileUpload_S3_AWSSecretAccessKey', '', {
-			type: 'string',
+			type: 'password',
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
