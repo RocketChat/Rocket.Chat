@@ -3978,6 +3978,7 @@
   "StatusMessage_Placeholder": "What are you doing right now?",
   "StatusMessage_Too_Long": "Status message must be shorter than 120 characters.",
   "Step": "Step",
+  "Stop_call": "Stop call",
   "Stop_Recording": "Stop Recording",
   "Store_Last_Message": "Store Last Message",
   "Store_Last_Message_Sent_per_Room": "Store last message sent on each room.",

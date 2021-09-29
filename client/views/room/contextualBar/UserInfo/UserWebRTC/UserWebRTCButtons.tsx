@@ -21,8 +21,8 @@ const UserWebRTCButtons = ({ webRTCData }: { webRTCData: useWebRTCProps }): Reac
 
 	return (
 		<ButtonGroup align='center'>
-			<Button primary danger onClick={handleStopCall}>
-				<i className='icon-stop'></i>Stop
+			<Button primary danger onClick={handleStopCall} title={t('Stop_call')}>
+				<Icon size='x20' name='phone-off' />
 			</Button>
 
 			<Button onClick={toggleAudio} title={audioEnabled ? t('Mute') : t('Unmute')}>

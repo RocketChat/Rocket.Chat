@@ -17,7 +17,6 @@ const UserWebRTCVideo = ({
 	ownUser,
 	screen,
 	isMainVideo,
-	videoEnabled,
 }: UserWebRTCVideoProps): ReactElement => {
 	const videoStream = useRef<HTMLVideoElement>(null);
 
@@ -44,7 +43,6 @@ const UserWebRTCVideo = ({
 	return (
 		<Box
 			width='full'
-			backgroundColor={!videoEnabled ? 'black' : ''}
 			minHeight={isMainVideo ? '300px' : 'auto'}
 			is='video'
 			ref={videoStream}
