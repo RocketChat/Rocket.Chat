@@ -1,6 +1,31 @@
 
 # 4.0.0 (Under Release Candidate Process)
 
+## 4.0.0-rc.2
+`2021-09-29  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Update visitor info on email reception based on current inbox settings ([#23280](https://github.com/RocketChat/Rocket.Chat/pull/23280))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Create new loggers based on server log level ([#23297](https://github.com/RocketChat/Rocket.Chat/pull/23297))
+
+- Regression: Fix channel icons on queue ([#23304](https://github.com/RocketChat/Rocket.Chat/pull/23304))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.0.0-rc.1
 `2021-09-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
 
