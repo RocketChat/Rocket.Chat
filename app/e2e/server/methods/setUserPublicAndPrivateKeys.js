@@ -4,6 +4,7 @@ import { Users } from '../../../models';
 
 Meteor.methods({
 	'e2e.setUserPublicAndPrivateKeys'({ public_key, private_key }) {
+		console.log('setting keys');
 		const userId = Meteor.userId();
 
 		if (!userId) {

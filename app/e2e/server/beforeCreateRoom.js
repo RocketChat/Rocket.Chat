@@ -6,6 +6,7 @@ callbacks.add('beforeCreateRoom', ({ type, extraData }) => {
 		settings.get('E2E_Enabled') && ((type === 'd' && settings.get('E2E_Enabled_Default_DirectRooms'))
 		|| (type === 'p' && settings.get('E2E_Enabled_Default_PrivateRooms')))
 	) {
+		console.log('here here here');
 		extraData.encrypted = extraData.encrypted ?? true;
 	}
 });

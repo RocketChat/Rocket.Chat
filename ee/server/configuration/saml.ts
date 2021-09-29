@@ -38,6 +38,11 @@ onLicense('saml-enterprise', () => {
 			metadataTemplate: settings.get(`${ service }_Metadata_template`),
 		});
 	});
+
+	SAMLUtils.events.on('updateCustomFields', (updateData: Record<string, any>, userObject: Record<string, any>) => {
+		console.log('\n\nevent lmao\n\n');
+		console.log(updateData, userObject);
+	});
 });
 
 // For setting creation we add the listener first because the event is emmited during startup
