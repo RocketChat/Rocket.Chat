@@ -19,7 +19,7 @@ class Notifications {
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
-		this.streamPresence = new Meteor.Streamer('user-presence');
+		// this.streamPresences = new Meteor.Streamer('user-presence');
 		if (this.debug === true) {
 			this.onAll(function() {
 				return console.log('RocketChat.Notifications: onAll', args);
@@ -97,14 +97,6 @@ class Notifications {
 
 	unUser(eventName, callback) {
 		return this.streamUser.removeListener(`${ Meteor.userId() }/${ eventName }`, callback);
-	}
-
-	onUserPresence(uid, callback) {
-		return this.streamPresence.on(uid, callback);
-	}
-
-	unUserPresence(uid, callback) {
-		return this.streamPresence.removeListener(uid, callback);
 	}
 }
 

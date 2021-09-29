@@ -71,7 +71,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			const ids = Array.from(currentUids);
 			const removed = Array.from(deletedUids);
 
-			Meteor.subscribe('streamer-user-presences', {
+			Meteor.subscribe('stream-user-presence', '', {
 				...(ids.length > 0 && { added: Array.from(currentUids) }),
 				...(removed.length && { removed: Array.from(deletedUids) }),
 			});

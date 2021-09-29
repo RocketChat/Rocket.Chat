@@ -1,15 +1,14 @@
-import { DDPCommon } from 'meteor/ddp-common';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor, Subscription } from 'meteor/meteor';
 
 import { IUser } from '../../../../definition/IUser';
+import { IPublication, IStreamerConstructor, Connection, IStreamer } from '../../../../server/modules/streamer/streamer.module';
 
-type UserPresenseStreamProps = {
+export type UserPresenseStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
 }
 
-type UserPresenseStreamArgs = {
+export type UserPresenseStreamArgs = {
 	'uid': string;
 	args: unknown;
 }
@@ -19,16 +18,20 @@ const e = new Emitter<{
 }>();
 
 
-const clients = new WeakMap<Meteor.Connection, UserPresence>();
+const clients = new WeakMap<Connection, UserPresence>();
 
-class UserPresence {
-	private readonly publication: Subscription;
+
+export class UserPresence {
+	private readonly streamer: IStreamer;
+
+	private readonly publication: IPublication;
 
 	private readonly listeners: Set<string>;
 
-	constructor(publication: Subscription) {
+	constructor(publication: IPublication, streamer: IStreamer) {
 		this.listeners = new Set();
 		this.publication = publication;
+		this.streamer = streamer;
 	}
 
 	listen(uid: string): void {
@@ -45,42 +48,57 @@ class UserPresence {
 	}
 
 	run = (args: UserPresenseStreamArgs): void => {
-		(this.publication as any)._session.socket.send(DDPCommon.stringifyDDP({
-			msg: 'changed',
-			collection: 'stream-user-presences',
-			id: args.uid,
-			fields: args,
-		}));
+		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
+		(this.publication as any)._session.socket.send(payload);
 	}
 
 	stop(): void {
 		this.listeners.forEach(this.off);
-		clients.delete(this.publication.connection as Meteor.Connection);
+		clients.delete(this.publication.connection);
+	}
+
+	static getClient(publication: IPublication, streamer: IStreamer): [UserPresence, boolean] {
+		const { connection } = publication;
+		const stored = clients.get(connection);
+
+		const client = stored || new UserPresence(publication, streamer);
+
+		const main = Boolean(!stored);
+
+		clients.set(connection, client);
+
+		return [client, main];
 	}
 }
 
-Meteor.publish('streamer-user-presences', function({ added, removed }: UserPresenseStreamProps) {
-	const stored = clients.get(this.connection);
-
-	const client = stored || new UserPresence(this);
-
-	const main = Boolean(!stored);
-
-	clients.set(this.connection, client);
-
-	added?.forEach((uid) => client.listen(uid));
-	removed?.forEach((uid) => client.off(uid));
+export class StreamPresence {
+	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer {
+		return new class StreamPresence extends Streamer {
+			async _publish(publication: IPublication, _eventName: string, options: boolean | {useCollection?: boolean; args?: any} = false): Promise<void> {
+				const { added, removed } = (typeof options !== 'boolean' ? options : {}) as unknown as UserPresenseStreamProps;
 
 
-	if (!main) {
-		this.stop();
-		return;
+				const [client, main] = UserPresence.getClient(publication, this);
+
+				added?.forEach((uid) => client.listen(uid));
+				removed?.forEach((uid) => client.off(uid));
+
+
+				if (!main) {
+					publication.stop();
+					return;
+				}
+
+				publication.ready();
+				publication.connection.onClose(() => client.stop());
+
+				publication.onStop(() => client.stop());
+			}
+		}(name);
 	}
+}
 
-	this.ready();
-	this.connection.onClose(() => client.stop());
 
-	this.onStop(() => client.stop());
-});
-
-export const emit = (uid: string, args: UserPresenseStreamArgs): void => e.emit(uid, { uid, args });
+export const emit = (uid: string, args: UserPresenseStreamArgs): void => {
+	e.emit(uid, { uid, args });
+};
