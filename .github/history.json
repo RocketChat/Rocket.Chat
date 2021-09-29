@@ -65698,6 +65698,52 @@
           ]
         }
       ]
+    },
+    "4.0.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23306",
+          "title": "Regression: LDAP Issues",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23302",
+          "title": "[BREAK] Remove cordova compatibility setting",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23308",
+          "title": "Regression: Fix Bugsnag not started error",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
     }
   }
 }
