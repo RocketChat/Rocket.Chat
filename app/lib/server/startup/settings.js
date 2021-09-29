@@ -916,12 +916,6 @@ settings.addGroup('General', function() {
 		public: true,
 	});
 
-	// Deprecated setting
-	this.add('Support_Cordova_App', false, {
-		type: 'boolean',
-		i18nDescription: 'Support_Cordova_App_Description',
-		alert: 'Support_Cordova_App_Alert',
-	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
@@ -1285,6 +1279,11 @@ settings.addGroup('Message', function() {
 				i18nLabel: 'Message_ErasureType_Unlink',
 			},
 		],
+	});
+
+	this.add('Message_Code_highlight', 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim', {
+		type: 'string',
+		public: true,
 	});
 });
 

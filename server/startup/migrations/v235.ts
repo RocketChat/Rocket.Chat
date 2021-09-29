@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Settings, Subscriptions, Users } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 235,
 	up() {
 		Settings.removeById('Accounts_Default_User_Preferences_audioNotifications');

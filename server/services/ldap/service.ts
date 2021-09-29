@@ -13,4 +13,8 @@ export class LDAPService extends ServiceClass implements ILDAPService {
 	async testConnection(): Promise<void> {
 		return LDAPManager.testConnection();
 	}
+
+	async testSearch(username: string): Promise<void> {
+		return LDAPManager.testSearch(username);
+	}
 }

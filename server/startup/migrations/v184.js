@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 184,
 	up() {
 		// Set SAML signature validation type to 'Either'
