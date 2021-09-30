@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings, SettingsVersion4 } from '../../settings';
+import { SettingsVersion4 } from '../../settings/server/Settingsv4';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
