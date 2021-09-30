@@ -57,11 +57,7 @@ onLicense('saml-enterprise', () => {
 			customFieldsList[customAttribute] = value;
 		}
 
-		Users.update(updatedUser.userId, {
-			$set: {
-				customFields: customFieldsList,
-			},
-		});
+		Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
 	});
 });
 
