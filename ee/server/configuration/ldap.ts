@@ -18,8 +18,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	// Configure background sync cronjob
 	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
 		let lastSchedule: string;
-
-		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
+		return function addCronJobDebounced(): void {
 			if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {
 				if (cronJobs.nextScheduledAtDate(jobName)) {
 					logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
@@ -38,7 +37,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 				logger.info({ msg: 'Enabling LDAP Background Sync', jobName });
 				cronJobs.add(jobName, schedule, () => cb(), 'text');
 			}
-		}), 500);
+		};
 	}
 
 	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => LDAPEE.sync());

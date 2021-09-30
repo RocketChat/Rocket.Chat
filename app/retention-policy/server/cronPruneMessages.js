@@ -1,8 +1,6 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { debounce } from 'underscore';
 
-import { settings } from '../../settings/server';
+import { SettingsVersion4 } from '../../settings/server/Settingsv4';
 import { Rooms } from '../../models/server';
 import { cleanRoomHistory } from '../../lib';
 
@@ -20,10 +18,10 @@ const toDays = (d) => d * 1000 * 60 * 60 * 24;
 
 function job() {
 	const now = new Date();
-	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
-	const excludePinned = settings.get('RetentionPolicy_DoNotPrunePinned');
-	const ignoreDiscussion = settings.get('RetentionPolicy_DoNotPruneDiscussion');
-	const ignoreThreads = settings.get('RetentionPolicy_DoNotPruneThreads');
+	const filesOnly = SettingsVersion4.get('RetentionPolicy_FilesOnly');
+	const excludePinned = SettingsVersion4.get('RetentionPolicy_DoNotPrunePinned');
+	const ignoreDiscussion = SettingsVersion4.get('RetentionPolicy_DoNotPruneDiscussion');
+	const ignoreThreads = SettingsVersion4.get('RetentionPolicy_DoNotPruneThreads');
 
 	// get all rooms with default values
 	types.forEach((type) => {
@@ -79,37 +77,39 @@ function deployCron(precision) {
 	});
 }
 
-const reloadPolicy = debounce(Meteor.bindEnvironment(function reloadPolicy() {
+SettingsVersion4.watchMultiple(['RetentionPolicy_Enabled',
+	'RetentionPolicy_AppliesToChannels',
+	'RetentionPolicy_AppliesToGroups',
+	'RetentionPolicy_AppliesToDMs',
+	'RetentionPolicy_MaxAge_Channels',
+	'RetentionPolicy_MaxAge_Groups',
+	'RetentionPolicy_MaxAge_DMs',
+	'RetentionPolicy_Advanced_Precision',
+	'RetentionPolicy_Advanced_Precision_Cron',
+	'RetentionPolicy_Precision'], function reloadPolicy() {
 	types = [];
 
-	if (!settings.get('RetentionPolicy_Enabled')) {
+	if (!SettingsVersion4.get('RetentionPolicy_Enabled')) {
 		return SyncedCron.remove(pruneCronName);
 	}
-	if (settings.get('RetentionPolicy_AppliesToChannels')) {
+	if (SettingsVersion4.get('RetentionPolicy_AppliesToChannels')) {
 		types.push('c');
 	}
 
-	if (settings.get('RetentionPolicy_AppliesToGroups')) {
+	if (SettingsVersion4.get('RetentionPolicy_AppliesToGroups')) {
 		types.push('p');
 	}
 
-	if (settings.get('RetentionPolicy_AppliesToDMs')) {
+	if (SettingsVersion4.get('RetentionPolicy_AppliesToDMs')) {
 		types.push('d');
 	}
 
-	maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
-	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
-	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
+	maxTimes.c = SettingsVersion4.get('RetentionPolicy_MaxAge_Channels');
+	maxTimes.p = SettingsVersion4.get('RetentionPolicy_MaxAge_Groups');
+	maxTimes.d = SettingsVersion4.get('RetentionPolicy_MaxAge_DMs');
 
 
-	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
+	const precision = (SettingsVersion4.get('RetentionPolicy_Advanced_Precision') && SettingsVersion4.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(SettingsVersion4.get('RetentionPolicy_Precision'));
 
 	return deployCron(precision);
-}), 500);
-
-Meteor.startup(function() {
-	Meteor.defer(function() {
-		settings.get(/^RetentionPolicy_/, reloadPolicy);
-		reloadPolicy();
-	});
 });

@@ -214,7 +214,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 
 	private getConfig(config?: OverCustomSettingsConfig): SettingsConfig {
 		return {
-			debounce: 100,
+			debounce: 500,
 			...config,
 		};
 	}

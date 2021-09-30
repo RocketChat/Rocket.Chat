@@ -272,7 +272,7 @@ export function startStreamBroadcast() {
 	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
-	SettingsVersion4.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+	SettingsVersion4.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
 		if (TroubleshootDisableInstanceBroadcast === value) { return; }
 		TroubleshootDisableInstanceBroadcast = value;
 

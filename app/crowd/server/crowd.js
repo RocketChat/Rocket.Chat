@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
 import { Logger } from '../../logger';
 import { _setRealName } from '../../lib';
@@ -312,7 +311,7 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 
 const jobName = 'CROWD_Sync';
 
-const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
+const addCronJob = function addCronJobDebounced() {
 	if (SettingsVersion4.get('CROWD_Sync_User_Data') !== true) {
 		logger.info('Disabling CROWD Background Sync');
 		if (SyncedCron.nextScheduledAtDate(jobName)) {
@@ -333,7 +332,7 @@ const addCronJob = _.debounce(Meteor.bindEnvironment(function addCronJobDebounce
 			},
 		});
 	}
-}), 500);
+};
 
 Meteor.startup(() => {
 	SettingsVersion4.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], addCronJob);

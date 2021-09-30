@@ -1,4 +1,3 @@
-import { debounce } from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
 import { settings, SettingsVersion4 } from '../../../settings/server';
@@ -66,7 +65,7 @@ Meteor.startup(function() {
 	});
 });
 
-const updateSettings = debounce(Meteor.bindEnvironment(function() {
+const updateSettings = function() {
 	// Get the key pair
 
 	if (getFederationDiscoveryMethod() === 'hub' && !isRegisteringOrEnabled()) {
@@ -86,9 +85,10 @@ const updateSettings = debounce(Meteor.bindEnvironment(function() {
 	} else {
 		updateStatus(STATUS_ENABLED);
 	}
-}), 150);
+};
 
-function enableOrDisable(key, value) {
+// Add settings listeners
+SettingsVersion4.watch('FEDERATION_Enabled', function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${ value ? 'enabled' : 'disabled' }`);
 
 	if (value) {
@@ -102,8 +102,6 @@ function enableOrDisable(key, value) {
 	}
 
 	value && updateSettings();
-}
+});
 
-// Add settings listeners
-SettingsVersion4.watch('FEDERATION_Enabled', enableOrDisable);
 SettingsVersion4.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);

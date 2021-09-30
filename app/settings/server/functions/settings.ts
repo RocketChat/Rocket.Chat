@@ -83,11 +83,14 @@ class Settings extends SettingsBase {
 
 	constructor() {
 		super();
-
+		const start = process.hrtime();
 		SettingsModel.find().forEach((record: ISetting) => {
 			this.storeSettingValue(record, true);
 			updateValue(record._id, { value: record.value });
 		});
+		const elapsed = process.hrtime(start);
+
+		console.log(`Settings: ${ elapsed[0] }s ${ elapsed[1] / 1000000 }ms`);
 		this.initialLoad = false;
 		SettingsEvents.emit('after-initial-load', Meteor.settings);
 		SettingsVersion4.initilized();
