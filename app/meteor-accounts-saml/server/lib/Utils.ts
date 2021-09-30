@@ -90,6 +90,10 @@ export class SAMLUtils {
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {
 			globalSettings.userDataFieldMap = samlConfigs.userDataFieldMap;
 		}
+
+		if (samlConfigs.userDataCustomFieldMap && typeof samlConfigs.userDataCustomFieldMap === 'string') {
+			globalSettings.userDataCustomFieldMap = samlConfigs.userDataCustomFieldMap;
+		}
 	}
 
 	public static generateUniqueID(): string {
@@ -209,6 +213,7 @@ export class SAMLUtils {
 
 		try {
 			map = JSON.parse(userDataFieldMap);
+			customMap = JSON.parse(userDataCustomFieldMap);
 		} catch (e) {
 			SAMLUtils.log(userDataFieldMap);
 			SAMLUtils.log(e);
@@ -304,10 +309,20 @@ export class SAMLUtils {
 			if (attributeMap) {
 				if (spFieldName === 'email' || spFieldName === 'username' || spFieldName === 'name') {
 					parsedMap[spFieldName] = attributeMap;
-				} else {
-					parsedMap.customFields.set(spFieldName, attributeMap);
 				}
 			}
+		}
+		for (const spCustomFieldName in customMap) {
+			if (!customMap.hasOwnProperty(spCustomFieldName)) {
+				continue;
+			}
+			const customAttribute = customMap[spCustomFieldName];
+
+			const customAttributeMap = {
+				fieldName: customAttribute,
+			};
+			parsedMap.attributeList.add(customAttribute);
+			parsedMap.customFields.set(spCustomFieldName, customAttributeMap);
 		}
 
 		if (identifier) {
@@ -324,7 +339,6 @@ export class SAMLUtils {
 				parsedMap.attributeList.add(identifier);
 			}
 		}
-		console.log('parsedMap', parsedMap);
 		return parsedMap;
 	}
 
@@ -438,8 +452,6 @@ export class SAMLUtils {
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
-		console.log('getting email\n');
-		console.log(userDataMap.email);
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name);

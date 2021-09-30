@@ -40,7 +40,6 @@ onLicense('saml-enterprise', () => {
 	});
 
 	SAMLUtils.events.on('updateCustomFields', (updateData: Record<string, any>, userObject: Record<string, any>) => {
-		console.log('\n\nevent lmao\n\n');
 		console.log(updateData, userObject);
 	});
 });
