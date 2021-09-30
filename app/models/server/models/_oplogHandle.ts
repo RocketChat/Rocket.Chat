@@ -68,6 +68,7 @@ class CustomOplogHandle {
 		}
 
 		this.client = new MongoClient(oplogUrl, {
+			...JSON.parse(process.env.MONGO_OPTIONS || ''),
 			useUnifiedTopology: true,
 			useNewUrlParser: true,
 			poolSize: this.usingChangeStream ? 15 : 1,
