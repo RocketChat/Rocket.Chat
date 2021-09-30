@@ -22,7 +22,6 @@ const globalSettings: ISAMLGlobalSettings = {
 	immutableProperty: 'EMail',
 	defaultUserRole: 'user',
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
-	userDataCustomFieldMap: '{}',
 	usernameNormalize: 'None',
 	channelsAttributeUpdate: false,
 	includePrivateChannelsInUpdate: false,
@@ -89,10 +88,6 @@ export class SAMLUtils {
 
 		if (samlConfigs.userDataFieldMap && typeof samlConfigs.userDataFieldMap === 'string') {
 			globalSettings.userDataFieldMap = samlConfigs.userDataFieldMap;
-		}
-
-		if (samlConfigs.userDataCustomFieldMap && typeof samlConfigs.userDataCustomFieldMap === 'string') {
-			globalSettings.userDataCustomFieldMap = samlConfigs.userDataCustomFieldMap;
 		}
 	}
 
@@ -205,15 +200,13 @@ export class SAMLUtils {
 	}
 
 	public static getUserDataMapping(): IUserDataMap {
-		const { userDataFieldMap, userDataCustomFieldMap, immutableProperty } = globalSettings;
+		const { userDataFieldMap, immutableProperty } = globalSettings;
 
 		const defaultMappingFields = ['email', 'name', 'username'];
 		let map: Record<string, any>;
-		let customMap: Record<string, any>;
 
 		try {
 			map = JSON.parse(userDataFieldMap);
-			customMap = JSON.parse(userDataCustomFieldMap);
 		} catch (e) {
 			SAMLUtils.log(userDataFieldMap);
 			SAMLUtils.log(e);
@@ -221,7 +214,6 @@ export class SAMLUtils {
 		}
 
 		const parsedMap: IUserDataMap = {
-			customFields: new Map(),
 			attributeList: new Set(),
 			email: {
 				fieldName: 'email',
@@ -312,18 +304,7 @@ export class SAMLUtils {
 				}
 			}
 		}
-		for (const spCustomFieldName in customMap) {
-			if (!customMap.hasOwnProperty(spCustomFieldName)) {
-				continue;
-			}
-			const customAttribute = customMap[spCustomFieldName];
 
-			const customAttributeMap = {
-				fieldName: customAttribute,
-			};
-			parsedMap.attributeList.add(customAttribute);
-			parsedMap.customFields.set(spCustomFieldName, customAttributeMap);
-		}
 
 		if (identifier) {
 			const defaultTypes = [
@@ -462,7 +443,6 @@ export class SAMLUtils {
 		}
 
 		const userObject: ISAMLUser = {
-			customFields: new Map(),
 			samlLogin: {
 				provider: this.relayState,
 				idp: profile.issuer,
@@ -493,12 +473,6 @@ export class SAMLUtils {
 			}
 		}
 
-		for (const [fieldName, customField] of userDataMap.customFields) {
-			const value = this.getProfileValue(profile, customField);
-			if (value) {
-				userObject.customFields.set(fieldName, value);
-			}
-		}
 
 		this.events.emit('mapUser', { profile, userObject });
 
