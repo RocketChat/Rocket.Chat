@@ -1,7 +1,5 @@
-import { Logger, LogLevel } from '../../../../../lib/Logger';
 import { IConnection } from './IConnection';
 import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-
 /**
  * This class serves as a a base class for the different kind of call server objects
  * @remarks
@@ -82,11 +80,8 @@ export class Command {
 		this._returnReject = reject;
 	}
 
-	protected logger: Logger | undefined;
 
 	constructor(command: string, parametersNeeded: boolean) {
-		this.logger = new Logger('Command');
-		this.logger.setLogLevel(LogLevel.verbose);
 		this._commandText = command;
 		this._parametersNeeded = parametersNeeded;
 		this.result = {};
@@ -99,7 +94,7 @@ export class Command {
 			this.returnResolve = _resolve;
 			this.returnReject = _reject;
 			eventHandlerSetupCallback();
-			this.connection.executeCommand?.(amiCommand, actionResultCallback);
+			this.connection.executeCommand(amiCommand, actionResultCallback);
 		});
 		return returnPromise;
 	}

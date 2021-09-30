@@ -16,7 +16,7 @@
 
 import { Commands } from './Commands';
 import { IConnection } from './IConnection';
-import { Logger } from '../../../../../lib/Logger';
+import { Logger } from '../../../../lib/logger/Logger';
 import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
@@ -27,7 +27,7 @@ const version = 'Asterisk Connector 1.0';
 export class CommandHandler {
 	private connections: Map<CommandType, IConnection>;
 
-	private logger: Logger | undefined;
+	private logger: Logger;
 
 	constructor() {
 		this.logger = new Logger('CommandHandler');
@@ -56,10 +56,10 @@ export class CommandHandler {
 	 * or rejected.
 	 */
 	executeCommand(commandToExecute: Commands, commandData: any): Promise<IVoipExtensionConfig | IVoipExtensionBase []> {
-		this.logger?.debug(`executeCommand() executing ${ Commands[commandToExecute] }`);
+		this.logger.debug({ msg: `executeCommand() executing ${ Commands[commandToExecute] }` });
 		const command = CommandFactory.getCommandObject(commandToExecute);
 		command.connection = this.connections.get(command.type) as IConnection;
-		return command.executeCommand?.(commandData);
+		return command.executeCommand(commandData);
 	}
 
 	// Get the version string

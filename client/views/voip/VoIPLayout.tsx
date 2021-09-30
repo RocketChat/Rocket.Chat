@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
-import { Logger } from '../../../lib/Logger';
+import { ClientLogger } from '../../../lib/ClientLogger';
 import { ICallEventDelegate } from '../../components/voip/ICallEventDelegate';
 import { IConnectionDelegate } from '../../components/voip/IConnectionDelegate';
 import { IRegisterHandlerDelegate } from '../../components/voip/IRegisterHandlerDelegate';
@@ -33,7 +33,7 @@ class VoIPLayout
 
 	config: VoIPUserConfiguration = {};
 
-	logger: Logger | undefined;
+	logger: ClientLogger;
 
 	constructor() {
 		super({});
@@ -46,7 +46,7 @@ class VoIPLayout
 		this.registrar = React.createRef();
 		this.webSocketPath = React.createRef();
 		this.callTypeSelection = React.createRef();
-		this.logger = new Logger('VoIPLayout');
+		this.logger = new ClientLogger('VoIPLayout');
 		this.extensionConfig = null;
 	}
 
@@ -59,9 +59,9 @@ class VoIPLayout
 			this.extensionConfig = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
 				extension,
 			});
-			this.logger?.info('list = ', JSON.stringify(this.extensionConfig));
+			this.logger.info('list = ', JSON.stringify(this.extensionConfig));
 		} catch (error) {
-			this.logger?.error('error in API');
+			this.logger.error('error in API');
 			throw error;
 		}
 
@@ -88,6 +88,12 @@ class VoIPLayout
 
 		this.config.enableVideo = this.state.enableVideo;
 		this.config.connectionDelegate = this;
+		/**
+		 * Note : Following hardcoding needs to be removed. Where to get this data from, needs to
+		 * be decided. Administration -> RateLimiter -> WebRTC has a setting for stun/turn servers.
+		 * Nevertheless, whether it is configurebla by agent or not is to be found out.
+		 * Agent will control these settings.
+		 */
 		this.config.iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
 		const videoElement = document.getElementById('remote_video') as HTMLMediaElement;
 		if (videoElement) {
@@ -99,7 +105,7 @@ class VoIPLayout
 		await this.userHandler?.init();
 	}
 
-	private async deInitUserAgent(): Promise<void> {
+	private async resetUserAgent(): Promise<void> {
 		this.extensionConfig = null;
 		if (this.userName.current) {
 			this.userName.current.textContent = '';
@@ -123,7 +129,7 @@ class VoIPLayout
 
 	/* RegisterHandlerDeligate implementation begin */
 	onRegistered(): void {
-		this.logger?.info('onRegistered');
+		this.logger.info('onRegistered');
 		let element = document.getElementById('register');
 		if (element) {
 			// (element as HTMLInputElement).disabled = true;
@@ -136,11 +142,11 @@ class VoIPLayout
 	}
 
 	onRegistrationError(reason: any): void {
-		this.logger?.error(`onRegistrationError${reason}`);
+		this.logger.error(`onRegistrationError${reason}`);
 	}
 
 	onUnregistered(): void {
-		this.logger?.debug('onUnregistered');
+		this.logger.debug('onUnregistered');
 		let element = document.getElementById('register');
 		if (element) {
 			// (element as HTMLInputElement).disabled = true;
@@ -153,13 +159,13 @@ class VoIPLayout
 	}
 
 	onUnregistrationError(): void {
-		this.logger?.error('onUnregistrationError');
+		this.logger.error('onUnregistrationError');
 	}
 	/* RegisterHandlerDeligate implementation end */
 
 	/* ConnectionDelegate implementation begin */
 	onConnected(): void {
-		this.logger?.debug('onConnected');
+		this.logger.debug('onConnected');
 		let element = document.getElementById('register');
 		if (element) {
 			element.style.display = 'block';
@@ -171,7 +177,7 @@ class VoIPLayout
 	}
 
 	onConnectionError(error: any): void {
-		this.logger?.error(`onConnectionError${error}`);
+		this.logger.error(`onConnectionError${error}`);
 	}
 
 	/* ConnectionDelegate implementation end */
@@ -244,7 +250,7 @@ class VoIPLayout
 				await this.initUserAgent();
 				this.setState({ isReady: true });
 			} catch (error) {
-				this.logger?.error('componentDidMount() Error in getting extension Info', error);
+				this.logger.error('componentDidMount() Error in getting extension Info', error);
 				throw error;
 			}
 		}
@@ -255,7 +261,7 @@ class VoIPLayout
 			try {
 				await this.initUserAgent();
 			} catch (error) {
-				this.logger?.error('registerEndpoint() Error in getting extension Info', error);
+				this.logger.error('registerEndpoint() Error in getting extension Info', error);
 				throw error;
 			}
 		}
@@ -270,7 +276,7 @@ class VoIPLayout
 			this.callTypeSelection.current.disabled = false;
 		}
 		this.userHandler?.unregister();
-		this.deInitUserAgent();
+		this.resetUserAgent();
 	}
 
 	async acceptCall(): Promise<any> {

@@ -10,7 +10,7 @@ export enum LogLevel {
 	'debug',
 	'verbose',
 }
-export class Logger {
+export class ClientLogger {
 	module: string | undefined;
 
 	logLevel: LogLevel | undefined;

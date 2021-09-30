@@ -16,16 +16,10 @@ API.v1.addRoute('connector.getversion', { authRequired: true }, {
 // Get the extensions available on the call server
 API.v1.addRoute('connector.extension.list', { authRequired: true }, {
 	get() {
-		try {
-			const list = Promise.await (
-				commandHandler.executeCommand(Commands.extension_list, undefined)) as IVoipExtensionBase;
-			console.log(`JSON=${ JSON.stringify(list) }`);
-			return API.v1.success({ extensions: list });
-		} catch (error) {
-			return API.v1.failure({
-				error,
-			});
-		}
+		const list = Promise.await (
+			commandHandler.executeCommand(Commands.extension_list, undefined)) as IVoipExtensionBase;
+		this.logger.debug(`API = connector.extension.list JSON=${ JSON.stringify(list) }`);
+		return API.v1.success({ extensions: list });
 	},
 });
 
@@ -35,17 +29,11 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
  */
 API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 	get() {
-		try {
-			const endpointdetails = Promise.await (
-				commandHandler.executeCommand(
-					Commands.extension_info,
-					this.requestParams())) as IVoipExtensionConfig;
-			return API.v1.success({ ...endpointdetails });
-		} catch (error) {
-			return API.v1.failure({
-				error,
-			});
-		}
+		const endpointDetails = Promise.await (
+			commandHandler.executeCommand(
+				Commands.extension_info,
+				this.requestParams())) as IVoipExtensionConfig;
+		return API.v1.success({ ...endpointDetails });
 	},
 });
 
@@ -53,35 +41,29 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
  */
 API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
 	get() {
-		try {
-			/**
-             * REMOVE_THIS
-			 * Note : Once Murtaza's code reviews are done,
-             * this hardcoding will be removed.
-             *
-             */
-			const serverConfig = {
-				sipRegistrar: 'omni-asterisk.dev.rocket.chat',
-				websocketUri: 'wss://omni-asterisk.dev.rocket.chat/ws',
-			};
-			/**
-			 * REMOVE_THIS
-			 */
-			const endpointdetails = Promise.await (commandHandler.executeCommand(
-				Commands.extension_info,
-				this.requestParams())) as IVoipExtensionConfig;
+		/**
+		 * REMOVE_THIS
+		 * Note : Once Murtaza's code reviews are done,
+		 * this hardcoding will be removed.
+		 *
+		 */
+		const serverConfig = {
+			sipRegistrar: 'omni-asterisk.dev.rocket.chat',
+			websocketUri: 'wss://omni-asterisk.dev.rocket.chat/ws',
+		};
+		/**
+		 * REMOVE_THIS
+		 */
+		const endpointDetails = Promise.await (commandHandler.executeCommand(
+			Commands.extension_info,
+			this.requestParams())) as IVoipExtensionConfig;
 
-			const extensionRegistrationInfo = {
-				sipRegistrar: serverConfig.sipRegistrar,
-				websocketUri: serverConfig.websocketUri,
-				extension: endpointdetails.name,
-				password: endpointdetails.password,
-			};
-			return API.v1.success({ ...extensionRegistrationInfo });
-		} catch (error) {
-			return API.v1.failure({
-				error,
-			});
-		}
+		const extensionRegistrationInfo = {
+			sipRegistrar: serverConfig.sipRegistrar,
+			websocketUri: serverConfig.websocketUri,
+			extension: endpointDetails.name,
+			password: endpointDetails.password,
+		};
+		return API.v1.success({ ...extensionRegistrationInfo });
 	},
 });

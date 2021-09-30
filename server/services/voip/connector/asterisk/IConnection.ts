@@ -12,7 +12,7 @@ export interface IConnection {
 	 * @remarks
 	 * Callback for handling incoming call
 	 */
-	connect?(
+	connect(
 		connectionIpOrHostname: string,
 		connectionPort: string,
 		userName: string,
@@ -22,22 +22,22 @@ export interface IConnection {
 	 * Called for executing the command to the connection
 	 * @remarks
 	 */
-	executeCommand?(action: object, actionResultCallback: any): void;
+	executeCommand(action: object, actionResultCallback: any): void;
 
 	/**
 	 * Called for setting up event handling
 	 * @remarks
 	 */
-	on?(event: string, callback: any): void;
+	on(event: string, callback: any): void;
 	/**
 	 * Called for closing the connection.
 	 * @remarks
 	 */
-	closeConnection?(): void;
+	closeConnection(): void;
 
 	/**
 	 * Called for checking if connected
 	 * @remarks
 	 */
-	isConnected?(): boolean;
+	isConnected(): boolean;
 }

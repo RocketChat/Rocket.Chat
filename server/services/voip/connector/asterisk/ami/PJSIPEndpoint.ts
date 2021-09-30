@@ -29,15 +29,17 @@
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
 import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../../lib/Logger';
 import { Commands } from '../Commands';
+import { Logger } from '../../../../../lib/logger/Logger';
 import { EndpointState, IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../../definition/IVoipExtension';
 
 export class PJSIPEndpoint extends Command {
+	private logger: Logger;
+
 	constructor(command: string, parametersNeeded: boolean) {
 		super(command, parametersNeeded);
+		this.logger = new Logger('PJSIPEndpoint');
 		this._type = CommandType.AMI;
-		this.logger = new Logger('Endpoint');
 	}
 
 	private getState(endpointState: string): EndpointState {
@@ -57,9 +59,9 @@ export class PJSIPEndpoint extends Command {
 	 */
 	onEndpointList(event: any): void {
 		if (event.actionid !== this.actionId) {
-			this.logger?.error('onEndpointList() Unsual behavior. ActionId does not belong to this object',
-			event.actionid,
-			this.actionId);
+			this.logger.error({ msg: 'onEndpointList() Unsual behavior. ActionId does not belong to this object',
+				eventActionId: event.actionid,
+				actionId: this.actionId });
 			return;
 		}
 		const endPoint = {
@@ -75,7 +77,7 @@ export class PJSIPEndpoint extends Command {
 			result.endpoints = [];
 			result.endpoints.push(endPoint);
 		}
-		this.logger?.debug(`onEndpointList Data = ${ JSON.stringify(endPoint) }`);
+		this.logger.debug(`onEndpointList Data = ${ JSON.stringify(endPoint) }`);
 	}
 
 	/**
@@ -84,9 +86,9 @@ export class PJSIPEndpoint extends Command {
 	 */
 	onEndpointListComplete(event: any): void {
 		if (event.actionid !== this.actionId) {
-			this.logger?.error('onEndpointListComplete() Unsual behavior. ActionId does not belong to this object',
-			event.actionid,
-			this.actionId);
+			this.logger.error({ msg: 'onEndpointListComplete() Unsual behavior. ActionId does not belong to this object',
+				eventActionId: event.actionid,
+				actionId: this.actionId });
 			return;
 		}
 		const { result } = this;
@@ -106,9 +108,9 @@ export class PJSIPEndpoint extends Command {
 	 */
 	onEndpointInfo(event: any): void {
 		if (event.actionid !== this.actionId) {
-			this.logger?.error('onEndpointInfo() Unsual behavior. ActionId does not belong to this object',
-			event.actionid,
-			this.actionId);
+			this.logger.error({ msg: 'onEndpointInfo() Unsual behavior. ActionId does not belong to this object',
+				eventActionId: event.actionid,
+				actionId: this.actionId });
 			return;
 		}
 		const { result } = this;
@@ -137,13 +139,14 @@ export class PJSIPEndpoint extends Command {
 	 */
 	onEndpointDetailComplete(event: any): void {
 		if (event.actionid !== this.actionId) {
-			this.logger?.error('onEndpointDetailComplete() Unsual behavior. ActionId does not belong to this object',
-			event.actionid,
-			this.actionId);
+			this.logger.error({ msg: 'onEndpointDetailComplete() Unsual behavior. ActionId does not belong to this object',
+				eventActionId: event.actionid,
+				actionId: this.actionId });
 			return;
 		}
 		const { result } = this;
-		this.logger?.info(`onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }`);
+		this.logger.info({ msg: 'onEndpointDetailComplete() Complete.',
+			result });
 		this.returnResolve?.(result.endpoint as IVoipExtensionConfig);
 	}
 
@@ -151,14 +154,15 @@ export class PJSIPEndpoint extends Command {
 	 * Callback for indicatiing command execution status.
 	 * Received actionid for the first time.
 	 */
-	onActionResult(err: any, res: any): void {
-		if (err) {
-			this.logger?.error('onActionResult() error = ', JSON.stringify(err));
-			this.returnReject?.(`error${ err } while executing command`);
+	onActionResult(error: any, result: any): void {
+		if (error) {
+			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
+			this.returnReject?.(`error${ error } while executing command`);
 		} else {
-			this.logger?.debug('onActionResult() res = ', JSON.stringify(res));
+			this.logger.info({ msg: 'onActionResult()',
+				result });
 			// Set up actionid for future reference in case of success.
-			this.actionId = res.actionid;
+			this.actionId = result.actionid;
 		}
 	}
 
@@ -176,7 +180,7 @@ export class PJSIPEndpoint extends Command {
 
 	async executeCommand(data: any): Promise <IVoipExtensionConfig | IVoipExtensionBase []> {
 		let action = 'none';
-		this.logger?.debug('executeCommand() Executing ', JSON.stringify(data));
+		this.logger.info({ msg: `executeCommand() executing ${ this.commandText }` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|
 		if (this.commandText === Commands.extension_list.toString()) {
@@ -192,7 +196,7 @@ export class PJSIPEndpoint extends Command {
 				endpoint: data.extension,
 			};
 		}
-		this.logger?.debug('executeCommand() Executing ', JSON.stringify(amiCommand));
+		this.logger.debug({ msg: `executeCommand() executing AMI command ${ JSON.stringify(amiCommand) }`, data });
 		const actionResultCallback = this.onActionResult.bind(this);
 		const eventHandlerSetupCallback = this.setupEventHandlers.bind(this);
 		return super.prepareCommandAndExecution(amiCommand, actionResultCallback, eventHandlerSetupCallback);
