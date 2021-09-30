@@ -3,7 +3,7 @@ import { ISetting } from '../../../../definition/ISetting';
 
 type WizardSettings = Array<ISetting>;
 
-const url = 'https://go.rocket.chat/upgrade';
+const url = 'https://go.rocket.chat/i/seats-cap-upgrade';
 
 export const getSeatsRequestLink = (): string => {
 	const workspaceId: ISetting | undefined = Settings.findOneById('Cloud_Workspace_Id');
