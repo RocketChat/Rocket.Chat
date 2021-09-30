@@ -37,8 +37,6 @@ API.v1.addRoute('voipServerConfig.management', { authRequired: true }, {
 
 		const { host, port, serverName, username, password } = this.bodyParams;
 
-		Promise.await(Voip.deactivateServerConfigDataIfAvailable(ServerType.MANAGEMENT));
-
 		Promise.await(Voip.addServerConfigData({
 			type: ServerType.MANAGEMENT,
 			host,
