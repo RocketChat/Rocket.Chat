@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 

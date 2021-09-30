@@ -47,7 +47,7 @@ API.v1.addRoute('ldap.testSearch', { authRequired: true }, {
 			throw new Error('error-not-authorized');
 		}
 
-		if (settings.get('LDAP_Enable') !== true) {
+		if (SettingsVersion4.get('LDAP_Enable') !== true) {
 			throw new Error('LDAP_disabled');
 		}
 

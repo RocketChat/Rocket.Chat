@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { LDAPEE } from '../sdk';
 import { settings, SettingsVersion4 } from '../../../app/settings/server';
