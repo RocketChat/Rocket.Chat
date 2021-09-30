@@ -110,7 +110,7 @@ export const addSettings = function(name: string): void {
 			});
 			this.section('SAML_Section_5_Mapping', function() {
 				// Data Mapping Settings
-				this.add(`SAML_Custom_${ name }_user_data_custom_fieldmap`, '{"custom_field_1":"value1", "custom_field_2":"value2", "custom_field_3":"value3"}', {
+				this.add(`SAML_Custom_${ name }_user_data_custom_fieldmap`, '{"custom1":"custom1", "custom2":"custom2", "custom3":"custom3"}', {
 					type: 'string',
 					invalidValue: '',
 					i18nLabel: 'SAML_Custom_user_data_custom_fieldmap',
