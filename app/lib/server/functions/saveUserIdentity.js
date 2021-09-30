@@ -4,12 +4,13 @@ import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from 
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
+import { addUserToDefaultChannels } from './addUserToDefaultChannels';
 
 /**
  *
  * @param {object} changes changes to the user
  */
-export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) {
+export function saveUserIdentity({ _id, name: rawName, username: rawUsername, joinDefaultChannelsSilenced }) {
 	if (!_id) {
 		return false;
 	}
@@ -72,6 +73,8 @@ export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) 
 			// update name and fname of group direct messages
 			updateGroupDMsName(user);
 		}
+	} else {
+		addUserToDefaultChannels(user, joinDefaultChannelsSilenced ?? false);
 	}
 
 	return true;

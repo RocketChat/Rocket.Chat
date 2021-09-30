@@ -9,7 +9,7 @@ import { IImportChannel } from '../../../../definition/IImportChannel';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage } from '../../../lib/server';
+import { generateUsernameSuggestion, insertMessage, saveUserIdentity } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -210,7 +210,6 @@ export class ImportDataConverter {
 				type: userData.type || 'user',
 				...userData.statusText && { statusText: userData.statusText },
 				...userData.bio && { bio: userData.bio },
-				...userData.name && { name: userData.name },
 				...userData.services?.ldap && { ldap: true },
 			},
 		};
@@ -220,6 +219,23 @@ export class ImportDataConverter {
 		this.addUserImportId(updateData, userData);
 		this.flagEmailsAsVerified(updateData, userData);
 		Users.update({ _id }, updateData);
+
+		if (userData.utcOffset) {
+			Users.setUtcOffset(_id, userData.utcOffset);
+		}
+
+		if (userData.name || userData.username) {
+			saveUserIdentity({ _id, name: userData.name, username: userData.username, joinDefaultChannelsSilenced: true });
+		}
+
+		if (userData.avatarUrl) {
+			try {
+				Users.update({ _id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
+			} catch (error) {
+				this._logger.warn(`Failed to set ${ _id }'s avatar from url ${ userData.avatarUrl }`);
+				this._logger.error(error);
+			}
+		}
 	}
 
 	updateUser(existingUser: IUser, userData: IImportUser): void {
@@ -229,15 +245,6 @@ export class ImportDataConverter {
 
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
-		}
-
-		if (userData.avatarUrl) {
-			try {
-				Users.update({ _id: existingUser._id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
-			} catch (error) {
-				this._logger.warn(`Failed to set ${ existingUser._id }'s avatar from url ${ userData.avatarUrl }`);
-				this._logger.error(error);
-			}
 		}
 	}
 
@@ -260,28 +267,7 @@ export class ImportDataConverter {
 			this.addUserToCache(userData.importIds[0], user._id, userData.username);
 		}
 
-		Meteor.runAsUser(userId, () => {
-			Meteor.call('setUsername', userData.username, { joinDefaultChannelsSilenced: true });
-			if (userData.name) {
-				Users.setName(userId, userData.name);
-			}
-
-			this.updateUserId(userId, userData);
-
-			if (userData.utcOffset) {
-				Users.setUtcOffset(userId, userData.utcOffset);
-			}
-
-			if (userData.avatarUrl) {
-				try {
-					Users.update({ _id: userId }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
-				} catch (error) {
-					this._logger.warn(`Failed to set ${ userId }'s avatar from url ${ userData.avatarUrl }`);
-					this._logger.error(error);
-				}
-			}
-		});
-
+		this.updateUserId(userId, userData);
 		return user;
 	}
 
