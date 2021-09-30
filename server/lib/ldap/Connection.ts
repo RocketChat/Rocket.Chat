@@ -173,7 +173,7 @@ export class LDAPConnection {
 			}
 			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
 		} else {
-			searchLogger.warn('Unique Identifier Field is not configured.');
+			throw new Error('Unique Identifier Field is not configured.');
 		}
 
 		searchLogger.info({ msg: 'Searching by id', id });
