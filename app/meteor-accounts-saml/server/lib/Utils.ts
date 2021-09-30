@@ -22,6 +22,7 @@ const globalSettings: ISAMLGlobalSettings = {
 	immutableProperty: 'EMail',
 	defaultUserRole: 'user',
 	userDataFieldMap: '{"username":"username", "email":"email", "cn": "name"}',
+	userDataCustomFieldMap: '{}',
 	usernameNormalize: 'None',
 	channelsAttributeUpdate: false,
 	includePrivateChannelsInUpdate: false,
@@ -200,9 +201,11 @@ export class SAMLUtils {
 	}
 
 	public static getUserDataMapping(): IUserDataMap {
-		const { userDataFieldMap, immutableProperty } = globalSettings;
+		const { userDataFieldMap, userDataCustomFieldMap, immutableProperty } = globalSettings;
 
+		const defaultMappingFields = ['email', 'name', 'username'];
 		let map: Record<string, any>;
+		let customMap: Record<string, any>;
 
 		try {
 			map = JSON.parse(userDataFieldMap);
@@ -233,6 +236,9 @@ export class SAMLUtils {
 
 		for (const spFieldName in map) {
 			if (!map.hasOwnProperty(spFieldName)) {
+				continue;
+			}
+			if (!defaultMappingFields.includes(spFieldName)) {
 				continue;
 			}
 
@@ -318,7 +324,7 @@ export class SAMLUtils {
 				parsedMap.attributeList.add(identifier);
 			}
 		}
-
+		console.log('parsedMap', parsedMap);
 		return parsedMap;
 	}
 
@@ -432,7 +438,8 @@ export class SAMLUtils {
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
-
+		console.log('getting email\n');
+		console.log(userDataMap.email);
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name);
