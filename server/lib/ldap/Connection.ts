@@ -394,7 +394,7 @@ export class LDAPConnection {
 	}
 
 	public async bindDN(dn: string, password: string): Promise<void> {
-		await new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			try {
 				this.client.bind(dn, password, (error) => {
 					if (error) {
