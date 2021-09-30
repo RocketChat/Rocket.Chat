@@ -55,20 +55,13 @@ onLicense('saml-enterprise', () => {
 			const customAttribute = customMap[spCustomFieldName];
 			const value = SAMLUtils.getProfileValue(loginResult.profile, { fieldName: spCustomFieldName });
 			customFieldsList[customAttribute] = value;
-			customFieldsList[customAttribute] = 'lksjdflkjsdlfkjadflk';
 		}
-
-		const user1 = Users.findOneById(updatedUser.userId);
-		console.log('user before\n-----------', user1);
 
 		Users.update(updatedUser.userId, {
 			$set: {
 				customFields: customFieldsList,
 			},
 		});
-
-		const user = Users.findOneById(updatedUser.userId);
-		console.log('user after\n-----------', user);
 	});
 });
 

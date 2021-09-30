@@ -1,5 +1,4 @@
 import { ServerResponse } from 'http';
-import { EventEmitter } from 'events';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -195,11 +194,9 @@ export class SAML {
 			$set: updateData,
 		});
 
-
 		if (username && username !== user.username) {
 			saveUserIdentity({ _id: user._id, username });
 		}
-
 
 		// sending token along with the userId
 		return {
@@ -476,5 +473,3 @@ export class SAML {
 		}
 	}
 }
-
-SAMLUtils.events = new EventEmitter();

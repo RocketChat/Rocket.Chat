@@ -45,7 +45,6 @@ export const getSamlConfigs = function(service: string): Record<string, any> {
 		},
 		signatureValidationType: settings.get(`${ service }_signature_validation_type`),
 		userDataFieldMap: settings.get(`${ service }_user_data_fieldmap`),
-		userDataCustomFieldMap: settings.get(`${ service }_user_data_custom_fieldmap`),
 		allowedClockDrift: settings.get(`${ service }_allowed_clock_drift`),
 		customAuthnContext: defaultAuthnContext,
 		authnContextComparison: 'exact',
