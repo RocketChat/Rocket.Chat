@@ -11,7 +11,7 @@ import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '.
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { IUser } from '../../../../definition/IUser';
+import { IUser, IUserEmail } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
 
 type IRoom = Record<string, any>;
@@ -148,6 +148,26 @@ export class ImportDataConverter {
 		}
 	}
 
+	addUserEmails(updateData: Record<string, any>, userData: IImportUser, existingEmails: Array<IUserEmail>): void {
+		if (!userData.emails?.length) {
+			return;
+		}
+
+		const verifyEmails = Boolean(this.options.flagEmailsAsVerified);
+		const newEmailList: Array<IUserEmail> = [];
+
+		for (const email of userData.emails) {
+			const verified = verifyEmails || existingEmails.find((ee) => ee.address === email)?.verified || false;
+
+			newEmailList.push({
+				address: email,
+				verified,
+			});
+		}
+
+		updateData.$set.emails = newEmailList;
+	}
+
 	addUserServices(updateData: Record<string, any>, userData: IImportUser): void {
 		if (!userData.services) {
 			return;
@@ -168,14 +188,6 @@ export class ImportDataConverter {
 				updateData.$set[`services.${ serviceKey }.${ key }`] = service[key];
 			}
 		}
-	}
-
-	flagEmailsAsVerified(updateData: Record<string, any>, userData: IImportUser): void {
-		if (!this.options.flagEmailsAsVerified || !userData.emails.length) {
-			return;
-		}
-
-		updateData.$set['emails.$[].verified'] = true;
 	}
 
 	addCustomFields(updateData: Record<string, any>, userData: IImportUser): void {
@@ -202,7 +214,11 @@ export class ImportDataConverter {
 		subset(userData.customFields, 'customFields');
 	}
 
-	updateUserId(_id: string, userData: IImportUser): void {
+	updateUser(existingUser: IUser, userData: IImportUser): void {
+		const { _id } = existingUser;
+
+		userData._id = _id;
+
 		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
 			$set: {
@@ -217,7 +233,7 @@ export class ImportDataConverter {
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);
 		this.addUserImportId(updateData, userData);
-		this.flagEmailsAsVerified(updateData, userData);
+		this.addUserEmails(updateData, userData, existingUser.emails || []);
 		Users.update({ _id }, updateData);
 
 		if (userData.utcOffset) {
@@ -236,12 +252,6 @@ export class ImportDataConverter {
 				this._logger.error(error);
 			}
 		}
-	}
-
-	updateUser(existingUser: IUser, userData: IImportUser): void {
-		userData._id = existingUser._id;
-
-		this.updateUserId(userData._id, userData);
 
 		if (userData.importIds.length) {
 			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
@@ -260,14 +270,9 @@ export class ImportDataConverter {
 			joinDefaultChannelsSilenced: true,
 		});
 
-		userData._id = userId;
 		const user = Users.findOneById(userId, {});
+		this.updateUser(user, userData);
 
-		if (user && userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], user._id, userData.username);
-		}
-
-		this.updateUserId(userId, userData);
 		return user;
 	}
 
