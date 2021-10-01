@@ -77,7 +77,7 @@ export class PJSIPEndpoint extends Command {
 			result.endpoints = [];
 			result.endpoints.push(endPoint);
 		}
-		this.logger.debug(`onEndpointList Data = ${ JSON.stringify(endPoint) }`);
+		this.logger.debug({ msg: `onEndpointList Data = ${ JSON.stringify(endPoint) }` });
 	}
 
 	/**
@@ -92,7 +92,7 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		const { result } = this;
-		this.logger?.info(`onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }`);
+		this.logger.info({ msg: `onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }` });
 		this.returnResolve?.(result.endpoints as IVoipExtensionBase []);
 	}
 
@@ -130,7 +130,7 @@ export class PJSIPEndpoint extends Command {
 			result.endpoint.password = event.password;
 			result.endpoint.authtype = event.authtype;
 		}
-		this.logger?.debug(`onEndpointList Data = ${ JSON.stringify(result.endpoint) }`);
+		this.logger.debug({ msg: `onEndpointList Data = ${ JSON.stringify(result.endpoint) }` });
 	}
 
 	/**
@@ -169,12 +169,12 @@ export class PJSIPEndpoint extends Command {
 	setupEventHandlers(): void {
 		// Setup necessary command event handlers based on the command
 		if (this.commandText === Commands.extension_list.toString()) {
-			this.connection.on?.('endpointlist', this.onEndpointList.bind(this));
-			this.connection.on?.('endpointlistcomplete', this.onEndpointListComplete.bind(this));
+			this.connection.on('endpointlist', this.onEndpointList.bind(this));
+			this.connection.on('endpointlistcomplete', this.onEndpointListComplete.bind(this));
 		} else if (this.commandText === Commands.extension_info.toString()) {
-			this.connection.on?.('endpointdetail', this.onEndpointInfo.bind(this));
-			this.connection.on?.('authdetail', this.onEndpointInfo.bind(this));
-			this.connection.on?.('endpointdetailcomplete', this.onEndpointDetailComplete.bind(this));
+			this.connection.on('endpointdetail', this.onEndpointInfo.bind(this));
+			this.connection.on('authdetail', this.onEndpointInfo.bind(this));
+			this.connection.on('endpointdetailcomplete', this.onEndpointDetailComplete.bind(this));
 		}
 	}
 
