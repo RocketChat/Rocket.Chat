@@ -22,7 +22,7 @@ import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
 import { callbacks } from '../../../../callbacks';
-import { hasAllPermission, hasRole } from '../../../../authorization';
+import { hasAtLeastOnePermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
@@ -365,7 +365,7 @@ Template.roomOld.helpers({
 			return true;
 		}
 
-		if (hasAllPermission('preview-c-room')) {
+		if (hasAtLeastOnePermission(['preview-c-room', 'preview-l-room'])) {
 			return true;
 		}
 
