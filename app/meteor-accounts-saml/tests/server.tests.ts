@@ -42,7 +42,7 @@ import '../../../definition/xml-encryption';
 
 const { expect } = chai;
 
-describe.only('SAML', () => {
+describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
