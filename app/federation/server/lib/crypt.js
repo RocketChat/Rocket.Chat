@@ -1,7 +1,7 @@
 import { FederationKeys } from '../../../models/server';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
-import { logger } from './logger';
+import { cryptLogger } from './logger';
 
 export function decrypt(data, peerKey) {
 	//
@@ -15,7 +15,7 @@ export function decrypt(data, peerKey) {
 		// Decrypt with the local private key
 		data = FederationKeys.getPrivateKey().decrypt(data);
 	} catch (err) {
-		logger.crypt.error(err);
+		cryptLogger.error(err);
 
 		throw new Error('Could not decrypt');
 	}
@@ -60,7 +60,7 @@ export function encrypt(data, peerKey) {
 		// Encrypt with the local private key
 		return FederationKeys.getPrivateKey().encryptPrivate(data);
 	} catch (err) {
-		logger.crypt.error(err);
+		cryptLogger.error(err);
 
 		throw new Error('Could not encrypt');
 	}

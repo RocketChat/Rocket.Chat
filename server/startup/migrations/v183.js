@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Rooms, Messages, Subscriptions, Uploads, Settings, Users } from '../../../app/models/server';
 
 const unifyRooms = (room) => {
@@ -100,7 +100,7 @@ const fixUserSearch = () => {
 	Users.tryDropIndex('name_text_username_text_bio_text');
 };
 
-Migrations.add({
+addMigration({
 	version: 183,
 	up() {
 		fixDiscussions();

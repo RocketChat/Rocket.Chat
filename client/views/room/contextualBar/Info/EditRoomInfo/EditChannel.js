@@ -33,7 +33,7 @@ import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useMethod } from '../../../../../contexts/ServerContext';
 import { useSetting } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../../../../hooks/useForm';
 
 const typeMap = {
@@ -401,7 +401,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 								/>
 							</Field.Row>
 						</Box>
-						<Field.Hint>{t('Only_authorized_users_can_write_new_messages')}</Field.Hint>
+						<Field.Hint>{t('Only_authorized_users_can_react_to_messages')}</Field.Hint>
 					</Field>
 				)}
 				{canViewArchived && (

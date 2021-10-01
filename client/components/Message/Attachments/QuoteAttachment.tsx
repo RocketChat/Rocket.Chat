@@ -57,7 +57,7 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 					</Attachment.Author>
 					<MarkdownText parseEmoji variant='inline' content={text} />
 					{attachments && (
-						<Attachment.Inner>
+						<Attachment.Inner mbe='-12px'>
 							<Attachments attachments={attachments} />
 						</Attachment.Inner>
 					)}

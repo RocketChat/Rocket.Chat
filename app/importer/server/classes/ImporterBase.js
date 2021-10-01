@@ -14,7 +14,7 @@ import { RawImports } from '../models/RawImports';
 import { Settings, Imports } from '../../../models';
 import { Logger } from '../../../logger';
 import { ImportDataConverter } from './ImportDataConverter';
-import { ImportData } from '../models/ImportData';
+import { ImportData } from '../../../models/server';
 import { t } from '../../../utils/server';
 import {
 	Selection,
@@ -54,7 +54,7 @@ export class Base {
 
 		this.info = info;
 
-		this.logger = new Logger(`${ this.info.name } Importer`, {});
+		this.logger = new Logger(`${ this.info.name } Importer`);
 		this.converter.setLogger(this.logger);
 
 		this.progress = new Progress(this.info.key, this.info.name);

@@ -45,7 +45,7 @@ export const RoutingManager = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		logger.debug(`Getting next available agent with method ${ this.name }`);
+		logger.debug(`Getting next available agent with method ${ this.methodName }`);
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
@@ -55,6 +55,7 @@ export const RoutingManager = {
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${ inquiry._id }`);
 			agent = await this.getNextAgent(department);
+			logger.debug(`Routing method returned agent ${ agent && agent.agentId } for inquiry ${ inquiry._id }`);
 		}
 
 		if (!agent) {
@@ -62,7 +63,7 @@ export const RoutingManager = {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent._id }`);
+		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent.agentId }`);
 		return this.takeInquiry(inquiry, agent, options);
 	},
 
@@ -195,7 +196,7 @@ export const RoutingManager = {
 		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, { department: inquiry?.department });
 
 		if (defaultAgent) {
-			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent._id }`);
+			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent.username }`);
 			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 		}
 

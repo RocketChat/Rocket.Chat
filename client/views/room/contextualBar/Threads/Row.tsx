@@ -1,10 +1,10 @@
 import React, { FC, memo, MouseEvent } from 'react';
 
-import { call } from '../../../../../app/ui-utils/client';
 import { IMessage } from '../../../../../definition/IMessage';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
+import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
 import ThreadListMessage from './components/Message';
 import { mapProps } from './mapProps';
 import { normalizeThreadMessage } from './normalizeThreadMessage';
@@ -17,9 +17,12 @@ const handleFollowButton = (e: MouseEvent<HTMLElement>, threadId: string): void 
 	const { following } = e.currentTarget.dataset;
 
 	following &&
-		call(![true, 'true'].includes(following) ? 'followMessage' : 'unfollowMessage', {
-			mid: threadId,
-		});
+		callWithErrorHandling(
+			![true, 'true'].includes(following) ? 'followMessage' : 'unfollowMessage',
+			{
+				mid: threadId,
+			},
+		);
 };
 
 type ThreadRowProps = {

@@ -10,8 +10,18 @@ class SettingsClass {
 
 	public upsertCalls = 0;
 
+	private checkQueryMatch(key: string, data: Dictionary, queryValue: any): boolean {
+		if (typeof queryValue === 'object') {
+			if (queryValue.$exists !== undefined) {
+				return (data.hasOwnProperty(key) && data[key] !== undefined) === queryValue.$exists;
+			}
+		}
+
+		return queryValue === data[key];
+	}
+
 	findOne(query: Dictionary): any {
-		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => data[key] === value));
+		return [...this.data.values()].find((data) => Object.entries(query).every(([key, value]) => this.checkQueryMatch(key, data, value)));
 	}
 
 	upsert(query: any, update: any): void {

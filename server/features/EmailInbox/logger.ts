@@ -1,3 +1,3 @@
-import { Logger } from '../../../app/logger/server';
+import { Logger } from '../../lib/logger/Logger';
 
 export const logger = new Logger('EmailInbox');

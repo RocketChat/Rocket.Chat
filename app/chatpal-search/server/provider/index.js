@@ -29,13 +29,13 @@ class Backend {
 			const response = HTTP.call('POST', `${ this._options.baseurl }${ this._options.updatepath }`, options);
 
 			if (response.statusCode >= 200 && response.statusCode < 300) {
-				ChatpalLogger.debug(`indexed ${ docs.length } documents`, JSON.stringify(response.data, null, 2));
+				ChatpalLogger.debug({ msg: `indexed ${ docs.length } documents`, data: response.data });
 			} else {
 				throw new Error(response);
 			}
 		} catch (e) {
 			// TODO how to deal with this
-			ChatpalLogger.error('indexing failed', JSON.stringify(e, null, 2));
+			ChatpalLogger.error({ msg: 'indexing failed', err: e });
 			return false;
 		}
 	}
@@ -83,7 +83,7 @@ class Backend {
 			...this._options.httpOptions,
 		};
 
-		ChatpalLogger.debug('query: ', JSON.stringify(options, null, 2));
+		ChatpalLogger.debug({ query: options });
 
 		try {
 			if (callback) {
@@ -101,7 +101,7 @@ class Backend {
 				throw new Error(response);
 			}
 		} catch (e) {
-			ChatpalLogger.error('query failed', JSON.stringify(e, null, 2));
+			ChatpalLogger.error({ msg: 'query failed', err: e });
 			throw e;
 		}
 	}

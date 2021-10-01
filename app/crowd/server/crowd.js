@@ -10,8 +10,9 @@ import { Users } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
 import { deleteUser } from '../../lib/server/functions';
+import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
-const logger = new Logger('CROWD', {});
+const logger = new Logger('CROWD');
 
 function fallbackDefaultAccountSystem(bind, username, password) {
 	if (typeof username === 'string') {
@@ -154,7 +155,6 @@ export class CROWD {
 				address: crowdUser.email,
 				verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 			}],
-			active: crowdUser.active,
 			crowd: true,
 		};
 
@@ -173,6 +173,8 @@ export class CROWD {
 		Meteor.users.update(id, {
 			$set: user,
 		});
+
+		setUserActiveStatus(id, crowdUser.active);
 	}
 
 	sync() {

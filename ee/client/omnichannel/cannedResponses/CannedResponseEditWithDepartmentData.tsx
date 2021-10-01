@@ -2,14 +2,19 @@ import { Callout } from '@rocket.chat/fuselage';
 import React, { useMemo, FC } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { CannedResponseEndpointGetReturn } from '../../../../client/contexts/ServerContext/endpoints/v1/omnichannel/cannedResponse';
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 import { useEndpointData } from '../../../../client/hooks/useEndpointData';
+import { IOmnichannelCannedResponse } from '../../../../definition/IOmnichannelCannedResponse';
+import { Serialized } from '../../../../definition/Serialized';
 import CannedResponseEdit from './CannedResponseEdit';
 
 const CannedResponseEditWithData: FC<{
-	data: CannedResponseEndpointGetReturn | undefined;
+	data:
+		| {
+				cannedResponse: Serialized<IOmnichannelCannedResponse>;
+		  }
+		| undefined;
 	reload: () => void;
 	totalDataReload: () => void;
 }> = ({ data, reload, totalDataReload }) => {
@@ -18,7 +23,7 @@ const CannedResponseEditWithData: FC<{
 		value: departmentData,
 		phase: state,
 		error,
-	} = useEndpointData(`livechat/department/${departmentId}` as 'livechat/department/${string}');
+	} = useEndpointData(`livechat/department/${departmentId}`);
 
 	const t = useTranslation();
 

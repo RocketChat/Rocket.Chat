@@ -4,7 +4,6 @@ import {
 	Field,
 	TextInput,
 	Chip,
-	SelectFiltered,
 	Box,
 	Icon,
 	Divider,
@@ -12,6 +11,7 @@ import {
 	TextAreaInput,
 	ButtonGroup,
 	Button,
+	PaginatedSelectFiltered,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useRef } from 'react';
@@ -19,18 +19,17 @@ import { useSubscription } from 'use-subscription';
 
 import { isEmail } from '../../../../app/utils/client';
 import Page from '../../../components/Page';
+import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { useForm } from '../../../hooks/useForm';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import { formsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
-
-const useQuery = ({ name }) => useMemo(() => ({ selector: JSON.stringify({ name }) }), [name]);
 
 function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const t = useTranslation();
@@ -113,6 +112,12 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		departmentsAllowedToForward,
 	} = values;
 
+	const { itemsList: RoomsList, loadMoreItems: loadMoreRooms } = useRoomsList(
+		useMemo(() => ({ text: offlineMessageChannelName }), [offlineMessageChannelName]),
+	);
+
+	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
+
 	const handleTagChipClick = (tag) => () => {
 		setTags((tags) => tags.filter((_tag) => _tag !== tag));
 	};
@@ -128,26 +133,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setTagsText(e.target.value);
 	});
 
-	const query = useQuery({ offlineMessageChannelName });
-
-	const { value: autoCompleteChannels = {} } = useEndpointData(
-		'rooms.autocomplete.channelAndPrivate',
-		query,
-	);
-
-	const channelOpts = useMemo(
-		() =>
-			autoCompleteChannels && autoCompleteChannels.items
-				? autoCompleteChannels.items.map(({ name }) => [name, name])
-				: [],
-		[autoCompleteChannels],
-	);
-
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpointAction(
-		'POST',
-		`livechat/department/${id}/agents`,
-	);
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `livechat/department/${id}/agents`);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -232,7 +219,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		try {
 			if (id) {
 				await saveDepartmentInfo(id, payload, []);
-				await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
+					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				}
 			} else {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
@@ -356,12 +345,19 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						<Field>
 							<Field.Label>{t('Livechat_DepartmentOfflineMessageToChannel')}</Field.Label>
 							<Field.Row>
-								<SelectFiltered
-									flexGrow={1}
-									options={channelOpts}
+								<PaginatedSelectFiltered
 									value={offlineMessageChannelName}
 									onChange={handleOfflineMessageChannelName}
+									flexShrink={0}
+									filter={offlineMessageChannelName}
+									setFilter={handleOfflineMessageChannelName}
+									options={roomsItems}
 									placeholder={t('Channel_name')}
+									endReached={
+										roomsPhase === AsyncStatePhase.LOADING
+											? () => {}
+											: (start) => loadMoreRooms(start, Math.min(50, roomsTotal))
+									}
 								/>
 							</Field.Row>
 						</Field>

@@ -21,7 +21,7 @@ export async function configureEmailInboxes(): Promise<void> {
 		active: true,
 	});
 
-	(logger as any).info('Clearing old email inbox registrations');
+	logger.info('Clearing old email inbox registrations');
 	for (const { imap } of inboxes.values()) {
 		imap.stop();
 	}
@@ -29,7 +29,7 @@ export async function configureEmailInboxes(): Promise<void> {
 	inboxes.clear();
 
 	for await (const emailInboxRecord of emailInboxesCursor) {
-		(logger as any).info(`Setting up email interceptor for ${ emailInboxRecord.email }`);
+		logger.info(`Setting up email interceptor for ${ emailInboxRecord.email }`);
 
 		const imap = new IMAPInterceptor({
 			password: emailInboxRecord.imap.password,
@@ -58,7 +58,7 @@ export async function configureEmailInboxes(): Promise<void> {
 				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
 			} catch (e: any) {
 				// In case the email message history has been received by other instance..
-				(logger as any).error(e);
+				logger.error(e);
 			}
 		}));
 
@@ -77,7 +77,7 @@ export async function configureEmailInboxes(): Promise<void> {
 		inboxes.set(emailInboxRecord.email, { imap, smtp, config: emailInboxRecord });
 	}
 
-	(logger as any).info(`Configured a total of ${ inboxes.size } inboxes`);
+	logger.info(`Configured a total of ${ inboxes.size } inboxes`);
 }
 
 Meteor.startup(() => {
