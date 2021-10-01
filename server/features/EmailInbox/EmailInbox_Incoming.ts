@@ -9,6 +9,7 @@ import { LivechatRooms, LivechatVisitors, Messages } from '../../../app/models/s
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
+import { logger } from './logger';
 
 type FileAttachment = {
 	title: string;
@@ -29,12 +30,28 @@ const language = settings.get('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 function getGuestByEmail(email: string, name: string, department?: string): any {
+	(logger as any).debug(`Attempt to register a guest for ${ email } on department: ${ department }`);
 	const guest = LivechatVisitors.findOneGuestByEmailAddress(email);
 
 	if (guest) {
+		(logger as any).debug(`Guest with email ${ email } found with id ${ guest._id }`);
+		if (guest.department !== department) {
+			(logger as any).debug({
+				msg: 'Switching departments for guest',
+				guest,
+				previousDepartment: guest.department,
+				newDepartment: department,
+			});
+			Livechat.setDepartmentForGuest({ token: guest.token, department });
+			return LivechatVisitors.findOneById(guest._id, {});
+		}
 		return guest;
 	}
 
+	(logger as any).debug({
+		msg: 'Creating a new Omnichannel guest for visitor with email',
+		email,
+	});
 	const userId = Livechat.registerGuest({
 		token: Random.id(),
 		name: name || email,
@@ -47,6 +64,7 @@ function getGuestByEmail(email: string, name: string, department?: string): any 
 	});
 
 	const newGuest = LivechatVisitors.findOneById(userId, {});
+	(logger as any).debug(`Guest ${ userId } for visitor ${ email } created`);
 	if (newGuest) {
 		return newGuest;
 	}
@@ -102,6 +120,7 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department?: string): Promise<void> {
+	(logger as any).debug(`New email conversation received on inbox ${ inbox }. Will be assigned to department ${ department }`);
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -110,10 +129,20 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	const thread = references?.[0] ?? email.messageId;
 
+	(logger as any).debug(`Fetching guest for visitor ${ email.from.value[0].address }`);
 	const guest = getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
-	let room = LivechatRooms.findOneByVisitorTokenAndEmailThread(guest.token, thread, {});
+	(logger as any).debug(`Guest ${ guest._id } obtained. Attempting to find or create a room on department ${ department }`);
+	let room = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
+
+	(logger as any).debug({
+		msg: 'Room found for guest',
+		room,
+		guest,
+	});
+
 	if (room?.closedAt) {
+		(logger as any).debug(`Room ${ room?._id } is closed. Reopening`);
 		room = await QueueManager.unarchiveRoom(room);
 	}
 
@@ -127,6 +156,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
+	(logger as any).debug(`Sending email message to room ${ rid } for visitor ${ guest._id }. Conversation assigned to department ${ department }`);
 	Livechat.sendMessage({
 		guest,
 		message: {
@@ -198,7 +228,10 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			},
 		});
-	}).catch((error) => {
-		console.log('Error receiving Email: %s', error.message);
+	}).catch((err) => {
+		Livechat.logger.error({
+			msg: 'Error receiving email',
+			err,
+		});
 	});
 }
