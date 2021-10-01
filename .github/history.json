@@ -65817,6 +65817,218 @@
           ]
         }
       ]
+    },
+    "3.16.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "3.17.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "3.18.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23338",
+          "title": "Release 3.18.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23338",
+          "title": "Release 3.18.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23135",
+          "title": "Release 3.18.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "KevLehman",
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23328",
+          "title": "Regression: invalid `call` import",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23331",
+          "title": "Regression: LDAP: Handle base authentication and prevent crash",
+          "userLogin": "rodrigok",
+          "description": "When AD requires TLS the auth crashes the server if StartTLS is not set, the error shows at the end because the code was not waiting on this operation.",
+          "milestone": "4.0.0",
+          "contributors": [
+            "rodrigok",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23334",
+          "title": "Regression: invalid `call` import",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23321",
+          "title": "Regression: LDAP User Data Sync not always working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23333",
+          "title": "Regression: Removed exclusive tests statement",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23322",
+          "title": "Regression: Blank screen in Jitsi video calls",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix Jitsi calls being disposed even when \"Open in new window\" setting is disabled;\r\n - Fix misspelling on `CallJitsWithData.js` file name.",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23330",
+          "title": "Regression: SAML identifier mapping",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
