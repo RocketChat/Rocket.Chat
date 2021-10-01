@@ -6,7 +6,9 @@ type FunctionPropertyNames<T> = {
 
 type Prom<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? T[K] : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]>>;
-}
+} & {
+	use: <K extends FunctionPropertyNames<T>>(event: K, callback: (...params: Parameters<T[K]>) => void) => void;
+};
 
 type PromOrError<T> = {
 	[K in FunctionPropertyNames<T>]: ReturnType<T[K]> extends Promise<any> ? (...params: Parameters<T[K]>) => ReturnType<T[K]> | Promise<Error> : (...params: Parameters<T[K]>) => Promise<ReturnType<T[K]> | Error>;
@@ -14,7 +16,13 @@ type PromOrError<T> = {
 
 function handler<T extends object>(namespace: string, waitService: boolean): ProxyHandler<T> {
 	return {
-		get: (_target: T, prop: string): any => (...params: any): Promise<any> => api[waitService ? 'waitAndCall' : 'call'](`${ namespace }.${ prop }`, params),
+		get: (_target: T, prop: string): any => {
+			if (prop === 'use') {
+				return async (method: string, callback: any): Promise<any> => api.use(`${ namespace }.${ method }`, callback);
+			}
+			return (...params: any): Promise<any> =>
+				api[waitService ? 'waitAndCall' : 'call'](`${ namespace }.${ prop }`, params);
+		},
 	};
 }
 
