@@ -33,7 +33,7 @@ const querySettings = {
 	],
 };
 
-const CallJitsWithData = ({ rid }) => {
+const CallJitsiWithData = ({ rid }) => {
 	const user = useUser();
 	const { connected } = useConnectionStatus();
 	const [accessToken, setAccessToken] = useSafely(useState());
@@ -182,7 +182,7 @@ const CallJitsWithData = ({ rid }) => {
 
 			jitsi.on('HEARTBEAT', testAndHandleTimeout);
 
-			shouldDispose = !jitsi.openNewWindow;
+			shouldDispose = jitsi.openNewWindow;
 		}
 
 		fetchData().then(() => {
@@ -228,4 +228,4 @@ const CallJitsWithData = ({ rid }) => {
 	);
 };
 
-export default memo(CallJitsWithData);
+export default memo(CallJitsiWithData);
