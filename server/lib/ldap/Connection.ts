@@ -173,7 +173,7 @@ export class LDAPConnection {
 			}
 			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
 		} else {
-			searchLogger.warn('Unique Identifier Field is not configured.');
+			throw new Error('Unique Identifier Field is not configured.');
 		}
 
 		searchLogger.info({ msg: 'Searching by id', id });
@@ -394,7 +394,7 @@ export class LDAPConnection {
 	}
 
 	public async bindDN(dn: string, password: string): Promise<void> {
-		await new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			try {
 				this.client.bind(dn, password, (error) => {
 					if (error) {
