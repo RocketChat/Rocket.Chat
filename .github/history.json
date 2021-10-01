@@ -65744,6 +65744,79 @@
           ]
         }
       ]
+    },
+    "4.0.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23319",
+          "title": "[BREAK] Moved SAML custom field map to EE",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23320",
+          "title": "Regression: \"Join\" button not working",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23318",
+          "title": "Regression: Add default value when no cookies are present",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23317",
+          "title": "Regression: Request seats url",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23310",
+          "title": "[BREAK] Webhook will fail if user is not part of the channel",
+          "userLogin": "sampaiodiego",
+          "description": "Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.\r\n\r\nStarting from 4.0.0 the webhook request will fail with `error-not-allowed` error:\r\n\r\n```\r\n{\"success\":false,\"error\":\"error-not-allowed\"}\r\n```",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23311",
+          "title": "Regression: LDAP Channel/Role Sync not working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23312",
+          "title": "Regression: Request seats link",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
     }
   }
 }
