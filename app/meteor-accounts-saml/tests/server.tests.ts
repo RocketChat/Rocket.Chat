@@ -632,9 +632,6 @@ describe('SAML', () => {
 					username: 'anotherUsername',
 					email: 'singleEmail',
 					name: 'anotherName',
-					customField1: 'customField1',
-					customField2: 'customField2',
-					customField3: 'customField3',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
@@ -654,13 +651,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
 				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user']);
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
-
-				const map = new Map();
-				map.set('customField1', 'value1');
-				map.set('customField2', 'value2');
-				map.set('customField3', 'value3');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
 			it('should join array values if username receives an array of values', () => {
@@ -850,59 +840,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
 			});
 
-
-			it('should collect the values of every attribute on the field map', () => {
-				const { globalSettings } = SAMLUtils;
-
-				const fieldMap = {
-					username: 'anotherUsername',
-					email: 'singleEmail',
-					name: 'anotherName',
-					others: {
-						fieldNames: [
-							'issuer',
-							'sessionIndex',
-							'nameID',
-							'displayName',
-							'username',
-							'roles',
-							'otherRoles',
-							'language',
-							'channels',
-							'customField1',
-						],
-					},
-				};
-
-				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-
-				SAMLUtils.updateGlobalSettings(globalSettings);
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
-					'anotherUsername',
-					'singleEmail',
-					'anotherName',
-					'issuer',
-					'sessionIndex',
-					'nameID',
-					'displayName',
-					'username',
-					'roles',
-					'otherRoles',
-					'language',
-					'channels',
-					'customField1',
-				]);
-
-				// Workaround because chai doesn't handle Maps very well
-				for (const [key, value] of userObject.attributeList) {
-					// @ts-ignore
-					expect(value).to.be.equal(profile[key]);
-				}
-			});
-
 			it('should use the immutable property as default identifier', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -919,26 +856,6 @@ describe('SAML', () => {
 				const newUserObject = SAMLUtils.mapProfileToUserObject(profile);
 				expect(newUserObject).to.be.an('object');
 				expect(newUserObject).to.have.property('identifier').that.has.property('type').that.is.equal('username');
-			});
-
-			it('should collect the identifier from the fieldset', () => {
-				const { globalSettings } = SAMLUtils;
-
-				const fieldMap = {
-					username: 'anotherUsername',
-					email: 'singleEmail',
-					name: 'anotherName',
-					__identifier__: 'customField3',
-				};
-
-				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-				SAMLUtils.updateGlobalSettings(globalSettings);
-
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object');
-				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('custom');
-				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
 			});
 		});
 	});
@@ -969,7 +886,6 @@ describe('SAML', () => {
 						template: 'user-__uid__',
 					},
 					email: 'email',
-					epa: 'eduPersonAffiliation',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
@@ -991,8 +907,6 @@ describe('SAML', () => {
 
 				const map = new Map();
 				map.set('epa', 'group1');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 		});
 	});

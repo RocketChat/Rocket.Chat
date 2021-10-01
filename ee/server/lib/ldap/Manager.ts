@@ -113,6 +113,12 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
+		await this.syncUserRoles(ldap, user, dn);
+		await this.syncUserChannels(ldap, user, dn);
+		await this.syncUserTeams(ldap, user, isNewRecord);
+	}
+
 	private static async advancedSync(ldap: LDAPConnection, importUser: IImportUser, converter: LDAPDataConverter, isNewRecord: boolean): Promise<void> {
 		const user = converter.findExistingUser(importUser);
 		if (!user || user.username) {
@@ -120,9 +126,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const dn = importUser.importIds[0];
-		await this.syncUserRoles(ldap, user, dn);
-		await this.syncUserChannels(ldap, user, dn);
-		await this.syncUserTeams(ldap, user, isNewRecord);
+		return this.advancedSyncForUser(ldap, user, isNewRecord, dn);
 	}
 
 	private static async isUserInGroup(ldap: LDAPConnection, baseDN: string, filter: string, { dn, username }: { dn: string; username: string }, groupName: string): Promise<boolean> {
@@ -200,20 +204,22 @@ export class LDAPEEManager extends LDAPManager {
 
 		const fieldMap = this.parseJson(syncUserRolesFieldMap);
 		if (!fieldMap) {
+			logger.debug('missing group role mapping');
 			return;
 		}
 
-		Object.keys(fieldMap).forEach(async (ldapField) => {
-			if (!fieldMap.hasOwnProperty(ldapField)) {
-				return;
+		const ldapFields = Object.keys(fieldMap);
+		for await (const ldapField of ldapFields) {
+			if (!fieldMap[ldapField]) {
+				continue;
 			}
 
 			const userField = fieldMap[ldapField];
 
 			const [roleName] = userField.split(/\.(.+)/);
-			if (!_.find<IRole>(roles, (el) => el._id === roleName)) {
+			if (!_.find<IRole>(roles, (el) => el.name === roleName)) {
 				logger.debug(`User Role doesn't exist: ${ roleName }`);
-				return;
+				continue;
 			}
 
 			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
@@ -223,17 +229,17 @@ export class LDAPEEManager extends LDAPManager {
 					this.broadcastRoleChange('added', roleName, user._id, username);
 				}
 				logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
-				return;
+				continue;
 			}
 
 			if (!syncUserRolesAutoRemove) {
-				return;
+				continue;
 			}
 
 			if (Roles.removeUserRoles(user._id, roleName)) {
 				this.broadcastRoleChange('removed', roleName, user._id, username);
 			}
-		});
+		}
 	}
 
 	private static createRoomForSync(channel: string): IRoom | undefined {
@@ -265,22 +271,33 @@ export class LDAPEEManager extends LDAPManager {
 
 		const fieldMap = this.parseJson(syncUserChannelsFieldMap);
 		if (!fieldMap) {
+			logger.debug('missing group channel mapping');
 			return;
 		}
 
-		const username = user.username as string;
-		_.map(fieldMap, (channels, ldapField) => {
-			if (!Array.isArray(channels)) {
-				channels = [channels];
+		const { username } = user;
+		if (!username) {
+			return;
+		}
+
+		logger.debug('syncing user channels');
+		const ldapFields = Object.keys(fieldMap);
+
+		for await (const ldapField of ldapFields) {
+			if (!fieldMap[ldapField]) {
+				continue;
 			}
 
-			channels.forEach(async (channel: string) => {
+			const isUserInGroup = await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapField);
+
+			const channels: Array<string> = [].concat(fieldMap[ldapField]);
+			for await (const channel of channels) {
 				const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
 				if (!room) {
 					return;
 				}
 
-				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapField)) {
+				if (isUserInGroup) {
 					if (room.teamMain) {
 						logger.error(`Can't add user to channel ${ channel } because it is a team.`);
 					} else {
@@ -293,8 +310,8 @@ export class LDAPEEManager extends LDAPManager {
 						removeUserFromRoom(room._id, user);
 					}
 				}
-			});
-		});
+			}
+		}
 	}
 
 	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, isNewRecord: boolean): Promise<void> {

@@ -9,9 +9,9 @@ import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 
-import * as Models from '../../../models';
-import { settings } from '../../../settings';
-import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib';
+import * as Models from '../../../models/server';
+import { settings } from '../../../settings/server';
+import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
 import { integrations } from '../../lib/rocketchat';
 
@@ -192,7 +192,7 @@ export class RocketChatIntegrationHandler {
 			message.channel = `#${ tmpRoom._id }`;
 		}
 
-		message = processWebhookMessage(message, user, defaultValues, trigger);
+		message = processWebhookMessage(message, user, defaultValues);
 		return message;
 	}
 
