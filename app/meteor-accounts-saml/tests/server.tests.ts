@@ -42,7 +42,7 @@ import '../../../definition/xml-encryption';
 
 const { expect } = chai;
 
-describe('SAML', () => {
+describe.only('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
@@ -840,6 +840,56 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
 			});
 
+			it('should collect the values of every attribute on the field map', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: 'anotherUsername',
+					email: 'singleEmail',
+					name: 'anotherName',
+					others: {
+						fieldNames: [
+							'issuer',
+							'sessionIndex',
+							'nameID',
+							'displayName',
+							'username',
+							'roles',
+							'otherRoles',
+							'language',
+							'channels',
+						],
+					},
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+
+				SAMLUtils.updateGlobalSettings(globalSettings);
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('attributeList').that.is.a('Map').that.have.keys([
+					'anotherUsername',
+					'singleEmail',
+					'anotherName',
+					'issuer',
+					'sessionIndex',
+					'nameID',
+					'displayName',
+					'username',
+					'roles',
+					'otherRoles',
+					'language',
+					'channels',
+				]);
+
+				// Workaround because chai doesn't handle Maps very well
+				for (const [key, value] of userObject.attributeList) {
+					// @ts-ignore
+					expect(value).to.be.equal(profile[key]);
+				}
+			});
+
 			it('should use the immutable property as default identifier', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -856,6 +906,26 @@ describe('SAML', () => {
 				const newUserObject = SAMLUtils.mapProfileToUserObject(profile);
 				expect(newUserObject).to.be.an('object');
 				expect(newUserObject).to.have.property('identifier').that.has.property('type').that.is.equal('username');
+			});
+
+			it('should collect the identifier from the fieldset', () => {
+				const { globalSettings } = SAMLUtils;
+
+				const fieldMap = {
+					username: 'anotherUsername',
+					email: 'singleEmail',
+					name: 'anotherName',
+					__identifier__: 'customField3',
+				};
+
+				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
+				SAMLUtils.updateGlobalSettings(globalSettings);
+
+				const userObject = SAMLUtils.mapProfileToUserObject(profile);
+
+				expect(userObject).to.be.an('object');
+				expect(userObject).to.have.property('identifier').that.has.property('type').that.is.equal('custom');
+				expect(userObject).to.have.property('identifier').that.has.property('attribute').that.is.equal('customField3');
 			});
 		});
 	});
