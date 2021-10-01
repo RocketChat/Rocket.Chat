@@ -12,14 +12,33 @@ describe('miscellaneous', function() {
 
 	describe('API default', () => {
 		// Required by mobile apps
-		it('/info', (done) => {
-			request.get('/api/info')
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('version');
-				})
-				.end(done);
+		describe('/info', () => {
+			let version;
+			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', (done) => {
+				request.get('/api/info')
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.info).to.have.property('version').and.to.be.a('string');
+						expect(res.body.info).to.have.property('build').and.to.be.an('object');
+						expect(res.body.info).to.have.property('commit').and.to.be.an('object');
+						expect(res.body.info).to.have.property('marketplaceApiVersion').and.to.be.a('string');
+						version = res.body.info.version;
+					})
+					.end(done);
+			});
+			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
+				request.get('/api/info')
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('version');
+						expect(res.body).to.not.have.property('info');
+						expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+).*/, '$1'));
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -111,7 +130,6 @@ describe('miscellaneous', function() {
 			.expect(200)
 			.expect((res) => {
 				const allUserPreferencesKeys = [
-					'audioNotifications',
 					// 'language',
 					'newRoomNotification',
 					'newMessageNotification',
@@ -125,7 +143,7 @@ describe('miscellaneous', function() {
 					'unreadAlert',
 					'notificationsSoundVolume',
 					'desktopNotifications',
-					'mobileNotifications',
+					'pushNotifications',
 					'enableAutoAway',
 					'enableMessageParserEarlyAdoption',
 					// 'highlights',

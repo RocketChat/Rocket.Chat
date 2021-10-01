@@ -1,3 +1,4 @@
+import { IRoom } from '../../../definition/IRoom';
 import { FollowMessageMethod } from './methods/followMessage';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
@@ -58,6 +59,7 @@ export type ServerMethods = {
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
+	'license:getModules': () => string[];
 	'license:getTags': (...args: any[]) => any;
 	'livechat:addMonitor': (...args: any[]) => any;
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
@@ -132,6 +134,7 @@ export type ServerMethods = {
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
+	'getRoomById': (rid: IRoom['_id']) => IRoom;
 };
 
 export type ServerMethodName = keyof ServerMethods;

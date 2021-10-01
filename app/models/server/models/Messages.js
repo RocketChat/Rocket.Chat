@@ -76,6 +76,22 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
 	}
 
+	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
+	}
+
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
+	}
+
+	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
+	}
+
+	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
+		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
+	}
+
 	unsetReactions(messageId) {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
@@ -89,17 +105,6 @@ export class Messages extends Base {
 		const query = { _id };
 		const update = { $set: { otrAck } };
 		return this.update(query, update);
-	}
-
-	setGoogleVisionData(messageId, visionData) {
-		const updateObj = {};
-		for (const index in visionData) {
-			if (visionData.hasOwnProperty(index)) {
-				updateObj[`attachments.0.${ index }`] = visionData[index];
-			}
-		}
-
-		return this.update({ _id: messageId }, { $set: updateObj });
 	}
 
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {

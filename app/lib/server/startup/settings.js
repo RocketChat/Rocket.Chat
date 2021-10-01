@@ -259,24 +259,6 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Notification_RequireInteraction',
 			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
-		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
@@ -295,7 +277,7 @@ settings.addGroup('Accounts', function() {
 			],
 			public: true,
 		});
-		this.add('Accounts_Default_User_Preferences_mobileNotifications', 'all', {
+		this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 			type: 'select',
 			values: [
 				{
@@ -934,12 +916,6 @@ settings.addGroup('General', function() {
 		public: true,
 	});
 
-	// Deprecated setting
-	this.add('Support_Cordova_App', false, {
-		type: 'boolean',
-		i18nDescription: 'Support_Cordova_App_Description',
-		alert: 'Support_Cordova_App_Alert',
-	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
@@ -1304,6 +1280,11 @@ settings.addGroup('Message', function() {
 			},
 		],
 	});
+
+	this.add('Message_Code_highlight', 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim', {
+		type: 'string',
+		public: true,
+	});
 });
 
 settings.addGroup('Meta', function() {
@@ -1603,14 +1584,6 @@ settings.addGroup('Logs', function() {
 				i18nLabel: '2_Erros_Information_and_Debug',
 			},
 		],
-		public: true,
-	});
-	this.add('Log_Package', false, {
-		type: 'boolean',
-		public: true,
-	});
-	this.add('Log_File', false, {
-		type: 'boolean',
 		public: true,
 	});
 	this.add('Log_View_Limit', 1000, {

@@ -60,7 +60,7 @@ export async function resetTOTP(userId: string, notifyUser = false): Promise<boo
 	const result = await Users.resetTOTPById(userId);
 
 	if (result?.modifiedCount === 1) {
-		await Users.removeResumeService(userId);
+		await Users.unsetLoginTokens(userId);
 		return true;
 	}
 

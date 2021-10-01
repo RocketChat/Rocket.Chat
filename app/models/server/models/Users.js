@@ -9,12 +9,19 @@ import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
-	status: {
-		$exists: true,
-		$ne: 'offline',
-	},
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	$or: [{
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		roles: {
+			$ne: 'bot',
+		},
+	}, {
+		roles: 'bot',
+	}],
 	...extraFilters,
 	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
 });
@@ -47,6 +54,9 @@ export class Users extends Base {
 		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
 		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
 		this.tryEnsureIndex({ language: 1 }, { sparse: true });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -189,9 +199,6 @@ export class Users extends Base {
 
 		const query = queryStatusAgentOnline(extraFilters);
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -203,7 +210,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -226,9 +233,6 @@ export class Users extends Base {
 			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
 		const sort = {
 			livechatCount: 1,
 			username: 1,
@@ -240,7 +244,7 @@ export class Users extends Base {
 			},
 		};
 
-		const user = findAndModify(query, sort, update);
+		const user = this.findAndModify(query, sort, update);
 		if (user && user.value) {
 			return {
 				agentId: user.value._id,
@@ -357,7 +361,6 @@ export class Users extends Base {
 			},
 		};
 		const affectedRows = this.update(query, update);
-		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
 		return affectedRows;
 	}
 
@@ -875,12 +878,6 @@ export class Users extends Base {
 				$in: ['user', 'bot'],
 			},
 		};
-
-		return this.find(query, options);
-	}
-
-	findLDAPUsers(options) {
-		const query = { ldap: true };
 
 		return this.find(query, options);
 	}
@@ -1464,16 +1461,6 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
-	removeResumeService(_id) {
-		const update = {
-			$unset: {
-				'services.resume': '',
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
 	removeSamlServiceSession(_id) {
 		const update = {
 			$unset: {
@@ -1615,6 +1602,14 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	updateCustomFieldsById(userId, customFields) {
+		return this.update(userId, {
+			$set: {
+				customFields,
+			},
+		});
 	}
 }
 

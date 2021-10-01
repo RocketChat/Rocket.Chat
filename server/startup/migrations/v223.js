@@ -1,9 +1,9 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Permissions } from '../../../app/models/server';
 
 const roleName = 'user';
 
-Migrations.add({
+addMigration({
 	version: 223,
 	up() {
 		Permissions.update({ _id: 'message-impersonate' }, { $addToSet: { roles: roleName } });

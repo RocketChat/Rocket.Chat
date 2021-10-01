@@ -11,7 +11,7 @@ import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorizat
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { logger } from './logger';
+import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
@@ -205,21 +205,21 @@ const queueWorker = {
 	running: false,
 	queues: [],
 	async start() {
-		logger.queue.debug('Starting queue');
+		queueLogger.debug('Starting queue');
 		if (this.running) {
-			logger.queue.debug('Queue already running');
+			queueLogger.debug('Queue already running');
 			return;
 		}
 
 		const activeQueues = await this.getActiveQueues();
-		logger.queue.debug(`Active queues: ${ activeQueues.length }`);
+		queueLogger.debug(`Active queues: ${ activeQueues.length }`);
 
 		await OmnichannelQueue.initQueue();
 		this.running = true;
 		return this.execute();
 	},
 	async stop() {
-		logger.queue.debug('Stopping queue');
+		queueLogger.debug('Stopping queue');
 		this.running = false;
 		return OmnichannelQueue.stopQueue();
 	},
@@ -229,7 +229,7 @@ const queueWorker = {
 	},
 	async nextQueue() {
 		if (!this.queues.length) {
-			logger.queue.debug('No more registered queues. Refreshing');
+			queueLogger.debug('No more registered queues. Refreshing');
 			this.queues = await this.getActiveQueues();
 		}
 
@@ -237,21 +237,21 @@ const queueWorker = {
 	},
 	async execute() {
 		if (!this.running) {
-			logger.queue.debug('Queue stopped. Cannot execute');
+			queueLogger.debug('Queue stopped. Cannot execute');
 			return;
 		}
 
 		const queue = await this.nextQueue();
-		logger.queue.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ RACE_TIMEOUT }`);
+		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ RACE_TIMEOUT }`);
 
 		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
 	},
 
 	async checkQueue(queue) {
-		logger.queue.debug(`Processing items for queue ${ queue || 'Public' }`);
+		queueLogger.debug(`Processing items for queue ${ queue || 'Public' }`);
 		if (await OmnichannelQueue.lockQueue()) {
 			await processWaitingQueue(queue);
-			logger.queue.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
+			queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
 			await OmnichannelQueue.unlockQueue();
 		}
 
@@ -259,13 +259,19 @@ const queueWorker = {
 	},
 };
 
-settings.onload('Livechat_Routing_Method', function() {
+function shouldQueueStart() {
 	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
-	logger.queue.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
+	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
 		routingSupportsAutoAssign
 			? 'Starting'
 			: 'Stopping'
 	} queue`);
 
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+}
+
+settings.get('Livechat_enabled', (_, value) => {
+	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 });
+
+settings.onload('Livechat_Routing_Method', shouldQueueStart);

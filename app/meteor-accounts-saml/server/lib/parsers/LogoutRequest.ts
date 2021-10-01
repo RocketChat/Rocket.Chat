@@ -38,7 +38,7 @@ export class LogoutRequestParser {
 
 			return callback(null, { idpSession, nameID, id });
 		} catch (e) {
-			console.error(e);
+			SAMLUtils.error(e);
 			SAMLUtils.log(`Caught error: ${ e }`);
 
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
