@@ -170,10 +170,6 @@ export class SAML {
 			updateData[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
 		}
 
-		for (const [customField, value] of userObject.customFields) {
-			updateData[`customFields.${ customField }`] = value;
-		}
-
 		// Overwrite mail if needed
 		if (mailOverwrite === true && (customIdentifierMatch === true || immutableProperty !== 'EMail')) {
 			updateData.emails = emails;
