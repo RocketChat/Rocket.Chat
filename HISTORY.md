@@ -1,6 +1,49 @@
 
 # 4.0.0 (Under Release Candidate Process)
 
+## 4.0.0-rc.4
+`2021-10-01  ·  2 ️️️⚠️  ·  5 🔍  ·  6 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+
+- Moved SAML custom field map to EE ([#23319](https://github.com/RocketChat/Rocket.Chat/pull/23319))
+
+- Webhook will fail if user is not part of the channel ([#23310](https://github.com/RocketChat/Rocket.Chat/pull/23310))
+
+  Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.
+
+  Starting from 4.0.0 the webhook request will fail with `error-not-allowed` error:
+
+  ```
+  {"success":false,"error":"error-not-allowed"}
+  ```
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: "Join" button not working ([#23320](https://github.com/RocketChat/Rocket.Chat/pull/23320))
+
+- Regression: Add default value when no cookies are present ([#23318](https://github.com/RocketChat/Rocket.Chat/pull/23318))
+
+- Regression: LDAP Channel/Role Sync not working ([#23311](https://github.com/RocketChat/Rocket.Chat/pull/23311))
+
+- Regression: Request seats link ([#23312](https://github.com/RocketChat/Rocket.Chat/pull/23312))
+
+- Regression: Request seats url ([#23317](https://github.com/RocketChat/Rocket.Chat/pull/23317))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ostjen](https://github.com/ostjen)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 4.0.0-rc.3
 `2021-09-29  ·  1 ️️️⚠️  ·  3 🔍  ·  4 👩‍💻👨‍💻`
 
