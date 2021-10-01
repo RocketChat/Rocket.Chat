@@ -9,7 +9,7 @@ import { IImportChannel } from '../../../../definition/IImportChannel';
 import { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { IImportUserRecord, IImportChannelRecord, IImportMessageRecord } from '../../../../definition/IImportRecord';
 import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
-import { generateUsernameSuggestion, insertMessage, saveUserIdentity } from '../../../lib/server';
+import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { IUser, IUserEmail } from '../../../../definition/IUser';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -227,6 +227,7 @@ export class ImportDataConverter {
 				...userData.statusText && { statusText: userData.statusText },
 				...userData.bio && { bio: userData.bio },
 				...userData.services?.ldap && { ldap: true },
+				...userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl },
 			},
 		};
 
@@ -241,16 +242,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username, joinDefaultChannelsSilenced: true });
-		}
-
-		if (userData.avatarUrl) {
-			try {
-				Users.update({ _id }, { $set: { _pendingAvatarUrl: userData.avatarUrl } });
-			} catch (error) {
-				this._logger.warn(`Failed to set ${ _id }'s avatar from url ${ userData.avatarUrl }`);
-				this._logger.error(error);
-			}
+			saveUserIdentity({ _id, name: userData.name, username: userData.username });
 		}
 
 		if (userData.importIds.length) {
@@ -273,6 +265,7 @@ export class ImportDataConverter {
 		const user = Users.findOneById(userId, {});
 		this.updateUser(user, userData);
 
+		addUserToDefaultChannels(user, true);
 		return user;
 	}
 
