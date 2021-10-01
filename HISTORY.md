@@ -1,193 +1,12 @@
 
-# 4.0.0 (Under Release Candidate Process)
-
-## 4.0.0-rc.5
-`2021-10-01  ·  1 🚀  ·  2 🐛  ·  11 🔍  ·  10 👩‍💻👨‍💻`
-
-### 🚀 Improvements
-
-
-- Change HTTP and Method logs to level INFO ([#23100](https://github.com/RocketChat/Rocket.Chat/pull/23100))
-
-### 🐛 Bug fixes
-
-
-- Change way emails are validated on livechat registerGuest method ([#23089](https://github.com/RocketChat/Rocket.Chat/pull/23089))
-
-- Update visitor info on email reception based on current inbox settings ([#23280](https://github.com/RocketChat/Rocket.Chat/pull/23280))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091) by [@g-thome](https://github.com/g-thome))
-
-  Dimisses auth banners assigned to EE admins and prevents new ones from appearing.
-
-- Regression: Blank screen in Jitsi video calls ([#23322](https://github.com/RocketChat/Rocket.Chat/pull/23322))
-
-  - Fix Jitsi calls being disposed even when "Open in new window" setting is disabled;
-   - Fix misspelling on `CallJitsWithData.js` file name.
-
-- Regression: Change some logs to new format ([#23307](https://github.com/RocketChat/Rocket.Chat/pull/23307))
-
-- Regression: invalid `call` import ([#23328](https://github.com/RocketChat/Rocket.Chat/pull/23328))
-
-- Regression: invalid `call` import ([#23334](https://github.com/RocketChat/Rocket.Chat/pull/23334))
-
-- Regression: LDAP User Data Sync not always working ([#23321](https://github.com/RocketChat/Rocket.Chat/pull/23321))
-
-- Regression: LDAP: Handle base authentication and prevent crash ([#23331](https://github.com/RocketChat/Rocket.Chat/pull/23331))
-
-  When AD requires TLS the auth crashes the server if StartTLS is not set, the error shows at the end because the code was not waiting on this operation.
-
-- Regression: Removed exclusive tests statement ([#23333](https://github.com/RocketChat/Rocket.Chat/pull/23333))
-
-- Regression: SAML identifier mapping ([#23330](https://github.com/RocketChat/Rocket.Chat/pull/23330))
-
-- Release 3.18.1 ([#23135](https://github.com/RocketChat/Rocket.Chat/pull/23135) by [@g-thome](https://github.com/g-thome))
-
-- Release 3.18.2 ([#23338](https://github.com/RocketChat/Rocket.Chat/pull/23338))
-
-</details>
-
-### 👩‍💻👨‍💻 Contributors 😍
-
-- [@g-thome](https://github.com/g-thome)
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@casalsgh](https://github.com/casalsgh)
-- [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@murtaza98](https://github.com/murtaza98)
-- [@ostjen](https://github.com/ostjen)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@rodrigok](https://github.com/rodrigok)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.0.0-rc.4
-`2021-10-01  ·  2 ️️️⚠️  ·  5 🔍  ·  6 👩‍💻👨‍💻`
-
-### ⚠️ BREAKING CHANGES
-
-
-- Moved SAML custom field map to EE ([#23319](https://github.com/RocketChat/Rocket.Chat/pull/23319))
-
-- Webhook will fail if user is not part of the channel ([#23310](https://github.com/RocketChat/Rocket.Chat/pull/23310))
-
-  Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.
-
-  Starting from 4.0.0 the webhook request will fail with `error-not-allowed` error:
-
-  ```
-  {"success":false,"error":"error-not-allowed"}
-  ```
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: "Join" button not working ([#23320](https://github.com/RocketChat/Rocket.Chat/pull/23320))
-
-- Regression: Add default value when no cookies are present ([#23318](https://github.com/RocketChat/Rocket.Chat/pull/23318))
-
-- Regression: LDAP Channel/Role Sync not working ([#23311](https://github.com/RocketChat/Rocket.Chat/pull/23311))
-
-- Regression: Request seats link ([#23312](https://github.com/RocketChat/Rocket.Chat/pull/23312))
-
-- Regression: Request seats url ([#23317](https://github.com/RocketChat/Rocket.Chat/pull/23317))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@ostjen](https://github.com/ostjen)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.0.0-rc.3
-`2021-09-29  ·  1 ️️️⚠️  ·  3 🔍  ·  4 👩‍💻👨‍💻`
-
-### ⚠️ BREAKING CHANGES
-
-
-- Remove cordova compatibility setting ([#23302](https://github.com/RocketChat/Rocket.Chat/pull/23302))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Change some logs to new format ([#23307](https://github.com/RocketChat/Rocket.Chat/pull/23307))
-
-- Regression: Fix Bugsnag not started error ([#23308](https://github.com/RocketChat/Rocket.Chat/pull/23308))
-
-- Regression: LDAP Issues ([#23306](https://github.com/RocketChat/Rocket.Chat/pull/23306))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@ostjen](https://github.com/ostjen)
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 4.0.0-rc.2
-`2021-09-29  ·  1 🐛  ·  2 🔍  ·  4 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- Update visitor info on email reception based on current inbox settings ([#23280](https://github.com/RocketChat/Rocket.Chat/pull/23280))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Create new loggers based on server log level ([#23297](https://github.com/RocketChat/Rocket.Chat/pull/23297))
-
-- Regression: Fix channel icons on queue ([#23304](https://github.com/RocketChat/Rocket.Chat/pull/23304))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@murtaza98](https://github.com/murtaza98)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 4.0.0-rc.1
-`2021-09-27  ·  2 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Fix app storage migration ([#23286](https://github.com/RocketChat/Rocket.Chat/pull/23286))
-
-  The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.
-
-  As the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.
-
-  The fix extract the data from old apps and creates new zip files with the compiled `js` already present.
-
-- Regression: Seats Cap banner not being disabled if not enterprise ([#23278](https://github.com/RocketChat/Rocket.Chat/pull/23278))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@gabriellsh](https://github.com/gabriellsh)
-- [@thassiov](https://github.com/thassiov)
-
-## 4.0.0-rc.0
-`2021-09-24  ·  12 ️️️⚠️  ·  4 🎉  ·  12 🚀  ·  25 🐛  ·  48 🔍  ·  26 👩‍💻👨‍💻`
+# 4.0.0
+`2021-10-01  ·  15 ️️️⚠️  ·  4 🎉  ·  11 🚀  ·  24 🐛  ·  67 🔍  ·  26 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0-alpha.5428`
 
 ### ⚠️ BREAKING CHANGES
 
@@ -213,6 +32,10 @@
 - Moved advanced oAuth features to EE ([#23201](https://github.com/RocketChat/Rocket.Chat/pull/23201))
 
 - Moved role-sync and advanced SAML settings to EE ([#23107](https://github.com/RocketChat/Rocket.Chat/pull/23107))
+
+- Moved SAML custom field map to EE ([#23319](https://github.com/RocketChat/Rocket.Chat/pull/23319))
+
+- Remove cordova compatibility setting ([#23302](https://github.com/RocketChat/Rocket.Chat/pull/23302))
 
 - Remove deprecated endpoints ([#23162](https://github.com/RocketChat/Rocket.Chat/pull/23162))
 
@@ -248,6 +71,16 @@
   Remove audio preferences and make them tied to desktop notification preferences.
 
   TL;DR: new message sounds will play only if you receive a desktop notification. you'll still be able to chose to not play any sound though
+
+- Webhook will fail if user is not part of the channel ([#23310](https://github.com/RocketChat/Rocket.Chat/pull/23310))
+
+  Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.
+
+  Starting from 4.0.0 the webhook request will fail with `error-not-allowed` error:
+
+  ```
+  {"success":false,"error":"error-not-allowed"}
+  ```
 
 ### 🎉 New features
 
@@ -306,8 +139,6 @@
 
 - Canned response admin settings ([#23190](https://github.com/RocketChat/Rocket.Chat/pull/23190))
 
-- Change HTTP and Method logs to level INFO ([#23100](https://github.com/RocketChat/Rocket.Chat/pull/23100))
-
 - Change log format to JSON ([#22975](https://github.com/RocketChat/Rocket.Chat/pull/22975))
 
 - Change occurences of Livechat to Omnichannel in ES translations were applicable ([#23199](https://github.com/RocketChat/Rocket.Chat/pull/23199))
@@ -347,8 +178,6 @@
 - Can't edit profile information if any field update setting is disabled ([#23110](https://github.com/RocketChat/Rocket.Chat/pull/23110))
 
   - Check which fields have been updated before throwing errors in `validateUserEditing`.
-
-- Change way emails are validated on livechat registerGuest method ([#23089](https://github.com/RocketChat/Rocket.Chat/pull/23089))
 
 - Inaccurate use of 'Mobile notifications' instead of 'Push notifications' in i18n strings ([#22978](https://github.com/RocketChat/Rocket.Chat/pull/22978))
 
@@ -499,17 +328,50 @@
 
 - Merge master into develop & Set version to 4.0.0 ([#23086](https://github.com/RocketChat/Rocket.Chat/pull/23086))
 
+- Regression: "Join" button not working ([#23320](https://github.com/RocketChat/Rocket.Chat/pull/23320))
+
 - Regression: `renderEmoji` helper referred as a template ([#23212](https://github.com/RocketChat/Rocket.Chat/pull/23212))
 
-- Regression: Auth banner for EE ([#23091](https://github.com/RocketChat/Rocket.Chat/pull/23091) by [@g-thome](https://github.com/g-thome))
+- Regression: Add default value when no cookies are present ([#23318](https://github.com/RocketChat/Rocket.Chat/pull/23318))
 
-  Dimisses auth banners assigned to EE admins and prevents new ones from appearing.
+- Regression: Blank screen in Jitsi video calls ([#23322](https://github.com/RocketChat/Rocket.Chat/pull/23322))
+
+  - Fix Jitsi calls being disposed even when "Open in new window" setting is disabled;
+   - Fix misspelling on `CallJitsWithData.js` file name.
+
+- Regression: Create new loggers based on server log level ([#23297](https://github.com/RocketChat/Rocket.Chat/pull/23297))
+
+- Regression: Fix app storage migration ([#23286](https://github.com/RocketChat/Rocket.Chat/pull/23286))
+
+  The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.
+
+  As the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.
+
+  The fix extract the data from old apps and creates new zip files with the compiled `js` already present.
+
+- Regression: Fix Bugsnag not started error ([#23308](https://github.com/RocketChat/Rocket.Chat/pull/23308))
+
+- Regression: Fix channel icons on queue ([#23304](https://github.com/RocketChat/Rocket.Chat/pull/23304))
 
 - Regression: Fix user registration stuck ([#23254](https://github.com/RocketChat/Rocket.Chat/pull/23254))
 
 - Regression: Fix view logs admin screen ([#23194](https://github.com/RocketChat/Rocket.Chat/pull/23194))
 
+- Regression: invalid `call` import ([#23328](https://github.com/RocketChat/Rocket.Chat/pull/23328))
+
+- Regression: invalid `call` import ([#23334](https://github.com/RocketChat/Rocket.Chat/pull/23334))
+
+- Regression: LDAP Channel/Role Sync not working ([#23311](https://github.com/RocketChat/Rocket.Chat/pull/23311))
+
+- Regression: LDAP Issues ([#23306](https://github.com/RocketChat/Rocket.Chat/pull/23306))
+
 - Regression: LDAP Refactoring ([#23231](https://github.com/RocketChat/Rocket.Chat/pull/23231))
+
+- Regression: LDAP User Data Sync not always working ([#23321](https://github.com/RocketChat/Rocket.Chat/pull/23321))
+
+- Regression: LDAP: Handle base authentication and prevent crash ([#23331](https://github.com/RocketChat/Rocket.Chat/pull/23331))
+
+  When AD requires TLS the auth crashes the server if StartTLS is not set, the error shows at the end because the code was not waiting on this operation.
 
 - Regression: Log Sections not respecting Log Level setting ([#23230](https://github.com/RocketChat/Rocket.Chat/pull/23230))
 
@@ -519,11 +381,25 @@
 
   Spotted by @gabriellsh.
 
+- Regression: Removed exclusive tests statement ([#23333](https://github.com/RocketChat/Rocket.Chat/pull/23333))
+
+- Regression: Request seats link ([#23312](https://github.com/RocketChat/Rocket.Chat/pull/23312))
+
+- Regression: Request seats url ([#23317](https://github.com/RocketChat/Rocket.Chat/pull/23317))
+
+- Regression: SAML identifier mapping ([#23330](https://github.com/RocketChat/Rocket.Chat/pull/23330))
+
+- Regression: Seats Cap banner not being disabled if not enterprise ([#23278](https://github.com/RocketChat/Rocket.Chat/pull/23278))
+
 - Regression: View Logs administration page crashing ([#23205](https://github.com/RocketChat/Rocket.Chat/pull/23205))
 
   Fixes the `stdout.queue` endpoint; makes the components type-safe.
 
 - Regression: wrong settings order ([#23281](https://github.com/RocketChat/Rocket.Chat/pull/23281))
+
+- Release 3.18.1 ([#23135](https://github.com/RocketChat/Rocket.Chat/pull/23135) by [@g-thome](https://github.com/g-thome))
+
+- Release 3.18.2 ([#23338](https://github.com/RocketChat/Rocket.Chat/pull/23338))
 
 </details>
 
