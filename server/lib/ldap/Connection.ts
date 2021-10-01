@@ -545,12 +545,17 @@ export class LDAPConnection {
 		}
 
 		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
-		await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
-		this.usingAuthentication = true;
+		try {
+			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
+			this.usingAuthentication = true;
+		} catch (error) {
+			authLogger.error({ msg: 'Base Authentication Issue', err: error, dn: this.options.authenticationUserDN });
+			this.usingAuthentication = false;
+		}
 	}
 
 	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
-		this.maybeBindDN();
+		return this.maybeBindDN();
 	}
 
 	/*
