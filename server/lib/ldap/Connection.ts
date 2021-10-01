@@ -549,8 +549,7 @@ export class LDAPConnection {
 			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
 			this.usingAuthentication = true;
 		} catch (error) {
-			authLogger.info({ msg: 'Base Authentication Issue', dn: this.options.authenticationUserDN });
-			authLogger.debug({ msg: 'error', error });
+			authLogger.error({ msg: 'Base Authentication Issue', err: error, dn: this.options.authenticationUserDN });
 			this.usingAuthentication = false;
 		}
 	}
