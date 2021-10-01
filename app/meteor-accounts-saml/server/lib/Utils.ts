@@ -202,7 +202,6 @@ export class SAMLUtils {
 	public static getUserDataMapping(): IUserDataMap {
 		const { userDataFieldMap, immutableProperty } = globalSettings;
 
-		const defaultMappingFields = ['email', 'name', 'username'];
 		let map: Record<string, any>;
 
 		try {
@@ -233,9 +232,6 @@ export class SAMLUtils {
 
 		for (const spFieldName in map) {
 			if (!map.hasOwnProperty(spFieldName)) {
-				continue;
-			}
-			if (!defaultMappingFields.includes(spFieldName)) {
 				continue;
 			}
 
