@@ -64594,6 +64594,39 @@
           ]
         }
       ]
+    },
+    "3.18.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
