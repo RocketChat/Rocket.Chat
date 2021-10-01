@@ -142,7 +142,13 @@ function validateUserData(userId, userData) {
 	}
 }
 
-function validateUserEditing(userId, userData) {
+/**
+ * Validate permissions to edit user fields
+ *
+ * @param {string} userId
+ * @param {{ _id: string, roles: string[], username: string, name: string, statusText: string, email: string, password: string}} userData
+ */
+export function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
