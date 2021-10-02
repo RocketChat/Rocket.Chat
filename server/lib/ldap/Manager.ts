@@ -9,7 +9,7 @@ import _ from 'underscore';
 import { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import { LDAPLoginResult } from '../../../definition/ldap/ILDAPLoginResult';
 import { ILDAPUniqueIdentifierField } from '../../../definition/ldap/ILDAPUniqueIdentifierField';
-import { IUser, /* IUserEmail,*/ LoginUsername } from '../../../definition/IUser';
+import { IUser, LoginUsername } from '../../../definition/IUser';
 import { IImportUser } from '../../../definition/IImportUser';
 import { settings } from '../../../app/settings/server';
 import { Users as UsersRaw } from '../../../app/models/server/raw';
@@ -205,26 +205,25 @@ export class LDAPManager {
 	private static async addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): Promise<LDAPLoginResult> {
 		const user = await this.syncUserForLogin(ldapUser, undefined, username);
 
-		this.onLogin(ldapUser, user, password, ldap);
-		if (user) {
-			return {
-				userId: user._id,
-			};
+		if (!user) {
+			return;
 		}
+
+		this.onLogin(ldapUser, user, password, ldap, true);
+
+		return {
+			userId: user._id,
+		};
 	}
 
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection): void {
+	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
 		logger.debug('running onLDAPLogin');
-
-		if (user) {
-			if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
-				Accounts.setPassword(user._id, password, { logout: false });
-			}
-
-			this.syncUserAvatar(user, ldapUser);
+		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
+			Accounts.setPassword(user._id, password, { logout: false });
 		}
 
-		callbacks.run('onLDAPLogin', { user, ldapUser }, ldap);
+		this.syncUserAvatar(user, ldapUser);
+		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
 	}
 
 	private static async loginExistingUser(ldap: LDAPConnection, user: IUser, ldapUser: ILDAPEntry, password: string): Promise<LDAPLoginResult> {
@@ -233,11 +232,14 @@ export class LDAPManager {
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
 		}
 
-		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true;
+		// If we're merging an ldap user with a local user, then we need to sync the data even if 'update data on login' is off.
+		const forceUserSync = !user.ldap;
+
+		const syncData = forceUserSync || (settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true);
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
-		this.onLogin(ldapUser, updatedUser, password, ldap);
+		this.onLogin(ldapUser, updatedUser, password, ldap, false);
 		return {
 			userId: user._id,
 		};

@@ -2,12 +2,14 @@ import { Meteor } from 'meteor/meteor';
 
 import { LDAPEE } from '../sdk';
 import { settings, SettingsVersion4 } from '../../../app/settings/server';
+import { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
+import type { IUser } from '../../../definition/IUser';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
@@ -66,4 +68,8 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 		LDAPEEManager.copyCustomFields(ldapUser, userData);
 		LDAPEEManager.copyActiveState(ldapUser, userData);
 	}, callbacks.priority.MEDIUM, 'mapLDAPCustomFields');
+
+	callbacks.add('onLDAPLogin', ({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap: LDAPConnection) => {
+		Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
+	}, callbacks.priority.MEDIUM, 'advancedLDAPSync');
 }));
