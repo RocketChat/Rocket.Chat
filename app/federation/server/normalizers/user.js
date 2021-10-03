@@ -30,7 +30,6 @@ const normalizeUser = (originalResource) => {
 	resource.emails = [{
 		address: `${ resource._id }@${ getFederationDomain() }`,
 	}];
-	
 	const email = resource.emails[0].address;
 
 	resource.active = true;
