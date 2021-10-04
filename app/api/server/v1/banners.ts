@@ -37,18 +37,20 @@ import { BannerPlatform } from '../../../../definition/IBanner';
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  banners:
- *                    type: array
- *                    items:
- *                      $ref: '#/components/schemas/IBanner'
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      banners:
+ *                        type: array
+ *                        items:
+ *                           ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Meteor.Error'
+ *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 	get() {
@@ -103,18 +105,20 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  banners:
- *                    type: array
- *                    items:
- *                      $ref: '#/components/schemas/IBanner'
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      banners:
+ *                        type: array
+ *                        items:
+ *                          $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Meteor.Error'
+ *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners/:id', { authRequired: true }, {
 	get() {
@@ -160,18 +164,20 @@ API.v1.addRoute('banners/:id', { authRequired: true }, {
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  banners:
- *                    type: array
- *                    items:
- *                      $ref: '#/components/schemas/IBanner'
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      banners:
+ *                        type: array
+ *                        items:
+ *                          $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Meteor.Error'
+ *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners', { authRequired: true }, {
 	get() {
@@ -219,14 +225,13 @@ API.v1.addRoute('banners', { authRequired: true }, {
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                additionalProperties: false
+ *                $ref: '#/components/schemas/ApiSuccessV1'
  *        default:
  *          description: Unexpected error
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Meteor.Error'
+ *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners.dismiss', { authRequired: true }, {
 	post() {
