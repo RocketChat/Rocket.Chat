@@ -72,9 +72,50 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 	},
 });
 
-
+/**
+ * @openapi
+ *  /api/v1/banners/{id}:
+ *    get:
+ *      description: Gets the banner to be shown to the authenticated user
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      parameters:
+ *        - name: platform
+ *          in: query
+ *          description: The platform rendering the banner
+ *          required: true
+ *          schema:
+ *            type: string
+ *            enum: [web, mobile]
+ *          example: web
+ *        - name: id
+ *          in: path
+ *          description: The id of the banner
+ *          required: true
+ *          schema:
+ *            type: string
+ *          example: ByehQjC44FwMeiLbX
+ *      responses:
+ *        200:
+ *          description: |
+ *            A collection with a single banner matching the criteria; an empty
+ *            collection otherwise
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                property:
+ *                  banners: array
+ *                  items:
+ *                    $ref: '#/components/schemas/IBanner'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Meteor.Error'
+ */
 API.v1.addRoute('banners/:id', { authRequired: true }, {
-
 	get() {
 		check(this.urlParams, Match.ObjectIncluding({
 			id: String,
@@ -95,8 +136,8 @@ API.v1.addRoute('banners/:id', { authRequired: true }, {
 		return API.v1.success({ banners });
 	},
 });
-API.v1.addRoute('banners', { authRequired: true }, {
 
+API.v1.addRoute('banners', { authRequired: true }, {
 	get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			platform: String,
