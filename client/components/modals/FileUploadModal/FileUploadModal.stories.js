@@ -16,7 +16,6 @@ export const Default = () => {
 	const [file, setFile] = useState(_file);
 
 	const handleFile = (e) => {
-		console.log(e.target.files);
 		setFile(e.target.files[0]);
 	};
 	return (

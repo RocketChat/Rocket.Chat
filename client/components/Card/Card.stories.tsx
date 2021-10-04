@@ -95,3 +95,14 @@ export const Double: Story = () => (
 		</Card>
 	</Box>
 );
+
+export const CardIcon = (): unknown => (
+	<Box>
+		<Card>
+			<Card.Icon name='dialpad' />
+			<Card.Icon name='document-eye' />
+			<Card.Icon name='pencil' />
+			<Card.Icon name='cross' />
+		</Card>
+	</Box>
+);
