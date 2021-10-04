@@ -43,5 +43,6 @@ import './v1/banners';
 import './v1/email-inbox';
 import './v1/teams';
 import './v1/voip/asterisk-connector';
+import './v1/voip/server-config';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';
