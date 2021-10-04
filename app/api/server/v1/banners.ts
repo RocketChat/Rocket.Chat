@@ -38,10 +38,11 @@ import { BannerPlatform } from '../../../../definition/IBanner';
  *            application/json:
  *              schema:
  *                type: object
- *                property:
- *                  banners: array
- *                  items:
- *                    $ref: '#/components/schemas/IBanner'
+ *                properties:
+ *                  banners:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
@@ -103,10 +104,11 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
  *            application/json:
  *              schema:
  *                type: object
- *                property:
- *                  banners: array
- *                  items:
- *                    $ref: '#/components/schemas/IBanner'
+ *                properties:
+ *                  banners:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
@@ -159,10 +161,11 @@ API.v1.addRoute('banners/:id', { authRequired: true }, {
  *            application/json:
  *              schema:
  *                type: object
- *                property:
- *                  banners: array
- *                  items:
- *                    $ref: '#/components/schemas/IBanner'
+ *                properties:
+ *                  banners:
+ *                    type: array
+ *                    items:
+ *                      $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:
