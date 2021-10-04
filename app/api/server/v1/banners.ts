@@ -7,6 +7,49 @@ import { API } from '../api';
 import { Banner } from '../../../../server/sdk';
 import { BannerPlatform, IBanner } from '../../../../definition/IBanner';
 
+/**
+ * @deprecated
+ * @openapi
+ *  /api/v1/banners.getNew:
+ *    get:
+ *      description: Gets the banners to be shown to the authenticated user
+ *      deprecated: true
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      parameters:
+ *        - name: platform
+ *          in: query
+ *          description: The platform rendering the banner
+ *          required: true
+ *          schema:
+ *            type: string
+ *            enum: [web, mobile]
+ *          example: web
+ *        - name: bid
+ *          in: query
+ *          description: The id of a single banner
+ *          required: false
+ *          schema:
+ *            type: string
+ *          example: ByehQjC44FwMeiLbX
+ *      responses:
+ *        200:
+ *          description: The banners matching the criteria
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                property:
+ *                  banners: array
+ *                  items:
+ *                    $ref: '#/components/schemas/IBanner'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Meteor.Error'
+ */
 API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 	get() {
 		check(this.queryParams, Match.ObjectIncluding({
