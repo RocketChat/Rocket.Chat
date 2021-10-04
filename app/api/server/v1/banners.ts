@@ -194,7 +194,40 @@ API.v1.addRoute('banners', { authRequired: true }, {
 	},
 });
 
-
+/**
+ * @openapi
+ *  /api/v1/banners.dismiss:
+ *    post:
+ *      description: Dismisses a banner
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                bannerId:
+ *                  type: string
+ *            example: |
+ *              {
+ *                 "bannerId": "ByehQjC44FwMeiLbX"
+ *              }
+ *      responses:
+ *        200:
+ *          description: The banners matching the criteria
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                additionalProperties: false
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Meteor.Error'
+ */
 API.v1.addRoute('banners.dismiss', { authRequired: true }, {
 	post() {
 		check(this.bodyParams, Match.ObjectIncluding({
@@ -207,11 +240,7 @@ API.v1.addRoute('banners.dismiss', { authRequired: true }, {
 			throw new Meteor.Error('error-missing-param', 'The required "bannerId" param is missing.');
 		}
 
-		try {
-			Promise.await(Banner.dismiss(this.userId, bannerId));
-			return API.v1.success();
-		} catch (e) {
-			return API.v1.failure();
-		}
+		Promise.await(Banner.dismiss(this.userId, bannerId));
+		return API.v1.success();
 	},
 });
