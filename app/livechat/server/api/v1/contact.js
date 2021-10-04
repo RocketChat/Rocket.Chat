@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { Contacts } from '../../lib/Contacts';
+import { hasPermission } from '../../../../authorization';
 import {
 	LivechatVisitors,
 } from '../../../../models';
@@ -29,6 +30,10 @@ API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 		}
 	},
 	get() {
+		if (!hasPermission(this.userId, 'view-livechat-contact-list')) {
+			return API.v1.unauthorized();
+		}
+
 		check(this.queryParams, {
 			contactId: String,
 		});
@@ -43,6 +48,9 @@ API.v1.addRoute('omnichannel/contact', { authRequired: true }, {
 API.v1.addRoute('omnichannel/contact.search', { authRequired: true }, {
 	get() {
 		try {
+			if (!hasPermission(this.userId, 'view-livechat-contact-list')) {
+				return API.v1.unauthorized();
+			}
 			check(this.queryParams, {
 				email: Match.Maybe(String),
 				phone: Match.Maybe(String),

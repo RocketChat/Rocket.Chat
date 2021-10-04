@@ -94,6 +94,7 @@ Meteor.startup(function() {
 		{ _id: 'create-invite-links',                roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-l-room',                        roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'] },
 		{ _id: 'view-livechat-manager',              roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
+		{ _id: 'view-omnichannel-contact-list',      roles: ['livechat-manager', 'livechat-agent', 'livechat-monitor', 'admin'] },
 		{ _id: 'edit-omnichannel-contact',           roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'view-livechat-rooms',                roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
 		{ _id: 'close-livechat-room',                roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'] },
