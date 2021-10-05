@@ -225,8 +225,6 @@ export class ImportDataConverter {
 		};
 
 		this.addCustomFields(updateData, userData);
-		this.addUserServices(updateData, userData);
-		this.addUserImportId(updateData, userData);
 		this.addUserEmails(updateData, userData, existingUser.emails || []);
 		Users.update({ _id }, updateData);
 
@@ -236,10 +234,6 @@ export class ImportDataConverter {
 
 		if (userData.name || userData.username) {
 			saveUserIdentity({ _id, name: userData.name, username: userData.username });
-		}
-
-		if (userData.importIds.length) {
-			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
 		}
 	}
 
