@@ -21,7 +21,7 @@ const stateDecorator =
 		);
 
 export default {
-	title: 'components/ConnectionStatus',
+	title: 'components/ConnectionStatusBar',
 	component: ConnectionStatusBar,
 };
 

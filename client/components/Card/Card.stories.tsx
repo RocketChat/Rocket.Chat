@@ -96,7 +96,7 @@ export const Double: Story = () => (
 	</Box>
 );
 
-export const CardIcon = (): unknown => (
+export const CardIcon = (): Story => (
 	<Box>
 		<Card>
 			<Card.Icon name='dialpad' />

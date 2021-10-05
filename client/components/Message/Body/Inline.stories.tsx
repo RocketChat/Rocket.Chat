@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-// eslint-disable-next-line import/no-unresolved
 import { Plain } from '@rocket.chat/message-parser';
+import { Story } from '@storybook/react';
 import React, { ReactElement } from 'react';
 
 import Inline from './Inline';
@@ -16,4 +15,4 @@ const defaultValue: Plain = {
 	value: 'Test inline',
 };
 
-export const Default = () => <Inline value={[defaultValue]} />;
+export const Default = (): Story => <Inline value={[defaultValue]} />;
