@@ -15,6 +15,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 import { logger, helperLogger } from './logger';
+import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -158,24 +159,31 @@ export const updatePredictedVisitorAbandonment = () => {
 	}
 };
 
-let queueAction;
+let queueTimeout;
 
-settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
-	queueAction = value;
+settings.get('Livechat_max_queue_wait_time', (_, value) => {
+	queueTimeout = value;
 });
 
-export const updateQueueInactivityTimeout = (queueTimeout = 0) => {
-	if (!queueAction || queueAction === 'Nothing' || queueTimeout <= 0) {
-		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
+export const updateQueueInactivityTimeout = () => {
+	if (queueTimeout <= 0) {
+		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
+		OmnichannelQueueInactivityMonitor.stop();
 		return;
 	}
 
 	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
 	LivechatInquiry.getQueuedInquiries({ fields: { _updatedAt: 1 } }).forEach((inq) => {
 		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
-		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
+		try {
+			return OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, new Date(aggregatedDate.format()));
+		} catch (e) {
+			// this will usually happen if other instance attempts to re-create a job
+			logger.error({ err: e });
+		}
 	});
 };
+
 
 export const updateRoomPriorityHistory = (rid, user, priority) => {
 	const history = {

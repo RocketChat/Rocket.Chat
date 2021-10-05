@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../../app/settings';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
-import { OmnichannelQueueInactivityMonitor } from './lib/QueueInactivityMonitor';
 import './lib/query.helper';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
@@ -15,6 +14,10 @@ const businessHours = {
 	Multiple: new MultipleBusinessHoursBehavior(),
 	Single: new SingleBusinessHourBehavior(),
 };
+
+settings.onload('Livechat_max_queue_wait_time', function() {
+	updateQueueInactivityTimeout();
+});
 
 Meteor.startup(async function() {
 	settings.onload('Livechat_abandoned_rooms_action', function(_, value) {
@@ -32,23 +35,6 @@ Meteor.startup(async function() {
 		if (settings.get('Livechat_enable_business_hours')) {
 			businessHourManager.startManager();
 		}
-	});
-
-	let queueAction;
-	settings.get('Livechat_max_queue_wait_time_action', function(_, value) {
-		queueAction = value;
-		if (!value || value === 'Nothing') {
-			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
-		}
-		Promise.await(OmnichannelQueueInactivityMonitor.schedule());
-	});
-
-	settings.get('Livechat_max_queue_wait_time', function(_, value) {
-		if (value <= 0 || queueAction === 'Nothing') {
-			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
-		}
-		updateQueueInactivityTimeout(value);
-		Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
 	await resetDefaultBusinessHourIfNeeded();

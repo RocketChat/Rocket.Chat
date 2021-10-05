@@ -35,7 +35,7 @@ export class IMAPInterceptor extends EventEmitter {
 			...imapConfig,
 		});
 
-		// On successfully connected.
+		// On successfully connected..
 		this.imap.on('ready', () => {
 			if (this.imap.state !== 'disconnected') {
 				this.openInbox((err) => {
