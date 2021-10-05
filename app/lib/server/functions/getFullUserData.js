@@ -90,7 +90,7 @@ export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername
 	};
 	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
 	if (!user) {
-		return;
+		return null;
 	}
 
 	user.canViewAllInfo = canViewAllInfo;
