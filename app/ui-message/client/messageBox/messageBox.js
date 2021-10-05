@@ -21,7 +21,6 @@ import {
 import {
 	messageBox,
 	popover,
-	call,
 } from '../../../ui-utils';
 import {
 	t,
@@ -30,13 +29,14 @@ import {
 } from '../../../utils/client';
 import './messageBoxActions';
 import './messageBoxReplyPreview';
-import './messageBoxTyping';
+import './userActionIndicator.ts';
 import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
 import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { isRTL } from '../../../../client/lib/utils/isRTL';
+import { call } from '../../../../client/lib/utils/call';
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();

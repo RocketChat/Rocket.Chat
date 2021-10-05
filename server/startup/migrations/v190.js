@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
-Migrations.add({
+addMigration({
 	version: 190,
 	up() {
 		// Remove unused settings

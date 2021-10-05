@@ -16,6 +16,8 @@ import { IRoomService } from './types/IRoomService';
 import { IMediaService } from './types/IMediaService';
 import { IVoipService } from './types/IVoipService';
 import { ILivechatVoipService } from './types/IOmnichannelVoipService';
+import { IAnalyticsService } from './types/IAnalyticsService';
+import { ILDAPService } from './types/ILDAPService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -31,6 +33,8 @@ export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
 export const LivechatVoip = proxifyWithWait<ILivechatVoipService>('omnichannel-voip');
+export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
+export const LDAP = proxifyWithWait<ILDAPService>('ldap');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

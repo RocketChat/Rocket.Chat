@@ -72,7 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -103,8 +103,8 @@ export class SAML {
 			address: email,
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
-		const globalRoles = userObject.roles;
 
+		const { roles } = userObject;
 		let { username } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
@@ -113,7 +113,7 @@ export class SAML {
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
 				active,
-				globalRoles,
+				globalRoles: roles,
 				emails,
 				services: {
 					saml: {
@@ -170,10 +170,6 @@ export class SAML {
 			updateData[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
 		}
 
-		for (const [customField, value] of userObject.customFields) {
-			updateData[`customFields.${ customField }`] = value;
-		}
-
 		// Overwrite mail if needed
 		if (mailOverwrite === true && (customIdentifierMatch === true || immutableProperty !== 'EMail')) {
 			updateData.emails = emails;
@@ -184,8 +180,8 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roleAttributeSync) {
-			updateData.roles = globalRoles;
+		if (roles) {
+			updateData.roles = roles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
@@ -216,7 +212,7 @@ export class SAML {
 			res.writeHead(200);
 			res.write(serviceProvider.generateServiceProviderMetadata());
 			res.end();
-		} catch (err) {
+		} catch (err: any) {
 			showErrorMessage(res, err);
 		}
 	}
@@ -300,7 +296,7 @@ export class SAML {
 
 						redirect(url);
 					});
-				} catch (e) {
+				} catch (e: any) {
 					SystemLogger.error(e);
 					redirect();
 				}
@@ -472,7 +468,7 @@ export class SAML {
 					}
 				}
 			}
-		} catch (err) {
+		} catch (err: any) {
 			SystemLogger.error(err);
 		}
 	}

@@ -193,6 +193,17 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+			...departmentId && { departmentId },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
 		const query = {
 			t: 'l',

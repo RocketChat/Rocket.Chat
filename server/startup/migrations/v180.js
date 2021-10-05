@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { LivechatRooms, LivechatInquiry } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 180,
 	up() {
 		// Remove Old Omnichannel Inquiries related to rooms already closed
