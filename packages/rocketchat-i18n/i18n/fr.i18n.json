@@ -3599,7 +3599,7 @@
   "Room_name_changed_successfully": "Nom du salon modifié avec succès",
   "Room_not_found": "Salon introuvable",
   "Room_password_changed_successfully": "Mot de passe du salon modifié avec succès",
-  "room_removed_read_only": "<em>__user_by</em> a ajouté l'autorisation d'écriture au salon",
+  "room_removed_read_only": "<em>__user_by__</em> a ajouté l'autorisation d'écriture au salon",
   "room_set_read_only": "Salon mis en lecture seule par <em>__user_by__</em>",
   "Room_tokenpass_config_changed_successfully": "La configuration de tokenpass du salon a bien été modifiée",
   "Room_topic_changed_successfully": "Sujet du salon modifié avec succès",

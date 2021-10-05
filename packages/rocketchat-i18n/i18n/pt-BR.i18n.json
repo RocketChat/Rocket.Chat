@@ -873,7 +873,7 @@
   "Close": "Fechar",
   "Close_chat": "Encerrar chat",
   "Close_room_description": "Você está prestes a fechar este bate-papo. Você tem certeza que quer continuar?",
-  "Close_to_seat_limit_banner_warning": "*Você tem [__ seats__] seats vagos*  \nEsta workspace está próxima do seu limite de seats. Assim que o limite for atingido, não poderão ser adicionados novos membros. *[Solicitar Mais Seats](__url__)*",
+  "Close_to_seat_limit_banner_warning": "*Você tem [__seats__] seats vagos*  \nEsta workspace está próxima do seu limite de seats. Assim que o limite for atingido, não poderão ser adicionados novos membros. *[Solicitar Mais Seats](__url__)*",
   "Close_to_seat_limit_warning": "Novos membros não podem ser criados uma vez que o limite de seats seja atingido.",
   "close-livechat-room": "Fechar Sala Omnichannel",
   "close-livechat-room_description": "Permissão para fechar a sala Omnichannel atual",
