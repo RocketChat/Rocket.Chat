@@ -159,20 +159,15 @@ export const updatePredictedVisitorAbandonment = () => {
 };
 
 let queueAction;
-let queueTimeout;
 
 settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
 	queueAction = value;
 });
 
-settings.get('Livechat_max_queue_wait_time', (_, value) => {
-	queueTimeout = value;
-});
-
-export const updateQueueInactivityTimeout = () => {
+export const updateQueueInactivityTimeout = (queueTimeout = 0) => {
 	if (!queueAction || queueAction === 'Nothing' || queueTimeout <= 0) {
 		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
-		return LivechatInquiry.unsetEstimatedInactivityCloseTime();
+		return;
 	}
 
 	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');

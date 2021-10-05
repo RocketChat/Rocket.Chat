@@ -37,7 +37,6 @@ Meteor.startup(async function() {
 	let queueAction;
 	settings.get('Livechat_max_queue_wait_time_action', function(_, value) {
 		queueAction = value;
-		updateQueueInactivityTimeout();
 		if (!value || value === 'Nothing') {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
@@ -48,7 +47,7 @@ Meteor.startup(async function() {
 		if (value <= 0 || queueAction === 'Nothing') {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
-		updateQueueInactivityTimeout();
+		updateQueueInactivityTimeout(value);
 		Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
