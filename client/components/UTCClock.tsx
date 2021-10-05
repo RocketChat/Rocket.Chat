@@ -6,6 +6,10 @@ type UTCClockProps = {
 	utcOffset: number;
 };
 
-const UTCClock = ({ utcOffset }: UTCClockProps): ReactElement => <>{useUTCClock(utcOffset)}</>;
+const UTCClock = ({ utcOffset }: UTCClockProps): ReactElement => {
+	const time = useUTCClock(utcOffset);
+
+	return <>{time}</>;
+};
 
 export default memo(UTCClock);
