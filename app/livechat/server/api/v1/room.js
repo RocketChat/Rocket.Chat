@@ -10,7 +10,7 @@ import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } 
 import { Livechat } from '../../lib/Livechat';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/room', {
 	get() {
@@ -46,7 +46,13 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			const rid = Random.id();
-			room = Promise.await(getRoom({ guest, rid, agent, extraParams }));
+			const roomInfo = {
+				source: {
+					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+				},
+			};
+
+			room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
 			return API.v1.success(room);
 		}
 

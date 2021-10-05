@@ -78,13 +78,21 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 										return field;
 									}
 
-									const { value, ...rest } = field;
+									const { value, title, ...rest } = field;
 
 									return {
 										...rest,
+										title: (
+											<MarkdownText
+												variant='inline'
+												parseEmoji
+												content={title.replace(/(.*)/g, (line: string) => `${line}  `)}
+											/>
+										),
 										value: (
 											<MarkdownText
 												variant='inline'
+												parseEmoji
 												content={value.replace(/(.*)/g, (line: string) => `${line}  `)}
 											/>
 										),

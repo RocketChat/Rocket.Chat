@@ -7,7 +7,7 @@ import { Users } from '../../../models/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
 
-export const setUserAvatar = function(user, dataURI, contentType, service) {
+export const setUserAvatar = function(user, dataURI, contentType, service, etag = null) {
 	let encoding;
 	let image;
 
@@ -64,8 +64,8 @@ export const setUserAvatar = function(user, dataURI, contentType, service) {
 
 	fileStore.insert(file, buffer, (err, result) => {
 		Meteor.setTimeout(function() {
-			Users.setAvatarData(user._id, service, result.etag);
-			api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: result.etag });
+			Users.setAvatarData(user._id, service, etag || result.etag);
+			api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: etag || result.etag });
 		}, 500);
 	});
 };
