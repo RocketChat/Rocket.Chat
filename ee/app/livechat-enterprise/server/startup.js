@@ -33,16 +33,19 @@ Meteor.startup(async function() {
 			businessHourManager.startManager();
 		}
 	});
-	settings.onload('Livechat_max_queue_wait_time_action', function(_, value) {
+
+	let queueAction;
+	settings.get('Livechat_max_queue_wait_time_action', function(_, value) {
+		queueAction = value;
 		updateQueueInactivityTimeout();
 		if (!value || value === 'Nothing') {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
-		return Promise.await(OmnichannelQueueInactivityMonitor.schedule());
+		Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
-	settings.onload('Livechat_max_queue_wait_time', function(_, value) {
-		if (value <= 0) {
+	settings.get('Livechat_max_queue_wait_time', function(_, value) {
+		if (value <= 0 || queueAction === 'Nothing') {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
 		updateQueueInactivityTimeout();

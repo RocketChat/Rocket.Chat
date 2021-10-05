@@ -13,6 +13,12 @@ import { IOmnichannelRoom } from '../../../../../definition/IRoom';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
+let action: string;
+
+settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
+	action = value as string;
+});
+
 export class OmnichannelQueueInactivityMonitorClass {
 	scheduler: Agenda;
 
@@ -58,6 +64,10 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	async schedule(): Promise<void> {
+		if (!this.running) {
+			this.running = true;
+		}
+
 		this.scheduler.define(this._name, Meteor.bindEnvironment(this.job.bind(this)));
 		await this.scheduler.every('one minute', this._name);
 	}
@@ -73,7 +83,6 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	job(): void {
-		const action = settings.get('Livechat_max_queue_wait_time_action');
 		this.logger.debug(`Processing dangling queued items with action ${ action }`);
 		let counter = 0;
 		if (!action || action === 'Nothing') {

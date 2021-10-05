@@ -10,6 +10,7 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
+		this.tryEnsureIndex({ status: 1, estimatedInactivityCloseTimeAt: 1 });
 		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 	}
 
@@ -250,7 +251,7 @@ export class LivechatInquiry extends Base {
 	}
 
 	unsetEstimatedInactivityCloseTime() {
-		return this.update({ status: 'queued' }, {
+		return this.update({ status: 'queued', estimatedInactivityCloseTimeAt: { $exists: true } }, {
 			$unset: {
 				estimatedInactivityCloseTimeAt: 1,
 			},

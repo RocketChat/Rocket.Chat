@@ -27,14 +27,23 @@ callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');
 
+let queueInactivityAction;
+let maxQueueWaitTimeMinutes;
+
+settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
+	queueInactivityAction = value;
+});
+
+settings.get('Livechat_max_queue_wait_time', (_, value) => {
+	maxQueueWaitTimeMinutes = value;
+});
+
 callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
-	const queueInactivityAction = settings.get('Livechat_max_queue_wait_time_action');
 	if (!queueInactivityAction || queueInactivityAction === 'Nothing') {
 		cbLogger.debug('Skipping callback. Disabled by setting');
 		return extraData;
 	}
 
-	const maxQueueWaitTimeMinutes = settings.get('Livechat_max_queue_wait_time');
 	const estimatedInactivityCloseTimeAt = new Date(new Date().getTime() + maxQueueWaitTimeMinutes * 60000);
 
 	cbLogger.debug(`Setting maximum queue wait time to ${ maxQueueWaitTimeMinutes } minutes`);

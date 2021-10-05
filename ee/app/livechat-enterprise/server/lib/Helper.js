@@ -158,16 +158,25 @@ export const updatePredictedVisitorAbandonment = () => {
 	}
 };
 
+let queueAction;
+let queueTimeout;
+
+settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
+	queueAction = value;
+});
+
+settings.get('Livechat_max_queue_wait_time', (_, value) => {
+	queueTimeout = value;
+});
+
 export const updateQueueInactivityTimeout = () => {
-	const queueAction = settings.get('Livechat_max_queue_wait_time_action');
-	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
-	if (!queueAction || queueAction === 'Nothing') {
+	if (!queueAction || queueAction === 'Nothing' || queueTimeout <= 0) {
 		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
 		return LivechatInquiry.unsetEstimatedInactivityCloseTime();
 	}
 
 	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
-	LivechatInquiry.getQueuedInquiries().forEach((inq) => {
+	LivechatInquiry.getQueuedInquiries({ fields: { _updatedAt: 1 } }).forEach((inq) => {
 		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
 		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
 	});
