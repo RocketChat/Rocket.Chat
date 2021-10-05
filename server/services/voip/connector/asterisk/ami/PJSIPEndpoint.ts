@@ -29,8 +29,9 @@
  *    have same actionid, which is received by this class as a successful execution of a command in actionResultCallback.
  */
 import { Command, CommandType } from '../Command';
-import { Commands } from '../Commands';
 import { Logger } from '../../../../../lib/logger/Logger';
+import { Commands } from '../Commands';
+import { CallbackContext } from './CallbackContext';
 import { EndpointState, IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../../definition/IVoipExtension';
 
 export class PJSIPEndpoint extends Command {
@@ -58,10 +59,10 @@ export class PJSIPEndpoint extends Command {
 	 * This event is generated as a result of the execution of |pjsipshowendpoints|
 	 */
 	onEndpointList(event: any): void {
-		if (event.actionid !== this.actionId) {
+		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointList() Unsual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionId });
+				actionId: this.actionid });
 			return;
 		}
 		const endPoint = {
@@ -85,12 +86,13 @@ export class PJSIPEndpoint extends Command {
 	 * is received.
 	 */
 	onEndpointListComplete(event: any): void {
-		if (event.actionid !== this.actionId) {
+		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointListComplete() Unsual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionId });
+				actionId: this.actionid });
 			return;
 		}
+		this.resetEventHandlers();
 		const { result } = this;
 		this.logger.info({ msg: `onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }` });
 		this.returnResolve?.(result.endpoints as IVoipExtensionBase []);
@@ -107,10 +109,10 @@ export class PJSIPEndpoint extends Command {
 	 * for each event.
 	 */
 	onEndpointInfo(event: any): void {
-		if (event.actionid !== this.actionId) {
+		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointInfo() Unsual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionId });
+				actionId: this.actionid });
 			return;
 		}
 		const { result } = this;
@@ -138,15 +140,17 @@ export class PJSIPEndpoint extends Command {
 	 * is received.
 	 */
 	onEndpointDetailComplete(event: any): void {
-		if (event.actionid !== this.actionId) {
+		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointDetailComplete() Unsual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionId });
+				actionId: this.actionid });
 			return;
 		}
+		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.info({ msg: 'onEndpointDetailComplete() Complete.',
+		this.logger.debug({ msg: 'onEndpointDetailComplete() Complete.',
 			result });
+
 		this.returnResolve?.(result.endpoint as IVoipExtensionConfig);
 	}
 
@@ -159,22 +163,34 @@ export class PJSIPEndpoint extends Command {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
 			this.returnReject?.(`error${ error } while executing command`);
 		} else {
-			this.logger.info({ msg: 'onActionResult()',
+			this.logger.debug({ msg: 'onActionResult()',
 				result });
 			// Set up actionid for future reference in case of success.
-			this.actionId = result.actionid;
+			this.actionid = result.actionid;
 		}
 	}
 
 	setupEventHandlers(): void {
 		// Setup necessary command event handlers based on the command
 		if (this.commandText === Commands.extension_list.toString()) {
-			this.connection.on('endpointlist', this.onEndpointList.bind(this));
-			this.connection.on('endpointlistcomplete', this.onEndpointListComplete.bind(this));
+			this.connection.on('endpointlist', new CallbackContext(this.onEndpointList.bind(this), this));
+			this.connection.on('endpointlistcomplete', new CallbackContext(this.onEndpointListComplete.bind(this), this));
 		} else if (this.commandText === Commands.extension_info.toString()) {
-			this.connection.on('endpointdetail', this.onEndpointInfo.bind(this));
-			this.connection.on('authdetail', this.onEndpointInfo.bind(this));
-			this.connection.on('endpointdetailcomplete', this.onEndpointDetailComplete.bind(this));
+			this.connection.on('endpointdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
+			this.connection.on('authdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
+			this.connection.on('endpointdetailcomplete', new CallbackContext(this.onEndpointDetailComplete.bind(this), this));
+		}
+	}
+
+	resetEventHandlers(): void {
+		// Setup necessary command event handlers based on the command
+		if (this.commandText === Commands.extension_list.toString()) {
+			this.connection.off('endpointlist', this);
+			this.connection.off('endpointlistcomplete', this);
+		} else if (this.commandText === Commands.extension_info.toString()) {
+			this.connection.off('endpointdetail', this);
+			this.connection.off('authdetail', this);
+			this.connection.off('endpointdetailcomplete', this);
 		}
 	}
 
