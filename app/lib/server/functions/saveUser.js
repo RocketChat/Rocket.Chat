@@ -3,7 +3,6 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
 import { Gravatar } from 'meteor/jparker:gravatar';
-import { Random } from 'meteor/random';
 
 import * as Mailer from '../../../mailer';
 import { getRoles, hasPermission } from '../../../authorization';
@@ -34,13 +33,13 @@ function _sendUserEmail(subject, html, userData) {
 		subject,
 		html,
 		data: {
-			email: s.escapeHTML(userData.email),
-			password: s.escapeHTML(userData.password),
+			email: userData.email,
+			password: userData.password,
 		},
 	};
 
 	if (typeof userData.name !== 'undefined') {
-		email.data.name = s.escapeHTML(userData.name);
+		email.data.name = userData.name;
 	}
 
 	try {
@@ -199,19 +198,32 @@ function validateUserEditing(userId, userData) {
 }
 
 const handleBio = (updateUser, bio) => {
-	if (bio) {
-		if (bio.trim()) {
-			if (typeof bio !== 'string' || bio.length > 260) {
-				throw new Meteor.Error('error-invalid-field', 'bio', {
-					method: 'saveUserProfile',
-				});
-			}
-			updateUser.$set = updateUser.$set || {};
-			updateUser.$set.bio = bio;
-		} else {
-			updateUser.$unset = updateUser.$unset || {};
-			updateUser.$unset.bio = 1;
+	if (bio && bio.trim()) {
+		if (typeof bio !== 'string' || bio.length > 260) {
+			throw new Meteor.Error('error-invalid-field', 'bio', {
+				method: 'saveUserProfile',
+			});
 		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.bio = bio;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.bio = 1;
+	}
+};
+
+const handleNickname = (updateUser, nickname) => {
+	if (nickname && nickname.trim()) {
+		if (typeof nickname !== 'string' || nickname.length > 120) {
+			throw new Meteor.Error('error-invalid-field', 'nickname', {
+				method: 'saveUserProfile',
+			});
+		}
+		updateUser.$set = updateUser.$set || {};
+		updateUser.$set.nickname = nickname;
+	} else {
+		updateUser.$unset = updateUser.$unset || {};
+		updateUser.$unset.nickname = 1;
 	}
 };
 
@@ -221,7 +233,7 @@ export const saveUser = function(userId, userData) {
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
 		if (userData.setRandomPassword) {
-			userData.password = Random.id();
+			userData.password = passwordPolicy.generatePassword();
 			userData.requirePasswordChange = true;
 			sendPassword = true;
 		}
@@ -261,6 +273,7 @@ export const saveUser = function(userId, userData) {
 		}
 
 		handleBio(updateUser, userData.bio);
+		handleNickname(updateUser, userData.nickname);
 
 		Meteor.users.update({ _id }, updateUser);
 
@@ -320,6 +333,7 @@ export const saveUser = function(userId, userData) {
 	};
 
 	handleBio(updateUser, userData.bio);
+	handleNickname(updateUser, userData.nickname);
 
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;

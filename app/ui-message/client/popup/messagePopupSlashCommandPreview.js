@@ -5,7 +5,6 @@ import { Template } from 'meteor/templating';
 
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
-import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {
@@ -179,7 +178,6 @@ Template.messagePopupSlashCommandPreview.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;

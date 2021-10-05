@@ -10,6 +10,7 @@ export class LivechatDepartment extends Base {
 		super(modelOrName || 'livechat_department');
 
 		this.tryEnsureIndex({ name: 1 });
+		this.tryEnsureIndex({ businessHourId: 1 }, { sparse: true });
 		this.tryEnsureIndex({
 			numAgents: 1,
 			enabled: 1,
@@ -29,15 +30,11 @@ export class LivechatDepartment extends Base {
 		return this.find(query, options);
 	}
 
-	createOrUpdateDepartment(_id, data = {}, agents) {
-		// We need to allow updating Departments without having to inform agents, so now we'll only
-		// update the agent/numAgents fields when the agent parameter is an Array, otherwise we skipp those fields
-		const hasAgents = agents && Array.isArray(agents);
-		const numAgents = hasAgents && agents.length;
+	createOrUpdateDepartment(_id, data = {}) {
+		const oldData = _id && this.findOneById(_id);
 
 		const record = {
 			...data,
-			...hasAgents && { numAgents },
 		};
 
 		if (_id) {
@@ -45,27 +42,9 @@ export class LivechatDepartment extends Base {
 		} else {
 			_id = this.insert(record);
 		}
-
-		if (hasAgents) {
-			const savedAgents = _.pluck(LivechatDepartmentAgents.findByDepartmentId(_id).fetch(), 'agentId');
-			const agentsToSave = _.pluck(agents, 'agentId');
-
-			// remove other agents
-			_.difference(savedAgents, agentsToSave).forEach((agentId) => {
-				LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(_id, agentId);
-			});
-
-			agents.forEach((agent) => {
-				LivechatDepartmentAgents.saveAgent({
-					agentId: agent.agentId,
-					departmentId: _id,
-					username: agent.username,
-					count: agent.count ? parseInt(agent.count) : 0,
-					order: agent.order ? parseInt(agent.order) : 0,
-				});
-			});
+		if (oldData && oldData.enabled !== data.enabled) {
+			LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
 		}
-
 		return _.extend(record, { _id });
 	}
 
@@ -81,10 +60,12 @@ export class LivechatDepartment extends Base {
 		});
 
 		departments.forEach((departmentId) => {
+			const { enabled: departmentEnabled } = this.findOneById(departmentId, { fields: { enabled: 1 } });
 			const saveResult = LivechatDepartmentAgents.saveAgent({
 				agentId,
 				departmentId,
 				username,
+				departmentEnabled,
 				count: 0,
 				order: 0,
 			});
@@ -97,6 +78,10 @@ export class LivechatDepartment extends Base {
 
 	updateById(_id, update) {
 		return this.update({ _id }, update);
+	}
+
+	updateNumAgentsById(_id, numAgents) {
+		return this.update({ _id }, { $set: { numAgents } });
 	}
 
 	// REMOVE

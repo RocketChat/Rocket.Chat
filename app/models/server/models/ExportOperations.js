@@ -31,7 +31,7 @@ export class ExportOperations extends Base {
 		const query = {
 			userId,
 			status: {
-				$nin: ['completed'],
+				$nin: ['completed', 'skipped'],
 			},
 		};
 
@@ -40,7 +40,7 @@ export class ExportOperations extends Base {
 
 	findAllPending(options) {
 		const query = {
-			status: { $nin: ['completed'] },
+			status: { $nin: ['completed', 'skipped'] },
 		};
 
 		return this.find(query, options);
@@ -48,7 +48,7 @@ export class ExportOperations extends Base {
 
 	findOnePending(options) {
 		const query = {
-			status: { $nin: ['completed'] },
+			status: { $nin: ['completed', 'skipped'] },
 		};
 
 		return this.findOne(query, options);
@@ -56,7 +56,7 @@ export class ExportOperations extends Base {
 
 	findAllPendingBeforeMyRequest(requestDay, options) {
 		const query = {
-			status: { $nin: ['completed'] },
+			status: { $nin: ['completed', 'skipped'] },
 			createdAt: { $lt: requestDay },
 		};
 

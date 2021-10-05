@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isSetNotNull } from './function-isSet';
 import { RoomManager } from '../../../ui-utils/client';
@@ -126,7 +127,7 @@ export const updateEmojiCustom = function(emojiData) {
 };
 
 const customRender = (html) => {
-	const emojisMatchGroup = emoji.packages.emojiCustom.list.map(RegExp.escape).join('|');
+	const emojisMatchGroup = emoji.packages.emojiCustom.list.map(escapeRegExp).join('|');
 	if (emojisMatchGroup !== emoji.packages.emojiCustom._regexpSignature) {
 		emoji.packages.emojiCustom._regexpSignature = emojisMatchGroup;
 		emoji.packages.emojiCustom._regexp = new RegExp(`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${ emojisMatchGroup })`, 'gi');

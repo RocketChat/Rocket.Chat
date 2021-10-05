@@ -31,10 +31,6 @@ class LivechatRoomTypeServer extends LivechatRoomType {
 		const { token } = message;
 		return { token };
 	}
-
-	isEmitAllowed() {
-		return true;
-	}
 }
 
 roomTypes.add(new LivechatRoomTypeServer());

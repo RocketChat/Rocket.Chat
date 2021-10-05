@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { settings } from '../../../settings';
-import { RateLimiter, setStatusText } from '../../../lib';
+import { settings } from '../../../settings/server';
+import { RateLimiter, setStatusText } from '../../../lib/server';
 
 Meteor.methods({
 	setUserStatus(statusType, statusText) {
@@ -12,6 +12,9 @@ Meteor.methods({
 		}
 
 		if (statusType) {
+			if (statusType === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', { method: 'setUserStatus' });
+			}
 			Meteor.call('UserPresence:setDefaultStatus', statusType);
 		}
 

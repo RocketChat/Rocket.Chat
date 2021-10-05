@@ -4,11 +4,12 @@ import { Random } from 'meteor/random';
 
 import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { hasPermission } from '../../../../authorization';
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
+import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -38,6 +39,10 @@ API.v1.addRoute('livechat/message', {
 
 			if (!room.open) {
 				throw new Meteor.Error('room-closed');
+			}
+
+			if (settings.get('Livechat_enable_message_character_limit') && msg.length > parseInt(settings.get('Livechat_message_character_limit'))) {
+				throw new Meteor.Error('message-length-exceeds-character-limit');
 			}
 
 			const _id = this.bodyParams._id || Random.id();
@@ -204,8 +209,10 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				rid: String,
 			});
 
+			const { offset } = this.getPaginationItems();
+			const { searchText: text, token } = this.queryParams;
 			const { rid } = this.urlParams;
-			const { token } = this.queryParams;
+			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
 				throw new Meteor.Error('error-token-param-not-provided', 'The required "token" query param is missing.');
@@ -236,7 +243,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 				limit = parseInt(this.queryParams.limit);
 			}
 
-			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls })
+			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls, sort, offset, text })
 				.messages
 				.map(normalizeMessageFileUpload);
 			return API.v1.success({ messages });

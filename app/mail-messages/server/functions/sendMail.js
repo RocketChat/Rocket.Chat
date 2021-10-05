@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { placeholders } from '../../../utils';
 import * as Mailer from '../../../mailer';
@@ -51,8 +51,8 @@ export const sendMail = function(from, subject, body, dryrun, query) {
 					_id: user._id,
 					createdAt: user.createdAt.getTime(),
 				})),
-				name: s.escapeHTML(user.name),
-				email: s.escapeHTML(email),
+				name: escapeHTML(user.name),
+				email: escapeHTML(email),
 			});
 			console.log(`Sending email to ${ email }`);
 			return Mailer.send({

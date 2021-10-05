@@ -5,9 +5,10 @@ import { hasPermission, hasAllPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
+import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
 Meteor.methods({
-	saveSetting(_id, value, editor) {
+	saveSetting: twoFactorRequired(function(_id, value, editor) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
@@ -46,5 +47,5 @@ Meteor.methods({
 
 		settings.updateById(_id, value, editor);
 		return true;
-	},
+	}),
 });

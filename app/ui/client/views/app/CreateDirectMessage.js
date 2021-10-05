@@ -1,10 +1,10 @@
-import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { roomTypes } from '../../../../utils/client';
 import { call } from '../../../../ui-utils/client';
+import { waitUntilRoomBeInserted } from '../../../../ui-utils/client/lib/openRoom';
 import './CreateDirectMessage.html';
 
 Template.CreateDirectMessage.helpers({
@@ -43,22 +43,12 @@ Template.CreateDirectMessage.helpers({
 	userModifier() {
 		return (filter, text = '') => {
 			const f = filter.get();
-			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get()), (part) => `<strong>${ part }</strong>`) }`;
+			return `@${ f.length === 0 ? text : text.replace(new RegExp(filter.get(), 'i'), (part) => `<strong>${ part }</strong>`) }`;
 		};
 	},
 	nameSuggestion() {
 		return Template.instance().discussionName.get();
 	},
-});
-
-const waitUntilRoomBeInserted = async (rid) => new Promise((resolve) => {
-	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom('d', rid, Meteor.user());
-		if (room) {
-			c.stop();
-			return resolve(room);
-		}
-	});
 });
 
 Template.CreateDirectMessage.events({
@@ -72,7 +62,7 @@ Template.CreateDirectMessage.events({
 			instance.data.onCreate(result);
 		}
 
-		await waitUntilRoomBeInserted(result.rid);
+		await waitUntilRoomBeInserted('d', result.rid);
 
 		const user = Meteor.user();
 		roomTypes.openRouteLink(result.t, { ...result, name: result.usernames.filter((username) => username !== user.username).join(', ') });

@@ -1,16 +1,17 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { BlazeLayout } from 'meteor/kadira:blaze-layout';
+
+import { appLayout } from '../../../../client/lib/appLayout';
 
 FlowRouter.route('/audit', {
 	name: 'audit-home',
 	action() {
-		BlazeLayout.render('main', { center: 'audit' });
+		appLayout.render('main', { center: 'auditPage' });
 	},
 });
 
 FlowRouter.route('/audit-log', {
 	name: 'audit-log',
 	action() {
-		BlazeLayout.render('main', { center: 'auditLog' });
+		appLayout.render('main', { center: 'auditLogPage' });
 	},
 });

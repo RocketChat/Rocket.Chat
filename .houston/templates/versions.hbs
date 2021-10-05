@@ -1,0 +1,16 @@
+{{#if (or release.node_version release.npm_version release.mongo_versions)}}
+
+### Engine versions
+{{#if release.node_version}}
+- Node: `{{ release.node_version }}`
+{{/if}}
+{{#if release.npm_version}}
+- NPM: `{{ release.npm_version }}`
+{{/if}}
+{{#if release.mongo_versions}}
+- MongoDB: `{{ join release.mongo_versions ', ' }}`
+{{/if}}
+{{#if release.apps_engine_version}}
+- Apps-Engine: `{{ release.apps_engine_version }}`
+{{/if}}
+{{/if}}

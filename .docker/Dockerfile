@@ -1,11 +1,33 @@
-FROM rocketchat/base:12.16.1
+FROM node:12.22.1-buster-slim
 
-COPY --chown=rocketchat:rocketchat . /app
+LABEL maintainer="buildmaster@rocket.chat"
 
-RUN set -x \
- && cd /app/bundle/programs/server \
- && npm install \
- && npm cache clear --force
+# dependencies
+RUN groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends fontconfig
+
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
+
+RUN aptMark="$(apt-mark showmanual)" \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
+    && cd /app/bundle/programs/server \
+    && npm install \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual $aptMark > /dev/null \
+    && find /usr/local -type f -executable -exec ldd '{}' ';' \
+       | awk '/=>/ { print $(NF-1) }' \
+       | sort -u \
+       | xargs -r dpkg-query --search \
+       | cut -d: -f1 \
+       | sort -u \
+       | xargs -r apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && npm cache clear --force
 
 USER rocketchat
 
@@ -17,7 +39,6 @@ WORKDIR /app/bundle
 ENV DEPLOY_METHOD=docker \
     NODE_ENV=production \
     MONGO_URL=mongodb://mongo:27017/rocketchat \
-    MONGO_OPLOG_URL=mongodb://mongo:27017/local \
     HOME=/tmp \
     PORT=3001 \
     ROOT_URL=http://localhost:3001 \
@@ -28,3 +49,4 @@ ENV DEPLOY_METHOD=docker \
 EXPOSE 3001
 
 CMD ["node", "main.js"]
+

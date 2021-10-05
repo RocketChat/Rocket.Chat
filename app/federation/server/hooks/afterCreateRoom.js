@@ -40,7 +40,7 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 
 	// Check if the number of domains is allowed
 	if (!checkRoomDomainsLength(normalizedRoom.federation.domains)) {
-		throw new Error('Cannot federate rooms with more than 10 domains');
+		throw new Error(`Cannot federate rooms with more than ${ process.env.FEDERATED_DOMAINS_LENGTH || 10 } domains`);
 	}
 
 	// Ensure a genesis event for this room

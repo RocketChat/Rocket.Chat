@@ -1,22 +1,43 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { Notifications } from '../../notifications';
 import { Users, Subscriptions, Rooms } from '../../models';
+import { api } from '../../../server/sdk/api';
 
-const mention = new MentionsServer({
-	pattern: () => settings.get('UTF8_Names_Validation'),
-	messageMaxAll: () => settings.get('Message_MaxAll'),
-	getUser: (userId) => Users.findOneById(userId),
-	getTotalChannelMembers: (rid) => Subscriptions.findByRoomId(rid).count(),
+export class MentionQueries {
+	getUsers(usernames) {
+		const fields = { _id: true, username: true, name: 1 };
+		const query = { username: { $in: [...new Set(usernames)] } };
+
+		try {
+			const { customFields: { groupId } = {} } = Meteor.user() || {};
+			if (groupId) {
+				query['customFields.groupId'] = { $in: [groupId, null] };
+			}
+		} catch { /**/ }
+
+		const users = Meteor.users.find(query, fields).fetch();
+
+		return users.map((user) => ({
+			...user,
+			type: 'user',
+		}));
+	}
+
+	getUser(userId) {
+		return Users.findOneById(userId);
+	}
+
+	getTotalChannelMembers(rid) {
+		return Subscriptions.findByRoomId(rid).count();
+	}
+
 	getChannels(channels) {
 		const fields = { fields: { _id: 1, name: 1 } };
-		const query = { name: { $in: _.unique(channels) }, t: { $in: ['c', 'p'] } };
+		const query = { name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } };
 
 		try {
 			const { customFields: { groupId } = {} } = Meteor.user() || {};
@@ -26,32 +47,25 @@ const mention = new MentionsServer({
 		} catch { /**/ }
 
 		Rooms.find(query, fields).fetch();
-	},
-	getUsers(usernames) {
-		const fields = { _id: true, username: true, name: 1 };
-		const query = { username: { $in: _.unique(usernames) } };
+	}
+}
 
-		try {
-			const { customFields: { groupId } = {} } = Meteor.user() || {};
-			if (groupId) {
-				query['customFields.groupId'] = { $in: [groupId, null] };
-			}
-		} catch { /**/ }
+const queries = new MentionQueries();
 
-		const result = Meteor.users.find(query, fields).fetch();
-		return result;
-	},
+const mention = new MentionsServer({
+	pattern: () => settings.get('UTF8_Names_Validation'),
+	messageMaxAll: () => settings.get('Message_MaxAll'),
+	getUsers: (usernames) => queries.getUsers(usernames),
+	getUser: (userId) => queries.getUser(userId),
+	getTotalChannelMembers: (rid) => queries.getTotalChannelMembers(rid),
+	getChannels: (channels) => queries.getChannels(channels),
 	onMaxRoomMembersExceeded({ sender, rid }) {
 		// Get the language of the user for the error notification.
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		Notifications.notifyUser(sender._id, 'message', {
-			_id: Random.id(),
-			rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
-			groupable: false,
 		});
 
 		// Also throw to stop propagation of 'sendMessage'.

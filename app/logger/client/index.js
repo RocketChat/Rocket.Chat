@@ -1,2 +1,1 @@
 import './logger';
-import './viewLogs';

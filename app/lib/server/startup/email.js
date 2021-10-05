@@ -476,5 +476,8 @@ settings.addGroup('Email', function() {
 			type: 'boolean',
 			public: true,
 		});
+		this.add('Add_Sender_To_ReplyTo', false, {
+			type: 'boolean',
+		});
 	});
 });

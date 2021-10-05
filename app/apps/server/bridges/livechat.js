@@ -60,7 +60,7 @@ export class AppLivechatBridge {
 		let agentRoom;
 		if (agent && agent.id) {
 			const user = Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user._id });
+			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
 		}
 
 		const result = await getRoom({
@@ -134,10 +134,22 @@ export class AppLivechatBridge {
 			currentRoom,
 		} = transferData;
 
+		const appUser = Users.findOneByAppId(appId);
+		if (!appUser) {
+			throw new Error('Invalid app user, cannot transfer');
+		}
+		const { _id, username, name, type } = appUser;
+		const transferredBy = {
+			_id,
+			username,
+			name,
+			type,
+		};
+
 		return Livechat.transfer(
 			this.orch.getConverters().get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters().get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent.id, departmentId },
+			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
 		);
 	}
 
@@ -175,9 +187,24 @@ export class AppLivechatBridge {
 		return this.orch.getConverters().get('visitors').convertVisitor(LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
+	async findDepartmentsEnabledWithAgents(appId) {
+		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
+
+		const converter = this.orch.getConverters().get('departments');
+		const boundConverter = converter.convertDepartment.bind(converter);
+
+		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+	}
+
 	async findDepartmentByIdOrName(value, appId) {
 		this.orch.debugLog(`The App ${ appId } is looking for livechat departments.`);
 
 		return this.orch.getConverters().get('departments').convertDepartment(LivechatDepartment.findOneByIdOrName(value));
+	}
+
+	async setCustomFields(data, appId) {
+		this.orch.debugLog(`The App ${ appId } is setting livechat visitor's custom fields.`);
+
+		return Livechat.setCustomFields(data);
 	}
 }

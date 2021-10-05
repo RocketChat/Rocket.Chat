@@ -25,7 +25,7 @@ export class UsersMock extends BaseModelMock {
 			id: 'genius',
 			username: 'genius',
 			emails: [{
-				address: 'rocketcat@rocket.chat',
+				address: 'genius@rocket.chat',
 				verified: true,
 			}],
 			type: 'bot',

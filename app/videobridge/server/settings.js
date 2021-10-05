@@ -30,6 +30,18 @@ Meteor.startup(function() {
 				},
 			});
 
+
+			this.add('bigbluebutton_Open_New_Window', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'bigbluebutton_Enabled',
+					value: true,
+				},
+				i18nLabel: 'Always_open_in_new_window',
+				public: true,
+			});
+
+
 			this.add('bigbluebutton_enable_d', true, {
 				type: 'boolean',
 				i18nLabel: 'WebRTC_Enable_Direct',
@@ -86,6 +98,27 @@ Meteor.startup(function() {
 					value: true,
 				},
 				i18nLabel: 'URL_room_prefix',
+				public: true,
+			});
+
+			this.add('Jitsi_URL_Room_Suffix', '', {
+				type: 'string',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'URL_room_suffix',
+				public: true,
+			});
+
+			this.add('Jitsi_URL_Room_Hash', true, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'Jitsi_Enabled',
+					value: true,
+				},
+				i18nLabel: 'URL_room_hash',
+				i18nDescription: 'URL_room_hash_description',
 				public: true,
 			});
 

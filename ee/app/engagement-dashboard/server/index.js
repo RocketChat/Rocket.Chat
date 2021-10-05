@@ -7,7 +7,6 @@ import { fillFirstDaysOfUsersIfNeeded } from './lib/users';
 onLicense('engagement-dashboard', async () => {
 	await import('./listeners');
 	await import('./api');
-
 	Meteor.startup(async () => {
 		const date = new Date();
 		fillFirstDaysOfUsersIfNeeded(date);

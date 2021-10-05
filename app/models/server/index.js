@@ -29,7 +29,6 @@ import WebdavAccounts from './models/WebdavAccounts';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
-import LivechatOfficeHour from './models/LivechatOfficeHour';
 import LivechatPageVisited from './models/LivechatPageVisited';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatTrigger from './models/LivechatTrigger';
@@ -38,7 +37,9 @@ import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
 import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
+import OmnichannelQueue from './models/OmnichannelQueue';
 import Analytics from './models/Analytics';
+import EmailInbox from './models/EmailInbox';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
@@ -80,7 +81,6 @@ export {
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,
-	LivechatOfficeHour,
 	LivechatPageVisited,
 	LivechatRooms,
 	LivechatTrigger,
@@ -90,4 +90,6 @@ export {
 	LivechatExternalMessage,
 	LivechatInquiry,
 	Analytics,
+	OmnichannelQueue,
+	EmailInbox,
 };

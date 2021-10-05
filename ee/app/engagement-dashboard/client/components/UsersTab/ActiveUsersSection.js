@@ -1,15 +1,16 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { LegendSymbol } from '../data/LegendSymbol';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { Section } from '../Section';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function ActiveUsersSection() {
+const ActiveUsersSection = () => {
 	const t = useTranslation();
 
 	const period = useMemo(() => ({
@@ -22,7 +23,7 @@ export function ActiveUsersSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/users/active-users', params);
+	const { value: data } = useEndpointData('engagement-dashboard/users/active-users', params);
 
 	const [
 		countDailyActiveUsers,
@@ -91,7 +92,23 @@ export function ActiveUsersSection() {
 		];
 	}, [period, data]);
 
-	return <Section title={t('Active_users')} filter={null}>
+	const downloadData = () => {
+		const data = [{
+			countDailyActiveUsers,
+			diffDailyActiveUsers,
+			countWeeklyActiveUsers,
+			diffWeeklyActiveUsers,
+			countMonthlyActiveUsers,
+			diffMonthlyActiveUsers,
+			dauValues,
+			wauValues,
+			mauValues,
+		}];
+		downloadCsvAs(data, `ActiveUsersSection_start_${ params.start }_end_${ params.end }`);
+	};
+
+
+	return <Section title={t('Active_users')} filter={<ActionButton small disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/>}>
 		<CounterSet
 			counters={[
 				{
@@ -116,7 +133,11 @@ export function ActiveUsersSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveLine
 									data={[
 										{
@@ -206,7 +227,7 @@ export function ActiveUsersSection() {
 									enableSlices='x'
 									sliceTooltip={({ slice: { points } }) => <Tile elevation='2'>
 										{points.map(({ serieId, data: { y: activeUsers } }) =>
-											<Box key={serieId} textStyle='p2'>
+											<Box key={serieId} fontScale='p2'>
 												{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
 										|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
 										|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}
@@ -220,4 +241,6 @@ export function ActiveUsersSection() {
 				: <Skeleton variant='rect' height={240} />}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default ActiveUsersSection;

@@ -4,7 +4,7 @@
 @import 'imports/general/base_old.css';
 @import 'imports/general/base.css';
 @import 'imports/general/animations.css';
-@import 'imports/general/apps.css';
+@import 'imports/general/react-root.css';
 
 /* Forms */
 @import 'imports/general/forms.css';
@@ -22,35 +22,28 @@
 
 /* Sidebar */
 @import 'imports/components/sidebar/sidebar.css';
-@import 'imports/components/sidebar/sidebar-header.css';
-@import 'imports/components/sidebar/sidebar-item.css';
 @import 'imports/components/sidebar/sidebar-flex.css';
-@import 'imports/components/sidebar/toolbar.css';
 @import 'imports/components/sidebar/rooms-list.css';
 
 /* Main */
 @import 'imports/components/flex-nav.css';
 @import 'imports/components/header.css';
-@import 'imports/components/memberlist.css';
 @import 'imports/components/main-content.css';
 @import 'imports/components/message-box.css';
 @import 'imports/components/avatar.css';
 @import 'imports/components/badge.css';
 @import 'imports/components/popover.css';
-@import 'imports/components/alerts.css';
 @import 'imports/components/popout.css';
 @import 'imports/components/modal.css';
-@import 'imports/components/tooltip.css';
-@import 'imports/components/slider.css';
 @import 'imports/components/chip.css';
 @import 'imports/components/messages.css';
+@import 'imports/components/read-receipts.css';
 @import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
 @import 'imports/components/table.css';
 @import 'imports/components/tabs.css';
 
 /* Modal */
-@import 'imports/components/modal/full-modal.css';
 @import 'imports/components/modal/create-channel.css';
 
 /* User Info */
@@ -58,3 +51,6 @@
 
 /* RTL */
 @import 'imports/general/rtl.css';
+
+/* Legacy theming */
+@import 'imports/general/theme_old.css';

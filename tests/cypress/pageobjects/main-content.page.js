@@ -19,8 +19,6 @@ class MainContent extends Page {
 
 	get recordBtn() { return browser.element('.js-audio-message-record'); }
 
-	get videoCamBtn() { return browser.element('.message-buttons .icon-videocam'); }
-
 	get emojiBtn() { return browser.element('.rc-message-box__icon.emoji-picker-icon'); }
 
 	get messagePopUp() { return browser.element('.message-popup'); }
@@ -77,6 +75,8 @@ class MainContent extends Page {
 	get messageStar() { return browser.element('[data-id="star-message"][data-type="message-action"]'); }
 
 	get messageUnread() { return browser.element('[data-id="mark-message-as-unread"][data-type="message-action"]'); }
+
+	get messageReplyInDM() { return browser.element('[data-id="reply-directly"][data-type="message-action"]'); }
 
 	// get messageReaction() { return browser.element('.message-actions__button[data-message-action="reaction-message"]'); }
 	get messagePin() { return browser.element('[data-id="pin-message"][data-type="message-action"]'); }

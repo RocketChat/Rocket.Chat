@@ -101,8 +101,8 @@ describe('Mention', function() {
 				assert.deepEqual(result, mentionsParser.getUserMentions('@genius.'));
 			});
 
-			it.skip('should return without the "_" from "@rocket.cat_"', () => {
-				assert.deepEqual(result, mentionsParser.getUserMentions('@rocket.cat_'));
+			it.skip('should return without the "_" from "@genius_"', () => {
+				assert.deepEqual(result, mentionsParser.getUserMentions('@genius_'));
 			});
 
 			it.skip('should return without the "-" from "@genius-"', () => {

@@ -4,7 +4,11 @@ import Busboy from 'busboy';
 import { FileUpload } from '../../../file-upload';
 import { Rooms, Messages } from '../../../models';
 import { API } from '../api';
-import { findAdminRooms, findChannelAndPrivateAutocomplete } from '../lib/rooms';
+import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findRoomsAvailableForTeams } from '../lib/rooms';
+import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { Media } from '../../../../server/sdk';
+import { settings } from '../../../settings/server/index';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -118,7 +122,12 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 		};
 
 		const fileData = Meteor.runAsUser(this.userId, () => {
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
 			const fileStore = FileUpload.getStore('Uploads');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				file.fileBuffer = Promise.await(Media.stripExifFromBuffer(file.fileBuffer));
+			}
 			const uploadedFile = fileStore.insertSync(details, file.fileBuffer);
 
 			uploadedFile.description = fields.description;
@@ -192,18 +201,20 @@ API.v1.addRoute('rooms.cleanHistory', { authRequired: true }, {
 
 		const inclusive = this.bodyParams.inclusive || false;
 
-		Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
+		const count = Meteor.runAsUser(this.userId, () => Meteor.call('cleanRoomHistory', {
 			roomId: findResult._id,
 			latest,
 			oldest,
 			inclusive,
 			limit: this.bodyParams.limit,
-			excludePinned: this.bodyParams.excludePinned,
-			filesOnly: this.bodyParams.filesOnly,
+			excludePinned: [true, 'true', 1, '1'].includes(this.bodyParams.excludePinned),
+			filesOnly: [true, 'true', 1, '1'].includes(this.bodyParams.filesOnly),
+			ignoreThreads: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreThreads),
+			ignoreDiscussion: [true, 'true', 1, '1'].includes(this.bodyParams.ignoreDiscussion),
 			fromUsers: this.bodyParams.users,
 		}));
 
-		return API.v1.success();
+		return API.v1.success({ count });
 	},
 });
 
@@ -231,7 +242,7 @@ API.v1.addRoute('rooms.leave', { authRequired: true }, {
 
 API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 	post() {
-		const { prid, pmid, reply, t_name, users } = this.bodyParams;
+		const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
 		if (!prid) {
 			return API.v1.failure('Body parameter "prid" is required.');
 		}
@@ -242,12 +253,17 @@ API.v1.addRoute('rooms.createDiscussion', { authRequired: true }, {
 			return API.v1.failure('Body parameter "users" must be an array.');
 		}
 
+		if (encrypted !== undefined && typeof encrypted !== 'boolean') {
+			return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
+		}
+
 		const discussion = Meteor.runAsUser(this.userId, () => Meteor.call('createDiscussion', {
 			prid,
 			pmid,
 			t_name,
 			reply,
 			users: users || [],
+			encrypted,
 		}));
 
 		return API.v1.success({ discussion });
@@ -299,6 +315,22 @@ API.v1.addRoute('rooms.adminRooms', { authRequired: true }, {
 	},
 });
 
+API.v1.addRoute('rooms.adminRooms.getRoom', { authRequired: true }, {
+	get() {
+		const { rid } = this.requestParams();
+		const room = Promise.await(findAdminRoom({
+			uid: this.userId,
+			rid,
+		}));
+
+		if (!room) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		return API.v1.success(room);
+	},
+});
+
+
 API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, {
 	get() {
 		const { selector } = this.queryParams;
@@ -310,5 +342,110 @@ API.v1.addRoute('rooms.autocomplete.channelAndPrivate', { authRequired: true }, 
 			uid: this.userId,
 			selector: JSON.parse(selector),
 		})));
+	},
+});
+
+API.v1.addRoute('rooms.autocomplete.availableForTeams', { authRequired: true }, {
+	get() {
+		const { name } = this.queryParams;
+
+		if (name && typeof name !== 'string') {
+			return API.v1.failure('The \'name\' param is invalid');
+		}
+
+		return API.v1.success(Promise.await(findRoomsAvailableForTeams({
+			uid: this.userId,
+			name,
+		})));
+	},
+});
+
+API.v1.addRoute('rooms.saveRoomSettings', { authRequired: true }, {
+	post() {
+		const { rid, ...params } = this.bodyParams;
+
+		const result = Meteor.runAsUser(this.userId, () => Meteor.call('saveRoomSettings', rid, params));
+
+		return API.v1.success({ rid: result.rid });
+	},
+});
+
+API.v1.addRoute('rooms.changeArchivationState', { authRequired: true }, {
+	post() {
+		const { rid, action } = this.bodyParams;
+
+		let result;
+		if (action === 'archive') {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('archiveRoom', rid));
+		} else {
+			result = Meteor.runAsUser(this.userId, () => Meteor.call('unarchiveRoom', rid));
+		}
+
+		return API.v1.success({ result });
+	},
+});
+
+API.v1.addRoute('rooms.export', { authRequired: true }, {
+	post() {
+		const { rid, type } = this.bodyParams;
+
+		if (!rid || !type || !['email', 'file'].includes(type)) {
+			throw new Meteor.Error('error-invalid-params');
+		}
+
+		if (!hasPermission(this.userId, 'mail-messages', rid)) {
+			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
+		}
+
+		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room');
+		}
+
+		const user = Meteor.users.findOne({ _id: this.userId });
+
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		if (type === 'file') {
+			const { dateFrom, dateTo, format } = this.bodyParams;
+
+			if (!['html', 'json'].includes(format)) {
+				throw new Meteor.Error('error-invalid-format');
+			}
+
+			sendFile({
+				rid,
+				format,
+				...dateFrom && { dateFrom: new Date(dateFrom) },
+				...dateTo && { dateTo: new Date(dateTo) },
+			}, user);
+			return API.v1.success();
+		}
+
+		if (type === 'email') {
+			const { toUsers, toEmails, subject, messages } = this.bodyParams;
+
+			if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
+				throw new Meteor.Error('error-invalid-recipient');
+			}
+
+			if (messages.length === 0) {
+				throw new Meteor.Error('error-invalid-messages');
+			}
+
+			const result = sendViaEmail({
+				rid,
+				toUsers,
+				toEmails,
+				subject,
+				messages,
+			}, user);
+
+			return API.v1.success(result);
+		}
+
+		return API.v1.error();
 	},
 });

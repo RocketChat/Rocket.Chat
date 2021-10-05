@@ -9,7 +9,7 @@ import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalO
 export const handleMessagesSent = (message, room) => {
 	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
 	if (!roomTypesToShow.includes(room.t)) {
-		return;
+		return message;
 	}
 	Promise.await(AnalyticsRaw.saveMessageSent({
 		date: convertDateToInt(message.ts),
@@ -41,7 +41,10 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		messages.forEach((message) => Analytics.insert(message));
+		messages.forEach((message) => Analytics.insert({
+			...message,
+			date: parseInt(message.date),
+		}));
 	}
 };
 

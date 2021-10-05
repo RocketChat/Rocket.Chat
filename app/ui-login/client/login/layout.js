@@ -2,10 +2,6 @@ import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
 
-Template.loginLayout.onRendered(function() {
-	$('#initial-page-loading').remove();
-});
-
 Template.loginLayout.helpers({
 	backgroundUrl() {
 		const asset = settings.get('Assets_background');

@@ -1,17 +1,17 @@
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
-import { Notifications } from '../../../app/notifications/server';
 import { settings } from '../../../app/settings/server';
+import { UserStatus } from '../../../definition/UserStatus';
+import { api } from '../../../server/sdk/api';
 
-// mirror of object in /imports/startup/client/listenActiveUsers.js - keep updated
 export const STATUS_MAP = {
-	offline: 0,
-	online: 1,
-	away: 2,
-	busy: 3,
+	[UserStatus.OFFLINE]: 0,
+	[UserStatus.ONLINE]: 1,
+	[UserStatus.AWAY]: 2,
+	[UserStatus.BUSY]: 3,
 };
 
-const setUserStatus = (user, status/* , statusConnection*/) => {
+export const setUserStatus = (user, status/* , statusConnection*/) => {
 	const {
 		_id,
 		username,
@@ -20,12 +20,9 @@ const setUserStatus = (user, status/* , statusConnection*/) => {
 
 	// since this callback can be called by only one instance in the cluster
 	// we need to broadcast the change to all instances
-	Notifications.notifyLogged('user-status', [
-		_id,
-		username,
-		STATUS_MAP[status],
-		statusText,
-	]);
+	api.broadcast('presence.status', {
+		user: { status, _id, username, statusText }, // TODO remove username
+	});
 };
 
 let TroubleshootDisablePresenceBroadcast;

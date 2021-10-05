@@ -1,0 +1,62 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
+import React, { ReactNode, useMemo, useState, memo, useEffect } from 'react';
+
+import { roomTypes } from '../../../../app/utils/client';
+import { IRoom } from '../../../../definition/IRoom';
+import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
+import { AsyncStatePhase } from '../../../lib/asyncState';
+import Skeleton from '../Room/Skeleton';
+import { RoomContext } from '../contexts/RoomContext';
+import ToolboxProvider from './ToolboxProvider';
+
+export type Props = {
+	children: ReactNode;
+	rid: IRoom['_id'];
+};
+
+const RoomProvider = ({ rid, children }: Props): JSX.Element => {
+	const { phase, value: room } = useHandleRoom(rid);
+	const context = useMemo(() => {
+		if (!room) {
+			return null;
+		}
+		room._id = rid;
+		return {
+			rid,
+			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
+		};
+	}, [room, rid]);
+
+	const [tab, setTab] = useState<string | undefined>();
+	const routeName = FlowRouter.getRouteName();
+	const routeParams = FlowRouter.current()?.params;
+
+	Tracker.autorun(() => {
+		FlowRouter.watchPathChange();
+		const currentTab = FlowRouter.getParam('tab');
+		if (currentTab !== tab) {
+			setTab(currentTab);
+		}
+	});
+
+	useEffect(() => {
+		RoomManager.open(rid);
+		return (): void => {
+			RoomManager.back(rid);
+		};
+	}, [rid]);
+
+	if (phase === AsyncStatePhase.LOADING || !room) {
+		return <Skeleton />;
+	}
+
+	return (
+		<RoomContext.Provider value={context}>
+			<ToolboxProvider room={room} routeName={routeName} routeParams={routeParams} tab={tab}>
+				{children}
+			</ToolboxProvider>
+		</RoomContext.Provider>
+	);
+};
+export default memo(RoomProvider);

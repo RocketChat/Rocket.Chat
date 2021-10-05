@@ -2,7 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
 import { hasPermission } from '../../../authorization';
+import { clean } from '../lib/cleanQuery';
 import { API } from '../api';
+
+const pathAllowConf = {
+	'/api/v1/users.list': ['$or', '$regex', '$and'],
+	def: ['$or', '$and', '$regex'],
+};
 
 API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	let sort;
@@ -54,6 +60,7 @@ API.helperMethods.set('parseJsonQuery', function _parseJsonQuery() {
 	if (this.queryParams.query) {
 		try {
 			query = EJSON.parse(this.queryParams.query);
+			query = clean(query, pathAllowConf[this.request.route] || pathAllowConf.def);
 		} catch (e) {
 			this.logger.warn(`Invalid query parameter provided "${ this.queryParams.query }":`, e);
 			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: "${ this.queryParams.query }"`, { helperMethod: 'parseJsonQuery' });

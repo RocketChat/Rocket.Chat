@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import s from 'underscore.string';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Rooms } from '../../../models';
 
@@ -11,7 +11,7 @@ export const saveRoomTokensMinimumBalance = function(rid, roomTokensMinimumBalan
 		});
 	}
 
-	const minimumTokenBalance = parseFloat(s.escapeHTML(roomTokensMinimumBalance));
+	const minimumTokenBalance = parseFloat(escapeHTML(roomTokensMinimumBalance));
 
 	return Rooms.setMinimumTokenBalanceById(rid, minimumTokenBalance);
 };

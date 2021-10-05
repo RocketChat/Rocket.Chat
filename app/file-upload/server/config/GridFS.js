@@ -6,6 +6,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 
 import { Logger } from '../../../logger';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
 const logger = new Logger('FileUpload');
 
@@ -50,20 +51,6 @@ ExtractRange.prototype._transform = function(chunk, enc, cb) {
 	cb();
 };
 
-
-const getByteRange = function(header) {
-	if (header) {
-		const matches = header.match(/(\d+)-(\d+)/);
-		if (matches) {
-			return {
-				start: parseInt(matches[1], 10),
-				stop: parseInt(matches[2], 10),
-			};
-		}
-	}
-	return null;
-};
-
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
 const readFromGridFS = function(storeName, fileId, file, req, res) {
 	const store = UploadFS.getStore(storeName);
@@ -80,48 +67,44 @@ const readFromGridFS = function(storeName, fileId, file, req, res) {
 		ws.emit('end');
 	});
 
-	const accept = req.headers['accept-encoding'] || '';
-
 	// Transform stream
 	store.transformRead(rs, ws, fileId, file, req);
-	const range = getByteRange(req.headers.range);
-	let out_of_range = false;
+
+	const range = getFileRange(file, req);
 	if (range) {
-		out_of_range = (range.start > file.size) || (range.stop <= range.start) || (range.stop > file.size);
+		setRangeHeaders(range, file, res);
+
+		if (range.outOfRange) {
+			return;
+		}
+
+		logger.debug('File upload extracting range');
+		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
+		return;
 	}
 
+	const accept = req.headers['accept-encoding'] || '';
+
 	// Compress data using gzip
-	if (accept.match(/\bgzip\b/) && range === null) {
+	if (accept.match(/\bgzip\b/)) {
 		res.setHeader('Content-Encoding', 'gzip');
 		res.removeHeader('Content-Length');
 		res.writeHead(200);
 		ws.pipe(zlib.createGzip()).pipe(res);
-	} else if (accept.match(/\bdeflate\b/) && range === null) {
-		// Compress data using deflate
+		return;
+	}
+
+	// Compress data using deflate
+	if (accept.match(/\bdeflate\b/)) {
 		res.setHeader('Content-Encoding', 'deflate');
 		res.removeHeader('Content-Length');
 		res.writeHead(200);
 		ws.pipe(zlib.createDeflate()).pipe(res);
-	} else if (range && out_of_range) {
-		// out of range request, return 416
-		res.removeHeader('Content-Length');
-		res.removeHeader('Content-Type');
-		res.removeHeader('Content-Disposition');
-		res.removeHeader('Last-Modified');
-		res.setHeader('Content-Range', `bytes */${ file.size }`);
-		res.writeHead(416);
-		res.end();
-	} else if (range) {
-		res.setHeader('Content-Range', `bytes ${ range.start }-${ range.stop }/${ file.size }`);
-		res.removeHeader('Content-Length');
-		res.setHeader('Content-Length', range.stop - range.start + 1);
-		res.writeHead(206);
-		logger.debug('File upload extracting range');
-		ws.pipe(new ExtractRange({ start: range.start, stop: range.stop })).pipe(res);
-	} else {
-		res.writeHead(200);
-		ws.pipe(res);
+		return;
 	}
+
+	res.writeHead(200);
+	ws.pipe(res);
 };
 
 const copyFromGridFS = function(storeName, fileId, file, out) {
@@ -150,7 +133,6 @@ UploadFS.getStores().rocketchat_uploads = UploadFS.getStores()['GridFS:Uploads']
 FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 	collectionName: 'rocketchat_avatars',
 });
-
 
 new FileUploadClass({
 	name: 'GridFS:Uploads',

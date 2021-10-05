@@ -1,9 +1,8 @@
-import { Random } from 'meteor/random';
-
-import { Messages, Users, Subscriptions } from '../../../models';
-import { Notifications } from '../../../notifications';
+import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { api } from '../../../../server/sdk/api';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 export class AppMessageBridge {
 	constructor(orch) {
@@ -48,12 +47,13 @@ export class AppMessageBridge {
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
 
-		Notifications.notifyUser(user.id, 'message', Object.assign(msg, {
-			_id: Random.id(),
-			ts: new Date(),
-			u: undefined,
-			editor: undefined,
-		}));
+		if (!msg) {
+			return;
+		}
+
+		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+			...msg,
+		});
 	}
 
 	async notifyRoom(room, message, appId) {
@@ -64,13 +64,6 @@ export class AppMessageBridge {
 		}
 
 		const msg = this.orch.getConverters().get('messages').convertAppMessage(message);
-		const rmsg = Object.assign(msg, {
-			_id: Random.id(),
-			rid: room.id,
-			ts: new Date(),
-			u: undefined,
-			editor: undefined,
-		});
 
 		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
 			.fetch()
@@ -79,7 +72,19 @@ export class AppMessageBridge {
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
 			.forEach(({ _id }) =>
-				Notifications.notifyUser(_id, 'message', rmsg),
+				api.broadcast('notify.ephemeralMessage', _id, room.id, {
+					...msg,
+				}),
 			);
+	}
+
+	async typing({ scope, id, username, isTyping }) {
+		switch (scope) {
+			case 'room':
+				notifications.notifyRoom(id, 'typing', username, isTyping);
+				return;
+			default:
+				throw new Error('Unrecognized typing scope provided');
+		}
 	}
 }

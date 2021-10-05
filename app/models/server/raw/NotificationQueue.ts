@@ -7,11 +7,24 @@ import {
 import { BaseRaw } from './BaseRaw';
 import { INotification } from '../../../../definition/INotification';
 
-export class NotificationQueueRaw extends BaseRaw {
+export class NotificationQueueRaw extends BaseRaw<INotification> {
 	public readonly col!: Collection<INotification>;
 
 	unsetSendingById(_id: string) {
 		return this.col.updateOne({ _id }, {
+			$unset: {
+				sending: 1,
+			},
+		});
+	}
+
+	setErrorById(_id: string, error: any) {
+		return this.col.updateOne({
+			_id,
+		}, {
+			$set: {
+				error,
+			},
 			$unset: {
 				sending: 1,
 			},
@@ -55,6 +68,8 @@ export class NotificationQueueRaw extends BaseRaw {
 					{ schedule: { $exists: false } },
 					{ schedule: { $lte: now } },
 				],
+			}, {
+				error: { $exists: false },
 			}],
 		}, {
 			$set: {

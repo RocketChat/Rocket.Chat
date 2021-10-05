@@ -4,7 +4,7 @@ export class Statistics extends Base {
 	constructor() {
 		super('statistics');
 
-		this.tryEnsureIndex({ createdAt: 1 });
+		this.tryEnsureIndex({ createdAt: -1 });
 	}
 
 	// FIND ONE

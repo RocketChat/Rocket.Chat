@@ -59,8 +59,8 @@ const combinedCallbacks = new Map();
 
 /*
 * Callback priorities
+* @enum {CallbackPriority}
 */
-
 callbacks.priority = {
 	HIGH: -1000,
 	MEDIUM: 0,
@@ -73,8 +73,9 @@ const getHooks = (hookName) => callbacks[hookName] || [];
 * Add a callback function to a hook
 * @param {String} hook - The name of the hook
 * @param {Function} callback - The callback function
+* @param {CallbackPriority} priority - The callback run priority (order)
+* @param {String} id - Human friendly name for this callback
 */
-
 callbacks.add = function(
 	hook,
 	callback,

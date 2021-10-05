@@ -1,13 +1,14 @@
-import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Select, Skeleton, Table, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { Growth } from '../data/Growth';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import Growth from '../../../../../../client/components/data/Growth';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function TableSection() {
+const TableSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -52,7 +53,7 @@ export function TableSection() {
 		count: itemsPerPage,
 	}), [period, current, itemsPerPage]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/channels/list', params);
+	const { value: data } = useEndpointData('engagement-dashboard/channels/list', params);
 
 	const channels = useMemo(() => {
 		if (!data) {
@@ -73,9 +74,20 @@ export function TableSection() {
 		}));
 	}, [data]);
 
-	return <Section filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}>
+	const downloadData = () => {
+		const data = channels.map(({
+			createdAt,
+			messagesCount,
+			name,
+			t,
+			updatedAt,
+		}) => [t, name, messagesCount, updatedAt, createdAt]);
+		downloadCsvAs(data, `Channels_start_${ params.start }_end_${ params.end }`);
+	};
+
+	return <Section filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!channels} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}>
 		<Box>
-			{channels && !channels.length && <Tile textStyle='p1' textColor='info' style={{ textAlign: 'center' }}>
+			{channels && !channels.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
 				{t('No_data_found')}
 			</Tile>}
 			{(!channels || channels.length)
@@ -136,11 +148,13 @@ export function TableSection() {
 				itemsPerPage={itemsPerPage}
 				itemsPerPageLabel={() => t('Items_per_page:')}
 				showingResultsLabel={({ count, current, itemsPerPage }) =>
-					t('Showing results %s - %s of %s', current + 1, Math.min(current + itemsPerPage, count), count)}
+					t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)}
 				count={(data && data.total) || 0}
 				onSetItemsPerPage={setItemsPerPage}
 				onSetCurrent={setCurrent}
 			/>
 		</Box>
 	</Section>;
-}
+};
+
+export default TableSection;

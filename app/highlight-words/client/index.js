@@ -1,1 +1,1 @@
-import './client';
+export { createHighlightWordsMessageRenderer } from './client';

@@ -110,7 +110,8 @@ def buildImage(path, tagName, releaseVersion) {
     TMP=$(mktemp -ud -t rocketchat-build-XXXXXXXXXXXX --tmpdir=/home/$USER/tmp)
     rm -rf $TMP
 
-    meteor  npm install --allow-superuser
+    meteor --version
+    meteor npm install --allow-superuser
     meteor build --directory $TMP --allow-superuser
 
     # create docker image

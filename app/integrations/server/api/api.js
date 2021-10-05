@@ -12,7 +12,7 @@ import moment from 'moment';
 
 import { logger } from '../logger';
 import { processWebhookMessage } from '../../../lib';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api';
+import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models';
 import { settings } from '../../../settings/server';
 
@@ -247,7 +247,7 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues, this.integration);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}

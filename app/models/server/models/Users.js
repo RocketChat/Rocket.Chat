@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import s from 'underscore.string';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
@@ -28,9 +29,16 @@ export class Users extends Base {
 	constructor(...args) {
 		super(...args);
 
+		this.defaultFields = {
+			__rooms: 0,
+		};
+
+		this.tryEnsureIndex({ __rooms: 1 }, { sparse: 1 });
+
 		this.tryEnsureIndex({ roles: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ name: 1 });
-		this.tryEnsureIndex({ bio: 1 });
+		this.tryEnsureIndex({ bio: 1 }, { sparse: 1 });
+		this.tryEnsureIndex({ nickname: 1 }, { sparse: 1 });
 		this.tryEnsureIndex({ createdAt: 1 });
 		this.tryEnsureIndex({ lastLogin: 1 });
 		this.tryEnsureIndex({ status: 1 });
@@ -43,6 +51,10 @@ export class Users extends Base {
 		this.tryEnsureIndex({ federation: 1 }, { sparse: true });
 		this.tryEnsureIndex({ isRemote: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'customFields.groupId': 1 });
+		this.tryEnsureIndex({ 'services.saml.inResponseTo': 1 });
+		this.tryEnsureIndex({ openBusinessHours: 1 }, { sparse: true });
+		this.tryEnsureIndex({ statusLivechat: 1 }, { sparse: true });
+		this.tryEnsureIndex({ language: 1 }, { sparse: true });
 	}
 
 	getLoginTokensByUserId(userId) {
@@ -125,10 +137,10 @@ export class Users extends Base {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentByUsername(username) {
+	findOneOnlineAgentByUsername(username, options) {
 		const query = queryStatusAgentOnline({ username });
 
-		return this.findOneInGroup(query);
+		return this.findOneInGroup(query, options);
 	}
 
 	findOneOnlineAgentById(_id) {
@@ -164,8 +176,11 @@ export class Users extends Base {
 		return this.findInGroup(query);
 	}
 
-	getNextAgent() {
-		const query = queryStatusAgentOnline();
+	getNextAgent(ignoreAgentId) {
+		const extraFilters = {
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
+		};
+		const query = queryStatusAgentOnline(extraFilters);
 
 		const collectionObj = this.model.rawCollection();
 		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
@@ -191,11 +206,12 @@ export class Users extends Base {
 		return null;
 	}
 
-	getNextBotAgent() {
+	getNextBotAgent(ignoreAgentId) {
 		const query = {
 			roles: {
 				$all: ['bot', 'livechat-agent'],
 			},
+			...ignoreAgentId && { _id: { $ne: ignoreAgentId } },
 		};
 
 		const collectionObj = this.model.rawCollection();
@@ -386,6 +402,57 @@ export class Users extends Base {
 		});
 	}
 
+	addRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: { $ne: rid },
+		}, {
+			$addToSet: { __rooms: rid },
+		});
+	}
+
+	removeRoomByUserId(_id, rid) {
+		return this.update({
+			_id,
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		});
+	}
+
+	removeAllRoomsByUserId(_id) {
+		return this.update({
+			_id,
+		}, {
+			$set: { __rooms: [] },
+		});
+	}
+
+	removeRoomByRoomId(rid) {
+		return this.update({
+			__rooms: rid,
+		}, {
+			$pull: { __rooms: rid },
+		}, { multi: true });
+	}
+
+	removeRoomByRoomIds(rids) {
+		return this.update({
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
+	removeRoomsByRoomIdsAndUserId(rids, userId) {
+		return this.update({
+			_id: userId,
+			__rooms: { $in: rids },
+		}, {
+			$pullAll: { __rooms: rids },
+		}, { multi: true });
+	}
+
 	update2FABackupCodesByUserId(userId, backupCodes) {
 		return this.update({
 			_id: userId,
@@ -499,7 +566,7 @@ export class Users extends Base {
 
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username };
@@ -507,12 +574,34 @@ export class Users extends Base {
 		return this.findOneInGroup(query, options);
 	}
 
+	findOneByUsernameAndRoomIgnoringCase(username, rid, options) {
+		if (typeof username === 'string') {
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
+		}
+
+		const query = {
+			__rooms: rid,
+			username,
+		};
+
+		return this.findOneInGroup(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
-			username = new RegExp(`^${ s.escapeRegExp(username) }$`, 'i');
+			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
 		}
 
 		const query = { username, [`services.${ serviceName }.id`]: userId };
+
+		return this.findOneInGroup(query, options);
+	}
+
+	findOneByEmailAddressAndServiceNameIgnoringCase(emailAddress, userId, serviceName, options) {
+		const query = {
+			'emails.address': String(emailAddress).trim().toLowerCase(),
+			[`services.${ serviceName }.id`]: userId,
+		};
 
 		return this.findOneInGroup(query, options);
 	}
@@ -524,7 +613,7 @@ export class Users extends Base {
 	}
 
 	findOneByEmailAddress(emailAddress, options) {
-		const query = { 'emails.address': new RegExp(`^${ s.escapeRegExp(emailAddress) }$`, 'i') };
+		const query = { 'emails.address': String(emailAddress).trim().toLowerCase() };
 
 		return this.findOneInGroup(query, options);
 	}
@@ -544,8 +633,17 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneById(userId, options) {
+	findOneById(userId, options = {}) {
 		const query = { _id: userId };
+
+		return this.findOneInGroup(query, options);
+	}
+
+	findOneActiveById(userId, options) {
+		const query = {
+			_id: userId,
+			active: true,
+		};
 
 		return this.findOneInGroup(query, options);
 	}
@@ -620,11 +718,30 @@ export class Users extends Base {
 		return this.findInGroup(query, options);
 	}
 
+	findByUsernamesIgnoringCase(usernames, options) {
+		const query = {
+			username: {
+				$in: usernames.filter(Boolean).map((u) => new RegExp(`^${ escapeRegExp(u) }$`, 'i')),
+			},
+		};
+
+		return this.findInGroup(query, options);
+	}
+
 	findActive(options = {}) {
 		return this.findInGroup({
 			active: true,
 			type: { $nin: ['app'] },
 			roles: { $ne: ['guest'] },
+		}, options);
+	}
+
+	findActiveByUserIds(ids, options = {}) {
+		return this.findInGroup({
+			active: true,
+			type: { $nin: ['app'] },
+			roles: { $ne: ['guest'] },
+			_id: { $in: ids },
 		}, options);
 	}
 
@@ -650,45 +767,7 @@ export class Users extends Base {
 		return this.findInGroup(query, options);
 	}
 
-	findPrivateActiveByUsernameOrNameRegexWithExceptions(uid, searchTerm, exceptions, options) {
-		if (exceptions == null) { exceptions = []; }
-		if (options == null) { options = {}; }
-		if (!_.isArray(exceptions)) {
-			exceptions = [exceptions];
-		}
-
-		const roomIds = Subscriptions.findByUserIdAndType(uid, 'p', { fields: { rid: 1 } }).fetch().map((s) => s.rid);
-		const userIds = Subscriptions.findByRoomIdsAndNotUserId(roomIds, uid).fetch().map((s) => s.u._id);
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
-		const query = {
-			$or: [{
-				username: termRegex,
-			}, {
-				name: termRegex,
-			}],
-			active: true,
-			type: {
-				$in: ['user', 'bot'],
-			},
-			$and: [{
-				username: {
-					$exists: true,
-				},
-			}, {
-				username: {
-					$nin: exceptions,
-				},
-			}, {
-				_id: {
-					$in: userIds,
-				},
-			}],
-		};
-
-		return this.findInGroup(query, options);
-	}
-
-	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = []) {
+	findByActiveUsersExcept(searchTerm, exceptions, options, forcedSearchFields, extraQuery = [], { startsWith = false, endsWith = false } = {}) {
 		if (exceptions == null) { exceptions = []; }
 		if (options == null) { options = {}; }
 		if (!_.isArray(exceptions)) {
@@ -696,7 +775,7 @@ export class Users extends Base {
 		}
 
 		// if the search term is empty, don't need to have the $or statement (because it would be an empty regex)
-		if (searchTerm === '') {
+		if (!searchTerm) {
 			const query = {
 				$and: [
 					{
@@ -710,7 +789,7 @@ export class Users extends Base {
 			return this.findNoCachedInGroup(query, options);
 		}
 
-		const termRegex = new RegExp(s.escapeRegExp(searchTerm), 'i');
+		const termRegex = new RegExp((startsWith ? '^' : '') + escapeRegExp(searchTerm) + (endsWith ? '$' : ''), 'i');
 
 		const searchFields = forcedSearchFields || settings.get('Accounts_SearchFields').trim().split(',');
 
@@ -800,13 +879,11 @@ export class Users extends Base {
 		return this.findInGroup(query, options);
 	}
 
-	getLastLogin(options) {
-		if (options == null) { options = {}; }
-		const query = { lastLogin: { $exists: 1 } };
+	getLastLogin(options = { fields: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		options.limit = 1;
-		const [user] = this.findInGroup(query, options).fetch();
-		return user && user.lastLogin;
+		const [user] = this.findInGroup({}, options).fetch();
+		return user?.lastLogin;
 	}
 
 	findUsersByUsernames(usernames, options) {
@@ -895,6 +972,21 @@ export class Users extends Base {
 		});
 	}
 
+	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.find({
+			$or: [
+				{ 'services.saml.nameID': nameID },
+				{ 'services.saml.idpSession': idpSession },
+			],
+		});
+	}
+
+	findBySAMLInResponseTo(inResponseTo) {
+		return this.find({
+			'services.saml.inResponseTo': inResponseTo,
+		});
+	}
+
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
@@ -949,6 +1041,18 @@ export class Users extends Base {
 			},
 		};
 
+		return this.update(_id, update);
+	}
+
+	addPasswordToHistory(_id, password) {
+		const update = {
+			$push: {
+				'services.passwordHistory': {
+					$each: [password],
+					$slice: -Number(settings.get('Accounts_Password_History_Amount')),
+				},
+			},
+		};
 		return this.update(_id, update);
 	}
 
@@ -1032,6 +1136,28 @@ export class Users extends Base {
 		return this.update(_id, update);
 	}
 
+	setAvatarData(_id, origin, etag) {
+		const update = {
+			$set: {
+				avatarOrigin: origin,
+				avatarETag: etag,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
+	unsetAvatarData(_id) {
+		const update = {
+			$unset: {
+				avatarOrigin: 1,
+				avatarETag: 1,
+			},
+		};
+
+		return this.update(_id, update);
+	}
+
 	setRecentlyVisitedRoom(_id, rid) {
 		const update = {
 			$set: {
@@ -1047,26 +1173,6 @@ export class Users extends Base {
 
 		const user = this.findOne(query, { fields: { recentlyVisitedRoom: 1 } }).fetch();
 		return user && user.recentlyVisitedRoom;
-	}
-
-	setAvatarOrigin(_id, origin) {
-		const update = {
-			$set: {
-				avatarOrigin: origin,
-			},
-		};
-
-		return this.update(_id, update);
-	}
-
-	unsetAvatarOrigin(_id) {
-		const update = {
-			$unset: {
-				avatarOrigin: 1,
-			},
-		};
-
-		return this.update(_id, update);
 	}
 
 	setUserActive(_id, active) {
@@ -1173,6 +1279,21 @@ export class Users extends Base {
 			} : {
 				$unset: {
 					bio: 1,
+				},
+			},
+		};
+		return this.update(_id, update);
+	}
+
+	setNickname(_id, nickname = '') {
+		const update = {
+			...nickname.trim() ? {
+				$set: {
+					nickname,
+				},
+			} : {
+				$unset: {
+					nickname: 1,
 				},
 			},
 		};
@@ -1358,6 +1479,16 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
+	removeSamlServiceSession(_id) {
+		const update = {
+			$unset: {
+				'services.saml.idpSession': '',
+			},
+		};
+
+		return this.update({ _id }, update);
+	}
+
 	updateDefaultStatus(_id, statusDefault) {
 		return this.update({
 			_id,
@@ -1365,6 +1496,16 @@ export class Users extends Base {
 		}, {
 			$set: {
 				statusDefault,
+			},
+		});
+	}
+
+	setSamlInResponseTo(_id, inResponseTo) {
+		this.update({
+			_id,
+		}, {
+			$set: {
+				'services.saml.inResponseTo': inResponseTo,
 			},
 		});
 	}
@@ -1454,43 +1595,28 @@ Find users to send a message by email if:
 		});
 	}
 
-	findNoCachedInGroup(query, options) {
-		const groupId = this.getGroupId();
-		if (groupId) {
-			query['customFields.groupId'] = groupId;
-		}
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
-	findOneInGroup(query, options) {
-		this.addGroupFilter(query);
-		return this.findOne(query, options);
-	}
-
-	findInGroup(query, options) {
-		this.addGroupFilter(query);
-		return this.find(query, options);
-	}
-
-	addGroupFilter(query)	{
-		const groupId = this.getGroupId();
-		if (groupId) {
-			query['customFields.groupId'] = { $in: [groupId, null] };
+	addGroupFilter(query, groupId)	{
+		if (groupId && query) {
+			query['customFields.groupId'] = { $in: [groupId, `${ groupId }`, null] };
 		}
 	}
 
-	getGroupId() {
-		if (Meteor.isServer) {
-			try {
-				const { customFields: { groupId } = {} } = Meteor.user() || {};
-				return groupId;
-			} catch (e) {
-				return null;
-			}
-		}
-		return null;
+	findAllUsersWithPendingAvatar() {
+		const query = {
+			_pendingAvatarUrl: {
+				$exists: true,
+			},
+		};
+
+		const options = {
+			fields: {
+				_id: 1,
+				name: 1,
+				_pendingAvatarUrl: 1,
+			},
+		};
+
+		return this.findInGroup(query, options);
 	}
 }
 

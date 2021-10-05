@@ -16,26 +16,22 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw {
 		return this.find({ agentId });
 	}
 
-	findActiveDepartmentsByAgentId(agentId) {
-		const match = {
-			$match: { agentId },
-		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const activeDepartmentsOnlyMatch = { $match: { 'departments.enabled': true } };
-		const project = { $project: { departments: 0 } };
-		return this.col.aggregate([match, lookup, unwind, activeDepartmentsOnlyMatch, project]).toArray();
+	findAgentsByDepartmentId(departmentId, options) {
+		return this.find({ departmentId }, options);
 	}
+
+	findActiveDepartmentsByAgentId(agentId, options) {
+		const query = {
+			agentId,
+			departmentEnabled: true,
+		};
+		return this.find(query, options);
+	}
+
+	findByDepartmentIds(departmentIds, options = {}) {
+		return this.find({ departmentId: { $in: departmentIds } }, options);
+	}
+
+	// eslint-disable-next-line no-unused-vars
+	findAgentsByAgentIdAndBusinessHourId(agentId, businessHourId) { return []; }
 }

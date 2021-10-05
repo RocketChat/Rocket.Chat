@@ -5,8 +5,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
+import { replaceVariables } from './utils.js';
 
 let contentHeader;
 let contentFooter;
@@ -23,8 +25,13 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), value);
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+
+export const replacekey = (str, key, value = '') => str.replace(
+	new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
+	value,
+);
+
+export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';
@@ -42,14 +49,17 @@ export const replace = function replace(str, data = {}) {
 	return Object.entries(options).reduce((ret, [key, value]) => replacekey(ret, key, value), translate(str));
 };
 
+const nonEscapeKeys = ['room_path'];
+
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: s.escapeHTML(settings.get('Site_Name')),
-	Site_Url: s.escapeHTML(settings.get('Site_Url')),
+	Site_Name: escapeHTML(settings.get('Site_Name')),
+	Site_Url: escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
-		ret[key] = s.escapeHTML(value);
+		ret[key] = nonEscapeKeys.includes(key) ? value : escapeHTML(value);
 		return ret;
 	}, {}),
 });
+
 export const wrap = (html, data = {}) => {
 	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);
@@ -106,7 +116,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	}
 
 	if (!text) {
-		text = stripHtml(html);
+		text = stripHtml(html).result;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -116,7 +126,18 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
 };
 
-export const send = ({ to, from, replyTo, subject, html, text, data, headers }) => sendNoWrap({ to, from, replyTo, subject: replace(subject, data), text: text ? replace(text, data) : stripHtml(replace(html, data)), html: wrap(html, data), headers });
+export const send = ({ to, from, replyTo, subject, html, text, data, headers }) =>
+	sendNoWrap({
+		to,
+		from,
+		replyTo,
+		subject: replace(subject, data),
+		text: text
+			? replace(text, data)
+			: stripHtml(replace(html, data)).result,
+		html: wrap(html, data),
+		headers,
+	});
 
 export const checkAddressFormatAndThrow = (from, func) => {
 	if (checkAddressFormat(from)) {

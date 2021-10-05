@@ -1,6 +1,4 @@
 import './routes';
-import './reset-password/resetPassword.html';
-import './reset-password/resetPassword';
 import './login/footer.html';
 import './login/form.html';
 import './login/header.html';

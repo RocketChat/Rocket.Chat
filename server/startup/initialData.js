@@ -25,17 +25,20 @@ Meteor.startup(function() {
 
 			addUserRoles('genius', 'bot');
 
-			const rs = RocketChatFile.bufferToStream(new Buffer(Assets.getBinary('avatars/genius.png'), 'utf8'));
+			const buffer = Buffer.from(Assets.getBinary('avatars/genius.png'));
+
+			const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 			const fileStore = FileUpload.getStore('Avatars');
 			fileStore.deleteByName('genius');
 
 			const file = {
 				userId: 'genius',
 				type: 'image/png',
+				size: buffer.length,
 			};
 
 			Meteor.runAsUser('genius', () => {
-				fileStore.insert(file, rs, () => Users.setAvatarOrigin('genius', 'local'));
+				fileStore.insert(file, rs, () => Users.setAvatarData('genius', 'local', null));
 			});
 		}
 

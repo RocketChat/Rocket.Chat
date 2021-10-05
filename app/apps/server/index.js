@@ -1,3 +1,3 @@
 import './cron';
 
-export { Apps } from './orchestrator';
+export { Apps, AppEvents } from './orchestrator';

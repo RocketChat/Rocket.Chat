@@ -1,61 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import s from 'underscore.string';
 
-import * as Mailer from '../../app/mailer';
 import { Users } from '../../app/models';
-import { settings } from '../../app/settings';
-
-let template = '';
-
-Meteor.startup(() => {
-	Mailer.getTemplateWrapped('Forgot_Password_Email', (value) => {
-		template = value;
-	});
-});
+import { settings } from '../../app/settings/server';
 
 Meteor.methods({
 	sendForgotPasswordEmail(to) {
 		check(to, String);
 
-		let email = to.trim();
+		const email = to.trim().toLowerCase();
 
-		const user = Users.findOneByEmailAddress(email);
+		const user = Users.findOneByEmailAddress(email, { fields: { _id: 1 } });
 
 		if (!user) {
-			return false;
+			return true;
 		}
 
-		const regex = new RegExp(`^${ s.escapeRegExp(email) }$`, 'i');
-		email = (user.emails || []).map((item) => item.address).find((userEmail) => regex.test(userEmail));
-
-		const subject = Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
-			name: user.name,
-			email,
-		});
-
-		const html = Mailer.replace(template, {
-			name: user.name,
-			email,
-		});
-
-		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+		if (user.services && !user.services.password) {
+			if (!settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
+				return false;
+			}
+		}
 
 		try {
-			Accounts.emailTemplates.resetPassword.subject = function(/* userModel*/) {
-				return subject; // TODO check a better way to do this
-			};
-
-			Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
-				return Mailer.replacekey(html, 'Forgot_Password_Url', url);
-			};
-			return !!Accounts.sendResetPasswordEmail(user._id, email);
+			Accounts.sendResetPasswordEmail(user._id, email);
+			return true;
 		} catch (error) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${ error.message }`, {
-				method: 'registerUser',
-				message: error.message,
-			});
+			console.error(error);
 		}
 	},
 });

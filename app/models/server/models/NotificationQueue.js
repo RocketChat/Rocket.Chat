@@ -7,6 +7,7 @@ export class NotificationQueue extends Base {
 		this.tryEnsureIndex({ ts: 1 }, { expireAfterSeconds: 2 * 60 * 60 });
 		this.tryEnsureIndex({ schedule: 1 }, { sparse: true });
 		this.tryEnsureIndex({ sending: 1 }, { sparse: true });
+		this.tryEnsureIndex({ error: 1 }, { sparse: true });
 	}
 }
 

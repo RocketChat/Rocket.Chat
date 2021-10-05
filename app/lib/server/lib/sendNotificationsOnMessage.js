@@ -12,6 +12,7 @@ import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobi
 import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notifications/desktop';
 import { notifyAudioUser, shouldNotifyAudio } from '../functions/notifications/audio';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
+import { getMentions } from './notifyUsersOnMessage';
 
 let TroubleshootDisableNotifications;
 
@@ -66,6 +67,8 @@ export const sendNotification = async ({
 		return;
 	}
 
+	const isThread = !!message.tmid && !message.tshow;
+
 	notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);
 
 	const isHighlighted = messageContainsHighlight(message, subscription.userHighlights);
@@ -89,6 +92,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyAudioUser(subscription.u._id, message, room);
 	}
@@ -105,6 +109,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		notifyDesktopUser({
 			notificationMessage,
@@ -112,7 +117,6 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
-			duration: subscription.desktopNotificationDuration,
 		});
 	}
 
@@ -126,6 +130,7 @@ export const sendNotification = async ({
 		hasMentionToUser,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		queueItems.push({
 			type: 'push',
@@ -136,25 +141,35 @@ export const sendNotification = async ({
 				userId: subscription.u._id,
 				senderUsername: sender.username,
 				senderName: sender.name,
-				receiverUsername: receiver.username,
+				receiver,
 			}),
 		});
 	}
 
 	if (receiver.emails && shouldNotifyEmail({
 		disableAllMessageNotifications,
+		statusConnection: receiver.statusConnection,
 		emailNotifications,
 		isHighlighted,
 		hasMentionToUser,
 		hasMentionToAll,
 		hasReplyToThread,
 		roomType,
+		isThread,
 	})) {
 		receiver.emails.some((email) => {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({ message, receiver, subscription, room, emailAddress: email.address, hasMentionToUser }),
+					data: getEmailData({
+						message,
+						receiver,
+						sender,
+						subscription,
+						room,
+						emailAddress: email.address,
+						hasMentionToUser,
+					}),
 				});
 
 				return true;
@@ -165,6 +180,7 @@ export const sendNotification = async ({
 
 	if (queueItems.length) {
 		Notification.scheduleItem({
+			user: receiver,
 			uid: subscription.u._id,
 			rid: room._id,
 			mid: message._id,
@@ -176,12 +192,12 @@ export const sendNotification = async ({
 const project = {
 	$project: {
 		audioNotifications: 1,
-		desktopNotificationDuration: 1,
 		desktopNotifications: 1,
 		emailNotifications: 1,
 		mobilePushNotifications: 1,
 		muteGroupMentions: 1,
 		name: 1,
+		rid: 1,
 		userHighlights: 1,
 		'u._id': 1,
 		'receiver.active': 1,
@@ -218,10 +234,24 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return message;
 	}
 
-	const mentionIds = (message.mentions || []).map(({ _id }) => _id).concat(usersInThread); // add users in thread to mentions array because they follow the same rules
-	const mentionIdsWithoutGroups = mentionIds.filter((_id) => _id !== 'all' && _id !== 'here');
-	const hasMentionToAll = mentionIds.includes('all');
-	const hasMentionToHere = mentionIds.includes('here');
+	const {
+		toAll: hasMentionToAll,
+		toHere: hasMentionToHere,
+		mentionIds,
+	} = getMentions(message);
+
+	const mentionIdsWithoutGroups = [...mentionIds];
+
+	// getMentions removes `all` and `here` from mentionIds so we need to add them back for compatibility
+	if (hasMentionToAll) {
+		mentionIds.push('all');
+	}
+	if (hasMentionToHere) {
+		mentionIds.push('here');
+	}
+
+	// add users in thread to mentions array because they follow the same rules
+	mentionIds.push(...usersInThread);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
@@ -314,7 +344,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 export async function sendAllNotifications(message, room) {
 	if (TroubleshootDisableNotifications === true) {
-		return;
+		return message;
 	}
 
 	// threads

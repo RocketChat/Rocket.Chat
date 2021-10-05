@@ -1,15 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-
 const restrictedRolePermissions = new Map();
 
 export const AuthorizationUtils = class {
-	static addRolePermissionWhiteList(roleId: string, list: [string]): void {
+	static addRolePermissionWhiteList(roleId: string, list: string[]): void {
 		if (!roleId) {
-			throw new Meteor.Error('invalid-param');
+			throw new Error('invalid-param');
 		}
 
 		if (!list) {
-			throw new Meteor.Error('invalid-param');
+			throw new Error('invalid-param');
 		}
 
 		if (!restrictedRolePermissions.has(roleId)) {
@@ -25,7 +23,7 @@ export const AuthorizationUtils = class {
 
 	static isPermissionRestrictedForRole(permissionId: string, roleId: string): boolean {
 		if (!roleId || !permissionId) {
-			throw new Meteor.Error('invalid-param');
+			throw new Error('invalid-param');
 		}
 
 		if (!restrictedRolePermissions.has(roleId)) {
@@ -40,9 +38,9 @@ export const AuthorizationUtils = class {
 		return !rules.has(permissionId);
 	}
 
-	static isPermissionRestrictedForRoleList(permissionId: string, roleList: [string]): boolean {
+	static isPermissionRestrictedForRoleList(permissionId: string, roleList: string[]): boolean {
 		if (!roleList || !permissionId) {
-			throw new Meteor.Error('invalid-param');
+			throw new Error('invalid-param');
 		}
 
 		for (const roleId of roleList) {

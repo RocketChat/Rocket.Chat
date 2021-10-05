@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopup.html';
 
 const keys = {
@@ -150,7 +149,6 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -288,12 +286,16 @@ Template.messagePopup.events({
 		const template = Template.instance();
 		template.clickingItem = true;
 	},
-	'mouseup .popup-item, touchend .popup-item'() {
+	'mouseup .popup-item, touchend .popup-item'(e) {
+		e.stopPropagation();
 		const template = Template.instance();
+		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
 		template.clickingItem = false;
-		template.value.set(this._id);
-		template.enterValue();
-		template.open.set(false);
+		if (!wasMenuIconClicked) {
+			template.value.set(this._id);
+			template.enterValue();
+			template.open.set(false);
+		}
 	},
 });
 

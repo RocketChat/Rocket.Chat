@@ -1,14 +1,15 @@
 import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import '../../theme/client/imports/components/emojiPicker.css';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
-
 import './emojiPicker.html';
-import '../../theme/client/imports/components/emojiPicker.css';
 
 const ESCAPE = 27;
 
@@ -49,7 +50,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 	EmojiPicker.currentCategory.set('');
 
-	const searchRegExp = new RegExp(RegExp.escape(searchTerm.replace(/:/g, '')), 'i');
+	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in emoji.list) {
 		if (!emoji.list.hasOwnProperty(current)) {
@@ -58,7 +59,7 @@ function getEmojisBySearchTerm(searchTerm) {
 
 		if (searchRegExp.test(current)) {
 			const emojiObject = emoji.list[current];
-			const { emojiPackage, shortnames } = emojiObject;
+			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
 			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
@@ -141,6 +142,12 @@ Template.emojiPicker.events({
 	'click .emoji-picker'(event) {
 		event.stopPropagation();
 		event.preventDefault();
+	},
+	'click .add-custom'(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		FlowRouter.go('/admin/emoji-custom');
+		EmojiPicker.close();
 	},
 	'click .category-link'(event) {
 		event.stopPropagation();

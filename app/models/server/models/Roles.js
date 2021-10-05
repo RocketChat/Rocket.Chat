@@ -1,5 +1,4 @@
 import { Base } from './_Base';
-
 import * as Models from '..';
 
 
@@ -29,24 +28,16 @@ export class Roles extends Base {
 		});
 	}
 
-	createOrUpdate(name, scope = 'Users', description, protectedRole, mandatory2fa) {
-		const updateData = {};
-		updateData.name = name;
-		updateData.scope = scope;
+	createOrUpdate(name, scope = 'Users', description = '', protectedRole = true, mandatory2fa = false) {
+		const queryData = {
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		};
 
-		if (description != null) {
-			updateData.description = description;
-		}
-
-		if (protectedRole) {
-			updateData.protected = protectedRole;
-		}
-
-		if (mandatory2fa != null) {
-			updateData.mandatory2fa = mandatory2fa;
-		}
-
-		this.upsert({ _id: name }, { $set: updateData });
+		this.upsert({ _id: name }, { $set: queryData });
 	}
 
 	addUserRoles(userId, roles, scope) {

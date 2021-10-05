@@ -78,7 +78,7 @@ export class AppMessagesConverter {
 	}
 
 	convertAppMessage(message) {
-		if (!message) {
+		if (!message || !message.room) {
 			return undefined;
 		}
 

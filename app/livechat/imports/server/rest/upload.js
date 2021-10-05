@@ -6,7 +6,7 @@ import { settings } from '../../../../settings';
 import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils';
 import { FileUpload } from '../../../../file-upload';
-import { API } from '../../../../api';
+import { API } from '../../../../api/server';
 
 let maxFileSize;
 
@@ -96,6 +96,9 @@ API.v1.addRoute('livechat/upload/:rid', {
 		};
 
 		const uploadedFile = Meteor.wrapAsync(fileStore.insert.bind(fileStore))(details, file.fileBuffer);
+		if (!uploadedFile) {
+			return API.v1.error('Invalid file');
+		}
 
 		uploadedFile.description = fields.description;
 

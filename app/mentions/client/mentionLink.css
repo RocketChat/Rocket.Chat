@@ -1,6 +1,6 @@
 .message .mention-link,
 .mention-link {
-	padding: 0 6px 2px;
+	padding: 0 2px 2px;
 
 	transition: opacity 0.3s, background-color 0.3s, color 0.3s;
 

@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { Notifications } from '../../notifications';
 import { slashCommands } from '../../utils';
+import { api } from '../../../server/sdk/api';
 
 /*
 * Leave is a named function that will replace /leave commands
@@ -17,10 +16,7 @@ function Leave(command, params, item) {
 	try {
 		Meteor.call('leaveRoom', item.rid);
 	} catch ({ error }) {
-		Notifications.notifyUser(Meteor.userId(), 'message', {
-			_id: Random.id(),
-			rid: item.rid,
-			ts: new Date(),
+		api.broadcast('notify.ephemeralMessage', Meteor.userId(), item.rid, {
 			msg: TAPi18n.__(error, null, Meteor.user().language),
 		});
 	}

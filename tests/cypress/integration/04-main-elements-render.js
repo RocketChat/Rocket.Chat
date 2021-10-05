@@ -133,10 +133,6 @@ describe('[Main Elements Render]', function() {
 				mainContent.recordBtn.should('be.visible');
 			});
 
-			it.skip('it should show the video call button', () => {
-				mainContent.videoCamBtn.should('be.visible');
-			});
-
 			it('it should show the emoji button', () => {
 				mainContent.emojiBtn.should('be.visible');
 			});

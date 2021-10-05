@@ -1,11 +1,12 @@
-import { callbacks } from '../../../callbacks';
-import { Users, Rooms } from '../../../models';
+import _ from 'underscore';
+
+import { settings } from '../../../settings/server';
+import { callbacks } from '../../../callbacks/server';
 import { searchProviderService } from '../service/providerService';
 import SearchLogger from '../logger/logger';
 
 class EventService {
-	/* eslint no-unused-vars: [2, { "args": "none" }]*/
-	_pushError(name, value, payload) {
+	_pushError(name, value/* , payload */) {
 		// TODO implement a (performant) cache
 		SearchLogger.debug(`Error on event '${ name }' with id '${ value }'`);
 	}
@@ -17,48 +18,28 @@ class EventService {
 	}
 }
 
-const eventService = new EventService();
+export const searchEventService = new EventService();
 
 /**
  * Listen to message changes via Hooks
  */
-callbacks.add('afterSaveMessage', function(m) {
-	eventService.promoteEvent('message.save', m._id, m);
-}, callbacks.priority.MEDIUM, 'search-events');
+function afterSaveMessage(m) {
+	searchEventService.promoteEvent('message.save', m._id, m);
+	return m;
+}
 
-callbacks.add('afterDeleteMessage', function(m) {
-	eventService.promoteEvent('message.delete', m._id);
-}, callbacks.priority.MEDIUM, 'search-events-delete');
-
-/**
- * Listen to user and room changes via cursor
- */
+function afterDeleteMessage(m) {
+	searchEventService.promoteEvent('message.delete', m._id);
+	return m;
+}
 
 
-Users.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			const user = data || Users.findOneById(id);
-			eventService.promoteEvent('user.save', id, user);
-			break;
-
-		case 'removed':
-			eventService.promoteEvent('user.delete', id);
-			break;
+settings.get('Search.Provider', _.debounce(() => {
+	if (searchProviderService.activeProvider?.on) {
+		callbacks.add('afterSaveMessage', afterSaveMessage, callbacks.priority.MEDIUM, 'search-events');
+		callbacks.add('afterDeleteMessage', afterDeleteMessage, callbacks.priority.MEDIUM, 'search-events-delete');
+	} else {
+		callbacks.remove('afterSaveMessage', 'search-events');
+		callbacks.remove('afterDeleteMessage', 'search-events-delete');
 	}
-});
-
-Rooms.on('change', ({ clientAction, id, data }) => {
-	switch (clientAction) {
-		case 'updated':
-		case 'inserted':
-			const room = data || Rooms.findOneById(id);
-			eventService.promoteEvent('room.save', id, room);
-			break;
-
-		case 'removed':
-			eventService.promoteEvent('room.delete', id);
-			break;
-	}
-});
+}, 1000));

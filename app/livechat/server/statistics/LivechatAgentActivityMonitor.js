@@ -44,7 +44,7 @@ export class LivechatAgentActivityMonitor {
 		Meteor.onConnection(this._handleMeteorConnection);
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
 		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
-		this.started = true;
+		this._started = true;
 	}
 
 	_startMonitoring() {

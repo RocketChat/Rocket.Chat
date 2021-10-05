@@ -1,5 +1,7 @@
-import { Meteor } from 'meteor/meteor';
+import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel, Permissions } from '../../models';
@@ -16,15 +18,14 @@ function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
 
-
-class AppServerOrchestrator {
+export class AppServerOrchestrator {
 	constructor() {
 		this._isInitialized = false;
 	}
 
 	initialize() {
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
-		Permissions.createOrUpdate('manage-apps', ['admin']);
+		Permissions.create('manage-apps', ['admin']);
 
 		this._marketplaceUrl = 'https://marketplace.rocket.chat';
 
@@ -114,8 +115,7 @@ class AppServerOrchestrator {
 
 	debugLog(...args) {
 		if (this.isDebugging()) {
-			// eslint-disable-next-line
-			console.log(...args);
+			this.getRocketChatLogger().debug(...args);
 		}
 	}
 
@@ -155,8 +155,23 @@ class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps)
 			.then(() => this._manager.get());
 	}
+
+	async triggerEvent(event, ...payload) {
+		if (!this.isLoaded()) {
+			return;
+		}
+
+		return this.getBridges().getListenerBridge().handleEvent(event, ...payload).catch((error) => {
+			if (error instanceof EssentialAppDisabledException) {
+				throw new Meteor.Error('error-essential-app-disabled');
+			}
+
+			throw error;
+		});
+	}
 }
 
+export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
 settings.addGroup('General', function() {

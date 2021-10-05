@@ -1,10 +1,4 @@
-import './emojiParser';
-import { EmojiPicker } from './lib/EmojiPicker';
-import { renderEmoji } from './lib/emojiRenderer';
-import { emoji } from '../lib/rocketchat';
-
-export {
-	renderEmoji,
-	emoji,
-	EmojiPicker,
-};
+export { EmojiPicker } from './lib/EmojiPicker';
+export { renderEmoji } from './lib/emojiRenderer';
+export { emoji } from '../lib/rocketchat';
+export { createEmojiMessageRenderer } from './emojiParser';

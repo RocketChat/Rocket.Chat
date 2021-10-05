@@ -9,7 +9,7 @@ Migrations.add({
 			if (setting && setting.value) {
 				const username = setting.value;
 				const user = Users.findOne({ username });
-				if (!user && setting.value === 'Rocket.Cat') {
+				if (!user && setting.value === 'genius') {
 					Settings.update({ _id: 'InternalHubot_Username' }, { $set: { value: 'genius', packageValue: 'genius' } });
 				}
 			}

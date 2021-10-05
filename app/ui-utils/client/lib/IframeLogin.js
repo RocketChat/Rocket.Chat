@@ -37,7 +37,7 @@ export class IframeLogin {
 		});
 	}
 
-	tryLogin(callback) {
+	tryLogin(callback = () => {}) {
 		if (!this.enabled) {
 			return;
 		}

@@ -49,14 +49,19 @@ export const APIClient = {
 			Object.keys(params).forEach((key) => {
 				query += query === '' ? '?' : '&';
 
-				query += `${ key }=${ params[key] }`;
+				if (Array.isArray(params[key])) {
+					const joinedArray = params[key].join(`&${ key }[]=`);
+					query += `${ key }[]=${ joinedArray }`;
+				} else {
+					query += `${ key }=${ params[key] }`;
+				}
 			});
 		}
 
 		return query;
 	},
 
-	_jqueryCall(method, endpoint, params, body, headers = {}) {
+	_jqueryCall(method, endpoint, params, body, headers = {}, dataType) {
 		const query = APIClient._generateQueryFromParams(params);
 
 		return new Promise(function _rlRestApiGet(resolve, reject) {
@@ -68,6 +73,7 @@ export const APIClient = {
 					...APIClient.getCredentials(),
 				}, headers),
 				data: JSON.stringify(body),
+				dataType,
 				success: function _rlGetSuccess(result) {
 					resolve(result);
 				},

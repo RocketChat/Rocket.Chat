@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import _ from 'underscore';
 
@@ -49,6 +50,10 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 			fields,
 		});
 		return room && room.t;
+	}
+
+	showQuickActionButtons(roomType) {
+		return this.roomTypes[roomType] && typeof this.roomTypes[roomType].showQuickActionButtons === 'function' && this.roomTypes[roomType].showQuickActionButtons();
 	}
 
 	getUserStatusText(roomType, rid) {
@@ -175,5 +180,14 @@ export const roomTypes = new class RocketChatRoomTypes extends RoomTypesCommon {
 		}
 
 		return FlowRouter.go(this.roomTypes[roomType].route.name, routeData, queryParams);
+	}
+
+	getDefaultRoomId() {
+		const groupId = Meteor.user()?.customFields?.groupId;
+		const room = groupId && ChatRoom.findOne(
+			{ t: 'p', 'customFields.groupId': { $in: [groupId, `${ groupId }`] } },
+			{ fields: { name: 1 } },
+		);
+		return room?._id;
 	}
 }();

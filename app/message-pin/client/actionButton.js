@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import toastr from 'toastr';
 
 import { RoomHistoryManager, MessageAction } from '../../ui-utils';
@@ -8,6 +9,7 @@ import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
 import { handleError } from '../../utils';
 import { settings } from '../../settings';
 import { hasAtLeastOnePermission } from '../../authorization';
+import { Rooms } from '../../models/client';
 
 Meteor.startup(function() {
 	MessageAction.addButton({
@@ -64,11 +66,22 @@ Meteor.startup(function() {
 		id: 'jump-to-pin-message',
 		icon: 'jump',
 		label: 'Jump_to_message',
-		context: ['pinned', 'message', 'message-mobile', 'direct'],
+		context: ['pinned', 'message-mobile', 'direct'],
 		action() {
 			const { msg: message } = messageArgs(this);
 			if (window.matchMedia('(max-width: 500px)').matches) {
 				Template.instance().tabBar.close();
+			}
+			if (message.tmid) {
+				return FlowRouter.go(FlowRouter.getRouteName(), {
+					tab: 'thread',
+					context: message.tmid,
+					rid: message.rid,
+					jump: message._id,
+					name: Rooms.findOne({ _id: message.rid }).name,
+				}, {
+					jump: message._id,
+				});
 			}
 			return RoomHistoryManager.getSurroundingMessages(message, 50);
 		},
@@ -76,7 +89,7 @@ Meteor.startup(function() {
 			return !!subscription;
 		},
 		order: 100,
-		group: 'menu',
+		group: ['message', 'menu'],
 	});
 
 	MessageAction.addButton({
@@ -85,9 +98,10 @@ Meteor.startup(function() {
 		label: 'Get_link',
 		classes: 'clipboard',
 		context: ['pinned'],
-		async action(event) {
+		async action() {
 			const { msg: message } = messageArgs(this);
-			$(event.currentTarget).attr('data-clipboard-text', await MessageAction.getPermaLink(message._id));
+			const permalink = await MessageAction.getPermaLink(message._id);
+			navigator.clipboard.writeText(permalink);
 			toastr.success(TAPi18n.__('Copied'));
 		},
 		condition({ subscription }) {

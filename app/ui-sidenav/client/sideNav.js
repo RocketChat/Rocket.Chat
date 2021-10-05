@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
@@ -43,7 +44,7 @@ Template.sideNav.helpers({
 	},
 
 	sidebarHideAvatar() {
-		return getUserPreference(Meteor.userId(), 'sidebarHideAvatar');
+		return !getUserPreference(Meteor.userId(), 'sidebarDisplayAvatar');
 	},
 });
 
@@ -78,36 +79,41 @@ Template.sideNav.events({
 	},
 });
 
-const redirectToDefaultChannelIfNeeded = async () => {
-	const currentRouteState = FlowRouter.current();
-	const needToBeRedirect = ['/', '/home'];
-	if (!needToBeRedirect.includes(currentRouteState.path)) {
-		return;
-	}
+const redirectToDefaultChannelIfNeeded = () => {
+	const needToBeRedirect = () => ['/', '/home'].includes(FlowRouter.current().path);
 
-	const recentlyVisitedRoom = await call('getRecentlyVisitedRoom');
-	if (recentlyVisitedRoom) {
-		const link = roomTypes.getRouteLink(recentlyVisitedRoom.t, { name: recentlyVisitedRoom.name, rid: recentlyVisitedRoom._id });
-		return FlowRouter.go(link);
-	}
+	Tracker.autorun(async (c) => {
+		const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
 
-	const firstChannelAfterLogin = settings.get('First_Channel_After_Login');
-	const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
-	if (room && room._id) {
-		FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
-	} else {
+		if (!needToBeRedirect()) {
+			return c.stop();
+		}
+
+		const recentlyVisitedRoom = await call('getRecentlyVisitedRoom');
+		if (recentlyVisitedRoom) {
+			const link = roomTypes.getRouteLink(recentlyVisitedRoom.t, { name: recentlyVisitedRoom.name, rid: recentlyVisitedRoom._id });
+			c.stop();
+			return FlowRouter.go(link);
+		}
+
+		const room = roomTypes.findRoom('c', firstChannelAfterLogin, Meteor.userId());
+		if (firstChannelAfterLogin && room) {
+			c.stop();
+			return FlowRouter.go(`/channel/${ firstChannelAfterLogin }`);
+		}
+
 		const { customFields: { groupId } = {} } = Meteor.user() || {};
 		const privateRoom = Rooms.findOne({ t: 'p', 'customFields.groupId': groupId });
 		if (privateRoom) {
+			c.stop();
 			FlowRouter.go(`/group/${ privateRoom.name }`);
 		}
-	}
+	});
 };
 
 Template.sideNav.onRendered(function() {
 	SideNav.init();
 	menu.init();
-	redirectToDefaultChannelIfNeeded();
 
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
@@ -124,4 +130,5 @@ Template.sideNav.onCreated(function() {
 		const userPref = getUserPreference(user, 'sidebarGroupByType');
 		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
 	});
+	redirectToDefaultChannelIfNeeded();
 });

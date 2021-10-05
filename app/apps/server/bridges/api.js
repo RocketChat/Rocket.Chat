@@ -24,7 +24,7 @@ export class AppApisBridge {
 		// });
 
 		apiServer.use('/api/apps/private/:appId/:hash', (req, res) => {
-			const notFound = () => res.send(404);
+			const notFound = () => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
 
@@ -37,7 +37,7 @@ export class AppApisBridge {
 		});
 
 		apiServer.use('/api/apps/public/:appId', (req, res) => {
-			const notFound = () => res.send(404);
+			const notFound = () => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
 

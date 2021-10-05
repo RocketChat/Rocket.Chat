@@ -43,6 +43,7 @@ const getProductivityMetricsAsync = async ({
 		analyticsOptions: {
 			name: 'Productivity',
 		},
+		departmentId,
 	});
 	const averageWaitingTime = await findAllAverageWaitingTimeAsync({
 		start,
@@ -91,6 +92,7 @@ const getAgentsProductivityMetricsAsync = async ({
 		analyticsOptions: {
 			name: 'Conversations',
 		},
+		departmentId,
 	});
 
 	const totalOfServiceTime = averageOfServiceTime.departments.length;
@@ -166,6 +168,7 @@ const getChatsMetricsAsync = async ({
 const getConversationsMetricsAsync = async ({
 	start,
 	end,
+	departmentId,
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -178,9 +181,10 @@ const getConversationsMetricsAsync = async ({
 		analyticsOptions: {
 			name: 'Conversations',
 		},
+		...departmentId && departmentId !== 'undefined' && { departmentId },
 	});
 	const metrics = ['Total_conversations', 'Open_conversations', 'Total_messages'];
-	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end }).count();
+	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end, department: departmentId }).count();
 	return {
 		totalizers: [
 			...totalizers.filter((metric) => metrics.includes(metric.title)),

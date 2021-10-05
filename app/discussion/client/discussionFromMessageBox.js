@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { messageBox, modal } from '../../ui-utils/client';
 import { t } from '../../utils/client';
 import { settings } from '../../settings/client';
+import { hasPermission } from '../../authorization/client';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -13,7 +14,7 @@ Meteor.startup(function() {
 		messageBox.actions.add('Create_new', 'Discussion', {
 			id: 'start-discussion',
 			icon: 'discussion',
-			condition: () => true,
+			condition: () => hasPermission('start-discussion') || hasPermission('start-discussion-other-user'),
 			action(data) {
 				modal.open({
 					title: t('Discussion_title'),

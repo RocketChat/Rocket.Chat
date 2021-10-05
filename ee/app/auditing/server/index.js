@@ -19,13 +19,11 @@ onLicense('auditing', () => {
 		];
 
 		permissions.forEach((permission) => {
-			if (!Permissions.findOneById(permission._id)) {
-				Permissions.upsert(permission._id, { $set: permission });
-			}
+			Permissions.create(permission._id, permission.roles);
 		});
 
 		defaultRoles.forEach((role) =>
-			Roles.upsert({ _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } }),
+			Roles.createOrUpdate(role.name, role.scope, role.description),
 		);
 	});
 });

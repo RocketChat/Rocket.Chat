@@ -1,19 +1,19 @@
 .edit-status-type.rc-popover {
 	&__item {
 		&--online {
-			color: var(--status-online);
+			color: var(--rc-status-online);
 		}
 
 		&--away {
-			color: var(--status-away);
+			color: var(--rc-status-away);
 		}
 
 		&--busy {
-			color: var(--status-busy);
+			color: var(--rc-status-busy);
 		}
 
 		&--offline {
-			color: var(--status-invisible);
+			color: var(--rc-status-invisible);
 		}
 	}
 }
@@ -21,25 +21,25 @@
 .edit-status-type-icon {
 	&--online {
 		& .rc-icon {
-			color: var(--status-online);
+			color: var(--rc-status-online);
 		}
 	}
 
 	&--away {
 		& .rc-icon {
-			color: var(--status-away);
+			color: var(--rc-status-away);
 		}
 	}
 
 	&--busy {
 		& .rc-icon {
-			color: var(--status-busy);
+			color: var(--rc-status-busy);
 		}
 	}
 
 	&--offline {
 		& .rc-icon {
-			color: var(--status-invisible);
+			color: var(--rc-status-invisible);
 		}
 	}
 }

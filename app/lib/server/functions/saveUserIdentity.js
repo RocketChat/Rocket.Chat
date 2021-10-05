@@ -3,6 +3,7 @@ import { setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
+import { validateName } from './validateName';
 
 /**
  *
@@ -20,15 +21,22 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	const user = Users.findOneById(_id);
 
 	const previousUsername = user.username;
+	const previousName = user.name;
+	const nameChanged = previousName !== name;
+	const usernameChanged = previousUsername !== username;
 
-	if (typeof rawUsername !== 'undefined') {
+	if (typeof rawUsername !== 'undefined' && usernameChanged) {
+		if (!validateName(username)) {
+			return false;
+		}
+
 		if (!setUsername(_id, username, user)) {
 			return false;
 		}
 		user.username = username;
 	}
 
-	if (typeof rawName !== 'undefined') {
+	if (typeof rawName !== 'undefined' && nameChanged) {
 		if (!setRealName(_id, name, user)) {
 			return false;
 		}
@@ -36,7 +44,7 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 
 	// if coming from old username, update all references
 	if (previousUsername) {
-		if (typeof rawUsername !== 'undefined') {
+		if (usernameChanged && typeof rawUsername !== 'undefined') {
 			Messages.updateAllUsernamesByUserId(user._id, username);
 			Messages.updateUsernameOfEditByUserId(user._id, username);
 			Messages.findByMention(previousUsername).forEach(function(msg) {
@@ -57,11 +65,14 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 			}
 		}
 
-		// update name and fname of 1-on-1 direct messages
-		Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+		// update other references if either the name or username has changed
+		if (usernameChanged || nameChanged) {
+			// update name and fname of 1-on-1 direct messages
+			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
-		// update name and fname of group direct messages
-		updateGroupDMsName(user);
+			// update name and fname of group direct messages
+			updateGroupDMsName(user);
+		}
 	}
 
 	return true;

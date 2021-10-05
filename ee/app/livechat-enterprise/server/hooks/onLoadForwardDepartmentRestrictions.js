@@ -1,17 +1,18 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { LivechatDepartment } from '../../../../../app/models/server';
 
-callbacks.add('livechat.onLoadForwardDepartmentRestrictions', (departmentId) => {
+callbacks.add('livechat.onLoadForwardDepartmentRestrictions', (options = {}) => {
+	const { departmentId } = options;
 	if (!departmentId) {
-		return {};
+		return options;
 	}
 	const department = LivechatDepartment.findOneById(departmentId, { fields: { departmentsAllowedToForward: 1 } });
 	if (!department) {
-		return {};
+		return options;
 	}
 	const { departmentsAllowedToForward } = department;
 	if (!departmentsAllowedToForward) {
-		return {};
+		return options;
 	}
-	return { _id: { $in: departmentsAllowedToForward } };
+	return Object.assign({ restrictions: { _id: { $in: departmentsAllowedToForward } } }, options);
 }, callbacks.priority.MEDIUM, 'livechat-on-load-forward-department-restrictions');

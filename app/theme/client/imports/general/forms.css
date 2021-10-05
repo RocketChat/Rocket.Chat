@@ -1,63 +1,4 @@
 .input {
-	&.radio {
-		position: relative;
-
-		min-height: 13px;
-
-		& input {
-			position: absolute;
-			z-index: -1;
-			top: 0;
-			left: 0;
-
-			width: 0;
-			height: 0;
-
-			opacity: 0;
-			outline: 0;
-
-			&:checked + label::after {
-				opacity: 1;
-			}
-		}
-
-		& label {
-			padding-left: 20px;
-
-			cursor: pointer;
-			user-select: none;
-
-			&::before {
-				position: absolute;
-				top: 0;
-				left: 0;
-
-				width: 15px;
-				height: 15px;
-
-				content: '';
-
-				border-width: 1px;
-				border-radius: 50%;
-			}
-
-			&::after {
-				position: absolute;
-				top: 4px;
-				left: 4px;
-
-				width: 7px;
-				height: 7px;
-
-				content: '';
-				transition: opacity 0.2s ease-out;
-
-				opacity: 0;
-				border-radius: 50%;
-			}
-		}
-	}
-
 	&.checkbox.toggle {
 		position: relative;
 
@@ -197,7 +138,7 @@
 .rc-button-group {
 	display: flex;
 
-	margin: 0 calc(- var(--default-small-padding) / 2);
+	margin: 0 calc(var(--default-small-padding) / -2);
 
 	& .rc-button {
 		margin: 0 calc(var(--default-small-padding) / 2);

@@ -1,10 +1,16 @@
 export const Meteor = {
+	Device: {
+		isDesktop: () => false,
+	},
 	isClient: true,
 	isServer: false,
 	_localStorage: window.localStorage,
 	absoluteUrl: () => {},
 	userId: () => {},
-	Streamer: () => {},
+	Streamer: () => ({
+		on: () => {},
+		removeListener: () => {},
+	}),
 	startup: () => {},
 	methods: () => {},
 	call: () => {},
@@ -31,10 +37,13 @@ export const Mongo = {
 	}),
 };
 
-export const ReactiveVar = () => ({
-	get: () => {},
-	set: () => {},
-});
+export const ReactiveVar = (val) => {
+	let currentVal = val;
+	return {
+		get: () => currentVal,
+		set: (val) => { currentVal = val; },
+	};
+};
 
 export const ReactiveDict = () => ({
 	get: () => {},
@@ -68,8 +77,6 @@ export const FlowRouter = {
 		route: () => {},
 	}),
 };
-
-export const BlazeLayout = {};
 
 export const Session = {
 	get: () => {},

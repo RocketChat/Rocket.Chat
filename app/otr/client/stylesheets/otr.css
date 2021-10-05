@@ -1,47 +1,16 @@
-.flex-tab {
-	& .otr {
-		& ul {
-			& li {
-				margin-bottom: 20px;
-			}
-		}
-	}
-}
-
 .message {
-	&.otr,
 	&.otr-ack {
-		& .info::before {
-			display: inline-block;
-			visibility: visible;
+		.info {
+			color: lightgreen;
 
-			content: "\e952";
+			&::before {
+				display: inline-block;
+				visibility: visible;
 
-			font-family: 'fontello';
-		}
-	}
+				content: "\e952";
 
-	&.otr-ack {
-		& .info::before {
-			color: green;
-		}
-	}
-}
-
-.input-message-container.otr {
-	& .input-message {
-		padding-right: 48px;
-	}
-
-	& .inner-right-toolbar {
-		& .otr-icon {
-			display: inline-block;
-
-			margin-top: 2px;
-
-			vertical-align: top;
-
-			color: green;
+				font-family: 'fontello';
+			}
 		}
 	}
 }

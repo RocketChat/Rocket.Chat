@@ -4,27 +4,30 @@ import _ from 'underscore';
 import mem from 'mem';
 
 import { Subscriptions, Messages } from '../../../models';
-import { callbacks } from '../../../callbacks';
-import { settings } from '../../../settings';
-import { hasAtLeastOnePermission } from '../../../authorization';
-import { CachedCollectionManager } from '../../../ui-cached-collection';
+import { hasPermission } from '../../../authorization';
+import { call } from '../../../ui-utils/client';
 
 let userLanguage = 'en';
 let username = '';
 
-Meteor.startup(() => Tracker.autorun(() => {
-	const user = Meteor.user();
-	if (!user) {
-		return;
-	}
-	userLanguage = user.language || 'en';
-	username = user.username;
-}));
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const user = Meteor.user();
+		if (!user) {
+			return;
+		}
+		userLanguage = user.language || 'en';
+		username = user.username;
+	});
+});
 
 export const AutoTranslate = {
-	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
+	initialized: false,
+	providersMetadata: {},
 	messageIdsToWait: {},
 	supportedLanguages: [],
+
+	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 
 	getLanguage(rid) {
 		let subscription = {};
@@ -60,73 +63,78 @@ export const AutoTranslate = {
 	},
 
 	init() {
-		Meteor.call('autoTranslate.getSupportedLanguages', 'en', (err, languages) => {
-			this.supportedLanguages = languages || [];
-		});
+		if (this.initialized) {
+			return;
+		}
 
-		Meteor.call('autoTranslate.getProviderUiMetadata', (err, metadata) => {
-			this.providersMetadata = metadata;
-		});
-
-		Tracker.autorun(() => {
-			Subscriptions.find().observeChanges({
-				changed: (id, fields) => {
-					if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-						mem.clear(this.findSubscriptionByRid);
-					}
-				},
-			});
-		});
-
-		Tracker.autorun(() => {
-			if (settings.get('AutoTranslate_Enabled') && hasAtLeastOnePermission(['auto-translate'])) {
-				callbacks.add('renderMessage', (message) => {
-					const subscription = this.findSubscriptionByRid(message.rid);
-					const autoTranslateLanguage = this.getLanguage(message.rid);
-					if (message.u && message.u._id !== Meteor.userId()) {
-						if (!message.translations) {
-							message.translations = {};
-						}
-						if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
-							message.translations.original = message.html;
-							if (message.translations[autoTranslateLanguage]) {
-								message.html = message.translations[autoTranslateLanguage];
-							}
-
-							if (message.attachments && message.attachments.length > 0) {
-								message.attachments = this.translateAttachments(message.attachments, autoTranslateLanguage);
-							}
-						}
-					} else if (message.attachments && message.attachments.length > 0) {
-						message.attachments = this.translateAttachments(message.attachments, autoTranslateLanguage);
-					}
-					return message;
-				}, callbacks.priority.HIGH - 3, 'autotranslate');
-
-				callbacks.add('streamMessage', (message) => {
-					if (message.u && message.u._id !== Meteor.userId()) {
-						const subscription = this.findSubscriptionByRid(message.rid);
-						const language = this.getLanguage(message.rid);
-						if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
-							Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
-						} else if (this.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
-							Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
-							delete this.messageIdsToWait[message._id];
-						} else if (message.autoTranslateFetching === true) {
-							Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
-						}
-					}
-				}, callbacks.priority.HIGH - 3, 'autotranslate-stream');
-			} else {
-				callbacks.remove('renderMessage', 'autotranslate');
-				callbacks.remove('streamMessage', 'autotranslate-stream');
+		Tracker.autorun(async (c) => {
+			const uid = Meteor.userId();
+			if (!uid || !hasPermission('auto-translate')) {
+				return;
 			}
+
+			c.stop();
+
+			[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+				call('autoTranslate.getProviderUiMetadata'),
+				call('autoTranslate.getSupportedLanguages', 'en'),
+			]);
 		});
+
+		Subscriptions.find().observeChanges({
+			changed: (id, fields) => {
+				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
+					mem.clear(this.findSubscriptionByRid);
+				}
+			},
+		});
+
+		this.initialized = true;
 	},
 };
 
-Meteor.startup(function() {
-	CachedCollectionManager.onLogin(() => {
-		AutoTranslate.init();
-	});
-});
+export const createAutoTranslateMessageRenderer = () => {
+	AutoTranslate.init();
+
+	return (message) => {
+		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
+		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
+		if (message.u && message.u._id !== Meteor.userId()) {
+			if (!message.translations) {
+				message.translations = {};
+			}
+			if (!!(subscription && subscription.autoTranslate) !== !!message.autoTranslateShowInverse) {
+				message.translations.original = message.html;
+				if (message.translations[autoTranslateLanguage]) {
+					message.html = message.translations[autoTranslateLanguage];
+				}
+
+				if (message.attachments && message.attachments.length > 0) {
+					message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
+				}
+			}
+		} else if (message.attachments && message.attachments.length > 0) {
+			message.attachments = AutoTranslate.translateAttachments(message.attachments, autoTranslateLanguage);
+		}
+		return message;
+	};
+};
+
+export const createAutoTranslateMessageStreamHandler = () => {
+	AutoTranslate.init();
+
+	return (message) => {
+		if (message.u && message.u._id !== Meteor.userId()) {
+			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
+			const language = AutoTranslate.getLanguage(message.rid);
+			if (subscription && subscription.autoTranslate === true && ((message.msg && (!message.translations || !message.translations[language])))) { // || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
+				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
+				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
+				delete AutoTranslate.messageIdsToWait[message._id];
+			} else if (message.autoTranslateFetching === true) {
+				Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
+			}
+		}
+	};
+};

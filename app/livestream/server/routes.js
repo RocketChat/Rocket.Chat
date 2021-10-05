@@ -3,7 +3,7 @@ import google from 'googleapis';
 
 import { settings } from '../../settings';
 import { Users } from '../../models';
-import { API } from '../../api';
+import { API } from '../../api/server';
 
 const { OAuth2 } = google.auth;
 

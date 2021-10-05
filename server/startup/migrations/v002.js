@@ -29,7 +29,7 @@ Migrations.add({
 			const dataURI = avatars[service].blob;
 			const { image, contentType } = RocketChatFile.dataURIParse(dataURI);
 
-			const rs = RocketChatFile.bufferToStream(new Buffer(image, 'base64'));
+			const rs = RocketChatFile.bufferToStream(Buffer.from(image, 'base64'));
 			const fileStore = FileUpload.getStore('Avatars');
 			fileStore.deleteByName(user.username);
 
@@ -38,7 +38,7 @@ Migrations.add({
 				type: contentType,
 			};
 
-			fileStore.insert(file, rs, () => Users.setAvatarOrigin(user._id, service));
+			fileStore.insert(file, rs, (err, result) => Users.setAvatarData(user._id, service, result.etag));
 		});
 	},
 });

@@ -1,14 +1,15 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { CounterSet } from '../data/CounterSet';
+import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
-import { useEndpointData } from '../../hooks/useEndpointData';
+import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function MessagesSentSection() {
+const MessagesSentSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -48,7 +49,7 @@ export function MessagesSentSection() {
 		end: period.end.toISOString(),
 	}), [period]);
 
-	const data = useEndpointData('GET', 'engagement-dashboard/messages/messages-sent', params);
+	const { value: data } = useEndpointData('engagement-dashboard/messages/messages-sent', params);
 
 	const [
 		countFromPeriod,
@@ -81,9 +82,14 @@ export function MessagesSentSection() {
 		];
 	}, [data, period]);
 
+	const downloadData = () => {
+		const data = values.map(({ date, newMessages }) => [date, newMessages]);
+		downloadCsvAs(data, `MessagesSentSection_start_${ params.start }_end_${ params.end }`);
+	};
+
 	return <Section
 		title={t('Messages_sent')}
-		filter={<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />}
+		filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!data} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}
 	>
 		<CounterSet
 			counters={[
@@ -104,7 +110,11 @@ export function MessagesSentSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
@@ -157,7 +167,7 @@ export function MessagesSentSection() {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box textStyle='p2' textColor='alternative'>
+									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
 										{t('Value_messages', { value })}
 									</Box>}
 								/>
@@ -168,4 +178,6 @@ export function MessagesSentSection() {
 				: <Skeleton variant='rect' height={240} />}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default MessagesSentSection;

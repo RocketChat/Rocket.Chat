@@ -11,7 +11,7 @@ export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
 		super({
 			name: 'channel',
-			path: '/channel/:name',
+			path: '/channel/:name/:tab?/:context?',
 		});
 	}
 
@@ -34,6 +34,9 @@ export class PublicRoomType extends RoomTypeConfig {
 	getIcon(roomData) {
 		if (roomData.prid) {
 			return 'discussion';
+		}
+		if (roomData.teamMain) {
+			return 'team';
 		}
 		return this.icon;
 	}
@@ -134,9 +137,7 @@ export class PublicRoomType extends RoomTypeConfig {
 	}
 
 	getAvatarPath(roomData) {
-		// TODO: change to always get avatar from _id when rooms have avatars
-
-		return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+		return getAvatarURL({ roomId: roomData._id, cache: roomData.avatarETag });
 	}
 
 	getDiscussionType() {

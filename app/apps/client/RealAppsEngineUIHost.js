@@ -11,7 +11,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	constructor() {
 		super();
 
-		this._baseURL = baseURI;
+		this._baseURL = baseURI.replace(/\/$/, '');
 	}
 
 	getUserAvatarUrl(username) {

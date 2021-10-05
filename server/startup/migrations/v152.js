@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Migrations } from '../../../app/migrations/server';
 import { Users } from '../../../app/models/server';
-import { MAX_RESUME_LOGIN_TOKENS } from '../../lib/accounts';
+import { MAX_RESUME_LOGIN_TOKENS } from '../../../app/authentication/server';
 
 Migrations.add({
 	version: 152,
