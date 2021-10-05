@@ -26,8 +26,8 @@ import './tabbar';
 import { log, logError } from './logger';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import SaveE2EPasswordModal from './SaveE2EPasswordModal';
-import EnterE2EPasswordModal from './EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import { call } from '../../../client/lib/utils/call';
 
 let failedToDecodeKey = false;
