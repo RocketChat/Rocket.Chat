@@ -421,8 +421,16 @@ export class LDAPManager {
 			return ldapUser._raw.thumbnailPhoto;
 		}
 
+		if (ldapUser._raw['thumbnailPhoto;binary']) {
+			return ldapUser._raw['thumbnailPhoto;binary'];
+		}
+
 		if (ldapUser._raw.jpegPhoto) {
 			return ldapUser._raw.jpegPhoto;
+		}
+
+		if (ldapUser._raw['jpegPhoto;binary']) {
+			return ldapUser._raw['jpegPhoto;binary'];
 		}
 	}
 }
