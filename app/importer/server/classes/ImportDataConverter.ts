@@ -221,14 +221,7 @@ export class ImportDataConverter {
 
 		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
-			$set: {
-				roles: userData.roles || ['user'],
-				type: userData.type || 'user',
-				...userData.statusText && { statusText: userData.statusText },
-				...userData.bio && { bio: userData.bio },
-				...userData.services?.ldap && { ldap: true },
-				...userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl },
-			},
+			$set: {},
 		};
 
 		this.addCustomFields(updateData, userData);
