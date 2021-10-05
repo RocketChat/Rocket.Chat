@@ -8,16 +8,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings';
 import { Logger } from '../../logger';
-import { getURL } from '../../utils/lib/getURL';
-import { injectIntoHead } from '../../ui-master/server';
+import { addStyle } from '../../ui-master/server/inject';
 
-const logger = new Logger('rocketchat:theme', {
-	methods: {
-		stop_rendering: {
-			type: 'info',
-		},
-	},
-});
+const logger = new Logger('rocketchat:theme');
 
 let currentHash = '';
 let currentSize = 0;
@@ -70,9 +63,9 @@ export const theme = new class {
 		};
 		const start = Date.now();
 		return less.render(content, options, function(err, data) {
-			logger.stop_rendering(Date.now() - start);
+			logger.info({ stop_rendering: Date.now() - start });
 			if (err != null) {
-				return console.log(err);
+				return logger.error(err);
 			}
 			settings.updateById('css', data.css);
 
@@ -140,7 +133,7 @@ Meteor.startup(() => {
 	settings.get('css', (key, value = '') => {
 		currentHash = crypto.createHash('sha1').update(value).digest('hex');
 		currentSize = value.length;
-		injectIntoHead('css-theme', `<link rel="stylesheet" type="text/css" href="${ getURL(`/theme.css?${ currentHash }`) }">`);
+		addStyle('css-theme', value);
 	});
 });
 

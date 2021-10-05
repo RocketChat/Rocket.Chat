@@ -47,10 +47,11 @@ const FacebookPageContainer: FC = () => {
 		reload: reloadInitial,
 	} = useMethodData<InitialStateData>('livechat:facebook', initialStateArgs);
 
-	const { value: pagesData, phase: listState, reload: reloadData } = useMethodData<PageData>(
-		'livechat:facebook',
-		listPageArgs,
-	);
+	const {
+		value: pagesData,
+		phase: listState,
+		reload: reloadData,
+	} = useMethodData<PageData>('livechat:facebook', listPageArgs);
 
 	const { enabled, hasToken } = initialStateData || { enabled: false, hasToken: false };
 	const { pages } = pagesData || { pages: [] };

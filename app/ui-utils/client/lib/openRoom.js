@@ -9,34 +9,24 @@ import { Messages, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { roomTypes } from '../../../utils';
-import { call, callMethod } from './callMethod';
-import { RoomManager, fireGlobalEvent, RoomHistoryManager } from '..';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
+import { RoomManager, RoomHistoryManager } from '..';
 import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
 import { Rooms } from '../../../models/client';
+import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 
 window.currentTracker = undefined;
 
 // cleanup session when hot reloading
 Session.set('openedRoom', null);
 
-
-const waitUntilRoomBeInserted = async (type, rid) => new Promise((resolve) => {
-	Tracker.autorun((c) => {
-		const room = roomTypes.findRoom(type, rid, Meteor.user());
-		if (room) {
-			c.stop();
-			return resolve(room);
-		}
-	});
-});
-
-
 NewRoomManager.on('changed', (rid) => {
 	Session.set('openedRoom', rid);
 	RoomManager.openedRoom = rid;
 });
 
-export const openRoom = async function(type, name) {
+export const openRoom = async function(type, name, render = true) {
 	window.currentTracker && window.currentTracker.stop();
 	window.currentTracker = Tracker.autorun(async function(c) {
 		const user = Meteor.user();
@@ -46,7 +36,7 @@ export const openRoom = async function(type, name) {
 		}
 
 		try {
-			const room = roomTypes.findRoom(type, name, user) || await callMethod('getRoomByTypeAndName', type, name);
+			const room = roomTypes.findRoom(type, name, user) || await call('getRoomByTypeAndName', type, name);
 			Rooms.upsert({ _id: room._id }, _.omit(room, '_id'));
 
 			if (room._id !== name && type === 'd') { // Redirect old url using username to rid
@@ -61,7 +51,7 @@ export const openRoom = async function(type, name) {
 
 			RoomManager.open(type + name);
 
-			appLayout.render('main', { center: 'room' });
+			render && appLayout.render('main', { center: 'room' });
 
 
 			c.stop();
@@ -79,14 +69,14 @@ export const openRoom = async function(type, name) {
 			// update user's room subscription
 			const sub = ChatSubscription.findOne({ rid: room._id });
 			if (sub && sub.open === false) {
-				call('openRoom', room._id);
+				callWithErrorHandling('openRoom', room._id);
 			}
 
 			if (FlowRouter.getQueryParam('msg')) {
 				const messageId = FlowRouter.getQueryParam('msg');
 				const msg = { _id: messageId, rid: room._id };
 
-				const message = Messages.findOne({ _id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+				const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
 
 				if (message && (message.tmid || message.tcount)) {
 					return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
@@ -102,9 +92,9 @@ export const openRoom = async function(type, name) {
 		} catch (error) {
 			c.stop();
 			if (type === 'd') {
-				const result = await call('createDirectMessage', ...name.split(', ')).then((result) => waitUntilRoomBeInserted(type, result.rid)).catch(() => {});
+				const result = await callWithErrorHandling('createDirectMessage', ...name.split(', '));
 				if (result) {
-					return FlowRouter.go('direct', { rid: result._id }, FlowRouter.current().queryParams);
+					return FlowRouter.go('direct', { rid: result.rid }, FlowRouter.current().queryParams);
 				}
 			}
 			Session.set('roomNotFound', { type, name, error });

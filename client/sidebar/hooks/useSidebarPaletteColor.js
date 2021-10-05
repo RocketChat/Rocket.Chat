@@ -1,10 +1,8 @@
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useLayoutEffect, useEffect, useMemo } from 'react';
 
-import { isIE11 } from '../../../app/ui-utils/client/lib/isIE11.js';
 import { useSettings } from '../../contexts/SettingsContext';
-
-const isInternetExplorer11 = isIE11();
+import { isIE11 } from '../../lib/utils/isIE11';
 
 const oldPallet = {
 	'color-dark-100': '#0c0d0f',
@@ -138,9 +136,12 @@ const useTheme = () => {
 	return result;
 };
 
-const toVar = (color) => (color[0] === '#' ? color : oldPallet[color] || `var(--${color})`);
+const toVar = (color) =>
+	color && color[0] === '#' ? color : oldPallet[color] || `var(--${color})`;
 
-const getStyle = ((selector) => (colors) => `
+const getStyle = (
+	(selector) => (colors) =>
+		`
 		${selector} {
 			--rcx-color-neutral-100: ${toVar(colors.n900)};
 			--rcx-color-neutral-200: ${toVar(colors.n800)};
@@ -192,7 +193,8 @@ const getStyle = ((selector) => (colors) => `
 		.rcx-sidebar {
 			background-color: ${toVar(colors.sibebarSurface)};
 		}
-	`)(isInternetExplorer11 ? ':root' : modifier);
+	`
+)(isIE11 ? ':root' : modifier);
 
 const useSidebarPaletteColorIE11 = () => {
 	const colors = useTheme();
@@ -271,7 +273,7 @@ const useSidebarPaletteColorIE11 = () => {
 	}, [colors]);
 };
 
-export const useSidebarPaletteColor = isInternetExplorer11
+export const useSidebarPaletteColor = isIE11
 	? useSidebarPaletteColorIE11
 	: () => {
 			const colors = useTheme();

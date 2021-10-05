@@ -4,8 +4,10 @@ import { Match } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
+import { setUpdatedAt } from '../lib/setUpdatedAt';
 import { metrics } from '../../../metrics/server/lib/metrics';
 import { getOplogHandle } from './_oplogHandle';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const baseName = 'rocketchat_';
 
@@ -19,7 +21,7 @@ try {
 
 	trash._ensureIndex({ rid: 1, __collection__: 1, _deletedAt: 1 });
 } catch (e) {
-	console.log(e);
+	SystemLogger.error(e);
 }
 
 const actions = {
@@ -111,12 +113,7 @@ export class BaseDb extends EventEmitter {
 		// 	}
 		// }
 
-		if (/(^|,)\$/.test(Object.keys(record).join(','))) {
-			record.$set = record.$set || {};
-			record.$set._updatedAt = new Date();
-		} else {
-			record._updatedAt = new Date();
-		}
+		setUpdatedAt(record);
 
 		return record;
 	}

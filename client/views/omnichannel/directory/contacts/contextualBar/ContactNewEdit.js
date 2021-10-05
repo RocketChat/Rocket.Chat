@@ -45,15 +45,18 @@ const getInitialValues = (data) => {
 	};
 };
 
-function ContactNewEdit({ id, data, reload, close }) {
+function ContactNewEdit({ id, data, close }) {
 	const t = useTranslation();
 
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
-		getInitialValues(data),
-	);
+	const {
+		values,
+		handlers,
+		hasUnsavedChanges: hasUnsavedChangesContact,
+	} = useForm(getInitialValues(data));
+
 	const eeForms = useSubscription(formsSubscription);
 
 	const { useContactManager = () => {} } = eeForms;
@@ -182,7 +185,6 @@ function ContactNewEdit({ id, data, reload, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

@@ -35,18 +35,14 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		'desktopNotificationRequireInteraction',
 	);
 	const userDesktopNotifications = useUserPreference('desktopNotifications');
-	const userMobileNotifications = useUserPreference('mobileNotifications');
+	const userMobileNotifications = useUserPreference('pushNotifications');
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode');
-	const userDesktopAudioNotifications = useUserPreference('audioNotifications');
 
 	const defaultDesktopNotifications = useSetting(
 		'Accounts_Default_User_Preferences_desktopNotifications',
 	);
-	const defaultDesktopAudioNotifications = useSetting(
-		'Accounts_Default_User_Preferences_audioNotifications',
-	);
 	const defaultMobileNotifications = useSetting(
-		'Accounts_Default_User_Preferences_mobileNotifications',
+		'Accounts_Default_User_Preferences_pushNotifications',
 	);
 	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
 
@@ -56,7 +52,6 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 			desktopNotifications: userDesktopNotifications,
 			mobileNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
-			audioNotifications: userDesktopAudioNotifications,
 		},
 		onChange,
 	);
@@ -66,7 +61,6 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		desktopNotifications,
 		mobileNotifications,
 		emailNotificationMode,
-		audioNotifications,
 	} = values;
 
 	const {
@@ -74,7 +68,6 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		handleDesktopNotifications,
 		handleMobileNotifications,
 		handleEmailNotificationMode,
-		handleAudioNotifications,
 	} = handlers;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
@@ -107,15 +100,6 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		]);
 		return optionsCp;
 	}, [defaultDesktopNotifications, notificationOptions, t]);
-
-	const desktopNotificationAudioOptions = useMemo(() => {
-		const optionsCp = notificationOptions.slice();
-		optionsCp.unshift([
-			'default',
-			`${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopAudioNotifications])})`,
-		]);
-		return optionsCp;
-	}, [defaultDesktopAudioNotifications, notificationOptions, t]);
 
 	const mobileNotificationOptions = useMemo(() => {
 		const optionsCp = notificationOptions.slice();
@@ -184,17 +168,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 					</Field.Row>
 				</Field>
 				<Field>
-					<Field.Label>{t('Notification_Desktop_Audio_Default_For')}</Field.Label>
-					<Field.Row>
-						<Select
-							value={audioNotifications}
-							onChange={handleAudioNotifications}
-							options={desktopNotificationAudioOptions}
-						/>
-					</Field.Row>
-				</Field>
-				<Field>
-					<Field.Label>{t('Notification_Mobile_Default_For')}</Field.Label>
+					<Field.Label>{t('Notification_Push_Default_For')}</Field.Label>
 					<Field.Row>
 						<Select
 							value={mobileNotifications}

@@ -1,8 +1,10 @@
-import { Box, FieldGroup, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React from 'react';
 
-import { useMethod } from '../../../contexts/ServerContext';
+import VerticalBar from '../../../components/VerticalBar';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useForm } from '../../../hooks/useForm';
@@ -10,6 +12,7 @@ import RoleForm from './RoleForm';
 
 const NewRolePage = () => {
 	const t = useTranslation();
+	const router = useRoute('admin-permissions');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { values, handlers } = useForm({
@@ -19,30 +22,35 @@ const NewRolePage = () => {
 		mandatory2fa: false,
 	});
 
-	const saveRole = useMethod('authorization:saveRole');
+	const saveRole = useEndpoint('POST', 'roles.create');
 
 	const handleSave = useMutableCallback(async () => {
 		try {
 			await saveRole(values);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
 	return (
-		<Box w='full' alignSelf='center' mb='neg-x8'>
-			<Margins block='x8'>
-				<FieldGroup>
-					<RoleForm values={values} handlers={handlers} />
-				</FieldGroup>
+		<>
+			<VerticalBar.ScrollableContent>
+				<Box w='full' alignSelf='center' mb='neg-x8'>
+					<Margins block='x8'>
+						<RoleForm values={values} handlers={handlers} />
+					</Margins>
+				</Box>
+			</VerticalBar.ScrollableContent>
+			<VerticalBar.Footer>
 				<ButtonGroup stretch w='full'>
 					<Button primary onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Margins>
-		</Box>
+			</VerticalBar.Footer>
+		</>
 	);
 };
 

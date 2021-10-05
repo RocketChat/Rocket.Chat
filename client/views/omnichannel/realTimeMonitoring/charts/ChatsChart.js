@@ -16,7 +16,13 @@ const initialData = {
 };
 
 const init = (canvas, context, t) =>
-	drawDoughnutChart(canvas, t('Chats'), context, labels, Object.values(initialData));
+	drawDoughnutChart(
+		canvas,
+		t('Chats'),
+		context,
+		labels.map((l) => t(l)),
+		Object.values(initialData),
+	);
 
 const ChatsChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -31,10 +37,11 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/chats',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/chats', params);
 
 	reloadRef.current.chatsChart = reload;
 

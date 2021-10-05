@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import toastr from 'toastr';
 
-import { handleError } from '../../app/utils/client';
 import { ToastMessagesContext, ToastMessagePayload } from '../contexts/ToastMessagesContext';
+import { handleError } from '../lib/utils/handleError';
 
 const dispatch = ({ type, message, title, options }: ToastMessagePayload): void => {
 	if (type === 'error' && typeof message === 'object') {

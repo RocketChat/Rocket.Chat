@@ -4,7 +4,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import TeamsInfo from './TeamsInfo';
 
 export default {
-	title: 'components/TeamsInfo',
+	title: 'teams/TeamsInfo',
 	component: TeamsInfo,
 };
 

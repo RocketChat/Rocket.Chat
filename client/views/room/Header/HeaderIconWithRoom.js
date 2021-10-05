@@ -6,6 +6,6 @@ import { useRoomIcon } from '../../../hooks/useRoomIcon';
 const HeaderIconWithRoom = ({ room }) => {
 	const icon = useRoomIcon(room);
 
-	return <Header.Tag.Icon icon={icon} />;
+	return <Header.Icon icon={icon} />;
 };
 export default HeaderIconWithRoom;

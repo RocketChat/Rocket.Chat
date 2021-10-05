@@ -14,18 +14,18 @@ import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import CustomField from '../../../components/CustomField';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
-import CustomField from './CustomField';
-import Info from './Info';
-import Label from './Label';
 
-function ContactInfo({ id, rid, route }) {
+const ContactInfo = ({ id, rid, route }) => {
 	const t = useTranslation();
 	const routePath = useRoute(route || 'omnichannel-directory');
 
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData(
-		'livechat/custom-fields',
-	);
+	const { value: allCustomFields, phase: stateCustomFields } =
+		useEndpointData('livechat/custom-fields');
 
 	const [customFields, setCustomFields] = useState([]);
 
@@ -48,9 +48,9 @@ function ContactInfo({ id, rid, route }) {
 						id: rid,
 				  }
 				: {
-						tab: 'contacts',
-						context: 'edit',
+						page: 'contacts',
 						id,
+						bar: 'edit',
 				  },
 		);
 	});
@@ -62,23 +62,30 @@ function ContactInfo({ id, rid, route }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const { value: data, phase: state, error } = useEndpointData(
-		`omnichannel/contact?contactId=${id}`,
-	);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(`omnichannel/contact?contactId=${id}`);
 
 	const [currentRouteName] = useCurrentRoute();
 	const liveRoute = useRoute('live');
 
-	const {
-		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
-	} = data || { contact: {} };
 	if (state === AsyncStatePhase.LOADING) {
-		return <FormSkeleton />;
+		return (
+			<Box pi='x24'>
+				<FormSkeleton />
+			</Box>
+		);
 	}
 
 	if (error || !data || !data.contact) {
 		return <Box mbs='x16'>{t('Contact_not_found')}</Box>;
 	}
+
+	const {
+		contact: { name, username, visitorEmails, phone, livechatData, ts, lastChat, contactManager },
+	} = data;
 
 	const checkIsVisibleAndScopeVisitor = (key) => {
 		const field = customFields.find(({ _id }) => _id === key);
@@ -102,7 +109,7 @@ function ContactInfo({ id, rid, route }) {
 			<VerticalBar.ScrollableContent p='x24'>
 				<Margins block='x4'>
 					{displayName && (
-						<>
+						<Field>
 							<Label>{`${t('Name')} / ${t('Username')}`}</Label>
 							<Info style={{ display: 'flex' }}>
 								<UserAvatar size='x40' title={username} username={username} />
@@ -117,32 +124,32 @@ function ContactInfo({ id, rid, route }) {
 									</Box>
 								)}
 							</Info>
-						</>
+						</Field>
 					)}
 					{visitorEmails && visitorEmails.length && (
-						<>
+						<Field>
 							<Label>{t('Email')}</Label>
 							<Info>{visitorEmails[0].address}</Info>
-						</>
+						</Field>
 					)}
 					{phone && phone.length && (
-						<>
+						<Field>
 							<Label>{t('Phone')}</Label>
 							<Info>{phone[0].phoneNumber}</Info>
-						</>
+						</Field>
 					)}
 					{ts && (
-						<>
+						<Field>
 							<Label>{t('Created_at')}</Label>
 							<Info>{formatDate(ts)}</Info>
-						</>
+						</Field>
 					)}
 
 					{lastChat && (
-						<>
+						<Field>
 							<Label>{t('Last_Chat')}</Label>
 							<Info>{formatDate(lastChat.ts)}</Info>
-						</>
+						</Field>
 					)}
 					{canViewCustomFields() &&
 						livechatData &&
@@ -152,10 +159,10 @@ function ContactInfo({ id, rid, route }) {
 								livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
 					{contactManager && (
-						<>
+						<Field>
 							<Label>{t('Contact_Manager')}</Label>
 							<ContactManagerInfo username={contactManager.username} />
-						</>
+						</Field>
 					)}
 				</Margins>
 			</VerticalBar.ScrollableContent>
@@ -173,6 +180,6 @@ function ContactInfo({ id, rid, route }) {
 			</VerticalBar.Footer>
 		</>
 	);
-}
+};
 
 export default ContactInfo;

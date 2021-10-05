@@ -7,9 +7,10 @@ import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
-import Info from './Info';
-import Label from './Label';
 
 const AgentField = ({ agent }) => {
 	const t = useTranslation();
@@ -27,7 +28,7 @@ const AgentField = ({ agent }) => {
 	const displayName = name || username;
 
 	return (
-		<>
+		<Field>
 			<Label>{t('Agent')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size='x40' title={username} username={username} />
@@ -38,7 +39,7 @@ const AgentField = ({ agent }) => {
 					</Box>
 				)}
 			</Info>
-		</>
+		</Field>
 	);
 };
 

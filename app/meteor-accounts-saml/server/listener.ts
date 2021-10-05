@@ -6,6 +6,7 @@ import { RoutePolicy } from 'meteor/routepolicy';
 import bodyParser from 'body-parser';
 import fiber from 'fibers';
 
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
 import { ISAMLAction } from './definition/ISAMLAction';
@@ -54,14 +55,14 @@ const middleware = function(req: IIncomingMessage, res: ServerResponse, next: (e
 
 		const service = SAMLUtils.getServiceProviderOptions(samlObject.serviceName);
 		if (!service) {
-			console.error(`${ samlObject.serviceName } service provider not found`);
+			SystemLogger.error(`${ samlObject.serviceName } service provider not found`);
 			throw new Error('SAML Service Provider not found.');
 		}
 
 		SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
-		console.log(err);
+		SystemLogger.error(err);
 
 		const url = Meteor.absoluteUrl('home');
 		res.writeHead(302, {

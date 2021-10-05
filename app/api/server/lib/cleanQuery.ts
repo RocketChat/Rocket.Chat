@@ -18,7 +18,7 @@ export function clean(v: Query, allowList: string[] = []): Query {
 	if (v instanceof Object) {
 		/* eslint-disable guard-for-in */
 		for (const key in typedParam) {
-			if (/^$/.test(key) && !allowList.includes(key)) {
+			if (key.startsWith('$') && !allowList.includes(key)) {
 				delete typedParam[key];
 			} else {
 				clean(typedParam[key], allowList);

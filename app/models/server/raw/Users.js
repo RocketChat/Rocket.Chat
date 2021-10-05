@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class UsersRaw extends BaseRaw {
@@ -119,6 +120,14 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByIds(userIds, options = {}) {
+		const query = {
+			_id: { $in: userIds },
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByUsernameIgnoringCase(username, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${ escapeRegExp(username) }$`, 'i');
@@ -129,13 +138,43 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	async findOneByLDAPId(id, attribute = undefined) {
+		const query = {
+			'services.ldap.id': id,
+		};
+
+		if (attribute) {
+			query['services.ldap.idAttribute'] = attribute;
+		}
+
+		return this.findOne(query);
+	}
+
+	findLDAPUsers(options) {
+		const query = { ldap: true };
+
+		return this.find(query, options);
+	}
+
+	findConnectedLDAPUsers(options) {
+		const query = {
+			ldap: true,
+			'services.resume.loginTokens': {
+				$exists: true,
+				$ne: [],
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
 			roles: roleName,
 		};
 
-		return this.findOne(query, { fields: { roles: 1 } });
+		return this.findOne(query, { projection: { roles: 1 } });
 	}
 
 	getDistinctFederationDomains() {
@@ -154,6 +193,7 @@ export class UsersRaw extends BaseRaw {
 							$and: [
 								{ $eq: ['$u._id', '$$id'] },
 								{ $eq: ['$open', true] },
+								{ $ne: ['$onHold', true] },
 								{ ...department && { $eq: ['$department', department] } },
 							],
 						},
@@ -164,6 +204,29 @@ export class UsersRaw extends BaseRaw {
 			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
 			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1, count: { $size: '$subs' } } },
 			{ $sort: { count: 1, lastRoutingTime: 1, username: 1 } },
+		];
+
+		if (department) {
+			aggregate.push({ $unwind: '$departments' });
+			aggregate.push({ $match: { 'departments.departmentId': department } });
+		}
+
+		aggregate.push({ $limit: 1 });
+
+		const [agent] = await this.col.aggregate(aggregate).toArray();
+		if (agent) {
+			await this.setLastRoutingTime(agent.agentId);
+		}
+
+		return agent;
+	}
+
+	async getLastAvailableAgentRouted(department, ignoreAgentId) {
+		const aggregate = [
+			{ $match: { status: { $exists: true, $ne: 'offline' }, statusLivechat: 'available', roles: 'livechat-agent', ...ignoreAgentId && { _id: { $ne: ignoreAgentId } } } },
+			{ $lookup: { from: 'rocketchat_livechat_department_agents', localField: '_id', foreignField: 'agentId', as: 'departments' } },
+			{ $project: { agentId: '$_id', username: 1, lastRoutingTime: 1, departments: 1 } },
+			{ $sort: { lastRoutingTime: 1, username: 1 } },
 		];
 
 		if (department) {
@@ -194,6 +257,20 @@ export class UsersRaw extends BaseRaw {
 				},
 			});
 		return result.value;
+	}
+
+	setLivechatStatus(userId, status) { // TODO: Create class Agent
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -554,6 +631,24 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+		const query = {
+			_id: userId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	async isAgentWithinBusinessHours(agentId) {
 		return await this.find({
 			_id: agentId,
@@ -591,12 +686,12 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	removeResumeService(userId) {
+	unsetLoginTokens(userId) {
 		return this.col.updateOne({
 			_id: userId,
 		}, {
-			$unset: {
-				'services.resume': 1,
+			$set: {
+				'services.resume.loginTokens': [],
 			},
 		});
 	}

@@ -10,7 +10,11 @@ import EditUser from './EditUser';
 function EditUserWithData({ uid, ...props }) {
 	const t = useTranslation();
 	const { value: roleData, phase: roleState, error: roleError } = useEndpointData('roles.list', '');
-	const { value: data, phase: state, error } = useEndpointData(
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(
 		'users.info',
 		useMemo(() => ({ userId: uid }), [uid]),
 	);

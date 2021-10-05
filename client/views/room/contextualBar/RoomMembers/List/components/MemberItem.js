@@ -30,7 +30,7 @@ export const MemberItem = ({ _id, status, name, username, onClickView, style, ri
 				<UserAvatar username={username} size='x28' />
 			</Option.Avatar>
 			<Option.Column>
-				<ReactiveUserStatus uid={_id} presence={status} />
+				<ReactiveUserStatus uid={_id} />
 			</Option.Column>
 			<Option.Content>
 				{name} <Option.Description>({username})</Option.Description>

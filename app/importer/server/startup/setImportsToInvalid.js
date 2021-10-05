@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Imports } from '../../../models';
+import { Imports } from '../../../models/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RawImports } from '../models/RawImports';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 
@@ -8,7 +9,7 @@ function runDrop(fn) {
 	try {
 		fn();
 	} catch (e) {
-		console.log('errror', e); // TODO: Remove
+		SystemLogger.error('error', e); // TODO: Remove
 		// ignored
 	}
 }
@@ -21,9 +22,7 @@ Meteor.startup(function() {
 	// And there's still data for it on the temp collection
 	// Then we can keep the data there to let the user try again
 	if (lastOperation && [ProgressStep.USER_SELECTION, ProgressStep.ERROR].includes(lastOperation.status)) {
-		if (RawImports.find({ import: lastOperation._id }).count() > 0) {
-			idToKeep = lastOperation._id;
-		}
+		idToKeep = lastOperation._id;
 	}
 
 	if (idToKeep) {

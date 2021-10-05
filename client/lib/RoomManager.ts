@@ -2,11 +2,11 @@ import { Emitter } from '@rocket.chat/emitter';
 import { useEffect, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { getConfig } from '../../app/ui-utils/client/config';
 import { IRoom } from '../../definition/IRoom';
 import { useUserId, useUserRoom, useUserSubscription } from '../contexts/UserContext';
 import { useAsyncState } from '../hooks/useAsyncState';
 import { AsyncState } from './asyncState';
+import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
 
@@ -17,18 +17,34 @@ export class RoomStore extends Emitter<{
 
 	scroll?: number;
 
+	lm?: Date;
+
+	atBottom = true;
+
 	constructor(readonly rid: string) {
 		super();
 
 		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
 	}
 
-	update({ scroll, lastTime }: { scroll?: number; lastTime?: Date }): void {
+	update({
+		scroll,
+		lastTime,
+		atBottom,
+	}: {
+		scroll?: number;
+		lastTime?: Date;
+		atBottom?: boolean;
+	}): void {
 		if (scroll !== undefined) {
 			this.scroll = scroll;
 		}
 		if (lastTime !== undefined) {
 			this.lastTime = lastTime;
+		}
+
+		if (atBottom !== undefined) {
+			this.atBottom = atBottom;
 		}
 		if (scroll || lastTime) {
 			this.emit('changed');
@@ -85,6 +101,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.lastRid = rid;
 			this.rid = undefined;
 			this.emit('back', rid);
+			this.emit('changed', this.rid);
 		}
 	}
 
@@ -106,7 +123,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.rooms.set(rid, new RoomStore(rid));
 		}
 		this.rid = rid;
-		this.emit('opened', rid);
+		this.emit('opened', this.rid);
 		this.emit('changed', this.rid);
 	}
 
@@ -131,11 +148,11 @@ const subscribeOpenedRoom: Subscription<IRoom['_id'] | undefined> = {
 
 const fields = {};
 
-export const useHandleRoom = (rid: IRoom['_id']): AsyncState<IRoom> => {
-	const { resolve, update, ...state } = useAsyncState<IRoom>();
+export const useHandleRoom = <T extends IRoom>(rid: IRoom['_id']): AsyncState<T> => {
+	const { resolve, update, ...state } = useAsyncState<T>();
 	const uid = useUserId();
-	const subscription = (useUserSubscription(rid, fields) as unknown) as IRoom;
-	const _room = (useUserRoom(rid, fields) as unknown) as IRoom;
+	const subscription = useUserSubscription(rid, fields) as unknown as T;
+	const _room = useUserRoom(rid, fields) as unknown as T;
 
 	const room = uid ? subscription || _room : _room;
 

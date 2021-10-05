@@ -1,3 +1,4 @@
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import React, { useEffect, useRef, useState, FC } from 'react';
 
 import { AppEvents } from '../../../../app/apps/client/communication';
@@ -50,7 +51,7 @@ const AppsProvider: FC = ({ children }) => {
 
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
-				const { status, version } = await Apps.getApp(appId);
+				const { status, version, licenseValidation } = await Apps.getApp(appId);
 				const app = await Apps.getAppFromMarketplace(appId, version);
 				const updatedData = getDataCopy();
 				const index = updatedData.findIndex(({ id }: { id: string }) => id === appId);
@@ -59,6 +60,7 @@ const AppsProvider: FC = ({ children }) => {
 					installed: true,
 					status,
 					version,
+					licenseValidation,
 					marketplaceVersion: app.version,
 				};
 				setApps(updatedData);
@@ -96,7 +98,8 @@ const AppsProvider: FC = ({ children }) => {
 				if (!app) {
 					return;
 				}
-				app.status = status;
+
+				app.status = status as AppStatus;
 				setApps(updatedData);
 				invalidateData();
 			},
@@ -143,6 +146,7 @@ const AppsProvider: FC = ({ children }) => {
 								...(installedApp && {
 									status: installedApp.status,
 									version: installedApp.version,
+									licenseValidation: installedApp.licenseValidation,
 								}),
 								bundledIn: app.bundledIn,
 								marketplaceVersion: app.version,

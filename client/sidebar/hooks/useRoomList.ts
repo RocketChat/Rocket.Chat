@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { IRoom } from '../../../definition/IRoom';
 import { ISubscription } from '../../../definition/ISubscription';
 import { useQueuedInquiries, useOmnichannelEnabled } from '../../contexts/OmnichannelContext';
+import { useSetting } from '../../contexts/SettingsContext';
 import { useUserPreference, useUserSubscriptions } from '../../contexts/UserContext';
 import { useQueryOptions } from './useQueryOptions';
 
@@ -17,7 +18,7 @@ export const useRoomList = (): Array<ISubscription> => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
-	const showDiscussion = useUserPreference('sidebarShowDiscussion');
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const options = useQueryOptions();
@@ -37,8 +38,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			const team = new Set();
 			const omnichannel = new Set();
 			const unread = new Set();
-			const _private = new Set();
-			const _public = new Set();
+			const channels = new Set();
 			const direct = new Set();
 			const discussion = new Set();
 			const conversation = new Set();
@@ -57,16 +57,12 @@ export const useRoomList = (): Array<ISubscription> => {
 					return team.add(room);
 				}
 
-				if (showDiscussion && room.prid) {
+				if (sidebarGroupByType && isDiscussionEnabled && room.prid) {
 					return discussion.add(room);
 				}
 
-				if (room.t === 'c') {
-					_public.add(room);
-				}
-
-				if (room.t === 'p') {
-					_private.add(room);
+				if (room.t === 'c' || room.t === 'p') {
+					channels.add(room);
 				}
 
 				if (room.t === 'l' && room.onHold) {
@@ -95,10 +91,12 @@ export const useRoomList = (): Array<ISubscription> => {
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
 			team.size && groups.set('Teams', team);
-			showDiscussion && discussion.size && groups.set('Discussions', discussion);
-			sidebarGroupByType && _private.size && groups.set('Private', _private);
-			sidebarGroupByType && _public.size && groups.set('Public', _public);
-			sidebarGroupByType && direct.size && groups.set('Direct', direct);
+			sidebarGroupByType &&
+				isDiscussionEnabled &&
+				discussion.size &&
+				groups.set('Discussions', discussion);
+			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
 		});
@@ -109,9 +107,9 @@ export const useRoomList = (): Array<ISubscription> => {
 		queue,
 		sidebarShowUnread,
 		favoritesEnabled,
-		showDiscussion,
 		sidebarGroupByType,
 		setRoomList,
+		isDiscussionEnabled,
 	]);
 
 	return roomList;

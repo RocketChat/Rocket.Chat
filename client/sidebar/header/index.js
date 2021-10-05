@@ -26,8 +26,8 @@ const HeaderWithData = () => {
 					{user && (
 						<>
 							<Directory title={t('Directory')} />
-							<Sort title={t('Filters')} />
-							<CreateRoom title={t('Create_A_New_Channel')} data-qa='sidebar-create' />
+							<Sort title={t('Display')} />
+							<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
 						</>
 					)}
 					{!user && <Login title={t('Login')} />}

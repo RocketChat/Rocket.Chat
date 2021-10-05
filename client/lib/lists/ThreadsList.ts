@@ -1,7 +1,8 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { IMessage } from '../../../definition/IMessage';
 import { ISubscription } from '../../../definition/ISubscription';
 import { IUser } from '../../../definition/IUser';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { MessageList } from './MessageList';
 
 type ThreadMessage = Omit<IMessage, 'tcount'> & Required<Pick<IMessage, 'tcount'>>;
@@ -30,7 +31,7 @@ const isThreadFollowedByUser = (threadMessage: ThreadMessage, uid: IUser['_id'])
 	threadMessage.replies?.includes(uid) ?? false;
 
 const isThreadUnread = (threadMessage: ThreadMessage, tunread: ISubscription['tunread']): boolean =>
-	tunread.includes(threadMessage._id);
+	Boolean(tunread?.includes(threadMessage._id));
 
 const isThreadTextMatching = (threadMessage: ThreadMessage, regex: RegExp): boolean =>
 	regex.test(threadMessage.msg);
@@ -71,12 +72,7 @@ export class ThreadsList extends MessageList {
 		}
 
 		if (this._options.text) {
-			const regex = new RegExp(
-				this._options.text
-					.split(/\s/g)
-					.map((text) => escapeRegExp(text))
-					.join('|'),
-			);
+			const regex = new RegExp(escapeRegExp(this._options.text), 'i');
 			if (!isThreadTextMatching(message, regex)) {
 				return false;
 			}

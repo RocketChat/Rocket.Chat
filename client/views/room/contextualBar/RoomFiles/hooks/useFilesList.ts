@@ -1,23 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { getConfig } from '../../../../../../app/ui-utils/client/config';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useUserRoom, useUserId } from '../../../../../contexts/UserContext';
 import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
+import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { FilesList, FilesListOptions } from '../../../../../lib/lists/FilesList';
+import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useFilesList = (
 	options: FilesListOptions,
 ): {
 	filesList: FilesList;
 	initialItemCount: number;
+	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
-	const [filesList] = useState(() => new FilesList(options));
-
+	const [filesList, setFilesList] = useState(() => new FilesList(options));
+	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
 	const room = useUserRoom(options.rid);
 	const uid = useUserId();
+
+	useComponentDidUpdate(() => {
+		options && reload();
+	}, [options, reload]);
 
 	useEffect(() => {
 		if (filesList.options !== options) {
@@ -70,6 +76,7 @@ export const useFilesList = (
 	useStreamUpdatesForMessageList(filesList, uid, options.rid);
 
 	return {
+		reload,
 		filesList,
 		loadMoreItems,
 		initialItemCount,

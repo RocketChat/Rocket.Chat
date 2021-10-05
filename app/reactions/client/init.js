@@ -90,6 +90,10 @@ Meteor.startup(function() {
 			if (roomTypes.readOnly(room._id, user._id) && !room.reactWhenReadOnly) {
 				return false;
 			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 
 			return true;
 		},

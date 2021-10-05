@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { IRoom, IOmnichannelRoom, IDirectMessageRoom } from '../../definition/IRoom';
 import { ReactiveUserStatus } from '../components/UserStatus';
@@ -10,7 +10,7 @@ export const colors = {
 	offline: 'neutral-600',
 };
 
-export const useRoomIcon = (room: IRoom): JSX.Element | { name: string; color?: string } | null => {
+export const useRoomIcon = (room: IRoom): ReactNode | { name: string; color?: string } | null => {
 	if (room.prid) {
 		return { name: 'baloons' };
 	}
@@ -25,9 +25,24 @@ export const useRoomIcon = (room: IRoom): JSX.Element | { name: string; color?: 
 		case 'c':
 			return { name: 'hash' };
 		case 'l':
-			return { name: 'headset', color: colors[((room as unknown) as IOmnichannelRoom).v.status] };
+			const omnichannelRoom = room as IOmnichannelRoom;
+
+			const icon =
+				{
+					widget: 'livechat',
+					email: 'mail',
+					sms: 'sms',
+					app: 'headset', // TODO: use app icon
+					api: 'headset', // TODO: use api icon
+					other: 'headset',
+				}[omnichannelRoom.source?.type as string] || 'headset';
+
+			return {
+				name: icon,
+				color: colors[(room as unknown as IOmnichannelRoom)?.v.status || 'offline'],
+			};
 		case 'd':
-			const direct = (room as unknown) as IDirectMessageRoom;
+			const direct = room as unknown as IDirectMessageRoom;
 			if (direct.uids && direct.uids.length > 2) {
 				return { name: 'balloon' };
 			}
