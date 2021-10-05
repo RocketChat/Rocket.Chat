@@ -89,6 +89,10 @@ export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername
 		fields,
 	};
 	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	if (!user) {
+		return;
+	}
+
 	user.canViewAllInfo = canViewAllInfo;
 
 	return myself ? user : removePasswordInfo(user);
