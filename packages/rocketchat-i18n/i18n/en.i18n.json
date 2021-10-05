@@ -1680,6 +1680,7 @@
   "error-import-file-missing": "The file to be imported was not found on the specified path.",
   "error-importer-not-defined": "The importer was not defined correctly, it is missing the Import class.",
   "error-input-is-not-a-valid-field": "__input__ is not a valid __field__",
+  "error-insufficient-permission": "Error! You don't have ' __permission__ ' permission which is required to perform this operation",
   "error-invalid-account": "Invalid Account",
   "error-invalid-actionlink": "Invalid action link",
   "error-invalid-arguments": "Invalid arguments",

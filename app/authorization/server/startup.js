@@ -140,6 +140,13 @@ Meteor.startup(function() {
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'remove-livechat-department',  roles: ['livechat-manager', 'admin'] },
+
+		// VOIP Permissions
+		// allows to manage voip calls configuration
+		{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
+		{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
+		// allows to receive a voip call
+		{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
 	];
 
 	for (const permission of permissions) {
