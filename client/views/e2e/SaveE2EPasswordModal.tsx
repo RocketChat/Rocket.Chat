@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import GenericModal from '../../../client/components/GenericModal';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
+import GenericModal from '../../components/GenericModal';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const SaveE2EPasswordModal = ({
 	passwordRevealText,
@@ -26,7 +26,9 @@ const SaveE2EPasswordModal = ({
 			confirmText={t('I_Saved_My_Password')}
 			variant='warning'
 			title={t('Save_Your_Encryption_Password')}
-		><Box dangerouslySetInnerHTML={{ __html: passwordRevealText }} /></GenericModal>
+		>
+			<Box dangerouslySetInnerHTML={{ __html: passwordRevealText }} />
+		</GenericModal>
 	);
 };
 
