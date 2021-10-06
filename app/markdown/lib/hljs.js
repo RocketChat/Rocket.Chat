@@ -77,7 +77,7 @@ export const register = async (lang) => {
 		case 'crystal':
 			return hljs.registerLanguage('crystal', (await import('highlight.js/lib/languages/crystal')).default);
 		case 'cs':
-			return hljs.registerLanguage('cs', (await import('highlight.js/lib/languages/cs')).default);
+			return hljs.registerLanguage('cs', (await import('highlight.js/lib/languages/csharp')).default);
 		case 'csp':
 			return hljs.registerLanguage('csp', (await import('highlight.js/lib/languages/csp')).default);
 		case 'css':
@@ -229,7 +229,7 @@ export const register = async (lang) => {
 		case 'nginx':
 			return hljs.registerLanguage('nginx', (await import('highlight.js/lib/languages/nginx')).default);
 		case 'nimrod':
-			return hljs.registerLanguage('nimrod', (await import('highlight.js/lib/languages/nimrod')).default);
+			return hljs.registerLanguage('nimrod', (await import('highlight.js/lib/languages/nim')).default);
 		case 'nix':
 			return hljs.registerLanguage('nix', (await import('highlight.js/lib/languages/nix')).default);
 		case 'nsis':
@@ -323,7 +323,7 @@ export const register = async (lang) => {
 		case 'tcl':
 			return hljs.registerLanguage('tcl', (await import('highlight.js/lib/languages/tcl')).default);
 		case 'tex':
-			return hljs.registerLanguage('tex', (await import('highlight.js/lib/languages/tex')).default);
+			return hljs.registerLanguage('tex', (await import('highlight.js/lib/languages/latex')).default);
 		case 'thrift':
 			return hljs.registerLanguage('thrift', (await import('highlight.js/lib/languages/thrift')).default);
 		case 'tp':
