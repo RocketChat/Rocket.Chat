@@ -2,6 +2,7 @@ import hljs from 'highlight.js/lib/highlight';
 import clean from 'highlight.js/lib/languages/clean';
 import markdown from 'highlight.js/lib/languages/markdown';
 import javascript from 'highlight.js/lib/languages/javascript';
+import 'highlight.js/styles/github.css';
 
 hljs.registerLanguage('markdown', markdown);
 hljs.registerLanguage('clean', clean);

@@ -10,7 +10,6 @@ import { hasPermission } from '../../app/authorization/client';
 import { register } from '../../app/markdown/lib/hljs';
 import { settings } from '../../app/settings/client';
 import { getUserPreference, t } from '../../app/utils/client';
-import 'highlight.js/styles/github.css';
 import { UserStatus } from '../../definition/UserStatus';
 import * as banners from '../lib/banners';
 import { synchronizeUserData } from '../lib/userData';
