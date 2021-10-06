@@ -1,21 +1,24 @@
 import React, { useMemo } from 'react';
 
+import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import { useAtLeastOnePermission } from '../../../contexts/AuthorizationContext';
 import { useRouteParameter } from '../../../contexts/RouterContext';
-import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import IntegrationsPage from './IntegrationsPage';
-import NewIntegrationsPage from './new/NewIntegrationsPage';
 import EditIntegrationsPage from './edit/EditIntegrationsPage';
 import OutgoingWebhookHistoryPage from './edit/OutgoingWebhookHistoryPage';
+import NewIntegrationsPage from './new/NewIntegrationsPage';
 
 function IntegrationsRoute() {
 	const canViewIntegrationsPage = useAtLeastOnePermission(
-		useMemo(() => [
-			'manage-incoming-integrations',
-			'manage-outgoing-integrations',
-			'manage-own-incoming-integrations',
-			'manage-own-outgoing-integrations',
-		], []),
+		useMemo(
+			() => [
+				'manage-incoming-integrations',
+				'manage-outgoing-integrations',
+				'manage-own-incoming-integrations',
+				'manage-own-outgoing-integrations',
+			],
+			[],
+		),
 	);
 
 	const context = useRouteParameter('context');

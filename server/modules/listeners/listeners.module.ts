@@ -2,12 +2,13 @@ import { IServiceClass } from '../../sdk/types/ServiceClass';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
+import { UserStatus } from '../../../definition/UserStatus';
 
 const STATUS_MAP: {[k: string]: number} = {
-	offline: 0,
-	online: 1,
-	away: 2,
-	busy: 3,
+	[UserStatus.OFFLINE]: 0,
+	[UserStatus.ONLINE]: 1,
+	[UserStatus.AWAY]: 2,
+	[UserStatus.BUSY]: 3,
 };
 
 export const minimongoChangeMap: Record<string, string> = { inserted: 'added', updated: 'changed', removed: 'removed' };
@@ -256,7 +257,14 @@ export class ListenersModule {
 		});
 
 		service.onEvent('banner.new', (bannerId): void => {
-			notifications.notifyLoggedInThisInstance('new-banner', { bannerId });
+			notifications.notifyLoggedInThisInstance('new-banner', { bannerId }); // deprecated
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('banner.disabled', (bannerId): void => {
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('banner.enabled', (bannerId): void => {
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 	}
 }

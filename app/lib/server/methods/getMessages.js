@@ -7,10 +7,6 @@ Meteor.methods({
 	getMessages(messages) {
 		check(messages, [String]);
 
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getSingleMessage' });
-		}
-
 		const cache = {};
 
 		return messages.map((msgId) => {

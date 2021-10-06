@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { settings } from '../../../settings';
-import { call, RoomManager, RoomHistoryManager } from '../../../ui-utils';
-import { roomTypes } from '../../../utils';
-import { hasAllPermission } from '../../../authorization';
+import { settings } from '../../../settings/client';
+import { RoomManager, RoomHistoryManager } from '../../../ui-utils/client';
+import { roomTypes } from '../../../utils/client';
+import { hasAllPermission } from '../../../authorization/client';
 import './messageBoxNotSubscribed.html';
+import { call } from '../../../../client/lib/utils/call';
 
 
 Template.messageBoxNotSubscribed.helpers({

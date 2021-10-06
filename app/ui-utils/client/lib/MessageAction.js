@@ -8,23 +8,16 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
-
-const call = (method, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function(err, data) {
-		if (err) {
-			return reject(err);
-		}
-		resolve(data);
-	});
-});
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import ReactionList from '../../../../client/components/modals/ReactionList';
+import { call } from '../../../../client/lib/utils/call';
+import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -210,8 +203,12 @@ Meteor.startup(async function() {
 				.data('reply', messages)
 				.trigger('dataChange');
 		},
-		condition({ subscription }) {
+		condition({ subscription, room }) {
 			if (subscription == null) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -305,8 +302,12 @@ Meteor.startup(async function() {
 			const { msg } = messageArgs(this);
 			getChatMessagesFrom(msg).confirmDeleteMsg(msg);
 		},
-		condition({ msg: message, subscription }) {
+		condition({ msg: message, subscription, room }) {
 			if (!subscription) {
+				return false;
+			}
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
 				return false;
 			}
 
@@ -360,7 +361,11 @@ Meteor.startup(async function() {
 				});
 			});
 		},
-		condition({ subscription }) {
+		condition({ subscription, room }) {
+			const isLivechatRoom = roomTypes.isLivechatRoom(room.t);
+			if (isLivechatRoom) {
+				return false;
+			}
 			return Boolean(subscription);
 		},
 		order: 17,
@@ -375,9 +380,8 @@ Meteor.startup(async function() {
 		action(_, { tabBar, rid }) {
 			const { msg: { reactions } } = messageArgs(this);
 
-			modal.open({
-				template: 'reactionList',
-				data: { reactions, tabBar, rid, onClose: () => modal.close() },
+			imperativeModal.open({ component: ReactionList,
+				props: { reactions, rid, tabBar, onClose: imperativeModal.close },
 			});
 		},
 		condition({ msg: { reactions } }) {
@@ -386,8 +390,4 @@ Meteor.startup(async function() {
 		order: 18,
 		group: 'menu',
 	});
-});
-
-createTemplateForComponent('reactionList', () => import('./ReactionListContent'), {
-	renderContainerView: () => HTML.DIV({ style: 'margin: -16px; height: 100%; display: flex; flex-direction: column; overflow: hidden;' }), // eslint-disable-line new-cap
 });

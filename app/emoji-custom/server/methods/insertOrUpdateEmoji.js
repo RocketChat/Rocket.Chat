@@ -45,6 +45,8 @@ Meteor.methods({
 			emojiData.aliases = [];
 		}
 
+		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
+
 		let matchingResults = [];
 
 		if (emojiData._id) {

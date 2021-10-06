@@ -48,9 +48,29 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'ult',
+		system: true,
+		message: 'User_left_team',
+		data(message) {
+			return {
+				user_left: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'uj',
 		system: true,
 		message: 'User_joined_channel',
+		data(message) {
+			return {
+				user: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'ujt',
+		system: true,
+		message: 'User_joined_team',
 		data(message) {
 			return {
 				user: message.u.username,
@@ -160,6 +180,46 @@ Meteor.startup(function() {
 		},
 	});
 	MessageTypes.registerType({
+		id: 'room-removed-read-only',
+		system: true,
+		message: 'room_removed_read_only',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-set-read-only',
+		system: true,
+		message: 'room_set_read_only',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-allowed-reacting',
+		system: true,
+		message: 'room_allowed_reacting',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
+		id: 'room-disallowed-reacting',
+		system: true,
+		message: 'room_disallowed_reacting',
+		data(message) {
+			return {
+				user_by: message.u.username,
+			};
+		},
+	});
+	MessageTypes.registerType({
 		id: 'room_e2e_enabled',
 		system: true,
 		message: 'This_room_encryption_has_been_enabled_by__username_',
@@ -241,5 +301,21 @@ export const MessageTypesValues = [
 	{
 		key: 'room_e2e_disabled',
 		i18nLabel: 'Message_HideType_room_disabled_encryption',
+	},
+	{
+		key: 'room-removed-read-only',
+		i18nLabel: 'Message_HideType_room_removed_read_only',
+	},
+	{
+		key: 'room-set-read-only',
+		i18nLabel: 'Message_HideType_room_set_read_only',
+	},
+	{
+		key: 'room-disallowed-reacting',
+		i18nLabel: 'Message_HideType_room_disallowed_reacting',
+	},
+	{
+		key: 'room-allowed-reacting',
+		i18nLabel: 'Message_HideType_room_allowed_reacting',
 	},
 ];

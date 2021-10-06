@@ -1,15 +1,15 @@
-import { setUsername } from './setUsername';
+import { _setUsername } from './setUsername';
 import { setRealName } from './setRealName';
 import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
+import { validateName } from './validateName';
 
 /**
  *
- * @param {string} userId user performing the action
  * @param {object} changes changes to the user
  */
-export function saveUserIdentity(userId, { _id, name: rawName, username: rawUsername }) {
+export function saveUserIdentity({ _id, name: rawName, username: rawUsername }) {
 	if (!_id) {
 		return false;
 	}
@@ -25,7 +25,11 @@ export function saveUserIdentity(userId, { _id, name: rawName, username: rawUser
 	const usernameChanged = previousUsername !== username;
 
 	if (typeof rawUsername !== 'undefined' && usernameChanged) {
-		if (!setUsername(_id, username, user)) {
+		if (!validateName(username)) {
+			return false;
+		}
+
+		if (!_setUsername(_id, username, user)) {
 			return false;
 		}
 		user.username = username;

@@ -5,22 +5,18 @@ import { syncWorkspace } from './syncWorkspace';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
 export function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
+		syncWorkspace(true);
+
 		return true;
 	}
 
 	settings.updateById('Register_Server', true);
-
-	// If we still have client id lets see if they are still good before trying to register
-	if (workspaceRegistered) {
-		if (syncWorkspace(true)) {
-			return true;
-		}
-	}
 
 	const regInfo = buildWorkspaceRegistrationData();
 
@@ -33,9 +29,9 @@ export function startRegisterWorkspace(resend = false) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return false;

@@ -1,4 +1,5 @@
-import { USER_STATUS } from './UserStatus';
+import { UserStatus } from './UserStatus';
+import { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface ILoginToken {
 	hashedToken: string;
@@ -32,10 +33,18 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
+export type ILoginUsername = {
+	username: string;
+} | {
+	email: string;
+}
+export type LoginUsername = string | ILoginUsername;
+
 export interface IUserServices {
 	password?: {
 		bcrypt: string;
 	};
+	passwordHistory?: string[];
 	email?: {
 		verificationTokens?: IUserEmailVerificationToken[];
 	};
@@ -62,6 +71,10 @@ export interface IUserServices {
 		idpSession?: string;
 		nameID?: string;
 	};
+	ldap?: {
+		id: string;
+		idAttribute?: string;
+	};
 }
 
 export interface IUserEmail {
@@ -85,7 +98,15 @@ export interface IRole {
 	_id: string;
 }
 
-export interface IUser {
+export interface IDailyActiveUsers {
+	usersList: string[];
+	users: number;
+	day: number;
+	month: number;
+	year: number;
+}
+
+export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;
 	roles: string[];
@@ -95,19 +116,19 @@ export interface IUser {
 	name?: string;
 	services?: IUserServices;
 	emails?: IUserEmail[];
-	status?: USER_STATUS;
+	status?: UserStatus;
 	statusConnection?: string;
 	lastLogin?: Date;
 	avatarOrigin?: string;
 	avatarETag?: string;
 	utcOffset?: number;
 	language?: string;
-	statusDefault?: USER_STATUS;
+	statusDefault?: UserStatus;
 	statusText?: string;
 	oauth?: {
 		authorizedClients: string[];
 	};
-	_updatedAt?: Date;
+	_updatedAt: Date;
 	statusLivechat?: string;
 	e2e?: {
 		private_key: string;
@@ -118,6 +139,8 @@ export interface IUser {
 		[key: string]: any;
 	};
 	settings?: IUserSettings;
+	defaultRoom?: string;
+	ldap?: boolean;
 }
 
 export type IUserDataEvent = {

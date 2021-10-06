@@ -12,11 +12,14 @@ import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsers
 import { AppDepartmentsConverter } from './converters/departments';
 import { AppUploadsConverter } from './converters/uploads';
 import { AppVisitorsConverter } from './converters/visitors';
-import { AppRealLogsStorage, AppRealStorage } from './storage';
+import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
+
+let appsSourceStorageType;
+let appsSourceStorageFilesystemPath;
 
 export class AppServerOrchestrator {
 	constructor() {
@@ -24,16 +27,25 @@ export class AppServerOrchestrator {
 	}
 
 	initialize() {
+		if (this._isInitialized) {
+			return;
+		}
+
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
 		Permissions.create('manage-apps', ['admin']);
 
-		this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		if (typeof process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL === 'string' && process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL !== '') {
+			this._marketplaceUrl = process.env.OVERWRITE_INTERNAL_MARKETPLACE_URL;
+		} else {
+			this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		}
 
 		this._model = new AppsModel();
 		this._logModel = new AppsLogsModel();
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
+		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
 		this._converters.set('messages', new AppMessagesConverter(this));
@@ -46,7 +58,12 @@ export class AppServerOrchestrator {
 
 		this._bridges = new RealAppBridges(this);
 
-		this._manager = new AppManager(this._storage, this._logStorage, this._bridges);
+		this._manager = new AppManager({
+			metadataStorage: this._storage,
+			logStorage: this._logStorage,
+			bridges: this._bridges,
+			sourceStorage: this._appSourceStorage,
+		});
 
 		this._communicators = new Map();
 		this._communicators.set('methods', new AppMethods(this));
@@ -91,6 +108,10 @@ export class AppServerOrchestrator {
 
 	getProvidedComponents() {
 		return this._manager.getExternalComponentManager().getProvidedComponents();
+	}
+
+	getAppSourceStorage() {
+		return this._appSourceStorage;
 	}
 
 	isInitialized() {
@@ -176,6 +197,27 @@ export const Apps = new AppServerOrchestrator();
 
 settings.addGroup('General', function() {
 	this.section('Apps', function() {
+		this.add('Apps_Logs_TTL', '30_days', {
+			type: 'select',
+			values: [
+				{
+					key: '7_days',
+					i18nLabel: 'Apps_Logs_TTL_7days',
+				},
+				{
+					key: '14_days',
+					i18nLabel: 'Apps_Logs_TTL_14days',
+				},
+				{
+					key: '30_days',
+					i18nLabel: 'Apps_Logs_TTL_30days',
+				},
+			],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Logs_TTL_Alert',
+		});
+
 		this.add('Apps_Framework_enabled', true, {
 			type: 'boolean',
 			hidden: false,
@@ -191,19 +233,47 @@ settings.addGroup('General', function() {
 			hidden: false,
 		});
 
-		this.add('Apps_Game_Center_enabled', false, {
-			type: 'boolean',
-			enableQuery: {
-				_id: 'Apps_Framework_enabled',
-				value: true,
-			},
-			hidden: false,
+		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+			type: 'select',
+			values: [{
+				key: 'gridfs',
+				i18nLabel: 'GridFS',
+			}, {
+				key: 'filesystem',
+				i18nLabel: 'FileSystem',
+			}],
 			public: true,
-			alert: 'Experimental_Feature_Alert',
+			hidden: false,
+			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
+		});
+
+		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+			type: 'string',
+			public: true,
+			enableQuery: {
+				_id: 'Apps_Framework_Source_Package_Storage_Type',
+				value: 'filesystem',
+			},
+			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
 		});
 	});
 });
 
+settings.get('Apps_Framework_Source_Package_Storage_Type', (_, value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageType = value;
+	} else {
+		Apps.getAppSourceStorage().setStorage(value);
+	}
+});
+
+settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path', (_, value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageFilesystemPath = value;
+	} else {
+		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
+	}
+});
 
 settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	// In case this gets called before `Meteor.startup`
@@ -216,6 +286,34 @@ settings.get('Apps_Framework_enabled', (key, isEnabled) => {
 	} else {
 		Apps.unload();
 	}
+});
+
+settings.get('Apps_Logs_TTL', (key, value) => {
+	if (!Apps.isInitialized()) {
+		return;
+	}
+
+	let expireAfterSeconds = 0;
+
+	switch (value) {
+		case '7_days':
+			expireAfterSeconds = 604800;
+			break;
+		case '14_days':
+			expireAfterSeconds = 1209600;
+			break;
+		case '30_days':
+			expireAfterSeconds = 2592000;
+			break;
+	}
+
+	if (!expireAfterSeconds) {
+		return;
+	}
+
+	const model = Apps._logModel;
+
+	model.resetTTLIndex(expireAfterSeconds);
 });
 
 Meteor.startup(function _appServerOrchestrator() {

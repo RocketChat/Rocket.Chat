@@ -18,16 +18,18 @@ type LogItemProps = {
 const LogItem: FC<LogItemProps> = ({ entries, instanceId, title, ...props }) => {
 	const t = useTranslation();
 
-	return <Accordion.Item title={title} {...props}>
-		{instanceId && <Box>{t('Instance')}: {instanceId}</Box>}
-		{entries.map(({ severity, timestamp, caller, args }, i) => <LogEntry
-			key={i}
-			severity={severity}
-			timestamp={timestamp}
-			caller={caller}
-			args={args}
-		/>)}
-	</Accordion.Item>;
+	return (
+		<Accordion.Item title={title} {...props}>
+			{instanceId && (
+				<Box>
+					{t('Instance')}: {instanceId}
+				</Box>
+			)}
+			{entries.map(({ severity, timestamp, caller, args }, i) => (
+				<LogEntry key={i} severity={severity} timestamp={timestamp} caller={caller} args={args} />
+			))}
+		</Accordion.Item>
+	);
 };
 
 export default LogItem;

@@ -9,7 +9,7 @@ import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { Section } from '../Section';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 
-export function MessagesSentSection() {
+const MessagesSentSection = () => {
 	const t = useTranslation();
 
 	const periodOptions = useMemo(() => [
@@ -83,7 +83,10 @@ export function MessagesSentSection() {
 	}, [data, period]);
 
 	const downloadData = () => {
-		const data = values.map(({ date, newMessages }) => [date, newMessages]);
+		const data = [
+			['Date', 'Messages'],
+			...values.map(({ date, newMessages }) => [date, newMessages]),
+		];
 		downloadCsvAs(data, `MessagesSentSection_start_${ params.start }_end_${ params.end }`);
 	};
 
@@ -110,7 +113,11 @@ export function MessagesSentSection() {
 				? <Box style={{ height: 240 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
-							<Box style={{ position: 'absolute', width: '100%', height: '100%' }}>
+							<Box style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}>
 								<ResponsiveBar
 									data={values}
 									indexBy='date'
@@ -174,4 +181,6 @@ export function MessagesSentSection() {
 				: <Skeleton variant='rect' height={240} />}
 		</Flex.Container>
 	</Section>;
-}
+};
+
+export default MessagesSentSection;

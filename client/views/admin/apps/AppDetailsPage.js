@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useRef } from 'react';
 import { Button, ButtonGroup, Icon, Box, Throbber } from '@rocket.chat/fuselage';
+import React, { useState, useCallback, useRef } from 'react';
 
+import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
 import { useRoute, useCurrentRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
-import { useAppInfo } from './hooks/useAppInfo';
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import { handleAPIError } from './helpers';
-import AppDetailsPageContent from './AppDetailsPageContent';
-import SettingsDisplay from './SettingsDisplay';
 import APIsDisplay from './APIsDisplay';
+import AppDetailsPageContent from './AppDetailsPageContent';
 import LoadingDetails from './LoadingDetails';
+import SettingsDisplay from './SettingsDisplay';
+import { handleAPIError } from './helpers';
+import { useAppInfo } from './hooks/useAppInfo';
 
 function AppDetailsPage({ id }) {
 	const t = useTranslation();
@@ -36,37 +36,50 @@ function AppDetailsPage({ id }) {
 		const { current } = settingsRef;
 		setIsSaving(true);
 		try {
-			await Apps.setAppSettings(id, Object.values(settings).map((value) => ({ ...value, value: current[value.id] })));
+			await Apps.setAppSettings(
+				id,
+				Object.values(settings).map((value) => ({ ...value, value: current[value.id] })),
+			);
 		} catch (e) {
 			handleAPIError(e);
 		}
 		setIsSaving(false);
 	}, [id, settings]);
 
-	return <Page flexDirection='column'>
-		<Page.Header title={t('App_Details')}>
-			<ButtonGroup>
-				<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
-					{!isSaving && t('Save_changes')}
-					{isSaving && <Throbber inheritColor/>}
-				</Button>
-				<Button onClick={handleReturn}>
-					<Icon name='back'/>
-					{t('Back')}
-				</Button>
-			</ButtonGroup>
-		</Page.Header>
-		<Page.ScrollableContentWithShadow >
-			<Box maxWidth='x600' w='full' alignSelf='center'>
-				{isLoading && <LoadingDetails />}
-				{!isLoading && <>
-					<AppDetailsPageContent data={data} />
-					{!!showApis && <APIsDisplay apis={apis}/>}
-					{!!showSettings && <SettingsDisplay settings={settings} setHasUnsavedChanges={setHasUnsavedChanges} settingsRef={settingsRef}/>}
-				</>}
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+	return (
+		<Page flexDirection='column'>
+			<Page.Header title={t('App_Details')}>
+				<ButtonGroup>
+					<Button primary disabled={!hasUnsavedChanges || isSaving} onClick={saveAppSettings}>
+						{!isSaving && t('Save_changes')}
+						{isSaving && <Throbber inheritColor />}
+					</Button>
+					<Button onClick={handleReturn}>
+						<Icon name='back' />
+						{t('Back')}
+					</Button>
+				</ButtonGroup>
+			</Page.Header>
+			<Page.ScrollableContentWithShadow>
+				<Box maxWidth='x600' w='full' alignSelf='center'>
+					{isLoading && <LoadingDetails />}
+					{!isLoading && (
+						<>
+							<AppDetailsPageContent data={data} />
+							{!!showApis && <APIsDisplay apis={apis} />}
+							{!!showSettings && (
+								<SettingsDisplay
+									settings={settings}
+									setHasUnsavedChanges={setHasUnsavedChanges}
+									settingsRef={settingsRef}
+								/>
+							)}
+						</>
+					)}
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default AppDetailsPage;

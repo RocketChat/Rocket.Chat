@@ -8,12 +8,6 @@ import {
 import { Users } from '../../models';
 
 export class PendingAvatarImporter extends Base {
-	constructor(info, importRecord) {
-		super(info, importRecord);
-		this.userTags = [];
-		this.bots = {};
-	}
-
 	prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
@@ -58,7 +52,6 @@ export class PendingAvatarImporter extends Base {
 								Users.update({ _id }, { $unset: { _pendingAvatarUrl: '' } });
 							} catch (error) {
 								this.logger.warn(`Failed to set ${ name }'s avatar from url ${ url }`);
-								console.log(`Failed to set ${ name }'s avatar from url ${ url }`);
 							}
 						});
 					} finally {
@@ -71,7 +64,7 @@ export class PendingAvatarImporter extends Base {
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {
-				console.log('CursorNotFound');
+				this.logger.info('CursorNotFound');
 				return this.startImport();
 			}
 

@@ -1,6 +1,7 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Users } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export async function findUsersToAutocomplete({ uid, selector }) {
 	if (!await hasPermissionAsync(uid, 'view-outside-room')) {
@@ -9,7 +10,7 @@ export async function findUsersToAutocomplete({ uid, selector }) {
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
 	const options = {
-		fields: {
+		projection: {
 			name: 1,
 			username: 1,
 			nickname: 1,
