@@ -36,6 +36,8 @@
 
 .rc-old code.hljs {
 	overflow-y: hidden;
+
+	padding: 0.5em;
 }
 
 .rc-old pre {

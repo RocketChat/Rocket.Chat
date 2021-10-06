@@ -54,3 +54,4 @@
 
 /* Legacy theming */
 @import 'imports/general/theme_old.css';
+@import 'highlight.js/styles/github.css';

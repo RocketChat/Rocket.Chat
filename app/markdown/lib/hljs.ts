@@ -1,8 +1,7 @@
-import hljs from 'highlight.js/lib/highlight';
+import hljs from 'highlight.js/lib/core';
 import clean from 'highlight.js/lib/languages/clean';
 import markdown from 'highlight.js/lib/languages/markdown';
 import javascript from 'highlight.js/lib/languages/javascript';
-import 'highlight.js/styles/github.css';
 
 const languages = {
 	'1c': () => import('highlight.js/lib/languages/1c'),
@@ -28,7 +27,6 @@ const languages = {
 	basic: () => import('highlight.js/lib/languages/basic'),
 	bnf: () => import('highlight.js/lib/languages/bnf'),
 	brainfuck: () => import('highlight.js/lib/languages/brainfuck'),
-	'c-like': () => import('highlight.js/lib/languages/c-like'),
 	c: () => import('highlight.js/lib/languages/c'),
 	cal: () => import('highlight.js/lib/languages/cal'),
 	capnproto: () => import('highlight.js/lib/languages/capnproto'),
@@ -85,7 +83,6 @@ const languages = {
 	haskell: () => import('highlight.js/lib/languages/haskell'),
 	haxe: () => import('highlight.js/lib/languages/haxe'),
 	hsp: () => import('highlight.js/lib/languages/hsp'),
-	htmlbars: () => import('highlight.js/lib/languages/htmlbars'),
 	http: () => import('highlight.js/lib/languages/http'),
 	hy: () => import('highlight.js/lib/languages/hy'),
 	inform7: () => import('highlight.js/lib/languages/inform7'),
@@ -136,6 +133,12 @@ const languages = {
 	pf: () => import('highlight.js/lib/languages/pf'),
 	pgsql: () => import('highlight.js/lib/languages/pgsql'),
 	php: () => import('highlight.js/lib/languages/php'),
+	php3: () => import('highlight.js/lib/languages/php'),
+	php4: () => import('highlight.js/lib/languages/php'),
+	php5: () => import('highlight.js/lib/languages/php'),
+	php6: () => import('highlight.js/lib/languages/php'),
+	php7: () => import('highlight.js/lib/languages/php'),
+	php8: () => import('highlight.js/lib/languages/php'),
 	'php-template': () => import('highlight.js/lib/languages/php-template'),
 	plaintext: () => import('highlight.js/lib/languages/plaintext'),
 	pony: () => import('highlight.js/lib/languages/pony'),
@@ -169,7 +172,6 @@ const languages = {
 	smalltalk: () => import('highlight.js/lib/languages/smalltalk'),
 	sml: () => import('highlight.js/lib/languages/sml'),
 	sqf: () => import('highlight.js/lib/languages/sqf'),
-	sql_more: () => import('highlight.js/lib/languages/sql_more'),
 	sql: () => import('highlight.js/lib/languages/sql'),
 	stan: () => import('highlight.js/lib/languages/stan'),
 	stata: () => import('highlight.js/lib/languages/stata'),
@@ -196,10 +198,14 @@ const languages = {
 	xl: () => import('highlight.js/lib/languages/xl'),
 	xquery: () => import('highlight.js/lib/languages/xquery'),
 	zephir: () => import('highlight.js/lib/languages/zephir'),
-};
+	zsh: () => import('highlight.js/lib/languages/shell'),
+} as const;
 
-export const register = async (lang) => {
-	if (!(lang in languages)) {
+const isLanguageSupported = (lang: string): lang is keyof typeof languages =>
+	lang in languages;
+
+export const register = async (lang: string): Promise<void> => {
+	if (!isLanguageSupported(lang)) {
 		return register('plaintext');
 	}
 
