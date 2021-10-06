@@ -169,6 +169,7 @@ export class LDAPManager {
 			const [ldapUser] = users;
 			if (!await ldap.authenticate(ldapUser.dn, password)) {
 				logger.debug(`Wrong password for ${ escapedUsername }`);
+				throw new Error('Invalid user or wrong password');
 			}
 
 			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
