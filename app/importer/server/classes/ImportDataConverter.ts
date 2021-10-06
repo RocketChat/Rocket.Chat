@@ -221,10 +221,19 @@ export class ImportDataConverter {
 
 		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
-			$set: {},
+			$set: {
+				...userData.roles && { roles: userData.roles },
+				...userData.type && { type: userData.type },
+				...userData.statusText && { statusText: userData.statusText },
+				...userData.bio && { bio: userData.bio },
+				...userData.services?.ldap && { ldap: true },
+				...userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl },
+			},
 		};
 
 		this.addCustomFields(updateData, userData);
+		this.addUserServices(updateData, userData);
+		this.addUserImportId(updateData, userData);
 		this.addUserEmails(updateData, userData, existingUser.emails || []);
 		Users.update({ _id }, updateData);
 
@@ -234,6 +243,10 @@ export class ImportDataConverter {
 
 		if (userData.name || userData.username) {
 			saveUserIdentity({ _id, name: userData.name, username: userData.username });
+		}
+
+		if (userData.importIds.length) {
+			this.addUserToCache(userData.importIds[0], existingUser._id, existingUser.username);
 		}
 	}
 
