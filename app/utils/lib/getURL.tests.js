@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 /* eslint-env mocha */
 import 'babel-polyfill';
 import assert from 'assert';
@@ -89,12 +88,6 @@ const testCases = (options) => {
 			}
 		}
 	} else if (options._cdn_prefix === '') {
-		if (options.full && !options.cdn && !options.cloud) {
-			it('should return with host if full: true', () => {
-				testPaths(options, (path) => _site_url + path);
-			});
-		}
-
 		if (!options.full && options.cdn) {
 			it('should return with cloud host if cdn: true', () => {
 				testPaths(options, (path) => getCloudUrl(_site_url, path));
@@ -106,88 +99,54 @@ const testCases = (options) => {
 				testPaths(options, (path) => getCloudUrl(_site_url, path));
 			});
 		}
-
-		if (options.full && options.cdn && !options.cloud) {
-			it('should return with host if full: true and cdn: true', () => {
-				testPaths(options, (path) => _site_url + path);
-			});
-		}
-	} else {
-		if (options.full && !options.cdn && !options.cloud) {
-			it('should return with host if full: true', () => {
-				testPaths(options, (path) => _site_url + path);
-			});
-		}
-
-		if (!options.full && options.cdn && !options.cloud) {
-			it('should return with cdn prefix if cdn: true', () => {
-				testPaths(options, (path) => options._cdn_prefix + path);
-			});
-		}
-
-		if (!options.full && !options.cdn) {
-			it('should return with cloud host if full: fase and cdn: false', () => {
-				testPaths(options, (path) => getCloudUrl(_site_url, path));
-			});
-		}
-
-		if (options.full && options.cdn && !options.cloud) {
-			it('should return with host if full: true and cdn: true', () => {
-				testPaths(options, (path) => options._cdn_prefix + path);
-			});
-		}
+	} else if (!options.full && !options.cdn) {
+		it('should return with cloud host if full: fase and cdn: false', () => {
+			testPaths(options, (path) => getCloudUrl(_site_url, path));
+		});
 	}
 };
 
-const testOptions = (options) => {
-	testCases({ ...options, cdn: false, full: false, cloud: false });
-	testCases({ ...options, cdn: true, full: false, cloud: false });
-	testCases({ ...options, cdn: false, full: true, cloud: false });
-	testCases({ ...options, cdn: false, full: false, cloud: true });
-	testCases({ ...options, cdn: true, full: true, cloud: false });
-	testCases({ ...options, cdn: false, full: true, cloud: true });
-	testCases({ ...options, cdn: true, full: false, cloud: true });
-	testCases({ ...options, cdn: true, full: true, cloud: true });
+const testCasesForOptions = (description, options) => {
+	describe(description, () => {
+		testCases({ ...options, cdn: false, full: false, cloud: false });
+		testCases({ ...options, cdn: true, full: false, cloud: false });
+		testCases({ ...options, cdn: false, full: true, cloud: false });
+		testCases({ ...options, cdn: false, full: false, cloud: true });
+		testCases({ ...options, cdn: true, full: true, cloud: false });
+		testCases({ ...options, cdn: false, full: true, cloud: true });
+		testCases({ ...options, cdn: true, full: false, cloud: true });
+		testCases({ ...options, cdn: true, full: true, cloud: true });
+	});
 };
 
-describe('getURL', () => {
-	describe('getURL with no CDN, no PREFIX for http://localhost:3000/', () => {
-		testOptions({
-			_cdn_prefix: '',
-			_root_url_path_prefix: '',
-			_site_url: 'http://localhost:3000/',
-		});
+describe.only('getURL', () => {
+	testCasesForOptions('getURL with no CDN, no PREFIX for http://localhost:3000/', {
+		_cdn_prefix: '',
+		_root_url_path_prefix: '',
+		_site_url: 'http://localhost:3000/',
 	});
 
-	describe('getURL with no CDN, no PREFIX for http://localhost:3000', () => {
-		testOptions({
-			_cdn_prefix: '',
-			_root_url_path_prefix: '',
-			_site_url: 'http://localhost:3000',
-		});
+	testCasesForOptions('getURL with no CDN, no PREFIX for http://localhost:3000', {
+		_cdn_prefix: '',
+		_root_url_path_prefix: '',
+		_site_url: 'http://localhost:3000',
 	});
 
-	describe('getURL with CDN, no PREFIX for http://localhost:3000/', () => {
-		testOptions({
-			_cdn_prefix: 'https://cdn.com',
-			_root_url_path_prefix: '',
-			_site_url: 'http://localhost:3000/',
-		});
+	testCasesForOptions('getURL with CDN, no PREFIX for http://localhost:3000/', {
+		_cdn_prefix: 'https://cdn.com',
+		_root_url_path_prefix: '',
+		_site_url: 'http://localhost:3000/',
 	});
 
-	describe('getURL with CDN, PREFIX for http://localhost:3000/', () => {
-		testOptions({
-			_cdn_prefix: 'https://cdn.com',
-			_root_url_path_prefix: 'sub',
-			_site_url: 'http://localhost:3000/',
-		});
+	testCasesForOptions('getURL with CDN, PREFIX for http://localhost:3000/', {
+		_cdn_prefix: 'https://cdn.com',
+		_root_url_path_prefix: 'sub',
+		_site_url: 'http://localhost:3000/',
 	});
 
-	describe('getURL with CDN, PREFIX for https://localhost:3000/', () => {
-		testOptions({
-			_cdn_prefix: 'https://cdn.com',
-			_root_url_path_prefix: 'sub',
-			_site_url: 'https://localhost:3000/',
-		});
+	testCasesForOptions('getURL with CDN, PREFIX for https://localhost:3000/', {
+		_cdn_prefix: 'https://cdn.com',
+		_root_url_path_prefix: 'sub',
+		_site_url: 'https://localhost:3000/',
 	});
 });
