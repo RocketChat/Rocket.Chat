@@ -10,12 +10,8 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { callbacks } from '../../../callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
-import { getConfig } from '../../../ui-utils/client/config';
-import { callMethod } from '../../../ui-utils/client/lib/callMethod';
-
-const fromEntries = Object.fromEntries || function fromEntries(iterable) {
-	return [...iterable].reduce((obj, { 0: key, 1: val }) => Object.assign(obj, { [key]: val }), {});
-};
+import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { call } from '../../../../client/lib/utils/call';
 
 const wrap = (fn) => (...args) => new Promise((resolve, reject) => {
 	fn(...args, (err, result) => {
@@ -129,7 +125,7 @@ export class CachedCollection extends Emitter {
 		userRelated = true,
 		listenChangesForLoggedUsersOnly = false,
 		useSync = true,
-		version = 15,
+		version = 16,
 		maxCacheTime = 60 * 60 * 24 * 30,
 		onSyncData = (/* action, record */) => {},
 	}) {
@@ -201,12 +197,17 @@ export class CachedCollection extends Emitter {
 			const _updatedAt = new Date(record._updatedAt);
 			record._updatedAt = _updatedAt;
 
+			if (record.lastMessage && typeof record.lastMessage._updatedAt === 'string') {
+				record.lastMessage._updatedAt = new Date(record.lastMessage._updatedAt);
+			}
+
 			if (_updatedAt > this.updatedAt) {
 				this.updatedAt = _updatedAt;
 			}
 		});
 
-		this.collection._collection._docs._map = fromEntries(data.records.map((record) => [record._id, record]));
+		this.collection._collection._docs._map = new Map(data.records.map((record) => [record._id, record]));
+
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
 		Object.values(this.collection._collection.queries).forEach((query) => this.collection._collection._recomputeResults(query));
@@ -217,7 +218,7 @@ export class CachedCollection extends Emitter {
 	async loadFromServer() {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await callMethod(this.methodName);
+		const data = await call(this.methodName);
 		this.log(`${ data.length } records loaded from server`);
 		data.forEach((record) => {
 			callbacks.run(`cachedCollection-loadFromServer-${ this.name }`, record, 'changed');
@@ -275,14 +276,17 @@ export class CachedCollection extends Emitter {
 				let room;
 				if (this.eventName === 'subscriptions-changed') {
 					room = ChatRoom.findOne(record.rid);
-					this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					if (room) {
+						this.removeRoomFromCacheWhenUserLeaves(room._id, ChatRoom, CachedChatRoom);
+					}
 				} else {
 					room = this.collection.findOne({
 						_id: record._id,
 					});
 				}
 				if (room) {
-					RoomManager.close(room.t + room.name);
+					room.name && RoomManager.close(room.t + room.name);
+					!room.name && RoomManager.close(room.t + room._id);
 				}
 				this.collection.remove(record._id);
 			} else {
@@ -314,7 +318,7 @@ export class CachedCollection extends Emitter {
 
 		this.log(`syncing from ${ this.updatedAt }`);
 
-		const data = await callMethod(this.syncMethodName, this.updatedAt);
+		const data = await call(this.syncMethodName, this.updatedAt);
 		let changes = [];
 
 		if (data.update && data.update.length > 0) {

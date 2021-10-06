@@ -1,0 +1,16 @@
+.message {
+	&.otr-ack {
+		.info {
+			color: lightgreen;
+
+			&::before {
+				display: inline-block;
+				visibility: visible;
+
+				content: "\e952";
+
+				font-family: 'fontello';
+			}
+		}
+	}
+}

@@ -7,15 +7,16 @@ import { Restivus } from 'meteor/nimble:restivus';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { Logger } from '../../logger';
-import { settings } from '../../settings';
-import { metrics } from '../../metrics';
-import { hasPermission, hasAllPermission } from '../../authorization';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { getRestPayload } from '../../../server/lib/logger/logPayloads';
+import { settings } from '../../settings/server';
+import { metrics } from '../../metrics/server';
+import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
+const logger = new Logger('API');
 
-const logger = new Logger('API', {});
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -127,8 +128,6 @@ export class APIClass extends Restivus {
 			body: result,
 		};
 
-		logger.debug('Success', result);
-
 		return result;
 	}
 
@@ -159,8 +158,6 @@ export class APIClass extends Restivus {
 			statusCode: 400,
 			body: result,
 		};
-
-		logger.debug('Failure', result);
 
 		return result;
 	}
@@ -351,12 +348,27 @@ export class APIClass extends Restivus {
 						entrypoint: route.startsWith('method.call') ? decodeURIComponent(this.request._parsedUrl.pathname.slice(8)) : route,
 					});
 
-					logger.debug(`${ this.request.method.toUpperCase() }: ${ this.request.url }`);
 					this.requestIp = getRequestIP(this.request);
+
+					const startTime = Date.now();
+
+					const log = logger.logger.child({
+						method: this.request.method,
+						url: this.request.url,
+						userId: this.request.headers['x-user-id'],
+						userAgent: this.request.headers['user-agent'],
+						length: this.request.headers['content-length'],
+						host: this.request.headers.host,
+						referer: this.request.headers.referer,
+						remoteIP: this.requestIp,
+						...getRestPayload(this.request.body),
+					});
+
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
+
 					let result;
 
 					const connection = {
@@ -391,21 +403,28 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
-					} catch (e) {
-						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
 
+						log.http({
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
+					} catch (e) {
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+
+						log.http({
+							err: e,
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
-
-					result = result || API.v1.success();
 
 					rocketchatRestApiEnd({
 						status: result.statusCode,
@@ -653,20 +672,51 @@ API = {
 };
 
 const defaultOptionsEndpoint = function _defaultOptionsEndpoint() {
-	if (this.request.method === 'OPTIONS' && this.request.headers['access-control-request-method']) {
-		if (settings.get('API_Enable_CORS') === true) {
-			this.response.writeHead(200, {
-				'Access-Control-Allow-Origin': settings.get('API_CORS_Origin'),
-				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
-				'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
-			});
-		} else {
-			this.response.writeHead(405);
-			this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
-		}
-	} else {
-		this.response.writeHead(404);
+	// check if a pre-flight request
+	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
+		this.done();
+		return;
 	}
+
+	if (!settings.get('API_Enable_CORS')) {
+		this.response.writeHead(405);
+		this.response.write('CORS not enabled. Go to "Admin > General > REST Api" to enable it.');
+		this.done();
+		return;
+	}
+
+	const CORSOriginSetting = String(settings.get('API_CORS_Origin'));
+
+	const defaultHeaders = {
+		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',
+		'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
+	};
+
+	if (CORSOriginSetting === '*') {
+		this.response.writeHead(200, {
+			'Access-Control-Allow-Origin': '*',
+			...defaultHeaders,
+		});
+		this.done();
+		return;
+	}
+
+	const origins = CORSOriginSetting
+		.trim()
+		.split(',')
+		.map((origin) => String(origin).trim().toLocaleLowerCase());
+
+	// if invalid origin reply without required CORS headers
+	if (!origins.includes(this.request.headers.origin)) {
+		this.done();
+		return;
+	}
+
+	this.response.writeHead(200, {
+		'Access-Control-Allow-Origin': this.request.headers.origin,
+		Vary: 'Origin',
+		...defaultHeaders,
+	});
 	this.done();
 };
 
@@ -678,24 +728,6 @@ const createApi = function _createApi(_api, options = {}) {
 		defaultOptionsEndpoint,
 		auth: getUserAuth(),
 	}, options));
-
-	delete _api._config.defaultHeaders['Access-Control-Allow-Origin'];
-	delete _api._config.defaultHeaders['Access-Control-Allow-Headers'];
-	delete _api._config.defaultHeaders.Vary;
-
-	if (settings.get('API_Enable_CORS')) {
-		const origin = settings.get('API_CORS_Origin');
-
-		if (origin) {
-			_api._config.defaultHeaders['Access-Control-Allow-Origin'] = origin;
-
-			if (origin !== '*') {
-				_api._config.defaultHeaders.Vary = 'Origin';
-			}
-		}
-
-		_api._config.defaultHeaders['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token';
-	}
 
 	return _api;
 };

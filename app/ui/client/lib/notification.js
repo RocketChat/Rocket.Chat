@@ -12,9 +12,9 @@ import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-import { getAvatarAsPng } from '../../../ui-utils';
 import { promises } from '../../../promises/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
+import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -101,24 +101,35 @@ export const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (!Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
-			const userId = Meteor.userId();
-			const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
-			const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
+		if (Session.equals(`user_${ Meteor.user().username }_status`, 'busy')) {
+			return;
+		}
 
-			const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+		const userId = Meteor.userId();
+		const newMessageNotification = getUserPreference(userId, 'newMessageNotification');
+		const audioVolume = getUserPreference(userId, 'notificationsSoundVolume');
 
-			if (sub && sub.audioNotificationValue !== 'none') {
-				if (sub && sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-					CustomSounds.play(sub.audioNotificationValue, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				} else if (newMessageNotification !== 'none') {
-					CustomSounds.play(newMessageNotification, {
-						volume: Number((audioVolume / 100).toPrecision(2)),
-					});
-				}
+		const sub = ChatSubscription.findOne({ rid }, { fields: { audioNotificationValue: 1 } });
+
+		if (!sub || sub.audioNotificationValue === 'none') {
+			return;
+		}
+
+		try {
+			if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
+				CustomSounds.play(sub.audioNotificationValue, {
+					volume: Number((audioVolume / 100).toPrecision(2)),
+				});
+				return;
 			}
+
+			if (newMessageNotification !== 'none') {
+				CustomSounds.play(newMessageNotification, {
+					volume: Number((audioVolume / 100).toPrecision(2)),
+				});
+			}
+		} catch (e) {
+			// do nothing
 		}
 	},
 

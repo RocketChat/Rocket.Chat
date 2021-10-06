@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Rooms } from '../../../app/models/server/raw';
 
-Migrations.add({
+addMigration({
 	version: 193,
 	up() {
 		Promise.await(Rooms.col.updateMany({

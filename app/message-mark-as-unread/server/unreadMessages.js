@@ -12,17 +12,24 @@ Meteor.methods({
 			});
 		}
 
-		if (room) {
+		if (room && typeof room === 'string') {
 			const lastMessage = Messages.findVisibleByRoomId(room, { limit: 1, sort: { ts: -1 } }).fetch()[0];
 
 			if (lastMessage == null) {
-				throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+				throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
 					method: 'unreadMessages',
 					action: 'Unread_messages',
 				});
 			}
 
 			return Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+		}
+
+		if (typeof firstUnreadMessage?._id !== 'string') {
+			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
+				method: 'unreadMessages',
+				action: 'Unread_messages',
+			});
 		}
 
 		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {
@@ -41,9 +48,9 @@ Meteor.methods({
 		}
 		const lastSeen = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId).ls;
 		if (firstUnreadMessage.ts >= lastSeen) {
-			return logger.connection.debug('Provided message is already marked as unread');
+			return logger.debug('Provided message is already marked as unread');
 		}
-		logger.connection.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
+		logger.debug(`Updating unread  message of ${ originalMessage.ts } as the first unread`);
 		return Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	},
 });

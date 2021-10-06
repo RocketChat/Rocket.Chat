@@ -35,6 +35,9 @@ export class PublicRoomType extends RoomTypeConfig {
 		if (roomData.prid) {
 			return 'discussion';
 		}
+		if (roomData.teamMain) {
+			return 'team';
+		}
 		return this.icon;
 	}
 

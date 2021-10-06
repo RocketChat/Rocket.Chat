@@ -7,6 +7,4 @@ export default {
 	component: ResetPassword,
 };
 
-export const Basic = () => (
-	<ResetPassword/>
-);
+export const Basic = () => <ResetPassword />;

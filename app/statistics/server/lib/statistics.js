@@ -18,12 +18,14 @@ import {
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
-import { Migrations } from '../../../migrations/server';
+import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
+import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
+import { Team, Analytics } from '../../../../server/sdk';
 
 const wizardFields = [
 	'Organization_Type',
@@ -34,6 +36,24 @@ const wizardFields = [
 	'Server_Type',
 	'Register_Server',
 ];
+
+const getUserLanguages = (totalUsers) => {
+	const result = Promise.await(UsersRaw.getUserLanguages());
+
+	const languages = {
+		none: totalUsers,
+	};
+
+	result.forEach(({ _id, total }) => {
+		if (!_id) {
+			return;
+		}
+		languages[_id] = total;
+		languages.none -= total;
+	});
+
+	return languages;
+};
 
 export const statistics = {
 	get: function _getStatistics() {
@@ -69,12 +89,12 @@ export const statistics = {
 		statistics.activeGuests = Users.getActiveLocalGuestCount();
 		statistics.nonActiveUsers = Users.find({ active: false }).count();
 		statistics.appUsers = Users.find({ type: 'app' }).count();
-		statistics.onlineUsers = Meteor.users.find({ statusConnection: 'online' }).count();
-		statistics.awayUsers = Meteor.users.find({ statusConnection: 'away' }).count();
-		// TODO: Get statuses from the `status` property.
-		statistics.busyUsers = Meteor.users.find({ statusConnection: 'busy' }).count();
+		statistics.onlineUsers = Meteor.users.find({ status: 'online' }).count();
+		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
+		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.userLanguages = getUserLanguages(statistics.totalUsers);
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
@@ -84,6 +104,9 @@ export const statistics = {
 		statistics.totalLivechat = Rooms.findByType('l').count();
 		statistics.totalDiscussions = Rooms.countDiscussions();
 		statistics.totalThreads = Messages.countThreads();
+
+		// Teams statistics
+		statistics.teams = Promise.await(Team.getStatistics());
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = LivechatVisitors.find().count();
@@ -134,6 +157,9 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
+		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+
 		statistics.enterpriseReady = true;
 
 		statistics.uploadsTotal = Uploads.find().count();
@@ -142,7 +168,7 @@ export const statistics = {
 		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;
 
-		statistics.migration = Migrations._getControl();
+		statistics.migration = getControl();
 		statistics.instanceCount = InstanceStatus.getCollection().find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).count();
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
@@ -161,6 +187,7 @@ export const statistics = {
 		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
 
 		statistics.apps = getAppsStatistics();
+		statistics.services = getServicesStatistics();
 
 		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
 			projection: {
@@ -184,6 +211,7 @@ export const statistics = {
 		statistics.pushQueue = Promise.await(NotificationQueue.col.estimatedDocumentCount());
 
 		statistics.enterprise = getEnterpriseStatistics();
+		Promise.await(Analytics.resetSeatRequestCount());
 
 		return statistics;
 	},

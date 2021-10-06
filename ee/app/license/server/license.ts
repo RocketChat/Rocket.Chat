@@ -28,6 +28,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxActiveUsers = 0;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -78,10 +79,6 @@ class LicenseClass {
 				EnterpriseLicenses.emit(`invalid:${ module }`);
 			});
 		});
-	}
-
-	private _hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
-		return Users.getActiveLocalUserCount() <= maxActiveUsers;
 	}
 
 	private _addTags(license: ILicense): void {
@@ -165,6 +162,7 @@ class LicenseClass {
 				}
 				if (!this._validateURL(license.url, this.url)) {
 					item.valid = false;
+					console.error(`#### License error: invalid url, licensed to ${ license.url }, used on ${ this.url }`);
 					this._invalidModules(license.modules);
 					return item;
 				}
@@ -172,18 +170,17 @@ class LicenseClass {
 
 			if (license.expiry && this._validateExpiration(license.expiry)) {
 				item.valid = false;
-				this._invalidModules(license.modules);
-				return item;
-			}
-
-			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(license.maxActiveUsers)) {
-				item.valid = false;
+				console.error(`#### License error: expired, valid until ${ license.expiry }`);
 				this._invalidModules(license.modules);
 				return item;
 			}
 
 			if (license.maxGuestUsers > maxGuestUsers) {
 				maxGuestUsers = license.maxGuestUsers;
+			}
+
+			if (license.maxActiveUsers > maxActiveUsers) {
+				maxActiveUsers = license.maxActiveUsers;
 			}
 
 			this._validModules(license.modules);
@@ -198,6 +195,14 @@ class LicenseClass {
 
 		EnterpriseLicenses.emit('validate');
 		this.showLicenses();
+	}
+
+	canAddNewUser(): boolean {
+		if (!maxActiveUsers) {
+			return true;
+		}
+
+		return maxActiveUsers > Users.getActiveLocalUserCount();
 	}
 
 	showLicenses(): void {
@@ -283,6 +288,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxActiveUsers(): number {
+	return maxActiveUsers;
+}
+
 export function getLicenses(): IValidLicense[] {
 	return License.getLicenses();
 }
@@ -293,6 +302,10 @@ export function getModules(): string[] {
 
 export function getTags(): ILicenseTag[] {
 	return License.getTags();
+}
+
+export function canAddNewUser(): boolean {
+	return License.canAddNewUser();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {

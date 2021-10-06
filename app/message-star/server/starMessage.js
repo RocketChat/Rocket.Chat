@@ -14,13 +14,16 @@ Meteor.methods({
 
 		if (!settings.get('Message_AllowStarring')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message starring not allowed', {
-				method: 'pinMessage',
+				method: 'starMessage',
 				action: 'Message_starring',
 			});
 		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(message.rid, Meteor.userId(), { fields: { _id: 1 } });
 		if (!subscription) {
+			return false;
+		}
+		if (!Messages.findOneByRoomIdAndMessageId(message.rid, message._id)) {
 			return false;
 		}
 		const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());

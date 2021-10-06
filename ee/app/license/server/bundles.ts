@@ -12,6 +12,9 @@ const bundles: IBundle = {
 		'engagement-dashboard',
 		'push-privacy',
 		'scalability',
+		'teams-mention',
+		'saml-enterprise',
+		'oauth-enterprise',
 	],
 	pro: [
 	],

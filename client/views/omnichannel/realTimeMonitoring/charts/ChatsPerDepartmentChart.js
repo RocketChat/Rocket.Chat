@@ -1,24 +1,22 @@
 import React, { useRef, useEffect } from 'react';
 
+import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
+import { useTranslation } from '../../../../contexts/TranslationContext';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
-import { useTranslation } from '../../../../contexts/TranslationContext';
-import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 
 const initialData = {
 	departments: {},
 };
 
-const init = (canvas, context, t) => drawLineChart(
-	canvas,
-	context,
-	[t('Open'), t('Closed')],
-	[],
-	[[], []],
-	{ legends: true, anim: true, smallTicks: true },
-);
+const init = (canvas, context, t) =>
+	drawLineChart(canvas, context, [t('Open'), t('Closed')], [], [[], []], {
+		legends: true,
+		anim: true,
+		smallTicks: true,
+	});
 
 const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 	const t = useTranslation();
@@ -33,16 +31,15 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData(
-		'livechat/analytics/dashboards/charts/chats-per-department',
-		params,
-	);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('livechat/analytics/dashboards/charts/chats-per-department', params);
 
 	reloadRef.current.chatsPerDepartmentChart = reload;
 
-	const {
-		departments = {},
-	} = data ?? initialData;
+	const chartData = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -53,13 +50,16 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {
-			Object.entries(departments).forEach(([name, value]) => {
-				updateChartData(name, [value.open, value.closed]);
-			});
+			if (chartData && chartData.success) {
+				delete chartData.success;
+				Object.entries(chartData).forEach(([name, value]) => {
+					updateChartData(name, [value.open, value.closed]);
+				});
+			}
 		}
-	}, [departments, state, t, updateChartData]);
+	}, [chartData, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props}/>;
+	return <Chart ref={canvas} {...props} />;
 };
 
 export default ChatsPerDepartmentChart;

@@ -15,7 +15,7 @@ export const serveAvatar = (avatar, format, res) => {
 
 	if (['png', 'jpg', 'jpeg'].includes(format)) {
 		res.setHeader('Content-Type', `image/${ format }`);
-		sharp(new Buffer(avatar))
+		sharp(Buffer.from(avatar))
 			.toFormat(format)
 			.pipe(res);
 		return;

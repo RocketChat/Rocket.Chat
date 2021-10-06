@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Settings } from '../../../app/models/server';
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
 
-Migrations.add({
+addMigration({
 	version: 201,
 	up: () => {
 		const pushEnabled = Settings.findOneById('Push_enable');

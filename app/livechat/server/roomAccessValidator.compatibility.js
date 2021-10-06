@@ -41,7 +41,15 @@ export const validators = [
 
 		const filter = {
 			rid: room._id,
-			...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } },
+			$or: [
+				{
+					$and: [
+						{ defaultAgent: { $exists: true } },
+						{ 'defaultAgent.agentId': user._id },
+					],
+				},
+				{ ...departmentIds && departmentIds.length > 0 && { department: { $in: departmentIds } } },
+			],
 		};
 
 		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });

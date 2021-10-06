@@ -1,9 +1,8 @@
 <template name="messageBox">
 	<div class="rc-message-box rc-new {{#if isEmbedded}}rc-message-box--embedded{{/if}}">
 		{{#unless isAnonymousOrMustJoinWithCode}}
-			{{#unless tmid}}
-				{{> messageBoxTyping rid=rid}}
-			{{/unless}}
+
+			{{> userActionIndicator rid=rid tmid=tmid}}
 
 			{{#if isWritable}}
 				{{#if popupConfig}}
@@ -84,7 +83,7 @@
 					{{#if isBlockedOrBlocker}}
 						{{_ "room_is_blocked"}}
 					{{else}}
-						{{> messageBoxReadOnly rid=rid isSubscribed=isSubscribed}}
+						{{> messageBoxReadOnly rid=rid isSubscribed=isSubscribed onHold=onHold }}
 					{{/if}}
 				</div>
 			{{/if}}

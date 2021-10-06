@@ -6,7 +6,7 @@ import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 
-const logger = new Logger('WebDAV_Upload', {});
+const logger = new Logger('WebDAV_Upload');
 
 Meteor.methods({
 	async uploadFileToWebdav(accountId, fileData, name) {
@@ -24,7 +24,7 @@ Meteor.methods({
 		}
 
 		const uploadFolder = 'Rocket.Chat Uploads/';
-		const buffer = new Buffer(fileData);
+		const buffer = Buffer.from(fileData);
 
 		try {
 			const cred = getWebdavCredentials(account);

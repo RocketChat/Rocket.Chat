@@ -11,7 +11,7 @@ import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/l
 
 Meteor.startup(function() {
 	Meteor.defer(() => {
-		if (!Rooms.findOneById('GENERAL')) {
+		if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
 			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
 			});
@@ -89,7 +89,7 @@ Meteor.startup(function() {
 					let nameValidation;
 
 					try {
-						nameValidation = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+						nameValidation = new RegExp(`^${ settings.get('UTF8_User_Names_Validation') }$`);
 					} catch (error) {
 						nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 					}

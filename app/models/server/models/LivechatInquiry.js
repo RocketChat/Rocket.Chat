@@ -37,6 +37,10 @@ export class LivechatInquiry extends Base {
 		);
 	}
 
+	getQueuedInquiries(options) {
+		return this.find({ status: 'queued' }, options);
+	}
+
 	/*
 	* mark the inquiry as taken
 	*/
@@ -45,7 +49,7 @@ export class LivechatInquiry extends Base {
 			_id: inquiryId,
 		}, {
 			$set: { status: 'taken' },
-			$unset: { defaultAgent: 1 },
+			$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
 		});
 	}
 
@@ -63,13 +67,25 @@ export class LivechatInquiry extends Base {
 	/*
 	* mark inquiry as queued
 	*/
-	queueInquiry(inquiryId, defaultAgent) {
+	queueInquiry(inquiryId) {
 		return this.update({
 			_id: inquiryId,
 		}, {
 			$set: {
 				status: 'queued',
-				...defaultAgent && { defaultAgent },
+			},
+		});
+	}
+
+	/*
+	* mark inquiry as ready
+	*/
+	readyInquiry(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: {
+				status: 'ready',
 			},
 		});
 	}
@@ -107,6 +123,16 @@ export class LivechatInquiry extends Base {
 		};
 
 		return this.update(query, update);
+	}
+
+	setDefaultAgentById(inquiryId, defaultAgent) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: {
+				defaultAgent,
+			},
+		});
 	}
 
 	setNameByRoomId(rid, name) {
@@ -206,6 +232,48 @@ export class LivechatInquiry extends Base {
 
 		this.remove(query);
 	}
+
+	getUnnatendedQueueItems(date) {
+		const query = {
+			status: 'queued',
+			estimatedInactivityCloseTimeAt: { $lte: new Date(date) },
+		};
+		return this.find(query);
+	}
+
+	setEstimatedInactivityCloseTime(_id, date) {
+		return this.update({ _id }, {
+			$set: {
+				estimatedInactivityCloseTimeAt: new Date(date),
+			},
+		});
+	}
+
+	unsetEstimatedInactivityCloseTime() {
+		return this.update({ status: 'queued' }, {
+			$unset: {
+				estimatedInactivityCloseTimeAt: 1,
+			},
+		}, { multi: true });
+	}
+
+	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
+	// leaving this here for when the time comes
+	/* updateEstimatedInactivityCloseTime(milisecondsToAdd) {
+		return this.model.rawCollection().updateMany(
+			{ status: 'queued' },
+			[{
+				// in case this field doesn't exists, set at the last time the item was modified (updatedAt)
+				$set: { estimatedInactivityCloseTimeAt: '$_updatedAt' },
+			}, {
+				$set: {
+					estimatedInactivityCloseTimeAt: {
+						$add: ['$estimatedInactivityCloseTimeAt', milisecondsToAdd],
+					},
+				},
+			}],
+		);
+	} */
 }
 
 export default new LivechatInquiry();

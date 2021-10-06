@@ -10,6 +10,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
@@ -25,6 +26,9 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
+import { AppEvents, Apps } from '../../../apps/server';
+import { streamToBuffer } from './streamToBuffer';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -55,7 +59,8 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload(file) {
+	validateFileUpload(fileData) {
+		const { file = fileData, content = Buffer.from([]) } = fileData;
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -93,10 +98,21 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
+		// App IPreFileUpload event hook
+		try {
+			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }));
+		} catch (error) {
+			if (error instanceof AppsEngineException) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
+
+			throw error;
+		}
+
 		return true;
 	},
 
-	validateAvatarUpload(file) {
+	validateAvatarUpload({ file }) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
@@ -220,7 +236,7 @@ export const FileUpload = {
 				.then(Meteor.bindEnvironment(({ data, info }) => {
 					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
 						if (err != null) {
-							console.error(err);
+							SystemLogger.error(err);
 						}
 
 						this.getCollection().direct.update({ _id: file._id }, {
@@ -251,8 +267,47 @@ export const FileUpload = {
 		return result;
 	},
 
+	createImageThumbnail(file) {
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
+			return;
+		}
+
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
+
+		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
+			return;
+		}
+
+		file = Uploads.findOneById(file._id);
+		file = FileUpload.addExtensionTo(file);
+		const store = FileUpload.getStore('Uploads');
+		const image = store._store.getReadStream(file._id, file);
+
+		const transformer = sharp()
+			.resize({ width, height, fit: 'inside' });
+
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		image.pipe(transformer);
+
+		return result;
+	},
+
+	uploadImageThumbnail(file, buffer, rid, userId) {
+		const store = FileUpload.getStore('Uploads');
+		const details = {
+			name: `thumb-${ file.name }`,
+			size: buffer.length,
+			type: file.type,
+			rid,
+			userId,
+		};
+
+		return store.insertSync(details, buffer);
+	},
+
 	uploadsOnValidate(file) {
-		if (!/^image\/((x-windows-)?bmp|p?jpeg|png)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif)$/.test(file.type)) {
 			return;
 		}
 
@@ -263,20 +318,22 @@ export const FileUpload = {
 		const s = sharp(tmpFile);
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
-				console.error(err);
+				SystemLogger.error(err);
 				return fut.return();
 			}
+
+			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
 
 			const identify = {
 				format: metadata.format,
 				size: {
-					width: metadata.width,
-					height: metadata.height,
+					width: rotated ? metadata.height : metadata.width,
+					height: rotated ? metadata.width : metadata.height,
 				},
 			};
 
 			const reorientation = (cb) => {
-				if (!metadata.orientation || metadata.orientation === 1 || settings.get('FileUpload_RotateImages') !== true) {
+				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()
@@ -288,7 +345,7 @@ export const FileUpload = {
 							}));
 						}));
 					})).catch((err) => {
-						console.error(err);
+						SystemLogger.error(err);
 						fut.return();
 					});
 			};
@@ -375,7 +432,7 @@ export const FileUpload = {
 
 	getStoreByName(handlerName) {
 		if (this.handlers[handlerName] == null) {
-			console.error(`Upload handler "${ handlerName }" does not exists`);
+			SystemLogger.error(`Upload handler "${ handlerName }" does not exists`);
 		}
 		return this.handlers[handlerName];
 	},
@@ -404,6 +461,8 @@ export const FileUpload = {
 
 		store.copy(file, buffer);
 	},
+
+	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
 
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
@@ -583,12 +642,14 @@ export class FileUploadClass {
 	}
 
 	insert(fileData, streamOrBuffer, cb) {
-		fileData.size = parseInt(fileData.size) || 0;
+		if (streamOrBuffer instanceof stream) {
+			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+		}
 
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
-			filter.check(fileData);
+			filter.check({ file: fileData, content: streamOrBuffer });
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

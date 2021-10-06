@@ -1,7 +1,6 @@
 import { isEmptyArray } from './comparisons';
 
-const isNullDocument = (doc: unknown): doc is undefined | null =>
-	doc === undefined || doc === null;
+const isNullDocument = (doc: unknown): doc is undefined | null => doc === undefined || doc === null;
 
 const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
 	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');

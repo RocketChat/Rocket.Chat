@@ -6,7 +6,7 @@ import _ from 'underscore';
 import mem from 'mem';
 
 import { APIClient } from '../../utils/client';
-import { saveUser, interestedUserIds } from '../../../imports/startup/client/listenActiveUsers';
+import { saveUser, interestedUserIds } from '../../../client/startup/listenActiveUsers';
 import { Presence } from '../../../client/lib/presence';
 
 import './userPresence.html';
@@ -73,18 +73,14 @@ const featureExists = !!window.IntersectionObserver;
 
 const observer = featureExists && new IntersectionObserver(handleEntries, options);
 
-let wasConnected = Meteor.status().connected;
-
 Tracker.autorun(() => {
 	// Only clear statuses on disconnect, prevent process it on reconnect again
 	const isConnected = Meteor.status().connected;
-	if (!Meteor.userId() || (wasConnected && !isConnected)) {
-		wasConnected = isConnected;
+	if (!Meteor.userId() || !isConnected) {
 		Presence.reset();
 		return Meteor.users.update({ status: { $exists: true } }, { $unset: { status: true } }, { multi: true });
 	}
 	mem.clear(get);
-	wasConnected = isConnected;
 
 	Presence.restart();
 

@@ -4,6 +4,7 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
 
 class ExternalQueue {
 	constructor() {
@@ -35,7 +36,7 @@ class ExternalQueue {
 				});
 
 				if (result && result.data && result.data.username) {
-					const agent = Users.findOneOnlineAgentByUsername(result.data.username);
+					const agent = Users.findOneOnlineAgentByUserList(result.data.username);
 
 					if (agent) {
 						return {
@@ -45,15 +46,11 @@ class ExternalQueue {
 					}
 				}
 			} catch (e) {
-				console.error('Error requesting agent from external queue.', e);
+				SystemLogger.error('Error requesting agent from external queue.', e);
 				break;
 			}
 		}
 		throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-	}
-
-	delegateAgent(agent) {
-		return agent;
 	}
 }
 

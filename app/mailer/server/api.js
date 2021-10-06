@@ -5,9 +5,10 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { escapeHTML } from '../../../lib/escapeHTML';
+import { replaceVariables } from './utils.js';
 
 let contentHeader;
 let contentFooter;
@@ -24,8 +25,13 @@ settings.get('Language', (key, value) => {
 	lng = value || 'en';
 });
 
-export const replacekey = (str, key, value = '') => str.replace(new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'), escapeHTML(value));
-export const translate = (str) => str.replace(/\{ ?([^\} ]+)(( ([^\}]+))+)? ?\}/gmi, (match, key) => TAPi18n.__(key, { lng }));
+
+export const replacekey = (str, key, value = '') => str.replace(
+	new RegExp(`(\\[${ key }\\]|__${ key }__)`, 'igm'),
+	value,
+);
+
+export const translate = (str) => replaceVariables(str, (match, key) => TAPi18n.__(key, { lng }));
 export const replace = function replace(str, data = {}) {
 	if (!str) {
 		return '';
@@ -53,6 +59,7 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 		return ret;
 	}, {}),
 });
+
 export const wrap = (html, data = {}) => {
 	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);
@@ -109,7 +116,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 	}
 
 	if (!text) {
-		text = stripHtml(html);
+		text = stripHtml(html).result;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -127,7 +134,7 @@ export const send = ({ to, from, replyTo, subject, html, text, data, headers }) 
 		subject: replace(subject, data),
 		text: text
 			? replace(text, data)
-			: stripHtml(replace(html, data)),
+			: stripHtml(replace(html, data)).result,
 		html: wrap(html, data),
 		headers,
 	});

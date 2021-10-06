@@ -63,8 +63,14 @@ import { IntegrationHistoryRaw } from './IntegrationHistory';
 import IntegrationHistoryModel from '../models/IntegrationHistory';
 import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import { OmnichannelQueueRaw } from './OmnichannelQueue';
+import EmailInboxModel from '../models/EmailInbox';
+import { EmailInboxRaw } from './EmailInbox';
+import EmailMessageHistoryModel from '../models/EmailMessageHistory';
+import { EmailMessageHistoryRaw } from './EmailMessageHistory';
 import { api } from '../../../../server/sdk/api';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
+import ImportDataModel from '../models/ImportData';
+import { ImportDataRaw } from './ImportData';
 
 const trashCollection = trash.rawCollection();
 
@@ -100,6 +106,9 @@ export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.ra
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
 export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
+export const EmailInbox = new EmailInboxRaw(EmailInboxModel.model.rawCollection(), trashCollection);
+export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
+export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
@@ -116,6 +125,7 @@ const map = {
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
 	[IntegrationHistory.col.collectionName]: IntegrationHistoryModel,
 	[Integrations.col.collectionName]: IntegrationsModel,
+	[EmailInbox.col.collectionName]: EmailInboxModel,
 };
 
 if (!process.env.DISABLE_DB_WATCH) {
@@ -134,6 +144,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 		InstanceStatus,
 		IntegrationHistory,
 		Integrations,
+		EmailInbox,
 	};
 
 	initWatchers(models, api.broadcastLocal.bind(api), (model, fn) => {

@@ -1,9 +1,9 @@
-import { Template } from 'meteor/templating';
-import { Blaze } from 'meteor/blaze';
-import React, { useLayoutEffect, useRef } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import React, { memo, useLayoutEffect, useRef } from 'react';
 
-export const BlazeTemplate = React.memo(({ name, flexShrink, overflow, onClick, children, ...props }) => {
+const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props }) => {
 	const ref = useRef();
 	useLayoutEffect(() => {
 		if (!ref.current || !Template[name]) {
@@ -20,9 +20,19 @@ export const BlazeTemplate = React.memo(({ name, flexShrink, overflow, onClick, 
 			clearTimeout(timeout);
 			view && Blaze.remove(view);
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [name]);
-	return <Box rcx-blaze-template display='flex' onClick={onClick} flexDirection='column' flexGrow={1} ref={ref} { ...{ flexShrink, overflow }}/>;
-});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [name, JSON.stringify(props)]);
+	return (
+		<Box
+			rcx-blaze-template
+			display='flex'
+			onClick={onClick}
+			flexDirection='column'
+			flexGrow={1}
+			ref={ref}
+			{...{ flexShrink, overflow }}
+		/>
+	);
+};
 
-export default React.memo(BlazeTemplate);
+export default memo(BlazeTemplate);

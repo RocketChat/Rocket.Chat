@@ -21,7 +21,6 @@ const following = {
 	following: true,
 };
 
-
 const unread = {
 	...largeText,
 	unread: true,

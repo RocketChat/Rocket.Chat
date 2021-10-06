@@ -8,9 +8,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { timeAgo } from '../../ui/client/views/app/helpers';
-import { modal, call } from '../../ui-utils';
-import { t } from '../../utils';
-import { fileUploadHandler } from '../../file-upload';
+import { modal } from '../../ui-utils/client';
+import { t } from '../../utils/client';
+import { fileUploadHandler } from '../../file-upload/client';
+import { call } from '../../../client/lib/utils/call';
 
 function sortTable(data, sortBy, sortDirection) {
 	if (sortDirection === 'desc') {

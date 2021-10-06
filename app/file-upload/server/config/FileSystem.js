@@ -6,6 +6,9 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
+import { getFileRange, setRangeHeaders } from '../lib/ranges';
+
+const statSync = Meteor.wrapAsync(fs.stat);
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
@@ -14,18 +17,40 @@ const FileSystemUploads = new FileUploadClass({
 	get(file, req, res) {
 		const filePath = this.store.getFilePath(file._id, file);
 
+		const options = {};
+
 		try {
-			const stat = Meteor.wrapAsync(fs.stat)(filePath);
-
-			if (stat && stat.isFile()) {
-				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
-				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-				res.setHeader('Content-Type', file.type || 'application/octet-stream');
-				res.setHeader('Content-Length', file.size);
-
-				this.store.getReadStream(file._id, file).pipe(res);
+			const stat = statSync(filePath);
+			if (!stat?.isFile()) {
+				res.writeHead(404);
+				res.end();
+				return;
 			}
+
+			file = FileUpload.addExtensionTo(file);
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file.name) }`);
+			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+			res.setHeader('Content-Type', file.type || 'application/octet-stream');
+
+			if (req.headers.range) {
+				const range = getFileRange(file, req);
+
+				if (range) {
+					setRangeHeaders(range, file, res);
+					if (range.outOfRange) {
+						return;
+					}
+					options.start = range.start;
+					options.end = range.stop;
+				}
+			}
+
+			// set content-length if range has not set
+			if (!res.getHeader('Content-Length')) {
+				res.setHeader('Content-Length', file.size);
+			}
+
+			this.store.getReadStream(file._id, file, options).pipe(res);
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
@@ -35,7 +60,7 @@ const FileSystemUploads = new FileUploadClass({
 	copy(file, out) {
 		const filePath = this.store.getFilePath(file._id, file);
 		try {
-			const stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = statSync(filePath);
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -56,7 +81,7 @@ const FileSystemAvatars = new FileUploadClass({
 		const filePath = this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = statSync(filePath);
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);
@@ -77,7 +102,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		const filePath = this.store.getFilePath(file._id, file);
 
 		try {
-			const stat = Meteor.wrapAsync(fs.stat)(filePath);
+			const stat = statSync(filePath);
 
 			if (stat && stat.isFile()) {
 				file = FileUpload.addExtensionTo(file);

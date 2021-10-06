@@ -1,10 +1,7 @@
-import s from 'underscore.string';
-
 import { Logger } from '../../../logger';
 import { settings } from '../../../settings';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 const logger = new Logger('getFullUserData');
 
@@ -92,44 +89,11 @@ export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername
 		fields,
 	};
 	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	if (!user) {
+		return null;
+	}
+
+	user.canViewAllInfo = canViewAllInfo;
 
 	return myself ? user : removePasswordInfo(user);
 }
-
-export const getFullUserData = function({ userId, filter, limit: l }) {
-	const username = s.trim(filter);
-	const userToRetrieveFullUserData = username && Users.findOneByUsername(username, { fields: { username: 1 } });
-	if (!userToRetrieveFullUserData) {
-		return;
-	}
-
-	const isMyOwnInfo = userToRetrieveFullUserData && userToRetrieveFullUserData._id === userId;
-	const viewFullOtherUserInfo = hasPermission(userId, 'view-full-other-user-info');
-
-	const canViewAllInfo = isMyOwnInfo || viewFullOtherUserInfo;
-
-	const limit = !viewFullOtherUserInfo ? 1 : l;
-
-	if (!username && limit <= 1) {
-		return undefined;
-	}
-
-	const fields = getFields(canViewAllInfo);
-
-	const options = {
-		fields,
-		limit,
-		sort: { username: 1 },
-	};
-
-	if (!username) {
-		return Users.find({}, options);
-	}
-
-	if (limit === 1) {
-		return Users.findByUsername(userToRetrieveFullUserData.username, options);
-	}
-
-	const usernameReg = new RegExp(escapeRegExp(username), 'i');
-	return Users.findByUsernameNameOrEmailAddress(usernameReg, options);
-};

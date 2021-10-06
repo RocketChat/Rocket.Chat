@@ -1,15 +1,18 @@
 import { Box, Margins, Throbber } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useMemo } from 'react';
 import s from 'underscore.string';
-import { Meteor } from 'meteor/meteor';
 
-import { useTranslation } from '../../../contexts/TranslationContext';
-import { ProgressStep, ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useEndpoint } from '../../../contexts/ServerContext';
-import { useRoute } from '../../../contexts/RouterContext';
+import {
+	ProgressStep,
+	ImportingStartedStates,
+} from '../../../../app/importer/lib/ImporterProgressStep';
 import Page from '../../../components/Page';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useEndpoint } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../contexts/TranslationContext';
 import { useErrorHandler } from './useErrorHandler';
 
 function ImportProgressPage() {
@@ -53,7 +56,16 @@ function ImportProgressPage() {
 		};
 
 		loadCurrentOperation();
-	}, [getCurrentImportOperation, handleError, importHistoryRoute, prepareImportRoute, setCompleted, setImporterKey, setTotal, t]);
+	}, [
+		getCurrentImportOperation,
+		handleError,
+		importHistoryRoute,
+		prepareImportRoute,
+		setCompleted,
+		setImporterKey,
+		setTotal,
+		t,
+	]);
 
 	useEffect(() => {
 		if (!importerKey) {
@@ -67,7 +79,10 @@ function ImportProgressPage() {
 
 			switch (step) {
 				case ProgressStep.DONE:
-					dispatchToastMessage({ type: 'success', message: t(step[0].toUpperCase() + step.slice(1)) });
+					dispatchToastMessage({
+						type: 'success',
+						message: t(step[0].toUpperCase() + step.slice(1)),
+					});
 					importHistoryRoute.push();
 					return;
 
@@ -110,33 +125,52 @@ function ImportProgressPage() {
 		return () => {
 			streamer.removeListener('progress', handleProgressUpdated);
 		};
-	}, [dispatchToastMessage, getImportProgress, handleError, importHistoryRoute, importerKey, prepareImportRoute, setCompleted, setStep, setTotal, t]);
+	}, [
+		dispatchToastMessage,
+		getImportProgress,
+		handleError,
+		importHistoryRoute,
+		importerKey,
+		prepareImportRoute,
+		setCompleted,
+		setStep,
+		setTotal,
+		t,
+	]);
 
 	const progressRate = useMemo(() => {
 		if (total === 0) {
 			return null;
 		}
 
-		return completed / total * 100;
+		return (completed / total) * 100;
 	}, [completed, total]);
 
-	return <Page>
-		<Page.Header title={t('Importing_Data')} />
+	return (
+		<Page>
+			<Page.Header title={t('Importing_Data')} />
 
-		<Page.ScrollableContentWithShadow>
-			<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
-				<Margins block='x24'>
-					<Box is='p' fontScale='p1'>{t(step[0].toUpperCase() + step.slice(1))}</Box>
-					{progressRate
-						? <Box display='flex' justifyContent='center'>
-							<Box is='progress' value={completed} max={total} marginInlineEnd='x24' />
-							<Box is='span' fontScale='p1'>{completed}/{total} ({s.numberFormat(progressRate, 0) }%)</Box>
+			<Page.ScrollableContentWithShadow>
+				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
+					<Margins block='x24'>
+						<Box is='p' fontScale='p1'>
+							{t(step[0].toUpperCase() + step.slice(1))}
 						</Box>
-						: <Throbber justifyContent='center' />}
-				</Margins>
-			</Box>
-		</Page.ScrollableContentWithShadow>
-	</Page>;
+						{progressRate ? (
+							<Box display='flex' justifyContent='center'>
+								<Box is='progress' value={completed} max={total} marginInlineEnd='x24' />
+								<Box is='span' fontScale='p1'>
+									{completed}/{total} ({s.numberFormat(progressRate, 0)}%)
+								</Box>
+							</Box>
+						) : (
+							<Throbber justifyContent='center' />
+						)}
+					</Margins>
+				</Box>
+			</Page.ScrollableContentWithShadow>
+		</Page>
+	);
 }
 
 export default ImportProgressPage;

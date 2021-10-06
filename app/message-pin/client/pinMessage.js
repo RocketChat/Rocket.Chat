@@ -19,9 +19,14 @@ Meteor.methods({
 			toastr.error(TAPi18n.__('error-pinning-message'));
 			return false;
 		}
+		if (typeof message._id !== 'string') {
+			toastr.error(TAPi18n.__('error-pinning-message'));
+			return false;
+		}
 		toastr.success(TAPi18n.__('Message_has_been_pinned'));
 		return ChatMessage.update({
 			_id: message._id,
+			rid: message.rid,
 		}, {
 			$set: {
 				pinned: true,
@@ -41,9 +46,14 @@ Meteor.methods({
 			toastr.error(TAPi18n.__('error-unpinning-message'));
 			return false;
 		}
+		if (typeof message._id !== 'string') {
+			toastr.error(TAPi18n.__('error-unpinning-message'));
+			return false;
+		}
 		toastr.success(TAPi18n.__('Message_has_been_unpinned'));
 		return ChatMessage.update({
 			_id: message._id,
+			rid: message.rid,
 		}, {
 			$set: {
 				pinned: false,
