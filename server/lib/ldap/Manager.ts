@@ -250,6 +250,18 @@ export class LDAPManager {
 		logger.debug({ msg: 'Syncing user data', ldapUser: _.omit(ldapUser, '_raw'), user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
 
 		const userData = this.mapUserData(ldapUser, usedUsername);
+
+		// make sure to persist existing user data when passing to sync/convert
+		// TODO this is only needed because ImporterDataConverter assigns a default role and type if nothing is set. we might need to figure out a better way and stop doing that there
+		if (existingUser) {
+			if (!userData.roles && existingUser.roles) {
+				userData.roles = existingUser.roles;
+			}
+			if (!userData.type && existingUser.type) {
+				userData.type = existingUser.type as IImportUser['type'];
+			}
+		}
+
 		const options = this.getConverterOptions();
 		LDAPDataConverter.convertSingleUser(userData, options);
 

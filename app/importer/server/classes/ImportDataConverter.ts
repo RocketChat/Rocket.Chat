@@ -222,8 +222,8 @@ export class ImportDataConverter {
 		// #ToDo: #TODO: Move this to the model class
 		const updateData: Record<string, any> = {
 			$set: {
-				...userData.roles && { roles: userData.roles },
-				...userData.type && { type: userData.type },
+				roles: userData.roles || ['user'],
+				type: userData.type || 'user',
 				...userData.statusText && { statusText: userData.statusText },
 				...userData.bio && { bio: userData.bio },
 				...userData.services?.ldap && { ldap: true },
