@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import debounce from 'lodash.debounce';
 
 import {
 	LivechatDepartment,
@@ -102,6 +103,10 @@ export const dispatchWaitingQueueStatus = async (department) => {
 	});
 };
 
+// When dealing with lots of queued items we need to make sure to notify their position
+// but we don't need to notify _each_ change that takes place, just their f
+export const debouncedDispatchWaitingQueueStatus = debounce(dispatchWaitingQueueStatus, 1200);
+
 export const processWaitingQueue = async (department) => {
 	const queue = department || 'Public';
 	helperLogger.debug(`Processing items on queue ${ queue }`);
@@ -128,7 +133,7 @@ export const processWaitingQueue = async (department) => {
 	}
 
 	const { departmentId } = room || {};
-	await dispatchWaitingQueueStatus(departmentId);
+	await debouncedDispatchWaitingQueueStatus(departmentId);
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {

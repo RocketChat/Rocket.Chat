@@ -60,6 +60,8 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	scheduleInquiry(inquiryId: string, time: Date): void {
+		Promise.await(this.stopInquiry(inquiryId));
+		this.logger.debug(`Scheduling automatic close of inquiry ${ inquiryId } at ${ time }`);
 		const name = `${ this._name }-${ inquiryId }`;
 		this.scheduler.define(name, Meteor.bindEnvironment(this.closeRoom.bind(this)));
 
