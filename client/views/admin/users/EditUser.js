@@ -11,7 +11,7 @@ import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
 
 const getInitialValue = (data) => ({
-	roles: data.roles,
+	roles: data.rolesId,
 	name: data.name ?? '',
 	password: '',
 	username: data.username,
@@ -26,7 +26,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -143,11 +143,12 @@ function EditUser({ data, roles, ...props }) {
 			if (avatarObj) {
 				await updateAvatar();
 			}
+			onReload();
 			goToUser(data._id);
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
 
-	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+	const availableRoles = roles.map(({ _id, name, description }) => [_id, description || name]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 

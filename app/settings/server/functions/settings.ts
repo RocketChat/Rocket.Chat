@@ -68,6 +68,8 @@ const overrideSetting = (_id: string, value: SettingValue, options: ISettingAddO
 
 export interface ISettingAddOptions extends Partial<ISetting> {
 	force?: boolean;
+	actionText?: string;
+	code?: 'application/json';
 }
 
 export interface ISettingAddGroupOptions {
@@ -86,6 +88,7 @@ interface IUpdateOperator {
 	};
 	$unset?: {
 		section?: 1;
+		tab?: 1;
 	};
 }
 
@@ -99,11 +102,13 @@ type Query<T> = {
 
 type addSectionCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
+	set(options: ISettingAddOptions, cb: addSectionCallback): void;
 }) => void;
 
 type addGroupCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;
 	section(section: string, cb: addSectionCallback): void;
+	set(options: ISettingAddOptions, cb: addGroupCallback): void;
 }) => void;
 
 class Settings extends SettingsBase {
@@ -113,20 +118,19 @@ class Settings extends SettingsBase {
 
 	private initialLoad = false;
 
-	/*
-	* Add a setting
-	*/
-	add(_id: string, value: SettingValue, { editor, ...options }: ISettingAddOptions = {}): boolean {
-		if (!_id || value == null) {
-			return false;
-		}
-		if (options.group && this._sorter[options.group] == null) {
-			this._sorter[options.group] = 0;
+	private validateOptions(_id: string, value: SettingValue, options: ISettingAddOptions): void {
+		const sorterKey = options.group && options.section ? `${ options.group }_${ options.section }` : options.group;
+		if (sorterKey && this._sorter[sorterKey] == null) {
+			if (options.group && options.section) {
+				const currentGroupValue = this._sorter[options.group] || 0;
+				this._sorter[sorterKey] = currentGroupValue * 1000;
+			} else {
+				this._sorter[sorterKey] = 0;
+			}
 		}
 		options.packageValue = value;
 		options.valueSource = 'packageValue';
 		options.hidden = options.hidden || false;
-		options.blocked = options.blocked || false;
 		options.requiredOnWizard = options.requiredOnWizard || false;
 		options.secret = options.secret || false;
 		options.enterprise = options.enterprise || false;
@@ -136,14 +140,14 @@ class Settings extends SettingsBase {
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 		}
 
-		if (options.group && options.sorter == null) {
-			options.sorter = this._sorter[options.group]++;
+		if (sorterKey && options.sorter == null) {
+			options.sorter = this._sorter[sorterKey]++;
 		}
 		if (options.enableQuery != null) {
 			options.enableQuery = JSON.stringify(options.enableQuery);
 		}
-		if (options.i18nLabel == null) {
-			options.i18nLabel = _id;
+		if (options.displayQuery != null) {
+			options.displayQuery = JSON.stringify(options.displayQuery);
 		}
 		if (options.i18nDescription == null) {
 			options.i18nDescription = `${ _id }_Description`;
@@ -159,6 +163,21 @@ class Settings extends SettingsBase {
 		}
 		if (options.autocomplete == null) {
 			options.autocomplete = true;
+		}
+	}
+
+	/*
+	* Add a setting
+	*/
+	add(_id: string, value: SettingValue, { editor, ...options }: ISettingAddOptions = {}): boolean {
+		if (!_id || value == null) {
+			return false;
+		}
+
+		this.validateOptions(_id, value, options);
+		options.blocked = options.blocked || false;
+		if (options.i18nLabel == null) {
+			options.i18nLabel = _id;
 		}
 
 		value = overrideSetting(_id, value, options);
@@ -192,6 +211,15 @@ class Settings extends SettingsBase {
 				section: 1,
 			};
 			query.section = {
+				$exists: false,
+			};
+		}
+
+		if (!options.tab) {
+			updateOperations.$unset = {
+				tab: 1,
+			};
+			query.tab = {
 				$exists: false,
 			};
 		}
@@ -279,19 +307,36 @@ class Settings extends SettingsBase {
 		}
 
 		if (cb != null) {
-			cb.call({
-				add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-					options.group = _id;
-					return this.add(id, value, options);
-				},
-				section: (section: string, cb: addSectionCallback) => cb.call({
-					add: (id: string, value: SettingValue, options: ISettingAddOptions = {}) => {
-						options.group = _id;
-						options.section = section;
-						return this.add(id, value, options);
-					},
-				}),
-			});
+			const addWith = (preset: ISettingAddOptions) => (id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+				this.add(id, value, mergedOptions);
+			};
+			const sectionSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addSectionCallback): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+				cb.call({
+					add: addWith(mergedOptions),
+					set: sectionSetWith(mergedOptions),
+				});
+			};
+			const sectionWith = (preset: ISettingAddOptions) => (section: string, cb: addSectionCallback): void => {
+				const mergedOptions = Object.assign({}, preset, { section });
+				cb.call({
+					add: addWith(mergedOptions),
+					set: sectionSetWith(mergedOptions),
+				});
+			};
+
+			const groupSetWith = (preset: ISettingAddOptions) => (options: ISettingAddOptions, cb: addGroupCallback): void => {
+				const mergedOptions = Object.assign({}, preset, options);
+
+				cb.call({
+					add: addWith(mergedOptions),
+					section: sectionWith(mergedOptions),
+					set: groupSetWith(mergedOptions),
+				});
+			};
+
+			groupSetWith({ group: _id })({}, cb);
 		}
 		return true;
 	}

@@ -115,5 +115,13 @@
 			"matheusbsilva137",
 			"pierre-lehnen-rc"
 		]
+	}],
+	"3.18.2": [{
+		"title": "[FIX] Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)",
+		"userLogin": "sampaiodiego",
+		"contributors": [
+			"sampaiodiego",
+			"pierre-lehnen-rc"
+		]
 	}]
 }

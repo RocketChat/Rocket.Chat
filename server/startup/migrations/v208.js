@@ -1,6 +1,6 @@
 import Future from 'fibers/future';
 
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Users, Sessions } from '../../../app/models/server/raw';
 
 async function migrateSessions(fut) {
@@ -31,7 +31,7 @@ async function migrateSessions(fut) {
 	fut.return();
 }
 
-Migrations.add({
+addMigration({
 	version: 208,
 	up() {
 		const fut = new Future();

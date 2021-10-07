@@ -259,24 +259,6 @@ settings.addGroup('Accounts', function() {
 			i18nLabel: 'Notification_RequireInteraction',
 			i18nDescription: 'Notification_RequireInteraction_Description',
 		});
-		this.add('Accounts_Default_User_Preferences_audioNotifications', 'mentions', {
-			type: 'select',
-			values: [
-				{
-					key: 'all',
-					i18nLabel: 'All_messages',
-				},
-				{
-					key: 'mentions',
-					i18nLabel: 'Mentions',
-				},
-				{
-					key: 'nothing',
-					i18nLabel: 'Nothing',
-				},
-			],
-			public: true,
-		});
 		this.add('Accounts_Default_User_Preferences_desktopNotifications', 'all', {
 			type: 'select',
 			values: [
@@ -934,12 +916,6 @@ settings.addGroup('General', function() {
 		public: true,
 	});
 
-	// Deprecated setting
-	this.add('Support_Cordova_App', false, {
-		type: 'boolean',
-		i18nDescription: 'Support_Cordova_App_Description',
-		alert: 'Support_Cordova_App_Alert',
-	});
 	this.add('GoogleTagManager_id', '', {
 		type: 'string',
 		public: true,
@@ -1303,6 +1279,11 @@ settings.addGroup('Message', function() {
 				i18nLabel: 'Message_ErasureType_Unlink',
 			},
 		],
+	});
+
+	this.add('Message_Code_highlight', 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim', {
+		type: 'string',
+		public: true,
 	});
 });
 

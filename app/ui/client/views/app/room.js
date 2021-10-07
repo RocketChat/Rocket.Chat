@@ -10,15 +10,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
+import { t, roomTypes, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
@@ -30,6 +28,9 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
@@ -39,7 +40,7 @@ const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteo
 export const openProfileTab = (e, tabBar, username) => {
 	e.stopPropagation();
 
-	if (Layout.isEmbedded()) {
+	if (isLayoutEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		return;
@@ -272,7 +273,7 @@ Template.roomOld.helpers({
 	messageboxData() {
 		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {

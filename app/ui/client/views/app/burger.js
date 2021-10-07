@@ -3,7 +3,8 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { ChatSubscription } from '../../../../models/client';
-import { Layout, menu } from '../../../../ui-utils/client';
+import { menu } from '../../../../ui-utils/client';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { getUserPreference } from '../../../../utils';
 
 Template.burger.helpers({
@@ -50,7 +51,7 @@ Template.burger.helpers({
 	},
 
 	embeddedVersion() {
-		return Layout.isEmbedded();
+		return isLayoutEmbedded();
 	},
 });
 
