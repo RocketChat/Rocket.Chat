@@ -16,11 +16,13 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 	const loader = document.getElementById('js-loading-${canvasId}');
-	if (loader) { loader.style.display = 'block'; }
+	if (loader) { 
+		loader.style.display = 'block'; 
+	}
 	const pdf = await pdfjs.getDocument(pdfLink).promise;
 	const page = await pdf.getPage(1);
 	const scale = 0.5;
-	const viewport = page.getViewport({scale:scale});
+	const viewport = page.getViewport({ scale: scale });
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
@@ -28,7 +30,9 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 		canvasContext: context,
 		viewport,
 	});
-	if (loader) { loader.style.display = 'none'; }
+	if (loader) { 
+		loader.style.display = 'none'; 
+	}
 	canvas.style.maxWidth = '-webkit-fill-available';
 	canvas.style.maxWidth = '-moz-available';
 	canvas.style.display = 'block';
@@ -42,8 +46,8 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	file,
 }) => {
 	const t = useTranslation();
-	const [collapsed, collapse] = useCollapse(collapsedDefault);
-	const label = "js-loading-" + file._id; 
+	const [collapsed] = useCollapse(collapsedDefault);
+	const label = 'js-loading-' + file._id; 
 
 	useEffect(() => {
 		if (file && file.type === 'application/pdf') {
