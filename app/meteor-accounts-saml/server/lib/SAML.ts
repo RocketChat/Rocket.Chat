@@ -180,10 +180,6 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roles) {
-			updateData.roles = roles;
-		}
-
 		if (userObject.channels && channelsAttributeUpdate === true) {
 			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
