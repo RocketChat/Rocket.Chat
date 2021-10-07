@@ -141,9 +141,6 @@ Meteor.methods({
 			return '';
 		}
 
-		/*
-		 text = 'from:rodrigo mention:gabriel chat'
-		 */
 
 		// Query for senders
 		const from = [];
