@@ -8,7 +8,7 @@ type ServerInfo = {
 	version: string | undefined;
 };
 
-const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+).*/, '$1');
+const removePatchInfo = (version: string): string => version.replace(/(\d+\.\d+\.\d+).*/, '$1');
 
 export async function getServerInfo(userId?: string): Promise<ServerInfo> {
 	if (await hasRoleAsync(userId, 'admin')) {
