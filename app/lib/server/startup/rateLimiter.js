@@ -120,9 +120,7 @@ const callback = (message, name) => (reply, input) => {
 			name: input.name,
 			connection_id: input.connectionId,
 		});
-	// } else {
-	// 	console.log('DDP RATE LIMIT:', message);
-	// 	console.log(JSON.stringify({ ...reply, ...input }, null, 2));
+	
 	}
 };
 
