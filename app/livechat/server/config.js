@@ -82,7 +82,7 @@ Meteor.startup(function() {
 		i18nLabel: 'Color',
 	});
 	settings.add('Livechat_offline_message', '', {
-		type: 'string',
+		type: 'markdown',
 		group: 'Omnichannel',
 		public: true,
 		section: 'Livechat',

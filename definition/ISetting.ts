@@ -21,7 +21,7 @@ export interface ISettingSelectOption {
 
 export interface ISetting {
 	_id: SettingId;
-	type: 'boolean' | 'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
+	type: 'boolean' | 'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date' | 'markdown';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
