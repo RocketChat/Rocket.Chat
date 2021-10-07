@@ -64,6 +64,40 @@ API.v1.addRoute('dns.resolve.srv', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ * 	/api/v1/dns.resolve.txt:
+ * 	  get:
+ *      description: Resolves DNS text records (TXT records) for a hostname
+ *      security:
+ *        $ref: '#/security/authenticated'
+ *      parameters:
+ *        - name: url
+ *          in: query
+ *          description: The hostname
+ *          required: true
+ *          schema:
+ *            type: string
+ *          example: open.rocket.chat
+ *      responses:
+ *        200:
+ *          description: The resolved records
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      resolved:
+ *                        type: string
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('dns.resolve.txt', { authRequired: true }, {
 	post() {
 		check(this.queryParams, Match.ObjectIncluding({
