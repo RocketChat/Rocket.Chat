@@ -7,19 +7,19 @@ import Attachment from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';
 
 async function renderPdfToCanvas(canvasId, pdfLink) {
-	if (!pdfLink || !pdfLink.toLowerCase().endsWith('.pdf')) { 
-		return; 
+	if (!pdfLink || !pdfLink.toLowerCase().endsWith('.pdf')) {
+		return;
 	}
 	const canvas = document.getElementById(canvasId);
-	if (!canvas) { 
-		return; 
+	if (!canvas) {
+		return;
 	}
-  	const pdfjs = await import('pdfjs-dist/build/pdf');
-  	const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+	const pdfjs = await import('pdfjs-dist/build/pdf');
+	const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
 	pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 	const loader = document.getElementById('js-loading-${canvasId}');
-	if (loader) { 
-		loader.style.display = 'block'; 
+	if (loader) {
+		loader.style.display = 'block';
 	}
 	const pdf = await pdfjs.getDocument(pdfLink).promise;
 	const page = await pdf.getPage(1);
@@ -32,8 +32,8 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 		canvasContext: context,
 		viewport,
 	});
-	if (loader) { 
-		loader.style.display = 'none'; 
+	if (loader) {
+		loader.style.display = 'none';
 	}
 	canvas.style.maxWidth = '-webkit-fill-available';
 	canvas.style.maxWidth = '-moz-available';
@@ -62,13 +62,13 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 			{description && <MarkdownText variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{t('PDF')}</Attachment.Title>
-				{/*collapse*/ /* removing this for now since it makes the preview disappear */} 
+				{collapse} 
 				{hasDownload && link && <Attachment.Download href={link} />}
 			</Attachment.Row>
 			{!collapsed && (
 				<Attachment.Content>
 					<canvas id={file._id} className='attachment-canvas'></canvas>
-					<div id={label} className="attachment-pdf-loading">
+					<div id={label} className='attachment-pdf-loading'>
 						{file.name && <Attachment.Title>{file.name}</Attachment.Title>}
 						{file.size && <Attachment.Size size={file.size}/>}
 					</div>
