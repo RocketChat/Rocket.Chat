@@ -127,7 +127,7 @@ export default class AutoComplete {
 			}
 			const [selector] = getFindParams(rule, filter, this.limit);
 
-			// console.debug 'Subscribing to <%s> in <%s>.<%s>', filter, rule.collection, rule.field
+			
 			this.setLoaded(false);
 			const endpointName = rule.endpoint || 'users.autocomplete';
 			const { items } = await APIClient.v1.get(`${ endpointName }?selector=${ JSON.stringify(selector) }`);
