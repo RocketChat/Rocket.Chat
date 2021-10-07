@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useTranslation } from '../contexts/TranslationContext';
 import Page from './Page';
 
-function NotAuthorizedPage() {
+const NotAuthorizedPage = (): ReactElement => {
 	const t = useTranslation();
 
 	return (
@@ -16,6 +16,6 @@ function NotAuthorizedPage() {
 			</Page.Content>
 		</Page>
 	);
-}
+};
 
 export default NotAuthorizedPage;

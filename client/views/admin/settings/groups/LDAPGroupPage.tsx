@@ -50,6 +50,8 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 		try {
 			await testConnection(undefined);
 			const confirmSync = async (): Promise<void> => {
+				closeModal();
+
 				try {
 					const { message } = await syncNow(undefined);
 					dispatchToastMessage({ type: 'success', message: t(message) });
