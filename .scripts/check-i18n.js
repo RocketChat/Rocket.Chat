@@ -54,7 +54,6 @@ const validate = (i18nFiles, usedKeys) => {
 
 			checkUniqueKeys(content, json, file);
 
-			// console.log('json, usedKeys2', json, usedKeys);
 
 			const result = validateKeys(json, usedKeys);
 
