@@ -383,7 +383,7 @@ export const FileUpload = {
 			Avatars.deleteFile(oldAvatar._id);
 		}
 		Avatars.updateFileNameById(file._id, user.username);
-		// console.log('upload finished ->', file);
+		
 	},
 
 	requestCanAccessFiles({ headers = {}, query = {} }) {
