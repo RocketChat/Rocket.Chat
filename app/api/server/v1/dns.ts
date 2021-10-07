@@ -6,7 +6,7 @@ import { resolveSRV, resolveTXT } from '../../../federation/server/functions/res
 
 /**
  * @openapi
- * 	/api/v1/dns.resolve.srv:
+ *  /api/v1/dns.resolve.srv:
  * 	  get:
  *      description: Resolves DNS service records (SRV records) for a hostname
  *      security:
@@ -66,7 +66,7 @@ API.v1.addRoute('dns.resolve.srv', { authRequired: true }, {
 
 /**
  * @openapi
- * 	/api/v1/dns.resolve.txt:
+ *  /api/v1/dns.resolve.txt:
  * 	  get:
  *      description: Resolves DNS text records (TXT records) for a hostname
  *      security:
