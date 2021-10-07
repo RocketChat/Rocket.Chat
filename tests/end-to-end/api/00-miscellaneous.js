@@ -35,7 +35,7 @@ describe('miscellaneous', function() {
 					.expect((res) => {
 						expect(res.body).to.have.property('version');
 						expect(res.body).to.not.have.property('info');
-						expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+).*/, '$1'));
+						expect(res.body.version).to.be.equal(version.replace(/(\d+\.\d+\.\d+).*/, '$1'));
 					})
 					.end(done);
 			});
