@@ -6,6 +6,7 @@ import { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUpl
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
 import { AppServerOrchestrator } from '../orchestrator';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
@@ -56,17 +57,17 @@ export class AppUploadBridge extends UploadBridge {
 
 		return new Promise(Meteor.bindEnvironment((resolve, reject) => {
 			try {
-				const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
-
-				if (details.visitorToken) {
-					Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
-				} else {
-					Meteor.runAsUser(details.userId, () => {
+				SystemLogger.debug({ msg: 'App bridge is trying to upload the file.', details });
+				Meteor.runAsUser(details.userId, () => {
+					const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
+					SystemLogger.debug({ msg: 'App bridge has successfully uploaded the file', uploadedFile });
+					if (details.visitorToken) {
+						Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
+					} else {
 						Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
-					});
-				}
-
-				resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
+					}
+					resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
+				});
 			} catch (err) {
 				reject(err);
 			}
