@@ -430,6 +430,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
+	logger.debug({ msg: 'New Room object properties after deletedInquiry', servedBy, chatQueued });
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
 		return false;
@@ -437,7 +438,10 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+		// if chat is queued then we don't ignore the new servedBy agent bcs at this
+		// point the chat is not assigned to him/her and it is still in the queue
+		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
+		dispatchAgentDelegated(rid, null);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
