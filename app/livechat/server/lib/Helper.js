@@ -441,7 +441,6 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
 		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
-		dispatchAgentDelegated(rid, null);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
@@ -452,6 +451,8 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${ inquiry._id } as ready`);
 		LivechatInquiry.readyInquiry(inquiry._id);
+		LivechatRooms.removeAgentByRoomId(rid);
+		dispatchAgentDelegated(rid, null);
 		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 
