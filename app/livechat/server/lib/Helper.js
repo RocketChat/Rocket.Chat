@@ -430,7 +430,6 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
-	logger.debug({ msg: 'New Room object properties after deletedInquiry', servedBy, chatQueued });
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
 		return false;
