@@ -213,7 +213,6 @@ export class SAMLUtils {
 		}
 
 		const parsedMap: IUserDataMap = {
-			customFields: new Map(),
 			attributeList: new Set(),
 			email: {
 				fieldName: 'email',
@@ -298,11 +297,10 @@ export class SAMLUtils {
 			if (attributeMap) {
 				if (spFieldName === 'email' || spFieldName === 'username' || spFieldName === 'name') {
 					parsedMap[spFieldName] = attributeMap;
-				} else {
-					parsedMap.customFields.set(spFieldName, attributeMap);
 				}
 			}
 		}
+
 
 		if (identifier) {
 			const defaultTypes = [
@@ -318,7 +316,6 @@ export class SAMLUtils {
 				parsedMap.attributeList.add(identifier);
 			}
 		}
-
 		return parsedMap;
 	}
 
@@ -432,7 +429,6 @@ export class SAMLUtils {
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
-
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name);
@@ -443,7 +439,6 @@ export class SAMLUtils {
 		}
 
 		const userObject: ISAMLUser = {
-			customFields: new Map(),
 			samlLogin: {
 				provider: this.relayState,
 				idp: profile.issuer,
@@ -474,12 +469,6 @@ export class SAMLUtils {
 			}
 		}
 
-		for (const [fieldName, customField] of userDataMap.customFields) {
-			const value = this.getProfileValue(profile, customField);
-			if (value) {
-				userObject.customFields.set(fieldName, value);
-			}
-		}
 
 		this.events.emit('mapUser', { profile, userObject });
 

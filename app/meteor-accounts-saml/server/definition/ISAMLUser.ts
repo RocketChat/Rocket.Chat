@@ -1,5 +1,4 @@
 export interface ISAMLUser {
-	customFields: Map<string, any>;
 	emailList: Array<string>;
 	fullName: string | null;
 	roles: Array<string>;

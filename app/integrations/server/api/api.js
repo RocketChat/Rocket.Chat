@@ -11,9 +11,9 @@ import s from 'underscore.string';
 import moment from 'moment';
 
 import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib';
+import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import * as Models from '../../../models';
+import * as Models from '../../../models/server';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
@@ -239,7 +239,7 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues, this.integration);
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}

@@ -5,7 +5,6 @@ export interface IAttributeMapping {
 }
 
 export interface IUserDataMap {
-	customFields: Map<string, IAttributeMapping>;
 	attributeList: Set<string>;
 	identifier: {
 		type: string;

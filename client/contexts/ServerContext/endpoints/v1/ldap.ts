@@ -6,6 +6,11 @@ export type LDAPEndpoints = {
 			message: TranslationKey;
 		};
 	};
+	'ldap.testSearch': {
+		POST: (params: { username: string }) => {
+			message: TranslationKey;
+		};
+	};
 	'ldap.syncNow': {
 		POST: () => {
 			message: TranslationKey;

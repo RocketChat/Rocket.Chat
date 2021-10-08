@@ -12,11 +12,15 @@ const getLevel = (level: LogLevelSetting): string => {
 	}
 };
 
+let defaultLevel = 'warn';
+
+logLevel.once('changed', (level) => { defaultLevel = getLevel(level); });
+
 export class Logger {
 	readonly logger: P.Logger;
 
 	constructor(loggerLabel: string) {
-		this.logger = getPino(loggerLabel);
+		this.logger = getPino(loggerLabel, defaultLevel);
 
 		logLevel.on('changed', (level) => {
 			this.logger.level = getLevel(level);
@@ -59,6 +63,14 @@ export class Logger {
 
 	info(msg: string, ...args: any[]): void {
 		this.logger.info(msg, ...args);
+	}
+
+	startup<T extends object>(obj: T, ...args: any[]): void;
+
+	startup(msg: string, ...args: any[]): void;
+
+	startup(msg: string, ...args: any[]): void {
+		this.logger.startup(msg, ...args);
 	}
 
 	success<T extends object>(obj: T, ...args: any[]): void;
