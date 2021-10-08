@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import toastr from 'toastr';
 
 import { t } from '../../utils';
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { reportError } from '../../../client/lib/2fa/utils';
+import { isTotpInvalidError, reportError } from '../../../client/lib/2fa/utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	if (typeof selector === 'string') {
@@ -45,12 +45,16 @@ Meteor.loginWithPassword = function(email, password, cb) {
 			emailOrUsername: email,
 			onCode: (code) => {
 				Meteor.loginWithPasswordAndTOTP(email, password, code, (error) => {
-					if (error && error.error === 'totp-invalid') {
-						toastr.error(t('Invalid_two_factor_code'));
+					if (isTotpInvalidError(error)) {
+						dispatchToastMessage({
+							type: 'error',
+							message: t('Invalid_two_factor_code'),
+						});
 						cb();
-					} else {
-						cb(error);
+						return;
 					}
+
+					cb(error);
 				});
 			},
 		});

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import toastr from 'toastr';
 
 import { t } from '../../utils/client';
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 const { call } = Meteor;
 
@@ -17,7 +17,10 @@ const callWithTotp = (methodName: string, args: unknown[], callback: Callback) =
 		call(methodName, ...args, { twoFactorCode, twoFactorMethod }, (error: unknown, result: unknown): void => {
 			if (isTotpInvalidError(error)) {
 				(error as { toastrShowed?: true }).toastrShowed = true;
-				toastr.error(t('Invalid_two_factor_code'));
+				dispatchToastMessage({
+					type: 'error',
+					message: t('Invalid_two_factor_code'),
+				});
 				callback(error);
 				return;
 			}

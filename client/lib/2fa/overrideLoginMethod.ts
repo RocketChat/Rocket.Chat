@@ -1,6 +1,5 @@
-import toastr from 'toastr';
-
 import { t } from '../../../app/utils/client';
+import { dispatchToastMessage } from '../toast';
 import { process2faReturn } from './process2faReturn';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 
@@ -36,7 +35,7 @@ export const overrideLoginMethod = <A extends unknown[]>(
 			onCode: (code: string) => {
 				loginMethodTOTP?.call(null, ...loginArgs, code, (error: unknown) => {
 					if (isTotpInvalidError(error)) {
-						toastr.error(t('Invalid_two_factor_code'));
+						dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 						callback(null);
 						return;
 					}
