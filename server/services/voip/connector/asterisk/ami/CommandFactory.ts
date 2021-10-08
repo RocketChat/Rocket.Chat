@@ -10,10 +10,13 @@ import { Command } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';
 import { PJSIPEndpoint } from './PJSIPEndpoint';
+import { Logger } from '../../../../../lib/logger/Logger';
 
 export class CommandFactory {
+	static 	logger: Logger = new Logger('CommandFactory');
+
 	static getCommandObject(command: Commands): Command {
-		console.log('Creating command object');
+		this.logger.debug({ msg: ' Creating command object for ${ Commands[command] }' });
 		switch (command) {
 			case Commands.ping:
 				return new Command(Commands.ping.toString(), false);

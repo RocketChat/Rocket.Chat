@@ -70,33 +70,21 @@ export class AMIConnection implements IConnection {
 	}
 
 	eventHandlerCallback(event: any): void {
-		this.logger.info({ msg: 'eventHandlerCallback()',
-			event });
-		/* Check if the command class has registered to receive this event */
-		if (this.eventHandlers.has(event.event.toLowerCase())) {
-			this.logger.debug({ msg: 'eventHandlerCallback() Event found',
-				event: event.event });
-			const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
-			this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${ handlers.length }` });
-			/* Go thru all the available handlers  and call each one of them if the actionid matches */
-			for (let i = 0; i < handlers.length; i++) {
-				const callbackCtx: CallbackContext = handlers[i];
-				if (callbackCtx.call(event)) {
-					this.logger.debug({ msg: `eventHandlerCallback() called callback for action = ${ event.actionid }` });
-				} else {
-					this.logger.warn({ msg: `eventHandlerCallback() No command found for action = ${ event.actionid }` });
-				}
-				/*
-				if (command.actionId === event.actionid) {
-					this.logger.debug({ msg: `eventHandlerCallback() Calling callback for action = ${ command.actionId }` });
-					handlers[i].callback(event);
-				} else {
-					this.logger.warn({ msg: `eventHandlerCallback() No command found for action = ${ command.actionId }` });
-				}
-				*/
-			}
-		} else {
+		this.logger.info({ msg: 'eventHandlerCallback()', event });
+		if (! this.eventHandlers.has(event.event.toLowerCase())) {
 			this.logger.info({ msg: `eventHandlerCallback() no event handler set for ${ event.event }` });
+			return;
+		}
+		this.logger.debug({ msg: 'eventHandlerCallback() Event found', event: event.event });
+		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
+		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${ handlers.length }` });
+		/* Go thru all the available handlers  and call each one of them if the actionid matches */
+		for (const handler of handlers) {
+			if (handler.call(event)) {
+				this.logger.debug({ msg: `eventHandlerCallback() called callback for action = ${ event.actionid }` });
+			} else {
+				this.logger.warn({ msg: `eventHandlerCallback() No command found for action = ${ event.actionid }` });
+			}
 		}
 	}
 
@@ -112,25 +100,25 @@ export class AMIConnection implements IConnection {
 
 	off(event: string, command: Command): void {
 		this.logger.info({ msg: 'off()' });
-		if (this.eventHandlers.has(event)) {
-			this.logger.debug({ msg: `off() Event found ${ event }` });
-			const handlers = this.eventHandlers.get(event);
-			this.logger.debug({ msg: `off() Handler array length = ${ handlers.length }` });
-			for (let i = 0; i < handlers.length; i++) {
-				const callbackCtx: CallbackContext = handlers[i];
-				if (callbackCtx.isValidContext(command.actionid)) {
-					const newHandlers = handlers.filter((obj: any) => obj !== handlers[i]);
-					if (newHandlers.length === 0) {
-						this.logger.debug({ msg: `off() No handler for ${ event } deleting event from the map.` });
-						this.eventHandlers.delete(event);
-					} else {
-						this.eventHandlers.set(event, newHandlers);
-						break;
-					}
-				}
-			}
-		} else {
+		if (! this.eventHandlers.has(event)) {
 			this.logger.warn({ msg: `off() No event handler found for ${ event }` });
+			return;
+		}
+		this.logger.debug({ msg: `off() Event found ${ event }` });
+		const handlers = this.eventHandlers.get(event);
+		this.logger.debug({ msg: `off() Handler array length = ${ handlers.length }` });
+		for (const handler of handlers) {
+			if (! handler.isValidContext(command.actionid)) {
+				continue;
+			}
+			const newHandlers = handlers.filter((obj: any) => obj !== handler);
+			if (newHandlers.length === 0) {
+				this.logger.debug({ msg: `off() No handler for ${ event } deleting event from the map.` });
+				this.eventHandlers.delete(event);
+			} else {
+				this.eventHandlers.set(event, newHandlers);
+				break;
+			}
 		}
 	}
 

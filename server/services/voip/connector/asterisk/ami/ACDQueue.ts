@@ -6,7 +6,7 @@ import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
-import { IQueueSummary, IQueueDetails } from '../../../../../../definition/ACDQueues';
+import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnectorResult';
 
 export class ACDQueue extends Command {
 	private logger: Logger;
@@ -19,7 +19,7 @@ export class ACDQueue extends Command {
 
 	onQueueSummary(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueSummary() Unsual behavior. ActionId does not belong to this object',
+			this.logger.error({ msg: 'onQueueSummary() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid });
 			return;
@@ -44,16 +44,13 @@ export class ACDQueue extends Command {
 
 	onQueueSummaryComplete(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueSummaryComplete() Unsual behavior. ActionId does not belong to this object',
-				eventActionId: event.actionid,
-				actionId: this.actionid });
+			this.logger.error({ msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object', eventActionId: event.actionid, ßactionId: this.actionid });
 			return;
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onQueueSummaryComplete() Complete',
-			result });
-		this.returnResolve?.(result.queueSummary as IQueueSummary);
+		this.logger.debug({ msg: 'onQueueSummaryComplete() Complete', result });
+		this.returnResolve({ result: result.queueSummary } as IVoipConnectorResult);
 	}
 
 	/**  Callback for receiving Queue parameters for queuestatus action.
@@ -61,7 +58,7 @@ export class ACDQueue extends Command {
 	 */
 	onQueueParams(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueParams() Unsual behavior. ActionId does not belong to this object',
+			this.logger.error({ msg: 'onQueueParams() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid });
 			return;
@@ -87,7 +84,7 @@ export class ACDQueue extends Command {
 	 */
 	onQueueMember(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueMember() Unsual behavior. ActionId does not belong to this object',
+			this.logger.error({ msg: 'onQueueMember() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid });
 			return;
@@ -122,7 +119,7 @@ export class ACDQueue extends Command {
 	 */
 	onQueueStatusComplete(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueStatusComplete() Unsual behavior. ActionId does not belong to this object',
+			this.logger.error({ msg: 'onQueueStatusComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
 				actionId: this.actionid });
 			return;
@@ -131,7 +128,7 @@ export class ACDQueue extends Command {
 		const { result } = this;
 		this.logger.debug({ msg: 'onQueueStatusComplete() Complete',
 			result });
-		this.returnResolve?.(result.queueStatus as IQueueDetails);
+		this.returnResolve({ result: result.queueStatus } as IVoipConnectorResult);
 	}
 
 	/**
@@ -141,7 +138,7 @@ export class ACDQueue extends Command {
 	onActionResult(error: any, result: any): void {
 		if (error) {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
-			this.returnReject?.(`error${ error } while executing command`);
+			this.returnReject(`error${ error } while executing command`);
 		} else {
 			this.logger.info({ msg: 'onActionResult()',
 				result });
@@ -174,7 +171,7 @@ export class ACDQueue extends Command {
 		}
 	}
 
-	async executeCommand(data: any): Promise <IQueueSummary []> {
+	async executeCommand(data: any): Promise <IVoipConnectorResult> {
 		this.logger.info({ msg: `executeCommand() executing ${ this.commandText }` });
 		let amiCommand = {};
 		// set up the specific action based on the value of |Commands|

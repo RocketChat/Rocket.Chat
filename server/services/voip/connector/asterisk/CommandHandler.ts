@@ -20,8 +20,7 @@ import { Logger } from '../../../../lib/logger/Logger';
 import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
-import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-import { IQueueDetails, IQueueSummary } from '../../../../../definition/ACDQueues';
+import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
 const version = 'Asterisk Connector 1.0';
 
@@ -56,11 +55,7 @@ export class CommandHandler {
 	 * This function returns a promise. Caller can wait for the promise to resolve
 	 * or rejected.
 	 */
-	executeCommand(commandToExecute: Commands, commandData: any = undefined):
-	Promise<IVoipExtensionConfig |
-	IVoipExtensionBase [] |
-	IQueueSummary []|
-	IQueueDetails> {
+	executeCommand(commandToExecute: Commands, commandData: any = undefined): Promise<IVoipConnectorResult> {
 		this.logger.debug({ msg: `executeCommand() executing ${ Commands[commandToExecute] }` });
 		const command = CommandFactory.getCommandObject(commandToExecute);
 		command.connection = this.connections.get(command.type) as IConnection;

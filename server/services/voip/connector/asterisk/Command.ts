@@ -1,6 +1,5 @@
 import { IConnection } from './IConnection';
-import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
-import { IQueueDetails, IQueueSummary } from '../../../../../definition/ACDQueues';
+import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
 /**
  * This class serves as a a base class for the different kind of call server objects
@@ -102,11 +101,7 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any):
-	Promise <IVoipExtensionConfig |
-	IVoipExtensionBase []|
-	IQueueSummary [] |
-	IQueueDetails> {
+	executeCommand(_data: any): Promise <IVoipConnectorResult> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});
