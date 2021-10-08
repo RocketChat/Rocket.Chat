@@ -24,7 +24,7 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 	const pdf = await pdfjs.getDocument(pdfLink).promise;
 	const page = await pdf.getPage(1);
 	const scale = 0.5;
-	const viewport = page.getViewport({ scale: scale });
+	const viewport = page.getViewport({ scale });
 	const context = canvas.getContext('2d');
 	canvas.height = viewport.height;
 	canvas.width = viewport.width;
@@ -48,33 +48,31 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 	file,
 }) => {
 	const t = useTranslation();
-	const [collapsed] = useCollapse(collapsedDefault);
-	const label = 'js-loading-' + file._id; 
+	const [collapsed, collapse] = useCollapse(collapsedDefault);
 
 	useEffect(() => {
 		if (file && file.type === 'application/pdf') {
-    		renderPdfToCanvas(file._id, link);
-    	}
-  	}, []);
+			renderPdfToCanvas(file._id, link);
+		}
+	}, []);
 
 	return (
 		<Attachment>
 			{description && <MarkdownText variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{t('PDF')}</Attachment.Title>
-				{collapse} 
+					{collapse}
 				{hasDownload && link && <Attachment.Download href={link} />}
 			</Attachment.Row>
 			{!collapsed && (
 				<Attachment.Content>
 					<canvas id={file._id} className='attachment-canvas'></canvas>
-					<div id={label} className='attachment-pdf-loading'>
+					<div id={`js-loading-${file._id}`} className='attachment-pdf-loading'>
 						{file.name && <Attachment.Title>{file.name}</Attachment.Title>}
-						{file.size && <Attachment.Size size={file.size}/>}
+						{file.size && <Attachment.Size size={file.size} />}
 					</div>
 				</Attachment.Content>
 			)}
 		</Attachment>
 	);
 };
-
