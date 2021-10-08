@@ -1,5 +1,6 @@
 
 import { MessageAttachmentBase } from '../MessageAttachmentBase';
+import { FileAttachmentProps } from './FileAttachmentProps';
 import { FileProp } from './FileProp';
 
 export type PDFAttachmentProps = {

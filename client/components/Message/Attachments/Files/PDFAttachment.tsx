@@ -6,11 +6,11 @@ import MarkdownText from '../../../MarkdownText';
 import Attachment from '../Attachment';
 import { useCollapse } from '../hooks/useCollapse';
 
-async function renderPdfToCanvas(canvasId, pdfLink) {
+async function renderPdfToCanvas(canvasId:any, pdfLink:any) {
 	if (!pdfLink || !pdfLink.toLowerCase().endsWith('.pdf')) {
 		return;
 	}
-	const canvas = document.getElementById(canvasId);
+	var canvas = document.getElementById(canvasId) as HTMLCanvasElement;
 	if (!canvas) {
 		return;
 	}
