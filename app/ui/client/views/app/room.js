@@ -355,11 +355,7 @@ Template.roomOld.helpers({
 		return getUserPreference(Meteor.userId(), 'displayAvatars') ? undefined : 'hide-avatars';
 	},
 	canPreview() {
-		const { room, state } = Template.instance();
-
-		if (room && room.t !== 'c') {
-			return true;
-		}
+		const { state } = Template.instance();
 
 		if (settings.get('Accounts_AllowAnonymousRead') === true) {
 			return true;
