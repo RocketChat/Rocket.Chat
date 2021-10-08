@@ -15,10 +15,10 @@ type LoginMethodWithTotp<A extends unknown[]> = (...args: [...args: A, code: str
 
 export const overrideLoginMethod = <
 	A extends unknown[]
->(loginMethod: LoginMethod<A>, loginArgs: A, cb: LoginCallback, loginMethodTOTP: LoginMethodWithTotp<A>, emailOrUsername: string): void => {
+>(loginMethod: LoginMethod<A>, loginArgs: A, callback: LoginCallback, loginMethodTOTP: LoginMethodWithTotp<A>, emailOrUsername: string): void => {
 	loginMethod.call(null, ...loginArgs, (error: unknown, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
-			cb(error);
+			callback(error);
 			return;
 		}
 
@@ -26,16 +26,16 @@ export const overrideLoginMethod = <
 			error,
 			result,
 			emailOrUsername,
-			originalCallback: cb,
+			originalCallback: callback,
 			onCode: (code: string) => {
 				loginMethodTOTP?.call(null, ...loginArgs, code, (error: unknown) => {
 					if (isTotpInvalidError(error)) {
 						toastr.error(t('Invalid_two_factor_code'));
-						cb(null);
+						callback(null);
 						return;
 					}
 
-					cb(error);
+					callback(error);
 				});
 			},
 		});
