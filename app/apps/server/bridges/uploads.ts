@@ -6,8 +6,6 @@ import { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUpl
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
 import { AppServerOrchestrator } from '../orchestrator';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -57,10 +55,9 @@ export class AppUploadBridge extends UploadBridge {
 
 		return new Promise(Meteor.bindEnvironment((resolve, reject) => {
 			try {
-				SystemLogger.debug({ msg: 'App bridge is trying to upload the file.', details });
 				Meteor.runAsUser(details.userId, () => {
 					const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
-					SystemLogger.debug({ msg: 'App bridge has successfully uploaded the file', uploadedFile });
+					this.orch.debugLog(`The App ${ appId } has created an upload`, uploadedFile);
 					if (details.visitorToken) {
 						Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
 					} else {
