@@ -61,7 +61,7 @@ export const PDFAttachment: FC<PDFAttachmentProps> = ({
 			{description && <MarkdownText variant='inline' content={description} />}
 			<Attachment.Row>
 				<Attachment.Title>{t('PDF')}</Attachment.Title>
-					{collapse}
+				{collapse}
 				{hasDownload && link && <Attachment.Download href={link} />}
 			</Attachment.Row>
 			{!collapsed && (
