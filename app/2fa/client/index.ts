@@ -1,4 +1,4 @@
-import './callWithTwoFactorRequired';
+import './process2faReturn';
 import './TOTPPassword';
 import './TOTPOAuth';
 import './TOTPGoogle';

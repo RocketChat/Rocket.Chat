@@ -3,17 +3,9 @@ import toastr from 'toastr';
 import { Accounts } from 'meteor/accounts-base';
 
 import { t } from '../../../utils/client';
-import { process2faReturn } from '../callWithTwoFactorRequired';
+import { process2faReturn } from '../process2faReturn';
 
 export class Utils2fa {
-	static reportError(error, callback) {
-		if (callback) {
-			callback(error);
-		} else {
-			throw error;
-		}
-	}
-
 	static convertError(err) {
 		if (err && err instanceof Meteor.Error && err.error === Accounts.LoginCancelledError.numericError) {
 			return new Accounts.LoginCancelledError(err.reason);

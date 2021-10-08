@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Utils2fa } from './lib/2fa';
 import '../../crowd/client/index';
+import { reportError } from './utils';
 
 Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 	const loginRequest = {
@@ -20,7 +21,7 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}

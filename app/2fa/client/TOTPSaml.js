@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Utils2fa } from './lib/2fa';
 import '../../meteor-accounts-saml/client/saml_client';
+import { reportError } from './utils';
 
 Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 	Accounts.callLoginMethod({
@@ -17,7 +18,7 @@ Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}

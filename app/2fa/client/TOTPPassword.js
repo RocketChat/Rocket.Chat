@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
-import { Utils2fa } from './lib/2fa';
 import { t } from '../../utils';
-import { process2faReturn } from './callWithTwoFactorRequired';
+import { process2faReturn } from './process2faReturn';
+import { reportError } from './utils';
 
 Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	if (typeof selector === 'string') {
@@ -27,7 +27,7 @@ Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}

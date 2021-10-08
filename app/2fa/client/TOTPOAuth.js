@@ -9,7 +9,7 @@ import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
 
 import { Utils2fa } from './lib/2fa';
-import { process2faReturn } from './callWithTwoFactorRequired';
+import { process2faReturn } from './process2faReturn';
 import { CustomOAuth } from '../../custom-oauth';
 
 let lastCredentialToken = null;

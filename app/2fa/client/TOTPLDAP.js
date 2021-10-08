@@ -3,6 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { Utils2fa } from './lib/2fa';
 import '../../../client/startup/ldap';
+import { reportError } from './utils';
 
 Meteor.loginWithLDAPAndTOTP = function(...args) {
 	// Pull username and password
@@ -34,7 +35,7 @@ Meteor.loginWithLDAPAndTOTP = function(...args) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}
