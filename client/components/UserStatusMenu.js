@@ -6,16 +6,14 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { UserStatus } from './UserStatus';
 
 const UserStatusMenu = ({
-	onChange = () => {},
-	optionWidth,
+	onChange,
+	optionWidth = undefined,
 	initialStatus = 'offline',
 	placement = 'bottom-end',
 	...props
 }) => {
 	const t = useTranslation();
-
 	const [status, setStatus] = useState(initialStatus);
-
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption');
 
 	const options = useMemo(() => {
@@ -30,8 +28,8 @@ const UserStatusMenu = ({
 
 		const statuses = [
 			['online', renderOption('online', t('Online'))],
-			['busy', renderOption('busy', t('Busy'))],
 			['away', renderOption('away', t('Away'))],
+			['busy', renderOption('busy', t('Busy'))],
 		];
 
 		if (allowInvisibleStatus) {

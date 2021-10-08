@@ -1,4 +1,5 @@
 import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { FollowMessageMethod } from './methods/followMessage';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
@@ -123,6 +124,7 @@ export type ServerMethods = {
 	'setAvatarFromService': (...args: any[]) => any;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
+	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;
