@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import '../../crowd/client/index';
-import { reportError } from './utils';
-import { overrideLoginMethod } from './overrideLoginMethod';
+import { reportError } from '../../../client/lib/2fa/utils';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 	const loginRequest = {

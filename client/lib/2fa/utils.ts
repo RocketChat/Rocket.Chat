@@ -1,10 +1,14 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-export const isTotpRequiredError = (error: unknown): error is Meteor.Error & { error: 'totp-required' } =>
+export const isTotpRequiredError = (
+	error: unknown,
+): error is Meteor.Error & { error: 'totp-required' } =>
 	(error as { error?: unknown } | undefined)?.error === 'totp-required';
 
-export const isTotpInvalidError = (error: unknown): error is Meteor.Error & { error: 'totp-invalid' } =>
+export const isTotpInvalidError = (
+	error: unknown,
+): error is Meteor.Error & { error: 'totp-invalid' } =>
 	(error as { error?: unknown } | undefined)?.error === 'totp-invalid';
 
 export const isLoginCancelledError = (error: unknown): error is Meteor.Error =>

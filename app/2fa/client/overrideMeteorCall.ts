@@ -2,21 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import toastr from 'toastr';
 
 import { t } from '../../utils/client';
-import { process2faReturn } from './process2faReturn';
-import { isTotpInvalidError } from './utils';
+import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
+import { isTotpInvalidError } from '../../../client/lib/2fa/utils';
 
 const { call } = Meteor;
 
 type Callback = {
-	(error: { toastrShowed?: boolean }): void;
-	(error: { toastrShowed?: boolean }, result: unknown): void;
+	(error: unknown): void;
+	(error: unknown, result: unknown): void;
 };
 
 const callWithTotp = (methodName: string, args: unknown[], callback: Callback) =>
 	(twoFactorCode: string, twoFactorMethod: string): unknown =>
-		call(methodName, ...args, { twoFactorCode, twoFactorMethod }, (error: { toastrShowed?: boolean }, result: unknown): void => {
+		call(methodName, ...args, { twoFactorCode, twoFactorMethod }, (error: unknown, result: unknown): void => {
 			if (isTotpInvalidError(error)) {
-				error.toastrShowed = true;
+				(error as { toastrShowed?: true }).toastrShowed = true;
 				toastr.error(t('Invalid_two_factor_code'));
 				callback(error);
 				return;
@@ -27,7 +27,7 @@ const callWithTotp = (methodName: string, args: unknown[], callback: Callback) =
 
 const callWithoutTotp = (methodName: string, args: unknown[], callback: Callback) =>
 	(): unknown =>
-		call(methodName, ...args, (error: { toastrShowed?: boolean }, result: unknown): void => {
+		call(methodName, ...args, (error: unknown, result: unknown): void => {
 			process2faReturn({
 				error,
 				result,

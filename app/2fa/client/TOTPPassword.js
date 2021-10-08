@@ -3,8 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import toastr from 'toastr';
 
 import { t } from '../../utils';
-import { process2faReturn } from './process2faReturn';
-import { reportError } from './utils';
+import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
+import { reportError } from '../../../client/lib/2fa/utils';
 
 Meteor.loginWithPasswordAndTOTP = function(selector, password, code, callback) {
 	if (typeof selector === 'string') {

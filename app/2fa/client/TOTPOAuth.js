@@ -8,10 +8,10 @@ import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
 import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
 
-import { process2faReturn } from './process2faReturn';
+import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
 import { CustomOAuth } from '../../custom-oauth';
-import { convertError } from './utils';
-import { overrideLoginMethod } from './overrideLoginMethod';
+import { convertError } from '../../../client/lib/2fa/utils';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 let lastCredentialToken = null;
 let lastCredentialSecret = null;

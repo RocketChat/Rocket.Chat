@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
 import _ from 'underscore';
 
-import { overrideLoginMethod } from './overrideLoginMethod';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 const loginWithGoogleAndTOTP = function(options, code, callback) {
 	// support a callback without options
