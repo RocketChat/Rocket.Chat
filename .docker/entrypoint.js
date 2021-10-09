@@ -8,17 +8,14 @@ const {
 const { spawn, exec } = require(`child_process`);
 
 const connectionUri = process.env.MONGO_URL;
-const mongoClient = new MongoClient(
-  connectionUri,
-  { useUnifiedTopology: true },
-  { native_parser: true },
-  { numberOfRetries: 0 },
-  { connectTimeoutMS: 5000 },
-  { noDelay: true },
-  { serverSelectionTimeoutMS: 5000 },
-  { socketTimeoutMS: 5000 },
-  { waitQueueTimeoutMS: 5000 }
-);
+const mongoClient = new MongoClient(connectionUri, {
+  useUnifiedTopology: true,
+  connectTimeoutMS: 5000,
+  noDelay: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 5000,
+  waitQueueTimeoutMS: 5000,
+});
 
 function startRocketChat() {
   const child = spawn(`node`, [`main.js`]);
@@ -55,7 +52,7 @@ async function start() {
     await new Promise((r) => setTimeout(r, seconds * 1000));
 
   const maxRetryCount = 30;
-	let mongoServerStatus;
+  let mongoServerStatus;
 
   for (let retryCount of Array(maxRetryCount).keys()) {
     mongoServerStatus = await mongoReady();
