@@ -392,6 +392,9 @@ jobs:
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
+        if [ -e ${DOCKER_PATH}/entrypoint.js ]; then
+          cp ${DOCKER_PATH}/entrypoint.js .
+        fi
 
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
@@ -516,6 +519,9 @@ jobs:
         if [ -e ${DOCKER_PATH}/entrypoint.sh ]; then
           cp ${DOCKER_PATH}/entrypoint.sh .
         fi;
+        if [ -e ${DOCKER_PATH}/entrypoint.js ]; then
+          cp ${DOCKER_PATH}/entrypoint.js .
+        fi
 
     - name: Build Docker image for tag
       if: github.event_name == 'release'
