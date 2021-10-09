@@ -73,7 +73,7 @@ async function start() {
     console.error(
       `failed to connect to mongod..tried ${retryCount} times.. retrying in 5 seconds...`
     );
-    await sleep(10);
+    await sleep(5);
   }
   console.log(mongoServerStatus.msg);
   mongoClient.close();
@@ -81,7 +81,7 @@ async function start() {
 }
 
 async function main() {
-  if (process.argv.slice(2)) {
+  if (process.argv.slice(2).length !== 0) {
     const child = exec(process.argv.slice(2).join(` `));
 
     child.stdout.on(`data`, (data) => process.stdout.write(data));
