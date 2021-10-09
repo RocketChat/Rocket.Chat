@@ -5,7 +5,7 @@ const {
   MongoNetworkError,
   MongoServerSelectionError,
 } = require(`/app/bundle/programs/server/npm/node_modules/mongodb`);
-const { spawn } = require(`child_process`);
+const { spawn, exec } = require(`child_process`);
 
 const connectionUri = process.env.MONGO_URL;
 const mongoClient = new MongoClient(
@@ -80,4 +80,19 @@ async function start() {
   startRocketChat();
 }
 
-start();
+async function main() {
+  if (process.argv.slice(2)) {
+    const child = exec(process.argv.slice(2).join(` `));
+
+    child.stdout.on(`data`, (data) => process.stdout.write(data));
+
+    child.stderr.on(`data`, (data) => process.stdout.write(data));
+
+    child.on(`exit`, (code, _) => process.exit(code));
+
+    return;
+  }
+  await start();
+}
+
+main();
