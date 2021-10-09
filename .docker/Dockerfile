@@ -46,4 +46,4 @@ ENV DEPLOY_METHOD=docker \
 
 EXPOSE 3000
 
-CMD ["node", "/app/entrypoint.js"]
+ENTRYPOINT ["node", "/app/entrypoint.js"]
