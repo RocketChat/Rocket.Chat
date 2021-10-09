@@ -54,12 +54,11 @@ async function start() {
   const maxRetryCount = 30;
   let mongoServerStatus;
 
-  for (let retryCount of Array(maxRetryCount).keys()) {
+  for (let retryCount = 1; retryCount <= maxRetryCount; retryCount++) {
     mongoServerStatus = await mongoReady();
     if (mongoServerStatus.ready) {
       break;
     }
-    retryCount++;
     console.log(mongoServerStatus.msg);
     if (retryCount == maxRetryCount) {
       console.error(
