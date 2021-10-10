@@ -1,0 +1,32 @@
+name: update compose file release version to latest
+
+on:
+  release: { types: [published] }
+
+jobs:
+  update-compose-release:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+          fetch-depth: 1
+
+      - name: update compose release
+        run: |
+          release=${{ github.event.release.tag_name }}
+          if ! [[ $release =~ -rc$ ]]; then
+            sed -iE "s/^\(RELEASE\)=.*/\1=$release/" deploy/.env
+            git config --local user.email debdut.chakraborty@rocket.chat
+            git config --local user.name 'Debdut Chakraborty'
+            git add deploy/.env
+            git commit -m "[auto] update compose release version to $release"
+          fi
+
+      - name: push to repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PAT }}
+          branch: develop

@@ -1,0 +1,42 @@
+version: "3.7"
+
+volumes:
+  uploads: { name: rocketchat_uploads }
+  data: { name: rocketchat_mongodb_data }
+
+services:
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:${RELEASE}
+    restart: on-failure
+    volumes:
+      - uploads:/app/uploads
+    environment:
+      MONGO_URL: mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      MONGO_OPLOG_URL: mongodb://mongo:27017/admin
+      ROOT_URL: ${ROOT_URL:-http://localhost}
+      PORT: ${PORT:-3000}
+    depends_on: [mongo]
+    ports:
+      - target: ${PORT:-3000}
+        published: ${HOST_PORT:-80}
+        protocol: tcp
+        mode: host
+
+  mongo:
+    image: bitnami/mongodb:5.0
+    restart: on-failure
+    volumes:
+      - data:/bitnami/mongodb
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_PORT_NUMBER: "27017"
+      MONGODB_INITIAL_PRIMARY_HOST: mongo
+      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: "27017"
+      MONGODB_ADVERTISED_HOSTNAME: mongo
+      MONGODB_ENABLE_JOURNAL: "true"
+      ALLOW_EMPTY_PASSWORD: ${ALLOW_EMPTY_PASSWORD:-yes}
+      MONGODB_ROOT_USER: ${MONGODB_ROOT_USER}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
