@@ -271,7 +271,7 @@ function shouldQueueStart() {
 }
 
 Meteor.startup(() => {
-	SettingsVersion4.watch('Livechat_enabled', (_, value) => {
+	SettingsVersion4.watch('Livechat_enabled', (value) => {
 		value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 	});
 

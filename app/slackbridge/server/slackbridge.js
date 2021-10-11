@@ -71,25 +71,25 @@ class SlackBridgeClass {
 				}
 			}
 
-			classLogger.debug('Setting: \'SlackBridge_APIToken\'', value);
+			classLogger.debug('Setting: SlackBridge_APIToken', value);
 		});
 
 		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
 		SettingsVersion4.watch('SlackBridge_AliasFormat', (value) => {
 			this.aliasFormat = value;
-			classLogger.debug(`Setting: ${ 'SlackBridge_AliasFormat' }`, value);
+			classLogger.debug('Setting: SlackBridge_AliasFormat', value);
 		});
 
 		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
 		SettingsVersion4.watch('SlackBridge_ExcludeBotnames', (value) => {
 			this.excludeBotnames = value;
-			classLogger.debug(`Setting: ${ 'SlackBridge_ExcludeBotnames' }`, value);
+			classLogger.debug('Setting: SlackBridge_ExcludeBotnames', value);
 		});
 
 		// Reactions
 		SettingsVersion4.watch('SlackBridge_Reactions_Enabled', (value) => {
 			this.isReactionsEnabled = value;
-			classLogger.debug(`Setting: ${ 'SlackBridge_Reactions_Enabled' }`, value);
+			classLogger.debug('Setting: SlackBridge_Reactions_Enabled', value);
 		});
 
 		// Is this entire SlackBridge enabled
@@ -99,7 +99,7 @@ class SlackBridgeClass {
 			} else {
 				this.disconnect();
 			}
-			classLogger.debug(`Setting: ${ 'SlackBridge_Enabled' }`, value);
+			classLogger.debug('Setting: SlackBridge_Enabled', value);
 		});
 	}
 }
