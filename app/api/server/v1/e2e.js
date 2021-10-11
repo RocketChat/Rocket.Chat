@@ -65,6 +65,37 @@ API.v1.addRoute('e2e.setRoomKeyID', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ *  /api/v1/e2e.setUserPublicAndPrivateKeys:
+ *    post:
+ *      description: Sets the end-to-end keys for the authenticated user
+ *      security:
+ *        - autenticated: {}
+ *      requestBody:
+ *        description: A tuple containing the public and the private keys
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                public_key:
+ *                  type: string
+ *                private_key:
+ *                  type: string
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiSuccessV1'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('e2e.setUserPublicAndPrivateKeys', { authRequired: true }, {
 	post() {
 		const { public_key, private_key } = this.bodyParams;
