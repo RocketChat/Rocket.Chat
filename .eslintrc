@@ -2,7 +2,7 @@
   "extends": [
     "@rocket.chat/eslint-config"
   ],
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "globals": {
     "__meteor_bootstrap__": false,
     "__meteor_runtime_config__": false,

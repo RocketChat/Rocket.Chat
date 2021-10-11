@@ -51,12 +51,13 @@
 		"email": "support@rocket.chat"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.14.6",
+		"@babel/core": "^7.15.8",
+		"@babel/eslint-parser": "^7.15.8",
 		"@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
 		"@babel/plugin-proposal-optional-chaining": "^7.14.5",
-		"@babel/preset-env": "^7.14.7",
+		"@babel/preset-env": "^7.15.8",
 		"@babel/preset-react": "^7.14.5",
-		"@babel/register": "^7.14.5",
+		"@babel/register": "^7.15.3",
 		"@rocket.chat/eslint-config": "^0.4.0",
 		"@rocket.chat/livechat": "^1.9.5",
 		"@settlin/spacebars-loader": "^1.0.9",
@@ -108,7 +109,6 @@
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^3.0.0",
 		"autoprefixer": "^9.8.6",
-		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.2.2",
 		"babel-mocha-es6-compiler": "^0.1.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -151,7 +151,7 @@
 		"webpack": "^4.44.1"
 	},
 	"dependencies": {
-		"@babel/runtime": "^7.14.6",
+		"@babel/runtime": "^7.15.4",
 		"@bugsnag/js": "^7.11.0",
 		"@google-cloud/language": "^3.8.0",
 		"@google-cloud/storage": "^2.5.0",
