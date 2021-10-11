@@ -330,6 +330,42 @@ API.v1.addRoute('directory', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ *  /api/v1/stdout.queue:
+ *    get:
+ *      description: Retrieves last 1000 lines of server logs
+ *      security:
+ *        - authenticated: ['view-logs']
+ *      responses:
+ *        200:
+ *          description: The user data of the authenticated user
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      queue:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            id:
+ *                              type: string
+ *                            string:
+ *                              type: string
+ *                            ts:
+ *                              type: string
+ *                              format: date-time
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-logs')) {
