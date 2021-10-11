@@ -1,5 +1,16 @@
-import { Message as MessageTemplate } from '@rocket.chat/fuselage';
-import React, { FC, memo, useRef } from 'react';
+import {
+	Message as MessageTemplate,
+	MessageBody,
+	MessageContainer,
+	MessageHeader,
+	MessageLeftContainer,
+	MessageName,
+	MessageRole,
+	MessageRoles,
+	MessageTimestamp,
+	MessageUsername,
+} from '@rocket.chat/fuselage';
+import React, { FC, memo } from 'react';
 
 import { IMessage } from '../../../../../definition/IMessage';
 import Attachments from '../../../../components/Message/Attachments';
@@ -25,42 +36,42 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 	const user: UserPresence = useUserData(message.u._id) || message.u;
 	return (
 		<MessageTemplate>
-			<MessageTemplate.LeftContainer>
+			<MessageLeftContainer>
 				{!sequential && message.u.username && (
 					<UserAvatar username={message.u.username} size={'x36'} />
 				)}
-			</MessageTemplate.LeftContainer>
-			<MessageTemplate.Container>
+			</MessageLeftContainer>
+			<MessageContainer>
 				{!sequential && (
-					<MessageTemplate.Header>
-						<MessageTemplate.Name data-username={user.username} onClick={openUserCard}>
+					<MessageHeader>
+						<MessageName data-username={user.username} onClick={openUserCard}>
 							{user.name || user.username}
-						</MessageTemplate.Name>
+						</MessageName>
 						{user.name && user.name !== user.username && (
-							<MessageTemplate.Username data-username={user.username} onClick={openUserCard}>
+							<MessageUsername data-username={user.username} onClick={openUserCard}>
 								@{user.username}
-							</MessageTemplate.Username>
+							</MessageUsername>
 						)}
 						{Array.isArray(user.roles) && user.roles.length > 0 && (
-							<MessageTemplate.Roles>
+							<MessageRoles>
 								{user.roles.map((role) => (
-									<MessageTemplate.Role>{role}</MessageTemplate.Role>
+									<MessageRole>{role}</MessageRole>
 								))}
-							</MessageTemplate.Roles>
+							</MessageRoles>
 						)}
-						<MessageTemplate.Timestamp data-time={message.ts.toISOString()}>
+						<MessageTimestamp data-time={message.ts.toISOString()}>
 							{formatters.messageHeader(message.ts)}
-						</MessageTemplate.Timestamp>
-					</MessageTemplate.Header>
+						</MessageTimestamp>
+					</MessageHeader>
 				)}
-				<MessageTemplate.Body>
+				<MessageBody>
 					{!message.blocks && message.md && (
 						<MessageBodyRender mentions={message.mentions} tokens={message.md} />
 					)}
 					{!message.blocks && !message.md && message.msg}
-				</MessageTemplate.Body>
+				</MessageBody>
 				{message.blocks && (
-					<MessageBlock mid={message.mid} blocks={message.blocks} appId rid={message.rid} />
+					<MessageBlock mid={message._id} blocks={message.blocks} appId rid={message.rid} />
 				)}
 				{message.attachments && (
 					<Attachments attachments={message.attachments} file={message.file} />
@@ -87,7 +98,7 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 				{broadcast && user.username && (
 					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
 				)}
-			</MessageTemplate.Container>
+			</MessageContainer>
 			<Toolbox message={message} />
 		</MessageTemplate>
 	);
