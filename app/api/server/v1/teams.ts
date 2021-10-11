@@ -84,7 +84,7 @@ API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
 			return API.v1.failure('missing-teamId-or-teamName');
 		}
 
-		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		const team = (teamId && Promise.await(Team.getOneById(teamId))) || (teamName && Promise.await(Team.getOneByName(teamName))) || undefined;
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -251,7 +251,7 @@ API.v1.addRoute('teams.members', { authRequired: true }, {
 			return API.v1.failure('missing-teamId-or-teamName');
 		}
 
-		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		const team = (teamId && Promise.await(Team.getOneById(teamId))) || (teamName && Promise.await(Team.getOneByName(teamName))) || undefined;
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -466,7 +466,7 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		Promise.await(Team.update(this.userId, teamId, { name: data.name, type: data.type }));
+		Promise.await(Team.update(this.userId, teamId, { name: data.name ?? undefined, type: data.type ?? undefined }));
 
 		return API.v1.success();
 	},

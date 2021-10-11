@@ -48,8 +48,8 @@ export interface IListRoomsFilter {
 }
 
 export interface ITeamUpdateData {
-	name: string;
-	type: TEAM_TYPE;
+	name?: string;
+	type?: TEAM_TYPE;
 	updateRoom?: boolean; // default is true
 }
 
