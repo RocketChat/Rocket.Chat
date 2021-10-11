@@ -61,7 +61,7 @@ export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boo
 	Subscriptions.resetUserE2EKey(uid);
 
 	// Force the user to logout, so that the keys can be generated again
-	Users.removeResumeService(uid);
+	Users.unsetLoginTokens(uid);
 
 	return true;
 }

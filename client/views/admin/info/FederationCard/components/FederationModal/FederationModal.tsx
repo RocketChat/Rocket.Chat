@@ -160,15 +160,15 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 						<Modal.Close onClick={onClose} />
 					</Modal.Header>
 					<Modal.Content>
-						<Tabs>
+						<Tabs mi='neg-x24'>
 							<Tabs.Item selected={currentTab === 1} onClick={(): void => setCurrentTab(1)}>
-								Configure DNS
+								{t('Federation_Configure_DNS')}
 							</Tabs.Item>
 							<Tabs.Item selected={currentTab === 2} onClick={(): void => setCurrentTab(2)}>
-								Legacy Support
+								{t('Federation_Legacy_support')}
 							</Tabs.Item>
 						</Tabs>
-						<Box style={{ marginTop: 30 }}>
+						<Box mbs='x24'>
 							{currentTab === 1 && (
 								<DNSRecords
 									federationSubdomain={federationSubdomain}
@@ -181,12 +181,13 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 							)}
 							{currentTab === 2 && (
 								<>
-									<Box style={{ marginBottom: 15 }}>
-										<b>If your DNS provider does not support SRV records with _http or _https</b>
-										<p style={{ marginTop: 8 }}>
-											Some DNS providers will not allow setting _https or _http on SRV records, so
-											we have support for those cases, using our old DNS record resolution method.
-										</p>
+									<Box mbe='x16'>
+										<Box is='p' fontWeight='c2' fontSize='p1'>
+											{t('Federation_SRV_no_support')}
+										</Box>
+										<Box is='p' mbs='x8' fontSize='x12'>
+											{t('Federation_SRV_no_support_details')}
+										</Box>
 									</Box>
 									<DNSRecords
 										federationSubdomain={federationSubdomain}
@@ -215,6 +216,11 @@ export const FederationModal: FC<{ onClose: () => void }> = ({
 				</>
 			)}
 			<Modal.Footer>
+				{currentStep === 2 && (
+					<Box mbs='x8' color='hint' fontSize='x12' position='absolute'>
+						{t('Federation_DNS_info_update')}
+					</Box>
+				)}
 				<ButtonGroup align='end'>
 					<Button onClick={previousStep}>{currentStep === 1 ? t('Cancel') : t('Back')}</Button>
 					<Button primary onClick={nextStep}>

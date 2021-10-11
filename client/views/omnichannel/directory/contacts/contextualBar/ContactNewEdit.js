@@ -7,7 +7,6 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import { isEmail } from '../../../../../../app/utils/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { createToken } from '../../../../../components/helpers';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -15,6 +14,7 @@ import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdat
 import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
+import { createToken } from '../../../../../lib/utils/createToken';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 

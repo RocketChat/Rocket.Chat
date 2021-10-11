@@ -7,7 +7,7 @@ import { usePermission } from '../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../contexts/ModalContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import ConfirmationModal from './ConfirmationModal';
 
 const useReactModal = (Component, props) => {
@@ -37,12 +37,12 @@ const RoomActions = ({ room, reload }) => {
 	const removeRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		'teams.removeRoom',
-		t('Success'),
+		t('Room_has_been_removed'),
 	);
 	const deleteRoomEndpoint = useEndpointActionExperimental(
 		'POST',
 		room.t === 'c' ? 'channels.delete' : 'groups.delete',
-		t('Success'),
+		t('Room_has_been_deleted'),
 	);
 
 	const RemoveFromTeamAction = useReactModal(ConfirmationModal, {

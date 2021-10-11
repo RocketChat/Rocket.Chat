@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import dompurify from 'dompurify';
 import marked from 'marked';
-import React, { FC, useMemo } from 'react';
+import React, { ComponentProps, FC, useMemo } from 'react';
 
-import { renderMessageEmoji } from '../lib/renderMessageEmoji';
+import { renderMessageEmoji } from '../lib/utils/renderMessageEmoji';
 
 type MarkdownTextParams = {
 	content: string;
@@ -11,7 +11,7 @@ type MarkdownTextParams = {
 	preserveHtml: boolean;
 	parseEmoji: boolean;
 	withTruncatedText: boolean;
-};
+} & ComponentProps<typeof Box>;
 
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();

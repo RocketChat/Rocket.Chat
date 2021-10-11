@@ -9,17 +9,14 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { KonchatNotification } from './notification';
-import { MsgTyping } from './msgTyping';
+import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUpload } from './fileUpload';
-import { t, slashCommands, handleError } from '../../../utils/client';
+import { t, slashCommands } from '../../../utils/client';
 import {
 	messageProperties,
 	MessageTypes,
 	readMessage,
 	modal,
-	call,
-	keyCodes,
-	prependReplies,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
@@ -30,6 +27,10 @@ import { emoji } from '../../../emoji/client';
 import { generateTriggerId } from '../../../ui-message/client/ActionManager';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import GenericModal from '../../../../client/components/GenericModal';
+import { keyCodes } from '../../../../client/lib/utils/keyCodes';
+import { prependReplies } from '../../../../client/lib/utils/prependReplies';
+import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 
 const messageBoxState = {
@@ -102,7 +103,7 @@ export class ChatMessages {
 			return;
 		}
 
-		const message = Messages.findOne(mid) || await call('getSingleMessage', mid);
+		const message = Messages.findOne(mid) || await callWithErrorHandling('getSingleMessage', mid);
 		if (!message) {
 			return;
 		}
@@ -254,10 +255,10 @@ export class ChatMessages {
 	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
-		MsgTyping.stop(rid);
+		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 
 		if (!ChatSubscription.findOne({ rid })) {
-			await call('joinRoom', rid);
+			await callWithErrorHandling('joinRoom', rid);
 		}
 
 		messageBoxState.save({ rid, tmid }, this.input);
@@ -345,7 +346,7 @@ export class ChatMessages {
 			return;
 		}
 
-		await call('sendMessage', message);
+		await callWithErrorHandling('sendMessage', message);
 	}
 
 	async processSetReaction({ rid, tmid, msg }) {
@@ -359,7 +360,7 @@ export class ChatMessages {
 		}
 
 		const lastMessage = this.collection.findOne({ rid, tmid }, { fields: { ts: 1 }, sort: { ts: -1 } });
-		await call('setReaction', reaction, lastMessage._id);
+		await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 		return true;
 	}
 
@@ -406,7 +407,7 @@ export class ChatMessages {
 		}
 
 		this.clearEditing();
-		await call('updateMessage', message);
+		await callWithErrorHandling('updateMessage', message);
 		return true;
 	}
 
@@ -521,7 +522,7 @@ export class ChatMessages {
 		}
 
 
-		await call('deleteMessage', { _id });
+		await callWithErrorHandling('deleteMessage', { _id });
 	}
 
 	keydown(event) {
@@ -579,9 +580,9 @@ export class ChatMessages {
 
 		if (!Object.values(keyCodes).includes(keyCode)) {
 			if (input.value.trim()) {
-				MsgTyping.start(rid);
+				UserAction.start(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			} else {
-				MsgTyping.stop(rid);
+				UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
 			}
 		}
 
@@ -589,6 +590,6 @@ export class ChatMessages {
 	}
 
 	onDestroyed(rid) {
-		MsgTyping.cancel(rid);
+		UserAction.cancel(rid);
 	}
 }

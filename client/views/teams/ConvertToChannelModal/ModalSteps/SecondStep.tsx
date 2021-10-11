@@ -2,17 +2,18 @@ import { Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { IRoom } from '../../../../../definition/IRoom';
+import { Serialized } from '../../../../../definition/Serialized';
 import GenericModal from '../../../../components/GenericModal';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 
 type SecondStepsProps = {
 	onClose: () => void;
 	onCancel: () => void;
-	onConfirm: (deletedRooms: { [key: string]: IRoom }) => void;
+	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	deletedRooms: {
-		[key: string]: IRoom;
+		[key: string]: Serialized<IRoom>;
 	};
-	rooms: Array<IRoom & { isLastOwner?: string }> | undefined;
+	rooms: (Serialized<IRoom> & { isLastOwner?: string })[] | undefined;
 };
 
 const SecondStep: FC<SecondStepsProps> = ({

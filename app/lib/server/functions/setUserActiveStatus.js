@@ -5,7 +5,9 @@ import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks/server';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
+import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
@@ -41,16 +43,32 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 	// Users without username can't do anything, so there is no need to check for owned rooms
 	if (user.username != null && !active) {
 		const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+		// give omnichannel rooms a special treatment :)
+		const chatSubscribedRooms = subscribedRooms.filter(({ t }) => t !== 'l');
+		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');
 
-		if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
-			const rooms = getUserSingleOwnedRooms(subscribedRooms);
+		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
+			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms);
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
-		relinquishRoomOwnerships(user._id, subscribedRooms, false);
+		closeOmnichannelConversations(user, livechatSubscribedRooms);
+		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
+	}
+
+	if (active && !user.active) {
+		callbacks.run('beforeActivateUser', user);
 	}
 
 	Users.setUserActive(userId, active);
+
+	if (active && !user.active) {
+		callbacks.run('afterActivateUser', user);
+	}
+
+	if (!active && user.active) {
+		callbacks.run('afterDeactivateUser', user);
+	}
 
 	if (user.username) {
 		Subscriptions.setArchivedByUsername(user.username, !active);
