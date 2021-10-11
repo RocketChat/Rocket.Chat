@@ -393,7 +393,7 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-SettingsVersion4.watch('Troubleshoot_Disable_Notifications', (key, value) => {
+SettingsVersion4.watch('Troubleshoot_Disable_Notifications', (value) => {
 	if (TroubleshootDisableNotifications === value) { return; }
 	TroubleshootDisableNotifications = value;
 

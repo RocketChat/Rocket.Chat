@@ -25,16 +25,15 @@ Accounts.config({
 	forbidClientAccountCreation: true,
 });
 
-const updateMailConfig = _.debounce(() => {
-	Accounts._options.loginExpirationInDays = SettingsVersion4.get('Accounts_LoginExpiration');
-
-	Accounts.emailTemplates.siteName = SettingsVersion4.get('Site_Name');
-
-	Accounts.emailTemplates.from = `${ SettingsVersion4.get('Site_Name') } <${ SettingsVersion4.get('From_Email') }>`;
-}, 1000);
 
 Meteor.startup(() => {
-	SettingsVersion4.watch(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], updateMailConfig);
+	SettingsVersion4.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
+		Accounts._options.loginExpirationInDays = SettingsVersion4.get('Accounts_LoginExpiration');
+
+		Accounts.emailTemplates.siteName = SettingsVersion4.get('Site_Name');
+
+		Accounts.emailTemplates.from = `${ SettingsVersion4.get('Site_Name') } <${ SettingsVersion4.get('From_Email') }>`;
+	});
 });
 
 Accounts.emailTemplates.userToActivate = {

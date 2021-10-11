@@ -62,11 +62,11 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	public watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void {
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
-			const cancelFn = (): void => {
+
+			cancel.add(this.once('ready', (): void => {
+				cancel.clear();
 				cancel.add(this.watchMultiple(_id, callback));
-				cancel.delete(cancelFn);
-			};
-			cancel.add(this.once('ready', cancelFn));
+			}));
 			return (): void => {
 				cancel.forEach((fn) => fn());
 			};
@@ -79,7 +79,8 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 		const mergeFunction = _.debounce((): void => {
 			callback(_id.map((id) => this.store.get(id)) as T[]);
 		}, 100);
-		const fns = _id.map((id) => this.change(id, mergeFunction));
+
+		const fns = _id.map((id) => this.on(id, mergeFunction));
 		return (): void => {
 			fns.forEach((fn) => fn());
 		};
@@ -94,23 +95,20 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* @param callback - The callback to run
 	* @returns {() => void} - A function that can be used to cancel the observe
 	*/
-	public watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void, config?: OverCustomSettingsConfig): () => void {
-		const { debounce } = this.getConfig(config);
-		const cb = _.debounce(callback, debounce);
+	public watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void {
 		if (!this.ready) {
 			const cancel = new Set<() => void>();
-			const cancelFn = (): void => {
-				cancel.add(this.watch(_id, cb));
-				cancel.delete(cancelFn);
-			};
-			cancel.add(this.once('ready', cancelFn));
+			cancel.add(this.once('ready', (): void => {
+				cancel.clear();
+				cancel.add(this.watch(_id, cb, config));
+			}));
 			return (): void => {
 				cancel.forEach((fn) => fn());
 			};
 		}
 
 		this.store.has(_id) && cb(this.store.get(_id) as T);
-		return this.change(_id, cb);
+		return this.change(_id, cb, config);
 	}
 
 	/*
@@ -123,14 +121,12 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* @param callback - The callback to run
 	* @returns {() => void} - A function that can be used to cancel the observe
 	*/
-	public watchOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void, config?: OverCustomSettingsConfig): () => void {
-		const { debounce } = this.getConfig(config);
-		const cb = _.debounce(callback, debounce);
+	public watchOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void {
 		if (this.store.has(_id)) {
 			cb(this.store.get(_id) as T);
 			return (): void => undefined;
 		}
-		return this.changeOnce(_id, cb);
+		return this.changeOnce(_id, cb, config);
 	}
 
 
@@ -160,11 +156,9 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* @returns {() => void} - A function that can be used to cancel the observe
 	*/
 	public changeMultiple<T extends SettingValue = SettingValue>(_ids: ISetting['_id'][], callback: (settings: T[]) => void, config?: OverCustomSettingsConfig): () => void {
-		const { debounce } = this.getConfig(config);
-		const mergeFunction = _.debounce((): void => {
+		const fns = _ids.map((id) => this.change(id, (): void => {
 			callback(_ids.map((id) => this.store.get(id)) as T[]);
-		}, debounce);
-		const fns = _ids.map((id) => this.change(id, mergeFunction));
+		}, config));
 		return (): void => {
 			fns.forEach((fn) => fn());
 		};
