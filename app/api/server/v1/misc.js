@@ -16,6 +16,146 @@ import { getURL } from '../../../utils/lib/getURL';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
+/**
+ * @openapi
+ *  /api/v1/me:
+ *    get:
+ *      description: Gets user data of the authenticated user
+ *      security:
+ *        - authenticated: []
+ *      responses:
+ *        200:
+ *          description: The user data of the authenticated user
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      name:
+ *                        type: string
+ *                      username:
+ *                        type: string
+ *                      nickname:
+ *                        type: string
+ *                      emails:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            address:
+ *                              type: string
+ *                            verified:
+ *                              type: boolean
+ *                      email:
+ *                        type: string
+ *                      status:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusDefault:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusText:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      statusConnection:
+ *                        $ref: '#/components/schemas/UserStatus'
+ *                      bio:
+ *                        type: string
+ *                      avatarOrigin:
+ *                        type: string
+ *                        enum: [none, local, upload, url]
+ *                      utcOffset:
+ *                        type: number
+ *                      language:
+ *                        type: string
+ *                      settings:
+ *                        type: object
+ *                        properties:
+ *                          preferences:
+ *                            type: object
+ *                      enableAutoAway:
+ *                        type: boolean
+ *                      idleTimeLimit:
+ *                        type: number
+ *                      roles:
+ *                        type: array
+ *                      active:
+ *                        type: boolean
+ *                      defaultRoom:
+ *                        type: string
+ *                      customFields:
+ *                        type: array
+ *                      requirePasswordChange:
+ *                        type: boolean
+ *                      requirePasswordChangeReason:
+ *                        type: string
+ *                      services:
+ *                        type: object
+ *                        properties:
+ *                          github:
+ *                            type: object
+ *                          gitlab:
+ *                            type: object
+ *                          tokenpass:
+ *                            type: object
+ *                          blockstack:
+ *                            type: object
+ *                          password:
+ *                            type: object
+ *                            properties:
+ *                              exists:
+ *                                type: boolean
+ *                          totp:
+ *                            type: object
+ *                            properties:
+ *                              enabled:
+ *                                type: boolean
+ *                          email2fa:
+ *                            type: object
+ *                            properties:
+ *                              enabled:
+ *                                type: boolean
+ *                      statusLivechat:
+ *                        type: string
+ *                        enum: [available, 'not-available']
+ *                      banners:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            id:
+ *                              type: string
+ *                            title:
+ *                              type: string
+ *                            text:
+ *                              type: string
+ *                            textArguments:
+ *                              type: array
+ *                              items: {}
+ *                            modifiers:
+ *                              type: array
+ *                              items:
+ *                                type: string
+ *                            infoUrl:
+ *                              type: string
+ *                      oauth:
+ *                        type: object
+ *                        properties:
+ *                          authorizedClients:
+ *                            type: array
+ *                            items:
+ *                              type: string
+ *                      _updatedAt:
+ *                        type: string
+ *                        format: date-time
+ *                      avatarETag:
+ *                        type: string
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('me', { authRequired: true }, {
 	get() {
 		const fields = getDefaultUserFields();
@@ -190,6 +330,42 @@ API.v1.addRoute('directory', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ *  /api/v1/stdout.queue:
+ *    get:
+ *      description: Retrieves last 1000 lines of server logs
+ *      security:
+ *        - authenticated: ['view-logs']
+ *      responses:
+ *        200:
+ *          description: The user data of the authenticated user
+ *          content:
+ *            application/json:
+ *              schema:
+ *                allOf:
+ *                  - $ref: '#/components/schemas/ApiSuccessV1'
+ *                  - type: object
+ *                    properties:
+ *                      queue:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          properties:
+ *                            id:
+ *                              type: string
+ *                            string:
+ *                              type: string
+ *                            ts:
+ *                              type: string
+ *                              format: date-time
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('stdout.queue', { authRequired: true }, {
 	get() {
 		if (!hasPermission(this.userId, 'view-logs')) {
