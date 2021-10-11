@@ -1,43 +1,52 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
-import { Template } from 'meteor/templating';
-import { Blaze } from 'meteor/blaze';
-import { Tracker } from 'meteor/tracker';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { Blaze } from 'meteor/blaze';
+import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+import React, { useEffect, useRef, useState, useCallback, useMemo, FC } from 'react';
 
-import { ChatMessage } from '../../../models/client';
-import { useRoute } from '../../../../client/contexts/RouterContext';
-import { roomTypes } from '../../../utils/client';
-import { normalizeThreadTitle } from '../lib/normalizeThreadTitle';
-import { useUserId, useUserSubscription } from '../../../../client/contexts/UserContext';
-import { useEndpoint, useMethod } from '../../../../client/contexts/ServerContext';
-import { useToastMessageDispatch } from '../../../../client/contexts/ToastMessagesContext';
-import ThreadSkeleton from './ThreadSkeleton';
-import ThreadView from './ThreadView';
+import { ChatMessage } from '../../../../app/models/client';
+import { normalizeThreadTitle } from '../../../../app/threads/client/lib/normalizeThreadTitle';
+import { roomTypes } from '../../../../app/utils/client';
 import { IMessage } from '../../../../definition/IMessage';
 import { IRoom } from '../../../../definition/IRoom';
-import { useTabBarOpenUserInfo } from '../../../../client/views/room/providers/ToolboxProvider';
-import { mapMessageFromApi } from '../../../../client/lib/utils/mapMessageFromApi';
+import { useRoute } from '../../../contexts/RouterContext';
+import { useEndpoint, useMethod } from '../../../contexts/ServerContext';
+import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+import { useUserId, useUserSubscription } from '../../../contexts/UserContext';
+import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import { useTabBarOpenUserInfo } from '../providers/ToolboxProvider';
+import ThreadSkeleton from './ThreadSkeleton';
+import ThreadView from './ThreadView';
 
 const subscriptionFields = {};
 
 const useThreadMessage = (tmid: string): IMessage => {
-	const [message, setMessage] = useState<IMessage>(() => Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })));
+	const [message, setMessage] = useState<IMessage>(() =>
+		Tracker.nonreactive(() => ChatMessage.findOne({ _id: tmid })),
+	);
 	const getMessage = useEndpoint('GET', 'chat.getMessage');
-	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(async (params) => {
-		const { message } = await getMessage(params);
-		return mapMessageFromApi(message);
-	}, [getMessage]);
+	const getMessageParsed = useCallback<(params: { msgId: IMessage['_id'] }) => Promise<IMessage>>(
+		async (params) => {
+			const { message } = await getMessage(params);
+			return mapMessageFromApi(message);
+		},
+		[getMessage],
+	);
 
 	useEffect(() => {
 		const computation = Tracker.autorun(async (computation) => {
-			const msg = ChatMessage.findOne({ _id: tmid }) || await getMessageParsed({ msgId: tmid });
+			const msg = ChatMessage.findOne({ _id: tmid }) || (await getMessageParsed({ msgId: tmid }));
 
 			if (!msg || computation.stopped) {
 				return;
 			}
 
 			setMessage((prevMsg) => {
-				if (!prevMsg || prevMsg._id !== msg._id || prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()) {
+				if (
+					!prevMsg ||
+					prevMsg._id !== msg._id ||
+					prevMsg._updatedAt?.getTime() !== msg._updatedAt?.getTime()
+				) {
 					return msg;
 				}
 
@@ -58,12 +67,7 @@ const ThreadComponent: FC<{
 	jump: unknown;
 	room: IRoom;
 	onClickBack: (e: unknown) => void;
-}> = ({
-	mid,
-	jump,
-	room,
-	onClickBack,
-}) => {
+}> = ({ mid, jump, room, onClickBack }) => {
 	const subscription = useUserSubscription(room._id, subscriptionFields);
 	const channelRoute = useRoute(roomTypes.getConfig(room.t).route.name);
 	const threadMessage = useThreadMessage(mid);
@@ -73,7 +77,10 @@ const ThreadComponent: FC<{
 	const ref = useRef<HTMLElement>(null);
 	const uid = useUserId();
 
-	const headerTitle = useMemo(() => (threadMessage ? normalizeThreadTitle(threadMessage) : null), [threadMessage]);
+	const headerTitle = useMemo(
+		() => (threadMessage ? normalizeThreadTitle(threadMessage) : null),
+		[threadMessage],
+	);
 	const [expanded, setExpand] = useLocalStorage('expand-threads', false);
 	const following = !uid ? false : threadMessage?.replies?.includes(uid) ?? false;
 
@@ -81,21 +88,24 @@ const ThreadComponent: FC<{
 	const followMessage = useMethod('followMessage');
 	const unfollowMessage = useMethod('unfollowMessage');
 
-	const setFollowing = useCallback<(following: boolean) => void>(async (following) => {
-		try {
-			if (following) {
-				await followMessage({ mid });
-				return;
-			}
+	const setFollowing = useCallback<(following: boolean) => void>(
+		async (following) => {
+			try {
+				if (following) {
+					await followMessage({ mid });
+					return;
+				}
 
-			await unfollowMessage({ mid });
-		} catch (error) {
-			dispatchToastMessage({
-				type: 'error',
-				message: error,
-			});
-		}
-	}, [dispatchToastMessage, followMessage, unfollowMessage, mid]);
+				await unfollowMessage({ mid });
+			} catch (error) {
+				dispatchToastMessage({
+					type: 'error',
+					message: error,
+				});
+			}
+		},
+		[dispatchToastMessage, followMessage, unfollowMessage, mid],
+	);
 
 	const handleClose = useCallback(() => {
 		channelRoute.push(room.t === 'd' ? { rid: room._id } : { name: room.name || room._id });
@@ -142,16 +152,18 @@ const ThreadComponent: FC<{
 		return <ThreadSkeleton expanded={expanded} onClose={handleClose} />;
 	}
 
-	return <ThreadView
-		ref={ref}
-		title={headerTitle}
-		expanded={expanded}
-		following={following}
-		onToggleExpand={(expanded): void => setExpand(!expanded)}
-		onToggleFollow={(following): void => setFollowing(!following)}
-		onClose={handleClose}
-		onClickBack={onClickBack}
-	/>;
+	return (
+		<ThreadView
+			ref={ref}
+			title={headerTitle}
+			expanded={expanded}
+			following={following}
+			onToggleExpand={(expanded): void => setExpand(!expanded)}
+			onToggleFollow={(following): void => setFollowing(!following)}
+			onClose={handleClose}
+			onClickBack={onClickBack}
+		/>
+	);
 };
 
 export default ThreadComponent;
