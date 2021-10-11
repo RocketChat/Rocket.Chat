@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import {
 	LivechatDepartment,
 } from '../../../../../app/models/server/raw';

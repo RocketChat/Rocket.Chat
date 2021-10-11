@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
 import { hasPermission } from '../../app/authorization';
-import { callbacks } from '../../app/callbacks/server';
+import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 
 Meteor.methods({

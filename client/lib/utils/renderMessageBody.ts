@@ -1,7 +1,7 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { IMessage } from '../../../definition/IMessage';
+import { callbacks } from '../../../lib/callbacks';
 
 export const renderMessageBody = <T extends Partial<IMessage> & { html?: string }>(
 	message: T,

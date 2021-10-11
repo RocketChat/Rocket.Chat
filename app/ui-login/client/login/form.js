@@ -9,7 +9,7 @@ import s from 'underscore.string';
 import toastr from 'toastr';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils';
 import { handleError } from '../../../../client/lib/utils/handleError';
 

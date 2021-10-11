@@ -1,5 +1,5 @@
 import { Rooms, Subscriptions, Messages } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
 export const addUserToDefaultChannels = function(user, silenced) {
 	callbacks.run('beforeJoinDefaultChannels', user);

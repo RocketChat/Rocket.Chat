@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
 import { check } from 'meteor/check';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
 
 Accounts.registerLoginHandler('totp', function(options) {

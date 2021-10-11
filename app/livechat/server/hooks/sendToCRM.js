@@ -1,5 +1,5 @@
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';

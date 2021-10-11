@@ -6,10 +6,10 @@ import toastr from 'toastr';
 import _ from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
-import { callbacks } from '../../app/callbacks/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
+import { callbacks } from '../../lib/callbacks';
 
 Meteor.methods({
 	updateMessage(message) {

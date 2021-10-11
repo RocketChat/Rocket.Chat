@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { dispatchInquiryPosition } from '../lib/Helper';

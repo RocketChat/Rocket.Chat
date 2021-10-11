@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings';
 import { dispatchWaitingQueueStatus } from '../lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';

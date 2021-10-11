@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 
 import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, EmojiCustom } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
-import { callbacks } from '../../../../callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department) {

@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Promise } from 'meteor/promise';
 
-import { callbacks } from '../../app/callbacks/server';
+import { callbacks } from '../../lib/callbacks';
 import { LDAP } from '../sdk';
 import { settings } from '../../app/settings/server';
 

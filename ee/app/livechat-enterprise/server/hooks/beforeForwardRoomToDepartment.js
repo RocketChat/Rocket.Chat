@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatDepartment } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
 

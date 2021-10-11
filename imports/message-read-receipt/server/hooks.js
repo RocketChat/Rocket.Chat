@@ -1,5 +1,5 @@
 import { ReadReceipt } from './lib/ReadReceipt';
-import { callbacks } from '../../../app/callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Subscriptions } from '../../../app/models';
 
 callbacks.add('afterSaveMessage', (message, room) => {

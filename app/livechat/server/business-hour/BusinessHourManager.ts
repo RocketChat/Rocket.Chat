@@ -4,7 +4,7 @@ import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../de
 import { ICronJobs } from '../../../utils/server/lib/cron/Cronjobs';
 import { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server/raw';
 
 const cronJobDayDict: Record<string, number> = {

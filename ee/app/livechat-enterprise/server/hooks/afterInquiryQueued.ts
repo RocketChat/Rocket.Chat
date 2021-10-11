@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { LivechatInquiry } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';

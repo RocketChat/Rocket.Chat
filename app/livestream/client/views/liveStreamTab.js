@@ -11,7 +11,7 @@ import { RocketChatAnnouncement } from '../../../lib/client';
 import { popout } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models';
 import { handleError } from '../../../../client/lib/utils/handleError';

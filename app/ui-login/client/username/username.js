@@ -8,7 +8,7 @@ import toastr from 'toastr';
 import { settings } from '../../../settings';
 import { Button } from '../../../ui';
 import { t } from '../../../utils';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
 Template.username.onCreated(function() {
 	const self = this;

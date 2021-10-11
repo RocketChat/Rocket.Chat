@@ -5,7 +5,7 @@ import toastr from 'toastr';
 
 import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { promises } from '../../../promises/client';
 import { t } from '../../../utils/client';
 

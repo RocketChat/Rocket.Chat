@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 const testIfPathAreEquals = (oldPath = '', newPath = '') => oldPath.replace(/"/g, '') === newPath;
 export const roomExit = function() {

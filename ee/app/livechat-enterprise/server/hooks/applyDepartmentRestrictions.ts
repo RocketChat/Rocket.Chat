@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { addQueryRestrictionsToDepartmentsModel } from '../lib/query.helper';
 import { hasRole } from '../../../../../app/authorization/server/functions/hasRole';
 import { cbLogger } from '../lib/logger';

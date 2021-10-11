@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 
 callbacks.add('livechat.beforeRoom', (roomInfo, extraData) => {

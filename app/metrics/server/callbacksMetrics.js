@@ -1,7 +1,7 @@
 
 import { metrics } from './lib/metrics';
 import StatsTracker from './lib/statsTracker';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 const {
 	run: originalRun,

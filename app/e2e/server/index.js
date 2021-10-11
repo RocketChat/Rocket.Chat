@@ -1,4 +1,4 @@
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Notifications } from '../../notifications';
 
 import './settings';

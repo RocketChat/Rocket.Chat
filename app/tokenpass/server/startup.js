@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { validateTokenAccess } from './roomAccessValidator.compatibility';
 import './roomAccessValidator.internalService';
 

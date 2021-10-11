@@ -1,5 +1,5 @@
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LivechatRooms } from '../../../models';
 
 callbacks.add('afterSaveMessage', function(message, room) {

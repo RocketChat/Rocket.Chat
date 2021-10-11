@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 import Filter from 'bad-words';
 
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { IMessage } from '../../../../definition/IMessage';
 
 const Dep = new Tracker.Dependency();

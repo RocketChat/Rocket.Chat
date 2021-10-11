@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageTypes } from '../../ui-utils';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(function() {
 	MessageTypes.registerType({

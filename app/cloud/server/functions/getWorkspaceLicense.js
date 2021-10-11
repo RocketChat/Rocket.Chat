@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { settings } from '../../../settings';
 import { Settings } from '../../../models';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { LICENSE_VERSION } from '../license';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
 Meteor.methods({
 	'livechat:getTagsList'() {

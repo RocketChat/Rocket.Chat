@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useMemo, FC } from 'react';
 
-import { callbacks } from '../../app/callbacks/client';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { getUserPreference } from '../../app/utils/client';
 import { IRoom } from '../../definition/IRoom';
 import { ISubscription } from '../../definition/ISubscription';
+import { callbacks } from '../../lib/callbacks';
 import { UserContext } from '../contexts/UserContext';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from './createReactiveSubscriptionFactory';

@@ -1,3 +1,3 @@
-import { callbacks } from '../../app/callbacks/lib/callbacks';
+import { callbacks } from '../../lib/callbacks';
 
 export const useCallbacks = () => callbacks;

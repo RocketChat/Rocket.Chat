@@ -8,7 +8,7 @@ import localforage from 'localforage';
 import _ from 'underscore';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';

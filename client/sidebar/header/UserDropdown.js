@@ -3,9 +3,9 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
-import { callbacks } from '../../../app/callbacks/client';
 import { popover, AccountBox, modal, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
+import { callbacks } from '../../../lib/callbacks';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';

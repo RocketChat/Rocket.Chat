@@ -12,7 +12,7 @@ import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriorit
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
 export const LivechatEnterprise = {

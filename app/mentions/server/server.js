@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Users, Subscriptions, Rooms } from '../../models';
 import { api } from '../../../server/sdk/api';
 

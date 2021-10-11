@@ -21,7 +21,7 @@ import {
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
 import { settings } from '../../../../settings';
-import { callbacks } from '../../../../callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';

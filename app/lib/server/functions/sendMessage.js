@@ -2,7 +2,7 @@ import { Match, check } from 'meteor/check';
 import { parser } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../settings';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages } from '../../../models';
 import { Apps } from '../../../apps/server';
 import { isURL, isRelativeURL } from '../../../utils/lib/isURL';

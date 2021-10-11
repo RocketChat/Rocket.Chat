@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { LivechatRooms, LivechatInquiry, Messages, Users, LivechatVisitors } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 
 const resolveOnHoldCommentInfo = (options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): string => {
 	let comment = '';

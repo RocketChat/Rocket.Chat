@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { getLivechatQueueInfo, getLivechatCustomFields } from '../lib/Helper';
 
 callbacks.add('livechat.onLoadConfigApi', async (options = {}) => {

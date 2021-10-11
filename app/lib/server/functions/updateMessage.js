@@ -3,7 +3,7 @@ import { parser } from '@rocket.chat/message-parser';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Apps } from '../../../apps/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';

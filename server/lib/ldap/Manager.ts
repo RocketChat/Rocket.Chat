@@ -18,7 +18,7 @@ import { LDAPDataConverter } from './DataConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { setUserAvatar } from '../../../app/lib/server/functions';
 
 export class LDAPManager {

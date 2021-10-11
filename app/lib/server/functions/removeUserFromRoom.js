@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models';
 import { AppEvents, Apps } from '../../../apps/server';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { Team } from '../../../../server/sdk';
 
 export const removeUserFromRoom = function(rid, user, options = {}) {

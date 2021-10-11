@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
 import { Messages, EmojiCustom, Rooms } from '../../models';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';

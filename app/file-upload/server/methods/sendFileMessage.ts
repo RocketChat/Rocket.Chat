@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import { Uploads } from '../../../models/server';
 import { Rooms } from '../../../models/server/raw';
-import { callbacks } from '../../../callbacks/server';
+import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';

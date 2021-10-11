@@ -11,7 +11,7 @@ import he from 'he';
 import jschardet from 'jschardet';
 
 import { OEmbedCache, Messages } from '../../models';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';

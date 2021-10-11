@@ -1,4 +1,4 @@
-import { callbacks } from '../../../../../app/callbacks/server';
+import { callbacks } from '../../../../../lib/callbacks';
 import { handleMessagesSent, handleMessagesDeleted } from '../lib/messages';
 
 callbacks.add('afterSaveMessage', handleMessagesSent);

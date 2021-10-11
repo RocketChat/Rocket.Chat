@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../app/callbacks';
+import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { cbLogger } from '../lib/logger';

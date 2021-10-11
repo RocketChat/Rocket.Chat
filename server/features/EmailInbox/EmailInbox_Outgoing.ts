@@ -3,7 +3,7 @@ import Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { callbacks } from '../../../app/callbacks/server';
+import { callbacks } from '../../../lib/callbacks';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
 import { FileUpload } from '../../../app/file-upload/server';

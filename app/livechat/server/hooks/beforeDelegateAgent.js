@@ -1,5 +1,5 @@
 
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings';
 import { Users, LivechatDepartmentAgents } from '../../../models';
 

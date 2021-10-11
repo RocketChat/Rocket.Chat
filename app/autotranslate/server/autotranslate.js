@@ -3,7 +3,7 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings';
-import { callbacks } from '../../callbacks';
+import { callbacks } from '../../../lib/callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger';
