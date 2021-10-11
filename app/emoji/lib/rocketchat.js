@@ -20,12 +20,14 @@ export const emoji = {
 			toneList: {},
 			render: emojioneRender,
 			renderPicker(emojiToRender) {
-				if (!emoji.list[emojiToRender]) {
+				const item = emoji.list[emojiToRender];
+
+				if (!item) {
 					removeFromRecent(emojiToRender);
 					return;
 				}
-				const correctPackage = emoji.list[emojiToRender].emojiPackage;
-				return emoji.packages[correctPackage].renderPicker(emojiToRender);
+
+				return emoji.packages[item.emojiPackage].renderPicker(emojiToRender);
 			},
 		},
 	},

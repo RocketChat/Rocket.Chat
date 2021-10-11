@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Messages, EmojiCustom, Rooms } from '../../models';
 import { callbacks } from '../../../lib/callbacks';
-import { emoji } from '../../emoji';
+import { emoji } from '../../emoji/lib/rocketchat';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
 import { api } from '../../../server/sdk/api';

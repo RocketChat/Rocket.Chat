@@ -5,7 +5,7 @@ import { roomTypes } from '../../utils/client';
 import { Rooms, Subscriptions } from '../../models';
 import { MessageAction } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
-import { EmojiPicker } from '../../emoji';
+import { EmojiPicker } from '../../emoji/client';
 import { tooltip } from '../../ui/client/components/tooltip';
 
 export const EmojiEvents = {

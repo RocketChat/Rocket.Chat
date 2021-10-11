@@ -5,7 +5,7 @@ import mem from 'mem';
 
 import { emojioneRender, emojioneRenderFromShort } from './emojioneRender';
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
-import { emoji } from '../../emoji';
+import { emoji } from '../../emoji/lib/rocketchat';
 import { getUserPreference } from '../../utils';
 
 // TODO remove fix below when issue is solved: https://github.com/joypixels/emojione/issues/617

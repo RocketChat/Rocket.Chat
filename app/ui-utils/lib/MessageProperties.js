@@ -1,6 +1,6 @@
 import GraphemeSplitter from 'grapheme-splitter';
 
-import { emoji } from '../../emoji';
+import { emoji } from '../../emoji/lib/rocketchat';
 
 const splitter = new GraphemeSplitter();
 

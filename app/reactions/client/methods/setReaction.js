@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { Messages, Rooms, Subscriptions } from '../../../models';
 import { callbacks } from '../../../../lib/callbacks';
-import { emoji } from '../../../emoji';
+import { emoji } from '../../../emoji/client';
 import { roomTypes } from '../../../utils/client';
 
 Meteor.methods({

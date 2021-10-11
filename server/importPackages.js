@@ -18,7 +18,6 @@ import '../app/custom-oauth';
 import '../app/custom-sounds/server';
 import '../app/dolphin/server';
 import '../app/drupal/server';
-import '../app/emoji';
 import '../app/emoji-custom/server';
 import '../app/emoji-emojione/server';
 import '../app/error-handler/server';

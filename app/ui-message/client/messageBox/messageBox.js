@@ -11,7 +11,7 @@ import {
 	formattingButtons,
 	applyFormatting,
 } from './messageBoxFormatting';
-import { EmojiPicker } from '../../../emoji';
+import { EmojiPicker } from '../../../emoji/client';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import {
