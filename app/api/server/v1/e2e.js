@@ -22,6 +22,37 @@ API.v1.addRoute('e2e.getUsersOfRoomWithoutKey', { authRequired: true }, {
 	},
 });
 
+/**
+ * @openapi
+ *  /api/v1/e2e.setRoomKeyID:
+ *    post:
+ *      description: Sets the end-to-end encryption key ID for a room
+ *      security:
+ *        - autenticated: {}
+ *      requestBody:
+ *        description: A tuple containing the room ID and the key ID
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                rid:
+ *                  type: string
+ *                keyID:
+ *                  type: string
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiSuccessV1'
+ *        default:
+ *          description: Unexpected error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ */
 API.v1.addRoute('e2e.setRoomKeyID', { authRequired: true }, {
 	post() {
 		const { rid, keyID } = this.bodyParams;
