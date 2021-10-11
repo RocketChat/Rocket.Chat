@@ -681,7 +681,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it.skip('should prevent from updating someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
+		it('should prevent from updating someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
 			updatePermission('edit-other-user-avatar', []).then(() => {
 				request.post(api('users.setAvatar'))
 					.set(userCredentials)
@@ -695,7 +695,7 @@ describe('[Users]', function() {
 					.end(done);
 			});
 		});
-		it.skip('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
+		it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
 			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
 				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
 					request.post(api('users.setAvatar'))

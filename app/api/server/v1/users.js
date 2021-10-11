@@ -314,12 +314,14 @@ API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 	post() {
 		const user = this.getUserFromParams();
 
-		if (user._id === this.userId) {
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
 		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
 			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 		} else {
-			return API.v1.unauthorized();
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
 		}
 
 		return API.v1.success();
