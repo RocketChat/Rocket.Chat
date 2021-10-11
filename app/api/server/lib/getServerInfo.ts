@@ -1,9 +1,10 @@
 
 import { Info } from '../../../utils/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { IServerInfo } from '../../../../definition/IServerInfo';
 
 type ServerInfo = {
-	info: Info;
+	info: IServerInfo;
 } | {
 	version: string | undefined;
 };

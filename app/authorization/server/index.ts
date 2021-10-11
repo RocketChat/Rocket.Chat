@@ -1,8 +1,5 @@
 import { addUserRoles } from './functions/addUserRoles';
-import {
-	canAccessRoom,
-	roomAccessValidators,
-} from './functions/canAccessRoom';
+import { canAccessRoom } from './functions/canAccessRoom';
 import { canSendMessage, validateRoomMessagePermissions } from './functions/canSendMessage';
 import { getRoles } from './functions/getRoles';
 import { getUsersInRole } from './functions/getUsersInRole';
@@ -31,7 +28,6 @@ export {
 	removeUserFromRoles,
 	canSendMessage,
 	validateRoomMessagePermissions,
-	roomAccessValidators,
 	addUserRoles,
 	canAccessRoom,
 	hasAllPermission,
