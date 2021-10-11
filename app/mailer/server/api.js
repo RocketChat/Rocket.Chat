@@ -108,11 +108,11 @@ export const setSettings = (s) => {
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
-export const checkAddressFormat = (from) => rfcMailPatternWithName.test(from);
+export const checkAddressFormat = (from) => [].concat(from).every((address) => rfcMailPatternWithName.test(address));
 
 export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) => {
 	if (!checkAddressFormat(to)) {
-		return;
+		throw new Meteor.Error('invalid email');
 	}
 
 	if (!text) {
