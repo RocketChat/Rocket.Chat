@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getStatusText } from '../../../lib';
+import { getStatusText } from '../../../lib/server';
 
 Meteor.methods({
 	getUserStatusText(userId) {

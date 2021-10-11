@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Users } from '../../app/models';
-import { passwordPolicy } from '../../app/lib';
+import { passwordPolicy } from '../../app/lib/server';
 
 Meteor.methods({
 	getPasswordPolicy(params = {}) {

@@ -40,7 +40,7 @@ import '../app/integrations/server';
 import '../app/irc/server';
 import '../app/issuelinks/server';
 import '../app/katex/server';
-import '../app/lib';
+import '../app/lib/server';
 import '../app/livestream/server';
 import '../app/logger';
 import '../app/token-login/server';

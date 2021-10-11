@@ -4,7 +4,7 @@ import { debounce } from 'underscore';
 
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { cleanRoomHistory } from '../../lib';
+import { cleanRoomHistory } from '../../lib/server';
 
 let types = [];
 

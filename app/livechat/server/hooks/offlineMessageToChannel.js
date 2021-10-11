@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../callbacks';
 import { settings } from '../../../settings';
-import { sendMessage } from '../../../lib';
+import { sendMessage } from '../../../lib/server';
 import { LivechatDepartment, Rooms, Users } from '../../../models';
 
 callbacks.add('livechat.offlineMessage', (data) => {

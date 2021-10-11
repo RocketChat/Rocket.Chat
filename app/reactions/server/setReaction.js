@@ -5,7 +5,7 @@ import _ from 'underscore';
 import { Messages, EmojiCustom, Rooms } from '../../models';
 import { callbacks } from '../../callbacks';
 import { emoji } from '../../emoji';
-import { isTheLastMessage, msgStream } from '../../lib';
+import { isTheLastMessage, msgStream } from '../../lib/server';
 import { hasPermission } from '../../authorization/server/functions/hasPermission';
 import { api } from '../../../server/sdk/api';
 

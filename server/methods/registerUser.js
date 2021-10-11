@@ -5,7 +5,7 @@ import s from 'underscore.string';
 
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
-import { validateEmailDomain, passwordPolicy } from '../../app/lib';
+import { validateEmailDomain, passwordPolicy } from '../../app/lib/server';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 
 Meteor.methods({

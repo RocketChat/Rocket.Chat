@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
 import { settings } from '../../settings/server';
-import { generateUsernameSuggestion } from '../../lib';
+import { generateUsernameSuggestion } from '../../lib/server';
 
 // Updates or creates a user after we authenticate with Blockstack
 // Clones Accounts.updateOrCreateUserFromExternalService with some modifications

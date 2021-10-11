@@ -1,5 +1,5 @@
 import { Users, Rooms } from '../../../../models';
-import { sendMessage, createDirectRoom } from '../../../../lib';
+import { sendMessage, createDirectRoom } from '../../../../lib/server';
 /*
  *
  * Get direct chat room helper

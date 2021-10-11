@@ -18,7 +18,7 @@ import {
 	archiveRoom,
 	unarchiveRoom,
 	sendMessage,
-} from '../../lib';
+} from '../../lib/server';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload';
 

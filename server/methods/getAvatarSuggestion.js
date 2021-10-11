@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { getAvatarSuggestionForUser } from '../../app/lib';
+import { getAvatarSuggestionForUser } from '../../app/lib/server';
 
 Meteor.methods({
 	getAvatarSuggestion() {

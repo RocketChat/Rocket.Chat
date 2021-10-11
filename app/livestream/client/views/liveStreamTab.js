@@ -7,7 +7,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import toastr from 'toastr';
 
 import { auth } from '../oauth.js';
-import { RocketChatAnnouncement } from '../../../lib';
+import { RocketChatAnnouncement } from '../../../lib/client';
 import { popout } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { settings } from '../../../settings';

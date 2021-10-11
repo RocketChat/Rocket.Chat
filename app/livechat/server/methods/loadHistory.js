@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { loadMessageHistory } from '../../../lib';
+import { loadMessageHistory } from '../../../lib/server';
 import { LivechatVisitors, LivechatRooms } from '../../../models';
 
 Meteor.methods({

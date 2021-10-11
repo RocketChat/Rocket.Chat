@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Subscriptions, Messages, Users, Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { isTheLastMessage } from '../../../lib';
+import { isTheLastMessage } from '../../../lib/server';
 
 Meteor.methods({
 	snippetMessage(message, filename) {

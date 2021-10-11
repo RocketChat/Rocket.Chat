@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 
 import { settings } from '../../settings';
 import { callbacks } from '../../callbacks';
-import { isTheLastMessage } from '../../lib';
+import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { hasPermission } from '../../authorization';
 import { Subscriptions, Messages, Users, Rooms } from '../../models';

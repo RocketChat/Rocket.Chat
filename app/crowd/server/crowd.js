@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 
 import { Logger } from '../../logger';
-import { _setRealName } from '../../lib';
+import { _setRealName } from '../../lib/server';
 import { Users } from '../../models';
 import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
