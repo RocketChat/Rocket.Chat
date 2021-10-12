@@ -9,4 +9,4 @@ export type PDFAttachmentProps = {
 
 export const isFilePDFAttachment = (
 	attachment: FileAttachmentProps,
-): attachment is PDFAttachmentProps & { type: 'file' } => attachment?.file?.type.endsWith('pdf');
+): attachment is PDFAttachmentProps & { type: 'file' } => attachment.file.type.endsWith('pdf');
