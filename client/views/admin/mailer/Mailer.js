@@ -11,7 +11,7 @@ import {
 import React, { useState, useCallback } from 'react';
 
 import { isEmail } from '../../../../app/utils/lib/isEmail.js';
-import { isJSON } from '../../../../app/utils/lib/isJSON.js';
+import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
