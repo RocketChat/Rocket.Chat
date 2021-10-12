@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
-import { isEmail } from '../../../../../../app/utils/client';
+import { isEmail } from '../../../../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
