@@ -15,4 +15,3 @@ export { getURL } from '../lib/getURL';
 export { getValidRoomName } from '../lib/getValidRoomName';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
-export { secondsToHHMMSS } from '../lib/timeConverter';

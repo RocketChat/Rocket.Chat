@@ -13,4 +13,3 @@ export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { APIClient } from './lib/RestApiClient';
-export { secondsToHHMMSS } from '../lib/timeConverter';

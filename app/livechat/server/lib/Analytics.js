@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { LivechatRooms } from '../../../models';
-import { secondsToHHMMSS } from '../../../utils/server';
+import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger';
 

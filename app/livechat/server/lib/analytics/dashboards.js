@@ -3,7 +3,7 @@ import moment from 'moment';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '../../../../models/server/raw';
 import { settings } from '../../../../settings';
 import { Livechat } from '../Livechat';
-import { secondsToHHMMSS } from '../../../../utils/server';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
