@@ -7,7 +7,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import { Logger } from '../../../logger';
-import { isDocker } from '../../../utils';
+import { isDocker } from '../../../../server/lib/isDocker';
 
 const logger = new Logger('UploadProxy');
 
