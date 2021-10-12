@@ -14,8 +14,8 @@ async function renderPdfToCanvas(canvasId: any, pdfLink: any) {
 	if (!canvas) {
 		return;
 	}
-	const pdfjs = await import('pdfjs-dist/build/pdf');
-	const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+	const pdfjs = await require('pdfjs-dist/build/pdf');
+	const pdfjsWorker = await require('pdfjs-dist/build/pdf.worker.entry');
 	pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 	const loader = document.getElementById('js-loading-${canvasId}');
 	if (loader) {
