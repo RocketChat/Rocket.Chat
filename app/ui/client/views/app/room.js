@@ -144,7 +144,7 @@ async function createFileFromUrl(url) {
 	const metadata = {
 		type: data.type,
 	};
-	const { mime } = await import('../../../../utils/lib/mimeTypes');
+	const { mime } = await import('../../../../../lib/mimeTypes');
 	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
@@ -503,7 +503,7 @@ export const dropzoneEvents = {
 				return addToInput(transferData.trim());
 			}
 		}
-		const { mime } = await import('../../../../utils/lib/mimeTypes');
+		const { mime } = await import('../../../../../lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {

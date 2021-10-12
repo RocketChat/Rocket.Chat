@@ -9,7 +9,7 @@ import sharp from 'sharp';
 
 import { settings } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
-import { mime } from '../../utils/lib/mimeTypes';
+import { mime } from '../../../lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
 

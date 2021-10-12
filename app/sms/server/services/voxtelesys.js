@@ -6,7 +6,7 @@ import filesize from 'filesize';
 import { settings } from '../../../settings';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { mime } from '../../../utils/lib/mimeTypes';
+import { mime } from '../../../../lib/mimeTypes';
 import { api } from '../../../../server/sdk/api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 

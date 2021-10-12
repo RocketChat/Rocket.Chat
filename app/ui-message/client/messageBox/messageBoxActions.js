@@ -41,7 +41,7 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 		$(document.body).append($input);
 
 		$input.one('change', async function(e) {
-			const { mime } = await import('../../../utils/lib/mimeTypes');
+			const { mime } = await import('../../../../lib/mimeTypes');
 			const filesToUpload = [...e.target.files].map((file) => {
 				Object.defineProperty(file, 'type', {
 					value: mime.lookup(file.name),
