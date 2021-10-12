@@ -5,7 +5,7 @@ import { Apps } from '../../../apps/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { getDefaultSubscriptionPref } from '../../../../server/lib/getDefaultSubscriptionPref';
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,

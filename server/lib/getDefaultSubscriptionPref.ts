@@ -1,5 +1,17 @@
-export const getDefaultSubscriptionPref = (userPref) => {
-	const subscription = {};
+import { IUserSettings } from '../../definition/IUser';
+
+type DefaultSubscriptionPref = {
+	userHighlights?: string[];
+	desktopNotifications?: unknown;
+	desktopPrefOrigin?: 'user' | 'subscription';
+	mobilePushNotifications?: unknown;
+	mobilePrefOrigin?: 'user' | 'subscription';
+	emailNotifications?: unknown;
+	emailPrefOrigin?: 'user' | 'subscription';
+};
+
+export const getDefaultSubscriptionPref = (userPref: IUserSettings['preferences']): DefaultSubscriptionPref => {
+	const subscription: DefaultSubscriptionPref = {};
 
 	const {
 		desktopNotifications,

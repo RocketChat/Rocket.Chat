@@ -1,5 +1,4 @@
 export { t, isRtl } from '../lib/tapi18n';
-export { getDefaultSubscriptionPref } from '../lib/getDefaultSubscriptionPref';
 export { Info } from '../rocketchat.info';
 export { getUserPreference } from '../lib/getUserPreference';
 export { fileUploadIsValidContentType } from '../lib/fileUploadRestrictions';
