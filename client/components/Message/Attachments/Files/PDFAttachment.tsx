@@ -17,7 +17,7 @@ async function renderPdfToCanvas(canvasId: any, pdfLink: any) {
 	const pdfjs = await require('pdfjs-dist/build/pdf');
 	const pdfjsWorker = await require('pdfjs-dist/build/pdf.worker.entry');
 	pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-	const loader = document.getElementById('js-loading-${canvasId}');
+	const loader = document.getElementById(`js-loading-${canvasId}`);
 	if (loader) {
 		loader.style.display = 'block';
 	}
