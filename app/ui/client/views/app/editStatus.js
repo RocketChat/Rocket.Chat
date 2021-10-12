@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
-import s from 'underscore.string';
 
 import { settings } from '../../../../settings';
 import { t } from '../../../../utils';
 import { popover } from '../../../../ui-utils';
 import { getPopoverStatusConfig } from '../..';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 
 Template.editStatus.helpers({
 	canChange() {
@@ -28,18 +27,16 @@ Template.editStatus.events({
 	'submit .edit-status__content'(e, instance) {
 		e.preventDefault();
 		e.stopPropagation();
-		const statusText = s.trim(e.target.status.value);
+		const statusText = e.target.status.value?.trim();
 		const statusType = e.target.statusType.value;
 
 		if (statusText !== this.statusText) {
 			if (statusText.length > 120) {
-				toastr.remove();
-				toastr.error(t('StatusMessage_Too_Long'));
+				dispatchToastMessage({ type: 'error', message: t('StatusMessage_Too_Long') });
 				return false;
 			}
 			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				toastr.remove();
-				toastr.error(t('StatusMessage_Change_Disabled'));
+				dispatchToastMessage({ type: 'error', message: t('StatusMessage_Change_Disabled') });
 				return false;
 			}
 

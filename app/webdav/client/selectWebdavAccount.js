@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
 import { WebdavAccounts } from '../../models';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.selectWebdavAccount.helpers({
 	webdavAccounts() {
@@ -30,12 +30,12 @@ Template.selectWebdavAccount.events({
 				const fileData = new Uint8Array(arrayBuffer);
 				Meteor.call('uploadFileToWebdav', accountId, fileData, name, (error, response) => {
 					if (error) {
-						return toastr.error(t(error.error));
+						return dispatchToastMessage({ type: 'error', message: t(error.error) });
 					}
 					if (!response.success) {
-						return toastr.error(t(response.message));
+						return dispatchToastMessage({ type: 'error', message: t(response.message) });
 					}
-					return toastr.success(t('File_uploaded'));
+					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				});
 			}
 		};

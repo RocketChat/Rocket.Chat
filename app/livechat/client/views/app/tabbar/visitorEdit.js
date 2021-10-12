@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { t } from '../../../../../utils';
 import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../../authorization';
 import './visitorEdit.html';
 import { APIClient } from '../../../../../utils/client';
 import { getCustomFormTemplate } from '../customTemplates/register';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 const CUSTOM_FIELDS_COUNT = 100;
 
@@ -177,9 +177,15 @@ Template.visitorEdit.events({
 
 		Meteor.call('livechat:saveInfo', userData, roomData, (err) => {
 			if (err) {
-				toastr.error(t(err.error));
+				dispatchToastMessage({
+					type: 'error',
+					message: t(err.error),
+				});
 			} else {
-				toastr.success(t('Saved'));
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Saved'),
+				});
 				this.save();
 			}
 		});
