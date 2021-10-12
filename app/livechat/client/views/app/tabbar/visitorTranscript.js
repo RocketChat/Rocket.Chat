@@ -4,7 +4,8 @@ import { Template } from 'meteor/templating';
 
 import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 import { handleError } from '../../../../../../client/lib/utils/handleError';
-import { t, isEmail, roomTypes } from '../../../../../utils';
+import { t, roomTypes } from '../../../../../utils';
+import { isEmail } from '../../../../../../lib/utils/isEmail';
 import { APIClient } from '../../../../../utils/client';
 import './visitorTranscript.html';
 
