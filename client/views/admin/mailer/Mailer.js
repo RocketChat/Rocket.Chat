@@ -10,8 +10,8 @@ import {
 } from '@rocket.chat/fuselage';
 import React, { useState, useCallback } from 'react';
 
-import { isJSON } from '../../../../lib/utils/isJSON';
 import { isEmail } from '../../../../lib/utils/isEmail';
+import { isJSON } from '../../../../lib/utils/isJSON';
 import Page from '../../../components/Page';
 import { useTranslation } from '../../../contexts/TranslationContext';
 

@@ -12,7 +12,7 @@ import {
 } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { promises } from '../../../../../promises/client';
-import { isURL } from '../../../../../utils/lib/isURL';
+import { isURL } from '../../../../../../lib/utils/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
 import { ChatMessage, Rooms, Messages } from '../../../../../models';

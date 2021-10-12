@@ -13,7 +13,7 @@ import jschardet from 'jschardet';
 import { OEmbedCache, Messages } from '../../models';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings';
-import { isURL } from '../../utils/lib/isURL';
+import { isURL } from '../../../lib/utils/isURL';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 const request = HTTPInternals.NpmModules.request.module;
