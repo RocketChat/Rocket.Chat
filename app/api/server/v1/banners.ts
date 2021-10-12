@@ -44,7 +44,7 @@ import { BannerPlatform } from '../../../../definition/IBanner';
  *                      banners:
  *                        type: array
  *                        items:
- *                           ref: '#/components/schemas/IBanner'
+ *                           $ref: '#/components/schemas/IBanner'
  *        default:
  *          description: Unexpected error
  *          content:

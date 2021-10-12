@@ -1,5 +1,4 @@
 import moment from 'moment';
-import toastr from 'toastr';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -31,6 +30,7 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 
 const messageBoxState = {
@@ -477,7 +477,7 @@ export class ChatMessages {
 			done();
 
 			imperativeModal.close();
-			toastr.success(t('Your_entry_has_been_deleted'));
+			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
 		};
 
 		const onCloseModal = () => {
@@ -516,7 +516,7 @@ export class ChatMessages {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockDeleteInMinutes) {
-				toastr.error(t('Message_deleting_blocked'));
+				dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 				return;
 			}
 		}

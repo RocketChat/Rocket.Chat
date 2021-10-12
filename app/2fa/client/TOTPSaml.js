@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Utils2fa } from './lib/2fa';
 import '../../meteor-accounts-saml/client/saml_client';
+import { reportError } from '../../../client/lib/2fa/utils';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 	Accounts.callLoginMethod({
@@ -17,7 +18,7 @@ Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}
@@ -28,5 +29,5 @@ Meteor.loginWithSamlTokenAndTOTP = function(credentialToken, code, callback) {
 const { loginWithSamlToken } = Meteor;
 
 Meteor.loginWithSamlToken = function(options, callback) {
-	Utils2fa.overrideLoginMethod(loginWithSamlToken, [options], callback, Meteor.loginWithSamlTokenAndTOTP);
+	overrideLoginMethod(loginWithSamlToken, [options], callback, Meteor.loginWithSamlTokenAndTOTP);
 };
