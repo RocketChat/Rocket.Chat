@@ -30,9 +30,3 @@ declare module 'meteor/rocketchat:tap-i18n' {
 		function __(s: string, options: { lng: string }): string;
 	}
 }
-
-declare module 'meteor/promise' {
-	namespace Promise {
-		function await(): any;
-	}
-}

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import _ from 'underscore';
 
 import { LDAPEE } from '../sdk';
@@ -21,7 +20,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	addSettings();
 
 	// Configure background sync cronjob
-	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): SettingCallback {
+	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): SettingCallback {
 		let lastSchedule: string;
 
 		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
