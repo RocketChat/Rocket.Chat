@@ -1,7 +1,3 @@
-import { EJSON } from 'meteor/ejson';
-import { Db, Collection } from 'mongodb';
-import * as mongodb from 'mongodb';
-
 import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
@@ -11,11 +7,6 @@ declare module 'meteor/random' {
 	}
 }
 
-declare module 'meteor/mongo' {
-	namespace MongoInternals {
-		function defaultRemoteCollectionDriver(): any;
-	}
-}
 
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
@@ -70,38 +61,5 @@ declare module 'meteor/rocketchat:tap-i18n' {
 declare module 'meteor/promise' {
 	namespace Promise {
 		function await(): any;
-	}
-}
-
-declare module 'meteor/mongo' {
-	interface RemoteCollectionDriver {
-		mongo: MongoConnection;
-	}
-	interface OplogHandle {
-		stop(): void;
-		onOplogEntry(trigger: Record<string, any>, callback: Function): void;
-		onSkippedEntries(callback: Function): void;
-		waitUntilCaughtUp(): void;
-		_defineTooFarBehind(value: number): void;
-	}
-	interface MongoConnection {
-		db: Db;
-		_oplogHandle: OplogHandle;
-		rawCollection(name: string): Collection;
-	}
-
-	namespace MongoInternals {
-		export const NpmModules: {
-			mongodb: {
-				version: string;
-				module: typeof mongodb;
-			};
-		};
-
-		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
-
-		class ConnectionClass {}
-
-		function Connection(): ConnectionClass;
 	}
 }
