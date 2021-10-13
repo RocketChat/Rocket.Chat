@@ -12,13 +12,148 @@ type SettingsConfig = {
 
 type OverCustomSettingsConfig = Partial<SettingsConfig>;
 
+export interface ICachedSettings {
+	/*
+	* @description: The settings object as ready
+	*/
+	initilized(): void;
+
+	/*
+	* returns if the setting is defined
+	* @param _id - The setting id
+	* @returns {boolean}
+	*/
+	has(_id: ISetting['_id']): boolean;
+
+
+	/*
+	* Gets the current value of the setting
+	* @remarks
+	* 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	* @param _id - The setting id
+	* @returns {SettingValue} - The current value of the setting
+	*/
+	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T;
+
+	/*
+	* Gets the current value of the setting
+	* @remarks
+	* 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	* @param _id - The setting id
+	* @returns {SettingValue} - The current value of the setting
+	*
+	*/
+	/* @deprecated */
+	getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][];
+
+	/*
+	* Get the current value of the settings, and keep track of changes
+	* @remarks
+	* 		- This callback is debounced
+	*       - The callback is not fire until the settings got initialized
+	* @param _ids - Array of setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	watchMultiple<T extends SettingValue = SettingValue>(_id: ISetting['_id'][], callback: (settings: T[]) => void): () => void;
+
+	/*
+	* Get the current value of the setting, and keep track of changes
+	* @remarks
+	* 		- This callback is debounced
+	*       - The callback is not fire until the settings got initialized
+	* @param _id - The setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	watch<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/*
+	* Get the current value of the setting, or wait until the initialized
+	* @remarks
+	* 		- This is a one time run
+	* 		- This callback is debounced
+	*       - The callback is not fire until the settings got initialized
+	* @param _id - The setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	watchOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
+
+
+	/*
+	* Observes the given setting by id and keep track of changes
+	* @remarks
+	* 		- This callback is debounced
+	*       - The callback is not fire until the setting is changed
+	*       - The callback is not fire until all the settings get initialized
+	* @param _id - The setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	change<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/*
+	* Observes multiple settings and keep track of changes
+	* @remarks
+	* 		- This callback is debounced
+	*       - The callback is not fire until the setting is changed
+	*       - The callback is not fire until all the settings get initialized
+	* @param _ids - Array of setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	changeMultiple<T extends SettingValue = SettingValue>(_ids: ISetting['_id'][], callback: (settings: T[]) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/*
+	* Observes the setting and fires only if there is a change. Runs only once
+	* @remarks
+	* 		- This is a one time run
+	* 		- This callback is debounced
+	*       - The callback is not fire until the setting is changed
+	*       - The callback is not fire until all the settings get initialized
+	* @param _id - The setting id
+	* @param callback - The callback to run
+	* @returns {() => void} - A function that can be used to cancel the observe
+	*/
+	changeOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], callback: (args: T) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/*
+	* Sets the value of the setting
+	* @remarks
+	* 		- if the value set is the same as the current value, the change will not be fired
+	*       - if the value is set before the initialization, the emit will be queued and will be fired after initialization
+	* @param _id - The setting id
+	* @param value - The value to set
+	* @returns {void}
+	*/
+	set(record: ISetting): void ;
+
+	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
+
+	/* @deprecated */
+	watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/* @deprecated */
+	changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
+
+	/*
+	* @description: Wait until the settings get ready then run the callback
+	*/
+	onReady(cb: () => void): void;
+}
+
+
 /**
  * Class responsible for setting up the settings, cache and propagation changes
  * Should be agnostic to the actual settings implementation, running on meteor or standalone
+ *
+ * You should not instantiate this class directly, only for testing purposes
+ *
  * @extends Emitter
  * @alpha
  */
-export const SettingsVersion4 = new class NewSettings extends Emitter<
+export class CachedSettings extends Emitter<
 {
 	'*': [string, SettingValue];
 }
@@ -26,7 +161,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 {
 	ready: undefined;
 	[k: string]: SettingValue;
-}> {
+}> implements ICachedSettings {
 	ready = false;
 
 	store = new Map<string, SettingValue>();
@@ -237,7 +372,6 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 			});
 			return;
 		}
-
 		this.emit(record._id, this.store.get(record._id));
 		this.emit('*', [record._id, this.store.get(record._id)]);
 	}
@@ -259,7 +393,6 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 				cancel.forEach((fn) => fn());
 			};
 		}
-
 		[...this.store.entries()].forEach(([key, value]) => {
 			if (regex.test(key)) {
 				cb(key, value);
@@ -279,6 +412,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 				cb(_id, value);
 				store.set(_id, cb);
 			}
+			regex.lastIndex = 0;
 		});
 	}
 
@@ -288,4 +422,4 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 		}
 		this.once('ready', cb);
 	}
-}();
+}
