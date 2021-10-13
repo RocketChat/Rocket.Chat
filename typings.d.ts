@@ -4,7 +4,6 @@ declare module 'meteor/promise';
 declare module 'meteor/ddp-common';
 declare module 'meteor/routepolicy';
 declare module 'meteor/logging';
-declare module 'webdav';
 
 declare module 'meteor/konecty:user-presence' {
 	namespace UserPresenceMonitor {
