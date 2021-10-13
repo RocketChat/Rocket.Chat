@@ -253,7 +253,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 			const cancel = new Set<() => void>();
 			cancel.add(this.once('ready', (): void => {
 				cancel.clear();
-				cancel.add(this.watchByRegex(_id, cb, config));
+				cancel.add(this.watchByRegex(regex, cb, config));
 			}));
 			return (): void => {
 				cancel.forEach((fn) => fn());
@@ -261,10 +261,10 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 		}
 
 		[...this.store.entries()].forEach(([key, value]) => {
-			if (regex.test(_id)) {
+			if (regex.test(key)) {
 				cb(key, value);
 			}
-		})
+		});
 
 		return this.changeByRegex(regex, cb, config);
 	}
@@ -277,7 +277,7 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 				const { debounce } = this.getConfig(config);
 				const cb = store.get(_id) || _.debounce(callback, debounce);
 				cb(_id, value);
-				store.set(_id, cb)
+				store.set(_id, cb);
 			}
 		});
 	}
