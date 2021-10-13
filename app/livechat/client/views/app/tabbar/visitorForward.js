@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
 import { ChatRoom } from '../../../../../models';
 import { t } from '../../../../../utils';
 import './visitorForward.html';
 import { APIClient } from '../../../../../utils/client';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
 
 Template.visitorForward.helpers({
 	visitor() {
@@ -128,13 +128,22 @@ Template.visitorForward.events({
 
 		Meteor.call('livechat:transfer', transferData, (error, result) => {
 			if (error) {
-				toastr.error(t(error.error));
+				dispatchToastMessage({
+					type: 'error',
+					message: t(error.error),
+				});
 			} else if (result) {
 				this.save();
-				toastr.success(t('Transferred'));
+				dispatchToastMessage({
+					type: 'success',
+					message: t('Transferred'),
+				});
 				FlowRouter.go('/');
 			} else {
-				toastr.warning(t('No_available_agents_to_transfer'));
+				dispatchToastMessage({
+					type: 'warning',
+					message: t('No_available_agents_to_transfer'),
+				});
 			}
 		});
 	},
