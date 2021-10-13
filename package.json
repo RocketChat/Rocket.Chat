@@ -304,7 +304,7 @@
 	"meteor": {
 		"mainModule": {
 			"client": "client/main.ts",
-			"server": "server/main.js"
+			"server": "server/main.ts"
 		}
 	},
 	"houston": {
