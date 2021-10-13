@@ -1,7 +1,7 @@
-import { settings, SettingsEvents, SettingsVersion4 } from './functions/settings';
+import { settings, SettingsEvents, settingsRegister } from './functions/settings';
 
 export {
 	settings,
+	settingsRegister,
 	SettingsEvents,
-	SettingsVersion4,
 };

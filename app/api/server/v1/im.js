@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDirectMessageByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getDirectMessageByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -279,7 +279,7 @@ API.v1.addRoute(['dm.messages', 'im.messages'], { authRequired: true }, {
 
 API.v1.addRoute(['dm.messages.others', 'im.messages.others'], { authRequired: true }, {
 	get() {
-		if (SettingsVersion4.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
+		if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
 			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', { route: '/api/v1/im.messages.others' });
 		}
 

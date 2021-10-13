@@ -76,25 +76,14 @@ type addGroupCallback = (this: {
 
 type ISettingAddOptions = Partial<ISetting>;
 
-class Settings extends SettingsBase {
+
+SettingsModel.find().forEach((record: ISetting) => {
+	SettingsVersion4.set(record);
+
+	updateValue(record._id, { value: record.value });
+});
+class SettingsRegister extends SettingsBase {
 	private _sorter: {[key: string]: number} = {};
-
-	private initialLoad = true;
-
-	constructor() {
-		super();
-		const start = process.hrtime();
-		SettingsModel.find().forEach((record: ISetting) => {
-			this.storeSettingValue(record, true);
-			updateValue(record._id, { value: record.value });
-		});
-		const elapsed = process.hrtime(start);
-
-		console.log(`Settings: ${ elapsed[0] }s ${ elapsed[1] / 1000000 }ms`);
-		this.initialLoad = false;
-		SettingsEvents.emit('after-initial-load', Meteor.settings);
-		SettingsVersion4.initilized();
-	}
 
 	/*
 	* Add a setting
@@ -117,7 +106,7 @@ class Settings extends SettingsBase {
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 		}
 
-		const settingStoredValue = Meteor.settings[_id] as ISetting['value'] | undefined;
+		const settingStoredValue = SettingsVersion4.has(_id) ? SettingsVersion4.get(_id) : undefined;
 		const settingOverwritten = overwriteSetting(settingFromCode);
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
@@ -135,7 +124,7 @@ class Settings extends SettingsBase {
 			return;
 		}
 
-		if (Meteor.settings.hasOwnProperty(_id)) {
+		if (SettingsVersion4.has(_id)) {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStoredValue);
 			} catch (e) {
@@ -150,7 +139,7 @@ class Settings extends SettingsBase {
 
 		SettingsModel.insert(setting); // no need to emit unless we remove the oplog
 
-		this.storeSettingValue(setting, true);
+		SettingsVersion4.set(setting);
 	}
 
 	/*
@@ -171,10 +160,10 @@ class Settings extends SettingsBase {
 
 		const options = groupOptions instanceof Function ? getGroupDefaults(_id, { sorter: this._sorter[_id] }) : getGroupDefaults(_id, { sorter: this._sorter[_id], ...groupOptions });
 
-		if (!Meteor.settings.hasOwnProperty(_id)) {
+		if (!SettingsVersion4.has(_id)) {
 			options.ts = new Date();
 			SettingsModel.insert(options);
-			this.storeSettingValue(options as ISetting, true);
+			SettingsVersion4.set(options as ISetting);
 		}
 
 		if (!callback) {
@@ -212,91 +201,11 @@ class Settings extends SettingsBase {
 
 		return groupSetWith({ group: _id })({}, callback);
 	}
-
-	/*
-	* Remove a setting by id
-	*/
-	removeById(_id: string): boolean {
-		if (!_id) {
-			return false;
-		}
-		return SettingsModel.removeById(_id);
-	}
-
-	/*
-	* Update a setting by id
-	*/
-	updateById(_id: string, value: SettingValue, editor?: string): boolean {
-		if (!_id || value == null) {
-			return false;
-		}
-		if (editor != null) {
-			return SettingsModel.updateValueAndEditorById(_id, value, editor);
-		}
-		return SettingsModel.updateValueById(_id, value);
-	}
-
-	/*
-	* Update options of a setting by id
-	*/
-	updateOptionsById(_id: string, options: ISettingAddOptions): boolean {
-		if (!_id || options == null) {
-			return false;
-		}
-
-		return SettingsModel.updateOptionsById(_id, options);
-	}
-
-	/*
-	* Update a setting by id
-	*/
-	clearById(_id: string): boolean {
-		if (_id == null) {
-			return false;
-		}
-		return SettingsModel.updateValueById(_id, undefined);
-	}
-
-	/*
-	* Change a setting value on the Meteor.settings object
-	*/
-	storeSettingValue(record: ISetting, initialLoad: boolean): void {
-		const newData = {
-			value: record.value,
-		};
-		SettingsEvents.emit('store-setting-value', [record, newData]);
-		const { value } = newData;
-
-		Meteor.settings[record._id] = record.type === 'group' ? true : value;
-		if (record.env === true) {
-			process.env[record._id] = String(value);
-		}
-
-		this.load(record._id, Meteor.settings[record._id], initialLoad);
-		SettingsVersion4.set(record._id, Meteor.settings[record._id]);
-	}
-
-	/*
-	* Remove a setting value on the Meteor.settings object
-	*/
-	removeSettingValue(record: ISetting, initialLoad: boolean): void {
-		SettingsEvents.emit('remove-setting-value', record);
-
-		delete Meteor.settings[record._id];
-		if (record.env === true) {
-			delete process.env[record._id];
-		}
-
-		this.load(record._id, undefined, initialLoad);
-	}
-
-	onAfterInitialLoad(fn: (settings: Meteor.Settings) => void): void {
-		if (this.initialLoad === false) {
-			return fn(Meteor.settings);
-		}
-		SettingsEvents.once('after-initial-load', fn);
-	}
 }
 
+SettingsVersion4.initilized();
 
-export const settings = new Settings();
+export const settingsRegister = new SettingsRegister();
+
+
+export const settings = SettingsVersion4;

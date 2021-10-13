@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../api';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { Messages } from '../../../models/server';
 
 API.v1.addRoute('autotranslate.getSupportedLanguages', { authRequired: true }, {
 	get() {
-		if (!SettingsVersion4.get('AutoTranslate_Enabled')) {
+		if (!settings.get('AutoTranslate_Enabled')) {
 			return API.v1.failure('AutoTranslate is disabled.');
 		}
 		const { targetLanguage } = this.queryParams;
@@ -19,7 +19,7 @@ API.v1.addRoute('autotranslate.getSupportedLanguages', { authRequired: true }, {
 API.v1.addRoute('autotranslate.saveSettings', { authRequired: true }, {
 	post() {
 		const { roomId, field, value, defaultLanguage } = this.bodyParams;
-		if (!SettingsVersion4.get('AutoTranslate_Enabled')) {
+		if (!settings.get('AutoTranslate_Enabled')) {
 			return API.v1.failure('AutoTranslate is disabled.');
 		}
 
@@ -48,7 +48,7 @@ API.v1.addRoute('autotranslate.saveSettings', { authRequired: true }, {
 API.v1.addRoute('autotranslate.translateMessage', { authRequired: true }, {
 	post() {
 		const { messageId, targetLanguage } = this.bodyParams;
-		if (!SettingsVersion4.get('AutoTranslate_Enabled')) {
+		if (!settings.get('AutoTranslate_Enabled')) {
 			return API.v1.failure('AutoTranslate is disabled.');
 		}
 		if (!messageId) {

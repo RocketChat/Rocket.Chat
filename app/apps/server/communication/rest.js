@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
@@ -115,7 +115,7 @@ export class AppsRestApi {
 				}
 
 				if (this.queryParams.buildExternalUrl && this.queryParams.appId) {
-					const workspaceId = SettingsVersion4.get('Cloud_Workspace_Id');
+					const workspaceId = settings.get('Cloud_Workspace_Id');
 
 					if (!this.queryParams.purchaseType || !purchaseTypes.has(this.queryParams.purchaseType)) {
 						return API.v1.failure({ error: 'Invalid purchase type' });
@@ -147,7 +147,7 @@ export class AppsRestApi {
 				let permissionsGranted;
 
 				if (this.bodyParams.url) {
-					if (SettingsVersion4.get('Apps_Framework_Development_Mode') !== true) {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Installation from url is disabled.' });
 					}
 
@@ -216,7 +216,7 @@ export class AppsRestApi {
 						return API.v1.failure(err.message);
 					}
 				} else {
-					if (SettingsVersion4.get('Apps_Framework_Development_Mode') !== true) {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct installation of an App is disabled.' });
 					}
 
@@ -400,7 +400,7 @@ export class AppsRestApi {
 				let permissionsGranted;
 
 				if (this.bodyParams.url) {
-					if (SettingsVersion4.get('Apps_Framework_Development_Mode') !== true) {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Updating an App from a url is disabled.' });
 					}
 
@@ -439,7 +439,7 @@ export class AppsRestApi {
 
 					buff = result.content;
 				} else {
-					if (SettingsVersion4.get('Apps_Framework_Development_Mode') !== true) {
+					if (settings.get('Apps_Framework_Development_Mode') !== true) {
 						return API.v1.failure({ error: 'Direct updating of an App is disabled.' });
 					}
 

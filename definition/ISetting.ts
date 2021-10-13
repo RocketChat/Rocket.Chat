@@ -51,6 +51,14 @@ export interface ISettingBase {
 	ts?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
+	wizard?: {
+		step: number;
+		order: number;
+	};
+	persistent?: boolean; // todo: remove
+	readonly?: boolean; // todo: remove
+	alert?: string; // todo: check if this is still used
+	private?: boolean; // todo: remove
 }
 
 export interface ISettingGroup {
@@ -64,6 +72,8 @@ export interface ISettingGroup {
 	i18nDescription: string;
 	value?: undefined;
 	type: 'group';
+
+	alert?: string; // todo: check if this is needed
 }
 
 

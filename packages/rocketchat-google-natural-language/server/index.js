@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor';
 import { Rooms } from 'meteor/rocketchat:models';
-import { SettingsVersion4 } from 'meteor/rocketchat:settings';
-import { callbacks } from 'meteor/rocketchat:callbacks';
-import './settings.js';
+import { Meteor } from 'meteor/meteor';
 import googleLanguage from '@google-cloud/language';
+import { callbacks } from 'meteor/rocketchat:callbacks';
+
+import { settings } from '../../../app/settings/server';
 
 let languageClient;
 
-SettingsVersion4.watch('GoogleNaturalLanguage_ServiceAccount', (value) => {
+settings.watch('GoogleNaturalLanguage_ServiceAccount', (value) => {
 	if (value) {
 		try {
 			languageClient = googleLanguage({
@@ -34,7 +34,7 @@ const setRoomSentiment = function(message) {
 	return message;
 };
 
-SettingsVersion4.watch('GoogleNaturalLanguage_Enabled', (value) => {
+settings.watch('GoogleNaturalLanguage_Enabled', (value) => {
 	if (value) {
 		callbacks.add('afterSaveMessage', setRoomSentiment, callbacks.priority.MEDIUM, 'GoogleNaturalLanguage');
 	} else {

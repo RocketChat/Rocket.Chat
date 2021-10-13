@@ -5,7 +5,7 @@ import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Settings } from '../../models';
-import { SettingsVersion4, settings } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
 import './scripts';
 
@@ -17,7 +17,7 @@ Meteor.startup(() => {
 		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
 	});
 
-	SettingsVersion4.watch('Default_Referrer_Policy', (value) => {
+	settings.watch('Default_Referrer_Policy', (value) => {
 		if (!value) {
 			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
 		}
@@ -35,7 +35,7 @@ Meteor.startup(() => {
 			`);
 	}
 
-	SettingsVersion4.watch('Assets_SvgFavicon_Enable', (value) => {
+	settings.watch('Assets_SvgFavicon_Enable', (value) => {
 		const standardFavicons = `
 			<link rel="icon" sizes="16x16" type="image/png" href="assets/favicon_16.png" />
 			<link rel="icon" sizes="32x32" type="image/png" href="assets/favicon_32.png" />`;
@@ -49,13 +49,13 @@ Meteor.startup(() => {
 		}
 	});
 
-	SettingsVersion4.watch('theme-color-sidebar-background', (value) => {
+	settings.watch('theme-color-sidebar-background', (value) => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('theme-color-sidebar-background', `<meta name="msapplication-TileColor" content="${ escapedValue }" />`
 							+ `<meta name="theme-color" content="${ escapedValue }" />`);
 	});
 
-	SettingsVersion4.watch('Site_Name', (value = 'Rocket.Chat') => {
+	settings.watch('Site_Name', (value = 'Rocket.Chat') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Site_Name',
 			`<title>${ escapedValue }</title>`
@@ -63,34 +63,34 @@ Meteor.startup(() => {
 			+ `<meta name="apple-mobile-web-app-title" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_language', (value = '') => {
+	settings.watch('Meta_language', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_language',
 			`<meta http-equiv="content-language" content="${ escapedValue }">`
 			+ `<meta name="language" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_robots', (value = '') => {
+	settings.watch('Meta_robots', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_robots', `<meta name="robots" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_msvalidate01', (value = '') => {
+	settings.watch('Meta_msvalidate01', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_msvalidate01', `<meta name="msvalidate.01" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_google-site-verification', (value = '') => {
+	settings.watch('Meta_google-site-verification', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_google-site-verification', `<meta name="google-site-verification" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_fb_app_id', (value = '') => {
+	settings.watch('Meta_fb_app_id', (value = '') => {
 		const escapedValue = escapeHTML(value);
 		injectIntoHead('Meta_fb_app_id', `<meta property="fb:app_id" content="${ escapedValue }">`);
 	});
 
-	SettingsVersion4.watch('Meta_custom', (value = '') => {
+	settings.watch('Meta_custom', (value = '') => {
 		injectIntoHead('Meta_custom', value);
 	});
 
@@ -135,7 +135,7 @@ renderDynamicCssList();
 // 	changed: renderDynamicCssList
 // });
 
-settings.get(/theme-color-rc/i, () => renderDynamicCssList());
+settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 
 injectIntoBody('react-root', `
 <div id="react-root">

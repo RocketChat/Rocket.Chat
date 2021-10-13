@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { updateOrCreateUser } from './userHandler';
 import { handleAccessToken } from './tokenHandler';
 import { logger } from './logger';
-import { SettingsVersion4 } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { Users } from '../../models';
 import { setUserAvatar } from '../../lib';
 
@@ -14,7 +14,7 @@ Accounts.registerLoginHandler('blockstack', (loginRequest) => {
 		return;
 	}
 
-	if (!SettingsVersion4.get('Blockstack_Enable')) {
+	if (!settings.get('Blockstack_Enable')) {
 		return;
 	}
 

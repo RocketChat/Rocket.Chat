@@ -7,11 +7,12 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings, SettingsVersion4 } from '../../settings/server';
+import { settings, settingsRegister } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
 import { RocketChatFile } from '../../file';
+import { Settings } from '../../models/server';
 
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
@@ -234,7 +235,7 @@ export const RocketChatAssets = new class {
 					defaultUrl: assets[asset].defaultUrl,
 				};
 
-				settings.updateById(key, value);
+				Settings.updateValueById(key, value);
 				return RocketChatAssets.processAsset(key, value);
 			}, 200);
 		}));
@@ -255,7 +256,7 @@ export const RocketChatAssets = new class {
 			defaultUrl: assets[asset].defaultUrl,
 		};
 
-		settings.updateById(key, value);
+		Settings.updateValueById(key, value);
 		RocketChatAssets.processAsset(key, value);
 	}
 
@@ -310,16 +311,16 @@ export const RocketChatAssets = new class {
 	}
 
 	getURL(assetName, options = { cdn: false, full: true }) {
-		const asset = SettingsVersion4.get(assetName);
+		const asset = settings.get(assetName);
 		const url = asset.url || asset.defaultUrl;
 
 		return getURL(url, options);
 	}
 }();
 
-settings.addGroup('Assets');
+settingsRegister.addGroup('Assets');
 
-settings.add('Assets_SvgFavicon_Enable', true, {
+settingsRegister.add('Assets_SvgFavicon_Enable', true, {
 	type: 'boolean',
 	group: 'Assets',
 	i18nLabel: 'Enable_Svg_Favicon',
@@ -328,7 +329,7 @@ settings.add('Assets_SvgFavicon_Enable', true, {
 function addAssetToSetting(asset, value) {
 	const key = `Assets_${ asset }`;
 
-	settings.add(key, {
+	settingsRegister.add(key, {
 		defaultUrl: value.defaultUrl,
 	}, {
 		type: 'asset',
@@ -340,11 +341,11 @@ function addAssetToSetting(asset, value) {
 		wizard: value.wizard,
 	});
 
-	const currentValue = SettingsVersion4.get(key);
+	const currentValue = settings.get(key);
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== assets[asset].defaultUrl) {
 		currentValue.defaultUrl = assets[asset].defaultUrl;
-		settings.updateById(key, currentValue);
+		Settings.updateValueById(key, currentValue);
 	}
 }
 
@@ -353,7 +354,7 @@ for (const key of Object.keys(assets)) {
 	addAssetToSetting(key, value);
 }
 
-settings.get(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
+settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 
 Meteor.startup(function() {
 	return Meteor.setTimeout(function() {

@@ -10,7 +10,7 @@ import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings, SettingsVersion4 } from '../../../../../app/settings/server';
+import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
@@ -270,10 +270,8 @@ function shouldQueueStart() {
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
 }
 
-Meteor.startup(() => {
-	SettingsVersion4.watch('Livechat_enabled', (value) => {
-		value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
-	});
-
-	SettingsVersion4.change('Livechat_Routing_Method', shouldQueueStart);
+settings.watch('Livechat_enabled', (value) => {
+	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
 });
+
+settings.change('Livechat_Routing_Method', shouldQueueStart);

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings, SettingsVersion4 } from '../../settings';
+import { settings, settingsRegister } from '../../settings/server';
 
 const defaults = {
 	enable: false,
@@ -17,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	settings.addGroup('Blockstack', function() {
+	settingsRegister.addGroup('Blockstack', function() {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
@@ -36,15 +36,15 @@ Meteor.startup(() => {
 
 // Helper to return all Blockstack settings
 const getSettings = () => Object.assign({}, defaults, {
-	enable: SettingsVersion4.get('Blockstack_Enable'),
-	authDescription: SettingsVersion4.get('Blockstack_Auth_Description'),
-	buttonLabelText: SettingsVersion4.get('Blockstack_ButtonLabelText'),
-	generateUsername: SettingsVersion4.get('Blockstack_Generate_Username'),
+	enable: settings.get('Blockstack_Enable'),
+	authDescription: settings.get('Blockstack_Auth_Description'),
+	buttonLabelText: settings.get('Blockstack_ButtonLabelText'),
+	generateUsername: settings.get('Blockstack_Generate_Username'),
 });
 
 
 // Add settings to auth provider configs on startup
-SettingsVersion4.watchMultiple(['Blockstack_Enable',
+settings.watchMultiple(['Blockstack_Enable',
 	'Blockstack_Auth_Description',
 	'Blockstack_ButtonLabelText',
 	'Blockstack_Generate_Username'], () => {

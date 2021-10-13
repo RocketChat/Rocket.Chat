@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { Roles } from '../../../models/server';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
 
@@ -54,7 +54,7 @@ Meteor.methods({
 		}
 
 		const remove = Roles.removeUserRoles(user._id, roleName, scope);
-		if (SettingsVersion4.get('UI_DisplayRoles')) {
+		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: roleName,

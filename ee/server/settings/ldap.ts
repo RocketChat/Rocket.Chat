@@ -1,7 +1,7 @@
-import { settings } from '../../../app/settings/server';
+import { settingsRegister } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	settings.addGroup('LDAP', function() {
+	settingsRegister.addGroup('LDAP', function() {
 		const enableQuery = { _id: 'LDAP_Enable', value: true };
 
 		this.with({

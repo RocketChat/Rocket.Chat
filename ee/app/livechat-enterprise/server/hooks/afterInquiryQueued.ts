@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { callbacks } from '../../../../../app/callbacks/server';
 import { LivechatInquiry } from '../../../../../app/models/server';
-import { SettingsVersion4 } from '../../../../../app/settings/server';
+import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 
 let timer = 0;
@@ -18,11 +18,11 @@ const setQueueTimer = (inquiry: any): void => {
 	(LivechatInquiry as any).setEstimatedInactivityCloseTime(inquiry?._id, newQueueTime);
 };
 
-SettingsVersion4.watch('Livechat_max_queue_wait_time', (value) => {
+settings.watch('Livechat_max_queue_wait_time', (value) => {
 	timer = value as number;
 });
 
-SettingsVersion4.watch('Livechat_max_queue_wait_time_action', (value) => {
+settings.watch('Livechat_max_queue_wait_time_action', (value) => {
 	if (!value || value === 'Nothing') {
 		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry-set-queue-timer');
 		return;

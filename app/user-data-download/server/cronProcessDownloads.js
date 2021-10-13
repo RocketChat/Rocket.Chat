@@ -9,7 +9,7 @@ import archiver from 'archiver';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import { settings, SettingsVersion4 } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
@@ -587,7 +587,7 @@ const name = 'Generate download files for user data';
 
 Meteor.startup(function() {
 	let TroubleshootDisableDataExporterProcessor;
-	SettingsVersion4.watch('Troubleshoot_Disable_Data_Exporter_Processor', (value) => {
+	settings.watch('Troubleshoot_Disable_Data_Exporter_Processor', (value) => {
 		if (TroubleshootDisableDataExporterProcessor === value) { return; }
 		TroubleshootDisableDataExporterProcessor = value;
 

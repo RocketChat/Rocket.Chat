@@ -1,5 +1,5 @@
 import { Logger } from '../../../logger';
-import { SettingsVersion4 } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
@@ -35,7 +35,7 @@ const fullFields = {
 let publicCustomFields = {};
 let customFields = {};
 
-SettingsVersion4.watch('Accounts_CustomFields', (value) => {
+settings.watch('Accounts_CustomFields', (value) => {
 	publicCustomFields = {};
 	customFields = {};
 

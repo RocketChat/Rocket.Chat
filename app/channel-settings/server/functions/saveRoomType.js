@@ -3,7 +3,7 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Rooms, Subscriptions, Messages } from '../../../models/server';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { roomTypes, RoomSettingsEnum } from '../../../utils/server';
 
 export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
@@ -41,11 +41,11 @@ export const saveRoomType = function(rid, roomType, user, sendMessage = true) {
 		let message;
 		if (roomType === 'c') {
 			message = TAPi18n.__('Channel', {
-				lng: (user && user.language) || SettingsVersion4.get('Language') || 'en',
+				lng: (user && user.language) || settings.get('Language') || 'en',
 			});
 		} else {
 			message = TAPi18n.__('Private_Group', {
-				lng: (user && user.language) || SettingsVersion4.get('Language') || 'en',
+				lng: (user && user.language) || settings.get('Language') || 'en',
 			});
 		}
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);

@@ -3,7 +3,7 @@ import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 import { UploadFS } from 'meteor/jalik:ufs';
 
-import { SettingsVersion4 } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
@@ -119,9 +119,9 @@ const FileSystemUserDataFiles = new FileUploadClass({
 	},
 });
 
-SettingsVersion4.watch('FileUpload_FileSystemPath', function() {
+settings.watch('FileUpload_FileSystemPath', function() {
 	const options = {
-		path: SettingsVersion4.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
+		path: settings.get('FileUpload_FileSystemPath'), // '/tmp/uploads/photos',
 	};
 
 	FileSystemUploads.store = FileUpload.configureUploadsStore('Local', FileSystemUploads.name, options);

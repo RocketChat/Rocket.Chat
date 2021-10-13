@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
@@ -64,7 +64,7 @@ export function getFingerprintFromConnection(connection: IMethodConnection): str
 }
 
 function getRememberDate(from: Date = new Date()): Date | undefined {
-	const rememberFor = parseInt(SettingsVersion4.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
 
 	if (rememberFor <= 0) {
 		return;
@@ -160,7 +160,7 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
-	if (!SettingsVersion4.get('Accounts_TwoFactorAuthentication_Enabled')) {
+	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
 		return true;
 	}
 

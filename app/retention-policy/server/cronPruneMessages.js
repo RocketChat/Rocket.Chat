@@ -1,6 +1,6 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { SettingsVersion4 } from '../../settings/server/Settingsv4';
+import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
 import { cleanRoomHistory } from '../../lib';
 
@@ -18,10 +18,10 @@ const toDays = (d) => d * 1000 * 60 * 60 * 24;
 
 function job() {
 	const now = new Date();
-	const filesOnly = SettingsVersion4.get('RetentionPolicy_FilesOnly');
-	const excludePinned = SettingsVersion4.get('RetentionPolicy_DoNotPrunePinned');
-	const ignoreDiscussion = SettingsVersion4.get('RetentionPolicy_DoNotPruneDiscussion');
-	const ignoreThreads = SettingsVersion4.get('RetentionPolicy_DoNotPruneThreads');
+	const filesOnly = settings.get('RetentionPolicy_FilesOnly');
+	const excludePinned = settings.get('RetentionPolicy_DoNotPrunePinned');
+	const ignoreDiscussion = settings.get('RetentionPolicy_DoNotPruneDiscussion');
+	const ignoreThreads = settings.get('RetentionPolicy_DoNotPruneThreads');
 
 	// get all rooms with default values
 	types.forEach((type) => {
@@ -77,7 +77,7 @@ function deployCron(precision) {
 	});
 }
 
-SettingsVersion4.watchMultiple(['RetentionPolicy_Enabled',
+settings.watchMultiple(['RetentionPolicy_Enabled',
 	'RetentionPolicy_AppliesToChannels',
 	'RetentionPolicy_AppliesToGroups',
 	'RetentionPolicy_AppliesToDMs',
@@ -89,27 +89,27 @@ SettingsVersion4.watchMultiple(['RetentionPolicy_Enabled',
 	'RetentionPolicy_Precision'], function reloadPolicy() {
 	types = [];
 
-	if (!SettingsVersion4.get('RetentionPolicy_Enabled')) {
+	if (!settings.get('RetentionPolicy_Enabled')) {
 		return SyncedCron.remove(pruneCronName);
 	}
-	if (SettingsVersion4.get('RetentionPolicy_AppliesToChannels')) {
+	if (settings.get('RetentionPolicy_AppliesToChannels')) {
 		types.push('c');
 	}
 
-	if (SettingsVersion4.get('RetentionPolicy_AppliesToGroups')) {
+	if (settings.get('RetentionPolicy_AppliesToGroups')) {
 		types.push('p');
 	}
 
-	if (SettingsVersion4.get('RetentionPolicy_AppliesToDMs')) {
+	if (settings.get('RetentionPolicy_AppliesToDMs')) {
 		types.push('d');
 	}
 
-	maxTimes.c = SettingsVersion4.get('RetentionPolicy_MaxAge_Channels');
-	maxTimes.p = SettingsVersion4.get('RetentionPolicy_MaxAge_Groups');
-	maxTimes.d = SettingsVersion4.get('RetentionPolicy_MaxAge_DMs');
+	maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
+	maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
+	maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
 
 
-	const precision = (SettingsVersion4.get('RetentionPolicy_Advanced_Precision') && SettingsVersion4.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(SettingsVersion4.get('RetentionPolicy_Precision'));
+	const precision = (settings.get('RetentionPolicy_Advanced_Precision') && settings.get('RetentionPolicy_Advanced_Precision_Cron')) || getSchedule(settings.get('RetentionPolicy_Precision'));
 
 	return deployCron(precision);
 });

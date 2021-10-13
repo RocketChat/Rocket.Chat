@@ -1,13 +1,13 @@
 import { TOTP } from '../lib/totp';
 import { IUser } from '../../../../definition/IUser';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class TOTPCheck implements ICodeCheck {
 	public readonly name = 'totp';
 
 	public isEnabled(user: IUser): boolean {
-		if (!SettingsVersion4.get('Accounts_TwoFactorAuthentication_By_TOTP_Enabled')) {
+		if (!settings.get('Accounts_TwoFactorAuthentication_By_TOTP_Enabled')) {
 			return false;
 		}
 

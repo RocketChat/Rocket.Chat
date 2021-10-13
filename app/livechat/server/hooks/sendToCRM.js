@@ -1,4 +1,4 @@
-import { settings, SettingsVersion4 } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks';
 import { Messages, LivechatRooms } from '../../../models';
 import { Livechat } from '../lib/Livechat';
@@ -13,7 +13,7 @@ const sendMessageType = (msgType) => {
 		case msgClosingType:
 			return true;
 		case msgNavType:
-			return SettingsVersion4.get('Livechat_Visitor_navigation_as_a_message') && SettingsVersion4.get('Send_visitor_navigation_history_livechat_webhook_request');
+			return settings.get('Livechat_Visitor_navigation_as_a_message') && settings.get('Send_visitor_navigation_history_livechat_webhook_request');
 		default:
 			return false;
 	}
@@ -36,7 +36,7 @@ const getAdditionalFieldsByType = (type, room) => {
 	}
 };
 function sendToCRM(type, room, includeMessages = true) {
-	if (!SettingsVersion4.get('Livechat_webhookUrl')) {
+	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}
 

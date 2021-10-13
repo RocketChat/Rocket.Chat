@@ -18,7 +18,12 @@ type OverCustomSettingsConfig = Partial<SettingsConfig>;
  * @extends Emitter
  * @alpha
  */
-export const SettingsVersion4 = new class NewSettings extends Emitter<{
+export const SettingsVersion4 = new class NewSettings extends Emitter<
+{
+	'*': [string, SettingValue];
+}
+&
+{
 	ready: undefined;
 	[k: string]: SettingValue;
 }> {
@@ -36,6 +41,19 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	}
 
 	/*
+	* returns if the setting is defined
+	* @param _id - The setting id
+	* @returns {boolean}
+	*/
+	public has(_id: ISetting['_id']): boolean {
+		if (!this.ready && warn) {
+			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
+		}
+		return this.store.has(_id);
+	}
+
+
+	/*
 	* Gets the current value of the setting
 	* @remarks
 	* 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
@@ -47,6 +65,23 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
 		}
 		return this.store.get(_id) as T;
+	}
+
+	/*
+	* Gets the current value of the setting
+	* @remarks
+	* 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
+	* @param _id - The setting id
+	* @returns {SettingValue} - The current value of the setting
+	*
+	*/
+	/* @deprecated */
+	public getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][] {
+		if (!this.ready && warn) {
+			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
+		}
+
+		return [...this.store.entries()].filter(([key]) => _id.test(key)) as [string, T][];
 	}
 
 
@@ -189,25 +224,51 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<{
 	* @param value - The value to set
 	* @returns {void}
 	*/
-	public set<T extends SettingValue = SettingValue>(_id: ISetting['_id'], value: T): void {
-		if (this.store.get(_id) === value) {
+	public set(record: ISetting): void {
+		if (this.store.has(record._id) && this.store.get(record._id) === record.value) {
 			return;
 		}
 
-		this.store.set(_id, value);
-
+		this.store.set(record._id, record.value);
 		if (!this.ready) {
 			this.once('ready', () => {
-				this.emit(_id, this.store.get(_id));
+				this.emit(record._id, this.store.get(record._id));
+				this.emit('*', [record._id, this.store.get(record._id)]);
 			});
 			return;
 		}
 
-		this.emit(_id, value/* , old */);
+		this.emit(record._id, this.store.get(record._id));
+		this.emit('*', [record._id, this.store.get(record._id)]);
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
 		debounce: 500,
 		...config,
 	})
+
+	/* @deprecated */
+	public watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
+		return this.on('*', ([_id, value]) => {
+			if (regex.test(_id)) {
+				cb(_id, value);
+			}
+		});
+	}
+
+	/* @deprecated */
+	public changeByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
+		return this.on('*', ([_id, value]) => {
+			if (regex.test(_id)) {
+				cb(_id, value);
+			}
+		});
+	}
+
+	public onReady(cb: () => void): void {
+		if (this.ready) {
+			return cb();
+		}
+		this.once('ready', cb);
+	}
 }();

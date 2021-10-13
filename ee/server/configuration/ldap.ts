@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { LDAPEE } from '../sdk';
-import { settings, SettingsVersion4 } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server';
 import { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
@@ -46,17 +46,17 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	const addLogoutCronJob = configureBackgroundSync('LDAP_AutoLogout', 'LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval', () => LDAPEE.syncLogout());
 
 
-	SettingsVersion4.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
-	SettingsVersion4.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
-	SettingsVersion4.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
+	settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
+	settings.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
+	settings.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
 
-	SettingsVersion4.watch('LDAP_Enable', () => {
+	settings.watch('LDAP_Enable', () => {
 		addCronJob();
 		addAvatarCronJob();
 		addLogoutCronJob();
 	});
 
-	SettingsVersion4.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
+	settings.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 		try {
 			LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
 		} catch (error) {

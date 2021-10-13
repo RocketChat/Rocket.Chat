@@ -7,7 +7,7 @@ import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { SettingsVersion4 } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { replaceVariables } from './utils.js';
 
 let contentHeader;
@@ -21,7 +21,7 @@ let Settings = {
 // define server language for email translations
 // @TODO: change TAPi18n.__ function to use the server language by default
 let lng = 'en';
-SettingsVersion4.watch('Language', (value) => {
+settings.watch('Language', (value) => {
 	lng = value || 'en';
 });
 
@@ -52,8 +52,8 @@ export const replace = function replace(str, data = {}) {
 const nonEscapeKeys = ['room_path'];
 
 export const replaceEscaped = (str, data = {}) => replace(str, {
-	Site_Name: escapeHTML(SettingsVersion4.get('Site_Name')),
-	Site_Url: escapeHTML(SettingsVersion4.get('Site_Url')),
+	Site_Name: escapeHTML(settings.get('Site_Name')),
+	Site_Url: escapeHTML(settings.get('Site_Url')),
 	...Object.entries(data).reduce((ret, [key, value]) => {
 		ret[key] = nonEscapeKeys.includes(key) ? value : escapeHTML(value);
 		return ret;
@@ -61,7 +61,7 @@ export const replaceEscaped = (str, data = {}) => replace(str, {
 });
 
 export const wrap = (html, data = {}) => {
-	if (SettingsVersion4.get('email_plain_text_only')) {
+	if (settings.get('email_plain_text_only')) {
 		return replace(html, data);
 	}
 
@@ -121,7 +121,7 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 		text = stripHtml(html).result;
 	}
 
-	if (SettingsVersion4.get('email_plain_text_only')) {
+	if (settings.get('email_plain_text_only')) {
 		html = undefined;
 	}
 

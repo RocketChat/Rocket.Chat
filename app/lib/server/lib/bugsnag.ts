@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import Bugsnag from '@bugsnag/js';
 
-import { SettingsVersion4 } from '../../../settings/server/Settingsv4';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/server';
 import { Logger } from '../../../logger/server';
 
@@ -27,7 +27,7 @@ function _bugsnagDebug(message: any, stack: any, ...args: any): void {
 	return originalMeteorDebug(message, stack, ...args);
 }
 
-SettingsVersion4.watch('Bugsnag_api_key', (value) => {
+settings.watch('Bugsnag_api_key', (value) => {
 	if (!value) {
 		return;
 	}

@@ -260,5 +260,5 @@ export const upsertPermissions = () => {
 		}
 	};
 
-	settings.onload('*', createPermissionForAddedSetting);
+	settings.on('*', createPermissionForAddedSetting);
 };

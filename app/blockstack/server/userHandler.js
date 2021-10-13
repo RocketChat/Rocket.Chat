@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { SettingsVersion4 } from '../../settings/server';
+import { settings } from '../../settings/server';
 import { generateUsernameSuggestion } from '../../lib';
 
 // Updates or creates a user after we authenticate with Blockstack
@@ -35,7 +35,7 @@ export const updateOrCreateUser = (serviceData, options) => {
 			// gaia, encrypting mail for DID user only. @TODO: document this approach.
 			emails.push({ address: `${ did }@blockstack.email`, verified: false });
 		} else {
-			const verified = SettingsVersion4.get('Accounts_Verify_Email_For_External_Accounts');
+			const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 			// Reformat array of emails into expected format if they exist
 			emails = profile.emails.map((address) => ({ address, verified }));
 		}

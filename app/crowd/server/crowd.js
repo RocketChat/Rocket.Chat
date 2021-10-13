@@ -6,7 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Logger } from '../../logger';
 import { _setRealName } from '../../lib';
 import { Users } from '../../models';
-import { settings, SettingsVersion4 } from '../../settings';
+import { settings } from '../../settings';
 import { hasRole } from '../../authorization';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
@@ -312,7 +312,7 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 const jobName = 'CROWD_Sync';
 
 const addCronJob = function addCronJobDebounced() {
-	if (SettingsVersion4.get('CROWD_Sync_User_Data') !== true) {
+	if (settings.get('CROWD_Sync_User_Data') !== true) {
 		logger.info('Disabling CROWD Background Sync');
 		if (SyncedCron.nextScheduledAtDate(jobName)) {
 			SyncedCron.remove(jobName);
@@ -322,11 +322,11 @@ const addCronJob = function addCronJobDebounced() {
 
 	const crowd = new CROWD();
 
-	if (SettingsVersion4.get('CROWD_Sync_Interval')) {
+	if (settings.get('CROWD_Sync_Interval')) {
 		logger.info('Enabling CROWD Background Sync');
 		SyncedCron.add({
 			name: jobName,
-			schedule: (parser) => parser.text(SettingsVersion4.get('CROWD_Sync_Interval')),
+			schedule: (parser) => parser.text(settings.get('CROWD_Sync_Interval')),
 			job() {
 				crowd.sync();
 			},
@@ -335,7 +335,7 @@ const addCronJob = function addCronJobDebounced() {
 };
 
 Meteor.startup(() => {
-	SettingsVersion4.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], addCronJob);
+	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], addCronJob);
 });
 
 Meteor.methods({

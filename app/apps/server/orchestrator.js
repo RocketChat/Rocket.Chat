@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
-import { settings, SettingsVersion4 } from '../../settings/server';
+import { settings, settingsRegister } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -121,7 +121,7 @@ export class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return SettingsVersion4.get('Apps_Framework_enabled');
+		return settings.get('Apps_Framework_enabled');
 	}
 
 	isLoaded() {
@@ -129,7 +129,7 @@ export class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return SettingsVersion4.get('Apps_Framework_Development_Mode') && !isTesting();
+		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
 	}
 
 	/**
@@ -200,7 +200,7 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settings.addGroup('General', function() {
+settingsRegister.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',
@@ -264,7 +264,7 @@ settings.addGroup('General', function() {
 	});
 });
 
-SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
+settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageType = value;
 	} else {
@@ -272,7 +272,7 @@ SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_Type', (value) => 
 	}
 });
 
-SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
+settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
 	if (!Apps.isInitialized()) {
 		appsSourceStorageFilesystemPath = value;
 	} else {
@@ -280,7 +280,7 @@ SettingsVersion4.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', 
 	}
 });
 
-SettingsVersion4.watch('Apps_Framework_enabled', (isEnabled) => {
+settings.watch('Apps_Framework_enabled', (isEnabled) => {
 	// In case this gets called before `Meteor.startup`
 	if (!Apps.isInitialized()) {
 		return;
@@ -293,7 +293,7 @@ SettingsVersion4.watch('Apps_Framework_enabled', (isEnabled) => {
 	}
 });
 
-SettingsVersion4.watch('Apps_Logs_TTL', (value) => {
+settings.watch('Apps_Logs_TTL', (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}

@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Roles, Users, Settings } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
@@ -27,19 +27,19 @@ Accounts.config({
 
 
 Meteor.startup(() => {
-	SettingsVersion4.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
-		Accounts._options.loginExpirationInDays = SettingsVersion4.get('Accounts_LoginExpiration');
+	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
+		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
 
-		Accounts.emailTemplates.siteName = SettingsVersion4.get('Site_Name');
+		Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
-		Accounts.emailTemplates.from = `${ SettingsVersion4.get('Site_Name') } <${ SettingsVersion4.get('From_Email') }>`;
+		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
 	});
 });
 
 Accounts.emailTemplates.userToActivate = {
 	subject() {
 		const subject = TAPi18n.__('Accounts_Admin_Email_Approval_Needed_Subject_Default');
-		const siteName = SettingsVersion4.get('Site_Name');
+		const siteName = settings.get('Site_Name');
 
 		return `[${ siteName }] ${ subject }`;
 	},
@@ -60,7 +60,7 @@ Accounts.emailTemplates.userActivated = {
 		const activated = username ? 'Activated' : 'Approved';
 		const action = active ? activated : 'Deactivated';
 		const subject = `Accounts_Email_${ action }_Subject`;
-		const siteName = SettingsVersion4.get('Site_Name');
+		const siteName = settings.get('Site_Name');
 
 		return `[${ siteName }] ${ TAPi18n.__(subject) }`;
 	},
@@ -95,7 +95,7 @@ Accounts.emailTemplates.verifyEmail.html = function(userModel, url) {
 };
 
 Accounts.emailTemplates.verifyEmail.subject = function() {
-	const subject = SettingsVersion4.get('Verification_Email_Subject');
+	const subject = settings.get('Verification_Email_Subject');
 	return Mailer.replace(subject || '');
 };
 
@@ -104,7 +104,7 @@ Accounts.urls.resetPassword = function(token) {
 };
 
 Accounts.emailTemplates.resetPassword.subject = function(userModel) {
-	return Mailer.replace(SettingsVersion4.get('Forgot_Password_Email_Subject') || '', {
+	return Mailer.replace(settings.get('Forgot_Password_Email_Subject') || '', {
 		name: userModel.name,
 	});
 };
@@ -116,7 +116,7 @@ Accounts.emailTemplates.resetPassword.html = function(userModel, url) {
 };
 
 Accounts.emailTemplates.enrollAccount.subject = function(user) {
-	const subject = SettingsVersion4.get('Accounts_Enrollment_Email_Subject');
+	const subject = settings.get('Accounts_Enrollment_Email_Subject');
 	return Mailer.replace(subject, user);
 };
 
@@ -154,7 +154,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
-	user.active = user.active !== undefined ? user.active : !SettingsVersion4.get('Accounts_ManuallyApproveNewUsers');
+	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
 
 	if (!user.name) {
 		if (options.profile) {
@@ -168,7 +168,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 	}
 
 	if (user.services) {
-		const verified = SettingsVersion4.get('Accounts_Verify_Email_For_External_Accounts');
+		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
 		for (const service of Object.values(user.services)) {
 			if (!user.name) {
@@ -197,7 +197,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 		const email = {
 			to: destinations,
-			from: SettingsVersion4.get('From_Email'),
+			from: settings.get('From_Email'),
 			subject: Accounts.emailTemplates.userToActivate.subject(),
 			html: Accounts.emailTemplates.userToActivate.html(options),
 		};
@@ -221,7 +221,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	delete user.globalRoles;
 
 	if (user.services && !user.services.password) {
-		const defaultAuthServiceRoles = String(SettingsVersion4.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
+		const defaultAuthServiceRoles = String(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
 			globalRoles.push(...defaultAuthServiceRoles.map((s) => s.trim()));
 		}
@@ -233,7 +233,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		user.type = 'user';
 	}
 
-	if (SettingsVersion4.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
+	if (settings.get('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In')) {
 		user.services = user.services || {};
 		user.services.email2fa = {
 			enabled: true,
@@ -259,7 +259,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 				return callbacks.run('afterCreateUser', user);
 			});
 		}
-		if (SettingsVersion4.get('Accounts_SetDefaultAvatar') === true) {
+		if (settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = getAvatarSuggestionForUser(user);
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
@@ -289,7 +289,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 			roles.push('user');
 		} else {
 			roles.push('admin');
-			if (SettingsVersion4.get('Show_Setup_Wizard') === 'pending') {
+			if (settings.get('Show_Setup_Wizard') === 'pending') {
 				Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 			}
 		}
@@ -341,7 +341,7 @@ Accounts.validateLoginAttempt(function(login) {
 		});
 	}
 
-	if (login.user.roles.includes('admin') === false && login.type === 'password' && SettingsVersion4.get('Accounts_EmailVerification') === true) {
+	if (login.user.roles.includes('admin') === false && login.type === 'password' && settings.get('Accounts_EmailVerification') === true) {
 		const validEmail = login.user.emails.filter((email) => email.verified === true);
 		if (validEmail.length === 0) {
 			throw new Meteor.Error('error-invalid-email', 'Invalid email __email__');
@@ -363,7 +363,7 @@ Accounts.validateNewUser(function(user) {
 		return true;
 	}
 
-	if (SettingsVersion4.get('Accounts_Registration_AuthenticationServices_Enabled') === false && SettingsVersion4.get('LDAP_Enable') === false && !(user.services && user.services.password)) {
+	if (settings.get('Accounts_Registration_AuthenticationServices_Enabled') === false && settings.get('LDAP_Enable') === false && !(user.services && user.services.password)) {
 		throw new Meteor.Error('registration-disabled-authentication-services', 'User registration is disabled for authentication services');
 	}
 
@@ -375,7 +375,7 @@ Accounts.validateNewUser(function(user) {
 		return true;
 	}
 
-	let domainWhiteList = SettingsVersion4.get('Accounts_AllowedDomainsList');
+	let domainWhiteList = settings.get('Accounts_AllowedDomainsList');
 	if (_.isEmpty(domainWhiteList?.trim())) {
 		return true;
 	}

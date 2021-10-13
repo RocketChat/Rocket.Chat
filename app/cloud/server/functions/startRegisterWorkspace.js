@@ -2,7 +2,7 @@ import { HTTP } from 'meteor/http';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -16,7 +16,7 @@ export function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	settings.updateById('Register_Server', true);
+	Settings.updateValueById('Register_Server', true);
 
 	const regInfo = buildWorkspaceRegistrationData();
 

@@ -125,12 +125,12 @@ export class MeteorService extends ServiceClass implements IMeteor {
 
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction !== 'removed') {
-				settings.storeSettingValue(setting, false);
+				settings.set(setting);
 				updateValue(setting._id, { value: setting.value });
 				return;
 			}
 
-			settings.removeSettingValue(setting, false);
+			settings.set({ ...setting, value: undefined });
 			setValue(setting._id, undefined);
 		});
 
