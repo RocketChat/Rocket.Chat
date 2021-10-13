@@ -7,16 +7,16 @@ import MarkdownSettingInput from './MarkdownSettingInput';
 export default {
 	title: 'admin/settings/inputs/MarkdownSettingInput',
 	component: MarkdownSettingInput,
-	decorators: [(storyFn) => <Field>{storyFn()}</Field>],
+	decorators: [(storyFn: () => any): any => <Field>{storyFn()}</Field>],
 };
 
-export const _default = () => (
+export const _default = (): any => (
 	<MarkdownSettingInput
 		_id='setting_id'
 		label='Label'
-		placeholder='Placeholder'
 		value='asd'
 		onChangeValue={action('changeValue')}
-		onChangeEditor={action('changeEditor')}
+		hasResetButton={true}
+		onResetButtonClick={action('resetButtonClick')}
 	/>
 );
