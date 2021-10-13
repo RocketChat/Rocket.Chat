@@ -1,12 +1,5 @@
-import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
-
 /* eslint-disable @typescript-eslint/interface-name-prefix */
-declare module 'meteor/random' {
-	namespace Random {
-		function _randomString(numberOfChars: number, map: string): string;
-	}
-}
-
+import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
