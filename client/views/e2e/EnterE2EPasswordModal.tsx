@@ -1,9 +1,9 @@
 import { Box, PasswordInput, Field, FieldGroup } from '@rocket.chat/fuselage';
-import React, { ReactElement, useState, useCallback } from 'react';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { ReactElement, useState, useCallback } from 'react';
 
-import GenericModal from '../../../client/components/GenericModal';
-import { useTranslation } from '../../../client/contexts/TranslationContext';
+import GenericModal from '../../components/GenericModal';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const EnterE2EPasswordModal = ({
 	onConfirm,
@@ -18,11 +18,13 @@ const EnterE2EPasswordModal = ({
 	const [password, setPassword] = useState('');
 	const [passwordError, setPasswordError] = useState<string | undefined>();
 
-	const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		e.target.value !== '' && setPasswordError(undefined);
-		setPassword(e.currentTarget.value);
-	}, [setPassword]);
-
+	const handleChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			e.target.value !== '' && setPasswordError(undefined);
+			setPassword(e.currentTarget.value);
+		},
+		[setPassword],
+	);
 
 	const handleConfirm = useMutableCallback((): void => {
 		if (password === '') {

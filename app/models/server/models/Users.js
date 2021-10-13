@@ -1603,6 +1603,14 @@ Find users to send a message by email if:
 
 		return this.find(query, options);
 	}
+
+	updateCustomFieldsById(userId, customFields) {
+		return this.update(userId, {
+			$set: {
+				customFields,
+			},
+		});
+	}
 }
 
 export default new Users(Meteor.users, true);

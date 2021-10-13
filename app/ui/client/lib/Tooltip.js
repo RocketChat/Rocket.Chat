@@ -28,7 +28,7 @@ export const openToolTip = (title, anchor) => {
 		anchor,
 	};
 	Dep.changed();
-	unregister = unregister || createEphemeralPortal(() => import('./TooltipComponent'), props, dom);
+	unregister = unregister || createEphemeralPortal(() => import('../../../../client/components/TooltipComponent'), props, dom);
 };
 
 window.matchMedia('(hover: none)').matches || document.body.addEventListener('mouseover', (() => {

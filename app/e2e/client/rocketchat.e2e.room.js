@@ -23,11 +23,11 @@ import {
 	readFileAsArrayBuffer,
 } from './helper';
 import { Notifications } from '../../notifications/client';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { call } from '../../ui-utils';
-import { roomTypes, RoomSettingsEnum } from '../../utils';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { roomTypes, RoomSettingsEnum } from '../../utils/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
+import { call } from '../../../client/lib/utils/call';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');

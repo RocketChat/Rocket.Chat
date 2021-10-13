@@ -257,8 +257,12 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
-	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
+	if (!onlineAgents) {
+		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+		return;
+	}
 
+	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	onlineAgents.forEach((agent) => {
@@ -433,7 +437,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+		// if chat is queued then we don't ignore the new servedBy agent bcs at this
+		// point the chat is not assigned to him/her and it is still in the queue
+		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
@@ -444,6 +450,8 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${ inquiry._id } as ready`);
 		LivechatInquiry.readyInquiry(inquiry._id);
+		LivechatRooms.removeAgentByRoomId(rid);
+		dispatchAgentDelegated(rid, null);
 		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 

@@ -30,8 +30,10 @@ Accounts.registerLoginHandler('saml', function(loginRequest) {
 
 	try {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
+		const updatedUser = SAML.insertOrUpdateSAMLUser(userObject);
+		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
-		return SAML.insertOrUpdateSAMLUser(userObject);
+		return updatedUser;
 	} catch (error: any) {
 		SystemLogger.error(error);
 

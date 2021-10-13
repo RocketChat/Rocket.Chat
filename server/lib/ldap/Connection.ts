@@ -4,7 +4,6 @@ import { settings } from '../../../app/settings/server';
 import type { ILDAPConnectionOptions, LDAPEncryptionType, LDAPSearchScope } from '../../../definition/ldap/ILDAPOptions';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
 import type { ILDAPCallback, ILDAPPageCallback } from '../../../definition/ldap/ILDAPCallback';
-import { callbacks } from '../../../app/callbacks/server';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
@@ -174,7 +173,7 @@ export class LDAPConnection {
 			}
 			searchOptions.filter = new this.ldapjs.filters.OrFilter({ filters });
 		} else {
-			searchLogger.warn('Unique Identifier Field is not configured.');
+			throw new Error('Unique Identifier Field is not configured.');
 		}
 
 		searchLogger.info({ msg: 'Searching by id', id });
@@ -395,7 +394,7 @@ export class LDAPConnection {
 	}
 
 	public async bindDN(dn: string, password: string): Promise<void> {
-		await new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			try {
 				this.client.bind(dn, password, (error) => {
 					if (error) {
@@ -546,12 +545,17 @@ export class LDAPConnection {
 		}
 
 		bindLogger.info({ msg: 'Binding UserDN', userDN: this.options.authenticationUserDN });
-		await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
-		this.usingAuthentication = true;
+		try {
+			await this.bindDN(this.options.authenticationUserDN, this.options.authenticationPassword);
+			this.usingAuthentication = true;
+		} catch (error) {
+			authLogger.error({ msg: 'Base Authentication Issue', err: error, dn: this.options.authenticationUserDN });
+			this.usingAuthentication = false;
+		}
 	}
 
-	protected async runBeforeSearch(searchOptions: ldapjs.SearchOptions): Promise<void> {
-		callbacks.run('beforeLDAPSearch', searchOptions, this);
+	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {
+		return this.maybeBindDN();
 	}
 
 	/*

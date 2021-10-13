@@ -632,9 +632,6 @@ describe('SAML', () => {
 					username: 'anotherUsername',
 					email: 'singleEmail',
 					name: 'anotherName',
-					customField1: 'customField1',
-					customField2: 'customField2',
-					customField3: 'customField3',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
@@ -654,13 +651,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
 				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user']);
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
-
-				const map = new Map();
-				map.set('customField1', 'value1');
-				map.set('customField2', 'value2');
-				map.set('customField3', 'value3');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
 			it('should join array values if username receives an array of values', () => {
@@ -850,7 +840,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
 			});
 
-
 			it('should collect the values of every attribute on the field map', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -869,7 +858,6 @@ describe('SAML', () => {
 							'otherRoles',
 							'language',
 							'channels',
-							'customField1',
 						],
 					},
 				};
@@ -893,7 +881,6 @@ describe('SAML', () => {
 					'otherRoles',
 					'language',
 					'channels',
-					'customField1',
 				]);
 
 				// Workaround because chai doesn't handle Maps very well
@@ -969,7 +956,6 @@ describe('SAML', () => {
 						template: 'user-__uid__',
 					},
 					email: 'email',
-					epa: 'eduPersonAffiliation',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
@@ -991,8 +977,6 @@ describe('SAML', () => {
 
 				const map = new Map();
 				map.set('epa', 'group1');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 		});
 	});
