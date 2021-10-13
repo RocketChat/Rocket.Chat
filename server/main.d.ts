@@ -68,12 +68,6 @@ declare module 'meteor/ddp-common' {
 	}
 }
 
-declare module 'meteor/routepolicy' {
-	export class RoutePolicy {
-		static declare(urlPrefix: string, type: string): void;
-	}
-}
-
 declare module 'meteor/rocketchat:tap-i18n' {
 	namespace TAPi18n {
 		function __(s: string, options: { lng: string }): string;
