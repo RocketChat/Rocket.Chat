@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { searchProviderService } from './service/providerService';
