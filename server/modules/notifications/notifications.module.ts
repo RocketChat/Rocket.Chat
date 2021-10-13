@@ -1,4 +1,5 @@
-import { IStreamer, IStreamerConstructor, IPublication } from '../streamer/streamer.module';
+import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+
 import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
