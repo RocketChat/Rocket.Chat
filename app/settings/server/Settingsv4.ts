@@ -249,18 +249,35 @@ export const SettingsVersion4 = new class NewSettings extends Emitter<
 
 	/* @deprecated */
 	public watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
-		return this.on('*', ([_id, value]) => {
-			if (regex.test(_id)) {
-				cb(_id, value);
+		if (!this.ready) {
+			const cancel = new Set<() => void>();
+			cancel.add(this.once('ready', (): void => {
+				cancel.clear();
+				cancel.add(this.watchByRegex(regex, cb, config));
+			}));
+			return (): void => {
+				cancel.forEach((fn) => fn());
+			};
+		}
+
+		[...this.store.entries()].forEach(([key, value]) => {
+			if (regex.test(key)) {
+				cb(key, value);
 			}
 		});
+
+		return this.changeByRegex(regex, cb, config);
 	}
 
 	/* @deprecated */
-	public changeByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
+	public changeByRegex(regex: RegExp, callback: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void {
+		const store: Map<string, (...args: [string, SettingValue]) => void> = new Map();
 		return this.on('*', ([_id, value]) => {
 			if (regex.test(_id)) {
+				const { debounce } = this.getConfig(config);
+				const cb = store.get(_id) || _.debounce(callback, debounce);
 				cb(_id, value);
+				store.set(_id, cb);
 			}
 		});
 	}

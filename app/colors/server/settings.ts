@@ -7,4 +7,3 @@ settingsRegister.add('HexColorPreview_Enabled', true, {
 	section: 'Hex_Color_Preview',
 	public: true,
 });
-
