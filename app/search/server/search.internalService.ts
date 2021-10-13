@@ -38,10 +38,10 @@ class Search extends ServiceClass {
 
 const service = new Search();
 
-settings.get('Search.Provider', _.debounce(() => {
+settings.watch('Search.Provider', () => {
 	if (searchProviderService.activeProvider?.on) {
 		api.registerService(service);
 	} else {
 		api.destroyService(service);
 	}
-}, 1000));
+});

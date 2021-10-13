@@ -3,7 +3,7 @@ import { IRoom } from '../../../../definition/IRoom';
 
 const hideMessagesOfTypeServer = new Set<string>();
 
-settings.watch('Hide_System_Messages', function(values) {
+settings.watch<string[]>('Hide_System_Messages', function(values) {
 	if (!values || !Array.isArray(values)) {
 		return;
 	}

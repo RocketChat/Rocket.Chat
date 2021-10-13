@@ -12,6 +12,7 @@ settingsRegister.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
+
 settingsRegister.addGroup('Accounts', function() {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
@@ -148,7 +149,7 @@ settingsRegister.addGroup('Accounts', function() {
 			enableQuery: {
 				_id: 'SMTP_Host',
 				value: {
-					$exists: 1,
+					$exists: true,
 					$ne: '',
 				},
 			},
@@ -644,7 +645,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Facebook_callback_url', '_oauth/facebook', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -669,7 +669,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Google_callback_url', '_oauth/google', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -694,7 +693,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Github_callback_url', '_oauth/github', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -719,7 +717,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Linkedin_callback_url', '_oauth/linkedin', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -744,7 +741,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Meteor_callback_url', '_oauth/meteor', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -769,7 +765,6 @@ settingsRegister.addGroup('OAuth', function() {
 		return this.add('Accounts_OAuth_Twitter_callback_url', '_oauth/twitter', {
 			type: 'relativeUrl',
 			readonly: true,
-			force: true,
 			enableQuery,
 		});
 	});
@@ -803,8 +798,9 @@ settingsRegister.addGroup('General', function() {
 			},
 		],
 	});
+
 	// eslint-disable-next-line @typescript-eslint/camelcase
-	this.add('Site_Url', typeof __meteor_runtime_config__ !== 'undefined' && __meteor_runtime_config__ !== null ? __meteor_runtime_config__.ROOT_URL : null, {
+	this.add('Site_Url', typeof (global as any).__meteor_runtime_config__ !== 'undefined' && (global as any).__meteor_runtime_config__ !== null ? (global as any).__meteor_runtime_config__.ROOT_URL : null, {
 		type: 'string',
 		i18nDescription: 'Site_Url_Description',
 		public: true,

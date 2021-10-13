@@ -15,7 +15,7 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	SyncedCron.add({
 		name: jobName,
-		schedule: (parser) => parser.text('at 2:00 am'),
+		schedule: (parser: { text: (time: string) => string }) => parser.text('at 2:00 am'),
 		job() {
 			checkVersionUpdate();
 		},

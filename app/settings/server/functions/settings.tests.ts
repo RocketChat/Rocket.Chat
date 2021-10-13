@@ -302,8 +302,8 @@ describe('Settings', () => {
 		});
 
 		const spy = chai.spy();
-		settings.get('setting_callback', spy);
-		settings.watchByRegexp(/setting_callback/, spy);
+		settings.watch('setting_callback', spy);
+		settings.watchByRegex(/setting_callback/, spy);
 
 		expect(spy).to.have.been.called.exactly(2);
 		expect(spy).to.have.been.called.always.with('setting_callback', 'value1');
@@ -312,8 +312,8 @@ describe('Settings', () => {
 	it('should call `settings.get` callback on setting changed', () => {
 		const spy = chai.spy();
 		const spy2 = chai.spy();
-		settings.get('setting_callback', spy);
-		settings.get(/setting_callback/, spy2);
+		settings.watch('setting_callback', spy);
+		settings.watchByRegex(/setting_callback/, spy2);
 
 		settingsRegister.addGroup('group', function() {
 			this.section('section', function() {

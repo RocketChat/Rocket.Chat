@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 
-function testWebAppInternals(fn): void {
+function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);
 }
 settings.change('CDN_PREFIX', function(value) {

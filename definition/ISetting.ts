@@ -10,12 +10,12 @@ export enum SettingEditor {
 	EXPRESSION = 'expression'
 }
 type AssetValue = { defaultUrl?: string };
-export type SettingValueMultiSelect = string[];
+export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = Array<{_id: string; name: string}> | string;
 export type SettingValue = string | boolean | number | SettingValueMultiSelect | Date | AssetValue | undefined;
 
 export interface ISettingSelectOption {
-	key: string;
+	key: string | number;
 	i18nLabel: string;
 }
 
@@ -23,7 +23,7 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 export interface ISettingBase {
 	_id: SettingId;
-	type: 'boolean' | 'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
+	type: 'boolean' | 'timezone' |'string' | 'relativeUrl' | 'password' | 'int' | 'select' | 'multiSelect' | 'language' | 'color' | 'font' | 'code' | 'action' | 'asset' | 'roomPick' | 'group' | 'date';
 	public: boolean;
 	env: boolean;
 	group?: GroupId;
@@ -51,6 +51,7 @@ export interface ISettingBase {
 	ts?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
+	placeholder?: string;
 	wizard?: {
 		step: number;
 		order: number;

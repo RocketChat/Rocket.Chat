@@ -28,7 +28,10 @@ Meteor.startup(async function() {
 		updatePredictedVisitorAbandonment();
 	});
 	settings.change<string>('Livechat_business_hour_type', (value) => {
-		businessHourManager.registerBusinessHourBehavior(businessHours[value]);
+		if (!Object.keys(businessHours).includes(value)) {
+			return;
+		}
+		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
 			businessHourManager.startManager();
 		}
@@ -41,7 +44,7 @@ Meteor.startup(async function() {
 		return Promise.await(OmnichannelQueueInactivityMonitor.schedule());
 	});
 
-	settings.change('Livechat_max_queue_wait_time', function(value) {
+	settings.change<number>('Livechat_max_queue_wait_time', function(value) {
 		if (value <= 0) {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}

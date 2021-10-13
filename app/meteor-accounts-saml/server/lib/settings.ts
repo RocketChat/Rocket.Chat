@@ -109,7 +109,7 @@ export const loadSamlServiceProviders = function(): void {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
-	const providers = Object.entries(services).map(([key, value]) => {
+	const providers = services.map(([key, value]) => {
 		if (value === true) {
 			const samlConfigs = getSamlConfigs(key);
 			SAMLUtils.log(key);
