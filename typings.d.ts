@@ -8,9 +8,3 @@ declare module 'meteor/logging';
 declare const Package: {
 	'disable-oplog': object;
 };
-
-declare module 'meteor/meteorhacks:inject-initial' {
-	namespace Inject {
-		function rawBody(key: string, value: string): void;
-	}
-}
