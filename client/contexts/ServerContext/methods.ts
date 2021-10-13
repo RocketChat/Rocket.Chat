@@ -1,5 +1,6 @@
 import { IRoom } from '../../../definition/IRoom';
 import { FollowMessageMethod } from './methods/followMessage';
+import { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
@@ -135,6 +136,7 @@ export type ServerMethods = {
 	'uploadCustomSound': (...args: any[]) => any;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
+	'getReadReceipts': GetReadReceiptsMethod;
 };
 
 export type ServerMethodName = keyof ServerMethods;
