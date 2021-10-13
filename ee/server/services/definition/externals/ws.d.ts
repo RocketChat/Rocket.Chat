@@ -1,0 +1,1 @@
+../../../../../definition/externals/ws.d.ts

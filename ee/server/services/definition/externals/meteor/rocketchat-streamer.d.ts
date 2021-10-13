@@ -1,0 +1,1 @@
+../../../../../../definition/externals/meteor/rocketchat-streamer.d.ts
