@@ -1,7 +1,6 @@
 import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
-// import { Notifications } from '../../app/notifications/client';
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
@@ -54,8 +53,6 @@ const notify = (presence: UserPresence): void => {
 		emitter.emit(presence._id, presence);
 	}
 };
-
-// const subStream = new Map<string, Function>();
 
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
@@ -148,7 +145,9 @@ const listen = (
 	uid: UserPresence['_id'],
 	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
 ): void => {
-	// emitter.on(uid, update);
+	if (!uid) {
+		return;
+	}
 	emitter.on(uid, handler);
 
 	const user = store.has(uid) && store.get(uid);
@@ -181,7 +180,6 @@ const restart = (): void => {
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
 	new Promise((resolve) => {
 		const user = store.has(uid) && store.get(uid);
-
 		if (user) {
 			return resolve(user);
 		}

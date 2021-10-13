@@ -7,7 +7,7 @@ import { usePresence } from '../../hooks/usePresence';
 const StatusMessage = ({ uid }: { uid: string }): ReactElement | null => {
 	const data = usePresence(uid);
 	useEffect(() => {
-		process.env.NODE_ENV === 'development' && console.log('StatusMessage component is deprecated');
+		process.env.NODE_ENV === 'development' && console.warn('StatusMessage component is deprecated');
 	}, [data]);
 
 	if (!data || !data.statusText) {

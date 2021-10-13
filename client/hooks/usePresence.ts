@@ -15,11 +15,11 @@ type Presence = 'online' | 'offline' | 'busy' | 'away' | 'loading';
 export const usePresence = (uid: string): UserPresence | undefined => {
 	const subscription = useMemo(
 		() => ({
-			getCurrentValue: (): UserPresence | undefined => Presence.store.get(uid),
+			getCurrentValue: (): UserPresence | undefined => (uid ? Presence.store.get(uid) : undefined),
 			subscribe: (callback: any): any => {
-				Presence.listen(uid, callback);
+				uid && Presence.listen(uid, callback);
 				return (): void => {
-					Presence.stop(uid, callback);
+					uid && Presence.stop(uid, callback);
 				};
 			},
 		}),

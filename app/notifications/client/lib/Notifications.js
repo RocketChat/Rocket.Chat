@@ -19,7 +19,7 @@ class Notifications {
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
-		// this.streamPresences = new Meteor.Streamer('user-presence');
+
 		if (this.debug === true) {
 			this.onAll(function() {
 				return console.log('RocketChat.Notifications: onAll', args);
