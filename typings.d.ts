@@ -5,16 +5,6 @@ declare module 'meteor/ddp-common';
 declare module 'meteor/routepolicy';
 declare module 'meteor/logging';
 
-declare module 'meteor/konecty:user-presence' {
-	namespace UserPresenceMonitor {
-		function processUserSession(userSession: any, event: string): void;
-	}
-
-	namespace UserPresence {
-		function removeConnectionsByInstanceId(id: string): void;
-	}
-}
-
 declare const Package: {
 	'disable-oplog': object;
 };
