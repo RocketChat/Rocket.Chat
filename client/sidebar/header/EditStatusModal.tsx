@@ -49,7 +49,7 @@ const EditStatusModal = ({
 			await setUserStatus(statusType, statusText);
 			dispatchToastMessage({ type: 'success', message: t('StatusMessage_Changed_Successfully') });
 		} catch (error) {
-			if (error instanceof Error) dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 
 		onClose();
