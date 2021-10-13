@@ -1,27 +1,40 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Divider } from '@rocket.chat/fuselage';
 import React, { useRef } from 'react';
 
-import TextEditor from './index.tsx';
+import TextEditor from './index';
 
 export default {
 	title: 'components/TextEditor',
 	component: TextEditor,
 };
 
-export const deafult = () => {
+export const render = () => {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const textAreaRef = useRef();
+	const textAreaRef = useRef<{
+		value: string;
+		selectionStart: number;
+		selectionEnd: number;
+		focus: () => {};
+		setSelectionRange: (start: number, end: number) => {};
+	}>();
 
 	const action = () => {
+		if (!textAreaRef || !textAreaRef.current) {
+			return;
+		}
 		const text = textAreaRef.current.value;
 		const startPos = textAreaRef.current.selectionStart;
 		const endPos = textAreaRef.current.selectionEnd;
+		if (!text || startPos === undefined || endPos === undefined) {
+			return;
+		}
 		textAreaRef.current.value = `${text.slice(0, startPos)}*${text.slice(
 			startPos,
 			endPos,
 		)}*${text.slice(endPos)}`;
-		textAreaRef.current.focus();
-		textAreaRef.current.setSelectionRange(startPos + 1, endPos + 1);
+		textAreaRef?.current?.focus();
+		textAreaRef?.current?.setSelectionRange(startPos + 1, endPos + 1);
 	};
 
 	return (
@@ -31,7 +44,7 @@ export const deafult = () => {
 				<TextEditor.Toolbox.TextButton text='Insert_Placeholder' action={action} />
 			</TextEditor.Toolbox>
 			<Divider w='full' mbe='16px' />
-			<TextEditor.Textarea rows='10' ref={textAreaRef} />
+			<TextEditor.Textarea rows={10} ref={textAreaRef as any} />
 		</TextEditor>
 	);
 };

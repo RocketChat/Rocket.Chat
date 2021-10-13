@@ -1,13 +1,17 @@
 import { Box, Divider, PositionAnimated, Tile } from '@rocket.chat/fuselage';
 import React, { FC, memo, useCallback, useRef, useState } from 'react';
 
-import { EmojiPicker } from '../../../../../../app/emoji/client';
-import { Backdrop } from '../../../../../../client/components/Backdrop';
-import { useUserPreference } from '../../../../../../client/contexts/UserContext';
+import { EmojiPicker } from '../../../app/emoji/client';
+import { useUserPreference } from '../../contexts/UserContext';
+import { Backdrop } from '../Backdrop';
 import TextEditor from '../TextEditor';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 
-const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, value }) => {
+const MarkdownTextEditor: FC<{
+	onChange: any;
+	value: string;
+	showPlaceholderInput?: boolean;
+}> = ({ onChange, value, showPlaceholderInput = true }) => {
 	const useEmojisPreference = useUserPreference('useEmojis');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -99,11 +103,13 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 					<TextEditor.Toolbox.IconButton name='link' action={useMarkdownSyntax('[]()')} />
 					<TextEditor.Toolbox.IconButton name='emoji' action={openEmojiPicker} />
 				</Box>
-				<TextEditor.Toolbox.TextButton
-					text='Insert_Placeholder'
-					action={openPlaceholderSelect}
-					ref={ref}
-				/>
+				{showPlaceholderInput && (
+					<TextEditor.Toolbox.TextButton
+						text='Insert_Placeholder'
+						action={openPlaceholderSelect}
+						ref={ref}
+					/>
+				)}
 				<Backdrop
 					display={visible ? 'block' : 'none'}
 					onClick={(): void => {

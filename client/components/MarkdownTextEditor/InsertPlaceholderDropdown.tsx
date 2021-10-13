@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider } from '@rocket.chat/fuselage';
 import React, { Dispatch, FC, memo, RefObject, SetStateAction } from 'react';
 
-import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
 const InsertPlaceholderDropdown: FC<{
 	onChange: any;

@@ -1,7 +1,7 @@
 import { Box, Field, Flex } from '@rocket.chat/fuselage';
 import React, { ChangeEvent, FunctionComponent } from 'react';
 
-import MarkdownTextEditor from '../../../../../ee/client/omnichannel/components/CannedResponse/MarkdownTextEditor';
+import MarkdownTextEditor from '../../../../components/MarkdownTextEditor';
 import ResetSettingButton from '../ResetSettingButton';
 
 type MarkdownSettingInputProps = {
@@ -21,9 +21,13 @@ const MarkdownSettingInput: FunctionComponent<MarkdownSettingInputProps> = ({
 	onChangeValue,
 	onResetButtonClick,
 }) => {
-	const handleChange = (event: ChangeEvent<{ value?: string }>): void => {
-		console.log(event);
-		onChangeValue && event.target?.value && onChangeValue(event.target.value);
+	const handleChange = (result: ChangeEvent<{ value?: string }> | string): void => {
+		if (!onChangeValue) {
+			return;
+		}
+		typeof result === 'string'
+			? onChangeValue(result)
+			: result.target?.value && onChangeValue(result.target.value);
 	};
 
 	return (
@@ -39,7 +43,7 @@ const MarkdownSettingInput: FunctionComponent<MarkdownSettingInputProps> = ({
 				</Box>
 			</Flex.Container>
 			<Field.Row>
-				<MarkdownTextEditor value={value} onChange={handleChange} />
+				<MarkdownTextEditor value={value} onChange={handleChange} showPlaceholderInput={false} />
 			</Field.Row>
 		</>
 	);
