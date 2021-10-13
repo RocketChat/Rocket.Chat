@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
