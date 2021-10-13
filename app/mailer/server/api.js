@@ -123,6 +123,14 @@ export const sendNoWrap = ({ to, from, replyTo, subject, html, text, headers }) 
 		html = undefined;
 	}
 
+	// == Email Delay ==
+	// Seeking Alpha’s LogStasher setup measures the queue wait-time
+	// between us sending email and our mail provider actually delivering it.
+	// This is reported in Kibana’s `email-*` index, in the `delay` field (measured in seconds).
+	// The calculation is based on a custom email header `X-SA-send-ts` (time_t).
+	headers = Object(headers);
+	headers['X-SA-send-ts'] = Math.round(new Date().getTime() / 1000);
+
 	Meteor.defer(() => Email.send({ to, from, replyTo, subject, html, text, headers }));
 };
 
