@@ -180,6 +180,10 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
+		if (roles && settings.get('SAML_Custom_Default_role_attribute_sync')) {
+			updateData.roles = roles;
+		}
+
 		if (userObject.channels && channelsAttributeUpdate === true) {
 			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
