@@ -24,9 +24,3 @@ declare module 'meteor/meteor' {
 		}
 	}
 }
-
-declare module 'meteor/rocketchat:tap-i18n' {
-	namespace TAPi18n {
-		function __(s: string, options: { lng: string }): string;
-	}
-}
