@@ -73,6 +73,7 @@ export class SAML {
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
 		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const rolesSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -180,7 +181,7 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roles && settings.get('SAML_Custom_Default_role_attribute_sync')) {
+		if (roles && rolesSync) {
 			updateData.roles = roles;
 		}
 
