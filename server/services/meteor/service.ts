@@ -117,7 +117,7 @@ if (disableOplog) {
 settings.set = use(settings.set, (context, next) => {
 	next(...context);
 	const [record] = context;
-	updateValue(record._id, record.value);
+	updateValue(record._id, record);
 });
 
 export class MeteorService extends ServiceClass implements IMeteor {
