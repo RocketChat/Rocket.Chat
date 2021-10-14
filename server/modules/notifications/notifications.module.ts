@@ -3,11 +3,13 @@ import { Authorization } from '../../sdk';
 import { RoomsRaw } from '../../../app/models/server/raw/Rooms';
 import { SubscriptionsRaw } from '../../../app/models/server/raw/Subscriptions';
 import { ISubscription } from '../../../definition/ISubscription';
+import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { UsersRaw } from '../../../app/models/server/raw/Users';
 import { SettingsRaw } from '../../../app/models/server/raw/Settings';
 import { IOmnichannelRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { SystemLogger } from '../../lib/logger/system';
+
 
 interface IModelsParam {
 	Rooms: RoomsRaw;
@@ -51,6 +53,9 @@ export class NotificationsModule {
 
 	public readonly streamLocal: IStreamer;
 
+	public readonly streamPresence: IStreamer;
+
+
 	constructor(
 		private Streamer: IStreamerConstructor,
 	) {
@@ -68,7 +73,7 @@ export class NotificationsModule {
 		this.streamLivechatQueueData = new this.Streamer('livechat-inquiry-queue-observer');
 		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
-
+		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
@@ -160,6 +165,7 @@ export class NotificationsModule {
 
 		this.streamLogged.allowWrite('none');
 		this.streamLogged.allowRead('logged');
+
 
 		this.streamRoom.allowRead(async function(eventName, extraData): Promise<boolean> {
 			const [rid] = eventName.split('/');
@@ -406,6 +412,9 @@ export class NotificationsModule {
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
 		this.streamLocal.allowWrite('none');
+
+		this.streamPresence.allowRead('logged');
+		this.streamPresence.allowWrite('none');
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {
@@ -438,6 +447,14 @@ export class NotificationsModule {
 
 	notifyUserInThisInstance(userId: string, eventName: string, ...args: any[]): void {
 		return this.streamUser.emitWithoutBroadcast(`${ userId }/${ eventName }`, ...args);
+	}
+
+	sendPresence(uid: string, ...args: any[]): void {
+		// if (this.debug === true) {
+		// 	console.log('notifyUserAndBroadcast', [userId, eventName, ...args]);
+		// }
+		emit(uid, args as any);
+		return this.streamPresence.emitWithoutBroadcast(uid, ...args);
 	}
 
 	progressUpdated(progress: {rate: number}): void {
