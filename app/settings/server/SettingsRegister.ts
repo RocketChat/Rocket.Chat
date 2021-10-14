@@ -25,6 +25,10 @@ if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
 	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
 
+/*
+* @deprecated
+* please do not use event emitter to mutate values
+*/
 export const SettingsEvents = new Emitter<{
 	'store-setting-value': [ISetting, { value: SettingValue }];
 	'fetch-settings': ISetting[];
