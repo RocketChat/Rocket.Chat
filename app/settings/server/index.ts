@@ -1,4 +1,5 @@
-import { settings, SettingsEvents, settingsRegister } from './functions/settings';
+import { settings, settingsRegister } from './functions/settings';
+import { SettingsEvents } from './SettingsRegister';
 
 export {
 	settings,
