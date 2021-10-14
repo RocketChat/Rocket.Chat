@@ -792,7 +792,7 @@ describe('[Users]', function() {
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(403)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					})
