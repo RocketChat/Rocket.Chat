@@ -3,7 +3,7 @@ import React from 'react';
 import { renderEmoji } from '../lib/utils/renderEmoji';
 
 function Emoji({ emojiHandle, className = undefined }) {
-	const markup = { __html: `${renderEmoji(emojiHandle)}` };
+	const markup = { __html: `${renderEmoji(emojiHandle) || emojiHandle}` };
 	return <span className={className} dangerouslySetInnerHTML={markup} />;
 }
 
