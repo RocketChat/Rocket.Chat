@@ -143,13 +143,13 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		}
 	}, [realname, requireName, t, user.name]);
 
-	const statusTextError = useMemo(
-		() =>
-			!statusText || statusText.length <= USER_STATUS_TEXT_MAX_LENGTH || statusText.length === 0
-				? undefined
-				: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
-		[statusText, t],
-	);
+	const statusTextError = useMemo(() => {
+		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
+			return t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH);
+		}
+
+		return undefined;
+	}, [statusText, t]);
 	const {
 		emails: [{ verified = false } = { verified: false }],
 	} = user;

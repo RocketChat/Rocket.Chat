@@ -1,6 +1,14 @@
-import { Field, TextInput, Modal, Icon, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import {
+	Field,
+	TextInput,
+	FieldGroup,
+	Modal,
+	Icon,
+	ButtonGroup,
+	Button,
+} from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useState, ChangeEvent, useEffect, useCallback } from 'react';
+import React, { ReactElement, useState, ChangeEvent, useCallback } from 'react';
 
 import { IUser } from '../../../definition/IUser';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
@@ -30,17 +38,15 @@ const EditStatusModal = ({
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
 
-	useEffect(() => {
-		setStatusTextError(
-			!statusText || statusText.length <= USER_STATUS_TEXT_MAX_LENGTH || statusText.length === 0
-				? undefined
-				: t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH),
-		);
-	}, [statusText, t]);
+	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void => {
+		setStatusText(e.currentTarget.value);
 
-	const handleStatusText = useMutableCallback((e: ChangeEvent<HTMLInputElement>): void =>
-		setStatusText(e.currentTarget.value),
-	);
+		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
+			return setStatusTextError(t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH));
+		}
+
+		return setStatusTextError(undefined);
+	});
 
 	const handleStatusType = (type: IUser['status']): void => setStatusType(type);
 
@@ -63,30 +69,32 @@ const EditStatusModal = ({
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p1'>
-				<Field>
-					<Field.Label>{t('StatusMessage')}</Field.Label>
-					<Field.Row>
-						<TextInput
-							error={statusTextError}
-							disabled={!allowUserStatusMessageChange}
-							flexGrow={1}
-							value={statusText}
-							onChange={handleStatusText}
-							placeholder={t('StatusMessage_Placeholder')}
-							addon={
-								<UserStatusMenu
-									margin='neg-x2'
-									onChange={handleStatusType}
-									initialStatus={statusType}
-								/>
-							}
-						/>
-					</Field.Row>
-					{!allowUserStatusMessageChange && (
-						<Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>
-					)}
-					<Field.Error>{statusTextError}</Field.Error>
-				</Field>
+				<FieldGroup>
+					<Field>
+						<Field.Label>{t('StatusMessage')}</Field.Label>
+						<Field.Row>
+							<TextInput
+								error={statusTextError}
+								disabled={!allowUserStatusMessageChange}
+								flexGrow={1}
+								value={statusText}
+								onChange={handleStatusText}
+								placeholder={t('StatusMessage_Placeholder')}
+								addon={
+									<UserStatusMenu
+										margin='neg-x2'
+										onChange={handleStatusType}
+										initialStatus={statusType}
+									/>
+								}
+							/>
+						</Field.Row>
+						{!allowUserStatusMessageChange && (
+							<Field.Hint>{t('StatusMessage_Change_Disabled')}</Field.Hint>
+						)}
+						<Field.Error>{statusTextError}</Field.Error>
+					</Field>
+				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
