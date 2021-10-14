@@ -66133,6 +66133,59 @@
           ]
         }
       ]
+    },
+    "4.0.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23377",
+          "title": "[FIX] Attachment buttons overlap in mobile view",
+          "userLogin": "Aman-Maheshwari",
+          "milestone": "4.0.2",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23393",
+          "title": "[FIX] user/agent upload not working via Apps Engine after 3.16.0",
+          "userLogin": "murtaza98",
+          "description": "Fixes #22974",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23404",
+          "title": "[FIX][ENTERPRISE] Omnichannel agent is not leaving the room when a forwarded chat is queued",
+          "userLogin": "murtaza98",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23396",
+          "title": "[FIX] Prevent starting Omni-Queue if Omnichannel is disabled",
+          "userLogin": "murtaza98",
+          "description": "Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
     }
   }
 }
