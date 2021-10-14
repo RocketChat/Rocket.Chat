@@ -469,7 +469,6 @@ export class SAMLUtils {
 			}
 		}
 
-
 		this.events.emit('mapUser', { profile, userObject });
 
 		return userObject;

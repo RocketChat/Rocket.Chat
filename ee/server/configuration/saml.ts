@@ -1,17 +1,17 @@
-import { onLicense } from '../../app/license/server';
+import { onLicense, isEnterprise } from '../../app/license/server';
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
 import { Users } from '../../../app/models/server';
-
+import { callbacks } from '../../../app/callbacks/server';
 
 onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser}) => {
 		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
 		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
-		if (!roleAttributeSync) {
+		if (!roleAttributeSync || !isEnterprise()) {
 			return;
 		}
 
@@ -23,6 +23,17 @@ onLicense('saml-enterprise', () => {
 
 			userObject.roles = SAMLUtils.ensureArray<string>(value);
 		}
+	});
+
+	SAMLUtils.events.on('syncRoles', (userId: string, roles: string[]): void => {
+		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
+
+		if (!roleAttributeSync || !isEnterprise()) {
+			return;
+		}
+
+		callbacks.run('validateUserRoles', { _id: userId, roles });
+		Users.updateRolesById(userId, roles);
 	});
 
 	SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, any>): void => {

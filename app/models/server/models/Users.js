@@ -1611,6 +1611,14 @@ Find users to send a message by email if:
 			},
 		});
 	}
+
+	updateRolesById(userId, roles) {
+		return this.update(userId, {
+			$set: {
+				roles,
+			},
+		});
+	}
 }
 
 export default new Users(Meteor.users, true);
