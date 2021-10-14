@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { SettingsVersion4 } from '../../../../../app/settings/server';
+import { settings } from '../../../../../app/settings/server';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
 
@@ -27,7 +27,7 @@ const handleAfterOnHold = async (room: any = {}): Promise<any> => {
 	await AutoCloseOnHoldScheduler.scheduleRoom(room._id, autoCloseOnHoldChatTimeout, customCloseMessage);
 };
 
-SettingsVersion4.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
+settings.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
 	autoCloseOnHoldChatTimeout = value as number;
 	if (!value || value <= 0) {
 		callbacks.remove('livechat:afterOnHold', 'livechat-auto-close-on-hold');
@@ -35,6 +35,6 @@ SettingsVersion4.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
 	callbacks.add('livechat:afterOnHold', handleAfterOnHold, callbacks.priority.HIGH, 'livechat-auto-close-on-hold');
 });
 
-SettingsVersion4.watch('Livechat_auto_close_on_hold_chats_custom_message', (value) => {
+settings.watch('Livechat_auto_close_on_hold_chats_custom_message', (value) => {
 	customCloseMessage = value as string || DEFAULT_CLOSED_MESSAGE;
 });

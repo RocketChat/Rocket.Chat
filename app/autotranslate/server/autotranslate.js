@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings, SettingsVersion4 } from '../../settings';
+import { settings } from '../../settings/server';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
@@ -338,12 +338,12 @@ Meteor.startup(() => {
 	 *  So the registered provider will be invoked when a message is saved.
 	 *  All the other inactive service provider must be deactivated.
 	 */
-	SettingsVersion4.watch('AutoTranslate_ServiceProvider', (providerName) => {
+	settings.watch('AutoTranslate_ServiceProvider', (providerName) => {
 		TranslationProviderRegistry.setCurrentProvider(providerName);
 	});
 
 	// Get Auto Translate Active flag
-	SettingsVersion4.watch('AutoTranslate_Enabled', (value) => {
+	settings.watch('AutoTranslate_Enabled', (value) => {
 		TranslationProviderRegistry.setEnable(value);
 	});
 });

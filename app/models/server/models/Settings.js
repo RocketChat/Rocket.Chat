@@ -247,6 +247,12 @@ export class Settings extends Base {
 			}
 		}
 	}
+
+
+	insert(...args) {
+		console.log(...args);
+		return super.insert(...args);
+	}
 }
 
 export default new Settings('settings', true);

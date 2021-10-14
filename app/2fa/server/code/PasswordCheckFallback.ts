@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { IUser } from '../../../../definition/IUser';
 
@@ -13,7 +13,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 		}
 		// TODO: Remove this setting for version 4.0 forcing the
 		// password fallback for who has password set.
-		if (SettingsVersion4.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+		if (settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 			return user.services?.password?.bcrypt != null;
 		}
 		return false;

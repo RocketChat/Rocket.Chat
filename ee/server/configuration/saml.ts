@@ -3,6 +3,8 @@ import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definit
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
+import { Users } from '../../../app/models/server';
+
 
 onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser}) => {
@@ -37,6 +39,25 @@ onLicense('saml-enterprise', () => {
 			metadataCertificateTemplate: settings.get(`${ service }_MetadataCertificate_template`),
 			metadataTemplate: settings.get(`${ service }_Metadata_template`),
 		});
+	});
+
+	SAMLUtils.events.on('updateCustomFields', (loginResult: Record<string, any>, updatedUser: {userId: string; token: string}) => {
+		const userDataCustomFieldMap = settings.get('SAML_Custom_Default_user_data_custom_fieldmap') as string;
+		const customMap: Record<string, any> = JSON.parse(userDataCustomFieldMap);
+
+		const customFieldsList: Record<string, any> = {};
+
+		for (const spCustomFieldName in customMap) {
+			if (!customMap.hasOwnProperty(spCustomFieldName)) {
+				continue;
+			}
+
+			const customAttribute = customMap[spCustomFieldName];
+			const value = SAMLUtils.getProfileValue(loginResult.profile, { fieldName: spCustomFieldName });
+			customFieldsList[customAttribute] = value;
+		}
+
+		Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
 	});
 });
 

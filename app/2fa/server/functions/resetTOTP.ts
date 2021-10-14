@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import { Users } from '../../../models/server/raw/index';
 import { IUser } from '../../../../definition/IUser';
@@ -12,7 +12,7 @@ const sendResetNotification = async function(uid: string): Promise<void> {
 		throw new Meteor.Error('invalid-user');
 	}
 
-	const language = user.language || SettingsVersion4.get('Language') || 'en';
+	const language = user.language || settings.get('Language') || 'en';
 	const addresses = user.emails?.filter(({ verified }: { verified: boolean}) => verified).map((e) => e.address);
 	if (!addresses?.length) {
 		return;
@@ -29,7 +29,7 @@ const sendResetNotification = async function(uid: string): Promise<void> {
 		<p>${ t('TOTP_Reset_Other_Key_Warning') }</p>
 	`;
 
-	const from = SettingsVersion4.get('From_Email');
+	const from = settings.get('From_Email');
 	const subject = t('TOTP_reset_email');
 
 	for (const address of addresses) {

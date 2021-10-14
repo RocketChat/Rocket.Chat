@@ -12,7 +12,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import Subscriptions from '../../../models/server/models/Subscriptions';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
@@ -436,7 +436,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 		if (!rid) {
 			throw new Meteor.Error('The required "rid" query param is missing.');
 		}
-		if (!SettingsVersion4.get('Threads_enabled')) {
+		if (!settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
@@ -479,7 +479,7 @@ API.v1.addRoute('chat.syncThreadsList', { authRequired: true }, {
 		const { query, fields, sort } = this.parseJsonQuery();
 		const { updatedSince } = this.queryParams;
 		let updatedSinceDate;
-		if (!SettingsVersion4.get('Threads_enabled')) {
+		if (!settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		if (!rid) {
@@ -514,7 +514,7 @@ API.v1.addRoute('chat.getThreadMessages', { authRequired: true }, {
 		const { query, fields, sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
 
-		if (!SettingsVersion4.get('Threads_enabled')) {
+		if (!settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		if (!tmid) {
@@ -556,7 +556,7 @@ API.v1.addRoute('chat.syncThreadMessages', { authRequired: true }, {
 		const { query, fields, sort } = this.parseJsonQuery();
 		const { updatedSince } = this.queryParams;
 		let updatedSinceDate;
-		if (!SettingsVersion4.get('Threads_enabled')) {
+		if (!settings.get('Threads_enabled')) {
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
 		}
 		if (!tmid) {

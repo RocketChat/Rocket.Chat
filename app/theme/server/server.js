@@ -4,9 +4,10 @@ import _ from 'underscore';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import { settings, SettingsVersion4 } from '../../settings';
+import { settings, settingsRegister } from '../../settings/server';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
+import { Settings } from '../../models/server';
 
 const logger = new Logger('rocketchat:theme');
 
@@ -18,32 +19,29 @@ export const theme = new class {
 		this.variables = {};
 		this.packageCallbacks = [];
 		this.customCSS = '';
-		settings.add('css', '');
-		settings.addGroup('Layout');
-		settings.onload('css', Meteor.bindEnvironment((key, value, initialLoad) => {
-			if (!initialLoad) {
-				Meteor.startup(function() {
-					process.emit('message', {
-						refresh: 'client',
-					});
+		settingsRegister.add('css', '');
+		settingsRegister.addGroup('Layout');
+		settings.change('css', () => {
+			Meteor.startup(function() {
+				process.emit('message', {
+					refresh: 'client',
 				});
-			}
-		}));
-		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
-		Meteor.startup(() => {
-			settings.onAfterInitialLoad(() => {
-				settings.get(/^theme-./, Meteor.bindEnvironment((key, value) => {
-					if (key === 'theme-custom-css' && value != null) {
-						this.customCSS = value;
-					} else {
-						const name = key.replace(/^theme-[a-z]+-/, '');
-						if (this.variables[name] != null) {
-							this.variables[name].value = value;
-						}
-					}
+			});
+		});
 
-					this.compileDelayed();
-				}));
+		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
+		settings.onReady(() => {
+			settings.watchByRegex(/^theme-./, (key, value) => {
+				if (key === 'theme-custom-css' && value != null) {
+					this.customCSS = value;
+				} else {
+					const name = key.replace(/^theme-[a-z]+-/, '');
+					if (this.variables[name] != null) {
+						this.variables[name].value = value;
+					}
+				}
+
+				this.compileDelayed();
 			});
 		});
 	}
@@ -67,7 +65,7 @@ export const theme = new class {
 			if (err != null) {
 				return logger.error(err);
 			}
-			settings.updateById('css', data.css);
+			Settings.updateValueById('css', data.css);
 
 			return Meteor.startup(function() {
 				return Meteor.setTimeout(function() {
@@ -89,7 +87,7 @@ export const theme = new class {
 			section,
 		};
 
-		return settings.add(`theme-color-${ name }`, value, config);
+		return settingsRegister.add(`theme-color-${ name }`, value, config);
 	}
 
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
@@ -108,7 +106,7 @@ export const theme = new class {
 				allowedTypes,
 				property,
 			};
-			return settings.add(`theme-${ type }-${ name }`, value, config);
+			return settingsRegister.add(`theme-${ type }-${ name }`, value, config);
 		}
 	}
 
@@ -130,7 +128,7 @@ export const theme = new class {
 }();
 
 Meteor.startup(() => {
-	SettingsVersion4.watch('css', (value = '') => {
+	settings.watch('css', (value = '') => {
 		currentHash = crypto.createHash('sha1').update(value).digest('hex');
 		currentSize = value.length;
 		addStyle('css-theme', value);

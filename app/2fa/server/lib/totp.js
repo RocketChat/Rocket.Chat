@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import speakeasy from 'speakeasy';
 
 import { Users } from '../../../models';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 
 export const TOTP = {
 	generateSecret() {
@@ -34,7 +34,7 @@ export const TOTP = {
 			return false;
 		}
 
-		const maxDelta = SettingsVersion4.get('Accounts_TwoFactorAuthentication_MaxDelta');
+		const maxDelta = settings.get('Accounts_TwoFactorAuthentication_MaxDelta');
 		if (maxDelta) {
 			const verifiedDelta = speakeasy.totp.verifyDelta({
 				secret,

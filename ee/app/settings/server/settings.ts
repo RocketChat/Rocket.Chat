@@ -4,14 +4,15 @@ import { SettingsEvents, settings } from '../../../../app/settings/server/functi
 import { isEnterprise, hasLicense, onValidateLicenses } from '../../license/server/license';
 import SettingsModel from '../../../../app/models/server/models/Settings';
 import { ISetting, SettingValue } from '../../../../definition/ISetting';
+import { use } from '../../../../app/settings/server/Middleware';
 
-export function changeSettingValue(record: ISetting): undefined | { value: SettingValue } {
+export function changeSettingValue(record: ISetting): SettingValue {
 	if (!record.enterprise) {
 		return;
 	}
 
 	if (!isEnterprise()) {
-		return { value: record.invalidValue };
+		return record.invalidValue;
 	}
 
 	if (!record.modules?.length) {
@@ -20,31 +21,36 @@ export function changeSettingValue(record: ISetting): undefined | { value: Setti
 
 	for (const moduleName of record.modules) {
 		if (!hasLicense(moduleName)) {
-			return { value: record.invalidValue };
+			return record.invalidValue;
 		}
 	}
 }
 
-SettingsEvents.on('store-setting-value', ([record, newRecord]) => {
-	const changedValue = changeSettingValue(record);
-	if (changedValue) {
-		newRecord.value = changedValue.value;
+settings.set = use(settings.set, (context, next) => {
+	const [record] = context;
+
+	if (!record.enterprise) {
+		return next(...context);
 	}
+	const value = changeSettingValue(record);
+
+	return next({ ...record, value });
 });
 
 SettingsEvents.on('fetch-settings', (settings: Array<ISetting>): void => {
 	for (const setting of settings) {
 		const changedValue = changeSettingValue(setting);
-		if (changedValue) {
-			setting.value = changedValue.value;
+		if (changedValue === undefined) {
+			continue;
 		}
+		setting.value = changedValue;
 	}
 });
 
 function updateSettings(): void {
 	const enterpriseSettings = SettingsModel.findEnterpriseSettings();
 
-	enterpriseSettings.forEach((record: ISetting) => settings.storeSettingValue(record, false));
+	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
 
 

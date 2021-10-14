@@ -481,15 +481,15 @@ API.v1.addRoute('groups.listAll', { authRequired: true }, {
 		const { sort, fields, query } = this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'p' });
 
-		let rooms = Rooms.find(ourQuery).fetch();
-		const totalCount = rooms.length;
-
-		rooms = Rooms.processQueryOptionsOnResult(rooms, {
+		const cursor = Rooms.find(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
 		});
+
+		const totalCount = cursor.count();
+		const rooms = cursor.fetch();
 
 		return API.v1.success({
 			groups: rooms.map((room) => this.composeRoomWithLastMessage(room, this.userId)),

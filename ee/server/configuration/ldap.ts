@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { LDAPEE } from '../sdk';
-import { settings, SettingsVersion4 } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server';
+import { LDAPConnection } from '../../../server/lib/ldap/Connection';
 import { logger } from '../../../server/lib/ldap/Logger';
 import { cronJobs } from '../../../app/utils/server/lib/cron/Cronjobs';
 import { LDAPEEManager } from '../lib/ldap/Manager';
 import { callbacks } from '../../../app/callbacks/server';
 import type { IImportUser } from '../../../definition/IImportUser';
 import type { ILDAPEntry } from '../../../definition/ldap/ILDAPEntry';
+import type { IUser } from '../../../definition/IUser';
 import { onLicense } from '../../app/license/server';
 import { addSettings } from '../settings/ldap';
 
@@ -18,8 +19,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	// Configure background sync cronjob
 	function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => {}): () => void {
 		let lastSchedule: string;
-
-		return _.debounce(Meteor.bindEnvironment(function addCronJobDebounced() {
+		return function addCronJobDebounced(): void {
 			if (settings.get('LDAP_Enable') !== true || settings.get(enableSetting) !== true) {
 				if (cronJobs.nextScheduledAtDate(jobName)) {
 					logger.info({ msg: 'Disabling LDAP Background Sync', jobName });
@@ -38,7 +38,7 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 				logger.info({ msg: 'Enabling LDAP Background Sync', jobName });
 				cronJobs.add(jobName, schedule, () => cb(), 'text');
 			}
-		}), 500);
+		};
 	}
 
 	const addCronJob = configureBackgroundSync('LDAP_Sync', 'LDAP_Background_Sync', 'LDAP_Background_Sync_Interval', () => LDAPEE.sync());
@@ -46,17 +46,17 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 	const addLogoutCronJob = configureBackgroundSync('LDAP_AutoLogout', 'LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval', () => LDAPEE.syncLogout());
 
 
-	SettingsVersion4.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
-	SettingsVersion4.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
-	SettingsVersion4.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
+	settings.watchMultiple(['LDAP_Background_Sync', 'LDAP_Background_Sync_Interval'], addCronJob);
+	settings.watchMultiple(['LDAP_Background_Sync_Avatars', 'LDAP_Background_Sync_Avatars_Interval'], addAvatarCronJob);
+	settings.watchMultiple(['LDAP_Sync_AutoLogout_Enabled', 'LDAP_Sync_AutoLogout_Interval'], addLogoutCronJob);
 
-	SettingsVersion4.watch('LDAP_Enable', () => {
+	settings.watch('LDAP_Enable', () => {
 		addCronJob();
 		addAvatarCronJob();
 		addLogoutCronJob();
 	});
 
-	SettingsVersion4.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
+	settings.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 		try {
 			LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
 		} catch (error) {
@@ -68,4 +68,8 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 		LDAPEEManager.copyCustomFields(ldapUser, userData);
 		LDAPEEManager.copyActiveState(ldapUser, userData);
 	}, callbacks.priority.MEDIUM, 'mapLDAPCustomFields');
+
+	callbacks.add('onLDAPLogin', ({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap: LDAPConnection) => {
+		Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
+	}, callbacks.priority.MEDIUM, 'advancedLDAPSync');
 }));

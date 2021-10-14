@@ -7,7 +7,7 @@ import { findAdminRooms, findChannelAndPrivateAutocomplete, findAdminRoom, findR
 import { sendFile, sendViaEmail } from '../../../../server/lib/channelExport';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Media } from '../../../../server/sdk';
-import { SettingsVersion4 } from '../../../settings/server/index';
+import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
@@ -87,7 +87,7 @@ API.v1.addRoute('rooms.upload/:rid', { authRequired: true }, {
 			userId: this.userId,
 		};
 
-		const stripExif = SettingsVersion4.get('Message_Attachments_Strip_Exif');
+		const stripExif = settings.get('Message_Attachments_Strip_Exif');
 		const fileStore = FileUpload.getStore('Uploads');
 		if (stripExif) {
 			// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)

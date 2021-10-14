@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { SettingsVersion4 } from '../../settings/server';
+import { settings } from '../../settings/server';
 
 export const SMS = {
 	enabled: false,
@@ -23,10 +23,10 @@ export const SMS = {
 	},
 };
 
-SettingsVersion4.watch('SMS_Enabled', function(value) {
+settings.watch('SMS_Enabled', function(value) {
 	SMS.enabled = value;
 });
 
-SettingsVersion4.watch('SMS_Default_Omnichannel_Department', function(value) {
+settings.watch('SMS_Default_Omnichannel_Department', function(value) {
 	SMS.department = value;
 });

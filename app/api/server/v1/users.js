@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
-import { SettingsVersion4 } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
@@ -98,7 +98,7 @@ API.v1.addRoute('users.deleteOwnAccount', { authRequired: true }, {
 		if (!password) {
 			return API.v1.failure('Body parameter "password" is required.');
 		}
-		if (!SettingsVersion4.get('Accounts_AllowDeleteOwnAccount')) {
+		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
@@ -334,7 +334,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			username: Match.Maybe(String),
 		}));
 
-		if (!SettingsVersion4.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
 				method: 'users.setAvatar',
 			});
@@ -415,7 +415,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 			message: Match.Maybe(String),
 		}));
 
-		if (!SettingsVersion4.get('Accounts_AllowUserStatusMessageChange')) {
+		if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
 			throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
 				method: 'users.setStatus',
 			});
@@ -439,7 +439,7 @@ API.v1.addRoute('users.setStatus', { authRequired: true }, {
 				if (validStatus.includes(this.bodyParams.status)) {
 					const { status } = this.bodyParams;
 
-					if (status === 'offline' && !SettingsVersion4.get('Accounts_AllowInvisibleStatusOption')) {
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 							method: 'users.setStatus',
 						});
@@ -857,7 +857,7 @@ API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: tr
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
 
-		if (!SettingsVersion4.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
@@ -887,7 +887,7 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
 
-		if (!SettingsVersion4.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 

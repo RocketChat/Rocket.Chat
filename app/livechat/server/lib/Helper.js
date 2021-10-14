@@ -257,8 +257,12 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
-	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
+	if (!onlineAgents) {
+		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+		return;
+	}
 
+	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	onlineAgents.forEach((agent) => {

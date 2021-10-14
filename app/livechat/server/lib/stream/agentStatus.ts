@@ -1,26 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../Livechat';
-import { SettingsVersion4 } from '../../../../settings/server';
+import { settings } from '../../../../settings/server';
 
 export let monitorAgents = false;
 let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-SettingsVersion4.watch('Livechat_agent_leave_action_timeout', (value) => {
+settings.watch('Livechat_agent_leave_action_timeout', (value) => {
 	if (typeof value !== 'number') {
 		return;
 	}
 	actionTimeout = value * 1000;
 });
 
-SettingsVersion4.watch('Livechat_agent_leave_action', (value) => {
+settings.watch('Livechat_agent_leave_action', (value) => {
 	monitorAgents = value !== 'none';
 	action = value as string;
 });
 
-SettingsVersion4.watch('Livechat_agent_leave_comment', (value) => {
+settings.watch('Livechat_agent_leave_comment', (value) => {
 	if (typeof value !== 'string') {
 		return;
 	}

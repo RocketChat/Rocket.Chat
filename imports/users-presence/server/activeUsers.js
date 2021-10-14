@@ -1,6 +1,6 @@
 import { UserPresenceEvents } from 'meteor/konecty:user-presence';
 
-import { SettingsVersion4 } from '../../../app/settings/server';
+import { settings } from '../../../app/settings/server';
 import { UserStatus } from '../../../definition/UserStatus';
 import { api } from '../../../server/sdk/api';
 
@@ -26,7 +26,7 @@ export const setUserStatus = (user, status/* , statusConnection*/) => {
 };
 
 let TroubleshootDisablePresenceBroadcast;
-SettingsVersion4.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
+settings.watch('Troubleshoot_Disable_Presence_Broadcast', (value) => {
 	if (TroubleshootDisablePresenceBroadcast === value) { return; }
 	TroubleshootDisablePresenceBroadcast = value;
 

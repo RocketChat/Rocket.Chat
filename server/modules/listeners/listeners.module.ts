@@ -183,8 +183,8 @@ export class ListenersModule {
 
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (result && !(result instanceof Error) && result.hasOwnProperty('value')) {
-					setting.value = result.value;
+				if (result !== undefined && !(result instanceof Error)) {
+					setting.value = result;
 				}
 			}
 

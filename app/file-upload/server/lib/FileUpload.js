@@ -12,7 +12,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
 import Avatars from '../../../models/server/models/Avatars';
@@ -33,7 +33,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-SettingsVersion4.watch('FileUpload_MaxFileSize', function(value) {
+settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -69,8 +69,8 @@ export const FileUpload = {
 		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
 
 		const room = Rooms.findOneById(file.rid);
-		const directMessageAllowed = SettingsVersion4.get('FileUpload_Enabled_Direct');
-		const fileUploadAllowed = SettingsVersion4.get('FileUpload_Enabled');
+		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
+		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (user?.type !== 'app' && canAccessRoom(room, user, file) !== true) {
 			return false;
 		}
@@ -144,7 +144,7 @@ export const FileUpload = {
 				onCheck: FileUpload.validateFileUpload,
 			}),
 			getPath(file) {
-				return `${ SettingsVersion4.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
+				return `${ settings.get('uniqueID') }/uploads/${ file.rid }/${ file.userId }/${ file._id }`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -167,7 +167,7 @@ export const FileUpload = {
 			}),
 			getPath(file) {
 				const avatarFile = file.rid ? `room-${ file.rid }` : file.userId;
-				return `${ SettingsVersion4.get('uniqueID') }/avatars/${ avatarFile }`;
+				return `${ settings.get('uniqueID') }/avatars/${ avatarFile }`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
 			onFinishUpload: FileUpload.avatarsOnFinishUpload,
@@ -178,7 +178,7 @@ export const FileUpload = {
 		return {
 			collection: UserDataFiles.model,
 			getPath(file) {
-				return `${ SettingsVersion4.get('uniqueID') }/uploads/userData/${ file.userId }`;
+				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
@@ -194,7 +194,7 @@ export const FileUpload = {
 	},
 
 	avatarsOnValidate(file) {
-		if (SettingsVersion4.get('Accounts_AvatarResize') !== true) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
@@ -208,7 +208,7 @@ export const FileUpload = {
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
-		const height = SettingsVersion4.get('Accounts_AvatarSize');
+		const height = settings.get('Accounts_AvatarSize');
 		const width = height;
 		const future = new Future();
 
@@ -268,12 +268,12 @@ export const FileUpload = {
 	},
 
 	createImageThumbnail(file) {
-		if (!SettingsVersion4.get('Message_Attachments_Thumbnails_Enabled')) {
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
 
-		const width = SettingsVersion4.get('Message_Attachments_Thumbnails_Width');
-		const height = SettingsVersion4.get('Message_Attachments_Thumbnails_Height');
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
 		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
 			return;
@@ -333,7 +333,7 @@ export const FileUpload = {
 			};
 
 			const reorientation = (cb) => {
-				if (!rotated || SettingsVersion4.get('FileUpload_RotateImages') !== true) {
+				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
 					return cb();
 				}
 				s.rotate()
@@ -387,7 +387,7 @@ export const FileUpload = {
 	},
 
 	requestCanAccessFiles({ headers = {}, query = {} }) {
-		if (!SettingsVersion4.get('FileUpload_ProtectFiles')) {
+		if (!settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
 
@@ -404,7 +404,7 @@ export const FileUpload = {
 		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
 		const isAuthorizedByHeaders = headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
 		const isAuthorizedByRoom = rc_room_type && roomTypes.getConfig(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		const isAuthorizedByJWT = SettingsVersion4.get('FileUpload_Enable_json_web_token_for_files') && token && isValidJWT(token, SettingsVersion4.get('FileUpload_json_web_token_secret_for_files'));
+		const isAuthorizedByJWT = settings.get('FileUpload_Enable_json_web_token_for_files') && token && isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
 		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
 	},
 	addExtensionTo(file) {
@@ -424,7 +424,7 @@ export const FileUpload = {
 	},
 
 	getStore(modelName) {
-		const storageType = SettingsVersion4.get('FileUpload_Storage_Type');
+		const storageType = settings.get('FileUpload_Storage_Type');
 		const handlerName = `${ storageType }:${ modelName }`;
 
 		return this.getStoreByName(handlerName);
@@ -493,14 +493,14 @@ export const FileUpload = {
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }) {
-		if (!SettingsVersion4.get('FileUpload_ProtectFiles') || !SettingsVersion4.get('FileUpload_Enable_json_web_token_for_files')) {
+		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
 			return;
 		}
 		return generateJWT({
 			rid,
 			userId,
 			fileId,
-		}, SettingsVersion4.get('FileUpload_json_web_token_secret_for_files'));
+		}, settings.get('FileUpload_json_web_token_secret_for_files'));
 	},
 
 	removeFilesByRoomId(rid) {

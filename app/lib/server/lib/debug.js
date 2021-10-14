@@ -3,7 +3,7 @@ import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 import _ from 'underscore';
 
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
@@ -12,13 +12,13 @@ const logger = new Logger('Meteor');
 
 let Log_Trace_Methods;
 let Log_Trace_Subscriptions;
-SettingsVersion4.watch('Log_Trace_Methods', (value) => { Log_Trace_Methods = value; });
-SettingsVersion4.watch('Log_Trace_Subscriptions', (value) => { Log_Trace_Subscriptions = value; });
+settings.watch('Log_Trace_Methods', (value) => { Log_Trace_Methods = value; });
+settings.watch('Log_Trace_Subscriptions', (value) => { Log_Trace_Subscriptions = value; });
 
 let Log_Trace_Methods_Filter;
 let Log_Trace_Subscriptions_Filter;
-SettingsVersion4.watch('Log_Trace_Methods_Filter', (value) => { Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined; });
-SettingsVersion4.watch('Log_Trace_Subscriptions_Filter', (value) => { Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined; });
+settings.watch('Log_Trace_Methods_Filter', (value) => { Log_Trace_Methods_Filter = value ? new RegExp(value) : undefined; });
+settings.watch('Log_Trace_Subscriptions_Filter', (value) => { Log_Trace_Subscriptions_Filter = value ? new RegExp(value) : undefined; });
 
 const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	if (!enable) {

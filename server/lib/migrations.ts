@@ -133,7 +133,7 @@ function migrate(direction: 'up' | 'down', migration: IMigration): void {
 		throw new Error(`Cannot migrate ${ direction } on version ${ migration.version }`);
 	}
 
-	log.info(`Running ${ direction }() on version ${ migration.version }${ migration.name ? `(${ migration.name })` : '' }`);
+	log.startup(`Running ${ direction }() on version ${ migration.version }${ migration.name ? `(${ migration.name })` : '' }`);
 
 	migration[direction]?.(migration);
 }
@@ -150,7 +150,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	const orderedMigrations = getOrderedMigrations();
 
 	if (orderedMigrations.length === 0) {
-		log.info('No migrations to run');
+		log.startup('No migrations to run');
 		return true;
 	}
 
@@ -199,7 +199,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	}
 
 	if (subcommands?.includes('rerun')) {
-		log.info(`Rerunning version ${ targetVersion }`);
+		log.startup(`Rerunning version ${ targetVersion }`);
 		const migration = orderedMigrations.find((migration) => migration.version === targetVersion);
 
 		if (!migration) {
@@ -213,13 +213,13 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 			log.error({ err: e });
 			process.exit(1);
 		}
-		log.info('Finished migrating.');
+		log.startup('Finished migrating.');
 		unlock(currentVersion);
 		return true;
 	}
 
 	if (currentVersion === version) {
-		log.info(`Not migrating, already at version ${ version }`);
+		log.startup(`Not migrating, already at version ${ version }`);
 		unlock(currentVersion);
 		return true;
 	}
@@ -234,7 +234,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		throw new Error(`Can't find migration version ${ version }`);
 	}
 
-	log.info(`Migrating from version ${ orderedMigrations[startIdx].version } -> ${ orderedMigrations[endIdx].version }`);
+	log.startup(`Migrating from version ${ orderedMigrations[startIdx].version } -> ${ orderedMigrations[endIdx].version }`);
 
 	try {
 		if (currentVersion < version) {
@@ -261,7 +261,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	}
 
 	unlock(orderedMigrations[endIdx].version);
-	log.info('Finished migrating.');
+	log.startup('Finished migrating.');
 
 	// remember to run meteor with --once otherwise it will restart
 	if (subcommands?.includes('exit')) {

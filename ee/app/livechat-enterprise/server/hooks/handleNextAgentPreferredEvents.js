@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { SettingsVersion4 } from '../../../../../app/settings/server';
+import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms, LivechatInquiry, LivechatVisitors, Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
@@ -86,7 +86,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 
 	return inquiry;
 };
-SettingsVersion4.watch('Livechat_last_chatted_agent_routing', function(value) {
+settings.watch('Livechat_last_chatted_agent_routing', function(value) {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
@@ -98,7 +98,7 @@ SettingsVersion4.watch('Livechat_last_chatted_agent_routing', function(value) {
 	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 });
 
-SettingsVersion4.watch('Omnichannel_contact_manager_routing', function(value) {
+settings.watch('Omnichannel_contact_manager_routing', function(value) {
 	contactManagerPreferred = value;
 });
 

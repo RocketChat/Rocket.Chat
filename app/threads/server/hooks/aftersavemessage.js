@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../../models/server';
 import { callbacks } from '../../../callbacks/server';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
@@ -64,7 +64,7 @@ export const processThreads = (message, room) => {
 };
 
 Meteor.startup(function() {
-	SettingsVersion4.watch('Threads_enabled', function(value) {
+	settings.watch('Threads_enabled', function(value) {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;

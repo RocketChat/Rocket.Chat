@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { SettingsVersion4 } from '../../settings';
+import { settings } from '../../settings';
 
 /**
  * DeepL translation service provider class representation.
@@ -28,7 +28,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.name = 'deepl-translate';
 		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
-		SettingsVersion4.watch('AutoTranslate_DeepLAPIKey', (value) => {
+		settings.watch('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}

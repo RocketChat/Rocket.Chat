@@ -1,6 +1,6 @@
-import { settings } from '../../app/settings/server';
+import { settingsRegister } from '../../app/settings/server';
 
-settings.addGroup('LDAP', function() {
+settingsRegister.addGroup('LDAP', function() {
 	const enableQuery = { _id: 'LDAP_Enable', value: true };
 	const adOnly = { _id: 'LDAP_Server_Type', value: 'ad' };
 	const ldapOnly = { _id: 'LDAP_Server_Type', value: '' };

@@ -1,14 +1,19 @@
-import { Meteor } from 'meteor/meteor';
 import mock from 'mock-require';
+
+import { ISetting } from '../../../../definition/ISetting';
+import { ICachedSettings } from '../Settingsv4';
 
 type Dictionary = {
 	[index: string]: any;
 }
 
 class SettingsClass {
+	settings: ICachedSettings;
+
 	find(): any[] {
 		return [];
 	}
+
 
 	public data = new Map<string, Dictionary>()
 
@@ -31,11 +36,9 @@ class SettingsClass {
 	}
 
 	insert(doc: any): void {
-		Meteor.settings[doc._id] = doc.value;
 		this.data.set(doc._id, doc);
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const { settings } = require('./settings');
-		settings.load(doc._id, doc.value, false);
+		this.settings.set(doc);
 		this.insertCalls++;
 	}
 
@@ -50,12 +53,10 @@ class SettingsClass {
 
 		// console.log(query, data);
 		this.data.set(query._id, data);
-		Meteor.settings[query._id] = data.value;
 
 		// Can't import before the mock command on end of this file!
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const { settings } = require('./settings');
-		settings.load(query._id, data.value, !existent);
+		this.settings.set(data);
 
 		this.upsertCalls++;
 	}
@@ -65,9 +66,7 @@ class SettingsClass {
 
 		// Can't import before the mock command on end of this file!
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const { settings } = require('./settings');
-		Meteor.settings[id] = value;
-		settings.load(id, value, false);
+		this.settings.set(this.data.get(id) as ISetting);
 	}
 }
 

@@ -1,32 +1,32 @@
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
-import { settings, SettingsVersion4 } from '../../app/settings/server';
+import { settings, settingsRegister } from '../../app/settings/server';
 import { SettingValue } from '../../definition/ISetting';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { eventTypes } from '../../app/models/server/models/FederationEvents';
-import { Users } from '../../app/models/server/raw';
+import { Users, Settings } from '../../app/models/server/raw';
 
 function updateSetting(id: string, value: SettingValue | null): void {
 	if (value !== null) {
-		const setting = SettingsVersion4.get(id);
+		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settings.add(id, value);
+			settingsRegister.add(id, value);
 		} else {
-			settings.updateById(id, value);
+			Settings.updateValueById(id, value);
 		}
 	} else {
-		settings.clearById(id);
+		Settings.updateValueById(id, undefined);
 	}
 }
 
 async function runFederation(): Promise<void> {
 	// Get the settings
-	const siteUrl = SettingsVersion4.get('Site_Url') as string;
+	const siteUrl = settings.get('Site_Url') as string;
 	const { protocol } = new URL(siteUrl);
 	const rocketChatProtocol = protocol.slice(0, -1);
 
-	const federationDomain = SettingsVersion4.get('FEDERATION_Domain') as string;
+	const federationDomain = settings.get('FEDERATION_Domain') as string;
 
 	// Load public key info
 	try {
@@ -47,7 +47,7 @@ async function runFederation(): Promise<void> {
 	// Load SRV info
 	try {
 		// If there is a protocol entry on DNS, we use it
-		const protocol = SettingsVersion4.get('FEDERATION_ResolvedProtocolTXT') as string ? 'tcp' : rocketChatProtocol;
+		const protocol = settings.get('FEDERATION_ResolvedProtocolTXT') as string ? 'tcp' : rocketChatProtocol;
 
 		const resolvedSRV = await resolveSRV(`_rocketchat._${ protocol }.${ federationDomain }`);
 		updateSetting('FEDERATION_ResolvedSRV', JSON.stringify(resolvedSRV));
@@ -67,7 +67,7 @@ async function runFederation(): Promise<void> {
 	}
 
 	// If federation is healthy, check if there are remote users
-	if (SettingsVersion4.get('FEDERATION_Healthy') as boolean) {
+	if (settings.get('FEDERATION_Healthy') as boolean) {
 		const user = await Users.findOne({ isRemote: true });
 
 		updateSetting('FEDERATION_Populated', !!user);
@@ -75,7 +75,7 @@ async function runFederation(): Promise<void> {
 }
 
 export function federationCron(SyncedCron: any): void {
-	SettingsVersion4.watch('FEDERATION_Enabled', (value) => {
+	settings.watch('FEDERATION_Enabled', (value) => {
 		if (!value) {
 			return SyncedCron.remove('Federation');
 		}

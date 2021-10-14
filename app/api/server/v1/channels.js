@@ -7,7 +7,7 @@ import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { SettingsVersion4 } from '../../../settings/server';
+import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 
@@ -1085,7 +1085,7 @@ API.v1.addRoute('channels.anonymousread', { authRequired: false }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-		if (!SettingsVersion4.get('Accounts_AllowAnonymousRead')) {
+		if (!settings.get('Accounts_AllowAnonymousRead')) {
 			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
 				method: 'channels.anonymousread',
 			});

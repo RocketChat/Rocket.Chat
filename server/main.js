@@ -1,5 +1,5 @@
 import '../ee/server/broker';
-import '../app/settings/lib/settings';
+import '../app/settings/server/startup';
 import './importPackages';
 import '../imports/startup/server';
 

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
 
-import { SettingsVersion4 } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 import { Settings, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { fileUploadIsValidContentType } from '../../../../utils/server';
 import { FileUpload } from '../../../../file-upload';
@@ -10,7 +10,7 @@ import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData'
 
 let maxFileSize;
 
-SettingsVersion4.watch('FileUpload_MaxFileSize', function(value) {
+settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {

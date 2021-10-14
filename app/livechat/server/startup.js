@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { roomTypes } from '../../utils';
 import { LivechatRooms } from '../../models';
 import { callbacks } from '../../callbacks';
-import { SettingsVersion4 } from '../../settings';
+import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
@@ -22,7 +22,7 @@ Meteor.startup(async () => {
 			return user;
 		}
 		throw new Meteor.Error(TAPi18n.__('You_cant_leave_a_livechat_room_Please_use_the_close_button', {
-			lng: user.language || SettingsVersion4.get('Language') || 'en',
+			lng: user.language || settings.get('Language') || 'en',
 		}));
 	}, callbacks.priority.LOW, 'cant-leave-room');
 
@@ -38,7 +38,7 @@ Meteor.startup(async () => {
 	const monitor = new LivechatAgentActivityMonitor();
 
 	let TroubleshootDisableLivechatActivityMonitor;
-	SettingsVersion4.watch('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
+	settings.watch('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
 		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
 		TroubleshootDisableLivechatActivityMonitor = value;
 
@@ -50,7 +50,7 @@ Meteor.startup(async () => {
 	});
 	await createDefaultBusinessHourIfNotExists();
 
-	SettingsVersion4.watch('Livechat_enable_business_hours', async (value) => {
+	settings.watch('Livechat_enable_business_hours', async (value) => {
 		if (value) {
 			return businessHourManager.startManager();
 		}
