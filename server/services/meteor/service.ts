@@ -114,7 +114,7 @@ if (disableOplog) {
 	};
 }
 
-settings.set = use(settings.set, (context, next) => { 
+settings.set = use(settings.set, (context, next) => {
 	next(...context);
 	const [record] = context;
 	updateValue(record._id, record.value);
