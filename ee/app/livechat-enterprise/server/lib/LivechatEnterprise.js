@@ -267,7 +267,7 @@ function shouldQueueStart() {
 			: 'Stopping'
 	} queue`);
 
-	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+	routingSupportsAutoAssign && settings.get('Livechat_enabled') ? queueWorker.start() : queueWorker.stop();
 }
 
 settings.get('Livechat_enabled', (_, value) => {
