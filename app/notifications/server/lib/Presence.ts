@@ -90,7 +90,6 @@ export class StreamPresence {
 				}
 
 				publication.ready();
-				publication.connection.onClose(() => client.stop());
 
 				publication.onStop(() => client.stop());
 			}

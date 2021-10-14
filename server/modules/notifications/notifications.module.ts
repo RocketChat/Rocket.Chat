@@ -74,9 +74,6 @@ export class NotificationsModule {
 		this.streamStdout = new this.Streamer('stdout');
 		this.streamRoomData = new this.Streamer('room-data');
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
-		this.streamPresence.allowRead('logged');
-		this.streamPresence.allowWrite('none');
-
 		this.streamRoomMessage = new this.Streamer('room-messages');
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
@@ -415,6 +412,9 @@ export class NotificationsModule {
 		this.streamLocal.allowRead('none');
 		this.streamLocal.allowEmit('all');
 		this.streamLocal.allowWrite('none');
+
+		this.streamPresence.allowRead('logged');
+		this.streamPresence.allowWrite('none');
 	}
 
 	notifyAll(eventName: string, ...args: any[]): void {

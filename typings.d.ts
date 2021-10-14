@@ -26,10 +26,3 @@ declare module 'meteor/meteorhacks:inject-initial' {
 		function rawBody(key: string, value: string): void;
 	}
 }
-
-declare module 'meteor/ddp-common' {
-	namespace DDPCommon {
-		function stringifyDDP(msg: EJSON): string;
-		function parseDDP(msg: string): EJSON;
-	}
-}

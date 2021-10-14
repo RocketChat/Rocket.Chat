@@ -15,10 +15,6 @@ StreamerCentral.on('broadcast', (name, eventName, args) => {
 });
 
 export class Stream extends Streamer {
-	static publish(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
-		server.publish(name, fn);
-	}
-
 	registerPublication(name: string, fn: (eventName: string, options: boolean | {useCollection?: boolean; args?: any}) => void): void {
 		server.publish(name, fn);
 	}
