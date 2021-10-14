@@ -54,26 +54,20 @@ const AccountProfilePage = () => {
 	const erasureType = useSetting('Message_ErasureType');
 	const allowRealNameChange = useSetting('Accounts_AllowRealNameChange');
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
-	const allowUsernameChange = useSetting('Accounts_AllowUsernameChange');
+	const canChangeUsername = useSetting('Accounts_AllowUsernameChange');
 	const allowEmailChange = useSetting('Accounts_AllowEmailChange');
 	let allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
 	const allowOAuthPasswordChange = useSetting('Accounts_AllowPasswordChangeForOAuthUsers');
 	const allowUserAvatarChange = useSetting('Accounts_AllowUserAvatarChange');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
-	const ldapEnabled = useSetting('LDAP_Enable');
-	const ldapUsernameField = useSetting('LDAP_Username_Field');
-	// whether the username is forced to match LDAP:
-	const ldapUsernameLinked = ldapEnabled && ldapUsernameField;
 	const requireName = useSetting('Accounts_RequireNameForSignUp');
-	const namesRegexSetting = useSetting('UTF8_Names_Validation');
+	const namesRegexSetting = useSetting('UTF8_User_Names_Validation');
 
 	if (allowPasswordChange && !allowOAuthPasswordChange) {
 		allowPasswordChange = localPassword;
 	}
 
 	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
-
-	const canChangeUsername = allowUsernameChange && !ldapUsernameLinked;
 
 	const settings = useMemo(
 		() => ({

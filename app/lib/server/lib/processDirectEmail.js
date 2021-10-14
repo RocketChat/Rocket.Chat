@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { EmailReplyParser as reply } from 'emailreplyparser';
 import moment from 'moment';
 
-import { settings } from '../../../settings';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models';
-import { metrics } from '../../../metrics';
-import { hasPermission } from '../../../authorization';
+import { settings } from '../../../settings/server';
+import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { metrics } from '../../../metrics/server';
+import { hasPermission } from '../../../authorization/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { sendMessage as _sendMessage } from '../functions';
 
 export const processDirectEmail = function(email) {
@@ -126,6 +127,6 @@ export const processDirectEmail = function(email) {
 		email.headers.mid = email.headers.to.split('@')[0].split('+')[1];
 		sendMessage(email);
 	} else {
-		console.log('Invalid Email....If not. Please report it.');
+		SystemLogger.error('Invalid Email....If not. Please report it.');
 	}
 };

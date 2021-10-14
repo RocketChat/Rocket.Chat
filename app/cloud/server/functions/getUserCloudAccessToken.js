@@ -8,6 +8,7 @@ import { userLoggedOut } from './userLoggedOut';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
 import { userScopes } from '../oauthScopes';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function getUserCloudAccessToken(userId, forceNew = false, scope = '', save = true) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
@@ -63,10 +64,10 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to get User AccessToken from Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
 
 			if (e.response.data.error === 'oauth_invalid_client_credentials') {
-				console.error('Server has been unregistered from cloud');
+				SystemLogger.error('Server has been unregistered from cloud');
 				unregisterWorkspace();
 			}
 
@@ -74,7 +75,7 @@ export function getUserCloudAccessToken(userId, forceNew = false, scope = '', sa
 				userLoggedOut(userId);
 			}
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return '';

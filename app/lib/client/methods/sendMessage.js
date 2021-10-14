@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import s from 'underscore.string';
-import toastr from 'toastr';
 
 import { ChatMessage } from '../../../models';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { promises } from '../../../promises/client';
 import { t } from '../../../utils/client';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Meteor.methods({
 	sendMessage(message) {
@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });
 		if (messageAlreadyExists) {
-			return toastr.error(t('Message_Already_Sent'));
+			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
 		const user = Meteor.user();
 		message.ts = isNaN(TimeSync.serverOffset()) ? new Date() : new Date(Date.now() + TimeSync.serverOffset());

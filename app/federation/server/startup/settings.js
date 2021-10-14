@@ -7,7 +7,7 @@ import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
 import { registerWithHub } from '../lib/dns';
 import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
-import { logger } from '../lib/logger';
+import { setupLogger } from '../lib/logger';
 import { FederationKeys } from '../../../models/server';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
@@ -89,7 +89,7 @@ const updateSettings = debounce(Meteor.bindEnvironment(function() {
 }), 150);
 
 function enableOrDisable(key, value) {
-	logger.setup.info(`Federation is ${ value ? 'enabled' : 'disabled' }`);
+	setupLogger.info(`Federation is ${ value ? 'enabled' : 'disabled' }`);
 
 	if (value) {
 		updateSettings();

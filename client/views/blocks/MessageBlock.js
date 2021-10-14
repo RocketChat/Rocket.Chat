@@ -9,7 +9,7 @@ import React from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import { useBlockRendered } from '../../components/Message/hooks/useBlockRendered';
-import { renderMessageBody } from '../../lib/renderMessageBody';
+import { renderMessageBody } from '../../lib/utils/renderMessageBody';
 import './textParsers';
 
 // TODO: move this to fuselage-ui-kit itself

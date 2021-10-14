@@ -63650,6 +63650,2398 @@
         "4.2"
       ],
       "pull_requests": []
+    },
+    "3.18.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22879",
+          "title": "[FIX] Threads List being requested more than expected",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "20907",
+          "title": "[IMPROVE] Create thumbnails from uploaded images",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "web-flow",
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22914",
+          "title": "[FIX] Threads and discussions searches don't display proper results",
+          "userLogin": "matheusbsilva137",
+          "description": "- _Fix_ issue in discussions search (which wasn't working after a search with no results was made);\r\n - _Improve_ discussions and threads searches: both searches (`chat.getDiscussions` and `chat.getThreadsList`) are now case insensitive (do NOT differ capital from lower letters) and match incomplete words or terms.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23016",
+          "title": "[FIX] QuickActions for mobile screen",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22398",
+          "title": "Chore: Script to start Rocket.Chat in HA mode during development",
+          "userLogin": "d-gubert",
+          "description": "Sometimes we need to start Rocket.Chat in High-Availability mode (cluster) during development to test how a feature behaves or hunt down a bug. Currently, this involves a lot of commands with details that might be lost if you haven't done it in a while.\r\n\r\nThis PR intends to provide a really simple way for us to start many instances of Rocket.Chat connected in a cluster.",
+          "contributors": [
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22577",
+          "title": "[IMPROVE] Add default permission 'start-discussion' and 'start-discussion-other-user' to app user",
+          "userLogin": "marceloschmidt",
+          "contributors": [
+            "marceloschmidt",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23007",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-08-23Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "23015",
+          "title": "Regression: Fix creation of self-DMs",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22976",
+          "title": "[FIX] Error getting default agent when routing system algorithm is Auto Selection",
+          "userLogin": "renatobecker",
+          "milestone": "3.18",
+          "contributors": [
+            "renatobecker",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22996",
+          "title": "[FIX] Atlassian Crowd connection not working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "piotrkochan",
+            "pierre-lehnen-rc",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22997",
+          "title": "Regression: no-js-action bump version",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22972",
+          "title": "Chore: Prevent new JS files being added",
+          "userLogin": "ggazzo",
+          "description": "We are moving our code base to TS, one way to help developers remember this is create a task that will notify you every time a new file is created.",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22953",
+          "title": "Regression: File upload name suggestion",
+          "userLogin": "gabriellsh",
+          "description": "Before:\r\n![image](https://user-images.githubusercontent.com/40830821/129774936-ecdbe9a1-5e3f-4a0a-ad1e-6f13eb15c60b.png)\r\n![image](https://user-images.githubusercontent.com/40830821/129775011-fb0df01d-74e4-41ae-bb47-dcf4cc17735e.png)\r\n\r\n\r\nAfter:\r\n![image](https://user-images.githubusercontent.com/40830821/129774877-928a8aa0-c003-4e57-8b33-ea6accc32774.png)\r\n![image](https://user-images.githubusercontent.com/40830821/129774972-d67debaf-0ce9-44fb-93cb-d7612dd18edf.png)",
+          "contributors": [
+            "gabriellsh",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22994",
+          "title": "Chore: Enable husky pre-push hook (back again)",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22977",
+          "title": "[IMPROVE] Increase the verbosity of Omnichannel routing system debugging outputs",
+          "userLogin": "KevLehman",
+          "milestone": "3.18",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22930",
+          "title": "[FIX] Bad words falling if message is empty",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22990",
+          "title": "Chore: Update Livechat widget to 1.9.4",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "18022",
+          "title": "[NEW] REST endpoint to delete a DM and allow DM for two other users",
+          "userLogin": "abrom",
+          "description": "[NEW] Improve DM create/delete API management",
+          "contributors": [
+            "abrom",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21937",
+          "title": "[NEW] Separate RegEx Settings for Channels and Usernames validation",
+          "userLogin": "aditya-mitra",
+          "description": "Now, there are 2 separate settings for validating names - One for **channels** and another for **usernames**.\r\n\r\nThis change also removes the old `UTF8_Names_Validation` setting and adds 2 new settings `UTF8_User_Names_Validation` and `UTF8_Channel_Names_Validation`.\r\n\r\nhttps://user-images.githubusercontent.com/55396651/116969904-af5bb800-acd4-11eb-9fc4-dacac60cb08f.mp4",
+          "contributors": [
+            "aditya-mitra"
+          ]
+        },
+        {
+          "pr": "22955",
+          "title": "[NEW][ENTERPRISE] Maximum waiting time for chats in Omnichannel queue",
+          "userLogin": "KevLehman",
+          "description": "- Add new settings to support closing chats that have been too long on waiting queue\r\n- Moved old settings to new \"Queue Management\" section\r\n- Fix issue when closing a livechat room that caused client to not to know if room was open or not",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22967",
+          "title": "[IMPROVE]  Types from currentChatsPage.tsx",
+          "userLogin": "tiagoevanp",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "22796",
+          "title": "[FIX] Go command duplicating subfolder path on iframes.",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22515",
+          "title": "[IMPROVE] Exclude archived rooms from unread-message count",
+          "userLogin": "nmagedman",
+          "contributors": [
+            "nmagedman"
+          ]
+        },
+        {
+          "pr": "22672",
+          "title": "Chore: Fix RHEL container build issue due to gpg keyserver deprecation",
+          "userLogin": "jsm84",
+          "description": "Changed gpg keyserver in RHEL Dockerfile to openpgp.org due to deprecation of the SKS keyserver network.",
+          "contributors": [
+            "jsm84",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22902",
+          "title": "[IMPROVE] Use tag autocomplete in more places",
+          "userLogin": "MartinSchoeler",
+          "description": "Use the proper autocomplete component for omnichannel tags, this adds proper sorting of results and better consistency.",
+          "contributors": [
+            "MartinSchoeler",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22850",
+          "title": "[FIX] Return transcript/dashboards based on timezone settings",
+          "userLogin": "KevLehman",
+          "description": "- Added new setting to manage timezones\r\n- Applied new setting to omnichannel dashboards (realtime, analytics) [NOTE: Other dashboards aren't using this setting actually)\r\n- Change getAnalyticsBetweenDate query to filter out system messages instead of substracting them",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "22952",
+          "title": "Regression: readNow blocked by a invalid condition",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22927",
+          "title": "[FIX] User presence being processes even if presence monitor was disabled",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22937",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-08-16Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "22917",
+          "title": "[FIX] Close omnichannel conversations when agent is deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22750",
+          "title": "[IMPROVE] Rewrite File Upload Modal",
+          "userLogin": "gabriellsh",
+          "description": "Image preview:\r\n![image](https://user-images.githubusercontent.com/40830821/127223432-dccd2182-aec0-430f-8d70-03ac88aec791.png)\r\n\r\nVideo preview:\r\n![image](https://user-images.githubusercontent.com/40830821/127225982-f8b21840-0d9c-4aff-a354-16188c7ed66e.png)\r\n\r\nFiles larger than 10mb:\r\n![image](https://user-images.githubusercontent.com/40830821/127222611-5265040f-a06b-4ec5-b528-89b40e6a9072.png)",
+          "contributors": [
+            "gabriellsh",
+            "dougfabris",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22882",
+          "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
+          "userLogin": "thassiov",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "milestone": "3.17.1",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22835",
+          "title": "[FIX] Use correct param on saveBusinessHour method",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22870",
+          "title": "[FIX] Can't access other administration menus after opening Engagement Dashboard",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "21868",
+          "title": "[FIX] \"Read Only\" field description is incorrect when the option is checked",
+          "userLogin": "epif4nio",
+          "contributors": [
+            "epif4nio",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22431",
+          "title": "Chore: Fix typo in rtl.css",
+          "userLogin": "eltociear",
+          "contributors": [
+            "eltociear",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22880",
+          "title": "[FIX] Audio recording doesn't stop in direct messages on channel switch",
+          "userLogin": "matheusbsilva137",
+          "description": "- Cancel audio recordings on message bar destroy event.\r\n![test-22372](https://user-images.githubusercontent.com/36537004/128569780-d83747b0-fb9c-4dc6-9bc5-7ae573e720c8.gif)",
+          "contributors": [
+            "matheusbsilva137",
+            "gabriellsh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22888",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-08-09Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22823",
+          "title": "[FIX] Manually approve new users is not applied to SAML users",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22839",
+          "title": "[FIX] applyChatRestictions callback not working for community version",
+          "userLogin": "murtaza98",
+          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "contributors": [
+            "Shailesh351",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22856",
+          "title": "[FIX] Message update not working in some cases",
+          "userLogin": "murtaza98",
+          "milestone": "3.17.1",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22848",
+          "title": "[FIX] Broken download link on uploaded files",
+          "userLogin": "ostjen",
+          "description": "Uploaded files had wrong download links when the deploy had a sub directory. This misbehavior was caused by the wrong usage of the rtrim method, the 2nd parameter is a list of chars, [not a string](https://www.php.net/manual/pt_BR/function.rtrim.php) (this method was inspired by php)",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22801",
+          "title": "[FIX] User is still asked for 2FA confirmation even if it is deactivated",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22778",
+          "title": "[FIX] Registration not possible with TOTP and email verification",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22396",
+          "title": "[FIX] users registered via third party apps bypass custom required fields",
+          "userLogin": "g-thome",
+          "description": "moves the custom fields from the initial registration form to the \"pick a username\" screen so that everyone is forced to fill the custom required fields",
+          "contributors": [
+            "g-thome",
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22871",
+          "title": "[FIX] \"Click to Join\" button is not working if there are no muted users in the room",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add check to `room.muted` array so as to cover the case in which it is `undefined`;",
+          "milestone": "3.17.1",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22836",
+          "title": "[FIX] \"Users By Time of the Day\" chart displays incorrect data for Local Timezone",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add local timezone conversion to the \"Users By Time of the Day\" chart in the Engagement Dashboard;\r\n - Simplify date creations by using `endOf` and `startOf` methods.",
+          "contributors": [
+            "matheusbsilva137",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22868",
+          "title": "[FIX] Production-environment dependencies",
+          "userLogin": "tassoevan",
+          "description": "`@rocket.chat/icons` was incorrectly referred as development dependency.",
+          "contributors": [
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22851",
+          "title": "[FIX] Tab margin style",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![image](https://user-images.githubusercontent.com/27704687/128103848-2a25ba7e-0e59-4502-9bcd-2569cad9379a.png)\r\n\r\n### after\r\n![image](https://user-images.githubusercontent.com/27704687/128103633-ec7b93fc-4667-4dc9-bad3-bfffaff3974e.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "22834",
+          "title": "Merge master into develop & Set version to 3.18.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22790",
+          "title": "[FIX] TypeError on Callout type prop",
+          "userLogin": "hrahul2605",
+          "contributors": [
+            "hrahul2605",
+            "dougfabris",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.17.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "22942",
+          "title": "Release 3.17.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "thassiov",
+            "murtaza98",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "22871",
+          "title": "[FIX] \"Click to Join\" button is not working if there are no muted users in the room",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add check to `room.muted` array so as to cover the case in which it is `undefined`;",
+          "milestone": "3.17.1",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22856",
+          "title": "[FIX] Message update not working in some cases",
+          "userLogin": "murtaza98",
+          "milestone": "3.17.1",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22835",
+          "title": "[FIX] Use correct param on saveBusinessHour method",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22882",
+          "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
+          "userLogin": "thassiov",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "milestone": "3.17.1",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22917",
+          "title": "[FIX] Close omnichannel conversations when agent is deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.17.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23045",
+          "title": "Release 3.17.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "murtaza98",
+            "sampaiodiego",
+            "KevLehman",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22976",
+          "title": "[FIX] Error getting default agent when routing system algorithm is Auto Selection",
+          "userLogin": "renatobecker",
+          "milestone": "3.17.2",
+          "contributors": [
+            "renatobecker",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22991",
+          "title": "[FIX] Fix Auto Selection algorithm on community edition",
+          "userLogin": "KevLehman",
+          "description": "- When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter\r\n- Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0",
+          "milestone": "3.17.2",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22839",
+          "title": "[FIX] applyChatRestictions callback not working for community version",
+          "userLogin": "murtaza98",
+          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "milestone": "3.17.2",
+          "contributors": [
+            "Shailesh351",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.18.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23046",
+          "title": "Regression: Attachment not rendering on message",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "22991",
+          "title": "[FIX] Fix Auto Selection algorithm on community edition",
+          "userLogin": "KevLehman",
+          "description": "- When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter\r\n- Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0",
+          "milestone": "3.17.2",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23033",
+          "title": "[NEW] Report \"Read Receipts\" setting on stat collector",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "3.18.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23055",
+          "title": "[NEW] Banner for the updates regarding authentication services",
+          "userLogin": "g-thome",
+          "description": "Add a banner to inform admins about future authentication changes. This banner targets servers that use some sort of authentication service since they're the ones which this update concerns the most.",
+          "contributors": [
+            "g-thome",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23048",
+          "title": "Regression: Logs were missing from Omnichannel callback methods",
+          "userLogin": "KevLehman",
+          "milestone": "3.18",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.18.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23045",
+          "title": "Release 3.17.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "murtaza98",
+            "sampaiodiego",
+            "KevLehman",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22976",
+          "title": "[FIX] Error getting default agent when routing system algorithm is Auto Selection",
+          "userLogin": "renatobecker",
+          "milestone": "3.17.2",
+          "contributors": [
+            "renatobecker",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22991",
+          "title": "[FIX] Fix Auto Selection algorithm on community edition",
+          "userLogin": "KevLehman",
+          "description": "- When using the autoselection algo on community editions, all agents were marked as unavailable due to an unapplied filter\r\n- Fixed an issue when both user & system setting to manange EE max number of chats allowed were set to 0",
+          "milestone": "3.17.2",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "22839",
+          "title": "[FIX] applyChatRestictions callback not working for community version",
+          "userLogin": "murtaza98",
+          "description": "Building on top of https://github.com/RocketChat/Rocket.Chat/pull/22838",
+          "milestone": "3.17.2",
+          "contributors": [
+            "Shailesh351",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22942",
+          "title": "Release 3.17.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "thassiov",
+            "murtaza98",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "22871",
+          "title": "[FIX] \"Click to Join\" button is not working if there are no muted users in the room",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add check to `room.muted` array so as to cover the case in which it is `undefined`;",
+          "milestone": "3.17.1",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22856",
+          "title": "[FIX] Message update not working in some cases",
+          "userLogin": "murtaza98",
+          "milestone": "3.17.1",
+          "contributors": [
+            "murtaza98",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22835",
+          "title": "[FIX] Use correct param on saveBusinessHour method",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "renatobecker",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "22882",
+          "title": "[FIX] Apps-Engine's scheduler failing to update run tasks",
+          "userLogin": "thassiov",
+          "description": "[Agenda](https://github.com/agenda/agenda), the library that manages scheduling, depended on setting a job property named `nextRunAt` as `undefined` to signal whether it should be run on schedule or not. [Rocket.Chat's current Mongo driver](https://github.com/RocketChat/Rocket.Chat/pull/22399) ignores `undefined` values when updating documents and this was causing jobs to never stop running as Agenda couldn't clear that property (set them as `undefined`). \r\nThis updates Rocket.Chat's dependency on Agenda.js to point to [a fork that fixes the problem](https://github.com/RocketChat/agenda/releases/tag/3.1.2).",
+          "milestone": "3.17.1",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "22917",
+          "title": "[FIX] Close omnichannel conversations when agent is deactivated",
+          "userLogin": "KevLehman",
+          "milestone": "3.17.1",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.18.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23067",
+          "title": "Bump: Fuselage 0.29.0",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
+    },
+    "3.18.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "4.0.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23218",
+          "title": "[FIX] Sidebar not closing when clicking in Home or Directory on mobile view",
+          "userLogin": "dougfabris",
+          "description": "### Additional fixed\r\n- Merge Burger menu components into a single component\r\n- Show a badge with no-read messages in the Burger Button:\r\n![image](https://user-images.githubusercontent.com/27704687/133679378-20fea2c0-4ac1-4b4e-886e-45154cc6afea.png)\r\n- remove useSidebarClose hook",
+          "contributors": [
+            "dougfabris",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23281",
+          "title": "Regression: wrong settings order",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "22407",
+          "title": "[FIX] Prevent users to edit an existing role when adding a new one with the same name used before.",
+          "userLogin": "dougfabris",
+          "description": "### before\r\n![Peek 2021-07-13 16-31](https://user-images.githubusercontent.com/27704687/125513721-953d84f4-1c95-45ca-80e1-b00992b874f6.gif)\r\n\r\n### after\r\n![Peek 2021-07-13 16-34](https://user-images.githubusercontent.com/27704687/125514098-91ee8014-51e5-4c62-9027-5538acf57d08.gif)",
+          "contributors": [
+            null,
+            "lucassartor",
+            "dougfabris",
+            "ggazzo",
+            "web-flow",
+            "pierre-lehnen-rc",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23282",
+          "title": "Regression: Missing i18n key",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23201",
+          "title": "[BREAK] Moved advanced oAuth features to EE",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23256",
+          "title": "[IMPROVE] Better text for auth banner",
+          "userLogin": "g-thome",
+          "description": "Change the text in the banner warning for auth changes",
+          "contributors": [
+            "g-thome",
+            "tassoevan",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23090",
+          "title": "[NEW] Omnichannel source identification fields",
+          "userLogin": "d-gubert",
+          "description": "This PR adds new fields to the room schema that aids in the identification of the source that created an Omnichannel room, which can be either via livechat widget, SMS, app, etc.",
+          "milestone": "4.0.0",
+          "contributors": [
+            "d-gubert",
+            "KevLehman",
+            "web-flow",
+            "tiagoevanp",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23231",
+          "title": "Regression: LDAP Refactoring",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "22657",
+          "title": "[IMPROVE][APPS] New storage strategy for Apps-Engine file packages",
+          "userLogin": "d-gubert",
+          "description": "This is an enabler for our initiative to support NPM packages in the Apps-Engine. \r\n\r\nCurrently, the packages (zip files) for Rocket.Chat Apps are stored as a base64 encoded string in a document in the database, which constrains us due to the size limit of a document in MongoDB (16Mb).\r\n\r\nWhen we allow apps to include NPM packages, the size of the App package itself will be potentially _very large_ (I'm looking at you `node_modules`). Thus we'll be changing the strategy to store apps either with GridFS or the host's File System itself.",
+          "milestone": "4.0.0",
+          "contributors": [
+            "d-gubert",
+            "web-flow",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23243",
+          "title": "[FIX] Modals is cutting pixels of the content",
+          "userLogin": "dougfabris",
+          "description": "Fuselage Dependency: [543](https://github.com/RocketChat/Rocket.Chat.Fuselage/pull/543)\r\n![image](https://user-images.githubusercontent.com/27704687/134049227-3cd1deed-34ba-454f-a95e-e99b79a7a7b9.png)",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23232",
+          "title": "[IMPROVE] Load code highlighting languages on demand and fixes on new message parser",
+          "userLogin": "ggazzo",
+          "description": "Now we have this setting called 'Code highlighting languages list' where you can define the languages that you want to be loaded by default.",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23223",
+          "title": "[BREAK][ENTERPRISE] Missing headers in CSV files downloaded from the Engagement Dashboard",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add headers to all CSV files downloaded from the \"Messages\" and \"Channels\" tabs from the Engagement Dashboard;\r\n - Add headers to the CSV file downloaded from the \"Users by time of day\" section (in the \"Users\" tab).",
+          "contributors": [
+            "matheusbsilva137",
+            "casalsgh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23074",
+          "title": "[FIX] transfer message when tranferring room by Apps Engine",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "4.0.0",
+          "contributors": [
+            "cuonghuunguyen",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22392",
+          "title": "[NEW] Add activity indicators for Uploading and Recording using new API; Support thread context; Deprecate the old typing API",
+          "userLogin": "sumukhah",
+          "milestone": "4.0.0",
+          "contributors": [
+            "sumukhah",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "23236",
+          "title": "Bump ejson from 2.2.1 to 2.2.2 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23056",
+          "title": "[FIX] Remove doubled \"Canned Responses\" strings",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove doubled canned response setting introduced in #22703 (by setting id change);\r\n - Update \"Canned Responses\" keys to \"Canned_Responses\".",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23110",
+          "title": "[FIX] Can't edit profile information if any field update setting is disabled",
+          "userLogin": "matheusbsilva137",
+          "description": "- Check which fields have been updated before throwing errors in `validateUserEditing`.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "23037",
+          "title": "[FIX] \"Read Only\" and \"Allow Reacting\" system messages are missing in rooms",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add system message to notify changes on the **\"Read Only\"** setting;\r\n - Add system message to notify changes on the **\"Allow Reacting\"** setting;\r\n - Fix \"Allow Reacting\" setting's description (updated from \"Only authorized users can write new messages\" to \"Only authorized users can react to messages\").\r\n![system-messages](https://user-images.githubusercontent.com/36537004/130883527-9eb47fcd-c8e5-41fb-af34-5d99bd0a6780.PNG)",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "ostjen",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "23277",
+          "title": "[BREAK] Remove old migrations up to version 2.4.14",
+          "userLogin": "sampaiodiego",
+          "description": "To update to version 4.0.0 you'll need to be running at least version 3.0.0, otherwise you might loose some database migrations which might have unexpected effects.\r\n\r\nThis aims to clean up the code, since upgrades jumping 2 major versions are too risky and hard to maintain, we'll keep only migration from that last major (in this case 3.x).",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23276",
+          "title": "[FIX] Logging out from other clients",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23262",
+          "title": "[FIX] Avoid bots to be marked as unavailable when log off/login",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23261",
+          "title": "[FIX] Stop queue when Omnichannel is disabled or the routing method does not support it",
+          "userLogin": "KevLehman",
+          "description": "- Add missing key logs\r\n- Stop queue (and logs) when livechat is disabled or when routing method does not support queue\r\n- Stop ignoring offline bot agents from delegation (previously, if a bot was offline, even with \"Assign new conversations to bot agent\" enabled, bot will be ignored and chat will be left in limbo (since bot was assigned, but offline).",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23017",
+          "title": "[NEW] Seats Cap",
+          "userLogin": "tassoevan",
+          "description": "- Adding New Members\r\n  - Awareness of seats usage while adding new members\r\n  - Seats Cap about to be reached\r\n  - Seats Cap reached\r\n  - Request more seats\r\n- Warning Admins\r\n  - System telling admins max seats are about to exceed\r\n  - System telling admins max seats were exceed\r\n  - Metric on Info Page\r\n  - Request more seats\r\n- Warning Members\r\n  - Invite link\r\n    - Block creating new invite links\r\n    - Block existing invite links (feedback on register process) \r\n  - Register to Workspaces\r\n- Emails\r\n  - System telling admins max seats are about to exceed\r\n  - System telling admins max seats were exceed",
+          "contributors": [
+            "tassoevan",
+            "pierre-lehnen-rc",
+            "web-flow",
+            "ggazzo",
+            "gabriellsh",
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "23269",
+          "title": "Chore: Update pino and pino-pretty",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23255",
+          "title": "Chore: Make SMTP empty on docker-compose so registration won't hang out of the box",
+          "userLogin": "geekgonecrazy",
+          "contributors": [
+            "geekgonecrazy",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23204",
+          "title": "[FIX] Wrap canned-responses endpoints with ee license",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.0.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23150",
+          "title": "[FIX] Omnichannel transcript button without user's email",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.0.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23263",
+          "title": "Chore: Re-enable session tests on local after removal of mongo-unit",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23107",
+          "title": "[BREAK] Moved role-sync and advanced SAML settings to EE",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23199",
+          "title": "[IMPROVE] Change occurences of Livechat to Omnichannel in ES translations were applicable",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23230",
+          "title": "Regression: Log Sections not respecting Log Level setting",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "22907",
+          "title": "[BREAK] Removed support of MongoDB 3.4; Deprecated MongoDB 3.6 and 4.0",
+          "userLogin": "ostjen",
+          "milestone": "4.0.0",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "23254",
+          "title": "Regression: Fix user registration stuck",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23219",
+          "title": "[FIX] Mark agents as unavailable when they logout",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "renatobecker",
+            "web-flow",
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23244",
+          "title": "[FIX] Toolbox click not working on Safari(iOS)",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23185",
+          "title": "[FIX] Omnichannel On hold chats being forwarded to offline agents",
+          "userLogin": "murtaza98",
+          "milestone": "4.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23171",
+          "title": "[BREAK] LDAP Refactoring",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23190",
+          "title": "[IMPROVE] Canned response admin settings",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.0.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23198",
+          "title": "Chore: Update Livechat widget to 1.9.4",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "MartinSchoeler",
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23209",
+          "title": "[FIX] Save department agents ",
+          "userLogin": "tiagoevanp",
+          "milestone": "4.0.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "23117",
+          "title": "[FIX] Wrong docs link on Omni-Webhook page",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23221",
+          "title": "[IMPROVE] Throw error if no appId is provided to useUIKitHandleAction",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "22957",
+          "title": "[IMPROVE] Do not re-create General room on every server start",
+          "userLogin": "matheusbsilva137",
+          "description": "- Check the `Show_Setup_Wizard` Setting's value to control whether the general room should be created. This channel will only be created if the `Show_Setup_Wizard` Setting is 'pending'.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "22985",
+          "title": "[NEW][APPS] Get livechat's room transcript via bridge method",
+          "userLogin": "thassiov",
+          "description": "Adds a new method for retrieving a room's transcript via a new method in the Livechat bridge",
+          "milestone": "4.0.0",
+          "contributors": [
+            "thassiov",
+            "web-flow",
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23212",
+          "title": "Regression: `renderEmoji` helper referred as a template",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "22542",
+          "title": "Chore: Convert VerticalBar component to typescript",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris",
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "21176",
+          "title": "[FIX] Add missing custom fields to apps' users converter",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "4.0.0",
+          "contributors": [
+            "cuonghuunguyen",
+            "web-flow",
+            "d-gubert",
+            "thassiov",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "23194",
+          "title": "Regression: Fix view logs admin screen",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23162",
+          "title": "[BREAK] Remove deprecated endpoints",
+          "userLogin": "sampaiodiego",
+          "description": "The following REST endpoints were removed:\r\n\r\n- `/api/v1/emoji-custom`\r\n- `/api/v1/info`\r\n- `/api/v1/permissions`\r\n- `/api/v1/permissions.list`\r\n\r\nThe following Real time API Methods were removed:\r\n\r\n- `getFullUserData`\r\n- `getServerInfo`\r\n- `livechat:saveOfficeHours`",
+          "contributors": [
+            "sampaiodiego",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23205",
+          "title": "Regression: View Logs administration page crashing",
+          "userLogin": "tassoevan",
+          "description": "Fixes the `stdout.queue` endpoint; makes the components type-safe.",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23178",
+          "title": "Chore: Move client helpers",
+          "userLogin": "tassoevan",
+          "description": "Moves helper modules under `app/` to `client/lib/utils/`.",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23200",
+          "title": "Chore: Change Ubuntu version to 20.04 on all GitHub Actions",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23196",
+          "title": "Regression: Properly trickle-down state from UsersPage to UsersTable",
+          "userLogin": "tassoevan",
+          "description": "Spotted by @gabriellsh.",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23176",
+          "title": "[IMPROVE] Add missing pt-BR translations, fix typos and unify language",
+          "userLogin": "gabrieloliverio",
+          "contributors": [
+            "gabrieloliverio",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23032",
+          "title": "[FIX] User list not being updated after creation/deletion of user",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23187",
+          "title": "Chore: Upgrade limax",
+          "userLogin": "tassoevan",
+          "description": "Upgrades `limax` for faster slugify algorithm.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23076",
+          "title": "[FIX] \"Parent channel or group\" search in discussions' creation throws \"Unexpected end of JSON input\" error",
+          "userLogin": "matheusbsilva137",
+          "description": "- Use `encodeURIComponent()` to encode values received by `_generateQueryFromParams()`.",
+          "contributors": [
+            "matheusbsilva137",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23108",
+          "title": "[BREAK] Stop sending audio notifications via stream",
+          "userLogin": "sampaiodiego",
+          "description": "Remove audio preferences and make them tied to desktop notification preferences.\r\n\r\nTL;DR: new message sounds will play only if you receive a desktop notification. you'll still be able to chose to not play any sound though",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23184",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-09-13Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "21779",
+          "title": "[FIX] Remove margin from quote inside quote",
+          "userLogin": "tiagoevanp",
+          "description": "![image](https://user-images.githubusercontent.com/17487063/116253926-4a89e600-a747-11eb-9172-f2ed1245fa1b.png)",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23160",
+          "title": "[BREAK] Remove Google Vision features",
+          "userLogin": "sampaiodiego",
+          "description": "Google Vision features like \"block adult images\" or label detection were not being maintained and totally broken. So we decided to remove its feature and maybe in the future release the same features as an app.",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23165",
+          "title": "Bump @storybook/react from 6.3.6 to 6.3.8",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23163",
+          "title": "Bump jsrsasign from 10.3.0 to 10.4.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23013",
+          "title": "[BREAK][ENTERPRISE] \"Download CSV\" button doesn't work in the Engagement Dashboard's Active Users section",
+          "userLogin": "tassoevan",
+          "description": "- Fix \"Download CSV\" button in the Engagement Dashboard's Active Users section;\r\n- Add column headers to the CSV file downloaded from the Engagement Dashboard's Active Users section;\r\n- Split the data in multiple CSV files.",
+          "contributors": [
+            "matheusbsilva137",
+            "dougfabris",
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23014",
+          "title": "[BREAK][ENTERPRISE] CSV file downloaded in the Engagement Dashboard's New Users section contains undefined data",
+          "userLogin": "tassoevan",
+          "description": "- Fix CSV file downloaded in the Engagement Dashboard's New Users section;\r\n - Add column headers to the CSV file downloaded from the Engagement Dashboard's New Users section.",
+          "contributors": [
+            "matheusbsilva137",
+            "gabriellsh",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23139",
+          "title": "Bump supertest from 6.1.3 to 6.1.6",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23152",
+          "title": "Chore: client endpoints typings",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23157",
+          "title": "Chore: Update pino and pino-pretty",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23138",
+          "title": "Bump @rocket.chat/string-helpers from 0.27.0 to 0.29.0 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22978",
+          "title": "[FIX] Inaccurate use of 'Mobile notifications' instead of 'Push notifications' in i18n strings",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix inaccurate use of 'Mobile notifications' (which is misleading in German) by 'Push notifications';\r\n - Update `'Notification_Mobile_Default_For'` key to `'Notification_Push_Default_For'` (and text to 'Send Push Notifications For' for English Language);\r\n - Update `'Accounts_Default_User_Preferences_mobileNotifications'` key to `'Accounts_Default_User_Preferences_pushNotifications'`;\r\n - Update `'Mobile_Notifications_Default_Alert'` key to `'Mobile_Push_Notifications_Default_Alert'`;",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23141",
+          "title": "Bump xml-crypto from 2.1.2 to 2.1.3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22975",
+          "title": "[IMPROVE] Change log format to JSON",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23023",
+          "title": "[IMPROVE][APPS] Return task ids when using the scheduler api",
+          "userLogin": "thassiov",
+          "description": "In the methods that create tasks (`scheduleRecurring` and `scheduleOnce`) return the `id` of the document created in the database so the user can cancel each task individually.",
+          "milestone": "4.0.0",
+          "contributors": [
+            "thassiov",
+            "d-gubert",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23104",
+          "title": "[FIX] Update bugsnag package",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23128",
+          "title": "Bump pm2 from 5.1.0 to 5.1.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23126",
+          "title": "Bump @types/ejson from 2.1.2 to 2.1.3 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23109",
+          "title": "Chore: Remove non-used dependencies",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23095",
+          "title": "Bump @types/ws from 7.4.6 to 7.4.7 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23068",
+          "title": "Bump tar from 6.1.0 to 6.1.11 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23122",
+          "title": "Bump @types/imap from 0.8.34 to 0.8.35",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23120",
+          "title": "Bump csv-parse from 4.16.0 to 4.16.3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23123",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-09-06Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "22177",
+          "title": "Bump juice from 5.2.0 to 8.0.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23054",
+          "title": "[IMPROVE] Use PaginatedSelectFiltered in department edition",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23053",
+          "title": "[FIX] Add check before placing chat on-hold to confirm that contact sent last message",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "22036",
+          "title": "Bump stylelint-order from 2.2.1 to 4.1.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "22527",
+          "title": "Bump iconv-lite from 0.4.24 to 0.6.3",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22528",
+          "title": "Bump image-size from 0.6.3 to 1.0.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22532",
+          "title": "Bump ip-range-check from 0.0.2 to 0.2.0",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "16050",
+          "title": "[BREAK] Remove patch info from endpoint /api/info for non-logged in users",
+          "userLogin": "MarcosSpessatto",
+          "milestone": "4.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "tassoevan",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23088",
+          "title": "Bump object-path from 0.11.5 to 0.11.6",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22922",
+          "title": "Chore: Environmental variable for marketplace url",
+          "userLogin": "graywolf336",
+          "contributors": [
+            "graywolf336"
+          ]
+        },
+        {
+          "pr": "22600",
+          "title": "Bump @types/cookie from 0.4.0 to 0.4.1 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22598",
+          "title": "Bump @types/express from 4.17.12 to 4.17.13 in /ee/server/services",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "22673",
+          "title": "Bump actions/stale from 3.0.19 to 4",
+          "userLogin": "dependabot[bot]",
+          "contributors": [
+            "dependabot[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23061",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-08-30Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "23086",
+          "title": "Merge master into develop & Set version to 4.0.0",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23079",
+          "title": "Chore: Remove wrong usages of `Meteor.wrapAsync`",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "3.18.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23135",
+          "title": "Release 3.18.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "KevLehman",
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23286",
+          "title": "Regression: Fix app storage migration",
+          "userLogin": "thassiov",
+          "description": "The previous version of this migration didn't take into consideration apps that were installed prior to [Rocket.Chat@3.8.0](https://github.com/RocketChat/Rocket.Chat/releases/tag/3.8.0), which [removed the typescript compiler from the server](https://github.com/RocketChat/Rocket.Chat/pull/18687) and into the CLI. As a result, the zip files inside each installed app's document in the database had typescript files in them instead of the now required javascript files.\r\n\r\nAs the new strategy of source code storage for apps changes the way the app is loaded, those zip files containing the source code are read everytime the app is started (or [in this particular case, updated](https://github.com/RocketChat/Rocket.Chat/pull/23286/files#diff-caf9f7a22478639e58d6514be039140a42ce1ab2d999c3efe5678c38ee36d0ccR43)), and as the zips' contents were wrong, the operation was failing.\r\n\r\nThe fix extract the data from old apps and creates new zip files with the compiled `js` already present.",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23278",
+          "title": "Regression: Seats Cap banner not being disabled if not enterprise",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23297",
+          "title": "Regression: Create new loggers based on server log level",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23304",
+          "title": "Regression: Fix channel icons on queue",
+          "userLogin": "MartinSchoeler",
+          "contributors": [
+            "KevLehman",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.0",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23306",
+          "title": "Regression: LDAP Issues",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23302",
+          "title": "[BREAK] Remove cordova compatibility setting",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23308",
+          "title": "Regression: Fix Bugsnag not started error",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23319",
+          "title": "[BREAK] Moved SAML custom field map to EE",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23320",
+          "title": "Regression: \"Join\" button not working",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23318",
+          "title": "Regression: Add default value when no cookies are present",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23317",
+          "title": "Regression: Request seats url",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23310",
+          "title": "[BREAK] Webhook will fail if user is not part of the channel",
+          "userLogin": "sampaiodiego",
+          "description": "Remove deprecated behavior added by https://github.com/RocketChat/Rocket.Chat/pull/18024 that accepts webhook integrations sending messages even if the user is not part of the channel.\r\n\r\nStarting from 4.0.0 the webhook request will fail with `error-not-allowed` error:\r\n\r\n```\r\n{\"success\":false,\"error\":\"error-not-allowed\"}\r\n```",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23311",
+          "title": "Regression: LDAP Channel/Role Sync not working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23312",
+          "title": "Regression: Request seats link",
+          "userLogin": "gabriellsh",
+          "contributors": [
+            "gabriellsh"
+          ]
+        }
+      ]
+    },
+    "3.16.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "3.17.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "3.18.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23338",
+          "title": "Release 3.18.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.0.0-rc.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23338",
+          "title": "Release 3.18.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23307",
+          "title": "Regression: Change some logs to new format",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23280",
+          "title": "[FIX] Update visitor info on email reception based on current inbox settings",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.2",
+          "contributors": [
+            "KevLehman",
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23135",
+          "title": "Release 3.18.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "KevLehman",
+            "g-thome"
+          ]
+        },
+        {
+          "pr": "23091",
+          "title": "Regression: Auth banner for EE",
+          "userLogin": "g-thome",
+          "description": "Dimisses auth banners assigned to EE admins and prevents new ones from appearing.",
+          "milestone": "3.18.1",
+          "contributors": [
+            "g-thome",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23089",
+          "title": "[FIX] Change way emails are validated on livechat registerGuest method",
+          "userLogin": "KevLehman",
+          "milestone": "3.18.1",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23100",
+          "title": "[IMPROVE] Change HTTP and Method logs to level INFO",
+          "userLogin": "sampaiodiego",
+          "milestone": "3.18.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23328",
+          "title": "Regression: invalid `call` import",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23331",
+          "title": "Regression: LDAP: Handle base authentication and prevent crash",
+          "userLogin": "rodrigok",
+          "description": "When AD requires TLS the auth crashes the server if StartTLS is not set, the error shows at the end because the code was not waiting on this operation.",
+          "milestone": "4.0.0",
+          "contributors": [
+            "rodrigok",
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23334",
+          "title": "Regression: invalid `call` import",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23321",
+          "title": "Regression: LDAP User Data Sync not always working",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23333",
+          "title": "Regression: Removed exclusive tests statement",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23322",
+          "title": "Regression: Blank screen in Jitsi video calls",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix Jitsi calls being disposed even when \"Open in new window\" setting is disabled;\r\n - Fix misspelling on `CallJitsWithData.js` file name.",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23330",
+          "title": "Regression: SAML identifier mapping",
+          "userLogin": "pierre-lehnen-rc",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.0.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0-alpha.5428",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
     }
   }
 }

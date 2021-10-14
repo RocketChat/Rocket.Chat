@@ -5,9 +5,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { settings } from '../../../../../settings';
 import { modal } from '../../../../../ui-utils/client';
-import { APIClient, handleError, t } from '../../../../../utils';
+import { APIClient, t } from '../../../../../utils';
 import { hasRole } from '../../../../../authorization';
 import './closeRoom.html';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
 
 const validateRoomComment = (comment) => {
 	if (!settings.get('Livechat_request_comment_when_closing_conversation')) {

@@ -34,7 +34,7 @@ function SideBar({ logoSrc = 'images/logo/logo.svg', currentStep = 1, steps = []
 				flexWrap='wrap'
 				alignItems='center'
 			>
-				<Logo src={logoSrc} width='auto' height='x24' margin='x4' />
+				<Logo src={logoSrc} width={84} margin='x4' />
 				<Box
 					is='span'
 					margin='x4'

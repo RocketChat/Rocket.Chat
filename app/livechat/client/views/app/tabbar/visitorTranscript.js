@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
-import toastr from 'toastr';
 
-import { t, isEmail, handleError, roomTypes } from '../../../../../utils';
+import { dispatchToastMessage } from '../../../../../../client/lib/toast';
+import { handleError } from '../../../../../../client/lib/utils/handleError';
+import { t, isEmail, roomTypes } from '../../../../../utils';
 import { APIClient } from '../../../../../utils/client';
 import './visitorTranscript.html';
 
@@ -99,7 +100,7 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			toastr.success(t('Your_email_has_been_queued_for_sending'));
+			dispatchToastMessage({ type: 'success', message: t('Your_email_has_been_queued_for_sending') });
 			this.save();
 		});
 	},
@@ -122,7 +123,7 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			toastr.success(t('Livechat_transcript_has_been_requested'));
+			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_has_been_requested') });
 			this.save();
 		});
 	},
@@ -138,7 +139,7 @@ Template.visitorTranscript.events({
 				return handleError(err);
 			}
 
-			toastr.success(t('Livechat_transcript_request_has_been_canceled'));
+			dispatchToastMessage({ type: 'success', message: t('Livechat_transcript_request_has_been_canceled') });
 			this.save();
 		});
 	},

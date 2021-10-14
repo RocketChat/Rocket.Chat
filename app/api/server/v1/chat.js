@@ -1,3 +1,4 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -448,11 +449,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			_hidden: { $ne: true },
 			...type === 'following' && { replies: { $in: [this.userId] } },
 			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
-			...text && {
-				$text: {
-					$search: text,
-				},
-			},
+			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };

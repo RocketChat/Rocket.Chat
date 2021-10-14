@@ -1,7 +1,8 @@
 import { EJSON } from 'meteor/ejson';
 import { Db, Collection } from 'mongodb';
+import * as mongodb from 'mongodb';
 
-import { IStreamerConstructor } from './modules/streamer/streamer.module';
+import { IStreamer, IStreamerConstructor } from './modules/streamer/streamer.module';
 
 /* eslint-disable @typescript-eslint/interface-name-prefix */
 declare module 'meteor/random' {
@@ -25,6 +26,14 @@ declare module 'meteor/accounts-base' {
 		function insertUserDoc(options: Record<string, any>, user: Record<string, any>): string;
 
 		function _generateStampedLoginToken(): {token: string; when: Date};
+
+		function _runLoginHandlers(methodInvocation: Function, loginRequest: Record<string, any>): Record<string, any> | undefined;
+
+		export class ConfigError extends Error {}
+
+		export class LoginCancelledError extends Error {
+			public static readonly numericError: number;
+		}
 	}
 }
 
@@ -40,7 +49,7 @@ declare module 'meteor/meteor' {
 			details?: string | undefined | Record<string, string>;
 		}
 
-		const Streamer: IStreamerConstructor;
+		const Streamer: IStreamerConstructor & IStreamer;
 
 		const server: any;
 
@@ -107,6 +116,13 @@ declare module 'meteor/mongo' {
 	}
 
 	namespace MongoInternals {
+		export const NpmModules: {
+			mongodb: {
+				version: string;
+				module: typeof mongodb;
+			};
+		};
+
 		function defaultRemoteCollectionDriver(): RemoteCollectionDriver;
 
 		class ConnectionClass {}

@@ -10,6 +10,7 @@ import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 API.v1.addRoute('livechat/message', {
 	post() {
@@ -56,6 +57,11 @@ API.v1.addRoute('livechat/message', {
 					token,
 				},
 				agent,
+				roomInfo: {
+					source: {
+						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+					},
+				},
 			};
 
 			const result = Promise.await(Livechat.sendMessage(sendMessage));
@@ -304,6 +310,11 @@ API.v1.addRoute('livechat/messages', { authRequired: true }, {
 					rid,
 					token: visitorToken,
 					msg: message.msg,
+				},
+				roomInfo: {
+					source: {
+						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+					},
 				},
 			};
 			const sentMessage = Promise.await(Livechat.sendMessage(sendMessage));

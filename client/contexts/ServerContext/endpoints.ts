@@ -1,120 +1,87 @@
-import { EngagementDashboardActiveUsersEndpoint } from '../../../ee/app/engagement-dashboard/client/contexts/ServerContext/endpoints/EngagementDashboardActiveUsers';
-import { ExternalComponentsEndpoint as AppsExternalComponentsEndpoint } from './endpoints/apps/externalComponents';
-import { FilesEndpoint as ChannelsFilesEndpoint } from './endpoints/v1/channels/files';
-import { ChannelsMembersEndpoint } from './endpoints/v1/channels/members';
-import { FollowMessageEndpoint as ChatFollowMessageEndpoint } from './endpoints/v1/chat/followMessage';
-import { GetDiscussionsEndpoint as ChatGetDiscussionsEndpoint } from './endpoints/v1/chat/getDiscussions';
-import { GetMessageEndpoint as ChatGetMessageEndpoint } from './endpoints/v1/chat/getMessage';
-import { GetThreadsListEndpoint as ChatGetThreadsListEndpoint } from './endpoints/v1/chat/getThreadsList';
-import { UnfollowMessageEndpoint as ChatUnfollowMessageEndpoint } from './endpoints/v1/chat/unfollowMessage';
-import { ManualRegisterEndpoint as CloudManualRegisterEndpoint } from './endpoints/v1/cloud/manualRegister';
-import { ListEndpoint as CustomUserStatusListEndpoint } from './endpoints/v1/custom-user-status/list';
-import { ResolveSrvEndpoint } from './endpoints/v1/dns/resolve.srv';
-import { ResolveTxtEndpoint } from './endpoints/v1/dns/resolve.txt';
-import { ListEndpoint as EmojiCustomListEndpoint } from './endpoints/v1/emoji-custom/list';
-import { FilesEndpoint as GroupsFilesEndpoint } from './endpoints/v1/groups/files';
-import { GroupsMembersEndpoint } from './endpoints/v1/groups/members';
-import { FilesEndpoint as ImFilesEndpoint } from './endpoints/v1/im/files';
-import { ImMembersEndpoint } from './endpoints/v1/im/members';
-import { AppearanceEndpoint as LivechatAppearanceEndpoint } from './endpoints/v1/livechat/appearance';
-import { LivechatCustomFieldsEndpoint } from './endpoints/v1/livechat/customFields';
-import { LivechatDepartment } from './endpoints/v1/livechat/department';
-import { LivechatDepartmentSingle } from './endpoints/v1/livechat/departmentSingle';
-import { LivechatDepartmentsByUnit } from './endpoints/v1/livechat/departmentsByUnit';
-import { LivechatMonitorsList } from './endpoints/v1/livechat/monitorsList';
-import { LivechatRoomOnHoldEndpoint } from './endpoints/v1/livechat/onHold';
-import { LivechatRoomsEndpoint } from './endpoints/v1/livechat/rooms';
-import { LivechatTagsList } from './endpoints/v1/livechat/tagsList';
-import { LivechatUsersAgentEndpoint } from './endpoints/v1/livechat/usersAgent';
-import { LivechatVisitorInfoEndpoint } from './endpoints/v1/livechat/visitorInfo';
-import { CannedResponseEndpoint } from './endpoints/v1/omnichannel/cannedResponse';
-import { CannedResponsesEndpoint } from './endpoints/v1/omnichannel/cannedResponses';
-import { AutocompleteAvailableForTeamsEndpoint as RoomsAutocompleteTeamsEndpoint } from './endpoints/v1/rooms/autocompleteAvailableForTeams';
-import { AutocompleteChannelAndPrivateEndpoint as RoomsAutocompleteEndpoint } from './endpoints/v1/rooms/autocompleteChannelAndPrivate';
-import { RoomsInfo as RoomsInfoEndpoint } from './endpoints/v1/rooms/roomsInfo';
-import { AddRoomsEndpoint as TeamsAddRoomsEndpoint } from './endpoints/v1/teams/addRooms';
-import { ListRoomsEndpoint } from './endpoints/v1/teams/listRooms';
-import { ListRoomsOfUserEndpoint } from './endpoints/v1/teams/listRoomsOfUser';
-import { AutocompleteEndpoint as UsersAutocompleteEndpoint } from './endpoints/v1/users/autocomplete';
-import { SendEmailCodeEndpoint } from './endpoints/v1/users/twoFactorAuth/sendEmailCode';
+import type { ExtractKeys, ValueOf } from '../../../definition/utils';
+import type { EngagementDashboardEndpoints } from '../../../ee/client/contexts/ServerContext/endpoints/v1/engagementDashboard';
+import type { AppsEndpoints } from './endpoints/apps';
+import type { ChannelsEndpoints } from './endpoints/v1/channels';
+import type { ChatEndpoints } from './endpoints/v1/chat';
+import type { CloudEndpoints } from './endpoints/v1/cloud';
+import type { CustomUserStatusEndpoints } from './endpoints/v1/customUserStatus';
+import type { DmEndpoints } from './endpoints/v1/dm';
+import type { DnsEndpoints } from './endpoints/v1/dns';
+import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
+import type { GroupsEndpoints } from './endpoints/v1/groups';
+import type { ImEndpoints } from './endpoints/v1/im';
+import type { LDAPEndpoints } from './endpoints/v1/ldap';
+import type { LicensesEndpoints } from './endpoints/v1/licenses';
+import type { MiscEndpoints } from './endpoints/v1/misc';
+import type { OmnichannelEndpoints } from './endpoints/v1/omnichannel';
+import type { RoomsEndpoints } from './endpoints/v1/rooms';
+import type { StatisticsEndpoints } from './endpoints/v1/statistics';
+import type { TeamsEndpoints } from './endpoints/v1/teams';
+import type { UsersEndpoints } from './endpoints/v1/users';
 
-export type ServerEndpoints = {
-	'chat.getMessage': ChatGetMessageEndpoint;
-	'chat.followMessage': ChatFollowMessageEndpoint;
-	'chat.unfollowMessage': ChatUnfollowMessageEndpoint;
-	'cloud.manualRegister': CloudManualRegisterEndpoint;
-	'chat.getDiscussions': ChatGetDiscussionsEndpoint;
-	'chat.getThreadsList': ChatGetThreadsListEndpoint;
-	'dns.resolve.srv': ResolveSrvEndpoint;
-	'dns.resolve.txt': ResolveTxtEndpoint;
-	'emoji-custom.list': EmojiCustomListEndpoint;
-	'channels.files': ChannelsFilesEndpoint;
-	'im.files': ImFilesEndpoint;
-	'im.members': ImMembersEndpoint;
-	'groups.files': GroupsFilesEndpoint;
-	'groups.members': GroupsMembersEndpoint;
-	'channels.members': ChannelsMembersEndpoint;
-	'users.autocomplete': UsersAutocompleteEndpoint;
-	'livechat/appearance': LivechatAppearanceEndpoint;
-	'custom-user-status.list': CustomUserStatusListEndpoint;
-	'/apps/externalComponents': AppsExternalComponentsEndpoint;
-	'rooms.autocomplete.channelAndPrivate': RoomsAutocompleteEndpoint;
-	'rooms.autocomplete.availableForTeams': RoomsAutocompleteTeamsEndpoint;
-	'teams.listRooms': ListRoomsEndpoint;
-	'teams.listRoomsOfUser': ListRoomsOfUserEndpoint;
-	'teams.addRooms': TeamsAddRoomsEndpoint;
-	'livechat/visitors.info': LivechatVisitorInfoEndpoint;
-	'livechat/room.onHold': LivechatRoomOnHoldEndpoint;
-	'livechat/monitors.list': LivechatMonitorsList;
-	'livechat/tags.list': LivechatTagsList;
-	'livechat/department': LivechatDepartment;
-	'livechat/department/${string}': LivechatDepartmentSingle;
-	'livechat/departments.by-unit/': LivechatDepartmentsByUnit;
-	'engagement-dashboard/users/active-users': EngagementDashboardActiveUsersEndpoint;
-	'rooms.info': RoomsInfoEndpoint;
-	'users.2fa.sendEmailCode': SendEmailCodeEndpoint;
-	'livechat/custom-fields': LivechatCustomFieldsEndpoint;
-	'livechat/rooms': LivechatRoomsEndpoint;
-	'livechat/users/agent': LivechatUsersAgentEndpoint;
-	'canned-responses': CannedResponsesEndpoint;
-	'canned-responses/${string}': CannedResponseEndpoint;
-};
+type Endpoints = ChatEndpoints &
+	ChannelsEndpoints &
+	CloudEndpoints &
+	CustomUserStatusEndpoints &
+	DmEndpoints &
+	DnsEndpoints &
+	EmojiCustomEndpoints &
+	GroupsEndpoints &
+	ImEndpoints &
+	LDAPEndpoints &
+	RoomsEndpoints &
+	TeamsEndpoints &
+	UsersEndpoints &
+	EngagementDashboardEndpoints &
+	AppsEndpoints &
+	OmnichannelEndpoints &
+	StatisticsEndpoints &
+	LicensesEndpoints &
+	MiscEndpoints;
 
-export type ServerEndpointPath = keyof ServerEndpoints;
-export type ServerEndpointMethodOf<Path extends ServerEndpointPath> = keyof ServerEndpoints[Path] &
-	('GET' | 'POST' | 'DELETE');
+type Endpoint = UnionizeEndpoints<Endpoints>;
 
-type ServerEndpoint<
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
-> = ServerEndpoints[Path][Method] extends (...args: any[]) => any
-	? ServerEndpoints[Path][Method]
-	: (...args: any[]) => any;
+type UnionizeEndpoints<EE extends Endpoints> = ValueOf<
+	{
+		[P in keyof EE]: UnionizeMethods<P, EE[P]>;
+	}
+>;
 
-export type ServerEndpointRequestPayload<
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
-> = Parameters<ServerEndpoint<Method, Path>>[0];
+type ExtractOperations<OO, M extends keyof OO> = ExtractKeys<OO, M, (...args: any[]) => any>;
 
-export type ServerEndpointFormData<
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
-> = Parameters<ServerEndpoint<Method, Path>>[1];
+type UnionizeMethods<P, OO> = ValueOf<
+	{
+		[M in keyof OO as ExtractOperations<OO, M>]: (
+			method: M,
+			path: OO extends { path: string } ? OO['path'] : P,
+			...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
+		) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
+	}
+>;
 
-export type ServerEndpointResponsePayload<
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
-> = ReturnType<ServerEndpoint<Method, Path>>;
+export type Method = Parameters<Endpoint>[0];
+export type Path = Parameters<Endpoint>[1];
 
-export type ServerEndpointFunction<
-	Method extends ServerEndpointMethodOf<Path>,
-	Path extends ServerEndpointPath,
-> = {
-	(params: ServerEndpointRequestPayload<Method, Path>): Promise<
-		ServerEndpointResponsePayload<Method, Path>
-	>;
-	(
-		params: ServerEndpointRequestPayload<Method, Path>,
-		formData: ServerEndpointFormData<Method, Path>,
-	): Promise<ServerEndpointResponsePayload<Method, Path>>;
-};
+export type MethodFor<P extends Path> = P extends any
+	? Parameters<Extract<Endpoint, (method: any, path: P, ...params: any[]) => any>>[0]
+	: never;
+export type PathFor<M extends Method> = M extends any
+	? Parameters<Extract<Endpoint, (method: M, path: any, ...params: any[]) => any>>[1]
+	: never;
+
+type Operation<M extends Method, P extends PathFor<M>> = M extends any
+	? P extends any
+		? Extract<Endpoint, (method: M, path: P, ...params: any[]) => any>
+		: never
+	: never;
+
+type ExtractParams<Q> = Q extends [any, any]
+	? [undefined?]
+	: Q extends [any, any, any, ...any[]]
+	? [Q[2]]
+	: never;
+
+export type Params<M extends Method, P extends PathFor<M>> = ExtractParams<
+	Parameters<Operation<M, P>>
+>;
+export type Return<M extends Method, P extends PathFor<M>> = ReturnType<Operation<M, P>>;

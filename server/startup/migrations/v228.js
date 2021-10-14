@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Permissions } from '../../../app/models';
 
-Migrations.add({
+addMigration({
 	version: 228,
 	up() {
 		if (Permissions) {

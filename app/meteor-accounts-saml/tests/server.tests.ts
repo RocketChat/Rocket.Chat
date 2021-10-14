@@ -632,13 +632,9 @@ describe('SAML', () => {
 					username: 'anotherUsername',
 					email: 'singleEmail',
 					name: 'anotherName',
-					customField1: 'customField1',
-					customField2: 'customField2',
-					customField3: 'customField3',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-				globalSettings.roleAttributeName = 'roles';
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
@@ -653,15 +649,8 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
 				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
-				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user', 'ruler', 'admin', 'king', 'president', 'governor', 'mayor']);
+				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user']);
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
-
-				const map = new Map();
-				map.set('customField1', 'value1');
-				map.set('customField2', 'value2');
-				map.set('customField3', 'value3');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 
 			it('should join array values if username receives an array of values', () => {
@@ -736,37 +725,6 @@ describe('SAML', () => {
 				expect(userObject).to.be.an('object');
 				expect(userObject).to.have.property('fullName').that.is.equal('[DisplayName]');
 				expect(userObject).to.have.property('username').that.is.equal('[username]');
-			});
-
-			it('should load multiple roles from the roleAttributeName when it has multiple values', () => {
-				const multipleRoles = {
-					...profile,
-					roles: ['role1', 'role2'],
-				};
-
-				const userObject = SAMLUtils.mapProfileToUserObject(multipleRoles);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['role1', 'role2']);
-			});
-
-			it('should assign the default role when the roleAttributeName is missing', () => {
-				const { globalSettings } = SAMLUtils;
-				globalSettings.roleAttributeName = '';
-				SAMLUtils.updateGlobalSettings(globalSettings);
-
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
-			});
-
-			it('should assign the default role when the value of the role attribute is missing', () => {
-				const { globalSettings } = SAMLUtils;
-				globalSettings.roleAttributeName = 'inexistentField';
-				SAMLUtils.updateGlobalSettings(globalSettings);
-
-				const userObject = SAMLUtils.mapProfileToUserObject(profile);
-
-				expect(userObject).to.be.an('object').that.have.property('roles').that.is.an('array').with.members(['user']);
 			});
 
 			it('should run custom regexes when one is used', () => {
@@ -882,7 +840,6 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('user-1');
 			});
 
-
 			it('should collect the values of every attribute on the field map', () => {
 				const { globalSettings } = SAMLUtils;
 
@@ -901,7 +858,6 @@ describe('SAML', () => {
 							'otherRoles',
 							'language',
 							'channels',
-							'customField1',
 						],
 					},
 				};
@@ -925,7 +881,6 @@ describe('SAML', () => {
 					'otherRoles',
 					'language',
 					'channels',
-					'customField1',
 				]);
 
 				// Workaround because chai doesn't handle Maps very well
@@ -1001,11 +956,9 @@ describe('SAML', () => {
 						template: 'user-__uid__',
 					},
 					email: 'email',
-					epa: 'eduPersonAffiliation',
 				};
 
 				globalSettings.userDataFieldMap = JSON.stringify(fieldMap);
-				globalSettings.roleAttributeName = 'roles';
 
 				SAMLUtils.updateGlobalSettings(globalSettings);
 				SAMLUtils.relayState = '[RelayState]';
@@ -1024,8 +977,6 @@ describe('SAML', () => {
 
 				const map = new Map();
 				map.set('epa', 'group1');
-
-				expect(userObject).to.have.property('customFields').that.is.a('Map').and.is.deep.equal(map);
 			});
 		});
 	});
