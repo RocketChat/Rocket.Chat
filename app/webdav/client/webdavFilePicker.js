@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import toastr from 'toastr';
 import { Session } from 'meteor/session';
 import { Handlebars } from 'meteor/ui';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -12,6 +11,7 @@ import { modal } from '../../ui-utils/client';
 import { t } from '../../utils/client';
 import { fileUploadHandler } from '../../file-upload/client';
 import { call } from '../../../client/lib/utils/call';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 function sortTable(data, sortBy, sortDirection) {
 	if (sortDirection === 'desc') {
@@ -238,7 +238,7 @@ Template.webdavFilePicker.events({
 		instance.isLoading.set(false);
 		if (!response || !response.success) {
 			modal.close();
-			return toastr.error(t('Failed_to_get_webdav_file'));
+			return dispatchToastMessage({ type: 'error', message: t('Failed_to_get_webdav_file') });
 		}
 		const blob = new Blob([response.data], { type: response.type });
 		// converting to file object

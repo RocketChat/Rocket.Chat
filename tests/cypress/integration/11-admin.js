@@ -83,7 +83,7 @@ describe('[Administration]', () => {
 					admin.roomsChannelsCheckbox.should('be.visible');
 				});
 
-				it('it should show the direct messsage checkbox', () => {
+				it('it should show the direct message checkbox', () => {
 					admin.roomsDirectCheckbox.should('be.visible');
 				});
 
