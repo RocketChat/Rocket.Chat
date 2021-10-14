@@ -1,8 +1,11 @@
 import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { UserStatus } from '../../definition/UserStatus';
+
+export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -54,11 +57,28 @@ const notify = (presence: UserPresence): void => {
 const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	let timer: ReturnType<typeof setTimeout>;
 
-	const fetch = (delay = 250): void => {
+	const deletedUids = new Set<UserPresence['_id']>();
+
+	const fetch = (delay = 500): void => {
 		timer && clearTimeout(timer);
 		timer = setTimeout(async () => {
 			const currentUids = new Set(uids);
 			uids.clear();
+
+			const ids = Array.from(currentUids);
+			const removed = Array.from(deletedUids);
+
+			Meteor.subscribe('stream-user-presence', '', {
+				...(ids.length > 0 && { added: Array.from(currentUids) }),
+				...(removed.length && { removed: Array.from(deletedUids) }),
+			});
+
+			deletedUids.clear();
+
+			if (ids.length === 0) {
+				return;
+			}
+
 			try {
 				const params = {
 					ids: [...currentUids],
@@ -93,13 +113,17 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 		uids.add(uid);
 		fetch();
 	};
-
+	const stop = (uid: UserPresence['_id']): void => {
+		deletedUids.add(uid);
+		fetch();
+	};
 	emitter.on('remove', (uid) => {
 		if (emitter.has(uid)) {
 			return;
 		}
 
 		store.delete(uid);
+		stop(uid);
 	});
 
 	emitter.on('reset', () => {
@@ -121,7 +145,9 @@ const listen = (
 	uid: UserPresence['_id'],
 	handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void),
 ): void => {
-	// emitter.on(uid, update);
+	if (!uid) {
+		return;
+	}
 	emitter.on(uid, handler);
 
 	const user = store.has(uid) && store.get(uid);
@@ -154,7 +180,6 @@ const restart = (): void => {
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
 	new Promise((resolve) => {
 		const user = store.has(uid) && store.get(uid);
-
 		if (user) {
 			return resolve(user);
 		}
