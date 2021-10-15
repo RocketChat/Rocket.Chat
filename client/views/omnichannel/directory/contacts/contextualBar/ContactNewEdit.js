@@ -11,7 +11,7 @@ import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesCo
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -107,12 +107,12 @@ function ContactNewEdit({ id, data, close }) {
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpointAction(
+	const saveContact = useEndpointActionExperimental('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpointActionExperimental(
 		'GET',
 		`omnichannel/contact.search?email=${email}`,
 	);
-	const phoneAlreadyExistsAction = useEndpointAction(
+	const phoneAlreadyExistsAction = useEndpointActionExperimental(
 		'GET',
 		`omnichannel/contact.search?phone=${phone}`,
 	);
