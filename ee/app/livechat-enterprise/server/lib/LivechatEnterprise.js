@@ -268,7 +268,7 @@ function shouldQueueStart(routingMethod) {
 			: 'Stopping'
 	} queue`);
 
-	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+	routingSupportsAutoAssign && settings.get('Livechat_enabled') ? queueWorker.start() : queueWorker.stop();
 }
 
 settings.watchMultiple(['Livechat_enabled', 'Livechat_Routing_Method'], ([enabled, routingMethod]) => {
