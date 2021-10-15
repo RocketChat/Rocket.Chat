@@ -9,6 +9,6 @@ export type UsersEndpoints = {
 		GET: (params: { selector: string }) => { items: IUser[] };
 	};
 	'users.listTeams': {
-		GET: (params: { userId: IUser['_id'] | null }) => { teams: Array<ITeam> };
+		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };
 	};
 };
