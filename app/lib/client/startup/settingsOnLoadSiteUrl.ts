@@ -1,16 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 
-export let hostname;
+Meteor.startup(() => {
+	Tracker.autorun(() => {
+		const value = settings.get('Site_Url');
+		if (value == null || value.trim() === '') {
+			return;
+		}
+		(window as any).__meteor_runtime_config__.ROOT_URL = value;
 
-settings.get('Site_Url', function(value) {
-	if (value == null || value.trim() === '') {
-		return;
-	}
-	(window as any).__meteor_runtime_config__.ROOT_URL = value;
-
-	if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
-		Meteor.absoluteUrl.defaultOptions.rootUrl = value;
-	}
+		if (Meteor.absoluteUrl.defaultOptions && Meteor.absoluteUrl.defaultOptions.rootUrl) {
+			Meteor.absoluteUrl.defaultOptions.rootUrl = value;
+		}
+	});
 });
