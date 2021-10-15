@@ -15,7 +15,6 @@ import {
 	messageProperties,
 	MessageTypes,
 	readMessage,
-	modal,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
