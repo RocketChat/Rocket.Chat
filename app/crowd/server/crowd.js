@@ -311,31 +311,27 @@ Accounts.registerLoginHandler('crowd', function(loginRequest) {
 
 const jobName = 'CROWD_Sync';
 
-const addCronJob = function addCronJobDebounced() {
-	if (settings.get('CROWD_Sync_User_Data') !== true) {
-		logger.info('Disabling CROWD Background Sync');
-		if (SyncedCron.nextScheduledAtDate(jobName)) {
-			SyncedCron.remove(jobName);
-		}
-		return;
-	}
-
-	const crowd = new CROWD();
-
-	if (settings.get('CROWD_Sync_Interval')) {
-		logger.info('Enabling CROWD Background Sync');
-		SyncedCron.add({
-			name: jobName,
-			schedule: (parser) => parser.text(settings.get('CROWD_Sync_Interval')),
-			job() {
-				crowd.sync();
-			},
-		});
-	}
-};
-
 Meteor.startup(() => {
-	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], addCronJob);
+	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], function addCronJobDebounced([data, interval]) {
+		if (data !== true) {
+			logger.info('Disabling CROWD Background Sync');
+			if (SyncedCron.nextScheduledAtDate(jobName)) {
+				SyncedCron.remove(jobName);
+			}
+			return;
+		}
+		const crowd = new CROWD();
+		if (interval) {
+			logger.info('Enabling CROWD Background Sync');
+			SyncedCron.add({
+				name: jobName,
+				schedule: (parser) => parser.text(interval),
+				job() {
+					crowd.sync();
+				},
+			});
+		}
+	});
 });
 
 Meteor.methods({

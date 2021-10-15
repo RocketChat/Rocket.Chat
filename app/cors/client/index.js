@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../settings';
+
+import { settings } from '../../settings/client';
 
 Meteor.startup(function() {
-	settings.get('Force_SSL', (value) => {
-		Meteor.absoluteUrl.defaultOptions.secure = Boolean(value);
+	Tracker.autorun(function() {
+		Meteor.absoluteUrl.defaultOptions.secure = Boolean(settings.get('Force_SSL'));
 	});
 });
