@@ -27,7 +27,13 @@ export const RoutingManager = {
 		// queue shouldn't start on CE
 	},
 
+	isMethodSet() {
+		return !!this.methodName;
+	},
+
 	setMethodName(name) {
+		const err = new Error();
+		console.log(err.stack);
 		this.logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
 		if (!this.methods[name]) {
 			this.logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
