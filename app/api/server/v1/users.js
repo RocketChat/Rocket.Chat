@@ -903,6 +903,9 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 
 API.v1.addRoute('users.listTeams', { authRequired: true }, {
 	get() {
+		check(this.queryParams, Match.ObjectIncluding({
+			userId: Match.Maybe(String),
+		}));
 		const { userId } = this.queryParams;
 
 		if (!userId) {
