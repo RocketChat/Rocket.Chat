@@ -250,7 +250,7 @@ export const upsertPermissions = () => {
 	createPermissionsForExistingSettings();
 
 	// register a callback for settings for be create in higher-level-packages
-	const createPermissionForAddedSetting = function(settingId) {
+	settings.on('*', function([settingId]) {
 		const previousSettingPermissions = getPreviousPermissions(settingId);
 		const setting = Settings.findOneById(settingId);
 		if (setting) {
@@ -258,7 +258,5 @@ export const upsertPermissions = () => {
 				createSettingPermission(setting, previousSettingPermissions);
 			}
 		}
-	};
-
-	settings.on('*', createPermissionForAddedSetting);
+	});
 };
