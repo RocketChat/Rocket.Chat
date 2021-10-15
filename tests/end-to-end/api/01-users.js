@@ -3094,7 +3094,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.listTeams', () => {
+	describe('[/users.listTeams]', () => {
 		const teamName1 = `team-name-${ Date.now() }`;
 		const teamName2 = `team-name-2-${ Date.now() }`;
 		let testUser;
@@ -3184,7 +3184,7 @@ describe('[Users]', function() {
 		it('should list both channels', (done) => {
 			request.get(api('users.listTeams'))
 				.set(credentials)
-				.send({
+				.query({
 					userId: testUser._id,
 				})
 				.expect('Content-Type', 'application/json')
