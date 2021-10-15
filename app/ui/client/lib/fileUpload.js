@@ -131,7 +131,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				isValidContentType: file.file.type && fileUploadIsValidContentType(file.file.type),
+				invalidContentType: file.file.type && !fileUploadIsValidContentType(file.file.type),
 			},
 		});
 	};

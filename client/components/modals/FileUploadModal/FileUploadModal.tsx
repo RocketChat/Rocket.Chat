@@ -26,7 +26,7 @@ type FilePreviewModalProps = {
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
 	fileName: string;
-	isValidContentType: boolean;
+	invalidContentType: boolean;
 };
 
 const FilePreviewModal = ({
@@ -34,7 +34,7 @@ const FilePreviewModal = ({
 	file,
 	fileName,
 	onSubmit,
-	isValidContentType,
+	invalidContentType,
 }: FilePreviewModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>('');
@@ -63,7 +63,7 @@ const FilePreviewModal = ({
 	};
 
 	useEffect(() => {
-		if (!isValidContentType) {
+		if (invalidContentType) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }),
@@ -79,7 +79,7 @@ const FilePreviewModal = ({
 			});
 			onClose();
 		}
-	}, [file, dispatchToastMessage, isValidContentType, t, onClose]);
+	}, [file, dispatchToastMessage, invalidContentType, t, onClose]);
 
 	return (
 		<Modal>
