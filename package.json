@@ -241,7 +241,7 @@
 		"localforage": "^1.9.0",
 		"lodash.clonedeep": "^4.5.0",
 		"lodash.get": "^4.4.2",
-		"mailparser": "^3.2.0",
+		"mailparser": "^3.4.0",
 		"marked": "^0.7.0",
 		"mem": "^6.1.1",
 		"meteor-node-stubs": "^1.0.3",
