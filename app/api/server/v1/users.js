@@ -903,10 +903,14 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 
 API.v1.addRoute('users.listTeams', { authRequired: true }, {
 	get() {
-		const { userId } = this.bodyParams;
+		const { userId } = this.queryParams;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
 
 		// If the caller has permission to view all teams, there's no need to filter the teams
-		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? undefined : this.userId;
 
 		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
 
