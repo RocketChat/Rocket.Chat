@@ -17,8 +17,8 @@ import React, {
 	useEffect,
 } from 'react';
 
-import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
-import { useTranslation } from '../../../contexts/TranslationContext';
+import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import FilePreview from './FilePreview';
 
 type FilePreviewModalProps = {

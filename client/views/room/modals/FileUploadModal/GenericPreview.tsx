@@ -1,7 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import React, { ReactElement } from 'react';
 
-import { formatBytes } from '../../../lib/utils/formatBytes';
+import { formatBytes } from '../../../../lib/utils/formatBytes';
 
 const GenericPreview = ({ file }: { file: File }): ReactElement => (
 	<Box display='flex' alignItems='center' w='full' fontScale='s2'>
