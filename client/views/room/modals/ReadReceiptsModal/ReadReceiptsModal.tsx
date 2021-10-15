@@ -15,7 +15,7 @@ type ReadReceiptsModalProps = {
 	onClose: () => void;
 };
 
-const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): ReactElement | null => {
+const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
