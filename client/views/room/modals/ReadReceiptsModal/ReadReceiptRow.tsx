@@ -3,10 +3,10 @@ import { Box } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement } from 'react';
 
-import type { ReadReceipt } from '../../../../definition/ReadReceipt';
-import UserAvatar from '../../../components/avatar/UserAvatar';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
+import type { ReadReceipt } from '../../../../../definition/ReadReceipt';
+import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 
 const hoverStyle = css`
 	&:hover {
@@ -17,6 +17,7 @@ const hoverStyle = css`
 const ReadReceiptRow = ({ user, ts }: ReadReceipt): ReactElement => {
 	const displayName = useUserDisplayName(user);
 	const formatDateAndTime = useFormatDateAndTime();
+
 	return (
 		<Box
 			display='flex'

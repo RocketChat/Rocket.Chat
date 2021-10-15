@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { settings } from '../../app/settings/client';
 import { MessageAction, messageArgs } from '../../app/ui-utils/client';
 import { imperativeModal } from '../lib/imperativeModal';
-import ReadReceiptsModal from '../views/room/ReadReceipts/ReadReceiptsModal';
+import ReadReceiptsModal from '../views/room/modals/ReadReceiptsModal';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

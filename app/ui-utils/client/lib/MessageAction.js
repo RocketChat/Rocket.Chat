@@ -15,7 +15,7 @@ import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import ReactionList from '../../../../client/components/modals/ReactionList';
+import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import { call } from '../../../../client/lib/utils/call';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 
