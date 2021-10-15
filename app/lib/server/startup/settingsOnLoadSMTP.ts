@@ -1,10 +1,15 @@
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const buildMailURL = _.debounce(function() {
+settings.watchMultiple(['SMTP_Host',
+	'SMTP_Port',
+	'SMTP_Username',
+	'SMTP_Password',
+	'SMTP_Protocol',
+	'SMTP_Pool',
+	'SMTP_IgnoreTLS'], function() {
 	SystemLogger.info('Updating process.env.MAIL_URL');
 
 	if (settings.get('SMTP_Host')) {
@@ -28,42 +33,4 @@ const buildMailURL = _.debounce(function() {
 
 		return process.env.MAIL_URL;
 	}
-}, 500);
-
-settings.change('SMTP_Host', function(value) {
-	if (_.isString(value)) {
-		return buildMailURL();
-	}
-});
-
-settings.change('SMTP_Port', function() {
-	return buildMailURL();
-});
-
-settings.change('SMTP_Username', function(value) {
-	if (_.isString(value)) {
-		return buildMailURL();
-	}
-});
-
-settings.change('SMTP_Password', function(value) {
-	if (_.isString(value)) {
-		return buildMailURL();
-	}
-});
-
-settings.change('SMTP_Protocol', function() {
-	return buildMailURL();
-});
-
-settings.change('SMTP_Pool', function() {
-	return buildMailURL();
-});
-
-settings.change('SMTP_IgnoreTLS', function() {
-	return buildMailURL();
-});
-
-Meteor.startup(function() {
-	return buildMailURL();
 });

@@ -76,19 +76,20 @@ export class SettingsRegister {
 	/*
 	* Add a setting
 	*/
-	add(_id: string, value: SettingValue, { sorter, group, ...options }: ISettingAddOptions = {}): void {
+	add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): void {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
 
-		const sorterKey = group && options.section ? `${ group }_${ options.section }` : group;
+		const sorterKey = group && section ? `${ group }_${ section }` : group;
 
 		if (sorterKey) {
-			this._sorter[sorterKey] = this._sorter[sorterKey] || -1;
+			this._sorter[sorterKey] = this._sorter[sorterKey] ?? -1;
 			this._sorter[sorterKey]++;
 		}
 
-		const settingFromCode = getSettingDefaults({ _id, type: 'string', value, sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]), group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
+		const settingFromCode = getSettingDefaults({ _id, type: 'string', section, value, sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]), group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
+
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);

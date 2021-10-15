@@ -56,9 +56,9 @@ Meteor.startup(() => onLicense('ldap-enterprise', () => {
 		addLogoutCronJob();
 	});
 
-	settings.watch('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
+	settings.watch<string>('LDAP_Groups_To_Rocket_Chat_Teams', (value) => {
 		try {
-			LDAPEEManager.validateLDAPTeamsMappingChanges(value as string);
+			LDAPEEManager.validateLDAPTeamsMappingChanges(value);
 		} catch (error) {
 			logger.error(error);
 		}
