@@ -17,13 +17,12 @@ import React, { useCallback, useMemo, useEffect, useState } from 'react';
 import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';
 import UserAvatarEditor from '../../components/avatar/UserAvatarEditor';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-
-const STATUS_TEXT_MAX_LENGTH = 120;
 
 function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
@@ -144,13 +143,13 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		}
 	}, [realname, requireName, t, user.name]);
 
-	const statusTextError = useMemo(
-		() =>
-			!statusText || statusText.length <= STATUS_TEXT_MAX_LENGTH || statusText.length === 0
-				? undefined
-				: t('Max_length_is', STATUS_TEXT_MAX_LENGTH),
-		[statusText, t],
-	);
+	const statusTextError = useMemo(() => {
+		if (statusText && statusText.length > USER_STATUS_TEXT_MAX_LENGTH) {
+			return t('Max_length_is', USER_STATUS_TEXT_MAX_LENGTH);
+		}
+
+		return undefined;
+	}, [statusText, t]);
 	const {
 		emails: [{ verified = false } = { verified: false }],
 	} = user;
@@ -247,6 +246,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 								flexGrow={1}
 								value={statusText}
 								onChange={handleStatusText}
+								placeholder={t('StatusMessage_Placeholder')}
 								addon={
 									<UserStatusMenu
 										margin='neg-x2'
