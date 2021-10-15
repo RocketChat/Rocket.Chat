@@ -69,8 +69,6 @@ const messageBoxState = {
 
 callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
 
-const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
-
 export class ChatMessages {
 	constructor(collection = ChatMessage) {
 		this.collection = collection;
@@ -374,26 +372,32 @@ export class ChatMessages {
 			throw new Error({ error: 'Message_too_long' });
 		}
 
-		try {
-			await showModal({
-				text: t('Message_too_long_as_an_attachment_question'),
-				title: '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonText: t('Yes'),
-				cancelButtonText: t('No'),
-				closeOnConfirm: false,
-			});
-
+		const onConfirm = () => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
 			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
-		} catch (e) {
+			imperativeModal.close();
+		};
+
+		const onClose = () => {
 			messageBoxState.set(this.input, msg);
-			return true;
-		}
+			imperativeModal.close();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Message_too_long'),
+				children: t('Send_it_as_attachment_instead_question'),
+				onConfirm,
+				onClose,
+				onCancel: onClose,
+				variant: 'warning',
+			},
+		});
+
 		return true;
 	}
 
