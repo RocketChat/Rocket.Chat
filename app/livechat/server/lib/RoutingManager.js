@@ -23,14 +23,20 @@ export const RoutingManager = {
 	methods: {},
 	logger,
 
+	startQueue() {
+		// queue shouldn't start on CE
+	},
+
 	setMethodName(name) {
 		this.logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
 		if (!this.methods[name]) {
 			this.logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
 			this.methodName = 'Manual_Selection';
-			return;
+		} else {
+			this.methodName = name;
 		}
-		this.methodName = name;
+
+		this.startQueue();
 	},
 
 	registerMethod(name, Method) {
