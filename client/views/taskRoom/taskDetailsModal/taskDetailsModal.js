@@ -16,7 +16,7 @@ const TaskDetailsModal = ({
 	const canSave = useMemo(() => hasUnsavedChanges, [hasUnsavedChanges]);
 	const t = useTranslation();
 	return (
-		<Modal style={{ marginTop: '150px' }}>
+		<Modal>
 			<Modal.Header>
 				<Modal.Title>{t('Task Details')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
