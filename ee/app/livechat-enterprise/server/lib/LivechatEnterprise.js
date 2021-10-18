@@ -281,5 +281,5 @@ RoutingManager.startQueue = shouldQueueStart;
 
 settings.get('Livechat_enabled', (_, value) => {
 	omnichannelIsEnabled = value;
-	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart(value) : queueWorker.stop();
+	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
 });

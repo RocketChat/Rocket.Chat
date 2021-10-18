@@ -21,7 +21,6 @@ const logger = new Logger('RoutingManager');
 export const RoutingManager = {
 	methodName: null,
 	methods: {},
-	logger,
 
 	startQueue() {
 		// queue shouldn't start on CE
@@ -31,10 +30,8 @@ export const RoutingManager = {
 		return !!this.methodName;
 	},
 
-	setMethodName(name) {
-		const err = new Error();
-		console.log(err.stack);
-		this.logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
+	setMethodNameAndStartQueue(name) {
+		logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
 		if (!this.methods[name]) {
 			this.logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
 			this.methodName = 'Manual_Selection';
@@ -46,7 +43,7 @@ export const RoutingManager = {
 	},
 
 	registerMethod(name, Method) {
-		this.logger.debug(`Registering new routing method with name ${ name }`);
+		logger.debug(`Registering new routing method with name ${ name }`);
 		this.methods[name] = new Method();
 	},
 

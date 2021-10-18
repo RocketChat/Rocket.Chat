@@ -59,7 +59,7 @@ Meteor.startup(async () => {
 	});
 
 	settings.get('Livechat_Routing_Method', function(key, value) {
-		RoutingManager.setMethodName(value);
+		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
 	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechat(user._id, 'not-available'));
