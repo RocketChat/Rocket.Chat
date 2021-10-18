@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import toastr from 'toastr';
 
 import { modal } from '../../ui-utils';
 import { t } from '../../utils';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.addWebdavAccount.helpers({
 	btnAddNewServer() {
@@ -28,12 +28,12 @@ Template.addWebdavAccount.events({
 			modal.close();
 			instance.loading.set(false);
 			if (error) {
-				return toastr.error(t(error.error));
+				return dispatchToastMessage({ type: 'error', message: t(error.error) });
 			}
 			if (!success) {
-				return toastr.error(t('Error'));
+				return dispatchToastMessage({ type: 'error', message: t('Error') });
 			}
-			toastr.success(t('webdav-account-saved'));
+			dispatchToastMessage({ type: 'success', message: t('webdav-account-saved') });
 		});
 	},
 });
