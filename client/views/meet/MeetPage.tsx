@@ -8,7 +8,7 @@ import { useRouteParameter, useQueryStringParameter } from '../../contexts/Route
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
-import './CallPage.css';
+import './styles.css';
 
 function MeetPage() {
 	const [isRoomMember, setIsRoomMember] = useState(false);

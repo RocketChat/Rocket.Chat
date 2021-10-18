@@ -1,6 +1,6 @@
 import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import { Notifications } from '../../../app/notifications/client';
 import { WebRTC } from '../../../app/webrtc/client';
@@ -8,9 +8,21 @@ import { WEB_RTC_EVENTS } from '../../../app/webrtc/index';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useTranslation } from '../../contexts/TranslationContext';
 import OngoingCallDuration from './OngoingCallDuration';
-import './CallPage.css';
+import './styles.css';
 
-function CallPage({
+type CallPageProps = {
+	roomId: any;
+	visitorToken: any;
+	visitorId: any;
+	status: any;
+	setStatus: any;
+	layout: any;
+	visitorName: any;
+	agentName: any;
+	callStartTime: any;
+};
+
+const CallPage: FC<CallPageProps> = ({
 	roomId,
 	visitorToken,
 	visitorId,
@@ -20,7 +32,7 @@ function CallPage({
 	visitorName,
 	agentName,
 	callStartTime,
-}) {
+}) => {
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [isCameraOn, setIsCameraOn] = useState(false);
@@ -41,7 +53,7 @@ function CallPage({
 	useEffect(() => {
 		if (visitorToken) {
 			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
-			const isMobileDevice = () => {
+			const isMobileDevice = (): boolean => {
 				if (layout === 'embedded') {
 					setCallInIframe(true);
 				}
@@ -60,7 +72,7 @@ function CallPage({
 			};
 			Notifications.onUser(
 				WEB_RTC_EVENTS.WEB_RTC,
-				(type, data) => {
+				(type: any, data: any) => {
 					if (data.room == null) {
 						return;
 					}
@@ -68,7 +80,7 @@ function CallPage({
 				},
 				visitorId,
 			);
-			Notifications.onRoom(roomId, 'webrtc', (type, data) => {
+			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
 				if (type === 'callStatus' && data.callStatus === 'ended') {
 					webrtcInstance.stop();
 					setStatus(data.callStatus);
@@ -96,7 +108,7 @@ function CallPage({
 					},
 				});
 			}
-			Notifications.onRoom(roomId, 'webrtc', (type, data) => {
+			Notifications.onRoom(roomId, 'webrtc', (type: any, data: any) => {
 				if (type === 'callStatus') {
 					switch (data.callStatus) {
 						case 'ended':
@@ -122,7 +134,7 @@ function CallPage({
 		}
 	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, layout]);
 
-	const toggleButton = (control) => {
+	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
 			WebRTC.getInstanceByRoomId(roomId, visitorToken).toggleAudio();
 			return setIsMicOn(!isMicOn);
@@ -132,17 +144,17 @@ function CallPage({
 		Notifications.notifyRoom(roomId, 'webrtc', 'cameraStatus', { isCameraOn: !isCameraOn });
 	};
 
-	const closeWindow = () => {
+	const closeWindow = (): void => {
 		if (layout === 'embedded') {
-			return parent.handleIframeClose();
+			return (parent as any)?.handleIframeClose();
 		}
 		return window.close();
 	};
 
-	const getCallDuration = (callStartTime) =>
+	const getCallDuration = (callStartTime: any): any =>
 		moment.duration(moment(new Date()).diff(moment(callStartTime))).asSeconds();
 
-	const showCallPage = (localAvatar, remoteAvatar) => (
+	const showCallPage = (localAvatar: any, remoteAvatar: any): any => (
 		<Flex.Container direction='column' justifyContent='center'>
 			<Box
 				width='full'
@@ -154,9 +166,7 @@ function CallPage({
 			>
 				<Box
 					position='absolute'
-					zIndex='1'
-					top='5%'
-					right='2%'
+					zIndex={1}
 					style={{
 						top: '5%',
 						right: '2%',
@@ -188,7 +198,7 @@ function CallPage({
 				</Box>
 				<ButtonGroup
 					position='absolute'
-					zIndex='1'
+					zIndex={1}
 					style={{
 						bottom: '5%',
 					}}
@@ -197,9 +207,9 @@ function CallPage({
 						id='mic'
 						square
 						data-title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
-						onClick={() => toggleButton('mic')}
+						onClick={(): any => toggleButton('mic')}
 						className={isMicOn ? 'On' : 'Off'}
-						size={buttonSize}
+						size={Number(buttonSize)}
 					>
 						{isMicOn ? (
 							<Icon name='mic' size={iconSize} />
@@ -211,9 +221,9 @@ function CallPage({
 						id='camera'
 						square
 						data-title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
-						onClick={() => toggleButton('camera')}
+						onClick={(): void => toggleButton('camera')}
 						className={isCameraOn ? 'On' : 'Off'}
-						size={buttonSize}
+						size={parseInt(buttonSize)}
 					>
 						{isCameraOn ? (
 							<Icon name='video' size={iconSize} />
@@ -227,8 +237,8 @@ function CallPage({
 							backgroundColor='#2F343D'
 							borderColor='#2F343D'
 							data-title={t('Expand_view')}
-							onClick={() => parent.expandCall()}
-							size={buttonSize}
+							onClick={(): void => (parent as any)?.expandCall()}
+							size={parseInt(buttonSize)}
 						>
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
@@ -239,7 +249,7 @@ function CallPage({
 						danger
 						data-title={t('End_call')}
 						onClick={closeWindow}
-						size={buttonSize}
+						size={parseInt(buttonSize)}
 					>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
@@ -256,12 +266,14 @@ function CallPage({
 				></video>
 				<Box
 					position='absolute'
-					zIndex='1'
+					zIndex={1}
 					display={isRemoteCameraOn ? 'none' : 'flex'}
-					top={isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%'}
 					justifyContent='center'
 					flexDirection='column'
 					alignItems='center'
+					style={{
+						top: isRemoteMobileDevice || isLocalMobileDevice ? '10%' : '30%',
+					}}
 				>
 					<UserAvatar
 						style={{
@@ -290,9 +302,9 @@ function CallPage({
 		</Flex.Container>
 	);
 
-	switch (status) {
-		case 'ringing':
-			return (
+	return (
+		<>
+			{status === 'ringing' && (
 				<Flex.Container direction='column' justifyContent='center'>
 					<Box
 						width='full'
@@ -304,7 +316,7 @@ function CallPage({
 					>
 						<Box
 							position='absolute'
-							zIndex='1'
+							zIndex={1}
 							style={{
 								top: '5%',
 								right: '2%',
@@ -325,7 +337,7 @@ function CallPage({
 						</Box>
 						<Box
 							position='absolute'
-							zIndex='1'
+							zIndex={1}
 							style={{
 								top: '20%',
 								display: 'flex',
@@ -357,10 +369,8 @@ function CallPage({
 						</Box>
 					</Box>
 				</Flex.Container>
-			);
-
-		case 'declined':
-			return (
+			)}
+			{status === 'declined' && (
 				<Box
 					minHeight='90%'
 					display='flex'
@@ -371,16 +381,16 @@ function CallPage({
 				>
 					{t('Call_declined')}
 				</Box>
-			);
-		case 'inProgress':
-			return (
+			)}
+			{status === 'inProgress' && (
 				<Flex.Container direction='column' justifyContent='center'>
 					{visitorToken
 						? showCallPage(visitorName, agentName)
 						: showCallPage(agentName, visitorName)}
 				</Flex.Container>
-			);
-	}
-}
+			)}
+		</>
+	);
+};
 
 export default CallPage;
