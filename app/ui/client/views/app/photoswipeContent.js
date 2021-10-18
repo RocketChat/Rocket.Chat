@@ -3,6 +3,8 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
+import './photoswipeContent.html';
+
 Meteor.startup(() => {
 	let currentGallery = null;
 	const initGallery = async (items, options) => {
