@@ -1,24 +1,27 @@
-import { ReadReceipt } from '../../imports/message-read-receipt/server/lib/ReadReceipt';
+import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
+
+import { markRoomAsRead } from '../lib/markRoomAsRead';
+import { canAccessRoom } from '../../app/authorization/server';
+import { Rooms } from '../../app/models/server';
 
 Meteor.methods({
 	readMessages(rid) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
-
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'readMessages',
 			});
 		}
 
-		// this prevents cache from updating object reference/pointer
-		const userSubscription = Object.assign({}, RocketChat.models.Subscriptions.findOneByRoomIdAndUserId(rid, userId));
+		const user = Meteor.user();
+		const room = Rooms.findOneById(rid);
+		if (!canAccessRoom(room, user)) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
+		}
 
-		RocketChat.models.Subscriptions.setAsReadByRoomIdAndUserId(rid, userId);
-
-		Meteor.defer(() => {
-			ReadReceipt.markMessagesAsRead(rid, userId, userSubscription.ls);
-		});
+		Promise.await(markRoomAsRead(rid, userId));
 	},
 });

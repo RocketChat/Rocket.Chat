@@ -40,7 +40,12 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 - Number of Running Instances: 
 - DB Replicaset Oplog: 
 - NodeJS Version: 
-- MongoDB Version: 
+- MongoDB Version:
+
+### Client Setup Information
+
+- Desktop App or Browser Version:
+- Operating System:
 
 ### Additional context
 

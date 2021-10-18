@@ -1,0 +1,21 @@
+<template name="mentionsFlexTab">
+	{{#if Template.subscriptionsReady}}
+		{{#unless hasMessages}}
+			<div class="list-view mentioned-messages-list flex-tab__header">
+				<h2>{{_ "No_mentions_found"}}</h2>
+			</div>
+		{{/unless}}
+	{{/if}}
+	<div class="flex-tab__result js-list">
+		<ul class="mentioned-messages-list list clearfix">
+			{{# with messageContext}}
+				{{#each msg in messages}}{{> message groupable=false msg=msg room=room subscription=subscription settings=settings u=u customClass="mentions" context="mentions"}}{{/each}}
+			{{/with}}
+		</ul>
+		{{#if hasMore}}
+		<div class="load-more">
+			{{> loading}}
+		</div>
+		{{/if}}
+	</div>
+</template>

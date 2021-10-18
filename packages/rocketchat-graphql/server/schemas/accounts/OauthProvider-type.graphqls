@@ -1,3 +1,0 @@
-type OauthProvider {
-  name: String!
-}

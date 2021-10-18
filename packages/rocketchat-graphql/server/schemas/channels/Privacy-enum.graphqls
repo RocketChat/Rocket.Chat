@@ -1,5 +1,0 @@
-enum Privacy {
-	PRIVATE
-	PUBLIC
-	ALL
-}

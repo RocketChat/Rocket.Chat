@@ -1,0 +1,11 @@
+<template name="invite">
+	{{#if ready}}
+		{{#if isValidInvite}}
+			{{> main center="home"}}
+		{{else}}
+			{{> logoLayout render="invalidInvite"}}
+		{{/if}}
+	{{else}}
+		{{> loading}}
+	{{/if}}
+</template>

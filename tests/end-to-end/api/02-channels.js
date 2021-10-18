@@ -1,22 +1,19 @@
-/* eslint-env mocha */
-/* globals expect */
-/* eslint no-unused-vars: 0 */
+import { expect } from 'chai';
 
 import {
 	getCredentials,
 	api,
-	login,
 	request,
 	credentials,
-	apiEmail,
-	apiUsername,
-	targetUser,
-	log,
 	apiPublicChannelName,
 	channel,
+	reservedWords,
 } from '../../data/api-data.js';
-import { adminEmail, password } from '../../data/user.js';
-import supertest from 'supertest';
+import { adminUsername, password } from '../../data/user.js';
+import { createUser, login } from '../../data/users.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createRoom } from '../../data/rooms.helper';
+import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve/* , reject*/) => {
@@ -36,7 +33,7 @@ describe('[Channels]', function() {
 
 	before((done) => getCredentials(done));
 
-	it('/channels.create', (done) => {
+	before('Creating channel', (done) => {
 		request.post(api('channels.create'))
 			.set(credentials)
 			.send({
@@ -55,28 +52,450 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.info', (done) => {
-		request.get(api('channels.info'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', 0);
-			})
-			.end(done);
+	describe('[/channels.info]', () => {
+		let testChannel = {};
+		let channelMessage = {};
+		it('creating new channel...', (done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should return channel basic structure', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
+					expect(res.body).to.have.nested.property('channel.t', 'c');
+					expect(res.body).to.have.nested.property('channel.msgs', 0);
+				})
+				.end(done);
+		});
+		it('sending a message...', (done) => {
+			request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: testChannel._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					channelMessage = res.body.message;
+				})
+				.end(done);
+		});
+		it('REACTing with last message', (done) => {
+			request.post(api('chat.react'))
+				.set(credentials)
+				.send({
+					emoji: ':squid:',
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('STARring last message', (done) => {
+			request.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('PINning last message', (done) => {
+			request.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: channelMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+			request.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('channel').and.to.be.an('object');
+					const { channel } = res.body;
+					expect(channel).to.have.property('lastMessage').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('reactions').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('pinned').and.to.be.a('boolean');
+					expect(channel.lastMessage).to.have.property('pinnedAt').and.to.be.a('string');
+					expect(channel.lastMessage).to.have.property('pinnedBy').and.to.be.an('object');
+					expect(channel.lastMessage).to.have.property('starred').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
+			request.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const { messages } = res.body;
+					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
+					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
+					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+				})
+				.end(done);
+		});
 	});
 
-	it('/channels.invite', async(done) => {
+	describe('[/channels.online]', () => {
+		const createUserAndChannel = async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			await request.post(api('users.setStatus'))
+				.set(testUserCredentials)
+				.send({
+					message: '',
+					status: 'online',
+				});
+
+			const roomName = `group-test-${ Date.now() }`;
+
+			const roomResponse = await createRoom({ name: roomName, type: 'c', members: [testUser.username] });
+
+			return {
+				testUser,
+				testUserCredentials,
+				room: roomResponse.body.channel,
+			};
+		};
+
+		it('should return an error if no query', () =>
+			request.get(api('channels.online'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an error if passing an empty query', () =>
+			request.get(api('channels.online'))
+				.set(credentials)
+				.query('query={}')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an array with online members', async () => {
+			const {
+				testUser,
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('channels.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
+
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
+
+		it('should return an empty array if requesting user is not in channel', async () => {
+			const outsider = await createUser();
+			const outsiderCredentials = await login(outsider.username, password);
+
+			const {
+				testUser,
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('channels.online'))
+				.set(outsiderCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('online');
+
+					const expected = {
+						_id: testUser._id,
+						username: testUser.username,
+					};
+					expect(res.body.online).to.deep.include(expected);
+				});
+		});
+	});
+
+	describe('[/channels.files]', () => {
+		it('should fail if invalid channel', (done) => {
+			request.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+
+		it('should succeed when searching by roomId', (done) => {
+			request.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: 'GENERAL',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should succeed when searching by roomName', (done) => {
+			request.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomName: 'general',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/channels.join]', () => {
+		let testChannelNoCode;
+		let testChannelWithCode;
+		let testUser;
+		let testUserCredentials;
+		before('Create test user', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+		before('Login as test user', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials = {};
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+		before('Create no code channel', (done) => {
+			request.post(api('channels.create'))
+				.set(testUserCredentials)
+				.send({
+					name: `${ apiPublicChannelName }-nojoincode`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testChannelNoCode = res.body.channel;
+				})
+				.end(done);
+		});
+		before('Create code channel', (done) => {
+			request.post(api('channels.create'))
+				.set(testUserCredentials)
+				.send({
+					name: `${ apiPublicChannelName }-withjoincode`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testChannelWithCode = res.body.channel;
+				})
+				.end(done);
+		});
+		before('Set code for channel', (done) => {
+			request.post(api('channels.setJoinCode'))
+				.set(testUserCredentials)
+				.send({
+					roomId: testChannelWithCode._id,
+					joinCode: '123',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should fail if invalid channel', (done) => {
+			request.post(api('channels.join'))
+				.set(credentials)
+				.send({
+					roomId: 'invalid',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				})
+				.end(done);
+		});
+
+		it('should succeed when joining code-free channel without join code', (done) => {
+			request.post(api('channels.join'))
+				.set(credentials)
+				.send({
+					roomId: testChannelNoCode._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', testChannelNoCode._id);
+				})
+				.end(done);
+		});
+
+		it('should fail when joining code-needed channel without join code and no join-without-join-code permission', (done) => {
+			updatePermission('join-without-join-code', []).then(() => {
+				request.post(api('channels.join'))
+					.set(credentials)
+					.send({
+						roomId: testChannelWithCode._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.nested.property('errorType', 'error-code-invalid');
+					})
+					.end(done);
+			});
+		});
+
+		it('should succeed when joining code-needed channel without join code and with join-without-join-code permission', (done) => {
+			updatePermission('join-without-join-code', ['admin']).then(() => {
+				request.post(api('channels.join'))
+					.set(credentials)
+					.send({
+						roomId: testChannelWithCode._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
+					})
+					.end(done);
+			});
+		});
+
+		it('leave channel', (done) => {
+			request.post(api('channels.leave'))
+				.set(credentials)
+				.send({
+					roomId: testChannelWithCode._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should succeed when joining code-needed channel with join code', (done) => {
+			request.post(api('channels.join'))
+				.set(credentials)
+				.send({
+					roomId: testChannelWithCode._id,
+					joinCode: '123',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id', testChannelWithCode._id);
+				})
+				.end(done);
+		});
+	});
+
+	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.invite'))
+		return request.post(api('channels.invite'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -90,8 +509,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/channels.addModerator', (done) => {
@@ -154,10 +572,10 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.kick', async(done) => {
+	it('/channels.kick', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.kick'))
+		return request.post(api('channels.kick'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -171,14 +589,13 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
-	it('/channels.invite', async(done) => {
+	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.invite'))
+		return request.post(api('channels.invite'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -192,8 +609,7 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
 	it('/channels.addOwner', (done) => {
@@ -211,68 +627,136 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.setDescription', (done) => {
-		request.post(api('channels.setDescription'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				description: 'this is a description for a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
-			})
-			.end(done);
+	describe('/channels.setDescription', () => {
+		it('should set the description of the channel with a string', (done) => {
+			request.post(api('channels.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					description: 'this is a description for a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', 'this is a description for a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the description of the channel with an empty string(remove the description)', (done) => {
+			request.post(api('channels.setDescription'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					description: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('description', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/channels.setTopic', (done) => {
-		request.post(api('channels.setTopic'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				topic: 'this is a topic of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
-			})
-			.end(done);
+	describe('/channels.setTopic', () => {
+		it('should set the topic of the channel with a string', (done) => {
+			request.post(api('channels.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					topic: 'this is a topic of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', 'this is a topic of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the topic of the channel with an empty string(remove the topic)', (done) => {
+			request.post(api('channels.setTopic'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					topic: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('topic', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/channels.setAnnouncement', (done) => {
-		request.post(api('channels.setAnnouncement'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				announcement: 'this is an announcement of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
-			})
-			.end(done);
+	describe('/channels.setAnnouncement', () => {
+		it('should set the announcement of the channel with a string', (done) => {
+			request.post(api('channels.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					announcement: 'this is an announcement of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', 'this is an announcement of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the announcement of the channel with an empty string(remove the announcement)', (done) => {
+			request.post(api('channels.setAnnouncement'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					announcement: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('announcement', '');
+				})
+				.end(done);
+		});
 	});
 
-	it('/channels.setPurpose', (done) => {
-		request.post(api('channels.setPurpose'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				purpose: 'this is a purpose of a channel for api tests',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
-			})
-			.end(done);
+	describe('/channels.setPurpose', () => {
+		it('should set the purpose of the channel with a string', (done) => {
+			request.post(api('channels.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					purpose: 'this is a purpose of a channel for api tests',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', 'this is a purpose of a channel for api tests');
+				})
+				.end(done);
+		});
+		it('should set the announcement of channel with an empty string(remove the purpose)', (done) => {
+			request.post(api('channels.setPurpose'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					purpose: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('purpose', '');
+				})
+				.end(done);
+		});
 	});
 
 	it('/channels.history', (done) => {
@@ -430,10 +914,32 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
-	it('/channels.rename', async(done) => {
+	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.rename'))
+		function failRenameChannel(name) {
+			it(`should not rename a channel to the reserved name ${ name }`, (done) => {
+				request.post(api('channels.rename'))
+					.set(credentials)
+					.send({
+						roomId: channel._id,
+						name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is already in use :( [error-field-unavailable]`);
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failRenameChannel(name);
+		});
+
+		return request.post(api('channels.rename'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -447,24 +953,111 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
-	it('/channels.getIntegrations', (done) => {
-		request.get(api('channels.getIntegrations'))
-			.set(credentials)
-			.query({
-				roomId: channel._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 0);
-				expect(res.body).to.have.property('total', 0);
-			})
-			.end(done);
+	describe('/channels.getIntegrations', () => {
+		let integrationCreatedByAnUser;
+		let userCredentials;
+		let createdChannel;
+		before((done) => {
+			createRoom({ name: `test-integration-channel-${ Date.now() }`, type: 'c' })
+				.end((err, res) => {
+					createdChannel = res.body.channel;
+					createUser().then((createdUser) => {
+						const user = createdUser;
+						login(user.username, password).then((credentials) => {
+							userCredentials = credentials;
+							updatePermission('manage-incoming-integrations', ['user']).then(() => {
+								updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+									createIntegration({
+										type: 'webhook-incoming',
+										name: 'Incoming test',
+										enabled: true,
+										alias: 'test',
+										username: 'rocket.cat',
+										scriptEnabled: false,
+										channel: `#${ createdChannel.name }`,
+									}, userCredentials).then((integration) => {
+										integrationCreatedByAnUser = integration;
+										done();
+									});
+								});
+							});
+						});
+					});
+				});
+		});
+
+		after((done) => {
+			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+		});
+
+		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {
+			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				request.get(api('channels.getIntegrations'))
+					.set(credentials)
+					.query({
+						roomId: createdChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+						expect(integrationCreated).to.be.an('object');
+						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the list of integrations created by the user only', (done) => {
+			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				updatePermission('manage-incoming-integrations', []).then(() => {
+					request.get(api('channels.getIntegrations'))
+						.set(credentials)
+						.query({
+							roomId: createdChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreated = res.body.integrations.find((createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id);
+							expect(integrationCreated).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			updatePermission('manage-incoming-integrations', []).then(() => {
+				updatePermission('manage-own-incoming-integrations', []).then(() => {
+					updatePermission('manage-outgoing-integrations', []).then(() => {
+						updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							request.get(api('channels.getIntegrations'))
+								.set(credentials)
+								.query({
+									roomId: createdChannel._id,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+				});
+			});
+		});
 	});
 
 	it('/channels.addAll', (done) => {
@@ -484,11 +1077,40 @@ describe('[Channels]', function() {
 			.end(done);
 	});
 
+	it('/channels.addLeader', (done) => {
+		request.post(api('channels.addLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.a.property('success', true);
+			})
+			.end(done);
+	});
+	it('/channels.removeLeader', (done) => {
+		request.post(api('channels.removeLeader'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
 
 	describe('/channels.setCustomFields:', () => {
 		let cfchannel;
 		it('create channel with customFields', (done) => {
-			const customFields = { field0:'value0' };
+			const customFields = { field0: 'value0' };
 			request.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -514,9 +1136,9 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('change customFields', async(done) => {
-			const customFields = { field9:'value9' };
-			request.post(api('channels.setCustomFields'))
+		it('change customFields', async () => {
+			const customFields = { field9: 'value9' };
+			return request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -531,8 +1153,7 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.customFields.field9', 'value9');
 					expect(res.body).to.have.not.nested.property('channel.customFields.field0', 'value0');
-				})
-				.end(done);
+				});
 		});
 		it('get customFields using channels.info', (done) => {
 			request.get(api('channels.info'))
@@ -572,9 +1193,9 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('set customFields with one nested field', async(done) => {
-			const customFields = { field1:'value1' };
-			request.post(api('channels.setCustomFields'))
+		it('set customFields with one nested field', async () => {
+			const customFields = { field1: 'value1' };
+			return request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomId: cfchannel._id,
@@ -588,13 +1209,12 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.nested.property('channel.name', cfchannel.name);
 					expect(res.body).to.have.nested.property('channel.t', 'c');
 					expect(res.body).to.have.nested.property('channel.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields with multiple nested fields', async(done) => {
-			const customFields = { field2:'value2', field3:'value3', field4:'value4' };
+		it('set customFields with multiple nested fields', async () => {
+			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			request.post(api('channels.setCustomFields'))
+			return request.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
 					roomName: cfchannel.name,
@@ -611,10 +1231,9 @@ describe('[Channels]', function() {
 					expect(res.body).to.have.nested.property('channel.customFields.field3', 'value3');
 					expect(res.body).to.have.nested.property('channel.customFields.field4', 'value4');
 					expect(res.body).to.have.not.nested.property('channel.customFields.field1', 'value1');
-				})
-				.end(done);
+				});
 		});
-		it('set customFields to empty object', async(done) => {
+		it('set customFields to empty object', (done) => {
 			const customFields = {};
 
 			request.post(api('channels.setCustomFields'))
@@ -636,7 +1255,7 @@ describe('[Channels]', function() {
 				})
 				.end(done);
 		});
-		it('set customFields as a string -> should return 400', async(done) => {
+		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
 			request.post(api('channels.setCustomFields'))
@@ -667,10 +1286,10 @@ describe('[Channels]', function() {
 		});
 	});
 
-	it('/channels.setJoinCode', async(done) => {
+	it('/channels.setJoinCode', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.setJoinCode'))
+		return request.post(api('channels.setJoinCode'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -684,14 +1303,13 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			})
-			.end(done);
+			});
 	});
 
-	it('/channels.setReadOnly', async(done) => {
+	it('/channels.setReadOnly', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.setReadOnly'))
+		return request.post(api('channels.setReadOnly'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -704,15 +1322,14 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel._id');
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			})
-			.end(done);
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+			});
 	});
 
-	it('/channels.setDefault', async(done) => {
+	it('/channels.setDefault', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.setDefault'))
+		return request.post(api('channels.setDefault'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -726,14 +1343,13 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
-			})
-			.end(done);
+			});
 	});
 
-	it('/channels.leave', async(done) => {
+	it('/channels.leave', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.leave'))
+		return request.post(api('channels.leave'))
 			.set(credentials)
 			.send({
 				roomId: channel._id,
@@ -746,29 +1362,29 @@ describe('[Channels]', function() {
 				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			});
 	});
 
-	it('/channels.setType', async(done) => {
-		const roomInfo = await getRoomInfo(channel._id);
+	describe('/channels.setType', () => {
+		it('should change the type public channel to private', async () => {
+			const roomInfo = await getRoomInfo(channel._id);
 
-		request.post(api('channels.setType'))
-			.set(credentials)
-			.send({
-				roomId: channel._id,
-				type: 'p',
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
-				expect(res.body).to.have.nested.property('channel.t', 'p');
-				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
-			})
-			.end(done);
+			request.post(api('channels.setType'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					type: 'p',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel._id');
+					expect(res.body).to.have.nested.property('channel.name', `EDITED${ apiPublicChannelName }`);
+					expect(res.body).to.have.nested.property('channel.t', 'p');
+					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
+				});
+		});
 	});
 
 	describe('/channels.delete:', () => {
@@ -846,7 +1462,7 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('/channels.invite', async(done) => {
+		it('/channels.invite', (done) => {
 			request.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -916,7 +1532,7 @@ describe('[Channels]', function() {
 					done();
 				});
 		});
-		it('/channels.invite', async(done) => {
+		it('/channels.invite', (done) => {
 			request.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -948,6 +1564,175 @@ describe('[Channels]', function() {
 					expect(res.body.moderators[0].username).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+	});
+	describe('/channels.anonymousread', () => {
+		after(() => updateSetting('Accounts_AllowAnonymousRead', false));
+		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body).to.have.a.property('error');
+						expect(res.body).to.have.a.property('errorType');
+						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('Enable \"Allow Anonymous Read\" [error-not-allowed]');
+					})
+					.end(done);
+			});
+		});
+		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled', (done) => {
+			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				request.get(api('channels.anonymousread'))
+					.query({
+						roomId: 'GENERAL',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('messages').that.is.an('array');
+					})
+					.end(done);
+			});
+		});
+	});
+
+	describe('/channels.convertToTeam', () => {
+		before((done) => {
+			request.post(api('channels.create'))
+				.set(credentials)
+				.send({ name: `channel-${ Date.now() }` })
+				.then((response) => {
+					this.newChannel = response.body.channel;
+				})
+				.then(() => done());
+		});
+
+		it('should fail to convert channel if lacking edit-room permission', (done) => {
+			updatePermission('create-team', []).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert channel if lacking create-team permission', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', []).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', false);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should successfully convert a channel to a team', (done) => {
+			updatePermission('create-team', ['admin']).then(() => {
+				updatePermission('edit-room', ['admin']).then(() => {
+					request.post(api('channels.convertToTeam'))
+						.set(credentials)
+						.send({ channelId: this.newChannel._id })
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.a.property('success', true);
+						})
+						.end(done);
+				});
+			});
+		});
+
+		it('should fail to convert channel without the required parameters', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.end(done);
+		});
+
+		it('should fail to convert channel if it\'s already taken', (done) => {
+			request.post(api('channels.convertToTeam'))
+				.set(credentials)
+				.send({ channelId: this.newChannel._id })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	describe.skip('/channels.setAutojoin', () => {
+		// let testTeam;
+		let testChannel;
+		// let testUser1;
+		// let testUser2;
+		before(async () => {
+			const teamCreateRes = await request.post(api('teams.create'))
+				.set(credentials)
+				.send({ name: `team-${ Date.now() }` });
+
+			const { team } = teamCreateRes.body;
+
+			const user1 = await createUser();
+			const user2 = await createUser();
+
+			const channelCreateRes = await request.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: `team-channel-${ Date.now() }`,
+					extraData: {
+						teamId: team._id,
+					},
+				});
+
+			const { channel } = channelCreateRes.body;
+
+			// testTeam = team;
+			testChannel = channel;
+			// testUser1 = user1;
+			// testUser2 = user2;
+
+			await request.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					name: team.name,
+					members: [{ userId: user1._id }, { userId: user2._id }],
+				});
+		});
+
+		it('should add all existing team members', async () => {
+			const resAutojoin = await request.post(api('channels.setAutojoin'))
+				.set(credentials)
+				.send({ roomName: testChannel.name, autojoin: true })
+				.expect(200);
+			expect(resAutojoin.body).to.have.a.property('success', true);
+
+			const channelInfoResponse = await request.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: testChannel._id });
+			const { channel } = channelInfoResponse.body;
+
+			console.log('channel: ', channel);
+
+			return expect(channel.usersCount).to.be.equals(3);
 		});
 	});
 });

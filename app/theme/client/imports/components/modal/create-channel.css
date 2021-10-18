@@ -1,0 +1,65 @@
+.create-channel {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+
+	animation-name: fadeIn;
+	animation-duration: 1s;
+
+	&__content {
+		overflow: auto;
+		flex: 1 1 auto;
+
+		margin: 0 -40px;
+		padding: 0 40px;
+	}
+
+	&__wrapper {
+		display: flex;
+		flex-direction: column;
+
+		height: 100%;
+	}
+
+	&__switches,
+	&__inputs:not(:only-of-type),
+	& .rc-input:not(:only-of-type) {
+		margin-bottom: var(--create-channel-gap-between-elements);
+	}
+
+	&__description {
+		padding: var(--create-channel-gap-between-elements) 0;
+
+		color: var(--create-channel-description-color);
+
+		font-size: var(--create-channel-description-text-size);
+	}
+
+	&__switches {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	& .rc-switch {
+		width: 100%;
+
+		&:not(:last-child) {
+			margin-bottom: 2rem;
+		}
+	}
+
+	& .rc-input__icon-svg {
+		font-size: 1.2rem;
+	}
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}

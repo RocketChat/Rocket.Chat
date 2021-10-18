@@ -1,0 +1,1 @@
+export { createHighlightWordsMessageRenderer } from './client';

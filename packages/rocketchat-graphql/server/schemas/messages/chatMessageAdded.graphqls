@@ -1,3 +1,0 @@
-type Subscription {
-  chatMessageAdded(channelId: String, directTo: String): Message
-}
