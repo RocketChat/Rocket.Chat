@@ -896,7 +896,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate(params);
 	}
 
-	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, options = {} }) {
+	findRoomsWithCriteria({ agents, roomName, departmentId, open, served, createdAt, closedAt, tags, customFields, visitorId, roomIds, onhold, options = {} }) {
 		const query = {
 			t: 'l',
 		};
@@ -945,6 +945,13 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 		if (roomIds) {
 			query._id = { $in: roomIds };
+		}
+
+		if (onhold) {
+			query.onHold = {
+				$exists: true,
+				$eq: onhold,
+			};
 		}
 
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });

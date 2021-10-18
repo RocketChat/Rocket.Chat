@@ -193,7 +193,7 @@ const getConversationsMetricsAsync = async ({
 		utcOffset: user.utcOffset,
 		language: user.language || settings.get('Language') || 'en',
 	});
-	const metrics = ['Total_conversations', 'Open_conversations', 'Total_messages'];
+	const metrics = ['Total_conversations', 'Open_conversations', 'On_Hold_conversations', 'Total_messages'];
 	const visitorsCount = await LivechatVisitors.getVisitorsBetweenDate({ start, end, department: departmentId }).count();
 	return {
 		totalizers: [

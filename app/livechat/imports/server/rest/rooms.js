@@ -21,7 +21,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		const { agents, departmentId, open, tags, roomName } = this.requestParams();
+		const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
 		let { createdAt, customFields, closedAt } = this.requestParams();
 		check(agents, Match.Maybe([String]));
 		check(roomName, Match.Maybe(String));
@@ -51,6 +51,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			closedAt,
 			tags,
 			customFields,
+			onhold,
 			options: { offset, count, sort, fields },
 		})));
 	},

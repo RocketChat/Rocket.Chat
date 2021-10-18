@@ -337,6 +337,7 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
+			const onHoldConversations = LivechatRooms.getOnHoldConversationsBetweenDate(from, to);
 
 			const data = [{
 				title: 'Total_conversations',
@@ -344,6 +345,9 @@ export const Analytics = {
 			}, {
 				title: 'Open_conversations',
 				value: openConversations,
+			}, {
+				title: 'On_Hold_conversations',
+				value: onHoldConversations,
 			}, {
 				title: 'Total_messages',
 				value: totalMessages,

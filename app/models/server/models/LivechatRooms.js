@@ -448,6 +448,19 @@ export class LivechatRooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
+	getOnHoldConversationsBetweenDate(from, to) {
+		return this.find({
+			onHold: {
+				$exists: true,
+				$eq: true,
+			},
+			ts: {
+				$gte: new Date(from),	// ISO Date, ts >= date.gte
+				$lt: new Date(to),	// ISODate, ts < date.lt
+			},
+		}).count();
+	}
+
 	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
 		return this.model.rawCollection().aggregate([
 			{
