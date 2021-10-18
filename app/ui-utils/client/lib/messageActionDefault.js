@@ -1,6 +1,5 @@
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import toastr from 'toastr';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Session } from 'meteor/session';
@@ -12,8 +11,9 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/c
 import { modal } from './modal';
 import { MessageAction } from './MessageAction';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import ReactionList from '../../../../client/components/modals/ReactionList';
+import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -112,7 +112,7 @@ Meteor.startup(async function() {
 			const { message = messageArgs(this).msg } = props;
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -130,7 +130,7 @@ Meteor.startup(async function() {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			navigator.clipboard.writeText(message);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -262,7 +262,7 @@ Meteor.startup(async function() {
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, { tabBar, rid, ...props }) {
-			const { message = messageArgs(this).msg } = props;
+			const { message: { reactions } = messageArgs(this).msg } = props;
 
 			imperativeModal.open({ component: ReactionList,
 				props: { reactions, rid, tabBar, onClose: imperativeModal.close },
