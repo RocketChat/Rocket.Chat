@@ -21,7 +21,8 @@ export class ACDQueue extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onQueueSummary() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		const queue = {
@@ -44,7 +45,10 @@ export class ACDQueue extends Command {
 
 	onQueueSummaryComplete(event: any): void {
 		if (event.actionid !== this.actionid) {
-			this.logger.error({ msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object', eventActionId: event.actionid, ßactionId: this.actionid });
+			this.logger.error({ msg: 'onQueueSummaryComplete() Unusual behavior. ActionId does not belong to this object',
+				eventActionId: event.actionid,
+				actionId: this.actionid,
+			});
 			return;
 		}
 		this.resetEventHandlers();
@@ -60,7 +64,8 @@ export class ACDQueue extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onQueueParams() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		const queue = {
@@ -74,9 +79,7 @@ export class ACDQueue extends Command {
 			logestholdtime: event.logestholdtime,
 		};
 		this.result.queueStatus = queue;
-		const { result } = this;
-		this.logger.debug({ msg: 'onQueueParams() Complete',
-			result });
+		this.logger.debug({ msg: 'onQueueParams() Complete', result: this.result });
 	}
 
 	/**  Callback for receiving Queue members for queuestatus action.
@@ -86,7 +89,8 @@ export class ACDQueue extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onQueueMember() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		const member = {
@@ -121,13 +125,13 @@ export class ACDQueue extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onQueueStatusComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onQueueStatusComplete() Complete',
-			result });
+		this.logger.debug({ msg: 'onQueueStatusComplete() Complete', result });
 		this.returnResolve({ result: result.queueStatus } as IVoipConnectorResult);
 	}
 
@@ -140,8 +144,7 @@ export class ACDQueue extends Command {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
 			this.returnReject(`error${ error } while executing command`);
 		} else {
-			this.logger.info({ msg: 'onActionResult()',
-				result });
+			this.logger.info({ msg: 'onActionResult()', result });
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
 		}
@@ -149,25 +152,42 @@ export class ACDQueue extends Command {
 
 	setupEventHandlers(): void {
 		// Setup necessary command event handlers based on the command
-
-		if (this.commandText === Commands.queue_summary.toString()) {
-			this.connection.on('queuesummary', new CallbackContext(this.onQueueSummary.bind(this), this));
-			this.connection.on('queuesummarycomplete', new CallbackContext(this.onQueueSummaryComplete.bind(this), this));
-		} else if (this.commandText === Commands.queue_details.toString()) {
-			this.connection.on('queueparams', new CallbackContext(this.onQueueParams.bind(this), this));
-			this.connection.on('queuemember', new CallbackContext(this.onQueueMember.bind(this), this));
-			this.connection.on('queuestatuscomplete', new CallbackContext(this.onQueueStatusComplete.bind(this), this));
+		switch (this.commandText) {
+			case Commands.queue_summary.toString(): {
+				this.connection.on('queuesummary', new CallbackContext(this.onQueueSummary.bind(this), this));
+				this.connection.on('queuesummarycomplete', new CallbackContext(this.onQueueSummaryComplete.bind(this), this));
+				break;
+			}
+			case Commands.queue_details.toString(): {
+				this.connection.on('queueparams', new CallbackContext(this.onQueueParams.bind(this), this));
+				this.connection.on('queuemember', new CallbackContext(this.onQueueMember.bind(this), this));
+				this.connection.on('queuestatuscomplete', new CallbackContext(this.onQueueStatusComplete.bind(this), this));
+				break;
+			}
+			default: {
+				this.logger.error({ msg: `setupEventHandlers() : Unimplemented ${ this.commandText }` });
+				break;
+			}
 		}
 	}
 
 	resetEventHandlers(): void {
-		if (this.commandText === Commands.queue_summary.toString()) {
-			this.connection.off('queuesummary', this);
-			this.connection.off('queuesummarycomplete', this);
-		} else if (this.commandText === Commands.queue_details.toString()) {
-			this.connection.off('queueparams', this);
-			this.connection.off('queuemember', this);
-			this.connection.off('queuestatuscomplete', this);
+		switch (this.commandText) {
+			case Commands.queue_summary.toString(): {
+				this.connection.off('queuesummary', this);
+				this.connection.off('queuesummarycomplete', this);
+				break;
+			}
+			case Commands.queue_details.toString(): {
+				this.connection.off('queueparams', this);
+				this.connection.off('queuemember', this);
+				this.connection.off('queuestatuscomplete', this);
+				break;
+			}
+			default: {
+				this.logger.error({ msg: `resetEventHandlers() : Unimplemented ${ this.commandText }` });
+				break;
+			}
 		}
 	}
 

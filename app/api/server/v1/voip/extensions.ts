@@ -4,12 +4,12 @@ import { Commands } from '../../../../../server/services/voip/connector/asterisk
 import { CommandHandler } from '../../../../../server/services/voip/connector/asterisk/CommandHandler';
 import { Voip } from '../../../../../server/sdk';
 import { ICallServerConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
-import { IVoipExtensionConfig } from '../../../../../definition/IVoipExtension';
+import { IVoipExtensionBase, IVoipExtensionConfig } from '../../../../../definition/IVoipExtension';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
 const commandHandler = new CommandHandler();
 // Get the connector version and type
-API.v1.addRoute('connector.getversion', { authRequired: true }, {
+API.v1.addRoute('connector.getVersion', { authRequired: true }, {
 	get() {
 		return API.v1.success(commandHandler.getVersion());
 	},
@@ -21,8 +21,9 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
 		const list = Promise.await(
 			commandHandler.executeCommand(Commands.extension_list, undefined),
 		) as IVoipConnectorResult;
-		this.logger.debug({ msg: 'API = connector.extension.list', result: list.result });
-		return API.v1.success({ extensions: list.result });
+		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
+		this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
+		return API.v1.success({ extensions: result });
 	},
 });
 
@@ -32,7 +33,7 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
  */
 API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 	get() {
-		const endpointDetails = Promise.await (
+		const endpointDetails = Promise.await(
 			commandHandler.executeCommand(
 				Commands.extension_info,
 				this.requestParams()),
@@ -53,7 +54,7 @@ API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true 
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			return API.v1.notFound();
 		}
-		const endpointDetails = Promise.await (commandHandler.executeCommand(
+		const endpointDetails = Promise.await(commandHandler.executeCommand(
 			Commands.extension_info,
 			this.requestParams())) as IVoipConnectorResult;
 		const callServerConfig: ICallServerConfigData = config.configData as unknown as ICallServerConfigData;

@@ -71,7 +71,7 @@ export class AMIConnection implements IConnection {
 
 	eventHandlerCallback(event: any): void {
 		this.logger.info({ msg: 'eventHandlerCallback()', event });
-		if (! this.eventHandlers.has(event.event.toLowerCase())) {
+		if (!this.eventHandlers.has(event.event.toLowerCase())) {
 			this.logger.info({ msg: `eventHandlerCallback() no event handler set for ${ event.event }` });
 			return;
 		}
@@ -100,7 +100,7 @@ export class AMIConnection implements IConnection {
 
 	off(event: string, command: Command): void {
 		this.logger.info({ msg: 'off()' });
-		if (! this.eventHandlers.has(event)) {
+		if (!this.eventHandlers.has(event)) {
 			this.logger.warn({ msg: `off() No event handler found for ${ event }` });
 			return;
 		}
@@ -108,11 +108,11 @@ export class AMIConnection implements IConnection {
 		const handlers = this.eventHandlers.get(event);
 		this.logger.debug({ msg: `off() Handler array length = ${ handlers.length }` });
 		for (const handler of handlers) {
-			if (! handler.isValidContext(command.actionid)) {
+			if (!handler.isValidContext(command.actionid)) {
 				continue;
 			}
 			const newHandlers = handlers.filter((obj: any) => obj !== handler);
-			if (newHandlers.length === 0) {
+			if (!newHandlers.length) {
 				this.logger.debug({ msg: `off() No handler for ${ event } deleting event from the map.` });
 				this.eventHandlers.delete(event);
 			} else {

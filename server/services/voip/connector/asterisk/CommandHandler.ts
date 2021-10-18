@@ -55,7 +55,7 @@ export class CommandHandler {
 	 * This function returns a promise. Caller can wait for the promise to resolve
 	 * or rejected.
 	 */
-	executeCommand(commandToExecute: Commands, commandData: any = undefined): Promise<IVoipConnectorResult> {
+	executeCommand(commandToExecute: Commands, commandData?: any): Promise<IVoipConnectorResult> {
 		this.logger.debug({ msg: `executeCommand() executing ${ Commands[commandToExecute] }` });
 		const command = CommandFactory.getCommandObject(commandToExecute);
 		command.connection = this.connections.get(command.type) as IConnection;

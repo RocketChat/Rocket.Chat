@@ -63,7 +63,8 @@ export class PJSIPEndpoint extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointList() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		const endPoint = {
@@ -90,7 +91,8 @@ export class PJSIPEndpoint extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointListComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		this.resetEventHandlers();
@@ -113,7 +115,8 @@ export class PJSIPEndpoint extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointInfo() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		const { result } = this;
@@ -144,13 +147,13 @@ export class PJSIPEndpoint extends Command {
 		if (event.actionid !== this.actionid) {
 			this.logger.error({ msg: 'onEndpointDetailComplete() Unusual behavior. ActionId does not belong to this object',
 				eventActionId: event.actionid,
-				actionId: this.actionid });
+				actionId: this.actionid,
+			});
 			return;
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.debug({ msg: 'onEndpointDetailComplete() Complete.',
-			result });
+		this.logger.debug({ msg: 'onEndpointDetailComplete() Complete', result });
 
 		this.returnResolve({ result: result.endpoint } as IVoipConnectorResult);
 	}
@@ -164,8 +167,7 @@ export class PJSIPEndpoint extends Command {
 			this.logger.error({ msg: 'onActionResult()', error: JSON.stringify(error) });
 			this.returnReject(`error${ error } while executing command`);
 		} else {
-			this.logger.debug({ msg: 'onActionResult()',
-				result });
+			this.logger.debug({ msg: 'onActionResult()', result });
 			// Set up actionid for future reference in case of success.
 			this.actionid = result.actionid;
 		}
@@ -173,25 +175,42 @@ export class PJSIPEndpoint extends Command {
 
 	setupEventHandlers(): void {
 		// Setup necessary command event handlers based on the command
-		if (this.commandText === Commands.extension_list.toString()) {
-			this.connection.on('endpointlist', new CallbackContext(this.onEndpointList.bind(this), this));
-			this.connection.on('endpointlistcomplete', new CallbackContext(this.onEndpointListComplete.bind(this), this));
-		} else if (this.commandText === Commands.extension_info.toString()) {
-			this.connection.on('endpointdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
-			this.connection.on('authdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
-			this.connection.on('endpointdetailcomplete', new CallbackContext(this.onEndpointDetailComplete.bind(this), this));
+		switch (this.commandText) {
+			case Commands.extension_list.toString(): {
+				this.connection.on('endpointlist', new CallbackContext(this.onEndpointList.bind(this), this));
+				this.connection.on('endpointlistcomplete', new CallbackContext(this.onEndpointListComplete.bind(this), this));
+				break;
+			}
+			case Commands.extension_info.toString(): {
+				this.connection.on('endpointdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
+				this.connection.on('authdetail', new CallbackContext(this.onEndpointInfo.bind(this), this));
+				this.connection.on('endpointdetailcomplete', new CallbackContext(this.onEndpointDetailComplete.bind(this), this));
+				break;
+			}
+			default: {
+				this.logger.error({ msg: `setupEventHandlers() : Unimplemented ${ this.commandText }` });
+				break;
+			}
 		}
 	}
 
 	resetEventHandlers(): void {
-		// Setup necessary command event handlers based on the command
-		if (this.commandText === Commands.extension_list.toString()) {
-			this.connection.off('endpointlist', this);
-			this.connection.off('endpointlistcomplete', this);
-		} else if (this.commandText === Commands.extension_info.toString()) {
-			this.connection.off('endpointdetail', this);
-			this.connection.off('authdetail', this);
-			this.connection.off('endpointdetailcomplete', this);
+		switch (this.commandText) {
+			case Commands.extension_list.toString(): {
+				this.connection.off('endpointlist', this);
+				this.connection.off('endpointlistcomplete', this);
+				break;
+			}
+			case Commands.extension_info.toString(): {
+				this.connection.off('endpointdetail', this);
+				this.connection.off('authdetail', this);
+				this.connection.off('endpointdetailcomplete', this);
+				break;
+			}
+			default: {
+				this.logger.error({ msg: `resetEventHandlers() : Unimplemented ${ this.commandText }` });
+				break;
+			}
 		}
 	}
 
