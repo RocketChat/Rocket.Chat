@@ -141,6 +141,7 @@
 		"core-js": "^2.5.7",
 		"csv-parse": "^2.4.0",
 		"emailreplyparser": "^0.0.5",
+		"fibers": "^5.0.0",
 		"file-type": "^8.0.0",
 		"filesize": "^3.6.1",
 		"grapheme-splitter": "^1.0.2",
