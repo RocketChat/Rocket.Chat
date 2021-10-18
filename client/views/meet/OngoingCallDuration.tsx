@@ -3,7 +3,6 @@ import React, { FC, useEffect, useState } from 'react';
 
 type OngoingCallDurationProps = {
 	counter: number;
-	fontSize: number;
 };
 
 const OngoingCallDuration: FC<OngoingCallDurationProps> = ({ counter: defaultCounter = 0 }) => {
