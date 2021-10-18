@@ -1,5 +1,11 @@
+import { Meteor } from 'meteor/meteor';
+
+import { Subscriptions } from '../../app/models/server';
+import { hasPermission } from '../../app/authorization/server';
+import { findUsersOfRoom } from '../lib/findUsersOfRoom';
+
 Meteor.methods({
-	getUsersOfRoom(rid, showAll) {
+	getUsersOfRoom(rid, showAll, { limit, skip } = {}, filter) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
@@ -10,20 +16,16 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		if (room.broadcast && !RocketChat.authz.hasPermission(userId, 'view-broadcast-member-list', rid)) {
+		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		const subscriptions = RocketChat.models.Subscriptions.findByRoomIdWhenUsernameExists(rid, { fields: { 'u._id': 1 } }).fetch();
-		const userIds = subscriptions.map((s) => s.u._id); // TODO: CACHE: expensive
-		const options = { fields: { username: 1, name: 1 } };
+		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
-		const users = showAll === true
-			? RocketChat.models.Users.findUsersWithUsernameByIds(userIds, options).fetch()
-			: RocketChat.models.Users.findUsersWithUsernameByIdsNotOffline(userIds, options).fetch();
+		const users = findUsersOfRoom({ rid, status: !showAll ? { $ne: 'offline' } : undefined, limit, skip, filter }).fetch();
 
 		return {
-			total: userIds.length,
+			total,
 			records: users,
 		};
 	},

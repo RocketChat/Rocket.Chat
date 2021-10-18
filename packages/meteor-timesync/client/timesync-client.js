@@ -1,8 +1,11 @@
-/* eslint-disable */
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { HTTP } from 'meteor/http';
+
 //IE8 doesn't have Date.now()
 Date.now = Date.now || function() { return +new Date; };
 
-TimeSync = {
+export const TimeSync = {
   loggingEnabled: true
 };
 
@@ -15,10 +18,10 @@ function log(/* arguments */) {
 var defaultInterval = 1000;
 
 // Internal values, exported for testing
-SyncInternals = {
+export const SyncInternals = {
   offset: undefined,
   roundTripTime: undefined,
-  offsetDep: new Deps.Dependency(),
+  offsetDep: new Tracker.Dependency(),
   timeTick: {},
 
   timeCheck: function (lastTime, currentTime, interval, tolerance) {
@@ -31,7 +34,7 @@ SyncInternals = {
   }
 };
 
-SyncInternals.timeTick[defaultInterval] = new Deps.Dependency();
+SyncInternals.timeTick[defaultInterval] = new Tracker.Dependency();
 
 var maxAttempts = 5;
 var attempts = 0;
@@ -44,16 +47,9 @@ var attempts = 0;
   we should try taking multiple measurements.
  */
 
-// Only use Meteor.absoluteUrl for Cordova; see
-// https://github.com/meteor/meteor/issues/4696
-// https://github.com/mizzao/meteor-timesync/issues/30
 var syncUrl = "/_timesync";
 if (__meteor_runtime_config__.ROOT_URL_PATH_PREFIX) {
 	syncUrl = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + syncUrl;
-}
-
-if (Meteor.isCordova) {
-  syncUrl = Meteor.absoluteUrl("_timesync");
 }
 
 var updateOffset = function() {
@@ -121,7 +117,7 @@ TimeSync.resync = function() {
 // Run again whenever we reconnect after losing connection
 var wasConnected = false;
 
-Deps.autorun(function() {
+Tracker.autorun(function() {
   var connected = Meteor.status().connected;
   if ( connected && !wasConnected ) TimeSync.resync();
   wasConnected = connected;
@@ -139,7 +135,7 @@ var lastClientTime = Date.now();
 function getTickDependency(interval) {
 
   if ( !SyncInternals.timeTick[interval] ) {
-    var dep  = new Deps.Dependency();
+    var dep  = new Tracker.Dependency();
 
     Meteor.setInterval(function() {
       dep.changed();
