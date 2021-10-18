@@ -1,4 +1,4 @@
-import { onLicense, isEnterprise } from '../../app/license/server';
+import { onLicense } from '../../app/license/server';
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
@@ -11,7 +11,7 @@ onLicense('saml-enterprise', () => {
 		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
 		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
-		if (!roleAttributeSync || !isEnterprise()) {
+		if (!roleAttributeSync) {
 			return;
 		}
 
@@ -28,7 +28,7 @@ onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('syncRoles', (userId: string, roles: string[]): void => {
 		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
-		if (!roleAttributeSync || !isEnterprise()) {
+		if (!roleAttributeSync) {
 			return;
 		}
 
