@@ -1,4 +1,28 @@
 
+# 4.0.3
+`2021-10-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- **APPS:** Communication problem when updating and uninstalling apps in cluster ([#23418](https://github.com/RocketChat/Rocket.Chat/pull/23418))
+
+  - Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.  
+  - Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.
+
+- Server crashing when Routing method is not available at start ([#23473](https://github.com/RocketChat/Rocket.Chat/pull/23473))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@thassiov](https://github.com/thassiov)
+
 # 4.0.2
 `2021-10-14  ·  4 🐛  ·  2 👩‍💻👨‍💻`
 
