@@ -27,6 +27,13 @@ export interface ICachedSettings {
 
 
 	/*
+	* Gets the current Object of the setting
+	* @param _id - The setting id
+	* @returns {ISetting} - The current Object of the setting
+	*/
+	getSetting(_id: ISetting['_id']): ISetting | undefined;
+
+	/*
 	* Gets the current value of the setting
 	* @remarks
 	* 		- In development mode if you are trying to get the value of a setting that is not defined, it will give an warning, in theory it makes sense, there no reason to do that
@@ -164,7 +171,7 @@ export class CachedSettings extends Emitter<
 }> implements ICachedSettings {
 	ready = false;
 
-	store = new Map<string, SettingValue>();
+	store = new Map<string, ISetting>();
 
 	initilized(): void {
 		if (this.ready) {
@@ -187,6 +194,13 @@ export class CachedSettings extends Emitter<
 		return this.store.has(_id);
 	}
 
+	public getSetting(_id: ISetting['_id']): ISetting | undefined {
+		if (!this.ready && warn) {
+			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
+		}
+		return this.store.get(_id);
+	}
+
 
 	/*
 	* Gets the current value of the setting
@@ -199,7 +213,7 @@ export class CachedSettings extends Emitter<
 		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
 		}
-		return this.store.get(_id) as T;
+		return this.store.get(_id)?.value as T;
 	}
 
 	/*
@@ -216,7 +230,7 @@ export class CachedSettings extends Emitter<
 			SystemLogger.warn(`Settings not initialized yet. getting: ${ _id }`);
 		}
 
-		return [...this.store.entries()].filter(([key]) => _id.test(key)) as [string, T][];
+		return [...this.store.entries()].filter(([key]) => _id.test(key)).map(([key, setting]) => [key, setting.value]) as [string, T][];
 	}
 
 
@@ -243,11 +257,11 @@ export class CachedSettings extends Emitter<
 		}
 
 		if (_id.every((id) => this.store.has(id))) {
-			const settings = _id.map((id) => this.store.get(id));
+			const settings = _id.map((id) => this.store.get(id)?.value);
 			callback(settings as T[]);
 		}
 		const mergeFunction = _.debounce((): void => {
-			callback(_id.map((id) => this.store.get(id)) as T[]);
+			callback(_id.map((id) => this.store.get(id)?.value) as T[]);
 		}, 100);
 
 		const fns = _id.map((id) => this.on(id, mergeFunction));
@@ -277,7 +291,7 @@ export class CachedSettings extends Emitter<
 			};
 		}
 
-		this.store.has(_id) && cb(this.store.get(_id) as T);
+		this.store.has(_id) && cb(this.store.get(_id)?.value as T);
 		return this.change(_id, cb, config);
 	}
 
@@ -293,7 +307,7 @@ export class CachedSettings extends Emitter<
 	*/
 	public watchOnce<T extends SettingValue = SettingValue>(_id: ISetting['_id'], cb: (args: T) => void, config?: OverCustomSettingsConfig): () => void {
 		if (this.store.has(_id)) {
-			cb(this.store.get(_id) as T);
+			cb(this.store.get(_id)?.value as T);
 			return (): void => undefined;
 		}
 		return this.changeOnce(_id, cb, config);
@@ -327,7 +341,7 @@ export class CachedSettings extends Emitter<
 	*/
 	public changeMultiple<T extends SettingValue = SettingValue>(_ids: ISetting['_id'][], callback: (settings: T[]) => void, config?: OverCustomSettingsConfig): () => void {
 		const fns = _ids.map((id) => this.change(id, (): void => {
-			callback(_ids.map((id) => this.store.get(id)) as T[]);
+			callback(_ids.map((id) => this.store.get(id)?.value) as T[]);
 		}, config));
 		return (): void => {
 			fns.forEach((fn) => fn());
@@ -360,20 +374,20 @@ export class CachedSettings extends Emitter<
 	* @returns {void}
 	*/
 	public set(record: ISetting): void {
-		if (this.store.has(record._id) && this.store.get(record._id) === record.value) {
+		if (this.store.has(record._id) && this.store.get(record._id)?.value === record.value) {
 			return;
 		}
 
-		this.store.set(record._id, record.value);
+		this.store.set(record._id, record);
 		if (!this.ready) {
 			this.once('ready', () => {
-				this.emit(record._id, this.store.get(record._id));
-				this.emit('*', [record._id, this.store.get(record._id)]);
+				this.emit(record._id, this.store.get(record._id)?.value);
+				this.emit('*', [record._id, this.store.get(record._id)?.value]);
 			});
 			return;
 		}
-		this.emit(record._id, this.store.get(record._id));
-		this.emit('*', [record._id, this.store.get(record._id)]);
+		this.emit(record._id, this.store.get(record._id)?.value);
+		this.emit('*', [record._id, this.store.get(record._id)?.value]);
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
@@ -393,9 +407,9 @@ export class CachedSettings extends Emitter<
 				cancel.forEach((fn) => fn());
 			};
 		}
-		[...this.store.entries()].forEach(([key, value]) => {
+		[...this.store.entries()].forEach(([key, setting]) => {
 			if (regex.test(key)) {
-				cb(key, value);
+				cb(key, setting.value);
 			}
 		});
 

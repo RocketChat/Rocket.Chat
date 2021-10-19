@@ -20,7 +20,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 		settingsRegister.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', true, {
@@ -83,7 +83,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 
 		process.env.OVERWRITE_SETTING_my_setting = '1';
 
@@ -139,7 +139,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 		settingsRegister.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting_bool', false, {
@@ -197,7 +197,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 		settingsRegister.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting_str', '', {
@@ -253,7 +253,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 
 		settingsRegister.addGroup('group', function() {
 			this.section('section', function() {
@@ -304,7 +304,7 @@ describe('Settings', () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initilized();
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 
 		const spy = chai.spy();
 		const spy2 = chai.spy();
@@ -334,7 +334,7 @@ describe('Settings', () => {
 		const spy2 = chai.spy();
 		const settings = new CachedSettings();
 		Settings.settings = settings;
-		const settingsRegister = new SettingsRegister(settings);
+		const settingsRegister = new SettingsRegister({ store: settings, model: Settings as any });
 
 		settings.watch('setting_callback', spy, { debounce: 10 });
 		settings.watchByRegex(/setting_callback/ig, spy2, { debounce: 10 });

@@ -11,4 +11,4 @@ SettingsModel.find().forEach((record: ISetting) => {
 
 settings.initilized();
 
-export const settingsRegister = new SettingsRegister(settings);
+export const settingsRegister = new SettingsRegister({ store: settings, model: SettingsModel });
