@@ -113,8 +113,8 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings).to.have.property('insertCalls').to.be.equal(1);
-		expect(Settings).to.have.property('upsertCalls').to.be.equal(1);
+		expect(Settings).to.have.property('insertCalls').to.be.equal(2);
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting = '2';
@@ -128,8 +128,8 @@ describe('Settings', () => {
 			});
 		});
 
-		expect(Settings).to.have.property('insertCalls').to.be.equal(1);
-		expect(Settings).to.have.property('upsertCalls').to.be.equal(2);
+		expect(Settings).to.have.property('insertCalls').to.be.equal(2);
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(1);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include({ ...expectedSetting, value: 2, processEnvValue: 2 });
 	});
 
@@ -166,8 +166,8 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.insertCalls).to.be.equal(1);
-		expect(Settings.upsertCalls).to.be.equal(1);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'false';
@@ -182,8 +182,8 @@ describe('Settings', () => {
 		});
 
 
-		expect(Settings.insertCalls).to.be.equal(1);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(1);
 		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include({
 			value: false,
 			processEnvValue: false,
@@ -224,8 +224,8 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.insertCalls).to.be.equal(1);
-		expect(Settings.upsertCalls).to.be.equal(1);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey ho';
@@ -239,8 +239,8 @@ describe('Settings', () => {
 			});
 		});
 
-		expect(Settings.insertCalls).to.be.equal(1);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(1);
 		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include({ ...expectedSetting,
 			value: 'hey ho',
 			processEnvValue: 'hey ho',

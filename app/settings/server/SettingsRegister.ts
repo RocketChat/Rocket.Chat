@@ -67,9 +67,16 @@ type addGroupCallback = (this: {
 type ISettingAddOptions = Partial<ISetting>;
 
 
-const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) => (a: ISetting, b: ISetting): boolean => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((key) => !keys.includes(key as keyof ISetting)).every((key) => a.hasOwnProperty(key) && b.hasOwnProperty(key) && a[key as keyof ISetting] === b[key as keyof ISetting]);
+const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) =>
+	(a: ISetting, b: ISetting): boolean =>
+		[...new Set([...Object.keys(a), ...Object.keys(b)])]
+			.filter((key) => !keys.includes(key as keyof ISetting))
+			.every((key) =>
+				a.hasOwnProperty(key)
+				&& b.hasOwnProperty(key)
+				&& a[key as keyof ISetting] === b[key as keyof ISetting]);
 
-const compareSettingsIgnoringValueTsCreatedAt = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt']);
+const compareSettingsIgnoringValueTsCreatedAt = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'processEnvValue']);
 
 export class SettingsRegister {
 	private model: typeof SettingsModel;
@@ -119,11 +126,13 @@ export class SettingsRegister {
 
 
 		if (settingStored && !compareSettingsIgnoringValueTsCreatedAt(settingStored, settingOverwritten)) {
+			console.warn(`Overwriting setting ${ _id }`);
 			this.model.upsert({ _id }, settingProps);
 			return;
 		}
 
 		if (settingStored && isOverwritten) {
+			console.warn(`Overwriting  asdasd setting ${ _id }`);
 			if (settingStored.value !== settingOverwritten.value) {
 				this.model.upsert({ _id }, settingProps);
 			}
