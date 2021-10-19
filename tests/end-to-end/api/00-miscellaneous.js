@@ -143,7 +143,7 @@ describe('miscellaneous', function() {
 					'unreadAlert',
 					'notificationsSoundVolume',
 					'desktopNotifications',
-					'pushNotifications',
+					'mobileNotifications',
 					'enableAutoAway',
 					'enableMessageParserEarlyAdoption',
 					// 'highlights',

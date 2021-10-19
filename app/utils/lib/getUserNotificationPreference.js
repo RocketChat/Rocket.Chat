@@ -9,7 +9,7 @@ export const getUserNotificationPreference = (user, pref) => {
 	let preferenceKey;
 	switch (pref) {
 		case 'desktop': preferenceKey = 'desktopNotifications'; break;
-		case 'mobile': preferenceKey = 'pushNotifications'; break;
+		case 'mobile': preferenceKey = 'mobileNotifications'; break;
 		case 'email': preferenceKey = 'emailNotificationMode'; break;
 	}
 
