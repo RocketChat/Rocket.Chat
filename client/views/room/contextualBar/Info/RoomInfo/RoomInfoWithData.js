@@ -194,6 +194,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	});
 
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+	const allowConvertToTeam = !room.teamId && !prid && canConvertRoomToTeam && canEdit;
 
 	return (
 		<RoomInfo
@@ -207,9 +208,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
 			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
-			onClickConvertToTeam={
-				!room.teamId && !prid && canConvertRoomToTeam && canEdit && onConvertToTeam
-			}
+			onClickConvertToTeam={allowConvertToTeam && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
 		/>
 	);
