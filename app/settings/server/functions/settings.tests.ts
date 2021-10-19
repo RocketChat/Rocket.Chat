@@ -1,24 +1,27 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-env mocha */
-import { Meteor } from 'meteor/meteor';
 import chai, { expect } from 'chai';
 import spies from 'chai-spies';
 
 import { Settings } from './settings.mocks';
-import { settings } from './settings';
+import { SettingsRegistry } from '../SettingsRegistry';
+import { CachedSettings } from '../CachedSettings';
 
 chai.use(spies);
 
 describe('Settings', () => {
 	beforeEach(() => {
+		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
-		Settings.data.clear();
-		Meteor.settings = { public: {} };
 		process.env = {};
 	});
 
 	it('should not insert the same setting twice', () => {
-		settings.addGroup('group', function() {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', true, {
 					type: 'boolean',
@@ -27,8 +30,9 @@ describe('Settings', () => {
 			});
 		});
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.insertCalls).to.be.equal(2);
+
 		expect(Settings.findOne({ _id: 'my_setting' })).to.be.include({
 			type: 'boolean',
 			sorter: 0,
@@ -45,7 +49,7 @@ describe('Settings', () => {
 			autocomplete: true,
 		});
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', true, {
 					type: 'boolean',
@@ -54,11 +58,12 @@ describe('Settings', () => {
 			});
 		});
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.insertCalls).to.be.equal(2);
+
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting2', false, {
 					type: 'boolean',
@@ -67,16 +72,22 @@ describe('Settings', () => {
 			});
 		});
 
-		expect(Settings.data.size).to.be.equal(3);
-		expect(Settings.upsertCalls).to.be.equal(3);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.insertCalls).to.be.equal(3);
+
 		expect(Settings.findOne({ _id: 'my_setting' }).value).to.be.equal(true);
 		expect(Settings.findOne({ _id: 'my_setting2' }).value).to.be.equal(false);
 	});
 
 	it('should respect override via environment as int', () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
 		process.env.OVERWRITE_SETTING_my_setting = '1';
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -102,13 +113,13 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings).to.have.property('insertCalls').to.be.equal(2);
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting = '2';
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -117,18 +128,19 @@ describe('Settings', () => {
 			});
 		});
 
-		expectedSetting.value = 2;
-		expectedSetting.processEnvValue = 2;
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+		expect(Settings).to.have.property('insertCalls').to.be.equal(2);
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(1);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include({ ...expectedSetting, value: 2, processEnvValue: 2 });
 	});
 
 	it('should respect override via environment as boolean', () => {
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'true';
 
-		settings.addGroup('group', function() {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting_bool', false, {
 					type: 'boolean',
@@ -154,33 +166,39 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'false';
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
-				this.add('my_setting_bool', false, {
+				this.add('my_setting_bool', true, {
 					type: 'boolean',
 					sorter: 0,
 				});
 			});
 		});
 
-		expectedSetting.value = false;
-		expectedSetting.processEnvValue = false;
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include(expectedSetting);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(1);
+		expect(Settings.findOne({ _id: 'my_setting_bool' })).to.include({
+			value: false,
+			processEnvValue: false,
+			packageValue: true,
+		});
 	});
 
 	it('should respect override via environment as string', () => {
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey';
 
-		settings.addGroup('group', function() {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting_str', '', {
 					type: 'string',
@@ -206,13 +224,13 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include(expectedSetting);
 
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey ho';
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting_str', 'hey', {
 					type: 'string',
@@ -221,19 +239,23 @@ describe('Settings', () => {
 			});
 		});
 
-		expectedSetting.value = 'hey ho';
-		expectedSetting.processEnvValue = 'hey ho';
-		expectedSetting.packageValue = 'hey';
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include(expectedSetting);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(1);
+		expect(Settings.findOne({ _id: 'my_setting_str' })).to.include({ ...expectedSetting,
+			value: 'hey ho',
+			processEnvValue: 'hey ho',
+			packageValue: 'hey',
+		});
 	});
 
 	it('should respect initial value via environment', () => {
 		process.env.my_setting = '1';
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -259,13 +281,11 @@ describe('Settings', () => {
 			autocomplete: true,
 		};
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
 		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
 
-		process.env.my_setting = '2';
-
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('my_setting', 0, {
 					type: 'int',
@@ -274,160 +294,22 @@ describe('Settings', () => {
 			});
 		});
 
-		expectedSetting.processEnvValue = 2;
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
+		expect(Settings.insertCalls).to.be.equal(2);
+		expect(Settings.upsertCalls).to.be.equal(0);
+		expect(Settings.findOne({ _id: 'my_setting' })).to.include({ ...expectedSetting });
 	});
 
-	it('should respect initial value via Meteor.settings', () => {
-		Meteor.settings.my_setting = 1;
 
-		settings.addGroup('group', function() {
-			this.section('section', function() {
-				this.add('my_setting', 0, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
+	it('should call `settings.get` callback on setting added', (done) => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initilized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		const expectedSetting = {
-			value: 1,
-			meteorSettingsValue: 1,
-			valueSource: 'meteorSettingsValue',
-			type: 'int',
-			sorter: 0,
-			group: 'group',
-			section: 'section',
-			packageValue: 0,
-			hidden: false,
-			blocked: false,
-			secret: false,
-			i18nLabel: 'my_setting',
-			i18nDescription: 'my_setting_Description',
-			autocomplete: true,
-		};
+		const spy = chai.spy();
+		const spy2 = chai.spy();
 
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-
-		Meteor.settings.my_setting = 2;
-
-		settings.addGroup('group', function() {
-			this.section('section', function() {
-				this.add('my_setting', 0, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
-
-		expectedSetting.meteorSettingsValue = 2;
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(3);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-	});
-
-	it('should keep original value if value on code was changed', () => {
-		settings.addGroup('group', function() {
-			this.section('section', function() {
-				this.add('my_setting', 0, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
-
-		const expectedSetting = {
-			value: 0,
-			valueSource: 'packageValue',
-			type: 'int',
-			sorter: 0,
-			group: 'group',
-			section: 'section',
-			packageValue: 0,
-			hidden: false,
-			blocked: false,
-			secret: false,
-			i18nLabel: 'my_setting',
-			i18nDescription: 'my_setting_Description',
-			autocomplete: true,
-		};
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-
-		// Can't reset setting because the Meteor.setting will have the first value and will act to enforce his value
-		// settings.addGroup('group', function() {
-		// 	this.section('section', function() {
-		// 		this.add('my_setting', 1, {
-		// 			type: 'int',
-		// 			sorter: 0,
-		// 		});
-		// 	});
-		// });
-
-		// expectedSetting.packageValue = 1;
-
-		// expect(Settings.data.size).to.be.equal(2);
-		// expect(Settings.upsertCalls).to.be.equal(3);
-		// expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-	});
-
-	it('should change group and section', () => {
-		settings.addGroup('group', function() {
-			this.section('section', function() {
-				this.add('my_setting', 0, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
-
-		const expectedSetting = {
-			value: 0,
-			valueSource: 'packageValue',
-			type: 'int',
-			sorter: 0,
-			group: 'group',
-			section: 'section',
-			packageValue: 0,
-			hidden: false,
-			blocked: false,
-			secret: false,
-			i18nLabel: 'my_setting',
-			i18nDescription: 'my_setting_Description',
-			autocomplete: true,
-		};
-
-		expect(Settings.data.size).to.be.equal(2);
-		expect(Settings.upsertCalls).to.be.equal(2);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-
-		settings.addGroup('group2', function() {
-			this.section('section2', function() {
-				this.add('my_setting', 0, {
-					type: 'int',
-					sorter: 0,
-				});
-			});
-		});
-
-		expectedSetting.group = 'group2';
-		expectedSetting.section = 'section2';
-
-		expect(Settings.data.size).to.be.equal(3);
-		expect(Settings.upsertCalls).to.be.equal(4);
-		expect(Settings.findOne({ _id: 'my_setting' })).to.include(expectedSetting);
-	});
-
-	it('should call `settings.get` callback on setting added', () => {
-		settings.addGroup('group', function() {
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('setting_callback', 'value1', {
 					type: 'string',
@@ -435,20 +317,30 @@ describe('Settings', () => {
 			});
 		});
 
-		const spy = chai.spy();
-		settings.get('setting_callback', spy);
-		settings.get(/setting_callback/, spy);
+		settings.watch('setting_callback', spy, { debounce: 10 });
+		settings.watchByRegex(/setting_callback/, spy2, { debounce: 10 });
 
-		expect(spy).to.have.been.called.exactly(2);
-		expect(spy).to.have.been.called.always.with('setting_callback', 'value1');
+		setTimeout(() => {
+			expect(spy).to.have.been.called.exactly(1);
+			expect(spy2).to.have.been.called.exactly(1);
+			expect(spy).to.have.been.called.always.with('value1');
+			expect(spy2).to.have.been.called.always.with('setting_callback', 'value1');
+			done();
+		}, settings.getConfig({ debounce: 10 }).debounce);
 	});
 
-	it('should call `settings.get` callback on setting changed', () => {
+	it('should call `settings.watch` callback on setting changed registering before initialized', (done) => {
 		const spy = chai.spy();
-		settings.get('setting_callback', spy);
-		settings.get(/setting_callback/, spy);
+		const spy2 = chai.spy();
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		settings.addGroup('group', function() {
+		settings.watch('setting_callback', spy, { debounce: 10 });
+		settings.watchByRegex(/setting_callback/ig, spy2, { debounce: 10 });
+
+		settings.initilized();
+		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
 				this.add('setting_callback', 'value2', {
 					type: 'string',
@@ -456,10 +348,18 @@ describe('Settings', () => {
 			});
 		});
 
-		settings.updateById('setting_callback', 'value3');
+		setTimeout(() => {
+			settings.on('*', () => setTimeout(() => {
+				done();
+			}, settings.getConfig({ debounce: 10 }).debounce));
 
-		expect(spy).to.have.been.called.exactly(6);
-		expect(spy).to.have.been.called.with('setting_callback', 'value2');
-		expect(spy).to.have.been.called.with('setting_callback', 'value3');
+			Settings.updateValueById('setting_callback', 'value3');
+			setTimeout(() => {
+				expect(spy).to.have.been.called.exactly(2);
+				expect(spy2).to.have.been.called.exactly(2);
+				expect(spy).to.have.been.called.with('value2');
+				expect(spy).to.have.been.called.with('value3');
+			}, settings.getConfig({ debounce: 10 }).debounce);
+		}, settings.getConfig({ debounce: 10 }).debounce);
 	});
 });

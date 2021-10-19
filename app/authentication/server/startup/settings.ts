@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
 Meteor.startup(function() {
-	settings.addGroup('Accounts', function() {
+	settingsRegistry.addGroup('Accounts', function() {
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
 		this.section('Login_Attempts', function() {

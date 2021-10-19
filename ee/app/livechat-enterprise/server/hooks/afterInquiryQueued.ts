@@ -18,11 +18,11 @@ const setQueueTimer = (inquiry: any): void => {
 	(LivechatInquiry as any).setEstimatedInactivityCloseTime(inquiry?._id, newQueueTime);
 };
 
-settings.get('Livechat_max_queue_wait_time', (_, value) => {
+settings.watch('Livechat_max_queue_wait_time', (value) => {
 	timer = value as number;
 });
 
-settings.get('Livechat_max_queue_wait_time_action', (_, value) => {
+settings.watch('Livechat_max_queue_wait_time_action', (value) => {
 	if (!value || value === 'Nothing') {
 		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry-set-queue-timer');
 		return;

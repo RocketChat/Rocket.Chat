@@ -90,7 +90,7 @@ const fillSettings = _.debounce(Meteor.bindEnvironment(() => {
 
 if (Meteor.isServer) {
 	Meteor.startup(function() {
-		return settings.get(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+		return settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
 	});
 } else {
 	Meteor.startup(function() {

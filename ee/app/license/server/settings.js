@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 import { addLicense } from './license';
 
 Meteor.startup(function() {
-	settings.addGroup('Enterprise', function() {
+	settingsRegistry.addGroup('Enterprise', function() {
 		this.section('License', function() {
 			this.add('Enterprise_License', '', {
 				type: 'string',
@@ -20,7 +20,7 @@ Meteor.startup(function() {
 	});
 });
 
-settings.get('Enterprise_License', (key, license) => {
+settings.watch('Enterprise_License', (license) => {
 	if (!license || String(license).trim() === '') {
 		return;
 	}
