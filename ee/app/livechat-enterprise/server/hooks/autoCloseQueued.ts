@@ -1,4 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks/server';
+import { settings } from '../../../../../app/settings/server';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 
 const removeScheduledQueueCloseTime = (inquiry: any): void => {
@@ -8,4 +9,10 @@ const removeScheduledQueueCloseTime = (inquiry: any): void => {
 	OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 };
 
-callbacks.add('livechat.afterTakeInquiry', removeScheduledQueueCloseTime, callbacks.priority.HIGH, 'livechat-after-inquiry-taken-remove-schedule');
+settings.get('Livechat_max_queue_wait_time', function(_, value) {
+	if (!value || value < 0) {
+		callbacks.remove('livechat.afterTakeInquiry', 'livechat-after-inquiry-taken-remove-schedule');
+		return;
+	}
+	callbacks.add('livechat.afterTakeInquiry', removeScheduledQueueCloseTime, callbacks.priority.HIGH, 'livechat-after-inquiry-taken-remove-schedule');
+});
