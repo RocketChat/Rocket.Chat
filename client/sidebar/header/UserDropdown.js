@@ -4,17 +4,20 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
 
 import { callbacks } from '../../../app/callbacks/client';
-import { popover, AccountBox, modal, SideNav } from '../../../app/ui-utils/client';
+import { popover, AccountBox, SideNav } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useAtLeastOnePermission } from '../../contexts/AuthorizationContext';
+import { useLayout } from '../../contexts/LayoutContext';
 import { useRoute } from '../../contexts/RouterContext';
 import { useSetting } from '../../contexts/SettingsContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useLogout } from '../../contexts/UserContext';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { imperativeModal } from '../../lib/imperativeModal';
+import EditStatusModal from './EditStatusModal';
 
 const ADMIN_PERMISSIONS = [
 	'view-logs',
@@ -49,6 +52,7 @@ const UserDropdown = ({ user, onClose }) => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account');
 	const adminRoute = useRoute('admin');
+	const { sidebar } = useLayout();
 
 	const logout = useLogout();
 
@@ -63,18 +67,9 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleCustomStatus = useMutableCallback((e) => {
 		e.preventDefault();
-		modal.open({
-			title: t('Edit_Status'),
-			content: 'editStatus',
-			data: {
-				onSave() {
-					modal.close();
-				},
-			},
-			modalClass: 'modal',
-			showConfirmButton: false,
-			showCancelButton: false,
-			confirmOnEnter: false,
+		imperativeModal.open({
+			component: EditStatusModal,
+			props: { userStatus: status, userStatusText: statusText, onClose: imperativeModal.close },
 		});
 		onClose();
 	});
@@ -86,6 +81,7 @@ const UserDropdown = ({ user, onClose }) => {
 
 	const handleAdmin = useMutableCallback(() => {
 		adminRoute.push({ group: 'info' });
+		sidebar.toggle();
 		popover.close();
 	});
 

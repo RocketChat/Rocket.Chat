@@ -5,6 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import * as Mailer from '../../../mailer';
 import { Users, Subscriptions, Rooms } from '../../../models';
 import { settings } from '../../../settings';
+import { callbacks } from '../../../callbacks/server';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
@@ -39,8 +40,18 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		return false;
 	}
 
+
 	// Users without username can't do anything, so there is no need to check for owned rooms
 	if (user.username != null && !active) {
+		const userAdmin = Users.findOneAdmin(userId.count);
+		const adminsCount = Users.findActiveUsersInRoles(['admin']).count();
+		if (userAdmin && adminsCount === 1) {
+			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
+				method: 'removeUserFromRole',
+				action: 'Remove_last_admin',
+			});
+		}
+
 		const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
 		// give omnichannel rooms a special treatment :)
 		const chatSubscribedRooms = subscribedRooms.filter(({ t }) => t !== 'l');
@@ -55,7 +66,19 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
 	}
 
+	if (active && !user.active) {
+		callbacks.run('beforeActivateUser', user);
+	}
+
 	Users.setUserActive(userId, active);
+
+	if (active && !user.active) {
+		callbacks.run('afterActivateUser', user);
+	}
+
+	if (!active && user.active) {
+		callbacks.run('afterDeactivateUser', user);
+	}
 
 	if (user.username) {
 		Subscriptions.setArchivedByUsername(user.username, !active);

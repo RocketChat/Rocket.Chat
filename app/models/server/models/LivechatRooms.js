@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
 
@@ -194,6 +193,17 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+			...departmentId && { departmentId },
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
 		const query = {
 			t: 'l',
@@ -234,9 +244,6 @@ export class LivechatRooms extends Base {
 	}
 
 	updateRoomCount = function() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -247,7 +254,7 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return livechatCount.value.value;
 	}

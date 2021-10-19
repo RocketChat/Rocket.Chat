@@ -4,16 +4,17 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 
 import { auth } from '../oauth.js';
 import { RocketChatAnnouncement } from '../../../lib';
 import { popout } from '../../../ui-utils';
-import { t, handleError } from '../../../utils';
+import { t } from '../../../utils';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
 import { hasAllPermission } from '../../../authorization';
 import { Users, Rooms } from '../../../models';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export const call = (...args) => new Promise(function(resolve, reject) {
 	Meteor.call(...args, function(err, result) {
@@ -134,7 +135,7 @@ Template.liveStreamTab.events({
 			i.streamingOptions.set(clearedObject);
 			const roomAnnouncement = new RocketChatAnnouncement().getByRoom(i.data.rid);
 			if (roomAnnouncement.getMessage() !== '') { roomAnnouncement.clear(); }
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
 		});
 	},
 	'click .js-save'(e, i) {
@@ -166,7 +167,7 @@ Template.liveStreamTab.events({
 				}
 			}
 
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
 		});
 	},
 	'click .streaming-source-settings'(e, i) {
@@ -226,7 +227,7 @@ Template.liveStreamTab.events({
 					roomAnnouncement.clear();
 				}
 			}
-			return toastr.success(TAPi18n.__('Livestream_source_changed_succesfully'));
+			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Livestream_source_changed_succesfully') });
 		});
 	},
 	'click .js-popout'(e, i) {

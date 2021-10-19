@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import toastr from 'toastr';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -10,21 +9,15 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 
 import { messageArgs } from './messageArgs';
-import { roomTypes, canDeleteMessage } from '../../../utils/client';
+import { roomTypes } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/client';
 import { modal } from './modal';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import ReactionList from '../../../../client/components/modals/ReactionList';
-
-const call = (method, ...args) => new Promise((resolve, reject) => {
-	Meteor.call(method, ...args, function(err, data) {
-		if (err) {
-			return reject(err);
-		}
-		resolve(data);
-	});
-});
+import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
+import { call } from '../../../../client/lib/utils/call';
+import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -235,7 +228,7 @@ Meteor.startup(async function() {
 			const { msg: message } = messageArgs(this);
 			const permalink = await MessageAction.getPermaLink(message._id);
 			navigator.clipboard.writeText(permalink);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;
@@ -253,7 +246,7 @@ Meteor.startup(async function() {
 		action() {
 			const { msg: { msg } } = messageArgs(this);
 			navigator.clipboard.writeText(msg);
-			toastr.success(TAPi18n.__('Copied'));
+			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
 			return !!subscription;

@@ -1,9 +1,9 @@
 import './livechat';
+import './config';
 import './startup';
 import './visitorStatus';
 import './agentStatus';
 import '../lib/messageTypes';
-import './config';
 import './roomType';
 import './hooks/beforeCloseRoom';
 import './hooks/beforeDelegateAgent';
@@ -69,7 +69,6 @@ import './methods/setUpConnection';
 import './methods/takeInquiry';
 import './methods/requestTranscript';
 import './methods/returnAsInquiry';
-import './methods/saveOfficeHours';
 import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
 import './methods/getTagsList';

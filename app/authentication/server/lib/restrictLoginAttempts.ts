@@ -5,7 +5,7 @@ import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
 import { IServerEventType } from '../../../../definition/IServerEvent';
 import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
-import { addMinutesToADate } from '../../../utils/lib/date.helper';
+import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
@@ -16,7 +16,6 @@ const logger = new Logger('LoginProtection');
 export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
-		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided is invalid');
 		return;
 	}
@@ -24,7 +23,6 @@ export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date
 	// to avoid issues when "fname" is presented in the UI, check if the name matches it as well
 	const room = await Rooms.findOneByNameOrFname(channelToNotify);
 	if (!room) {
-		/* @ts-expect-error */
 		logger.error('Cannot notify failed logins: channel provided doesn\'t exists');
 		return;
 	}

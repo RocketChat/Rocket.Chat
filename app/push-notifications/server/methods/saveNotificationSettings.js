@@ -2,7 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Subscriptions } from '../../../models/server';
-import { getUserNotificationPreference } from '../../../utils';
+import { getUserNotificationPreference } from '../../../utils/server';
+
+const saveAudioNotificationValue = (subId, value) => (value === 'default'
+	? Subscriptions.clearAudioNotificationValueById(subId)
+	: Subscriptions.updateAudioNotificationValueById(subId, value));
 
 Meteor.methods({
 	saveNotificationSettings(roomId, field, value) {
@@ -22,9 +26,6 @@ Meteor.methods({
 		};
 
 		const notifications = {
-			audioNotifications: {
-				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('audio', value), 'audioNotifications', 'audioPrefOrigin'),
-			},
 			desktopNotifications: {
 				updateMethod: (subscription, value) => Subscriptions.updateNotificationsPrefById(subscription._id, getNotificationPrefValue('desktop', value), 'desktopNotifications', 'desktopPrefOrigin'),
 			},
@@ -47,12 +48,12 @@ Meteor.methods({
 				updateMethod: (subscription, value) => Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
 			},
 			audioNotificationValue: {
-				updateMethod: (subscription, value) => Subscriptions.updateAudioNotificationValueById(subscription._id, value),
+				updateMethod: (subscription, value) => saveAudioNotificationValue(subscription._id, value),
 			},
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
 		const basicValuesForNotifications = ['all', 'mentions', 'nothing', 'default'];
-		const fieldsMustHaveBasicValues = ['emailNotifications', 'audioNotifications', 'mobilePushNotifications', 'desktopNotifications'];
+		const fieldsMustHaveBasicValues = ['emailNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 		if (isInvalidNotification) {
 			throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', { method: 'saveNotificationSettings' });
@@ -77,7 +78,7 @@ Meteor.methods({
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', { method: 'saveAudioNotificationValue' });
 		}
-		Subscriptions.updateAudioNotificationValueById(subscription._id, value);
+		saveAudioNotificationValue(subscription._id, value);
 		return true;
 	},
 });

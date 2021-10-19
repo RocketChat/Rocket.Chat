@@ -1,4 +1,4 @@
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { FederationRoomEvents, Rooms } from '../../../models/server';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -13,7 +13,7 @@ async function beforeDeleteRoom(roomId) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) { return roomId; }
 
-	logger.client.debug(() => `beforeDeleteRoom => room=${ JSON.stringify(room, null, 2) }`);
+	clientLogger.debug({ msg: 'beforeDeleteRoom', room });
 
 	try {
 		// Create the message event
@@ -22,7 +22,7 @@ async function beforeDeleteRoom(roomId) {
 		// Dispatch event (async)
 		dispatchEvent(room.federation.domains, event);
 	} catch (err) {
-		logger.client.error('beforeDeleteRoom => Could not remove room:', err);
+		clientLogger.error({ msg: 'beforeDeleteRoom => Could not remove room:', err });
 
 		throw err;
 	}

@@ -7,6 +7,7 @@ import { LivechatRooms, LivechatVisitors, LivechatDepartment } from '../../../..
 import { API } from '../../../../api/server';
 import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 
 const getUploadFile = (details, fileUrl) => {
 	const response = HTTP.get(fileUrl, { npmRequestOptions: { encoding: null } });
@@ -83,6 +84,10 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				sms: {
 					from: sms.to,
 				},
+				source: {
+					type: OmnichannelSourceType.SMS,
+					alias: this.urlParams.service,
+				},
 			},
 		};
 
@@ -132,7 +137,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 					attachment.video_size = file.size;
 				}
 			} catch (e) {
-				console.error(`Attachment upload failed: ${ e.message }`);
+				Livechat.logger.error(`Attachment upload failed: ${ e.message }`);
 				attachment = {
 					fields: [{
 						title: 'User upload failed',

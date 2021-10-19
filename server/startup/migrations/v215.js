@@ -1,9 +1,9 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 
 const removed = ['advocacy', 'industry', 'publicRelations', 'healthcarePharmaceutical', 'helpCenter'];
 
-Migrations.add({
+addMigration({
 	version: 215,
 	up() {
 		const current = Settings.findOneById('Industry');

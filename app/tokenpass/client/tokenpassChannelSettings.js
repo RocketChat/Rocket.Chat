@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 
-import { t, handleError } from '../../utils';
+import { t } from '../../utils';
 import { ChatRoom } from '../../models';
+import { handleError } from '../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 Template.channelSettings__tokenpass.helpers({
 	addDisabled() {
@@ -93,7 +94,7 @@ Template.channelSettings__tokenpass.events({
 			i.balance.set('');
 			i.initial = tokenpass;
 			[...i.findAll('input')].forEach((el) => { el.value = ''; });
-			return toastr.success(TAPi18n.__('Room_tokenpass_config_changed_successfully'));
+			return dispatchToastMessage({ type: 'success', message: TAPi18n.__('Room_tokenpass_config_changed_successfully') });
 		});
 	},
 	'click .js-cancel'(e, i) {

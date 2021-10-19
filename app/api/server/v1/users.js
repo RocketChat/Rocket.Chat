@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import Busboy from 'busboy';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
@@ -16,10 +15,11 @@ import {
 	checkUsernameAvailability,
 	setUserAvatar,
 	saveCustomFields,
-} from '../../../lib';
+	setStatusText,
+} from '../../../lib/server';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
-import { setStatusText } from '../../../lib/server';
+import { getUploadFormData } from '../lib/getUploadFormData';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
@@ -314,12 +314,14 @@ API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 	post() {
 		const user = this.getUserFromParams();
 
-		if (user._id === this.userId) {
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
-		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
-			Meteor.runAsUser(user._id, () => Meteor.call('resetAvatar'));
+		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 		} else {
-			return API.v1.unauthorized();
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
 		}
 
 		return API.v1.success();
@@ -333,8 +335,9 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			userId: Match.Maybe(String),
 			username: Match.Maybe(String),
 		}));
+		const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
 				method: 'users.setAvatar',
 			});
@@ -343,64 +346,44 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
-		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+		} else if (canEditOtherUserAvatar) {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
 		}
 
-		Meteor.runAsUser(user._id, () => {
-			if (this.bodyParams.avatarUrl) {
-				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
-			} else {
-				const busboy = new Busboy({ headers: this.request.headers });
-				const fields = {};
-				const getUserFromFormData = (fields) => {
-					if (fields.userId) {
-						return Users.findOneById(fields.userId, { _id: 1 });
-					}
-					if (fields.username) {
-						return Users.findOneByUsernameIgnoringCase(fields.username, { _id: 1 });
-					}
-				};
+		if (this.bodyParams.avatarUrl) {
+			setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+			return API.v1.success();
+		}
 
-				Meteor.wrapAsync((callback) => {
-					busboy.on('file', Meteor.bindEnvironment((fieldname, file, filename, encoding, mimetype) => {
-						if (fieldname !== 'image') {
-							return callback(new Meteor.Error('invalid-field'));
-						}
-						const imageData = [];
-						file.on('data', Meteor.bindEnvironment((data) => {
-							imageData.push(data);
-						}));
+		const { image, ...fields } = Promise.await(getUploadFormData({
+			request: this.request,
+		}));
 
-						file.on('end', Meteor.bindEnvironment(() => {
-							const sentTheUserByFormData = fields.userId || fields.username;
-							if (sentTheUserByFormData) {
-								user = getUserFromFormData(fields);
-								if (!user) {
-									return callback(new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users'));
-								}
-								const isAnotherUser = this.userId !== user._id;
-								if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-info')) {
-									return callback(new Meteor.Error('error-not-allowed', 'Not allowed'));
-								}
-							}
-							try {
-								setUserAvatar(user, Buffer.concat(imageData), mimetype, 'rest');
-								callback();
-							} catch (e) {
-								callback(e);
-							}
-						}));
-					}));
-					busboy.on('field', (fieldname, val) => {
-						fields[fieldname] = val;
-					});
-					this.request.pipe(busboy);
-				})();
+		if (!image) {
+			return API.v1.failure('The \'image\' param is required');
+		}
+
+		const sentTheUserByFormData = fields.userId || fields.username;
+		if (sentTheUserByFormData) {
+			if (fields.userId) {
+				user = Users.findOneById(fields.userId, { fields: { username: 1 } });
+			} else if (fields.username) {
+				user = Users.findOneByUsernameIgnoringCase(fields.username, { fields: { username: 1 } });
 			}
-		});
+
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
+			}
+
+			const isAnotherUser = this.userId !== user._id;
+			if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-avatar')) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+		}
+
+		setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
 
 		return API.v1.success();
 	},
@@ -923,10 +906,17 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 
 API.v1.addRoute('users.listTeams', { authRequired: true }, {
 	get() {
-		const { userId } = this.bodyParams;
+		check(this.queryParams, Match.ObjectIncluding({
+			userId: Match.Maybe(String),
+		}));
+		const { userId } = this.queryParams;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
 
 		// If the caller has permission to view all teams, there's no need to filter the teams
-		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? undefined : this.userId;
 
 		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
 
@@ -945,7 +935,7 @@ API.v1.addRoute('users.logout', { authRequired: true }, {
 		}
 
 		// this method logs the user out automatically, if successful returns 1, otherwise 0
-		if (!Users.removeResumeService(userId)) {
+		if (!Users.unsetLoginTokens(userId)) {
 			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 		}
 

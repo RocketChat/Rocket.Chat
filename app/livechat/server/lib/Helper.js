@@ -15,8 +15,10 @@ import notifications from '../../../notifications/server/lib/Notifications';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 const logger = new Logger('LivechatHelper');
+const emailValidationRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const allowAgentSkipQueue = (agent) => {
 	check(agent, Match.ObjectIncluding({
@@ -59,6 +61,12 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		cl: false,
 		open: true,
 		waitingResponse: true,
+		// this should be overriden by extraRoomInfo when provided
+		// in case it's not provided, we'll use this "default" type
+		source: {
+			type: OmnichannelSourceType.OTHER,
+			alias: 'unknown',
+		},
 	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
@@ -195,7 +203,7 @@ export const parseAgentCustomFields = (customFields) => {
 			return Object.keys(parseCustomFields)
 				.filter((customFieldKey) => parseCustomFields[customFieldKey].sendToIntegrations === true);
 		} catch (error) {
-			console.error(error);
+			Livechat.logger.error(error);
 			return [];
 		}
 	};
@@ -249,8 +257,12 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = Livechat.getOnlineAgents(department, agent);
-	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
+	if (!onlineAgents) {
+		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+		return;
+	}
 
+	logger.debug(`Notifying ${ onlineAgents.count() } agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
 	onlineAgents.forEach((agent) => {
@@ -419,13 +431,15 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		logger.debug(`Cannot forward room ${ room._id }. Chat is assigned to previous agent`);
+		logger.debug(`Cannot forward room ${ room._id }. Chat assigned to agent ${ servedBy._id } (Previous was ${ oldServedBy._id })`);
 		return false;
 	}
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+		// if chat is queued then we don't ignore the new servedBy agent bcs at this
+		// point the chat is not assigned to him/her and it is still in the queue
+		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
@@ -436,6 +450,8 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${ inquiry._id } as ready`);
 		LivechatInquiry.readyInquiry(inquiry._id);
+		LivechatRooms.removeAgentByRoomId(rid);
+		dispatchAgentDelegated(rid, null);
 		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 
@@ -533,5 +549,12 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
 
+	return true;
+};
+
+export const validateEmail = (email) => {
+	if (!emailValidationRegex.test(email)) {
+		throw new Meteor.Error('error-invalid-email', `Invalid email ${ email }`, { function: 'Livechat.validateEmail', email });
+	}
 	return true;
 };

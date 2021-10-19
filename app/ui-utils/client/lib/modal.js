@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 
-import { t, getUserPreference, handleError } from '../../../utils';
+import { t, getUserPreference } from '../../../utils';
 import './modal.html';
+import { handleError } from '../../../../client/lib/utils/handleError';
 
 let modalStack = [];
 

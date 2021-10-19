@@ -87,6 +87,10 @@ export class ListenersModule {
 			}
 
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
+
+			if (_id) {
+				notifications.sendPresence(_id, [username, STATUS_MAP[status], statusText]);
+			}
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {
@@ -257,7 +261,14 @@ export class ListenersModule {
 		});
 
 		service.onEvent('banner.new', (bannerId): void => {
-			notifications.notifyLoggedInThisInstance('new-banner', { bannerId });
+			notifications.notifyLoggedInThisInstance('new-banner', { bannerId }); // deprecated
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('banner.disabled', (bannerId): void => {
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
+		});
+		service.onEvent('banner.enabled', (bannerId): void => {
+			notifications.notifyLoggedInThisInstance('banner-changed', { bannerId });
 		});
 	}
 }

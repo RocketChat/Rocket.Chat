@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { CannedResponse } from '../../../ee/app/models/server';
 
 function migrateCannedResponses() {
@@ -47,7 +47,7 @@ function migrateCannedResponses() {
 	CannedResponse.tryEnsureIndex({ shortcut: 1 }, { unique: true });
 }
 
-Migrations.add({
+addMigration({
 	version: 227,
 	up() {
 		migrateCannedResponses();

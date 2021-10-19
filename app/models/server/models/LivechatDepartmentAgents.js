@@ -14,6 +14,9 @@ export class LivechatDepartmentAgents extends Base {
 		this.tryEnsureIndex({ departmentEnabled: 1 });
 		this.tryEnsureIndex({ agentId: 1 });
 		this.tryEnsureIndex({ username: 1 });
+
+		const collectionObj = this.model.rawCollection();
+		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
 	}
 
 	findByDepartmentId(departmentId) {
@@ -183,10 +186,7 @@ export class LivechatDepartmentAgents extends Base {
 			},
 		};
 
-		const collectionObj = this.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);
-
-		const bot = findAndModify(query, sort, update);
+		const bot = this.findAndModify(query, sort, update);
 		if (bot && bot.value) {
 			return {
 				agentId: bot.value.agentId,

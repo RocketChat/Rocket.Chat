@@ -90,7 +90,7 @@ API.v1.addRoute('livechat/facebook', {
 				message: Livechat.sendMessage(sendMessage),
 			};
 		} catch (e) {
-			console.error('Error using Facebook ->', e);
+			Livechat.logger.error('Error using Facebook ->', e);
 		}
 	},
 });

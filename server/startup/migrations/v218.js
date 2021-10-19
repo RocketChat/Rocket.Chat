@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { Statistics } from '../../../app/models/server';
 
-Migrations.add({
+addMigration({
 	version: 218,
 	up() {
 		Statistics.tryDropIndex({ createdAt: 1 });

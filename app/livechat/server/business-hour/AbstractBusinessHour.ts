@@ -19,6 +19,7 @@ export interface IBusinessHourBehavior {
 	onStartBusinessHours(): Promise<void>;
 	afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void>;
 	allowAgentChangeServiceStatus(agentId: string): Promise<boolean>;
+	changeAgentActiveStatus(agentId: string, status: string): Promise<any>;
 }
 
 export interface IBusinessHourType {
@@ -43,6 +44,10 @@ export abstract class AbstractBusinessHourBehavior {
 
 	async allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
+	}
+
+	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
+		return this.UsersRepository.setLivechatStatus(agentId, status);
 	}
 }
 

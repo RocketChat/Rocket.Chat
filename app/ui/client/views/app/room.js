@@ -10,15 +10,13 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
-import { t, roomTypes, getUserPreference, handleError } from '../../../../utils/client';
+import { t, roomTypes, getUserPreference } from '../../../../utils/client';
 import { WebRTC } from '../../../../webrtc/client';
 import { ChatMessage, RoomRoles, Users, Subscriptions, Rooms } from '../../../../models';
 import {
-	fireGlobalEvent,
 	RoomHistoryManager,
 	RoomManager,
 	readMessage,
-	Layout,
 } from '../../../../ui-utils/client';
 import { messageContext } from '../../../../ui-utils/client/lib/messageContext';
 import { messageArgs } from '../../../../ui-utils/client/lib/messageArgs';
@@ -30,6 +28,9 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
+import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
+import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
+import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
@@ -39,7 +40,7 @@ const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteo
 export const openProfileTab = (e, tabBar, username) => {
 	e.stopPropagation();
 
-	if (Layout.isEmbedded()) {
+	if (isLayoutEmbedded()) {
 		fireGlobalEvent('click-user-card-message', { username });
 		e.preventDefault();
 		return;
@@ -227,6 +228,10 @@ Template.roomOld.helpers({
 		return RoomHistoryManager.hasMoreNext(this._id);
 	},
 
+	scrolled() {
+		return !Template.instance().atBottom.get();
+	},
+
 	isLoading() {
 		return RoomHistoryManager.isLoading(this._id);
 	},
@@ -272,7 +277,7 @@ Template.roomOld.helpers({
 	messageboxData() {
 		const { sendToBottomIfNecessary, subscription } = Template.instance();
 		const { _id: rid } = this;
-		const isEmbedded = Layout.isEmbedded();
+		const isEmbedded = isLayoutEmbedded();
 		const showFormattingTips = settings.get('Message_ShowFormattingTips');
 
 		return {
@@ -546,7 +551,7 @@ Meteor.startup(() => {
 		},
 		'click .jump-recent button'(e, template) {
 			e.preventDefault();
-			template.atBottom = true;
+			template.atBottom.set(true);
 			RoomHistoryManager.clear(template && template.data && template.data._id);
 		},
 		'load .gallery-item'(e, template) {
@@ -557,7 +562,7 @@ Meteor.startup(() => {
 			template.sendToBottomIfNecessary();
 		},
 		'click .new-message'(event, instance) {
-			instance.atBottom = true;
+			instance.atBottom.set(true);
 			instance.sendToBottomIfNecessary();
 			chatMessages[RoomManager.openedRoom].input.focus();
 		},
@@ -664,7 +669,7 @@ Meteor.startup(() => {
 		});
 
 		this.showUsersOffline = new ReactiveVar(false);
-		this.atBottom = !FlowRouter.getQueryParam('msg');
+		this.atBottom = new ReactiveVar(!FlowRouter.getQueryParam('msg'));
 		this.unreadCount = new ReactiveVar(0);
 
 		this.selectable = new ReactiveVar(false);
@@ -759,7 +764,7 @@ Meteor.startup(() => {
 		});
 
 		this.sendToBottomIfNecessary = () => {
-			if (this.atBottom === true) {
+			if (this.atBottom.get() === true) {
 				this.sendToBottom();
 			}
 		};
@@ -837,7 +842,7 @@ Meteor.startup(() => {
 		};
 
 		template.checkIfScrollIsAtBottom = function() {
-			template.atBottom = template.isAtBottom(100);
+			template.atBottom.set(template.isAtBottom(100));
 		};
 
 		template.observer = new ResizeObserver(() => template.sendToBottomIfNecessary());
@@ -852,7 +857,7 @@ Meteor.startup(() => {
 
 		wrapper.addEventListener('wheel', wheelHandler);
 
-		wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
+		wrapper.addEventListener('touchstart', () => { template.atBottom.set(false); });
 
 		wrapper.addEventListener('touchend', function() {
 			template.checkIfScrollIsAtBottom();

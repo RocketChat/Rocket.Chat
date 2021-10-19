@@ -5,9 +5,13 @@ import _ from 'underscore';
 
 import * as peerCommandHandlers from './peerHandlers';
 import * as localCommandHandlers from './localHandlers';
-import { callbacks } from '../../../callbacks';
+import { callbacks } from '../../../callbacks/server';
 import * as servers from '../servers';
 import { Settings } from '../../../models/server';
+import { Logger } from '../../../logger/server';
+
+const logger = new Logger('IRC Bridge');
+const queueLogger = logger.section('Queue');
 
 let removed = false;
 const updateLastPing = _.throttle(Meteor.bindEnvironment(() => {
@@ -82,11 +86,13 @@ class Bridge {
 	 * Log helper
 	 */
 	log(message) {
-		console.log(`[irc][bridge] ${ message }`);
+		// TODO logger: debug?
+		logger.info(message);
 	}
 
 	logQueue(message) {
-		console.log(`[irc][bridge][queue] ${ message }`);
+		// TODO logger: debug?
+		queueLogger.info(message);
 	}
 
 	/**

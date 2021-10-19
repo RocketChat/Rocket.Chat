@@ -13,7 +13,7 @@ import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesConte
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
 import { useTabBarClose, useTabBarOpen } from '../../../room/providers/ToolboxProvider';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';

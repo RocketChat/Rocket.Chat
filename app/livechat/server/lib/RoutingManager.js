@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -13,7 +12,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
@@ -23,9 +22,24 @@ export const RoutingManager = {
 	methodName: null,
 	methods: {},
 
-	setMethodName(name) {
+	startQueue() {
+		// queue shouldn't start on CE
+	},
+
+	isMethodSet() {
+		return !!this.methodName;
+	},
+
+	setMethodNameAndStartQueue(name) {
 		logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
-		this.methodName = name;
+		if (!this.methods[name]) {
+			logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
+			this.methodName = 'Manual_Selection';
+		} else {
+			this.methodName = name;
+		}
+
+		this.startQueue();
 	},
 
 	registerMethod(name, Method) {
@@ -45,7 +59,7 @@ export const RoutingManager = {
 	},
 
 	async getNextAgent(department, ignoreAgentId) {
-		logger.debug(`Getting next available agent with method ${ this.name }`);
+		logger.debug(`Getting next available agent with method ${ this.methodName }`);
 		return this.getMethod().getNextAgent(department, ignoreAgentId);
 	},
 
@@ -55,6 +69,7 @@ export const RoutingManager = {
 		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${ inquiry._id }`);
 			agent = await this.getNextAgent(department);
+			logger.debug(`Routing method returned agent ${ agent && agent.agentId } for inquiry ${ inquiry._id }`);
 		}
 
 		if (!agent) {
@@ -62,7 +77,7 @@ export const RoutingManager = {
 			return LivechatRooms.findOneById(rid);
 		}
 
-		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent._id }`);
+		logger.debug(`Inquiry ${ inquiry._id } will be taken by agent ${ agent.agentId }`);
 		return this.takeInquiry(inquiry, agent, options);
 	},
 
@@ -192,9 +207,10 @@ export const RoutingManager = {
 
 	delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${ inquiry._id }`);
-		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', { agent, department: inquiry?.department });
+		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, { department: inquiry?.department });
+
 		if (defaultAgent) {
-			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent._id }`);
+			logger.debug(`Delegating Inquiry ${ inquiry._id } to agent ${ defaultAgent.username }`);
 			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 		}
 
@@ -215,7 +231,3 @@ export const RoutingManager = {
 		});
 	},
 };
-
-settings.get('Livechat_Routing_Method', function(key, value) {
-	RoutingManager.setMethodName(value);
-});
