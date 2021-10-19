@@ -20,9 +20,8 @@ const mongoClient = new MongoClient(connectionUri, {
 function startRocketChat() {
   const child = spawn(`node`, [`main.js`]);
 
-  child.stdout.on(`data`, (data) => process.stdout.write(data));
-
-  child.stderr.on(`data`, (data) => process.stderr.write(data));
+  child.stdout.pipe(process.stdout)
+	child.stderr.pipe(process.stderr)
 
   child.on(`exit`, (code, _) => process.exit(code));
 }
@@ -80,9 +79,8 @@ async function main() {
   if (process.argv.slice(2).length !== 0) {
     const child = exec(process.argv.slice(2).join(` `));
 
-    child.stdout.on(`data`, (data) => process.stdout.write(data));
-
-    child.stderr.on(`data`, (data) => process.stdout.write(data));
+    child.stdout.pipe(process.stdout)
+		child.stderr.pipe(process.stderr)
 
     child.on(`exit`, (code, _) => process.exit(code));
 
