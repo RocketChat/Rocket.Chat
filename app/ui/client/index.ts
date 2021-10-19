@@ -28,7 +28,7 @@ import './views/app/secretURL';
 import './views/app/invite';
 import './views/app/videoCall/videoButtons';
 import './views/app/videoCall/videoCall';
-import './views/app/photoswipeContent';
+import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
 import './components/table.html';
 import './components/table';
