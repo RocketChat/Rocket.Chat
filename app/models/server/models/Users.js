@@ -569,6 +569,17 @@ export class Users extends Base {
 		return this.find(query, options);
 	}
 
+	findActiveUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByAppId(appId, options) {
 		const query = { appId };
 

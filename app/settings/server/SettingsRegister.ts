@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import SettingsModel from '../../models/server/models/Settings';
+import type SettingsModel from '../../models/server/models/Settings';
 import { ISetting, ISettingGroup, isSettingEnterprise, SettingValue } from '../../../definition/ISetting';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { overwriteSetting } from './functions/overwriteSetting';
@@ -24,6 +24,8 @@ if (process.env.SETTINGS_HIDDEN) {
 if (process.env.SETTINGS_REQUIRED_ON_WIZARD) {
 	process.env.SETTINGS_REQUIRED_ON_WIZARD.split(',').forEach((settingId) => wizardRequiredSettings.add(settingId.trim()));
 }
+
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 /*
 * @deprecated
@@ -64,13 +66,18 @@ type addGroupCallback = (this: {
 
 type ISettingAddOptions = Partial<ISetting>;
 
+const compareSettingsIgnoringValue = (a: ISetting, b: ISetting): boolean => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((key) => key !== 'value').every((key) => a.hasOwnProperty(key) && b.hasOwnProperty(key) && a[key as keyof ISetting] === b[key as keyof ISetting]);
+
 export class SettingsRegister {
+	private model: typeof SettingsModel;
+
 	private store: ICachedSettings;
 
 	private _sorter: {[key: string]: number} = {};
 
-	constructor(store: ICachedSettings) {
+	constructor({ store, model }: { store: ICachedSettings; model: typeof SettingsModel }) {
 		this.store = store;
+		this.model = model;
 	}
 
 	/*
@@ -95,29 +102,36 @@ export class SettingsRegister {
 			throw new Error(`Enterprise setting ${ _id } is missing the invalidValue option`);
 		}
 
-		const settingStoredValue = this.store.has(_id) ? this.store.get(_id) : undefined;
+		const settingStored = this.store.getSetting(_id);
 		const settingOverwritten = overwriteSetting(settingFromCode);
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			SystemLogger.error(`Invalid setting code ${ _id }: ${ e.message }`);
+			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${ _id }: ${ e.message }`);
 		}
 
 		const isOverwritten = settingFromCode !== settingOverwritten;
 
 		const { _id: _, ...settingProps } = settingOverwritten;
-		if (isOverwritten) {
-			if (settingStoredValue !== settingOverwritten.value) {
-				SettingsModel.upsert({ _id }, settingProps);
+
+
+		if (settingStored && !compareSettingsIgnoringValue(settingStored, settingOverwritten)) {
+			this.model.upsert({ _id }, settingProps);
+			return;
+		}
+
+		if (settingStored && isOverwritten) {
+			if (settingStored.value !== settingOverwritten.value) {
+				this.model.upsert({ _id }, settingProps);
 			}
 			return;
 		}
 
-		if (this.store.has(_id)) {
+		if (settingStored) {
 			try {
-				validateSetting(settingFromCode._id, settingFromCode.type, settingStoredValue);
+				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
+				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
 			}
 			return;
 		}
@@ -126,7 +140,7 @@ export class SettingsRegister {
 
 		const setting = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
 
-		SettingsModel.insert(setting); // no need to emit unless we remove the oplog
+		this.model.insert(setting); // no need to emit unless we remove the oplog
 
 		this.store.set(setting);
 	}
@@ -151,7 +165,7 @@ export class SettingsRegister {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			SettingsModel.insert(options);
+			this.model.insert(options);
 			this.store.set(options as ISetting);
 		}
 

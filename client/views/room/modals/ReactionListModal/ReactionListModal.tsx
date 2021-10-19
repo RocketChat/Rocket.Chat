@@ -1,10 +1,10 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
 
-import { openUserCard } from '../../../../app/ui/client/lib/UserCard';
-import { IUser } from '../../../../definition/IUser';
-import { useTranslation } from '../../../contexts/TranslationContext';
-import GenericModal from '../../GenericModal';
+import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
+import { IUser } from '../../../../../definition/IUser';
+import GenericModal from '../../../../components/GenericModal';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import Reactions from './Reactions';
 
 type ReactionListProps = {

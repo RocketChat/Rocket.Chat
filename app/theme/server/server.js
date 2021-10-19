@@ -24,27 +24,23 @@ export const theme = new class {
 		settingsRegister.add('css', '');
 		settingsRegister.addGroup('Layout');
 		settings.change('css', () => {
-			Meteor.startup(function() {
-				process.emit('message', {
-					refresh: 'client',
-				});
+			process.emit('message', {
+				refresh: 'client',
 			});
 		});
 
 		this.compileDelayed = _.debounce(Meteor.bindEnvironment(this.compile.bind(this)), 100);
-		settings.onReady(() => {
-			settings.watchByRegex(/^theme-./, (key, value) => {
-				if (key === 'theme-custom-css' && value != null) {
-					this.customCSS = value;
-				} else {
-					const name = key.replace(/^theme-[a-z]+-/, '');
-					if (this.variables[name] != null) {
-						this.variables[name].value = value;
-					}
+		settings.watchByRegex(/^theme-./, (key, value) => {
+			if (key === 'theme-custom-css' && value != null) {
+				this.customCSS = value;
+			} else {
+				const name = key.replace(/^theme-[a-z]+-/, '');
+				if (this.variables[name] != null) {
+					this.variables[name].value = value;
 				}
+			}
 
-				this.compileDelayed();
-			});
+			this.compileDelayed();
 		});
 	}
 
