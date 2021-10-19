@@ -66,7 +66,10 @@ type addGroupCallback = (this: {
 
 type ISettingAddOptions = Partial<ISetting>;
 
-const compareSettingsIgnoringValue = (a: ISetting, b: ISetting): boolean => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((key) => key !== 'value').every((key) => a.hasOwnProperty(key) && b.hasOwnProperty(key) && a[key as keyof ISetting] === b[key as keyof ISetting]);
+
+const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) => (a: ISetting, b: ISetting): boolean => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((key) => !keys.includes(key as keyof ISetting)).every((key) => a.hasOwnProperty(key) && b.hasOwnProperty(key) && a[key as keyof ISetting] === b[key as keyof ISetting]);
+
+const compareSettingsIgnoringValueTsCreatedAt = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt']);
 
 export class SettingsRegister {
 	private model: typeof SettingsModel;
@@ -115,7 +118,7 @@ export class SettingsRegister {
 		const { _id: _, ...settingProps } = settingOverwritten;
 
 
-		if (settingStored && !compareSettingsIgnoringValue(settingStored, settingOverwritten)) {
+		if (settingStored && !compareSettingsIgnoringValueTsCreatedAt(settingStored, settingOverwritten)) {
 			this.model.upsert({ _id }, settingProps);
 			return;
 		}

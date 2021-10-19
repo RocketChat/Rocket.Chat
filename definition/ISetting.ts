@@ -49,6 +49,7 @@ export interface ISettingBase {
 	processEnvValue?: SettingValue;
 	meteorSettingsValue?: SettingValue;
 	ts: Date;
+	createdAt: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
