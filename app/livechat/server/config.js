@@ -110,7 +110,7 @@ Meteor.startup(function() {
 		section: 'Livechat',
 		i18nLabel: 'Allow_switching_departments',
 	});
-	
+
 	settings.add('Livechat_accessible_mode', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
