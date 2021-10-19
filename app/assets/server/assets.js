@@ -26,8 +26,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 		wizard: {
 			step: 3,
@@ -36,12 +34,9 @@ const assets = {
 	},
 	background: {
 		label: 'login background (svg, png, jpg)',
-		defaultUrl: undefined,
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_ico: {
@@ -50,8 +45,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['ico'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon: {
@@ -60,8 +53,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_16: {
@@ -180,8 +171,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 };
