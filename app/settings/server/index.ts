@@ -1,5 +1,5 @@
 import { settings, settingsRegistry } from './functions/settings';
-import { SettingsEvents } from './SettingsRegister';
+import { SettingsEvents } from './SettingsRegistry';
 
 export {
 	settings,
