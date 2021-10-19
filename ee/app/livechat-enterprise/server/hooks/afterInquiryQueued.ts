@@ -17,7 +17,6 @@ const scheduleInquiry = (inquiry: any): void => {
 	const newQueueTime = moment(inquiry?._updatedAt).add(timer, 'minutes');
 	cbLogger.debug(`Scheduling estimated close time at ${ newQueueTime } for queued inquiry ${ inquiry._id }`);
 	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
-	// (LivechatInquiry as any).setEstimatedInactivityCloseTime(inquiry?._id, newQueueTime);
 };
 
 settings.get('Livechat_max_queue_wait_time', (_, value) => {

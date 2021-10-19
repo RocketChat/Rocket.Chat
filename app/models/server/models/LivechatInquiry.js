@@ -10,7 +10,6 @@ export class LivechatInquiry extends Base {
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
 		this.tryEnsureIndex({ department: 1 });
 		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
-		// this.tryEnsureIndex({ status: 1, estimatedInactivityCloseTimeAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
 	}
 
@@ -248,14 +247,6 @@ export class LivechatInquiry extends Base {
 				estimatedInactivityCloseTimeAt: new Date(date),
 			},
 		});
-	}
-
-	unsetEstimatedInactivityCloseTime() {
-		return this.update({ status: 'queued', estimatedInactivityCloseTimeAt: { $exists: true } }, {
-			$unset: {
-				estimatedInactivityCloseTimeAt: 1,
-			},
-		}, { multi: true });
 	}
 
 	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
