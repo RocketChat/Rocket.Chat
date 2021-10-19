@@ -8,15 +8,7 @@ import Toolbox from './Toolbox';
 export const ToolboxWrapper: FC<{ message: IMessage }> = (props) => {
 	const ref = useRef<HTMLInputElement>();
 
-	const [isVisible, setIsVisible] = useState(false);
-
-	const [isWrapperVisible] = useIsVisible(ref);
-
-	useEffect(() => {
-		if (isWrapperVisible) {
-			setIsVisible(true);
-		}
-	}, [isWrapperVisible]);
+	const [isVisible] = useIsVisible(ref);
 
 	return (
 		<MessageToolbox.Wrapper ref={ref}>{isVisible && <Toolbox {...props} />}</MessageToolbox.Wrapper>

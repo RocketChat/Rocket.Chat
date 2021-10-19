@@ -1,21 +1,37 @@
-import { MessageToolbox, Option } from '@rocket.chat/fuselage';
-import React, { FC, memo, MouseEvent, ReactNode } from 'react';
+import { MessageToolbox } from '@rocket.chat/fuselage';
+import React, { FC, memo, MouseEvent, useMemo } from 'react';
 
 import { MessageAction } from '../../../../../../app/ui-utils/client/lib/MessageAction';
 import { IMessage } from '../../../../../../definition/IMessage';
+import { IUser } from '../../../../../../definition/IUser';
+import { useSettings } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
+import { useUser, useUserRoom, useUserSubscription } from '../../../../../contexts/UserContext';
+import { MessageActionMenu } from './MessageActionMenu';
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 	const t = useTranslation();
 
-	const messageActions = MessageAction.getButtonsByGroup(
-		'message',
-		MessageAction.getButtonsByContext('message', MessageAction._getButtons()),
+	const room = useUserRoom(message.rid);
+	const subscription = useUserSubscription(message.rid);
+	const settings = useSettings();
+	const user = useUser() as IUser;
+
+	const mapSettings = useMemo(
+		() => Object.fromEntries(settings.map((setting) => [setting._id, setting.value])),
+		[settings],
 	);
 
-	const menuActions = MessageAction.getButtonsByGroup(
+	const messageActions = MessageAction.getButtons(
+		{ message, room, user, subscription, settings: mapSettings },
+		'message',
+		'message',
+	);
+
+	const menuActions = MessageAction.getButtons(
+		{ message, room, user, subscription, settings: mapSettings },
+		'message',
 		'menu',
-		MessageAction.getButtonsByContext('message', MessageAction._getButtons()),
 	);
 
 	return (
@@ -30,25 +46,7 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 					title={t(action.label)}
 				/>
 			))}
-			{menuActions.length > 0 && (
-				<MessageToolbox.Menu
-					onBlur={() =>{}}
-					maxHeight='initial'
-					renderItem={({ label: { label, icon }, ...props }): ReactNode => (
-						<Option role='option' icon={icon} label={label} {...props} />
-					)}
-					options={menuActions.map((action) => ({
-						label: {
-							label: action.label,
-							icon: action.icon,
-						},
-						value: action.id,
-						action: (e: MouseEvent): void => {
-							action.action(e, { message });
-						},
-					}))}
-				/>
-			)}
+			{menuActions.length > 0 && <MessageActionMenu options={menuActions} />}
 		</MessageToolbox>
 	);
 };

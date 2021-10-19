@@ -12,6 +12,7 @@ import { IUser } from '../../../../definition/IUser';
 import { ISubscription } from '../../../../definition/ISubscription';
 import { TranslationKey } from '../../../../client/contexts/TranslationContext';
 import { IRoom } from '../../../../definition/IRoom';
+import { SettingValue } from '../../../../definition/ISetting';
 
 const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err: any, data: any) {
@@ -41,13 +42,16 @@ type MessageActionConditionProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	context?: MessageActionContext;
+	settings: { [key: string]: SettingValue };
 };
 
-type MessageActionConfig = {
+export type MessageActionConfig = {
 	id: string;
 	icon: string;
 	label: TranslationKey;
 	order?: number;
+	/* @deprecated */
+	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
 	action: (e: MouseEvent, { message }: { message: IMessage }) => any;
@@ -115,19 +119,19 @@ export const MessageAction = new class {
 		return allButtons[id];
 	}
 
-	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'))
+	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 })
 
 	getButtonsByCondition(prop: MessageActionConditionProps, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
-		return arr.filter((button) => button.condition == null || button.condition(prop));
+		return arr.filter((button) => !button.condition || button.condition(prop));
 	}
 
 	getButtonsByGroup = mem(function(group: MessageActionGroup, arr: MessageActionConfigList = MessageAction._getButtons()): MessageActionConfigList {
-		return arr.filter((button) => (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
-	})
+		return arr.filter((button) => !button.group || (Array.isArray(button.group) ? button.group.includes(group) : button.group === group));
+	}, { maxAge: 1000 })
 
-	getButtonsByContext = mem(function(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
-		return arr.filter((button) => !context || button.context == null || button.context.includes(context));
-	})
+	getButtonsByContext(context: MessageActionContext, arr: MessageActionConfigList): MessageActionConfigList {
+		return !context ? arr : arr.filter((button) => !button.context || button.context.includes(context));
+	}
 
 	getButtons(props: MessageActionConditionProps, context: MessageActionContext, group: MessageActionGroup): MessageActionConfigList {
 		const allButtons = group ? this.getButtonsByGroup(group) : MessageAction._getButtons();

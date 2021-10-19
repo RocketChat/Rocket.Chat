@@ -45,7 +45,7 @@ Meteor.startup(async function() {
 				reply: message._id,
 			});
 		},
-		condition({ subscription, room, msg, u }) {
+		condition({ subscription, room, message, user }) {
 			if (subscription == null) {
 				return false;
 			}
@@ -54,9 +54,9 @@ Meteor.startup(async function() {
 			}
 
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (u._id !== msg.u._id && !hasPermission('create-d')) {
-				const dmRoom = Rooms.findOne({ _id: [u._id, msg.u._id].sort().join('') });
-				if (!dmRoom || !Subscriptions.findOne({ rid: dmRoom._id, 'u._id': u._id })) {
+			if (user._id !== message.u._id && !hasPermission('create-d')) {
+				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
+				if (!dmRoom || !Subscriptions.findOne({ rid: dmRoom._id, 'u._id': user._id })) {
 					return false;
 				}
 			}
@@ -106,7 +106,7 @@ Meteor.startup(async function() {
 		id: 'permalink',
 		icon: 'permalink',
 		label: 'Get_link',
-		classes: 'clipboard',
+		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads'],
 		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
@@ -129,7 +129,7 @@ Meteor.startup(async function() {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			navigator.clipboard.writeText(message);
+			navigator.clipboard.writeText(message.msg);
 			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
@@ -186,7 +186,7 @@ Meteor.startup(async function() {
 			const { message = messageArgs(this).msg } = props;
 			getChatMessagesFrom(message).confirmDeleteMsg(message);
 		},
-		condition({ msg: message, subscription, room }) {
+		condition({ message, subscription, room }) {
 			if (!subscription) {
 				return false;
 			}
