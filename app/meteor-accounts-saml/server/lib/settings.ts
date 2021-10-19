@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings, settingsRegister } from '../../../settings/server';
+import { settings, settingsRegistry } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
@@ -134,7 +134,7 @@ export const addSamlService = function(name: string): void {
 };
 
 export const addSettings = function(name: string): void {
-	settingsRegister.addGroup('SAML', function() {
+	settingsRegistry.addGroup('SAML', function() {
 		this.with({
 			tab: 'SAML_Connection',
 		}, function() {

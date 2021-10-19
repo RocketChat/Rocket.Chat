@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { RealAppBridges } from './bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppMessagesConverter, AppRoomsConverter, AppSettingsConverter, AppUsersConverter } from './converters';
@@ -200,7 +200,7 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settingsRegister.addGroup('General', function() {
+settingsRegistry.addGroup('General', function() {
 	this.section('Apps', function() {
 		this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',

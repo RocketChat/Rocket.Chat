@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-settingsRegister.addGroup('UserDataDownload', function() {
+settingsRegistry.addGroup('UserDataDownload', function() {
 	this.add('UserData_EnableDownload', true, {
 		type: 'boolean',
 		public: true,

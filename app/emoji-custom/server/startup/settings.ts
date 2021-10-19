@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-settingsRegister.addGroup('EmojiCustomFilesystem', function() {
+settingsRegistry.addGroup('EmojiCustomFilesystem', function() {
 	this.add('EmojiUpload_Storage_Type', 'GridFS', {
 		type: 'select',
 		values: [{

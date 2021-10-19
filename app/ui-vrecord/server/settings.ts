@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('Message', function() {
+settingsRegistry.addGroup('Message', function() {
 	this.add('Message_VideoRecorderEnabled', true, {
 		type: 'boolean',
 		public: true,

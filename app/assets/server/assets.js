@@ -7,7 +7,7 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
@@ -318,9 +318,9 @@ export const RocketChatAssets = new class {
 	}
 }();
 
-settingsRegister.addGroup('Assets');
+settingsRegistry.addGroup('Assets');
 
-settingsRegister.add('Assets_SvgFavicon_Enable', true, {
+settingsRegistry.add('Assets_SvgFavicon_Enable', true, {
 	type: 'boolean',
 	group: 'Assets',
 	i18nLabel: 'Enable_Svg_Favicon',
@@ -329,7 +329,7 @@ settingsRegister.add('Assets_SvgFavicon_Enable', true, {
 function addAssetToSetting(asset, value) {
 	const key = `Assets_${ asset }`;
 
-	settingsRegister.add(key, {
+	settingsRegistry.add(key, {
 		defaultUrl: value.defaultUrl,
 	}, {
 		type: 'asset',

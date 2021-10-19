@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.add('Message_AllowStarring', true, {
+settingsRegistry.add('Message_AllowStarring', true, {
 	type: 'boolean',
 	group: 'Message',
 	public: true,

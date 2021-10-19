@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 
 const defaults = {
 	enable: false,
@@ -17,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	settingsRegister.addGroup('Blockstack', function() {
+	settingsRegistry.addGroup('Blockstack', function() {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',

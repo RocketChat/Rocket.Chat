@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
 import { SettingEditor } from '../../../definition/ISetting';
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function() {
-	settingsRegister.addGroup('Omnichannel', function() {
+	settingsRegistry.addGroup('Omnichannel', function() {
 		this.add('Livechat_enabled', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -311,7 +311,7 @@ Meteor.startup(function() {
 			i18nLabel: 'Send_Visitor_navigation_history_as_a_message',
 		});
 
-		settingsRegister.addGroup('Omnichannel', function() {
+		settingsRegistry.addGroup('Omnichannel', function() {
 			this.section('Business_Hours', function() {
 				this.add('Livechat_enable_business_hours', false, {
 					type: 'boolean',

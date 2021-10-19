@@ -7,7 +7,7 @@ import { overwriteSetting } from './functions/overwriteSetting';
 import { overrideSetting } from './functions/overrideSetting';
 import { getSettingDefaults } from './functions/getSettingDefaults';
 import { validateSetting } from './functions/validateSetting';
-import type { ICachedSettings } from './Settingsv4';
+import type { ICachedSettings } from './CachedSettings';
 
 export const blockedSettings = new Set<string>();
 export const hiddenSettings = new Set<string>();
@@ -71,14 +71,17 @@ const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) =>
 	(a: ISetting, b: ISetting): boolean =>
 		[...new Set([...Object.keys(a), ...Object.keys(b)])]
 			.filter((key) => !keys.includes(key as keyof ISetting))
-			.every((key) =>
-				a.hasOwnProperty(key)
-				&& b.hasOwnProperty(key)
-				&& a[key as keyof ISetting] === b[key as keyof ISetting]);
+			.every((key) => {
+				const result = a.hasOwnProperty(key) && b.hasOwnProperty(key) && a[key as keyof ISetting] === b[key as keyof ISetting];
+				if (!result) {
+					console.log(key, a, b);
+				}
+				return result;
+			});
 
-const compareSettingsIgnoringValueTsCreatedAt = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'processEnvValue']);
+const compareSettings = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'processEnvValue', '_updatedAt']);
 
-export class SettingsRegister {
+export class SettingsRegistry {
 	private model: typeof SettingsModel;
 
 	private store: ICachedSettings;
@@ -125,7 +128,7 @@ export class SettingsRegister {
 		const { _id: _, ...settingProps } = settingOverwritten;
 
 
-		if (settingStored && !compareSettingsIgnoringValueTsCreatedAt(settingStored, settingOverwritten)) {
+		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
 			console.warn(`Overwriting setting ${ _id }`);
 			this.model.upsert({ _id }, settingProps);
 			return;

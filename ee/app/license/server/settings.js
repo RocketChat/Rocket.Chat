@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings, settingsRegister } from '../../../../app/settings/server';
+import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 import { addLicense } from './license';
 
 Meteor.startup(function() {
-	settingsRegister.addGroup('Enterprise', function() {
+	settingsRegistry.addGroup('Enterprise', function() {
 		this.section('License', function() {
 			this.add('Enterprise_License', '', {
 				type: 'string',

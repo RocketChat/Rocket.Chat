@@ -6,7 +6,7 @@ import Autoprefixer from 'less-plugin-autoprefixer';
 import { WebApp } from 'meteor/webapp';
 import { Meteor } from 'meteor/meteor';
 
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { Logger } from '../../logger';
 import { addStyle } from '../../ui-master/server/inject';
 import { Settings } from '../../models/server';
@@ -21,8 +21,8 @@ export const theme = new class {
 		this.variables = {};
 		this.packageCallbacks = [];
 		this.customCSS = '';
-		settingsRegister.add('css', '');
-		settingsRegister.addGroup('Layout');
+		settingsRegistry.add('css', '');
+		settingsRegistry.addGroup('Layout');
 		settings.change('css', () => {
 			process.emit('message', {
 				refresh: 'client',
@@ -83,7 +83,7 @@ export const theme = new class {
 			section,
 		};
 
-		return settingsRegister.add(`theme-color-${ name }`, value, config);
+		return settingsRegistry.add(`theme-color-${ name }`, value, config);
 	}
 
 	addVariable(type, name, value, section, persist = true, editor, allowedTypes, property) {
@@ -102,7 +102,7 @@ export const theme = new class {
 				allowedTypes,
 				property,
 			};
-			return settingsRegister.add(`theme-${ type }-${ name }`, value, config);
+			return settingsRegistry.add(`theme-${ type }-${ name }`, value, config);
 		}
 	}
 

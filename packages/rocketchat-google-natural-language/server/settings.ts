@@ -1,13 +1,13 @@
-import { settingsRegister } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../app/settings/server';
 
-settingsRegister.add('GoogleNaturalLanguage_Enabled', false, {
+settingsRegistry.add('GoogleNaturalLanguage_Enabled', false, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Google Natural Language',
 	public: true,
 	i18nLabel: 'Enabled',
 });
-settingsRegister.add('GoogleNaturalLanguage_ServiceAccount', '', {
+settingsRegistry.add('GoogleNaturalLanguage_ServiceAccount', '', {
 	type: 'string',
 	group: 'Message',
 	section: 'Google Natural Language',

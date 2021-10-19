@@ -1,4 +1,4 @@
-import { settingsRegister } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../app/settings/server';
 import {
 	defaultAuthnContextTemplate,
 	defaultAuthRequestTemplate,
@@ -12,7 +12,7 @@ import {
 } from '../../../app/meteor-accounts-saml/server/lib/constants';
 
 export const addSettings = function(name: string): void {
-	settingsRegister.addGroup('SAML', function() {
+	settingsRegistry.addGroup('SAML', function() {
 		this.with({
 			tab: 'SAML_Enterprise',
 			enterprise: true,

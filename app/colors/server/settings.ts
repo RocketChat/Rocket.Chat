@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.add('HexColorPreview_Enabled', true, {
+settingsRegistry.add('HexColorPreview_Enabled', true, {
 	type: 'boolean',
 	i18nLabel: 'Enabled',
 	group: 'Message',

@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.add('IssueLinks_Enabled', false, {
+settingsRegistry.add('IssueLinks_Enabled', false, {
 	type: 'boolean',
 	i18nLabel: 'Enabled',
 	i18nDescription: 'IssueLinks_Incompatible',
@@ -9,7 +9,7 @@ settingsRegister.add('IssueLinks_Enabled', false, {
 	public: true,
 });
 
-settingsRegister.add('IssueLinks_Template', '', {
+settingsRegistry.add('IssueLinks_Template', '', {
 	type: 'string',
 	i18nLabel: 'IssueLinks_LinkTemplate',
 	i18nDescription: 'IssueLinks_LinkTemplate_Description',
