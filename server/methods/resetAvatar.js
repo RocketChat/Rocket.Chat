@@ -14,8 +14,9 @@ Meteor.methods({
 				method: 'resetAvatar',
 			});
 		}
+		const canEditOtherUserAvatar = hasPermission(Meteor.userId(), 'edit-other-user-avatar');
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'resetAvatar',
 			});
@@ -24,7 +25,7 @@ Meteor.methods({
 		let user;
 
 		if (userId && userId !== Meteor.userId()) {
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+			if (!canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'resetAvatar',
 				});
