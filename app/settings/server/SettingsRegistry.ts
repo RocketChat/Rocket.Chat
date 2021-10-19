@@ -122,7 +122,8 @@ export class SettingsRegistry {
 		const { _id: _, ...settingProps } = settingOverwritten;
 
 		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
-			this.model.upsert({ _id }, settingProps);
+			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
+			this.model.upsert({ _id }, { $set: { ...settingOverwrittenProps } });
 			return;
 		}
 

@@ -50,7 +50,7 @@ export interface ISettingBase {
 	meteorSettingsValue?: SettingValue;
 	ts: Date;
 	createdAt: Date;
-	_updatedAt: Date;
+	_updatedAt?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
