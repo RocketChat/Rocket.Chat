@@ -13,6 +13,8 @@ import { ISubscription } from '../../../../definition/ISubscription';
 import { TranslationKey } from '../../../../client/contexts/TranslationContext';
 import { IRoom } from '../../../../definition/IRoom';
 import { SettingValue } from '../../../../definition/ISetting';
+import { ToolboxContextValue } from '../../../../client/views/room/lib/Toolbox/ToolboxContext';
+
 
 const call = (method: string, ...args: any[]): Promise<any> => new Promise((resolve, reject) => {
 	Meteor.call(method, ...args, function(err: any, data: any) {
@@ -54,7 +56,7 @@ export type MessageActionConfig = {
 	color?: string;
 	group?: MessageActionGroup | MessageActionGroup[];
 	context?: MessageActionContext[];
-	action: (e: MouseEvent, { message }: { message: IMessage }) => any;
+	action: (e: MouseEvent, { message, tabbar }: { message: IMessage; tabbar: ToolboxContextValue }) => any;
 	condition?: (props: MessageActionConditionProps) => boolean;
 }
 

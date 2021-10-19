@@ -7,6 +7,7 @@ import { IUser } from '../../../../../../definition/IUser';
 import { useSettings } from '../../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useUser, useUserRoom, useUserSubscription } from '../../../../../contexts/UserContext';
+import { getTabBarContext } from '../../../lib/Toolbox/ToolboxContext';
 import { MessageActionMenu } from './MessageActionMenu';
 
 export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
@@ -34,19 +35,30 @@ export const Toolbox: FC<{ message: IMessage }> = ({ message }) => {
 		'menu',
 	);
 
+	const tabbar = getTabBarContext(message.rid);
+
 	return (
 		<MessageToolbox>
 			{messageActions.map((action) => (
 				<MessageToolbox.Item
 					onClick={(e: MouseEvent): void => {
-						action.action(e, { message });
+						action.action(e, { message, tabbar });
 					}}
 					key={action.id}
 					icon={action.icon}
 					title={t(action.label)}
 				/>
 			))}
-			{menuActions.length > 0 && <MessageActionMenu options={menuActions} />}
+			{menuActions.length > 0 && (
+				<MessageActionMenu
+					options={menuActions.map((action) => ({
+						...action,
+						action: (e: MouseEvent): void => {
+							action.action(e, { message, tabbar });
+						},
+					}))}
+				/>
+			)}
 		</MessageToolbox>
 	);
 };

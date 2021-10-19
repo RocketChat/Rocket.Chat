@@ -14,8 +14,10 @@ import { imperativeModal } from '../../../../client/lib/imperativeModal';
 import ReactionList from '../../../../client/views/room/modals/ReactionListModal';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { IMessage } from '../../../../definition/IMessage';
+import { ChatMessages } from '../../../ui/client';
 
-export const addMessageToList = (messagesList, message) => {
+export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
 	// checks if the message is not already on the list
 	if (!messagesList.find(({ _id }) => _id === message._id)) {
 		messagesList.push(message);
@@ -27,7 +29,7 @@ export const addMessageToList = (messagesList, message) => {
 Meteor.startup(async function() {
 	const { chatMessages } = await import('../../../ui');
 
-	const getChatMessagesFrom = (msg) => {
+	const getChatMessagesFrom = (msg: IMessage): ChatMessages => {
 		const { rid = Session.get('openedRoom'), tmid = msg._id } = msg;
 
 		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
@@ -156,7 +158,7 @@ Meteor.startup(async function() {
 			const isEditAllowed = settings.Message_AllowEditing;
 			const editOwn = message.u && message.u._id === Meteor.userId();
 			if (!(hasPermission || (isEditAllowed && editOwn))) {
-				return;
+				return false;
 			}
 			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
 			if (blockEditInMinutes) {
@@ -168,7 +170,7 @@ Meteor.startup(async function() {
 				if (msgTs != null) {
 					currentTsDiff = moment().diff(msgTs, 'minutes');
 				}
-				return currentTsDiff < blockEditInMinutes;
+				return !!currentTsDiff && currentTsDiff < blockEditInMinutes;
 			}
 			return true;
 		},
@@ -261,11 +263,11 @@ Meteor.startup(async function() {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(_, { tabBar, rid, ...props }) {
-			const { message: { reactions } = messageArgs(this).msg } = props;
+		action(_, { tabbar, ...props }) {
+			const { message: { reactions, rid } = messageArgs(this).msg } = props;
 
 			imperativeModal.open({ component: ReactionList,
-				props: { reactions, rid, tabBar, onClose: imperativeModal.close },
+				props: { reactions, rid, tabBar: tabbar, onClose: imperativeModal.close },
 			});
 		},
 		condition({ message: { reactions } }) {

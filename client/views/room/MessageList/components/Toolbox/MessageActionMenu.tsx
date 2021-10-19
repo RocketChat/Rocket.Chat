@@ -13,7 +13,7 @@ type Option = {
 	// group?: string;
 	color?: string; // @deprecated
 	variant?: 'danger' | 'success' | 'warning';
-	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+	action: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const style = css`
@@ -61,6 +61,7 @@ export const MessageActionMenu: FC<{
 									id={option.id}
 									icon={option.icon}
 									label={t(option.label)}
+									onClick={option.action}
 								/>
 							))}
 							{index !== arr.length - 1 && <Option.Divider />}

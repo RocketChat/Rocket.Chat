@@ -7,6 +7,7 @@ import React, {
 	useCallback,
 	useLayoutEffect,
 	MouseEventHandler,
+	useEffect,
 } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
@@ -14,7 +15,12 @@ import { useCurrentRoute, useRoute } from '../../../contexts/RouterContext';
 import { useSession } from '../../../contexts/SessionContext';
 import { useSetting } from '../../../contexts/SettingsContext';
 import { useUserId } from '../../../contexts/UserContext';
-import { ToolboxContext, ToolboxEventHandler } from '../lib/Toolbox/ToolboxContext';
+import {
+	removeTabBarContext,
+	setTabBarContext,
+	ToolboxContext,
+	ToolboxEventHandler,
+} from '../lib/Toolbox/ToolboxContext';
 import { Store } from '../lib/Toolbox/generator';
 import { ToolboxAction, ToolboxActionConfig } from '../lib/Toolbox/index';
 import VirtualAction from './VirtualAction';
@@ -114,6 +120,14 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		}),
 		[listen, list, activeTabBar, open, close, openUserInfo],
 	);
+
+	// TODO: remove this when the messages are running on react diretly, not wrapped by blaze
+	useEffect(() => {
+		setTabBarContext(room._id, contextValue);
+		return (): void => {
+			removeTabBarContext(room._id);
+		};
+	}, [contextValue, room._id]);
 
 	return (
 		<ToolboxContext.Provider value={contextValue}>

@@ -63,6 +63,11 @@ export interface IMessage extends IRocketChatRecord {
 	tlm?: Date;
 
 	dcount?: number;
+
+	reactions?: {
+		[key: string]: { usernames: IUser['_id'][] };
+	};
+
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending';

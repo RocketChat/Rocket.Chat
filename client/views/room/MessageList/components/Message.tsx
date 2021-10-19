@@ -9,10 +9,14 @@ import {
 	MessageRoles,
 	MessageTimestamp,
 	MessageUsername,
+	MessageReactions,
+
+	ReactionEmoji,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
 import { IMessage } from '../../../../../definition/IMessage';
+import Emoji from '../../../../components/Emoji';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import Broadcast from '../../../../components/Message/Metrics/Broadcast';
@@ -76,12 +80,20 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 				{message.attachments && (
 					<Attachments attachments={message.attachments} file={message.file} />
 				)}
-				{/* <Reactions>
-				<Reactions.Reaction counter={1} />
-				<Reactions.Reaction counter={2} />
-				<Reactions.Reaction counter={3} />
-				<Reactions.Action />
-			  </Reactions> */}
+				{message.reactions && Object.keys(message.reactions).length > 0 && (
+					<MessageReactions>
+						{Object.entries(message.reactions).map(([name, reactions]) => (
+							<>
+								<MessageReactions.Reaction key={name} counter={reactions.usernames.length}>
+								 <ReactionEmoji>
+									<Emoji emojiHandle={name} />
+								 </ReactionEmoji>
+								</MessageReactions.Reaction>
+							</>
+						))}
+						<MessageReactions.Action />
+					</MessageReactions>
+				)}
 
 				{message.tcount && <Thread openThread={openThread} counter={message.tcount} />}
 				{/* //following={following} lm={message.tlm} rid={message.rid} mid={message._id} unread={unread} mention={mention all={all openThread={actions.openThread }} */}
