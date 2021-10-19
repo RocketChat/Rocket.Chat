@@ -1539,6 +1539,7 @@
 
 .rc-old .rc-message-box .reply-preview__wrap {
 	position: relative;
+	margin-right: 60px;
 }
 
 .rc-old .rc-message-box .reply-preview {
