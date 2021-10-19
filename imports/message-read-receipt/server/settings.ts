@@ -1,12 +1,12 @@
-import { settingsRegister } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../app/settings/server';
 
-settingsRegister.add('Message_Read_Receipt_Enabled', false, {
+settingsRegistry.add('Message_Read_Receipt_Enabled', false, {
 	group: 'Message',
 	type: 'boolean',
 	public: true,
 });
 
-settingsRegister.add('Message_Read_Receipt_Store_Users', false, {
+settingsRegistry.add('Message_Read_Receipt_Store_Users', false, {
 	group: 'Message',
 	type: 'boolean',
 	public: true,

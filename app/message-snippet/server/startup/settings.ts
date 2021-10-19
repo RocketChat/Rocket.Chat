@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-settingsRegister.add('Message_AllowSnippeting', false, {
+settingsRegistry.add('Message_AllowSnippeting', false, {
 	type: 'boolean',
 	public: true,
 	group: 'Message',

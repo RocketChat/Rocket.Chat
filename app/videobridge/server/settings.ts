@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('Video Conference', function() {
+settingsRegistry.addGroup('Video Conference', function() {
 	this.section('BigBlueButton', function() {
 		this.add('bigbluebutton_Enabled', false, {
 			type: 'boolean',

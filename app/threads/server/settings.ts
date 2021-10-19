@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('Threads', function() {
+settingsRegistry.addGroup('Threads', function() {
 	this.add('Threads_enabled', true, {
 		group: 'Threads',
 		i18nLabel: 'Enable',

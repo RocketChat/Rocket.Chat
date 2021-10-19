@@ -7,7 +7,7 @@ import { overwriteSetting } from './functions/overwriteSetting';
 import { overrideSetting } from './functions/overrideSetting';
 import { getSettingDefaults } from './functions/getSettingDefaults';
 import { validateSetting } from './functions/validateSetting';
-import type { ICachedSettings } from './Settingsv4';
+import type { ICachedSettings } from './CachedSettings';
 
 export const blockedSettings = new Set<string>();
 export const hiddenSettings = new Set<string>();
@@ -78,7 +78,7 @@ const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) =>
 
 const compareSettingsIgnoringValueTsCreatedAt = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'processEnvValue']);
 
-export class SettingsRegister {
+export class SettingsRegistry {
 	private model: typeof SettingsModel;
 
 	private store: ICachedSettings;

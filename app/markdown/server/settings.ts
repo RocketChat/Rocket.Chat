@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.add('Markdown_Parser', 'original', {
+settingsRegistry.add('Markdown_Parser', 'original', {
 	type: 'select',
 	values: [{
 		key: 'disabled',
@@ -18,14 +18,14 @@ settingsRegister.add('Markdown_Parser', 'original', {
 });
 
 const enableQueryOriginal = { _id: 'Markdown_Parser', value: 'original' };
-settingsRegister.add('Markdown_Headers', false, {
+settingsRegistry.add('Markdown_Headers', false, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
 	enableQuery: enableQueryOriginal,
 });
-settingsRegister.add('Markdown_SupportSchemesForLink', 'http,https', {
+settingsRegistry.add('Markdown_SupportSchemesForLink', 'http,https', {
 	type: 'string',
 	group: 'Message',
 	section: 'Markdown',
@@ -35,28 +35,28 @@ settingsRegister.add('Markdown_SupportSchemesForLink', 'http,https', {
 });
 
 const enableQueryMarked = { _id: 'Markdown_Parser', value: 'marked' };
-settingsRegister.add('Markdown_Marked_GFM', true, {
+settingsRegistry.add('Markdown_Marked_GFM', true, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
 	enableQuery: enableQueryMarked,
 });
-settingsRegister.add('Markdown_Marked_Tables', true, {
+settingsRegistry.add('Markdown_Marked_Tables', true, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
 	enableQuery: enableQueryMarked,
 });
-settingsRegister.add('Markdown_Marked_Breaks', true, {
+settingsRegistry.add('Markdown_Marked_Breaks', true, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
 	enableQuery: enableQueryMarked,
 });
-settingsRegister.add('Markdown_Marked_Pedantic', false, {
+settingsRegistry.add('Markdown_Marked_Pedantic', false, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
@@ -69,14 +69,14 @@ settingsRegister.add('Markdown_Marked_Pedantic', false, {
 		value: false,
 	}],
 });
-settingsRegister.add('Markdown_Marked_SmartLists', true, {
+settingsRegistry.add('Markdown_Marked_SmartLists', true, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',
 	public: true,
 	enableQuery: enableQueryMarked,
 });
-settingsRegister.add('Markdown_Marked_Smartypants', true, {
+settingsRegistry.add('Markdown_Marked_Smartypants', true, {
 	type: 'boolean',
 	group: 'Message',
 	section: 'Markdown',

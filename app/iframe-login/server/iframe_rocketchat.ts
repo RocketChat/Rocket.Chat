@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function() {
-	settingsRegister.addGroup('Accounts', function() {
+	settingsRegistry.addGroup('Accounts', function() {
 		this.section('Iframe', function() {
 			this.add('Accounts_iframe_enabled', false, { type: 'boolean', public: true });
 			this.add('Accounts_iframe_url', '', { type: 'string', public: true });

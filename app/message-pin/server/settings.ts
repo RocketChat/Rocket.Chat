@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.add('Message_AllowPinning', true, {
+settingsRegistry.add('Message_AllowPinning', true, {
 	type: 'boolean',
 	group: 'Message',
 	public: true,

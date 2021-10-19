@@ -1,5 +1,5 @@
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
-import { settings, settingsRegister } from '../../app/settings/server';
+import { settings, settingsRegistry } from '../../app/settings/server';
 import { SettingValue } from '../../definition/ISetting';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
@@ -11,7 +11,7 @@ function updateSetting(id: string, value: SettingValue | null): void {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settingsRegister.add(id, value);
+			settingsRegistry.add(id, value);
 		} else {
 			Settings.updateValueById(id, value);
 		}

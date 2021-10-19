@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { Logger } from '../../logger';
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 
 export const logger = new Logger('CAS');
 
 Meteor.startup(function() {
-	settingsRegister.addGroup('CAS', function() {
+	settingsRegistry.addGroup('CAS', function() {
 		this.add('CAS_enabled', false, { type: 'boolean', group: 'CAS', public: true });
 		this.add('CAS_base_url', '', { type: 'string', group: 'CAS', public: true });
 		this.add('CAS_login_url', '', { type: 'string', group: 'CAS', public: true });

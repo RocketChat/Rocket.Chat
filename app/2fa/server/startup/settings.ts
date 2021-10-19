@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-settingsRegister.addGroup('Accounts', function() {
+settingsRegistry.addGroup('Accounts', function() {
 	this.section('Two Factor Authentication', function() {
 		const enable2FA = {
 			_id: 'Accounts_TwoFactorAuthentication_Enabled',

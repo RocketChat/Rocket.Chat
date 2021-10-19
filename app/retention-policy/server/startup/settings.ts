@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
-settingsRegister.addGroup('RetentionPolicy', function() {
+settingsRegistry.addGroup('RetentionPolicy', function() {
 	const globalQuery = {
 		_id: 'RetentionPolicy_Enabled',
 		value: true,

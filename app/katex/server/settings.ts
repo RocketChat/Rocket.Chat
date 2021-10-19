@@ -1,20 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function() {
 	const enableQuery = {
 		_id: 'Katex_Enabled',
 		value: true,
 	};
-	settingsRegister.add('Katex_Enabled', true, {
+	settingsRegistry.add('Katex_Enabled', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
 		public: true,
 		i18nDescription: 'Katex_Enabled_Description',
 	});
-	settingsRegister.add('Katex_Parenthesis_Syntax', true, {
+	settingsRegistry.add('Katex_Parenthesis_Syntax', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
@@ -22,7 +22,7 @@ Meteor.startup(function() {
 		enableQuery,
 		i18nDescription: 'Katex_Parenthesis_Syntax_Description',
 	});
-	return settingsRegister.add('Katex_Dollar_Syntax', false, {
+	return settingsRegistry.add('Katex_Dollar_Syntax', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
