@@ -7,12 +7,13 @@ import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
 
-const labels = ['Open', 'Queued', 'Closed'];
+const labels = ['Open', 'Queued', 'Closed', 'On_Hold_Chats'];
 
 const initialData = {
 	open: 0,
 	queued: 0,
 	closed: 0,
+	onhold: 0,
 };
 
 const init = (canvas, context, t) =>
@@ -45,7 +46,7 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 
 	reloadRef.current.chatsChart = reload;
 
-	const { open, queued, closed } = data ?? initialData;
+	const { open, queued, closed, onhold } = data ?? initialData;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -59,8 +60,9 @@ const ChatsChart = ({ params, reloadRef, ...props }) => {
 			updateChartData(t('Open'), [open]);
 			updateChartData(t('Closed'), [closed]);
 			updateChartData(t('Queued'), [queued]);
+			updateChartData(t('On_Hold_Chats'), [onhold]);
 		}
-	}, [closed, open, queued, state, t, updateChartData]);
+	}, [closed, open, queued, onhold, state, t, updateChartData]);
 
 	return <Chart ref={canvas} {...props} />;
 };

@@ -25,6 +25,7 @@ const findAllChatsStatusAsync = async ({
 		open: await LivechatRooms.countAllOpenChatsBetweenDate({ start, end, departmentId }),
 		closed: await LivechatRooms.countAllClosedChatsBetweenDate({ start, end, departmentId }),
 		queued: await LivechatRooms.countAllQueuedChatsBetweenDate({ start, end, departmentId }),
+		onhold: await LivechatRooms.getOnHoldConversationsBetweenDate(start, end, departmentId),
 	};
 };
 
@@ -213,12 +214,19 @@ const findAllChatMetricsByAgentAsync = async ({
 	}
 	const open = await LivechatRooms.countAllOpenChatsByAgentBetweenDate({ start, end, departmentId });
 	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({ start, end, departmentId });
+	const onhold = await LivechatRooms.countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId });
 	const result = {};
 	(open || []).forEach((agent) => {
-		result[agent._id] = { open: agent.chats, closed: 0 };
+		result[agent._id] = { open: agent.chats, closed: 0, onhold: 0 };
 	});
 	(closed || []).forEach((agent) => {
 		result[agent._id] = { open: result[agent._id] ? result[agent._id].open : 0, closed: agent.chats };
+	});
+	(onhold || []).forEach((agent) => {
+		result[agent._id] = {
+			...result[agent._id],
+			onhold: agent.chats,
+		};
 	});
 	return result;
 };

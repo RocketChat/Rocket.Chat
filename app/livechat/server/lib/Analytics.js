@@ -2,6 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
 import { LivechatRooms } from '../../../models';
+import { LivechatRooms as LivechatRoomsRaw } from '../../../models/server/raw';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger';
@@ -337,9 +338,9 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
-			const onHoldConversations = LivechatRooms.getOnHoldConversationsBetweenDate(from, to);
+			const onHoldConversations = Promise.await(LivechatRoomsRaw.getOnHoldConversationsBetweenDate(from, to, departmentId));
 
-			const data = [{
+			return [{
 				title: 'Total_conversations',
 				value: totalConversations,
 			}, {
@@ -361,8 +362,6 @@ export const Analytics = {
 				title: 'Busiest_time',
 				value: `${ busiestHour.from }${ busiestHour.to ? `- ${ busiestHour.to }` : '' }`,
 			}];
-
-			return data;
 		},
 
 		/**

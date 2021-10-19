@@ -536,6 +536,31 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.col.aggregate([match, group]).toArray();
 	}
 
+	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }) {
+		const match = {
+			$match: {
+				t: 'l',
+				'servedBy.username': { $exists: true },
+				open: true,
+				onHold: {
+					$exists: true,
+					$eq: true,
+				},
+				ts: { $gte: new Date(start), $lte: new Date(end) },
+			},
+		};
+		const group = {
+			$group: {
+				_id: '$servedBy.username',
+				chats: { $sum: 1 },
+			},
+		};
+		if (departmentId && departmentId !== 'undefined') {
+			match.$match.departmentId = departmentId;
+		}
+		return this.col.aggregate([match, group]).toArray();
+	}
+
 	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }) {
 		const match = {
 			$match: {
@@ -955,6 +980,25 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 
 		return this.find(query, { sort: options.sort || { name: 1 }, skip: options.offset, limit: options.count });
+	}
+
+	getOnHoldConversationsBetweenDate(from, to, departmentId) {
+		const query = {
+			onHold: {
+				$exists: true,
+				$eq: true,
+			},
+			ts: {
+				$gte: new Date(from),	// ISO Date, ts >= date.gte
+				$lt: new Date(to),	// ISODate, ts < date.lt
+			},
+		};
+
+		if (departmentId && departmentId !== 'undefined') {
+			query.departmentId = departmentId;
+		}
+
+		return this.find(query).count();
 	}
 
 	findAllServiceTimeByAgent({ start, end, onlyCount = false, options = {} }) {
