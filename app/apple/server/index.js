@@ -1,2 +1,2 @@
-import './startup.js';
+import './startup';
 import './loginHandler.js';

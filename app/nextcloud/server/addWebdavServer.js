@@ -5,7 +5,7 @@ import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
 Meteor.startup(() => {
-	settings.get('Webdav_Integration_Enabled', (key, value) => {
+	settings.watch('Webdav_Integration_Enabled', (value) => {
 		if (value) {
 			return callbacks.add('afterValidateLogin', (login) => {
 				const { user } = login;

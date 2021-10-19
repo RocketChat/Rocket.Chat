@@ -20,4 +20,4 @@ const configStore = _.debounce(() => {
 	}
 }, 1000);
 
-settings.get(/^FileUpload_/, configStore);
+settings.watchByRegex(/^FileUpload_/, configStore);

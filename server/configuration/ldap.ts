@@ -16,7 +16,7 @@ Accounts.registerLoginHandler('ldap', function(loginRequest: Record<string, any>
 
 // Prevent password logins by LDAP users when LDAP is enabled
 let ldapEnabled: boolean;
-settings.get('LDAP_Enable', (_key, value) => {
+settings.watch('LDAP_Enable', (value) => {
 	if (ldapEnabled === value) {
 		return;
 	}
