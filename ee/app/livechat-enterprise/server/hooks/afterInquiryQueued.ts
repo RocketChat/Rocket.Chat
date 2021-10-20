@@ -19,7 +19,7 @@ const scheduleInquiry = (inquiry: any): void => {
 	}
 
 	// schedule individual jobs instead of property for close inactivty
-	const newQueueTime = moment(inquiry._updatedAt || inquiry._updatedAt).add(timer, 'minutes');
+	const newQueueTime = moment(inquiry._updatedAt || inquiry._createdAt).add(timer, 'minutes');
 	cbLogger.debug(`Scheduling estimated close time at ${ newQueueTime } for queued inquiry ${ inquiry._id }`);
 	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
