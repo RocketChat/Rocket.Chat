@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { validationService } from './validationService';
-import { settings, settingsRegister } from '../../../settings/server';
+import { settings, settingsRegistry } from '../../../settings/server';
 import SearchLogger from '../logger/logger';
 
 class SearchProviderService {
@@ -72,7 +72,7 @@ class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		settingsRegister.addGroup('Search', function() {
+		settingsRegistry.addGroup('Search', function() {
 			const self = this;
 
 			self.add('Search.Provider', 'defaultProvider', {

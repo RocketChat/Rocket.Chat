@@ -48,7 +48,9 @@ export interface ISettingBase {
 	autocomplete?: boolean;
 	processEnvValue?: SettingValue;
 	meteorSettingsValue?: SettingValue;
-	ts?: Date;
+	ts: Date;
+	createdAt: Date;
+	_updatedAt?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;

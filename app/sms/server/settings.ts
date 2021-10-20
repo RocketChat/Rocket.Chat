@@ -1,7 +1,7 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
 
-settingsRegister.addGroup('SMS', function() {
+settingsRegistry.addGroup('SMS', function() {
 	this.add('SMS_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

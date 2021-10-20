@@ -7,7 +7,7 @@ import _ from 'underscore';
 import sizeOf from 'image-size';
 import sharp from 'sharp';
 
-import { settings, settingsRegister } from '../../settings/server';
+import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { mime } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization';
@@ -26,8 +26,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 		wizard: {
 			step: 3,
@@ -36,12 +34,9 @@ const assets = {
 	},
 	background: {
 		label: 'login background (svg, png, jpg)',
-		defaultUrl: undefined,
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_ico: {
@@ -50,8 +45,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['ico'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon: {
@@ -60,8 +53,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 	favicon_16: {
@@ -180,8 +171,6 @@ const assets = {
 		constraints: {
 			type: 'image',
 			extensions: ['svg'],
-			width: undefined,
-			height: undefined,
 		},
 	},
 };
@@ -318,9 +307,9 @@ export const RocketChatAssets = new class {
 	}
 }();
 
-settingsRegister.addGroup('Assets');
+settingsRegistry.addGroup('Assets');
 
-settingsRegister.add('Assets_SvgFavicon_Enable', true, {
+settingsRegistry.add('Assets_SvgFavicon_Enable', true, {
 	type: 'boolean',
 	group: 'Assets',
 	i18nLabel: 'Enable_Svg_Favicon',
@@ -329,7 +318,7 @@ settingsRegister.add('Assets_SvgFavicon_Enable', true, {
 function addAssetToSetting(asset, value) {
 	const key = `Assets_${ asset }`;
 
-	settingsRegister.add(key, {
+	settingsRegistry.add(key, {
 		defaultUrl: value.defaultUrl,
 	}, {
 		type: 'asset',

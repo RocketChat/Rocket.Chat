@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('SlackBridge', function() {
+settingsRegistry.addGroup('SlackBridge', function() {
 	this.add('SlackBridge_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

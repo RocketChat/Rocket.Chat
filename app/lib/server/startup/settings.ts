@@ -1,11 +1,11 @@
 import { Random } from 'meteor/random';
 
-import { settingsRegister } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
-settingsRegister.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
+settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
@@ -13,7 +13,7 @@ settingsRegister.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
 
-settingsRegister.addGroup('Accounts', function() {
+settingsRegistry.addGroup('Accounts', function() {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
@@ -623,7 +623,7 @@ settingsRegister.addGroup('Accounts', function() {
 	});
 });
 
-settingsRegister.addGroup('OAuth', function() {
+settingsRegistry.addGroup('OAuth', function() {
 	this.section('Facebook', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
@@ -780,7 +780,7 @@ settingsRegister.addGroup('OAuth', function() {
 	});
 });
 
-settingsRegister.addGroup('General', function() {
+settingsRegistry.addGroup('General', function() {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
@@ -1073,7 +1073,7 @@ settingsRegister.addGroup('General', function() {
 	});
 });
 
-settingsRegister.addGroup('Message', function() {
+settingsRegistry.addGroup('Message', function() {
 	this.section('Message_Attachments', function() {
 		this.add('Message_Attachments_GroupAttach', false, {
 			type: 'boolean',
@@ -1284,7 +1284,7 @@ settingsRegister.addGroup('Message', function() {
 	});
 });
 
-settingsRegister.addGroup('Meta', function() {
+settingsRegistry.addGroup('Meta', function() {
 	this.add('Meta_language', '', {
 		type: 'string',
 	});
@@ -1310,7 +1310,7 @@ settingsRegister.addGroup('Meta', function() {
 	});
 });
 
-settingsRegister.addGroup('Mobile', function() {
+settingsRegistry.addGroup('Mobile', function() {
 	this.add('Allow_Save_Media_to_Gallery', true, {
 		type: 'boolean',
 		public: true,
@@ -1331,7 +1331,7 @@ const pushEnabledWithoutGateway = [
 	},
 ];
 
-settingsRegister.addGroup('Push', function() {
+settingsRegistry.addGroup('Push', function() {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
@@ -1452,7 +1452,7 @@ settingsRegister.addGroup('Push', function() {
 	});
 });
 
-settingsRegister.addGroup('Layout', function() {
+settingsRegistry.addGroup('Layout', function() {
 	this.section('Content', function() {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
@@ -1566,7 +1566,7 @@ settingsRegister.addGroup('Layout', function() {
 	});
 });
 
-settingsRegister.addGroup('Logs', function() {
+settingsRegistry.addGroup('Logs', function() {
 	this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
@@ -1634,7 +1634,7 @@ settingsRegister.addGroup('Logs', function() {
 	});
 });
 
-settingsRegister.addGroup('Setup_Wizard', function() {
+settingsRegistry.addGroup('Setup_Wizard', function() {
 	this.section('Organization_Info', function() {
 		this.add('Organization_Type', '', {
 			type: 'select',
@@ -2976,7 +2976,7 @@ settingsRegister.addGroup('Setup_Wizard', function() {
 	});
 });
 
-settingsRegister.addGroup('Rate Limiter', function() {
+settingsRegistry.addGroup('Rate Limiter', function() {
 	this.section('DDP Rate Limiter', function() {
 		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
 		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, { type: 'int', enableQuery: { _id: 'DDP_Rate_Limit_IP_Enabled', value: true } });
@@ -3007,7 +3007,7 @@ settingsRegister.addGroup('Rate Limiter', function() {
 	});
 });
 
-settingsRegister.addGroup('Troubleshoot', function() {
+settingsRegistry.addGroup('Troubleshoot', function() {
 	this.add('Troubleshoot_Disable_Notifications', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',

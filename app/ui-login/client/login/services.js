@@ -2,9 +2,9 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import toastr from 'toastr';
 
 import { CustomOAuth } from '../../../custom-oauth';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Meteor.startup(function() {
 	return ServiceConfiguration.configurations.find({
@@ -84,9 +84,9 @@ Template.loginServices.events({
 			if (error) {
 				console.log(JSON.stringify(error));
 				if (error.reason) {
-					toastr.error(error.reason);
+					dispatchToastMessage({ type: 'error', message: error.reason });
 				} else {
-					toastr.error(error.message);
+					dispatchToastMessage({ type: 'error', message: error.message });
 				}
 			}
 		});

@@ -76,6 +76,8 @@ export interface IStreamer {
 	emitWithoutBroadcast(event: string, ...data: any[]): void;
 
 	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
+
+	_publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}): Promise<void>;
 }
 
 export interface IStreamerConstructor {

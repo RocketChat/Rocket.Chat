@@ -259,7 +259,14 @@ const queueWorker = {
 	},
 };
 
+
+let omnichannelIsEnabled = false;
 function shouldQueueStart() {
+	if (!omnichannelIsEnabled) {
+		queueWorker.stop();
+		return;
+	}
+
 	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
 	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
 		routingSupportsAutoAssign
@@ -270,8 +277,9 @@ function shouldQueueStart() {
 	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
 }
 
-settings.watch('Livechat_enabled', (value) => {
-	value && settings.get('Livechat_Routing_Method') ? shouldQueueStart() : queueWorker.stop();
-});
+RoutingManager.startQueue = shouldQueueStart;
 
-settings.change('Livechat_Routing_Method', shouldQueueStart);
+settings.watch('Livechat_enabled', (enabled) => {
+	omnichannelIsEnabled = enabled;
+	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+});

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function() {
-	settingsRegister.addGroup('AtlassianCrowd', function() {
+	settingsRegistry.addGroup('AtlassianCrowd', function() {
 		const enableQuery = { _id: 'CROWD_Enable', value: true };
 		const enableSyncQuery = [enableQuery, { _id: 'CROWD_Sync_User_Data', value: true }];
 

@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('WebRTC', function() {
+settingsRegistry.addGroup('WebRTC', function() {
 	this.add('WebRTC_Enable_Channel', false, {
 		type: 'boolean',
 		group: 'WebRTC',

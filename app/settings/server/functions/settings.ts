@@ -1,6 +1,6 @@
 import SettingsModel from '../../../models/server/models/Settings';
-import { CachedSettings } from '../Settingsv4';
-import { SettingsRegister } from '../SettingsRegister';
+import { CachedSettings } from '../CachedSettings';
+import { SettingsRegistry } from '../SettingsRegistry';
 import { ISetting } from '../../../../definition/ISetting';
 
 
@@ -11,4 +11,4 @@ SettingsModel.find().forEach((record: ISetting) => {
 
 settings.initilized();
 
-export const settingsRegister = new SettingsRegister(settings);
+export const settingsRegistry = new SettingsRegistry({ store: settings, model: SettingsModel });

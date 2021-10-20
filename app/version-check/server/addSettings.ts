@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('General', function() {
+settingsRegistry.addGroup('General', function() {
 	this.section('Update', function() {
 		this.add('Update_LatestAvailableVersion', '0.0.0', {
 			type: 'string',

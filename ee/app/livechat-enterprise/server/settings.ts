@@ -1,8 +1,8 @@
-import { settingsRegister } from '../../../../app/settings/server';
+import { settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 
 export const createSettings = () => {
-	settingsRegister.add('Livechat_abandoned_rooms_action', 'none', {
+	settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -19,7 +19,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_abandoned_rooms_closed_custom_message', '', {
+	settingsRegistry.add('Livechat_abandoned_rooms_closed_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -32,7 +32,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_last_chatted_agent_routing', false, {
+	settingsRegistry.add('Livechat_last_chatted_agent_routing', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
@@ -43,7 +43,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.addGroup('Omnichannel', function() {
+	settingsRegistry.addGroup('Omnichannel', function() {
 		this.section('Business_Hours', function() {
 			this.add('Livechat_business_hour_type', 'Single', {
 				type: 'select',
@@ -151,7 +151,7 @@ export const createSettings = () => {
 		});
 	});
 
-	settingsRegister.add('Omnichannel_contact_manager_routing', true, {
+	settingsRegistry.add('Omnichannel_contact_manager_routing', true, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Routing',
@@ -162,7 +162,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
+	settingsRegistry.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -173,7 +173,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
+	settingsRegistry.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -185,7 +185,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_allow_manual_on_hold', false, {
+	settingsRegistry.add('Livechat_allow_manual_on_hold', false, {
 		type: 'boolean',
 		group: 'Omnichannel',
 		section: 'Sessions',
@@ -197,7 +197,7 @@ export const createSettings = () => {
 		],
 	});
 
-	settingsRegister.add('Livechat_auto_transfer_chat_timeout', 0, {
+	settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
 		type: 'int',
 		group: 'Omnichannel',
 		section: 'Sessions',

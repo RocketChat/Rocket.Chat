@@ -248,10 +248,8 @@ export class Settings extends Base {
 		}
 	}
 
-
-	insert(...args) {
-		console.log(...args);
-		return super.insert(...args);
+	insert(record, ...args) {
+		return super.insert({ createdAt: new Date(), ...record }, ...args);
 	}
 }
 

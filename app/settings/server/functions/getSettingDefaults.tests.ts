@@ -30,6 +30,15 @@ describe('getSettingDefaults', () => {
 		expect(setting).to.not.have.property('tab');
 	});
 
+	it('should return a sorter value', () => {
+		const setting = getSettingDefaults({ _id: 'test', value: 'test', type: 'string', sorter: 1 });
+
+		expect(setting).to.be.an('object');
+		expect(setting).to.have.property('_id');
+
+		expect(setting).to.have.property('sorter').to.be.equal(1);
+	});
+
 	it('should return a private setting', () => {
 		const setting = getSettingDefaults({ _id: 'test', value: 'test', type: 'string', public: false });
 

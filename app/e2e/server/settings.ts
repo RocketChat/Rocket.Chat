@@ -1,6 +1,6 @@
-import { settingsRegister } from '../../settings/server';
+import { settingsRegistry } from '../../settings/server';
 
-settingsRegister.addGroup('E2E Encryption', function() {
+settingsRegistry.addGroup('E2E Encryption', function() {
 	this.add('E2E_Enable', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',

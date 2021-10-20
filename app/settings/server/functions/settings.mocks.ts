@@ -1,7 +1,7 @@
 import mock from 'mock-require';
 
 import { ISetting } from '../../../../definition/ISetting';
-import { ICachedSettings } from '../Settingsv4';
+import { ICachedSettings } from '../CachedSettings';
 
 type Dictionary = {
 	[index: string]: any;

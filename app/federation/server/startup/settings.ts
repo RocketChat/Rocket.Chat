@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settingsRegister, settings } from '../../../settings/server';
+import { settingsRegistry, settings } from '../../../settings/server';
 import { updateStatus, updateEnabled, isRegisteringOrEnabled } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { getFederationDiscoveryMethod } from '../lib/getFederationDiscoveryMethod';
@@ -13,7 +13,7 @@ import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DI
 Meteor.startup(function() {
 	const federationPublicKey = FederationKeys.getPublicKeyString();
 
-	settingsRegister.addGroup('Federation', function() {
+	settingsRegistry.addGroup('Federation', function() {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
