@@ -31,7 +31,7 @@
 		"mem": "^6.1.1",
 		"moleculer": "^0.14.14",
 		"mongodb": "^3.6.9",
-		"nats": "^1.4.12",
+		"nats": "^2.2.0",
 		"pino": "^7.0.3",
 		"sodium-native": "^3.2.1",
 		"sodium-plus": "^0.9.0",
