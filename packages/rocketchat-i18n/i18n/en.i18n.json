@@ -2742,6 +2742,8 @@
   "manage-assets_description": "Permission to manage the server assets",
   "manage-cloud": "Manage Cloud",
   "manage-cloud_description": "Permission to manage cloud",
+  "manage-contact-center": "Manage contact center",
+  "manage-contact-center_description": "Permission to view and interact with the contact center",
   "manage-email-inbox": "Manage Email Inbox",
   "manage-email-inbox_description": "Permission to manage email inboxes",
   "manage-emoji": "Manage Emoji",
