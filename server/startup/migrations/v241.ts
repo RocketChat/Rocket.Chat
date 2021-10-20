@@ -1,30 +1,9 @@
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server';
+import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
 addMigration({
 	version: 241,
 	up() {
-		Settings.upsert(
-			{
-				_id: 'Livechat_guest_count',
-			},
-			{
-				$set: {
-					public: false,
-					hidden: true,
-				},
-			},
-		);
-		Settings.upsert(
-			{
-				_id: 'Livechat_Room_Count',
-			},
-			{
-				$set: {
-					public: false,
-					hidden: true,
-				},
-			},
-		);
+		upsertPermissions();
 	},
 });
