@@ -2,7 +2,7 @@ import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models/server';
 
 addMigration({
-	version: 241,
+	version: 242,
 	up() {
 		Settings.upsert(
 			{
