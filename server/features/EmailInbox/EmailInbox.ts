@@ -81,5 +81,7 @@ export async function configureEmailInboxes(): Promise<void> {
 }
 
 Meteor.startup(() => {
-	configureEmailInboxes();
+	Meteor.defer(() => {
+		configureEmailInboxes();
+	});
 });
