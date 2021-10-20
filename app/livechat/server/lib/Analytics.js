@@ -306,6 +306,7 @@ export const Analytics = {
 					lt: m.add(1, 'days'),
 				};
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
+				console.log(result);
 				totalConversations += result.length;
 
 				result.forEach(summarize(clonedDate));

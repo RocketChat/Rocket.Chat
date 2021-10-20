@@ -479,6 +479,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 			'metrics.chatDuration': {
 				$exists: false,
 			},
+			$or: [{
+				onHold: {
+					$exists: false,
+				},
+			}, {
+				onHold: {
+					$exists: true,
+					$eq: false,
+				},
+			}],
 			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
@@ -494,7 +504,6 @@ export class LivechatRoomsRaw extends BaseRaw {
 			'metrics.chatDuration': {
 				$exists: true,
 			},
-			servedBy: { $exists: true },
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -507,6 +516,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const query = {
 			t: 'l',
 			servedBy: { $exists: false },
+			open: true,
 			ts: { $gte: new Date(start), $lte: new Date(end) },
 		};
 		if (departmentId && departmentId !== 'undefined') {
@@ -521,6 +531,16 @@ export class LivechatRoomsRaw extends BaseRaw {
 				t: 'l',
 				'servedBy.username': { $exists: true },
 				open: true,
+				$or: [{
+					onHold: {
+						$exists: false,
+					},
+				}, {
+					onHold: {
+						$exists: true,
+						$eq: false,
+					},
+				}],
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
