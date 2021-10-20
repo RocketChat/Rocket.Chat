@@ -116,14 +116,14 @@ export const createSettings = () => {
 				],
 			});
 
-			this.add('Livechat_max_queue_wait_time', 60, {
+			this.add('Livechat_max_queue_wait_time', -1, {
 				type: 'int',
 				group: 'Omnichannel',
 				section: 'Queue_management',
 				i18nLabel: 'Livechat_maximum_queue_wait_time',
 				i18nDescription: 'Livechat_maximum_queue_wait_time_description',
 				enterprise: true,
-				invalidValue: 0,
+				invalidValue: -1,
 				modules: [
 					'livechat-enterprise',
 				],

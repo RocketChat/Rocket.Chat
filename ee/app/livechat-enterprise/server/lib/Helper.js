@@ -166,7 +166,7 @@ export const updatePredictedVisitorAbandonment = () => {
 
 let queueTimeout;
 
-settings.get('Livechat_max_queue_wait_time', (_, value) => {
+settings.get('Livechat_max_queue_wait_time', (value) => {
 	queueTimeout = value;
 });
 

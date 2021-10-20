@@ -13,8 +13,13 @@ const scheduleInquiry = (inquiry: any): void => {
 		return;
 	}
 
+	if (!inquiry?._updatedAt || !inquiry?._createdAt) {
+		cbLogger.debug('Skipping callback. Inquiry doesnt have timestamps');
+		return;
+	}
+
 	// schedule individual jobs instead of property for close inactivty
-	const newQueueTime = moment(inquiry?._updatedAt).add(timer, 'minutes');
+	const newQueueTime = moment(inquiry._updatedAt || inquiry._updatedAt).add(timer, 'minutes');
 	cbLogger.debug(`Scheduling estimated close time at ${ newQueueTime } for queued inquiry ${ inquiry._id }`);
 	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };

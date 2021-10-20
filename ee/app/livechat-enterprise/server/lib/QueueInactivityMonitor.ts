@@ -44,6 +44,10 @@ export class OmnichannelQueueInactivityMonitorClass {
 		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
 	}
 
+	getName(inquiryId: string): string {
+		return `${ this._name }-${ inquiryId }`;
+	}
+
 	createIndex(): void {
 		this._db.collection(SCHEDULER_NAME).createIndex({
 			'data.inquiryId': 1,
@@ -62,7 +66,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 	scheduleInquiry(inquiryId: string, time: Date): void {
 		Promise.await(this.stopInquiry(inquiryId));
 		this.logger.debug(`Scheduling automatic close of inquiry ${ inquiryId } at ${ time }`);
-		const name = `${ this._name }-${ inquiryId }`;
+		const name = this.getName(inquiryId);
 		this.scheduler.define(name, Meteor.bindEnvironment(this.closeRoom.bind(this)));
 
 		const job = this.scheduler.create(name, { inquiryId });
@@ -79,7 +83,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	async stopInquiry(inquiryId: string): Promise<void> {
-		const name = `${ this._name }-${ inquiryId }`;
+		const name = this.getName(inquiryId);
 		await this.scheduler.cancel({ name });
 	}
 
