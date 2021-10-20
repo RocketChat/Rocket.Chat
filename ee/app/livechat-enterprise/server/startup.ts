@@ -37,6 +37,8 @@ Meteor.startup(async function() {
 		}
 	});
 	settings.change('Livechat_max_queue_wait_time_action', function(value) {
+		console.log('-----------------------------------------------------------------------------');
+		console.log(value);
 		updateQueueInactivityTimeout();
 		if (!value || value === 'Nothing') {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
@@ -45,6 +47,8 @@ Meteor.startup(async function() {
 	});
 
 	settings.change<number>('Livechat_max_queue_wait_time', function(value) {
+		console.log('-----------------------------------------------------------------------------');
+		console.log(value);
 		if (value <= 0) {
 			return Promise.await(OmnichannelQueueInactivityMonitor.stop());
 		}
