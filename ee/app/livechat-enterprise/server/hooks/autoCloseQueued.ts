@@ -9,7 +9,7 @@ const removeScheduledQueueCloseTime = (inquiry: any): void => {
 	OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 };
 
-settings.get('Livechat_max_queue_wait_time', function(_, value) {
+settings.get('Livechat_max_queue_wait_time', function(value: number) {
 	if (!value || value < 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-after-inquiry-taken-remove-schedule');
 		return;

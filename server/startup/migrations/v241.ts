@@ -1,5 +1,4 @@
 import { addMigration } from '../../lib/migrations';
-import { settings } from '../../../app/settings/server';
 import { LivechatInquiry, Settings } from '../../../app/models/server';
 
 function removeQueueTimeoutFromInquiries(): void {
@@ -10,7 +9,8 @@ function removeQueueTimeoutFromInquiries(): void {
 }
 
 function removeSetting(): void {
-	const currentAction = settings.get('Livechat_max_queue_wait_time_action');
+	const currentAction = Settings.findById('Livechat_max_queue_wait_time_action');
+	console.log(currentAction);
 	if (currentAction === 'Nothing') {
 		Settings.upsert({ _id: 'Livechat_max_queue_wait_time' }, { $set: { value: -1 } });
 	}

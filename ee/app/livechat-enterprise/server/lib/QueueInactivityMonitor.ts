@@ -18,7 +18,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	running: boolean;
 
-	logger: any;
+	logger: Logger;
 
 	_name: string;
 
@@ -27,6 +27,8 @@ export class OmnichannelQueueInactivityMonitorClass {
 	message: string;
 
 	_db: Db;
+
+	bindedCloseRoom: any;
 
 	constructor() {
 		this._db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
@@ -42,6 +44,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		this.user = Users.findOneById('rocket.cat');
 		const language = settings.get('Language') || 'en';
 		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
+		this.bindedCloseRoom = Meteor.bindEnvironment(this.closeRoom.bind(this));
 	}
 
 	getName(inquiryId: string): string {
@@ -67,7 +70,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		Promise.await(this.stopInquiry(inquiryId));
 		this.logger.debug(`Scheduling automatic close of inquiry ${ inquiryId } at ${ time }`);
 		const name = this.getName(inquiryId);
-		this.scheduler.define(name, Meteor.bindEnvironment(this.closeRoom.bind(this)));
+		this.scheduler.define(name, this.bindedCloseRoom);
 
 		const job = this.scheduler.create(name, { inquiryId });
 		job.schedule(time);
