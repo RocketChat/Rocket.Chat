@@ -37,8 +37,8 @@ export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 			_id: UNIQUE_QUEUE_ID,
 			$or: [{
 				locked: true,
-				lockedUntil: {
-					$lte: date,
+				lockedAt: {
+					$lte: new Date(date.getTime() - 5000),
 				},
 			}, {
 				locked: false,
@@ -47,7 +47,7 @@ export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 			$set: {
 				locked: true,
 				// apply 5 secs lock lifetime
-				lockedUntil: new Date(date.getTime() + 5000),
+				lockedAt: new Date(),
 			},
 		}, {
 			sort: {
@@ -66,7 +66,7 @@ export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 				locked: false,
 			},
 			$unset: {
-				lockedUntil: 1,
+				lockedAt: 1,
 			},
 		}, {
 			sort: {
