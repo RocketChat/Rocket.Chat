@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings';
-import { dispatchWaitingQueueStatus } from '../lib/Helper';
+import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add('livechat.afterTakeInquiry', async (inquiry) => {
@@ -15,7 +15,7 @@ callbacks.add('livechat.afterTakeInquiry', async (inquiry) => {
 	}
 
 	const { department } = inquiry;
-	await dispatchWaitingQueueStatus(department);
+	debouncedDispatchWaitingQueueStatus(department);
 
 	cbLogger.debug(`Statuses for queue ${ department || 'Public' } updated succesfully`);
 	return inquiry;
