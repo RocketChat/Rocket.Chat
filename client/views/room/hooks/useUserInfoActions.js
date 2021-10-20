@@ -5,7 +5,6 @@ import React, { useCallback, useMemo } from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
 import { roomTypes, RoomMemberActions } from '../../../../app/utils/client';
-import { WebRTC } from '../../../../app/webrtc/client';
 import { usePermission, useAllPermissions } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
@@ -21,6 +20,7 @@ import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionE
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import RemoveUsersModal from '../../teams/contextualBar/members/RemoveUsersModal';
 import { useUserRoom } from './useUserRoom';
+import { useWebRTC } from './useWebRTC';
 
 const useUserHasRoomRole = (uid, rid, role) =>
 	useReactiveValue(
@@ -37,20 +37,6 @@ const getShouldOpenDirectMessage = (
 	const directMessageIsNotAlreadyOpen =
 		currentSubscription && currentSubscription.name !== username;
 	return canOpenDm && directMessageIsNotAlreadyOpen;
-};
-
-const getShouldAllowCalls = (webRTCInstance) => {
-	if (!webRTCInstance) {
-		return false;
-	}
-
-	const { localUrl, remoteItems } = webRTCInstance;
-	const r = remoteItems.get() || [];
-	if (localUrl.get() === null && r.length === 0) {
-		return false;
-	}
-
-	return true;
 };
 
 const getUserIsMuted = (room, user, userCanPostReadonly) => {
@@ -114,9 +100,6 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const isModerator = useUserHasRoomRole(uid, rid, 'moderator');
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
 
-	const getWebRTCInstance = useCallback(() => WebRTC.getInstanceByRoomId(rid), [rid]);
-	const webRTCInstance = useReactiveValue(getWebRTCInstance);
-
 	const otherUserCanPostReadonly = useAllPermissions('post-readonly', rid);
 
 	const isIgnored =
@@ -157,11 +140,8 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	const userCanMute = usePermission('mute-user', rid);
 	const userCanRemove = usePermission('remove-user', rid);
 	const userCanDirectMessage = usePermission('create-d');
+	const { shouldAllowCalls, callInProgress, joinCall, startCall } = useWebRTC(rid);
 
-	const shouldAllowCalls = getShouldAllowCalls(webRTCInstance);
-	const callInProgress = useReactiveValue(
-		useCallback(() => webRTCInstance?.callInProgress.get(), [webRTCInstance]),
-	);
 	const shouldOpenDirectMessage = getShouldOpenDirectMessage(
 		currentSubscription,
 		usernameSubscription,
@@ -186,13 +166,13 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 	);
 
 	const videoCallOption = useMemo(() => {
-		const joinCall = () => {
-			webRTCInstance.joinCall({ audio: true, video: true });
+		const handleJoinCall = () => {
+			joinCall({ audio: true, video: true });
 		};
-		const startCall = () => {
-			webRTCInstance.startCall({ audio: true, video: true });
+		const handleStartCall = () => {
+			startCall({ audio: true, video: true });
 		};
-		const action = callInProgress ? joinCall : startCall;
+		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
 			shouldAllowCalls && {
@@ -201,16 +181,16 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	const audioCallOption = useMemo(() => {
-		const joinCall = () => {
-			webRTCInstance.joinCall({ audio: true, video: false });
+		const handleJoinCall = () => {
+			joinCall({ audio: true, video: false });
 		};
-		const startCall = () => {
-			webRTCInstance.startCall({ audio: true, video: false });
+		const handleStartCall = () => {
+			startCall({ audio: true, video: false });
 		};
-		const action = callInProgress ? joinCall : startCall;
+		const action = callInProgress ? handleJoinCall : handleStartCall;
 
 		return (
 			shouldAllowCalls && {
@@ -219,7 +199,7 @@ export const useUserInfoActions = (user = {}, rid, reload) => {
 				action,
 			}
 		);
-	}, [callInProgress, shouldAllowCalls, t, webRTCInstance]);
+	}, [callInProgress, shouldAllowCalls, t, joinCall, startCall]);
 
 	const changeOwnerEndpoint = isOwner ? 'removeOwner' : 'addOwner';
 	const changeOwnerMessage = isOwner

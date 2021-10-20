@@ -28,26 +28,12 @@ import { fileUpload } from '../../lib/fileUpload';
 import './room.html';
 import { getCommonRoomEvents } from './lib/getCommonRoomEvents';
 import { RoomManager as NewRoomManager } from '../../../../../client/lib/RoomManager';
-import { fireGlobalEvent } from '../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../client/lib/utils/isLayoutEmbedded';
 import { handleError } from '../../../../../client/lib/utils/handleError';
 
 export const chatMessages = {};
 
 const userCanDrop = (_id) => !roomTypes.readOnly(_id, Users.findOne({ _id: Meteor.userId() }, { fields: { username: 1 } }));
-
-
-export const openProfileTab = (e, tabBar, username) => {
-	e.stopPropagation();
-
-	if (isLayoutEmbedded()) {
-		fireGlobalEvent('click-user-card-message', { username });
-		e.preventDefault();
-		return;
-	}
-
-	tabBar.openUserInfo(username);
-};
 
 const wipeFailedUploads = () => {
 	const uploads = Session.get('uploading');
@@ -979,15 +965,12 @@ Meteor.startup(() => {
 		if (webrtc) {
 			this.autorun(() => {
 				const remoteItems = webrtc.remoteItems.get();
-				if (remoteItems && remoteItems.length > 0) {
-					this.tabBar.open('members-list');
-				}
-
-				if (webrtc.localUrl.get()) {
-					this.tabBar.open('members-list');
+				if ((remoteItems && remoteItems.length > 0) || webrtc.localUrl.get()) {
+					return this.tabBar.openUserInfo();
 				}
 			});
 		}
+
 		callbacks.add('streamNewMessage', (msg) => {
 			if (rid !== msg.rid || msg.editedAt || msg.tmid) {
 				return;
