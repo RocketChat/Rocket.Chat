@@ -4,7 +4,6 @@ import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
 import { Users } from '../../../app/models/server';
-import { callbacks } from '../../../app/callbacks/server';
 
 onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser}) => {
@@ -23,17 +22,6 @@ onLicense('saml-enterprise', () => {
 
 			userObject.roles = SAMLUtils.ensureArray<string>(value);
 		}
-	});
-
-	SAMLUtils.events.on('syncRoles', (userId: string, roles: string[]): void => {
-		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
-
-		if (!roleAttributeSync) {
-			return;
-		}
-
-		callbacks.run('validateUserRoles', { _id: userId, roles });
-		Users.updateRolesById(userId, roles);
 	});
 
 	SAMLUtils.events.on('loadConfigs', (service: string, configs: Record<string, any>): void => {
