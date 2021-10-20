@@ -1,9 +1,8 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { logger } from './logger';
-import { settings } from '../../settings';
+import { settings, settingsRegistry } from '../../settings/server';
 
 const defaults = {
 	enable: false,
@@ -18,7 +17,7 @@ const defaults = {
 };
 
 Meteor.startup(() => {
-	settings.addGroup('Blockstack', function() {
+	settingsRegistry.addGroup('Blockstack', function() {
 		this.add('Blockstack_Enable', defaults.enable, {
 			type: 'boolean',
 			i18nLabel: 'Enable',
@@ -43,7 +42,12 @@ const getSettings = () => Object.assign({}, defaults, {
 	generateUsername: settings.get('Blockstack_Generate_Username'),
 });
 
-const configureService = _.debounce(Meteor.bindEnvironment(() => {
+
+// Add settings to auth provider configs on startup
+settings.watchMultiple(['Blockstack_Enable',
+	'Blockstack_Auth_Description',
+	'Blockstack_ButtonLabelText',
+	'Blockstack_Generate_Username'], () => {
 	const serviceConfig = getSettings();
 
 	if (!serviceConfig.enable) {
@@ -60,11 +64,4 @@ const configureService = _.debounce(Meteor.bindEnvironment(() => {
 	});
 
 	logger.debug('Init Blockstack auth', serviceConfig);
-}), 1000);
-
-// Add settings to auth provider configs on startup
-Meteor.startup(() => {
-	settings.get(/^Blockstack_.+/, () => {
-		configureService();
-	});
 });

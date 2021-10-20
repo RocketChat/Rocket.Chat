@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { settings as rcSettings } from '../../../settings';
+import { Settings } from '../../../models/server';
 
 Meteor.methods({
 	'livechat:saveAppearance'(settings) {
@@ -38,7 +38,7 @@ Meteor.methods({
 		}
 
 		settings.forEach((setting) => {
-			rcSettings.updateById(setting._id, setting.value);
+			Settings.updateValueById(setting._id, setting.value);
 		});
 	},
 });

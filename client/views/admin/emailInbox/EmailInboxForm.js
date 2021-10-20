@@ -13,7 +13,7 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../app/utils/client';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import GenericModal from '../../../components/GenericModal';
 import Page from '../../../components/Page';

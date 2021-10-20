@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
@@ -54,7 +53,7 @@ Meteor.methods({
 			});
 		}
 
-		params.forEach(({ _id, value, editor }) => settings.updateById(_id, value, editor));
+		params.forEach(({ _id, value, editor }) => Settings.updateValueById(_id, value, editor));
 
 		return true;
 	}),
