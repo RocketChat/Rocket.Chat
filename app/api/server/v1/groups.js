@@ -873,7 +873,6 @@ API.v1.addRoute('groups.setEncrypted', { authRequired: true }, {
 
 API.v1.addRoute('groups.convertToTeam', { authRequired: true }, {
 	post() {
-		console.log(this.requestParams());
 		const { roomId, roomName } = this.requestParams();
 
 		if (!roomId && !roomName) {
