@@ -254,6 +254,8 @@ const queueWorker = {
 				await processWaitingQueue(queue);
 				queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
 				await OmnichannelQueue.unlockQueue();
+			} else {
+				queueLogger.debug('Queue locked. Waiting');
 			}
 		} catch (e) {
 			queueLogger.error({
