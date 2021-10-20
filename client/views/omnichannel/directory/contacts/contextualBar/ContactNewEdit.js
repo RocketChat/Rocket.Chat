@@ -7,11 +7,11 @@ import { hasAtLeastOnePermission } from '../../../../../../app/authorization/cli
 import { isEmail } from '../../../../../../app/utils/client';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -107,15 +107,9 @@ function ContactNewEdit({ id, data, close }) {
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpointActionExperimental('POST', 'omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpointActionExperimental(
-		'GET',
-		`omnichannel/contact.search?email=${email}`,
-	);
-	const phoneAlreadyExistsAction = useEndpointActionExperimental(
-		'GET',
-		`omnichannel/contact.search?phone=${phone}`,
-	);
+	const saveContact = useEndpoint('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?email=${email}`);
+	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!isEmail(email)) {
