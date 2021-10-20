@@ -4,8 +4,9 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 import _ from 'underscore';
+
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.RocketSearch.onCreated(function() {
 	this.provider = new ReactiveVar();
@@ -32,7 +33,7 @@ Template.RocketSearch.onCreated(function() {
 
 			Meteor.call('rocketchatSearch.search', this.scope.text.get(), { rid: Session.get('openedRoom'), uid: Meteor.userId() }, _p, (err, result) => {
 				if (err) {
-					toastr.error(TAPi18n.__('Search_message_search_failed'));
+					dispatchToastMessage({ type: 'error', message: TAPi18n.__('Search_message_search_failed') });
 					this.scope.searching.set(false);
 				} else {
 					this.scope.searching.set(false);

@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Google } from 'meteor/google-oauth';
 import _ from 'underscore';
 
-import { Utils2fa } from './lib/2fa';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 const loginWithGoogleAndTOTP = function(options, code, callback) {
 	// support a callback without options
@@ -37,5 +37,5 @@ const loginWithGoogleAndTOTP = function(options, code, callback) {
 
 const { loginWithGoogle } = Meteor;
 Meteor.loginWithGoogle = function(options, cb) {
-	Utils2fa.overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
+	overrideLoginMethod(loginWithGoogle, [options], cb, loginWithGoogleAndTOTP);
 };

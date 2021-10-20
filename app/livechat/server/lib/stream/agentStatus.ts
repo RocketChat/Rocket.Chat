@@ -8,19 +8,19 @@ let actionTimeout = 60000;
 let action = 'none';
 let comment = '';
 
-settings.get('Livechat_agent_leave_action_timeout', (_key, value) => {
+settings.watch('Livechat_agent_leave_action_timeout', (value) => {
 	if (typeof value !== 'number') {
 		return;
 	}
 	actionTimeout = value * 1000;
 });
 
-settings.get('Livechat_agent_leave_action', (_key, value) => {
+settings.watch('Livechat_agent_leave_action', (value) => {
 	monitorAgents = value !== 'none';
 	action = value as string;
 });
 
-settings.get('Livechat_agent_leave_comment', (_key, value) => {
+settings.watch('Livechat_agent_leave_comment', (value) => {
 	if (typeof value !== 'string') {
 		return;
 	}

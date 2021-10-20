@@ -11,6 +11,7 @@ import {
 	Users as UsersRaw,
 	Settings as SettingsRaw,
 } from '../../../models/server/raw';
+import './Presence';
 
 // TODO: Replace this in favor of the api.broadcast
 // StreamerCentral.on('broadcast', (name, eventName, args) => {

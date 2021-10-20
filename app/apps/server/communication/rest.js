@@ -4,7 +4,7 @@ import { HTTP } from 'meteor/http';
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';

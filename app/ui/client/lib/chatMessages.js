@@ -1,5 +1,4 @@
 import moment from 'moment';
-import toastr from 'toastr';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
@@ -16,11 +15,9 @@ import {
 	messageProperties,
 	MessageTypes,
 	readMessage,
-	modal,
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
-import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
@@ -31,6 +28,8 @@ import { keyCodes } from '../../../../client/lib/utils/keyCodes';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 
 
 const messageBoxState = {
@@ -68,8 +67,6 @@ const messageBoxState = {
 };
 
 callbacks.add('afterLogoutCleanUp', messageBoxState.purgeAll, callbacks.priority.MEDIUM, 'chatMessages-after-logout-cleanup');
-
-const showModal = (config) => new Promise((resolve, reject) => modal.open(config, resolve, reject));
 
 export class ChatMessages {
 	constructor(collection = ChatMessage) {
@@ -287,7 +284,7 @@ export class ChatMessages {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
 
-			const message = await promises.run('onClientBeforeSendMessage', {
+			const message = await onClientBeforeSendMessage({
 				_id: Random.id(),
 				rid,
 				tshow,
@@ -374,26 +371,32 @@ export class ChatMessages {
 			throw new Error({ error: 'Message_too_long' });
 		}
 
-		try {
-			await showModal({
-				text: t('Message_too_long_as_an_attachment_question'),
-				title: '',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonText: t('Yes'),
-				cancelButtonText: t('No'),
-				closeOnConfirm: false,
-			});
-
+		const onConfirm = () => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
 			const fileName = `${ Meteor.user().username } - ${ new Date() }.txt`;
 			const file = new File([messageBlob], fileName, { type: contentType, lastModified: Date.now() });
 			fileUpload([{ file, name: fileName }], this.input, { rid, tmid });
-		} catch (e) {
+			imperativeModal.close();
+		};
+
+		const onClose = () => {
 			messageBoxState.set(this.input, msg);
-			return true;
-		}
+			imperativeModal.close();
+		};
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Message_too_long'),
+				children: t('Send_it_as_attachment_instead_question'),
+				onConfirm,
+				onClose,
+				onCancel: onClose,
+				variant: 'warning',
+			},
+		});
+
 		return true;
 	}
 
@@ -477,7 +480,7 @@ export class ChatMessages {
 			done();
 
 			imperativeModal.close();
-			toastr.success(t('Your_entry_has_been_deleted'));
+			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
 		};
 
 		const onCloseModal = () => {
@@ -516,7 +519,7 @@ export class ChatMessages {
 				currentTsDiff = moment().diff(msgTs, 'minutes');
 			}
 			if (currentTsDiff > blockDeleteInMinutes) {
-				toastr.error(t('Message_deleting_blocked'));
+				dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 				return;
 			}
 		}

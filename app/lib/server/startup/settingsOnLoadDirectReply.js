@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { Logger } from '../../../logger/server';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { IMAPIntercepter, POP3Helper, POP3 } from '../lib/interceptDirectReplyEmails.js';
 
 const logger = new Logger('Email Intercepter');
@@ -11,7 +10,7 @@ const logger = new Logger('Email Intercepter');
 let IMAP;
 let _POP3Helper;
 
-const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
+settings.watchMultiple(['Direct_Reply_Enable', 'Direct_Reply_Protocol', 'Direct_Reply_Host', 'Direct_Reply_Port', 'Direct_Reply_Username', 'Direct_Reply_Password', 'Direct_Reply_Protocol', 'Direct_Reply_Protocol'], function() {
 	logger.debug('Starting Email Intercepter...');
 
 	if (settings.get('Direct_Reply_Enable') && settings.get('Direct_Reply_Protocol') && settings.get('Direct_Reply_Host') && settings.get('Direct_Reply_Port') && settings.get('Direct_Reply_Username') && settings.get('Direct_Reply_Password')) {
@@ -71,6 +70,4 @@ const startEmailIntercepter = _.debounce(Meteor.bindEnvironment(function() {
 		// stop POP3 instance
 		_POP3Helper.stop();
 	}
-}), 1000);
-
-settings.onload(/^Direct_Reply_.+/, startEmailIntercepter);
+});

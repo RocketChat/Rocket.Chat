@@ -1,22 +1,22 @@
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
-import { settings } from '../../app/settings/server';
+import { settings, settingsRegistry } from '../../app/settings/server';
 import { SettingValue } from '../../definition/ISetting';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { eventTypes } from '../../app/models/server/models/FederationEvents';
-import { Users } from '../../app/models/server/raw';
+import { Users, Settings } from '../../app/models/server/raw';
 
 function updateSetting(id: string, value: SettingValue | null): void {
 	if (value !== null) {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settings.add(id, value);
+			settingsRegistry.add(id, value);
 		} else {
-			settings.updateById(id, value);
+			Settings.updateValueById(id, value);
 		}
 	} else {
-		settings.clearById(id);
+		Settings.updateValueById(id, undefined);
 	}
 }
 
@@ -75,11 +75,16 @@ async function runFederation(): Promise<void> {
 }
 
 export function federationCron(SyncedCron: any): void {
-	SyncedCron.add({
-		name: 'Federation',
-		schedule(parser: any) {
-			return parser.cron('* * * * *');
-		},
-		job: runFederation,
+	settings.watch('FEDERATION_Enabled', (value) => {
+		if (!value) {
+			return SyncedCron.remove('Federation');
+		}
+		SyncedCron.add({
+			name: 'Federation',
+			schedule(parser: any) {
+				return parser.cron('* * * * *');
+			},
+			job: runFederation,
+		});
 	});
 }

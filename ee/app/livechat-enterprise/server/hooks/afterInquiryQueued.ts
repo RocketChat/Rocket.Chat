@@ -19,7 +19,7 @@ const scheduleInquiry = (inquiry: any): void => {
 	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
-settings.get('Livechat_max_queue_wait_time', (_, value) => {
+settings.watch('Livechat_max_queue_wait_time', (value) => {
 	timer = value as number;
 	if (timer <= 0) {
 		callbacks.remove('livechat.afterInquiryQueued', 'livechat-inquiry-queued-set-queue-timer');
