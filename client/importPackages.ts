@@ -83,7 +83,6 @@ import '../app/settings/client';
 import '../app/models/client';
 import '../app/callbacks/client';
 import '../app/notifications/client';
-import '../app/promises/client';
 import '../app/ui-utils/client';
 import '../app/ui-cached-collection/client';
 import '../app/action-links/client';

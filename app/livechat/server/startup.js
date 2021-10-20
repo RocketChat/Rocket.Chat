@@ -5,12 +5,13 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { roomTypes } from '../../utils';
 import { LivechatRooms } from '../../models';
 import { callbacks } from '../../callbacks';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { hasPermission } from '../../authorization/server';
 import { Livechat } from './lib/Livechat';
+import { RoutingManager } from './lib/RoutingManager';
 
 import './roomAccessValidator.internalService';
 
@@ -38,7 +39,7 @@ Meteor.startup(async () => {
 	const monitor = new LivechatAgentActivityMonitor();
 
 	let TroubleshootDisableLivechatActivityMonitor;
-	settings.get('Troubleshoot_Disable_Livechat_Activity_Monitor', (key, value) => {
+	settings.watch('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
 		if (TroubleshootDisableLivechatActivityMonitor === value) { return; }
 		TroubleshootDisableLivechatActivityMonitor = value;
 
@@ -50,11 +51,15 @@ Meteor.startup(async () => {
 	});
 	await createDefaultBusinessHourIfNotExists();
 
-	settings.get('Livechat_enable_business_hours', async (key, value) => {
+	settings.watch('Livechat_enable_business_hours', async (value) => {
 		if (value) {
 			return businessHourManager.startManager();
 		}
 		return businessHourManager.stopManager();
+	});
+
+	settings.watch('Livechat_Routing_Method', function(value) {
+		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
 	Accounts.onLogout(({ user }) => user?.roles?.includes('livechat-agent') && !user?.roles?.includes('bot') && Livechat.setUserStatusLivechat(user._id, 'not-available'));

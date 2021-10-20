@@ -12,7 +12,8 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
-import { roomTypes, isEmail } from '../../../../../app/utils/client';
+import { roomTypes } from '../../../../../app/utils/client';
+import { isEmail } from '../../../../../lib/utils/isEmail';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';

@@ -1,5 +1,6 @@
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { hasAtLeastOnePermission } from '../../authorization';
@@ -192,7 +193,8 @@ Meteor.startup(() => {
 		});
 	});
 
-	settings.get('Apps_Framework_enabled', (isEnabled) => {
+	Tracker.autorun(() => {
+		const isEnabled = settings.get('Apps_Framework_enabled');
 		Apps.load(isEnabled);
 	});
 });

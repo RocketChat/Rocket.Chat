@@ -1273,6 +1273,6 @@ export const Livechat = {
 	},
 };
 
-settings.get('Livechat_history_monitor_type', (key, value) => {
+settings.watch('Livechat_history_monitor_type', (value) => {
 	Livechat.historyMonitorType = value;
 });
