@@ -22,7 +22,7 @@ function removeSetting(): void {
 }
 
 addMigration({
-	version: 243,
+	version: 242,
 	up() {
 		removeQueueTimeoutFromInquiries();
 		removeSetting();
