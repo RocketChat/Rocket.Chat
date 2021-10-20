@@ -16,7 +16,7 @@ const OmnichannelDirectoryPage = () => {
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
-	const canViewDirectory = usePermission('manage-contact-center');
+	const canViewDirectory = usePermission('view-omnichannel-contact-center');
 
 	useEffect(() => {
 		if (routeName !== 'omnichannel-directory') {

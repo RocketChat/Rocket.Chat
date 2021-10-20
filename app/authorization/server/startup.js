@@ -1,11 +1,11 @@
 /* eslint no-multi-spaces: 0 */
-import Roles from '../../../models/server/models/Roles';
-import Permissions from '../../../models/server/models/Permissions';
-import Settings from '../../../models/server/models/Settings';
-import { settings } from '../../../settings/server';
-import { getSettingPermissionId, CONSTANTS } from '../../lib';
+import { Meteor } from 'meteor/meteor';
 
-export const upsertPermissions = () => {
+import { Roles, Permissions, Settings } from '../../models/server';
+import { settings } from '../../settings/server';
+import { getSettingPermissionId, CONSTANTS } from '../lib';
+
+Meteor.startup(function() {
 	// Note:
 	// 1.if we need to create a role that can only edit channel message, but not edit group message
 	// then we can define edit-<type>-message instead of edit-message
@@ -94,7 +94,7 @@ export const upsertPermissions = () => {
 		{ _id: 'create-invite-links',                roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'view-l-room',                        roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'] },
 		{ _id: 'view-livechat-manager',              roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
-		{ _id: 'view-omnichannel-contact-center',    roles: ['livechat-manager', 'livechat-agent', 'livechat-monitor', 'admin'] },
+		{ _id: 'view-omnichannel-contact-center',	 roles: ['livechat-manager', 'livechat-agent', 'livechat-monitor', 'admin'] },
 		{ _id: 'edit-omnichannel-contact',           roles: ['livechat-manager', 'livechat-agent', 'admin'] },
 		{ _id: 'view-livechat-rooms',                roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
 		{ _id: 'close-livechat-room',                roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'] },
@@ -141,17 +141,7 @@ export const upsertPermissions = () => {
 		{ _id: 'view-all-teams', roles: ['admin'] },
 		{ _id: 'remove-closed-livechat-room', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'remove-livechat-department',  roles: ['livechat-manager', 'admin'] },
-		{ _id: 'manage-apps', roles: ['admin'] },
-		{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'set-readonly', roles: ['admin', 'owner'] },
-		{ _id: 'set-react-when-readonly', roles: ['admin', 'owner'] },
-		{ _id: 'manage-cloud', roles: ['admin'] },
-		{ _id: 'manage-sounds', roles: ['admin'] },
-		{ _id: 'access-mailer', roles: ['admin'] },
-		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
-		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 	];
-
 
 	for (const permission of permissions) {
 		Permissions.create(permission._id, permission.roles);
@@ -183,7 +173,7 @@ export const upsertPermissions = () => {
 			selector.settingId = settingId;
 		}
 
-		Permissions.find(selector).forEach(
+		Permissions.find(selector).fetch().forEach(
 			function(permission) {
 				previousSettingPermissions[permission._id] = permission;
 			});
@@ -251,7 +241,7 @@ export const upsertPermissions = () => {
 	createPermissionsForExistingSettings();
 
 	// register a callback for settings for be create in higher-level-packages
-	settings.on('*', function([settingId]) {
+	const createPermissionForAddedSetting = function(settingId) {
 		const previousSettingPermissions = getPreviousPermissions(settingId);
 		const setting = Settings.findOneById(settingId);
 		if (setting) {
@@ -259,5 +249,7 @@ export const upsertPermissions = () => {
 				createSettingPermission(setting, previousSettingPermissions);
 			}
 		}
-	});
-};
+	};
+
+	settings.onload('*', createPermissionForAddedSetting);
+});

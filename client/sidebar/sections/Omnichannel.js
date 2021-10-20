@@ -50,7 +50,7 @@ const OmnichannelSection = (props) => {
 					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
 				)}
 				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
-				{hasPermission(['manage-contact-center']) && (
+				{hasPermission(['view-omnichannel-contact-center']) && (
 					<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
 				)}
 			</Sidebar.TopBar.Actions>
