@@ -18,7 +18,6 @@ import {
 } from '../../../ui-utils/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../callbacks/client';
-import { promises } from '../../../promises/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { Messages, Rooms, ChatMessage, ChatSubscription } from '../../../models/client';
 import { emoji } from '../../../emoji/client';
@@ -30,6 +29,7 @@ import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { handleError } from '../../../../client/lib/utils/handleError';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { onClientBeforeSendMessage } from '../../../../client/lib/onClientBeforeSendMessage';
 
 
 const messageBoxState = {
@@ -284,7 +284,7 @@ export class ChatMessages {
 			readMessage.readNow(rid);
 			readMessage.refreshUnreadMark(rid);
 
-			const message = await promises.run('onClientBeforeSendMessage', {
+			const message = await onClientBeforeSendMessage({
 				_id: Random.id(),
 				rid,
 				tshow,

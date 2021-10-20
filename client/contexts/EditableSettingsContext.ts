@@ -1,10 +1,10 @@
 import { createContext, useContext, useMemo } from 'react';
 import { useSubscription, Subscription, Unsubscribe } from 'use-subscription';
 
-import { ISetting, SectionName, SettingId, GroupId, TabId } from '../../definition/ISetting';
+import { ISettingBase, SectionName, SettingId, GroupId, TabId } from '../../definition/ISetting';
 import { SettingsContextQuery } from './SettingsContext';
 
-export interface IEditableSetting extends ISetting {
+export interface IEditableSetting extends ISettingBase {
 	disabled: boolean;
 	changed: boolean;
 	invisible: boolean;

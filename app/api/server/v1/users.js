@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,

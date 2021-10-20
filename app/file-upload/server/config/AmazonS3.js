@@ -109,4 +109,4 @@ const configure = _.debounce(function() {
 	AmazonS3UserDataFiles.store = FileUpload.configureUploadsStore('AmazonS3', AmazonS3UserDataFiles.name, config);
 }, 500);
 
-settings.get(/^FileUpload_S3_/, configure);
+settings.watchByRegex(/^FileUpload_S3_/, configure);
