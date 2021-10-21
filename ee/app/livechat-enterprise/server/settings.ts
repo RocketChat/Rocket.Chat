@@ -1,10 +1,11 @@
 import { settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 
+
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 const businessHoursEnabled = { _id: 'Livechat_enable_business_hours', value: true };
 
-export const createSettings = () => {
+export const createSettings = (): void => {
 	settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
