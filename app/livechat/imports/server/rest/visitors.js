@@ -2,7 +2,7 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
+import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername, findChatHistoryMessage } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -59,6 +59,28 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 		}));
 
 		return API.v1.success(history);
+	},
+});
+
+API.v1.addRoute('livechat/visitors.chatHistoryMessages/room/:roomId', { authRequired: true }, {
+	get() {
+		check(this.urlParams, {
+			roomId: String,
+		});
+		const { offset, count } = this.getPaginationItems();
+		const { sort, query } = this.parseJsonQuery();
+		const historyMessages = Promise.await(findChatHistoryMessage({
+			userId: this.userId,
+			roomId: this.urlParams.roomId,
+			pagination: {
+				query,
+				offset,
+				count,
+				sort,
+			},
+		}));
+
+		return API.v1.success(historyMessages);
 	},
 });
 

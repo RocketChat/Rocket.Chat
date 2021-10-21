@@ -1,6 +1,8 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
+import { LivechatVisitors, Messages as MessagesRaw, LivechatRooms } from '../../../../models/server/raw';
+import { Messages } from '../../../../models/server';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
+import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 
 export async function findVisitorInfo({ userId, visitorId }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
@@ -25,7 +27,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
+	const cursor = MessagesRaw.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
@@ -72,6 +74,40 @@ export async function findChatHistory({ userId, roomId, visitorId, pagination: {
 		total,
 	};
 }
+
+export async function findChatHistoryMessage({ userId, roomId, pagination: { offset, count, query, sort } }) {
+	if (!await hasPermissionAsync(userId, 'view-l-room')) {
+		throw new Error('error-not-authorized');
+	}
+	const room = await LivechatRooms.findOneById(roomId);
+	if (!room) {
+		throw new Error('invalid-room');
+	}
+	if (!await canAccessRoomAsync(room, { _id: userId })) {
+		throw new Error('error-not-allowed');
+	}
+
+	const ourQuery = Object.assign({}, query, { rid: roomId });
+
+	const cursor = Messages.find(ourQuery, {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+	});
+
+
+	const total = await cursor.count();
+
+	const messages = await cursor.fetch();
+
+	return {
+		messages: normalizeMessagesForUser(messages, this.userId),
+		offset,
+		count,
+		total,
+	};
+}
+
 export async function searchChats({ userId, roomId, visitorId, searchText, closedChatsOnly, servedChatsOnly: served, pagination: { offset, count, sort } }) {
 	if (!await hasPermissionAsync(userId, 'view-l-room')) {
 		throw new Error('error-not-authorized');
