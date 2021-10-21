@@ -79,6 +79,9 @@ export const createSettings = (): void => {
 				i18nLabel: 'Waiting_queue',
 				enterprise: true,
 				invalidValue: false,
+				modules: [
+					'livechat-enterprise',
+				],
 				enableQuery: omnichannelEnabledQuery,
 			});
 
