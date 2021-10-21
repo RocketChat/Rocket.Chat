@@ -72,7 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole = 'user' } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -104,12 +104,14 @@ export class SAML {
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
 
-		const { roles } = userObject;
 		let { username } = userObject;
 
 		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
 
 		if (!user) {
+			// If we received any role from the mapping, use them - otherwise use the default role for creation.
+			const roles = userObject.roles?.length ? userObject.roles : SAMLUtils.ensureArray<string>(defaultUserRole.split(','));
+
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
 				active,
@@ -180,8 +182,9 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roles) {
-			updateData.roles = roles;
+		// When updating an user, we only update the roles if we received them from the mapping
+		if (userObject.roles?.length) {
+			updateData.roles = userObject.roles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {

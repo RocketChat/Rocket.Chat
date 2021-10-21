@@ -65,7 +65,7 @@ Meteor.startup(function() {
 	});
 });
 
-const updateSettings = function() {
+const updateSettings = function(): void {
 	// Get the key pair
 
 	if (getFederationDiscoveryMethod() === 'hub' && !isRegisteringOrEnabled()) {
