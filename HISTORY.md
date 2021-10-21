@@ -1,4 +1,29 @@
 
+# 4.0.4
+`2021-10-21  ·  2 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- Queue error handling and unlocking behavior ([#23522](https://github.com/RocketChat/Rocket.Chat/pull/23522))
+
+- SAML Users' roles being reset to default on login ([#23411](https://github.com/RocketChat/Rocket.Chat/pull/23411))
+
+  - Remove `roles` field update on `insertOrUpdateSAMLUser` function;  
+  - Add SAML `syncRoles` event;
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 # 4.0.3
 `2021-10-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
 
