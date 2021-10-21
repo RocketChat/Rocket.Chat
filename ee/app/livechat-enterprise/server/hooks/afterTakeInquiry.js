@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
 

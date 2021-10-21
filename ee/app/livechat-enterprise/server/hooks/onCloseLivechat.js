@@ -1,5 +1,5 @@
 import { callbacks } from '../../../../../app/callbacks';
-import { settings } from '../../../../../app/settings';
+import { settings } from '../../../../../app/settings/server';
 import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
