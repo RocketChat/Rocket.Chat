@@ -1384,7 +1384,6 @@ export class Rooms extends Base {
 	countDiscussions() {
 		return this.find({ prid: { $exists: true } }).count();
 	}
-	
 }
 
 export default new Rooms('room', true);

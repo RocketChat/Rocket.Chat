@@ -401,20 +401,20 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	allRoomSourcesCount() {
-		return this.col.aggregate( [
+		return this.col.aggregate([
 			{
 				$match: {
 					source: {
 						$exists: true,
-					}
-				}
+					},
+				},
 			},
 			{
 				$group: {
-					_id: "$source",
-					count: { $sum: 1 }
-				}
-			}
-		] );
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+		]);
 	}
 }
