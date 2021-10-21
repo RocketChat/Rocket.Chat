@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { FC } from 'react';
 
-const Wrapper = ({ children }) => (
+const Wrapper: FC = ({ children }) => (
 	<Box
 		is='span'
 		display='inline-flex'
 		flexDirection='column'
 		alignItems='center'
 		justifyContent='space-between'
-		size='x24'
+		sizes='x24'
 		paddingBlock='x4'
 		paddingInline='x2'
 		verticalAlign='middle'
