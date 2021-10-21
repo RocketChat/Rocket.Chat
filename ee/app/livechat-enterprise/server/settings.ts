@@ -1,6 +1,10 @@
 import { settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 
+
+const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
+const businessHoursEnabled = { _id: 'Livechat_enable_business_hours', value: true };
+
 export const createSettings = (): void => {
 	settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
@@ -17,6 +21,7 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	settingsRegistry.add('Livechat_abandoned_rooms_closed_custom_message', '', {
@@ -24,7 +29,7 @@ export const createSettings = (): void => {
 		group: 'Omnichannel',
 		section: 'Sessions',
 		i18nLabel: 'Livechat_abandoned_rooms_closed_custom_message',
-		enableQuery: { _id: 'Livechat_abandoned_rooms_action', value: 'close' },
+		enableQuery: [{ _id: 'Livechat_abandoned_rooms_action', value: 'close' }, omnichannelEnabledQuery],
 		enterprise: true,
 		invalidValue: '',
 		modules: [
@@ -41,6 +46,7 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	settingsRegistry.addGroup('Omnichannel', function() {
@@ -61,6 +67,7 @@ export const createSettings = (): void => {
 				modules: [
 					'livechat-enterprise',
 				],
+				enableQuery: [omnichannelEnabledQuery, businessHoursEnabled],
 			});
 		});
 
@@ -72,6 +79,7 @@ export const createSettings = (): void => {
 				i18nLabel: 'Waiting_queue',
 				enterprise: true,
 				invalidValue: false,
+				enableQuery: omnichannelEnabledQuery,
 			});
 
 			this.add('Livechat_waiting_queue_message', '', {
@@ -80,7 +88,7 @@ export const createSettings = (): void => {
 				section: 'Queue_management',
 				i18nLabel: 'Waiting_queue_message',
 				i18nDescription: 'Waiting_queue_message_description',
-				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enableQuery: [{ _id: 'Livechat_waiting_queue', value: true }, omnichannelEnabledQuery],
 				enterprise: true,
 				invalidValue: '',
 				modules: [
@@ -94,7 +102,7 @@ export const createSettings = (): void => {
 				section: 'Queue_management',
 				i18nLabel: 'Max_number_of_chats_per_agent',
 				i18nDescription: 'Max_number_of_chats_per_agent_description',
-				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enableQuery: [{ _id: 'Livechat_waiting_queue', value: true }, omnichannelEnabledQuery],
 				enterprise: true,
 				invalidValue: 0,
 				modules: [
@@ -108,7 +116,7 @@ export const createSettings = (): void => {
 				section: 'Queue_management',
 				i18nLabel: 'Number_of_most_recent_chats_estimate_wait_time',
 				i18nDescription: 'Number_of_most_recent_chats_estimate_wait_time_description',
-				enableQuery: { _id: 'Livechat_waiting_queue', value: true },
+				enableQuery: [{ _id: 'Livechat_waiting_queue', value: true }, omnichannelEnabledQuery],
 				enterprise: true,
 				invalidValue: 100,
 				modules: [
@@ -121,6 +129,7 @@ export const createSettings = (): void => {
 				group: 'Omnichannel',
 				section: 'Queue_management',
 				i18nLabel: 'Livechat_maximum_queue_wait_time',
+				enableQuery: omnichannelEnabledQuery,
 				i18nDescription: 'Livechat_maximum_queue_wait_time_description',
 				enterprise: true,
 				invalidValue: -1,
@@ -140,6 +149,7 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	settingsRegistry.add('Livechat_auto_close_on_hold_chats_timeout', 3600, {
@@ -151,13 +161,14 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	settingsRegistry.add('Livechat_auto_close_on_hold_chats_custom_message', '', {
 		type: 'string',
 		group: 'Omnichannel',
 		section: 'Sessions',
-		enableQuery: { _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } },
+		enableQuery: [{ _id: 'Livechat_auto_close_on_hold_chats_timeout', value: { $gte: 1 } }, omnichannelEnabledQuery],
 		enterprise: true,
 		invalidValue: '',
 		modules: [
@@ -175,6 +186,7 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	settingsRegistry.add('Livechat_auto_transfer_chat_timeout', 0, {
@@ -187,6 +199,7 @@ export const createSettings = (): void => {
 		modules: [
 			'livechat-enterprise',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 
 	Settings.addOptionValueById('Livechat_Routing_Method', { key: 'Load_Balancing', i18nLabel: 'Load_Balancing' });
