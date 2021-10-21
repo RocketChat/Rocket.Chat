@@ -2629,6 +2629,7 @@
   "Livechat_Managers": "Managers",
   "Livechat_max_queue_wait_time_action": "How to handle queued chats when the maximum wait time is reached",
   "Livechat_maximum_queue_wait_time": "Maximum waiting time in queue",
+  "Livechat_maximum_queue_wait_time_description": "Maximum time (in minutes) to keep chats on queue. -1 means unlimited",
   "Livechat_message_character_limit": "Livechat message character limit",
   "Livechat_monitors": "Livechat monitors",
   "Livechat_Monitors": "Monitors",

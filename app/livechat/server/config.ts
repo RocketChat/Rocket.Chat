@@ -102,6 +102,7 @@ Meteor.startup(function() {
 			i18nLabel: 'Instructions',
 			i18nDescription: 'Instructions_to_your_visitor_fill_the_form_to_send_a_message',
 			enableQuery: omnichannelEnabledQuery,
+			multiline: true,
 		});
 
 		this.add('Livechat_offline_email', '', {

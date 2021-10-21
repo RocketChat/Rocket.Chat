@@ -67,7 +67,10 @@ class CustomOplogHandle {
 			this.dbName = urlParsed.defaultDatabase;
 		}
 
+		const mongoOptions = process.env.MONGO_OPTIONS ? JSON.parse(process.env.MONGO_OPTIONS) : null;
+
 		this.client = new MongoClient(oplogUrl, {
+			...mongoOptions,
 			useUnifiedTopology: true,
 			useNewUrlParser: true,
 			poolSize: this.usingChangeStream ? 15 : 1,

@@ -214,10 +214,6 @@ Template.roomOld.helpers({
 		return RoomHistoryManager.hasMoreNext(this._id);
 	},
 
-	scrolled() {
-		return !Template.instance().atBottom.get();
-	},
-
 	isLoading() {
 		return RoomHistoryManager.isLoading(this._id);
 	},
@@ -537,7 +533,7 @@ Meteor.startup(() => {
 		},
 		'click .jump-recent button'(e, template) {
 			e.preventDefault();
-			template.atBottom.set(true);
+			template.atBottom = true;
 			RoomHistoryManager.clear(template && template.data && template.data._id);
 		},
 		'load .gallery-item'(e, template) {
@@ -548,7 +544,7 @@ Meteor.startup(() => {
 			template.sendToBottomIfNecessary();
 		},
 		'click .new-message'(event, instance) {
-			instance.atBottom.set(true);
+			instance.atBottom = true;
 			instance.sendToBottomIfNecessary();
 			chatMessages[RoomManager.openedRoom].input.focus();
 		},
@@ -655,7 +651,7 @@ Meteor.startup(() => {
 		});
 
 		this.showUsersOffline = new ReactiveVar(false);
-		this.atBottom = new ReactiveVar(!FlowRouter.getQueryParam('msg'));
+		this.atBottom = !FlowRouter.getQueryParam('msg');
 		this.unreadCount = new ReactiveVar(0);
 
 		this.selectable = new ReactiveVar(false);
@@ -750,7 +746,7 @@ Meteor.startup(() => {
 		});
 
 		this.sendToBottomIfNecessary = () => {
-			if (this.atBottom.get() === true) {
+			if (this.atBottom === true) {
 				this.sendToBottom();
 			}
 		};
@@ -828,7 +824,7 @@ Meteor.startup(() => {
 		};
 
 		template.checkIfScrollIsAtBottom = function() {
-			template.atBottom.set(template.isAtBottom(100));
+			template.atBottom = template.isAtBottom(100);
 		};
 
 		template.observer = new ResizeObserver(() => template.sendToBottomIfNecessary());
@@ -843,7 +839,7 @@ Meteor.startup(() => {
 
 		wrapper.addEventListener('wheel', wheelHandler);
 
-		wrapper.addEventListener('touchstart', () => { template.atBottom.set(false); });
+		wrapper.addEventListener('touchstart', () => { template.atBottom = false; });
 
 		wrapper.addEventListener('touchend', function() {
 			template.checkIfScrollIsAtBottom();

@@ -123,35 +123,15 @@ export const createSettings = () => {
 				],
 			});
 
-			this.add('Livechat_max_queue_wait_time_action', 'Nothing', {
-				type: 'select',
-				group: 'Omnichannel',
-				section: 'Queue_management',
-				i18nLabel: 'Livechat_max_queue_wait_time_action',
-				enterprise: true,
-				invalidValue: '',
-				modules: [
-					'livechat-enterprise',
-				],
-				values: [{
-					key: 'Nothing',
-					i18nLabel: 'Do_Nothing',
-				}, {
-					key: 'Close_chat',
-					i18nLabel: 'Livechat_close_chat',
-				}],
-				enableQuery: omnichannelEnabledQuery,
-			});
-
-			this.add('Livechat_max_queue_wait_time', 60, {
+			this.add('Livechat_max_queue_wait_time', -1, {
 				type: 'int',
 				group: 'Omnichannel',
 				section: 'Queue_management',
 				i18nLabel: 'Livechat_maximum_queue_wait_time',
-				i18nDescription: 'Time_in_minutes',
-				enableQuery: [{ _id: 'Livechat_max_queue_wait_time_action', value: 'Close_chat' }, omnichannelEnabledQuery],
+				enableQuery: omnichannelEnabledQuery,
+				i18nDescription: 'Livechat_maximum_queue_wait_time_description',
 				enterprise: true,
-				invalidValue: 0,
+				invalidValue: -1,
 				modules: [
 					'livechat-enterprise',
 				],

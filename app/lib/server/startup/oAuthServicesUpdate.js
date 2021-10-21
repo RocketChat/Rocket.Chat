@@ -11,7 +11,7 @@ const logger = new Logger('rocketchat:lib');
 
 function _OAuthServicesUpdate() {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
-	services.forEach(([key, value]) => {
+	services.filter(([, value]) => typeof value === 'boolean').forEach(([key, value]) => {
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
 		if (serviceName === 'Meteor') {
