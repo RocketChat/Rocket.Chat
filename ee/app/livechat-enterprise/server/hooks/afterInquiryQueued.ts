@@ -1,31 +1,34 @@
 import moment from 'moment';
 
 import { callbacks } from '../../../../../app/callbacks/server';
-import { LivechatInquiry } from '../../../../../app/models/server';
+import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
 
 let timer = 0;
 
-const setQueueTimer = (inquiry: any): void => {
+const scheduleInquiry = (inquiry: any): void => {
 	if (!inquiry?._id) {
 		cbLogger.debug('Skipping callback. No inquiry provided');
 		return;
 	}
 
-	const newQueueTime = moment(inquiry?._updatedAt).add(timer, 'minutes');
-	cbLogger.debug(`Setting estimated inactivity close time to ${ newQueueTime } for inquiry ${ inquiry._id }`);
-	(LivechatInquiry as any).setEstimatedInactivityCloseTime(inquiry?._id, newQueueTime);
+	if (!inquiry?._updatedAt || !inquiry?._createdAt) {
+		cbLogger.debug('Skipping callback. Inquiry doesnt have timestamps');
+		return;
+	}
+
+	// schedule individual jobs instead of property for close inactivty
+	const newQueueTime = moment(inquiry._updatedAt || inquiry._createdAt).add(timer, 'minutes');
+	cbLogger.debug(`Scheduling estimated close time at ${ newQueueTime } for queued inquiry ${ inquiry._id }`);
+	OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
 };
 
 settings.watch('Livechat_max_queue_wait_time', (value) => {
 	timer = value as number;
-});
-
-settings.watch('Livechat_max_queue_wait_time_action', (value) => {
-	if (!value || value === 'Nothing') {
-		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry-set-queue-timer');
+	if (timer <= 0) {
+		callbacks.remove('livechat.afterInquiryQueued', 'livechat-inquiry-queued-set-queue-timer');
 		return;
 	}
-	callbacks.add('livechat.afterInquiryQueued', setQueueTimer, callbacks.priority.HIGH, 'livechat-inquiry-queued-set-queue-timer');
+	callbacks.add('livechat.afterInquiryQueued', scheduleInquiry, callbacks.priority.HIGH, 'livechat-inquiry-queued-set-queue-timer');
 });

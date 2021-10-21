@@ -9,7 +9,7 @@ import { SettingsEvents } from '../../../../app/settings/server';
 
 export function changeSettingValue(record: ISetting): SettingValue {
 	if (!record.enterprise) {
-		return;
+		return record.value;
 	}
 
 	if (!isEnterprise()) {
@@ -17,7 +17,7 @@ export function changeSettingValue(record: ISetting): SettingValue {
 	}
 
 	if (!record.modules?.length) {
-		return;
+		return record.invalidValue;
 	}
 
 	for (const moduleName of record.modules) {
@@ -25,6 +25,8 @@ export function changeSettingValue(record: ISetting): SettingValue {
 			return record.invalidValue;
 		}
 	}
+
+	return record.value;
 }
 
 settings.set = use(settings.set, (context, next) => {
