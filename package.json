@@ -313,7 +313,8 @@
 			".snapcraft/snap/snapcraft.yaml",
 			".snapcraft/resources/prepareRocketChat",
 			".docker/Dockerfile.rhel",
-			"app/utils/rocketchat.info"
+			"app/utils/rocketchat.info",
+			".env"
 		]
 	},
 	"browserslist": [
