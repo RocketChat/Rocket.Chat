@@ -1,8 +1,8 @@
 version: "3.7"
 
 volumes:
-  uploads: { name: rocketchat_uploads }
-  data: { name: rocketchat_mongodb_data }
+  uploads:
+  data:
 
 services:
   rocketchat:
@@ -12,7 +12,7 @@ services:
       - uploads:/app/uploads
     environment:
       MONGO_URL: mongodb://mongo:27017/rocketchat?replicaSet=rs0
-      MONGO_OPLOG_URL: mongodb://mongo:27017/admin
+      MONGO_OPLOG_URL: mongodb://mongo:27017/local?replicaSet=rs0
       ROOT_URL: ${ROOT_URL:-http://localhost}
       PORT: ${PORT:-3000}
     depends_on: [mongo]
