@@ -66599,6 +66599,256 @@
           ]
         }
       ]
+    },
+    "4.0.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23386",
+          "title": "Release 4.0.1",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego",
+            "ostjen",
+            "wolbernd",
+            "d-gubert",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23378",
+          "title": "[FIX] Users' `roles` and `type` being reset to default on LDAP DataSync",
+          "userLogin": "matheusbsilva137",
+          "description": "- Update `roles` and `type` fields only if they are specified in the data imported from LDAP (otherwise, no changes are applied).",
+          "milestone": "4.0.1",
+          "contributors": [
+            "matheusbsilva137",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23374",
+          "title": "[FIX] imported migration v240",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23375",
+          "title": "Chore: Update Apps-Engine version",
+          "userLogin": "d-gubert",
+          "milestone": "4.0.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23366",
+          "title": "[FIX] BigBlueButton integration error due to missing file import",
+          "userLogin": "wolbernd",
+          "description": "Fixes BigBlueButton integration",
+          "milestone": "4.0.1",
+          "contributors": [
+            "wolbernd",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23372",
+          "title": "[FIX] unwanted toastr error message when deleting user",
+          "userLogin": "ostjen",
+          "milestone": "4.0.1",
+          "contributors": [
+            "ostjen",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23379",
+          "title": "[FIX] resumeToken not working",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23381",
+          "title": "[FIX] MongoDB deprecation link",
+          "userLogin": "sampaiodiego",
+          "milestone": "4.0.1",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23382",
+          "title": "[FIX] LDAP not stoping after wrong password",
+          "userLogin": "rodrigok",
+          "milestone": "4.0.1",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
+    },
+    "4.0.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23460",
+          "title": "Release 4.0.2",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "murtaza98",
+            "sampaiodiego",
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23377",
+          "title": "[FIX] Attachment buttons overlap in mobile view",
+          "userLogin": "Aman-Maheshwari",
+          "milestone": "4.0.2",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23393",
+          "title": "[FIX] user/agent upload not working via Apps Engine after 3.16.0",
+          "userLogin": "murtaza98",
+          "description": "Fixes #22974",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23404",
+          "title": "[FIX][ENTERPRISE] Omnichannel agent is not leaving the room when a forwarded chat is queued",
+          "userLogin": "murtaza98",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23396",
+          "title": "[FIX] Prevent starting Omni-Queue if Omnichannel is disabled",
+          "userLogin": "murtaza98",
+          "description": "Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.",
+          "milestone": "4.0.2",
+          "contributors": [
+            "murtaza98"
+          ]
+        }
+      ]
+    },
+    "4.0.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23496",
+          "title": "Release 4.0.3",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23418",
+          "title": "[FIX][APPS] Communication problem when updating and uninstalling apps in cluster",
+          "userLogin": "thassiov",
+          "description": "- Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.\r\n- Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.",
+          "milestone": "4.0.3",
+          "contributors": [
+            "thassiov"
+          ]
+        },
+        {
+          "pr": "23473",
+          "title": "[FIX] Server crashing when Routing method is not available at start",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.3",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23531",
+          "title": "Regression: Waiting_queue setting not being applied due to missing module key",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23528",
+          "title": "Regression: Settings order",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23529",
+          "title": "Regression: watchByRegex without Fibers",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   }
 }
