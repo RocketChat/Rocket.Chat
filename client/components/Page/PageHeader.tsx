@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useContext, FC } from 'react';
+import React, { useContext, FC, ReactElement } from 'react';
 
 import { useSession } from '../../contexts/SessionContext';
 import { useSidebar } from '../../contexts/SidebarContext';
@@ -8,7 +8,7 @@ import BurgerMenuButton from '../burger/BurgerMenuButton';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
-	title: string;
+	title: string | ReactElement;
 };
 
 const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, ...props }) => {
