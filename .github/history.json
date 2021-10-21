@@ -66220,6 +66220,40 @@
           ]
         }
       ]
+    },
+    "4.0.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23411",
+          "title": "[FIX] SAML Users' roles being reset to default on login",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove `roles` field update on `insertOrUpdateSAMLUser` function;\r\n- Add SAML `syncRoles` event;",
+          "milestone": "4.0.4",
+          "contributors": [
+            "matheusbsilva137",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23522",
+          "title": "[FIX] Queue error handling and unlocking behavior",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.4",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
     }
   }
 }
