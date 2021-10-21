@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 
 import Growth from './Growth';
 
-interface ICounter {
+export interface ICounter {
 	count: number;
 	variation: number;
 	description: string;
