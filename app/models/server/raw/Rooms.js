@@ -399,4 +399,22 @@ export class RoomsRaw extends BaseRaw {
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
+
+	allRoomSourcesCount() {
+		return this.col.aggregate( [
+			{
+				$match: {
+					source: {
+						$exists: true,
+					}
+				}
+			},
+			{
+				$group: {
+					_id: "$source",
+					count: { $sum: 1 }
+				}
+			}
+		] );
+	}
 }

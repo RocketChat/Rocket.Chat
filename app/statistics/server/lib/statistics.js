@@ -117,6 +117,8 @@ export const statistics = {
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
+		statistics.omnichanelSources = Rooms.allRoomSourcesCount();
+
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
 		statistics.totalPrivateGroupMessages = _.reduce(Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(), function _countPrivateGroupMessages(num, room) { return num + room.msgs; }, 0);
