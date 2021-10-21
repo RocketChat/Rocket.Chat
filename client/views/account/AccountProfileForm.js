@@ -14,8 +14,8 @@ import {
 import { useDebouncedCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
 
-import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
+import { isEmail } from '../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../components/UserStatus';
 import UserStatusMenu from '../../components/UserStatusMenu';

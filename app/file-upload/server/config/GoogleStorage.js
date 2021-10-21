@@ -93,4 +93,4 @@ const configure = _.debounce(function() {
 	GoogleCloudStorageUserDataFiles.store = FileUpload.configureUploadsStore('GoogleStorage', GoogleCloudStorageUserDataFiles.name, config);
 }, 500);
 
-settings.get(/^FileUpload_GoogleStorage_/, configure);
+settings.watchByRegex(/^FileUpload_GoogleStorage_/, configure);

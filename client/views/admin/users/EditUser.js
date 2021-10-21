@@ -138,15 +138,27 @@ function EditUser({ data, roles, onReload, ...props }) {
 			return false;
 		}
 
-		const result = await saveAction();
-		if (result.success) {
-			if (avatarObj) {
+		if (hasUnsavedChanges) {
+			const result = await saveAction();
+			if (result.success && avatarObj) {
 				await updateAvatar();
 			}
-			onReload();
-			goToUser(data._id);
+		} else {
+			await updateAvatar();
 		}
-	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
+		onReload();
+		goToUser(data._id);
+	}, [
+		hasUnsavedChanges,
+		avatarObj,
+		data._id,
+		goToUser,
+		saveAction,
+		updateAvatar,
+		values,
+		errors,
+		validationKeys,
+	]);
 
 	const availableRoles = roles.map(({ _id, name, description }) => [_id, description || name]);
 

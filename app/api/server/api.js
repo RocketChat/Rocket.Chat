@@ -744,11 +744,11 @@ const createApis = function _createApis() {
 createApis();
 
 // register the API to be re-created once the CORS-setting changes.
-settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
+settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
 	createApis();
 });
 
-settings.get('Accounts_CustomFields', (key, value) => {
+settings.watch('Accounts_CustomFields', (value) => {
 	if (!value) {
 		return API.v1.setLimitedCustomFields([]);
 	}
@@ -761,16 +761,16 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
+settings.watch('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
+settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('Prometheus_API_User_Agent', (key, value) => {
+settings.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
 });

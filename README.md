@@ -33,7 +33,7 @@ Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install yo
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#Support](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
 Join [#Dev](https://open.rocket.chat/channel/dev) for needing help from the community to develop new features.
-Talk with Rocket.Chat's leaderrship at the [Community Open Call](https://www.youtube.com/watch?v=RdbqOdUb3Wk), held monthly.  Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call-october?type=detailed).
+Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/watch?v=RdbqOdUb3Wk), held monthly.  Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
 
 ## Contributions
 
