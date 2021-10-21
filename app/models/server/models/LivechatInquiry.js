@@ -249,14 +249,6 @@ export class LivechatInquiry extends Base {
 		});
 	}
 
-	unsetEstimatedInactivityCloseTime() {
-		return this.update({ status: 'queued' }, {
-			$unset: {
-				estimatedInactivityCloseTimeAt: 1,
-			},
-		}, { multi: true });
-	}
-
 	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
 	// leaving this here for when the time comes
 	/* updateEstimatedInactivityCloseTime(milisecondsToAdd) {

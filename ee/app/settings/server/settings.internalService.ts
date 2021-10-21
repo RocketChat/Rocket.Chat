@@ -9,7 +9,7 @@ class EnterpriseSettings extends ServiceClass implements IEnterpriseSettings {
 
 	protected internal = true;
 
-	changeSettingValue(record: ISetting): undefined | { value: ISetting['value'] } {
+	changeSettingValue(record: ISetting): undefined | ISetting['value'] {
 		return changeSettingValue(record);
 	}
 }

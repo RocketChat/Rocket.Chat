@@ -1,5 +1,5 @@
 import { theme } from './server';
-import { settings } from '../../settings';
+import { settingsRegistry } from '../../settings/server';
 // TODO: Define registers/getters/setters for packages to work with established
 // 			heirarchy of colors instead of making duplicate definitions
 // TODO: Settings pages to show simple separation of major/minor/addon colors
@@ -48,7 +48,7 @@ for (let matches = regionRegex.exec(variablesContent); matches; matches = region
 	});
 }
 
-settings.add('theme-custom-css', '', {
+settingsRegistry.add('theme-custom-css', '', {
 	group: 'Layout',
 	type: 'code',
 	code: 'text/css',

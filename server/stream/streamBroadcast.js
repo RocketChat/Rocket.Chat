@@ -6,7 +6,7 @@ import { DDP } from 'meteor/ddp';
 
 import { Logger } from '../lib/logger/Logger';
 import { hasPermission } from '../../app/authorization';
-import { settings } from '../../app/settings';
+import { settings } from '../../app/settings/server';
 import { isDocker, getURL } from '../../app/utils';
 import { Users } from '../../app/models/server';
 import InstanceStatusModel from '../../app/models/server/models/InstanceStatus';
@@ -201,7 +201,7 @@ export function startStreamBroadcast() {
 
 	logger.info('startStreamBroadcast');
 
-	settings.get('Stream_Cast_Address', function(key, value) {
+	settings.watch('Stream_Cast_Address', function(value) {
 		// var connection, fn, instance;
 		const fn = function(instance, connection) {
 			connection.disconnect();
@@ -272,7 +272,7 @@ export function startStreamBroadcast() {
 	const onBroadcast = Meteor.bindEnvironment(broadcast);
 
 	let TroubleshootDisableInstanceBroadcast;
-	settings.get('Troubleshoot_Disable_Instance_Broadcast', (key, value) => {
+	settings.watch('Troubleshoot_Disable_Instance_Broadcast', (value) => {
 		if (TroubleshootDisableInstanceBroadcast === value) { return; }
 		TroubleshootDisableInstanceBroadcast = value;
 

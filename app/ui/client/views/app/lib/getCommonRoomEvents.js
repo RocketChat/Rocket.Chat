@@ -11,7 +11,6 @@ import {
 	addMessageToList,
 } from '../../../../../ui-utils/client/lib/MessageAction';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
-import { promises } from '../../../../../promises/client';
 import { isURL } from '../../../../../utils/lib/isURL';
 import { openUserCard } from '../../../lib/UserCard';
 import { messageArgs } from '../../../../../ui-utils/client/lib/messageArgs';
@@ -22,6 +21,7 @@ import { EmojiEvents } from '../../../../../reactions/client/init';
 import { goToRoomById } from '../../../../../../client/lib/utils/goToRoomById';
 import { fireGlobalEvent } from '../../../../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../../../../client/lib/utils/isLayoutEmbedded';
+import { onClientBeforeSendMessage } from '../../../../../../client/lib/onClientBeforeSendMessage';
 
 const mountPopover = (e, i, outerContext) => {
 	let context = $(e.target).parents('.message').data('context');
@@ -252,7 +252,7 @@ export const getCommonRoomEvents = () => ({
 			return;
 		}
 
-		msgObject = await promises.run('onClientBeforeSendMessage', msgObject);
+		msgObject = await onClientBeforeSendMessage(msgObject);
 
 		const _chatMessages = chatMessages[rid];
 		if (_chatMessages && await _chatMessages.processSlashCommand(msgObject)) {

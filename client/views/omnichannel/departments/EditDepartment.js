@@ -17,7 +17,7 @@ import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { isEmail } from '../../../../app/utils/client';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRoute } from '../../../contexts/RouterContext';

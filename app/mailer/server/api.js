@@ -21,7 +21,7 @@ let Settings = {
 // define server language for email translations
 // @TODO: change TAPi18n.__ function to use the server language by default
 let lng = 'en';
-settings.get('Language', (key, value) => {
+settings.watch('Language', (value) => {
 	lng = value || 'en';
 });
 
@@ -39,7 +39,7 @@ export const replace = function replace(str, data = {}) {
 	const options = {
 		Site_Name: Settings.get('Site_Name'),
 		Site_URL: Settings.get('Site_Url'),
-		Site_URL_Slash: Settings.get('Site_Url').replace(/\/?$/, '/'),
+		Site_URL_Slash: Settings.get('Site_Url')?.replace(/\/?$/, '/'),
 		...data.name && {
 			fname: s.strLeft(data.name, ' '),
 			lname: s.strRightBack(data.name, ' '),
@@ -67,7 +67,10 @@ export const wrap = (html, data = {}) => {
 
 	return replaceEscaped(body.replace('{{body}}', html), data);
 };
-export const inlinecss = (html) => juice.inlineContent(html, Settings.get('email_style'));
+export const inlinecss = (html) => {
+	const css = Settings.get('email_style');
+	return css ? juice.inlineContent(html, css) : html;
+};
 export const getTemplate = (template, fn, escape = true) => {
 	let html = '';
 	Settings.get(template, (key, value) => {
@@ -92,7 +95,6 @@ export const getTemplateWrapped = (template, fn) => {
 };
 export const setSettings = (s) => {
 	Settings = s;
-
 	getTemplate('Email_Header', (value) => {
 		contentHeader = replace(value || '');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
