@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../../app/callbacks';
 import { settings } from '../../../../../app/settings';
-import { dispatchWaitingQueueStatus } from '../lib/Helper';
+import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
@@ -13,7 +13,7 @@ const onCloseLivechat = (room) => {
 
 	const { departmentId } = room || {};
 	if (!RoutingManager.getConfig().autoAssignAgent) {
-		dispatchWaitingQueueStatus(departmentId);
+		debouncedDispatchWaitingQueueStatus(departmentId);
 		return room;
 	}
 

@@ -240,6 +240,7 @@
 		"limax": "^3.0.0",
 		"localforage": "^1.9.0",
 		"lodash.clonedeep": "^4.5.0",
+		"lodash.debounce": "^4.0.8",
 		"lodash.get": "^4.4.2",
 		"mailparser": "^3.2.0",
 		"marked": "^0.7.0",
