@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../../app/settings/server';
 
-export const createSettings = () => {
+export const createSettings = (): void => {
 	settingsRegistry.add('Canned_Responses_Enable', true, {
 		group: 'Omnichannel',
 		section: 'Canned_Responses',

@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../../app/settings/server';
 import { Settings } from '../../../../app/models/server';
 
-export const createSettings = () => {
+export const createSettings = (): void => {
 	settingsRegistry.add('Livechat_abandoned_rooms_action', 'none', {
 		type: 'select',
 		group: 'Omnichannel',
