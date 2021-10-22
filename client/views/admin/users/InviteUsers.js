@@ -1,7 +1,7 @@
 import { Box, Button, Icon, TextAreaInput } from '@rocket.chat/fuselage';
 import React, { useCallback, useState } from 'react';
 
-import { isEmail } from '../../../../app/utils/lib/isEmail.js';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import VerticalBar from '../../../components/VerticalBar';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';

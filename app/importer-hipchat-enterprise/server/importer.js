@@ -3,28 +3,12 @@ import path from 'path';
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
-import TurndownService from 'turndown';
 
 import {
 	Base,
 	ProgressStep,
 } from '../../importer/server';
 
-const turndownService = new TurndownService({
-	strongDelimiter: '*',
-	hr: '',
-	br: '\n',
-});
-
-turndownService.addRule('strikethrough', {
-	filter: 'img',
-
-	replacement(content, node) {
-		const src = node.getAttribute('src') || '';
-		const alt = node.alt || node.title || src;
-		return src ? `[${ alt }](${ src })` : '';
-	},
-});
 
 export class HipChatEnterpriseImporter extends Base {
 	constructor(info, importRecord) {
@@ -151,6 +135,30 @@ export class HipChatEnterpriseImporter extends Base {
 		return count;
 	}
 
+	get turndownService() {
+		const TurndownService = Promise.await(import('turndown')).default;
+
+		const turndownService = new TurndownService({
+			strongDelimiter: '*',
+			hr: '',
+			br: '\n',
+		});
+
+		turndownService.addRule('strikethrough', {
+			filter: 'img',
+
+			replacement(content, node) {
+				const src = node.getAttribute('src') || '';
+				const alt = node.alt || node.title || src;
+				return src ? `[${ alt }](${ src })` : '';
+			},
+		});
+
+		this.turndownService = turndownService;
+
+		return turndownService;
+	}
+
 	convertImportedMessage(importedMessage, rid, type) {
 		const idType = type === 'private' ? type : `${ rid }-${ type }`;
 		const newId = `hipchatenterprise-${ idType }-${ importedMessage.id }`;
@@ -167,7 +175,7 @@ export class HipChatEnterpriseImporter extends Base {
 		const text = importedMessage.message;
 
 		if (importedMessage.message_format === 'html') {
-			newMessage.msg = turndownService.turndown(text);
+			newMessage.msg = this.turndownService.turndown(text);
 		} else if (text.startsWith('/me ')) {
 			newMessage.msg = `${ text.replace(/\/me /, '_') }_`;
 		} else {

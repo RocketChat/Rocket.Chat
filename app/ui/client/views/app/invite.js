@@ -3,8 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import toastr from 'toastr';
 
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import { settings } from '../../../../settings';
 import { t, APIClient } from '../../../../utils';
 
@@ -31,7 +31,7 @@ Template.invite.onCreated(function() {
 		this.hashReady.set(true);
 
 		if (!result || !result.success) {
-			toastr.error(t('Failed_to_validate_invite_token'));
+			dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
 			return this.inviteIsValid.set(false);
 		}
 
@@ -42,7 +42,7 @@ Template.invite.onCreated(function() {
 		}
 		return this.inviteIsValid.set(result.valid);
 	}).catch(() => {
-		toastr.error(t('Failed_to_validate_invite_token'));
+		dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
 		return this.inviteIsValid.set(false);
 	});
 
@@ -56,7 +56,7 @@ Template.invite.onCreated(function() {
 			c.stop();
 			APIClient.v1.post('useInviteToken', { token }).then((result) => {
 				if (!result || !result.room || !result.room.name) {
-					toastr.error(t('Failed_to_activate_invite_token'));
+					dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 					return;
 				}
 
@@ -66,7 +66,7 @@ Template.invite.onCreated(function() {
 					FlowRouter.go(`/channel/${ result.room.name }`);
 				}
 			}).catch(() => {
-				toastr.error(t('Failed_to_activate_invite_token'));
+				dispatchToastMessage({ type: 'error', message: t('Failed_to_activate_invite_token') });
 			});
 		}
 	});

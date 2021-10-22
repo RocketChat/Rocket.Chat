@@ -32,12 +32,22 @@ export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 	}
 
 	async lockQueue() {
+		const date = new Date();
 		const result = await this.col.findOneAndUpdate({
 			_id: UNIQUE_QUEUE_ID,
-			locked: false,
+			$or: [{
+				locked: true,
+				lockedAt: {
+					$lte: new Date(date.getTime() - 5000),
+				},
+			}, {
+				locked: false,
+			}],
 		}, {
 			$set: {
 				locked: true,
+				// apply 5 secs lock lifetime
+				lockedAt: new Date(),
 			},
 		}, {
 			sort: {
@@ -54,6 +64,9 @@ export class OmnichannelQueueRaw extends BaseRaw<IOmnichannelQueueStatus> {
 		}, {
 			$set: {
 				locked: false,
+			},
+			$unset: {
+				lockedAt: 1,
 			},
 		}, {
 			sort: {

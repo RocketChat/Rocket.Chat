@@ -302,7 +302,7 @@ OEmbed.rocketUrlParser = function(message) {
 	return message;
 };
 
-settings.get('API_Embed', function(key, value) {
+settings.watch('API_Embed', function(value) {
 	if (value) {
 		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
 	}
