@@ -1,5 +1,5 @@
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { LivechatVisitors, Messages as MessagesRaw, LivechatRooms } from '../../../../models/server/raw';
+import { LivechatVisitors, Messages, LivechatRooms } from '../../../../models/server/raw';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
 
 export async function findVisitorInfo({ userId, visitorId }) {
@@ -25,7 +25,7 @@ export async function findVisitedPages({ userId, roomId, pagination: { offset, c
 	if (!room) {
 		throw new Error('invalid-room');
 	}
-	const cursor = MessagesRaw.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
+	const cursor = Messages.findByRoomIdAndType(room._id, 'livechat_navigation_history', {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,
