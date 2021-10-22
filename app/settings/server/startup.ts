@@ -7,8 +7,8 @@ import { settings } from './functions/settings';
 const getProcessingTimeInMS = (time: [number, number]): number => time[0] * 1000 + time[1] / 1e6;
 
 settings.watch = use(settings.watch, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
 });
 
 if (process.env.DEBUG_SETTINGS === 'true') {
@@ -23,23 +23,38 @@ if (process.env.DEBUG_SETTINGS === 'true') {
 	});
 }
 settings.watchMultiple = use(settings.watchMultiple, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
 });
 settings.watchOnce = use(settings.watchOnce, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
+});
+
+settings.watchByRegex = use(settings.watchByRegex, (context, next) => {
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
 });
 
 settings.change = use(settings.change, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
 });
 settings.changeMultiple = use(settings.changeMultiple, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
 });
 settings.changeOnce = use(settings.changeOnce, (context, next) => {
-	const [_id, callback] = context;
-	return next(_id, Meteor.bindEnvironment(callback));
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
+});
+
+settings.changeByRegex = use(settings.changeByRegex, (context, next) => {
+	const [_id, callback, ...args] = context;
+	return next(_id, Meteor.bindEnvironment(callback), ...args);
+});
+
+settings.onReady = use(settings.onReady, (context, next) => {
+	const [callback, ...args] = context;
+	return next(Meteor.bindEnvironment(callback), ...args);
 });

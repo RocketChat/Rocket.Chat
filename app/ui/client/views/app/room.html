@@ -56,7 +56,7 @@
 							<i class="icon-down-big"></i>
 							{{_ "New_messages"}}
 						</button>
-						<div class="jump-recent background-component-color {{#unless scrolled}}not{{/unless}}">
+						<div class="jump-recent background-component-color {{#unless hasMoreNext}}not{{/unless}}">
 							<button>{{_ "Jump_to_recent_messages"}} <i class="icon-level-down"></i></button>
 						</div>
 						{{#unless canPreview}}
