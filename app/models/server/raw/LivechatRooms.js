@@ -956,6 +956,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		}
 		if (open !== undefined) {
 			query.open = { $exists: open };
+			query.onHold = { $ne: true };
 		}
 		if (served !== undefined) {
 			query.servedBy = { $exists: served };

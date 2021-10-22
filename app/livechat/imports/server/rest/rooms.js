@@ -27,6 +27,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 		check(roomName, Match.Maybe(String));
 		check(departmentId, Match.Maybe(String));
 		check(open, Match.Maybe(String));
+		check(onhold, Match.Maybe(String));
 		check(tags, Match.Maybe([String]));
 
 		const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
