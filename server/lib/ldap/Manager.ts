@@ -169,6 +169,7 @@ export class LDAPManager {
 			const [ldapUser] = users;
 			if (!await ldap.authenticate(ldapUser.dn, password)) {
 				logger.debug(`Wrong password for ${ escapedUsername }`);
+				throw new Error('Invalid user or wrong password');
 			}
 
 			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
@@ -205,19 +206,18 @@ export class LDAPManager {
 	private static async addLdapUser(ldapUser: ILDAPEntry, username: string | undefined, password: string | undefined, ldap: LDAPConnection): Promise<LDAPLoginResult> {
 		const user = await this.syncUserForLogin(ldapUser, undefined, username);
 
-		this.onLogin(ldapUser, user, password, ldap, true);
-		if (user) {
-			return {
-				userId: user._id,
-			};
-		}
-	}
-
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser | undefined, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
 		if (!user) {
 			return;
 		}
 
+		this.onLogin(ldapUser, user, password, ldap, true);
+
+		return {
+			userId: user._id,
+		};
+	}
+
+	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
 			Accounts.setPassword(user._id, password, { logout: false });
@@ -233,7 +233,10 @@ export class LDAPManager {
 			throw new Meteor.Error('LDAP-login-error', `LDAP Authentication succeeded, but there's already an existing user with provided username [${ user.username }] in Mongo.`);
 		}
 
-		const syncData = settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true;
+		// If we're merging an ldap user with a local user, then we need to sync the data even if 'update data on login' is off.
+		const forceUserSync = !user.ldap;
+
+		const syncData = forceUserSync || (settings.get<boolean>('LDAP_Update_Data_On_Login') ?? true);
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && await this.syncUserForLogin(ldapUser, user)) || user;
 
@@ -247,6 +250,18 @@ export class LDAPManager {
 		logger.debug({ msg: 'Syncing user data', ldapUser: _.omit(ldapUser, '_raw'), user: { ...existingUser && { email: existingUser.emails, _id: existingUser._id } } });
 
 		const userData = this.mapUserData(ldapUser, usedUsername);
+
+		// make sure to persist existing user data when passing to sync/convert
+		// TODO this is only needed because ImporterDataConverter assigns a default role and type if nothing is set. we might need to figure out a better way and stop doing that there
+		if (existingUser) {
+			if (!userData.roles && existingUser.roles) {
+				userData.roles = existingUser.roles;
+			}
+			if (!userData.type && existingUser.type) {
+				userData.type = existingUser.type as IImportUser['type'];
+			}
+		}
+
 		const options = this.getConverterOptions();
 		LDAPDataConverter.convertSingleUser(userData, options);
 

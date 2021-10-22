@@ -1,5 +1,5 @@
 import { Logger } from '../../../logger';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 
@@ -35,7 +35,7 @@ const fullFields = {
 let publicCustomFields = {};
 let customFields = {};
 
-settings.get('Accounts_CustomFields', (key, value) => {
+settings.watch('Accounts_CustomFields', (value) => {
 	publicCustomFields = {};
 	customFields = {};
 
@@ -89,6 +89,10 @@ export function getFullUserDataByIdOrUsername({ userId, filterId, filterUsername
 		fields,
 	};
 	const user = Users.findOneByIdOrUsername(filterId || filterUsername, options);
+	if (!user) {
+		return null;
+	}
+
 	user.canViewAllInfo = canViewAllInfo;
 
 	return myself ? user : removePasswordInfo(user);

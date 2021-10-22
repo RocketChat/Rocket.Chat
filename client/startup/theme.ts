@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../app/settings/client';
-import { ISetting } from '../../definition/ISetting';
+import { ISetting, ISettingColor } from '../../definition/ISetting';
 
 const variables = new Map();
 const lessExpressions = new Map([
@@ -72,7 +72,10 @@ const updateCssVariables = _.debounce(async () => {
 	].join('\n');
 }, 50);
 
-const handleThemeColorChanged = ({ _id, value, editor }: ISetting & { value: string }): void => {
+const handleThemeColorChanged = ({ _id, value, editor }: ISettingColor): void => {
+	if (typeof value !== 'string') {
+		return;
+	}
 	try {
 		const name = /^theme-color-(.*)$/.exec(_id)?.[1];
 

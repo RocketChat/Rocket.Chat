@@ -270,3 +270,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 
 	return true;
 }
+
+export const onFreshInstall = getControl().version !== 0
+	? (): void => { /* noop */ }
+	: (fn: () => unknown): unknown => fn();

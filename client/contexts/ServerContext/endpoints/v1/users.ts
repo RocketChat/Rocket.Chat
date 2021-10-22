@@ -1,3 +1,4 @@
+import type { ITeam } from '../../../../../definition/ITeam';
 import type { IUser } from '../../../../../definition/IUser';
 
 export type UsersEndpoints = {
@@ -6,5 +7,8 @@ export type UsersEndpoints = {
 	};
 	'users.autocomplete': {
 		GET: (params: { selector: string }) => { items: IUser[] };
+	};
+	'users.listTeams': {
+		GET: (params: { userId: IUser['_id'] }) => { teams: Array<ITeam> };
 	};
 };

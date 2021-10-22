@@ -33,7 +33,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.get('FileUpload_MaxFileSize', function(key, value) {
+settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {

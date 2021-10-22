@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import toastr from 'toastr';
 
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
@@ -9,6 +8,7 @@ import { MessageAction } from '../../../ui-utils/client';
 import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { roomTypes } from '../../../utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Meteor.startup(function() {
 	Tracker.autorun(() => {
@@ -23,7 +23,7 @@ Meteor.startup(function() {
 			async action() {
 				const { msg } = messageArgs(this);
 				callWithErrorHandling('followMessage', { mid: msg._id }).then(() =>
-					toastr.success(TAPi18n.__('You_followed_this_message')),
+					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_followed_this_message') }),
 				);
 			},
 			condition({ msg: { _id, tmid, replies = [] }, u, room }, context) {

@@ -3,7 +3,7 @@ import { Random } from 'meteor/random';
 import speakeasy from 'speakeasy';
 
 import { Users } from '../../../models';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 export const TOTP = {
 	generateSecret() {

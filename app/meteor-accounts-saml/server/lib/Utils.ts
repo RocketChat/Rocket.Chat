@@ -202,7 +202,6 @@ export class SAMLUtils {
 	public static getUserDataMapping(): IUserDataMap {
 		const { userDataFieldMap, immutableProperty } = globalSettings;
 
-		const defaultMappingFields = ['email', 'name', 'username'];
 		let map: Record<string, any>;
 
 		try {
@@ -233,9 +232,6 @@ export class SAMLUtils {
 
 		for (const spFieldName in map) {
 			if (!map.hasOwnProperty(spFieldName)) {
-				continue;
-			}
-			if (!defaultMappingFields.includes(spFieldName)) {
 				continue;
 			}
 
@@ -414,7 +410,6 @@ export class SAMLUtils {
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
-		const { defaultUserRole = 'user' } = this.globalSettings;
 
 		if (userDataMap.identifier.type === 'custom') {
 			if (!userDataMap.identifier.attribute) {
@@ -451,7 +446,6 @@ export class SAMLUtils {
 			},
 			emailList: this.ensureArray<string>(email),
 			fullName: name || profile.displayName || profile.username,
-			roles: this.ensureArray<string>(defaultUserRole.split(',')),
 			eppn: profile.eppn,
 			attributeList,
 			identifier: userDataMap.identifier,
@@ -472,7 +466,6 @@ export class SAMLUtils {
 				userObject.channels = profile.channels.split(',');
 			}
 		}
-
 
 		this.events.emit('mapUser', { profile, userObject });
 
