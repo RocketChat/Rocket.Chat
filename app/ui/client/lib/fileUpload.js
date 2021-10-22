@@ -6,7 +6,7 @@ import { settings } from '../../../settings/client';
 import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import FileUploadModal from '../../../../client/components/modals/FileUploadModal';
+import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
 import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
@@ -131,7 +131,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				isValidContentType: file.file.type && fileUploadIsValidContentType(file.file.type),
+				invalidContentType: file.file.type && !fileUploadIsValidContentType(file.file.type),
 			},
 		});
 	};

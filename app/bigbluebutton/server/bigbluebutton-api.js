@@ -1,5 +1,6 @@
 /* eslint-disable */
 import crypto from 'crypto';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 var BigBlueButtonApi, filterCustomParameters, include, noChecksumMethods,
 	__indexOf = [].indexOf || function (item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };

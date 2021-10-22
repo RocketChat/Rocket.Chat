@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import objectPath from 'object-path';
 
 import { slashCommands } from '../../../utils';
-import { Rooms, Messages } from '../../../models';
+import { Messages } from '../../../models';
 import { API } from '../api';
 
 API.v1.addRoute('commands.get', { authRequired: true }, {
@@ -23,6 +24,116 @@ API.v1.addRoute('commands.get', { authRequired: true }, {
 	},
 });
 
+// TODO: replace with something like client/lib/minimongo
+const processQueryOptionsOnResult = (result, options = {}) => {
+	if (result === undefined || result === null) {
+		return undefined;
+	}
+
+	if (Array.isArray(result)) {
+		if (options.sort) {
+			result = result.sort((a, b) => {
+				let r = 0;
+				for (const field in options.sort) {
+					if (options.sort.hasOwnProperty(field)) {
+						const direction = options.sort[field];
+						let valueA;
+						let valueB;
+						if (field.indexOf('.') > -1) {
+							valueA = objectPath.get(a, field);
+							valueB = objectPath.get(b, field);
+						} else {
+							valueA = a[field];
+							valueB = b[field];
+						}
+						if (valueA > valueB) {
+							r = direction;
+							break;
+						}
+						if (valueA < valueB) {
+							r = -direction;
+							break;
+						}
+					}
+				}
+				return r;
+			});
+		}
+
+		if (typeof options.skip === 'number') {
+			result.splice(0, options.skip);
+		}
+
+		if (typeof options.limit === 'number' && options.limit !== 0) {
+			result.splice(options.limit);
+		}
+	}
+
+	if (!options.fields) {
+		options.fields = {};
+	}
+
+	const fieldsToRemove = [];
+	const fieldsToGet = [];
+
+	for (const field in options.fields) {
+		if (options.fields.hasOwnProperty(field)) {
+			if (options.fields[field] === 0) {
+				fieldsToRemove.push(field);
+			} else if (options.fields[field] === 1) {
+				fieldsToGet.push(field);
+			}
+		}
+	}
+
+	if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
+		console.warn('Can\'t mix remove and get fields');
+		fieldsToRemove.splice(0, fieldsToRemove.length);
+	}
+
+	if (fieldsToGet.length > 0 && fieldsToGet.indexOf('_id') === -1) {
+		fieldsToGet.push('_id');
+	}
+
+	const pickFields = (obj, fields) => {
+		const picked = {};
+		fields.forEach((field) => {
+			if (field.indexOf('.') !== -1) {
+				objectPath.set(picked, field, objectPath.get(obj, field));
+			} else {
+				picked[field] = obj[field];
+			}
+		});
+		return picked;
+	};
+
+	if (fieldsToRemove.length > 0 || fieldsToGet.length > 0) {
+		if (Array.isArray(result)) {
+			result = result.map((record) => {
+				if (fieldsToRemove.length > 0) {
+					return Object.fromEntries(Object.entries(record).filter(([key]) => !fieldsToRemove.includes(key)));
+				}
+
+				if (fieldsToGet.length > 0) {
+					return pickFields(record, fieldsToGet);
+				}
+
+				return null;
+			});
+		} else {
+			if (fieldsToRemove.length > 0) {
+				return Object.fromEntries(Object.entries(result).filter(([key]) => !fieldsToRemove.includes(key)));
+			}
+
+			if (fieldsToGet.length > 0) {
+				return pickFields(result, fieldsToGet);
+			}
+		}
+	}
+
+	return result;
+};
+
 API.v1.addRoute('commands.list', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
@@ -35,7 +146,7 @@ API.v1.addRoute('commands.list', { authRequired: true }, {
 		}
 
 		const totalCount = commands.length;
-		commands = Rooms.processQueryOptionsOnResult(commands, {
+		commands = processQueryOptionsOnResult(commands, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,

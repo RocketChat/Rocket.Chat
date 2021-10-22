@@ -3,6 +3,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { UserStatus } from '../../../definition/UserStatus';
+import { isSettingColor } from '../../../definition/ISetting';
 
 const STATUS_MAP: {[k: string]: number} = {
 	[UserStatus.OFFLINE]: 0,
@@ -87,6 +88,10 @@ export class ListenersModule {
 			}
 
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText]);
+
+			if (_id) {
+				notifications.sendPresence(_id, [username, STATUS_MAP[status], statusText]);
+			}
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {
@@ -182,8 +187,8 @@ export class ListenersModule {
 
 			if (clientAction !== 'removed') {
 				const result = await EnterpriseSettings.changeSettingValue(setting);
-				if (result && !(result instanceof Error) && result.hasOwnProperty('value')) {
-					setting.value = result.value;
+				if (result !== undefined && !(result instanceof Error)) {
+					setting.value = result;
 				}
 			}
 
@@ -194,7 +199,7 @@ export class ListenersModule {
 			const value = {
 				_id: setting._id,
 				value: setting.value,
-				editor: setting.editor,
+				...isSettingColor(setting) && { editor: setting.editor },
 				properties: setting.properties,
 				enterprise: setting.enterprise,
 				requiredOnWizard: setting.requiredOnWizard,

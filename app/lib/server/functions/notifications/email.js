@@ -4,7 +4,7 @@ import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../../mailer';
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/server';
 import { roomTypes } from '../../../../utils';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../callbacks';
@@ -13,7 +13,7 @@ import { getURL } from '../../../../utils/server';
 let advice = '';
 let goToMessage = '';
 Meteor.startup(() => {
-	settings.get('email_style', function() {
+	settings.watch('email_style', function() {
 		goToMessage = Mailer.inlinecss('<p><a class=\'btn\' href="[room_path]">{Offline_Link_Message}</a></p>');
 	});
 	Mailer.getTemplate('Email_Footer_Direct_Reply', (value) => {

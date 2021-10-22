@@ -6,7 +6,6 @@ import './customTranslations';
 import './e2e';
 import './emailVerification';
 import './i18n';
-import './listenActiveUsers';
 import './ldap';
 import './loginViaQuery';
 import './messageTypes';

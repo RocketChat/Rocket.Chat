@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { AutoTranslate,	TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 /**
  * Represents google translate class
@@ -26,7 +26,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		this.name = 'google-translate';
 		this.apiEndPointUrl = 'https://translation.googleapis.com/language/translate/v2';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_GoogleAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_GoogleAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
