@@ -1,6 +1,7 @@
 import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
 import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
 import { ILivechatTag } from '../../../../../definition/ILivechatTag';
+import { IMessage } from '../../../../../definition/IMessage';
 import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
 import { IOmnichannelRoom, IRoom } from '../../../../../definition/IRoom';
 import { ISetting } from '../../../../../definition/ISetting';
@@ -85,6 +86,14 @@ export type OmnichannelEndpoints = {
 			tags: string[];
 		}) => {
 			rooms: IOmnichannelRoom[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'livechat/:rid/messages': {
+		GET: (params: { query: string; sort?: string; offset?: number; count?: number }) => {
+			messages: IMessage[];
 			count: number;
 			offset: number;
 			total: number;

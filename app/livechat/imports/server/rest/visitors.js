@@ -2,7 +2,10 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername, findChatHistoryMessage } from '../../../server/api/lib/visitors';
+import { LivechatRooms, Messages, Users } from '../../../../models/server';
+import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoom, hasPermission } from '../../../../authorization';
+import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -62,25 +65,47 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 	},
 });
 
-API.v1.addRoute('livechat/visitors.chatHistoryMessages/room/:roomId', { authRequired: true }, {
+API.v1.addRoute('livechat/:rid/messages', { authRequired: true }, {
 	get() {
 		check(this.urlParams, {
-			roomId: String,
+			rid: String,
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort, query } = this.parseJsonQuery();
-		const historyMessages = Promise.await(findChatHistoryMessage({
-			userId: this.userId,
-			roomId: this.urlParams.roomId,
-			pagination: {
-				query,
-				offset,
-				count,
-				sort,
-			},
-		}));
 
-		return API.v1.success(historyMessages);
+		if (!hasPermission(this.userId, 'view-l-room')) {
+			throw new Error('error-not-authorized');
+		}
+
+		const room = LivechatRooms.findOneById(this.urlParams.rid);
+		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
+
+		if (!room) {
+			throw new Error('invalid-room');
+		}
+
+		if (!canAccessRoom(room, user)) {
+			throw new Error('error-not-allowed');
+		}
+
+		const ourQuery = { ...query, rid: this.urlParams.rid };
+
+		const cursor = Messages.find(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		});
+
+		const total = cursor.count();
+
+		const messages = cursor.fetch();
+
+		return API.v1.success({
+			messages: normalizeMessagesForUser(messages, this.userId),
+			offset,
+			count,
+			total,
+		});
 	},
 });
 

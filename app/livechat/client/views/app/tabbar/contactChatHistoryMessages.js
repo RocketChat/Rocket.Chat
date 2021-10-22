@@ -92,7 +92,7 @@ Template.contactChatHistoryMessages.onCreated(function() {
 			return this.loadMessages(`chat.search/?roomId=${ this.rid }&searchText=${ searchTerm }&count=${ limit }&offset=${ offset }&sort={"ts": 1}`);
 		}
 
-		this.loadMessages(`livechat/visitors.chatHistoryMessages/room/${ this.rid }?count=${ limit }&offset=${ offset }&sort={"ts": 1}&query={"$or": [ {"t": {"$exists": false} }, {"t": "livechat-close"} ] }`);
+		this.loadMessages(`livechat/${ this.rid }/messages?count=${ limit }&offset=${ offset }&sort={"ts": 1}&query={"$or": [ {"t": {"$exists": false} }, {"t": "livechat-close"} ] }`);
 	});
 
 	this.autorun(() => {
