@@ -71,7 +71,7 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true }, {
 			rid: String,
 		});
 		const { offset, count } = this.getPaginationItems();
-		const { sort, query } = this.parseJsonQuery();
+		const { sort } = this.parseJsonQuery();
 
 		if (!hasPermission(this.userId, 'view-l-room')) {
 			throw new Error('error-not-authorized');
@@ -88,9 +88,7 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true }, {
 			throw new Error('error-not-allowed');
 		}
 
-		const ourQuery = { ...query, rid: this.urlParams.rid };
-
-		const cursor = Messages.find(ourQuery, {
+		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
