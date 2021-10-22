@@ -314,7 +314,7 @@
 			".snapcraft/resources/prepareRocketChat",
 			".docker/Dockerfile.rhel",
 			"app/utils/rocketchat.info",
-			".env"
+			"deploy/.env"
 		]
 	},
 	"browserslist": [
