@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { API } from '../../../../api/server';
 import { LivechatRooms, Messages, Users } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
-import { canAccessRoom, hasPermission } from '../../../../authorization';
+import { canAccessRoom } from '../../../../authorization';
 import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
@@ -65,17 +65,13 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 	},
 });
 
-API.v1.addRoute('livechat/:rid/messages', { authRequired: true }, {
+API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequired: ['view-l-room'] }, {
 	get() {
 		check(this.urlParams, {
 			rid: String,
 		});
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
-
-		if (!hasPermission(this.userId, 'view-l-room')) {
-			throw new Error('error-not-authorized');
-		}
 
 		const room = LivechatRooms.findOneById(this.urlParams.rid);
 		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
