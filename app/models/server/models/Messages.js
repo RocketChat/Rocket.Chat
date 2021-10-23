@@ -1060,6 +1060,16 @@ export class Messages extends Base {
 		});
 	}
 
+	removeLinkPreview(_id) {
+		return this.update({
+			_id,
+		}, {
+			$set: {
+				removeLinkPreview: true,
+			},
+		});
+	}
+
 	findUnreadMessagesByRoomAndDate(rid, after) {
 		const query = {
 			unread: true,
