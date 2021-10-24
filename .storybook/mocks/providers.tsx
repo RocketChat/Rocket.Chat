@@ -1,7 +1,10 @@
 import i18next from 'i18next';
 import React, { PropsWithChildren, ReactElement } from 'react';
 
-import { TranslationContext, TranslationContextValue } from '../../client/contexts/TranslationContext';
+import {
+	TranslationContext,
+	TranslationContextValue,
+} from '../../client/contexts/TranslationContext';
 import ServerProvider from '../../client/providers/ServerProvider';
 
 let contextValue: TranslationContextValue;
@@ -45,11 +48,13 @@ const getContextValue = (): TranslationContextValue => {
 	translate.has = (key: string): boolean => !!key && i18next.exists(key);
 
 	contextValue = {
-		languages: [{
-			name: 'English',
-			en: 'English',
-			key: 'en',
-		}],
+		languages: [
+			{
+				name: 'English',
+				en: 'English',
+				key: 'en',
+			},
+		],
 		language: 'en',
 		translate,
 		loadLanguage: async (): Promise<void> => undefined,
@@ -62,10 +67,11 @@ function TranslationProviderMock({ children }: PropsWithChildren<{}>): ReactElem
 	return <TranslationContext.Provider children={children} value={getContextValue()} />;
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export function MeteorProviderMock({ children }: PropsWithChildren<{}>): ReactElement {
-	return <ServerProvider>
-		<TranslationProviderMock>
-			{children}
-		</TranslationProviderMock>
-	</ServerProvider>;
+	return (
+		<ServerProvider>
+			<TranslationProviderMock>{children}</TranslationProviderMock>
+		</ServerProvider>
+	);
 }

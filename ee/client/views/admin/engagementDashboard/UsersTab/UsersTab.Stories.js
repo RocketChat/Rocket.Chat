@@ -4,7 +4,7 @@ import React from 'react';
 import UsersTab from '.';
 
 export default {
-	title: 'admin/enterprise/engagement/UsersTab',
+	title: 'admin/engagementDashboard/UsersTab',
 	component: UsersTab,
 	decorators: [(fn) => <Margins children={fn()} all='x24' />],
 };

@@ -4,7 +4,7 @@ import React from 'react';
 import ChannelsTab from '.';
 
 export default {
-	title: 'admin/enterprise/engagement/ChannelsTab',
+	title: 'admin/engagementDashboard/ChannelsTab',
 	component: ChannelsTab,
 	decorators: [(fn) => <Margins children={fn()} all='x24' />],
 };
