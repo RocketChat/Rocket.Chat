@@ -1,8 +1,8 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
-import { findWeeklyMessagesSentData, findMessagesSentOrigin, findTopFivePopularChannelsByMessageSentQuantity } from '../lib/messages';
-import { transformDatesForAPI } from './helpers/date';
+import { API } from '../../../../app/api/server';
+import { findWeeklyMessagesSentData, findMessagesSentOrigin, findTopFivePopularChannelsByMessageSentQuantity } from '../../lib/engagementDashboard/messages';
+import { transformDatesForAPI } from './utils/date';
 
 API.v1.addRoute('engagement-dashboard/messages/messages-sent', { authRequired: true }, {
 	get() {

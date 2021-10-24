@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-import { roomTypes } from '../../../../../app/utils';
-import { Messages, Analytics } from '../../../../../app/models/server/raw';
+import { roomTypes } from '../../../../app/utils';
+import { Messages, Analytics } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 
 export const handleMessagesSent = (message, room) => {

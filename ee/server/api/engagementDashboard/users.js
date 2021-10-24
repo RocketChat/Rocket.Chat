@@ -1,14 +1,14 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
+import { API } from '../../../../app/api/server';
 import {
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,
 	findBusiestsChatsInADayByHours,
 	findBusiestsChatsWithinAWeek,
 	findUserSessionsByHourWithinAWeek,
-} from '../lib/users';
-import { transformDatesForAPI } from './helpers/date';
+} from '../../lib/engagementDashboard/users';
+import { transformDatesForAPI } from './utils/date';
 
 API.v1.addRoute('engagement-dashboard/users/new-users', { authRequired: true }, {
 	get() {

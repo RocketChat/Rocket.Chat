@@ -1,8 +1,8 @@
 import { check } from 'meteor/check';
 
-import { API } from '../../../../../app/api/server';
-import { findAllChannelsWithNumberOfMessages } from '../lib/channels';
-import { transformDatesForAPI } from './helpers/date';
+import { API } from '../../../../app/api/server';
+import { findAllChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
+import { transformDatesForAPI } from './utils/date';
 
 API.v1.addRoute('engagement-dashboard/channels/list', { authRequired: true }, {
 	get() {
