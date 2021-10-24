@@ -17,10 +17,12 @@ export function EngagementDashboardRoute() {
 		}
 	}, [routeName, engagementDashboardRoute, tab]);
 
-	return <EngagementDashboardPage
-		tab={tab}
-		onSelectTab={(tab) => engagementDashboardRoute.push({ tab })}
-	/>;
+	return (
+		<EngagementDashboardPage
+			tab={tab}
+			onSelectTab={(tab) => engagementDashboardRoute.push({ tab })}
+		/>
+	);
 }
 
 export default EngagementDashboardRoute;
