@@ -3,9 +3,9 @@ import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 
 import Page from '../../../../../client/components/Page';
 import { useTranslation } from '../../../../../client/contexts/TranslationContext';
-import ChannelsTab from './ChannelsTab';
-import MessagesTab from './MessagesTab';
-import UsersTab from './UsersTab';
+import ChannelsTab from './channels/ChannelsTab';
+import MessagesTab from './messages/MessagesTab';
+import UsersTab from './users/UsersTab';
 
 type EngagementDashboardPageProps = {
 	tab: 'users' | 'messages' | 'channels';
