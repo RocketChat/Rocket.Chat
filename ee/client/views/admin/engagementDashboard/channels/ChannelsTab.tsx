@@ -7,7 +7,6 @@ import {
 	Skeleton,
 	Table,
 	Tile,
-	ActionButton,
 } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
@@ -15,8 +14,8 @@ import React, { ReactElement, useMemo, useState } from 'react';
 import Growth from '../../../../../../client/components/data/Growth';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
+import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
 
 const ChannelsTab = (): ReactElement => {
@@ -44,7 +43,7 @@ const ChannelsTab = (): ReactElement => {
 			return;
 		}
 
-		return data.channels.map(
+		return data?.channels?.map(
 			({ room: { t, name, usernames, ts, _updatedAt }, messages, diffFromLastWeek }) => ({
 				t,
 				name: name || usernames?.join(' × '),
@@ -56,32 +55,24 @@ const ChannelsTab = (): ReactElement => {
 		);
 	}, [data]);
 
-	const downloadData = (): void => {
-		const data = [
-			['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date'],
-			...(channels?.map(({ createdAt, messagesCount, name, t, updatedAt }) => [
-				t,
-				name,
-				messagesCount,
-				updatedAt,
-				createdAt,
-			]) ?? []),
-		];
-		downloadCsvAs(data, `Channels_start_${params.start}_end_${params.end}`);
-	};
-
 	return (
 		<Section
 			filter={
 				<>
 					<Select {...periodSelectProps} />
-					<ActionButton
-						small
-						mis='x16'
-						disabled={!channels}
-						onClick={downloadData}
-						aria-label={t('Download_Info')}
-						icon='download'
+					<DownloadDataButton
+						attachmentName={`Channels_start_${params.start}_end_${params.end}`}
+						headers={['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date']}
+						dataAvailable={!!data}
+						dataExtractor={() =>
+							data?.channels?.map(({ room: { t, name, usernames, ts, _updatedAt }, messages }) => [
+								t,
+								name || usernames?.join(' × '),
+								messages,
+								_updatedAt,
+								ts,
+							])
+						}
 					/>
 				</>
 			}

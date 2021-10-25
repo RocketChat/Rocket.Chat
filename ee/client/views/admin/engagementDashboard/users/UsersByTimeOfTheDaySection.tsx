@@ -1,12 +1,12 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
+import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
 
 type UsersByTimeOfTheDaySectionProps = {
@@ -78,34 +78,26 @@ const UsersByTimeOfTheDaySection = ({
 		return [dates.map((date) => date.toISOString()), values];
 	}, [data, period.end, period.start, utc]);
 
-	const downloadData = (): void => {
-		const _data = [
-			['Date', 'Users'],
-			...(data?.week
-				?.map(({ users, hour, day, month, year }) => ({
-					date: moment([year, month - 1, day, hour, 0, 0, 0]),
-					users,
-				}))
-				?.sort((a, b) => a.date.diff(b.date))
-				?.map(({ date, users }) => [date.toISOString(), users]) ?? []),
-		];
-		downloadCsvAs(_data, `UsersByTimeOfTheDaySection_start_${params.start}_end_${params.end}`);
-	};
 	return (
 		<Section
 			title={t('Users_by_time_of_day')}
 			filter={
 				<>
 					<Select {...periodSelectProps} />
-					{
-						<ActionButton
-							small
-							mis='x16'
-							onClick={downloadData}
-							aria-label={t('Download_Info')}
-							icon='download'
-						/>
-					}
+					<DownloadDataButton
+						attachmentName={`UsersByTimeOfTheDaySection_start_${params.start}_end_${params.end}`}
+						headers={['Date', 'Users']}
+						dataAvailable={!!data}
+						dataExtractor={() =>
+							data?.week
+								?.map(({ users, hour, day, month, year }) => ({
+									date: moment([year, month - 1, day, hour, 0, 0, 0]),
+									users,
+								}))
+								?.sort((a, b) => a.date.diff(b.date))
+								?.map(({ date, users }) => [date.toISOString(), users])
+						}
+					/>
 				</>
 			}
 		>

@@ -1,21 +1,11 @@
 import { ResponsivePie } from '@nivo/pie';
-import {
-	Box,
-	Flex,
-	Icon,
-	Margins,
-	Select,
-	Skeleton,
-	Table,
-	Tile,
-	ActionButton,
-} from '@rocket.chat/fuselage';
+import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
+import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
 import { usePeriod } from '../usePeriod';
 
@@ -66,27 +56,17 @@ const MessagesPerChannelSection = (): ReactElement => {
 		return [pie, table];
 	}, [pieData, tableData]);
 
-	const downloadData = (): void => {
-		const data = [
-			['Room Type', 'Messages'],
-			...(pieData?.origins.map(({ t, messages }) => [t, messages]) ?? []),
-		];
-		downloadCsvAs(data, `MessagesPerChannelSection_start_${params.start}_end_${params.end}`);
-	};
-
 	return (
 		<Section
 			title={t('Where_are_the_messages_being_sent?')}
 			filter={
 				<>
 					<Select {...periodSelectProps} />
-					<ActionButton
-						small
-						mis='x16'
-						disabled={!pieData}
-						onClick={downloadData}
-						aria-label={t('Download_Info')}
-						icon='download'
+					<DownloadDataButton
+						attachmentName={`MessagesPerChannelSection_start_${params.start}_end_${params.end}`}
+						headers={['Room Type', 'Messages']}
+						dataAvailable={!!pieData}
+						dataExtractor={() => pieData?.origins.map(({ t, messages }) => [t, messages])}
 					/>
 				</>
 			}

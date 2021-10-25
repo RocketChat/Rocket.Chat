@@ -1,13 +1,13 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
+import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
+import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
 
 const MessagesSentSection = (): ReactElement => {
@@ -54,27 +54,17 @@ const MessagesSentSection = (): ReactElement => {
 			];
 		}, [data, period]);
 
-	const downloadData = (): void => {
-		const data = [
-			['Date', 'Messages'],
-			...(values?.map(({ date, newMessages }) => [date, newMessages]) ?? []),
-		];
-		downloadCsvAs(data, `MessagesSentSection_start_${params.start}_end_${params.end}`);
-	};
-
 	return (
 		<Section
 			title={t('Messages_sent')}
 			filter={
 				<>
 					<Select {...periodSelectProps} />
-					<ActionButton
-						small
-						mis='x16'
-						disabled={!data}
-						onClick={downloadData}
-						aria-label={t('Download_Info')}
-						icon='download'
+					<DownloadDataButton
+						attachmentName={`MessagesSentSection_start_${params.start}_end_${params.end}`}
+						headers={['Date', 'Messages']}
+						dataAvailable={!!data}
+						dataExtractor={() => values?.map(({ date, newMessages }) => [date, newMessages])}
 					/>
 				</>
 			}

@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile, ActionButton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -7,8 +7,8 @@ import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
-import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
+import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
 
 type ActiveUsersSectionProps = {
@@ -122,32 +122,28 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		];
 	}, [data, period.end, period.start, utc]);
 
-	const downloadData = (): void => {
-		const values = [];
-
-		for (let i = 0; i < 30; i++) {
-			values.push([
-				moment(dauValues[i].x).format('YYYY-MM-DD'),
-				dauValues[i].y,
-				wauValues[i].y,
-				mauValues[i].y,
-			]);
-		}
-
-		const data = [['Date', 'DAU', 'WAU', 'MAU'], ...values];
-		downloadCsvAs(data, `ActiveUsersSection_start_${params.start}_end_${params.end}`);
-	};
-
 	return (
 		<Section
 			title={t('Active_users')}
 			filter={
-				<ActionButton
-					small
-					disabled={!data}
-					onClick={downloadData}
-					aria-label={t('Download_Info')}
-					icon='download'
+				<DownloadDataButton
+					attachmentName={`ActiveUsersSection_start_${params.start}_end_${params.end}`}
+					headers={['Date', 'DAU', 'WAU', 'MAU']}
+					dataAvailable={!!data}
+					dataExtractor={() => {
+						const values = [];
+
+						for (let i = 0; i < 30; i++) {
+							values.push([
+								moment(dauValues[i].x).format('YYYY-MM-DD'),
+								dauValues[i].y,
+								wauValues[i].y,
+								mauValues[i].y,
+							]);
+						}
+
+						return values;
+					}}
 				/>
 			}
 		>
