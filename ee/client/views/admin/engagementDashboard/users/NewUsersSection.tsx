@@ -2,7 +2,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
@@ -10,8 +10,7 @@ import { useEndpointData } from '../../../../../../client/hooks/useEndpointData'
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
-
-type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+import { usePeriod } from '../usePeriod';
 
 const TICK_WIDTH = 45;
 
@@ -20,75 +19,12 @@ type NewUsersSectionProps = {
 };
 
 const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
-	const t = useTranslation();
 	const utc = timezone === 'utc';
+	const [period, periodSelectProps, periodLabel] = usePeriod({ utc });
 
-	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
-		() => [
-			['last 7 days', t('Last_7_days')],
-			['last 30 days', t('Last_30_days')],
-			['last 90 days', t('Last_90_days')],
-		],
-		[t],
-	);
-
-	const [periodId, setPeriodId] = useState<Period>('last 7 days');
+	const t = useTranslation();
 
 	const formatDate = useFormatDate();
-
-	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(7, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(7, 'days'),
-					end: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(1, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
-				};
-
-			case 'last 30 days':
-				return {
-					start: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(30, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(30, 'days'),
-					end: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(1, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
-				};
-
-			case 'last 90 days':
-				return {
-					start: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(90, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(90, 'days'),
-					end: utc
-						? moment()
-								.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-								.subtract(1, 'days')
-								.utc()
-						: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1, 'days'),
-				};
-		}
-	}, [periodId, utc]);
-
-	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -171,7 +107,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			title={t('New_users')}
 			filter={
 				<>
-					<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />
+					<Select {...periodSelectProps} />
 					<ActionButton
 						small
 						mis='x16'
@@ -188,7 +124,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 					{
 						count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
 						variation: data ? variatonFromPeriod : 0,
-						description: periodOptions.find(([id]) => id === periodId)?.[1],
+						description: periodLabel,
 					},
 					{
 						count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,

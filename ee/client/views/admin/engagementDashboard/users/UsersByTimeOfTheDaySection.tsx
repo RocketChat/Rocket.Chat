@@ -1,14 +1,13 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
-
-type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+import { usePeriod } from '../usePeriod';
 
 type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
@@ -17,49 +16,11 @@ type UsersByTimeOfTheDaySectionProps = {
 const UsersByTimeOfTheDaySection = ({
 	timezone,
 }: UsersByTimeOfTheDaySectionProps): ReactElement => {
-	const t = useTranslation();
 	const utc = timezone === 'utc';
 
-	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
-		() => [
-			['last 7 days', t('Last_7_days')],
-			['last 30 days', t('Last_30_days')],
-			['last 90 days', t('Last_90_days')],
-		],
-		[t],
-	);
+	const [period, periodSelectProps] = usePeriod({ utc });
 
-	const [periodId, setPeriodId] = useState<Period>('last 7 days');
-
-	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: utc
-						? moment.utc().startOf('day').subtract(7, 'days')
-						: moment().startOf('day').subtract(8, 'days'),
-					end: utc ? moment.utc().endOf('day').subtract(1, 'days') : moment().endOf('day'),
-				};
-
-			case 'last 30 days':
-				return {
-					start: utc
-						? moment.utc().startOf('day').subtract(30, 'days')
-						: moment().startOf('day').subtract(31, 'days'),
-					end: utc ? moment.utc().endOf('day').subtract(1, 'days') : moment().endOf('day'),
-				};
-
-			case 'last 90 days':
-				return {
-					start: utc
-						? moment.utc().startOf('day').subtract(90, 'days')
-						: moment().startOf('day').subtract(91, 'days'),
-					end: utc ? moment.utc().endOf('day').subtract(1, 'days') : moment().endOf('day'),
-				};
-		}
-	}, [periodId, utc]);
-
-	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
+	const t = useTranslation();
 
 	const params = useMemo(
 		() => ({
@@ -135,7 +96,7 @@ const UsersByTimeOfTheDaySection = ({
 			title={t('Users_by_time_of_day')}
 			filter={
 				<>
-					<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />
+					<Select {...periodSelectProps} />
 					{
 						<ActionButton
 							small

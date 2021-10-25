@@ -10,60 +10,19 @@ import {
 	Tile,
 	ActionButton,
 } from '@rocket.chat/fuselage';
-import moment from 'moment';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
 import LegendSymbol from '../data/LegendSymbol';
-
-type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+import { usePeriod } from '../usePeriod';
 
 const MessagesPerChannelSection = (): ReactElement => {
+	const [period, periodSelectProps] = usePeriod();
+
 	const t = useTranslation();
-
-	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
-		() => [
-			['last 7 days', t('Last_7_days')],
-			['last 30 days', t('Last_30_days')],
-			['last 90 days', t('Last_90_days')],
-		],
-		[t],
-	);
-
-	const [periodId, setPeriodId] = useState<Period>('last 7 days');
-
-	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 30 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 90 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-		}
-	}, [periodId]);
-
-	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -120,7 +79,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 			title={t('Where_are_the_messages_being_sent?')}
 			filter={
 				<>
-					<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />
+					<Select {...periodSelectProps} />
 					<ActionButton
 						small
 						mis='x16'

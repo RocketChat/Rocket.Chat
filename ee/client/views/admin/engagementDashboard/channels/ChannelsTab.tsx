@@ -17,52 +17,12 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
 import Section from '../Section';
-
-type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+import { usePeriod } from '../usePeriod';
 
 const ChannelsTab = (): ReactElement => {
+	const [period, periodSelectProps] = usePeriod();
+
 	const t = useTranslation();
-
-	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
-		() => [
-			['last 7 days', t('Last_7_days')],
-			['last 30 days', t('Last_30_days')],
-			['last 90 days', t('Last_90_days')],
-		],
-		[t],
-	);
-
-	const [periodId, setPeriodId] = useState<Period>('last 7 days');
-
-	const period = useMemo(() => {
-		switch (periodId) {
-			case 'last 7 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(7, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 30 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(30, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-
-			case 'last 90 days':
-				return {
-					start: moment()
-						.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-						.subtract(90, 'days'),
-					end: moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(1),
-				};
-		}
-	}, [periodId]);
-
-	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
@@ -114,7 +74,7 @@ const ChannelsTab = (): ReactElement => {
 		<Section
 			filter={
 				<>
-					<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />
+					<Select {...periodSelectProps} />
 					<ActionButton
 						small
 						mis='x16'
