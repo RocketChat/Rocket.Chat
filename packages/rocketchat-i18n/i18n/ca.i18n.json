@@ -3764,6 +3764,7 @@
   "Send_invitation_email_error": "No s'ha proporcionat cap adreça de correu electrònic vàlida.",
   "Send_invitation_email_info": "Es poden enviar múltiples invitacions per correu electrònic a la vegada.",
   "Send_invitation_email_success": "S'han enviat amb èxit invitacions per correu-e a les següents adreces:",
+  "Send_it_as_attachment_instead_question": "Envieu-lo com a fitxer adjunt?",
   "Send_me_the_code_again": "Enviem el codi de nou",
   "Send_request_on": "Envia la sol·licitud en",
   "Send_request_on_agent_message": "Enviar sol·licitud en missatges d'agent",
