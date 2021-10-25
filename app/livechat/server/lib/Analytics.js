@@ -289,8 +289,8 @@ export const Analytics = {
 			const totalMessagesInHour = new Map();		// total messages in hour 0, 1, ... 23 of weekday
 			const days = to.diff(from, 'days') + 1;		// total days
 
-			const summarize = (m) => ({ metrics, msgs }) => {
-				if (metrics && !metrics.chatDuration) {
+			const summarize = (m) => ({ metrics, msgs, onHold = false }) => {
+				if (metrics && !metrics.chatDuration && !onHold) {
 					openConversations++;
 				}
 				totalMessages += msgs;
@@ -306,7 +306,6 @@ export const Analytics = {
 					lt: m.add(1, 'days'),
 				};
 				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
-				console.log(result);
 				totalConversations += result.length;
 
 				result.forEach(summarize(clonedDate));

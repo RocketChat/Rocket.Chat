@@ -579,7 +579,7 @@ export class LivechatRooms extends Base {
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
 					msgs: '$messagesCount',
-					onHold: '$onHold',
+					onHold: '$_id.onHold',
 				},
 			},
 		]);
