@@ -56,7 +56,8 @@ API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true 
 		}
 		const endpointDetails = Promise.await(commandHandler.executeCommand(
 			Commands.extension_info,
-			this.requestParams())) as IVoipConnectorResult;
+			this.requestParams(),
+		)) as IVoipConnectorResult;
 		const callServerConfig: ICallServerConfigData = config.configData as unknown as ICallServerConfigData;
 		const endpointInfo: IVoipExtensionConfig = endpointDetails.result as IVoipExtensionConfig;
 		const extensionRegistrationInfo = {
