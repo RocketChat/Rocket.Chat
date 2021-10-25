@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
-import { Package } from 'meteor/tools';
 import semver from 'semver';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -196,7 +195,7 @@ class CustomOplogHandle {
 let oplogHandle: CustomOplogHandle;
 
 if (!process.env.DISABLE_DB_WATCH) {
-	const disableOplog = !!(Package as any)['disable-oplog'];
+	const disableOplog = !!(global.Package as any)['disable-oplog'];
 
 	if (disableOplog) {
 		try {
