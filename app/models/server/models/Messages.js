@@ -1258,7 +1258,7 @@ export class Messages extends Base {
 					{ t: 'livechat-close' },
 				],
 			},
-			pagination,
+			options,
 		);
 	}
 
