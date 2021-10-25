@@ -1249,7 +1249,7 @@ export class Messages extends Base {
 		return this.find(query);
 	}
 
-	findLivechatClosedMessages(rid, pagination) {
+	findLivechatClosedMessages(rid, options) {
 		return this.find(
 			{
 				rid,
