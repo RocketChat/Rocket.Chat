@@ -1,9 +1,8 @@
 import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
 import { IDailyActiveUsers } from '../../../../definition/IUser';
-import { Serialized } from '../../../../definition/Serialized';
 
 export type EngagementDashboardEndpoints = {
-	'/v1/engagement-dashboard/channels/list': {
+	'engagement-dashboard/channels/list': {
 		GET: (params: { start: Date; end: Date; offset: number; count: number }) => {
 			channels: {
 				room: {
@@ -55,8 +54,50 @@ export type EngagementDashboardEndpoints = {
 		};
 	};
 	'engagement-dashboard/users/active-users': {
-		GET: (params: { start: string; end: string }) => {
-			month: Serialized<IDailyActiveUsers>[];
+		GET: (params: { start: Date; end: Date }) => {
+			month: IDailyActiveUsers[];
+		};
+	};
+	'engagement-dashboard/users/chat-busier/weekly-data': {
+		GET: (params: { start: Date }) => {
+			month: {
+				users: number;
+				day: number;
+				month: number;
+				year: number;
+			}[];
+		};
+	};
+	'engagement-dashboard/users/chat-busier/hourly-data': {
+		GET: (params: { start: Date }) => {
+			hours: {
+				users: number;
+				hour: number;
+			}[];
+		};
+	};
+	'engagement-dashboard/users/users-by-time-of-the-day-in-a-week': {
+		GET: (params: { start: Date; end: Date }) => {
+			week: {
+				users: number;
+				hour: number;
+				day: number;
+				month: number;
+				year: number;
+			}[];
+		};
+	};
+	'engagement-dashboard/users/new-users': {
+		GET: (params: { start: Date; end: Date }) => {
+			days: { day: Date; users: number }[];
+			period: {
+				count: number;
+				variation: number;
+			};
+			yesterday: {
+				count: number;
+				variation: number;
+			};
 		};
 	};
 };
