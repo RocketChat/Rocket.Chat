@@ -10,18 +10,20 @@ import {
 	ActionButton,
 } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/data/Growth';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
+import Section from '../Section';
 
-const TableSection = () => {
+type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+
+const ChannelsTab = (): ReactElement => {
 	const t = useTranslation();
 
-	const periodOptions = useMemo(
+	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
 		() => [
 			['last 7 days', t('Last_7_days')],
 			['last 30 days', t('Last_30_days')],
@@ -30,7 +32,7 @@ const TableSection = () => {
 		[t],
 	);
 
-	const [periodId, setPeriodId] = useState('last 7 days');
+	const [periodId, setPeriodId] = useState<Period>('last 7 days');
 
 	const period = useMemo(() => {
 		switch (periodId) {
@@ -60,10 +62,10 @@ const TableSection = () => {
 		}
 	}, [periodId]);
 
-	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const [current, setCurrent] = useState(0);
-	const [itemsPerPage, setItemsPerPage] = useState(25);
+	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 
 	const params = useMemo(
 		() => ({
@@ -85,7 +87,7 @@ const TableSection = () => {
 		return data.channels.map(
 			({ room: { t, name, usernames, ts, _updatedAt }, messages, diffFromLastWeek }) => ({
 				t,
-				name: name || usernames.join(' × '),
+				name: name || usernames?.join(' × '),
 				createdAt: ts,
 				updatedAt: _updatedAt,
 				messagesCount: messages,
@@ -94,16 +96,16 @@ const TableSection = () => {
 		);
 	}, [data]);
 
-	const downloadData = () => {
+	const downloadData = (): void => {
 		const data = [
 			['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date'],
-			...channels.map(({ createdAt, messagesCount, name, t, updatedAt }) => [
+			...(channels?.map(({ createdAt, messagesCount, name, t, updatedAt }) => [
 				t,
 				name,
 				messagesCount,
 				updatedAt,
 				createdAt,
-			]),
+			]) ?? []),
 		];
 		downloadCsvAs(data, `Channels_start_${params.start}_end_${params.end}`);
 	};
@@ -189,8 +191,8 @@ const TableSection = () => {
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={() => t('Items_per_page:')}
-					showingResultsLabel={({ count, current, itemsPerPage }) =>
+					itemsPerPageLabel={(): string => t('Items_per_page:')}
+					showingResultsLabel={({ count, current, itemsPerPage }): string =>
 						t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)
 					}
 					count={(data && data.total) || 0}
@@ -202,4 +204,4 @@ const TableSection = () => {
 	);
 };
 
-export default TableSection;
+export default ChannelsTab;

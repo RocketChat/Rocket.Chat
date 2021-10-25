@@ -1,18 +1,20 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
+import Section from '../Section';
 
-const MessagesSentSection = () => {
+type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+
+const MessagesSentSection = (): ReactElement => {
 	const t = useTranslation();
 
-	const periodOptions = useMemo(
+	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
 		() => [
 			['last 7 days', t('Last_7_days')],
 			['last 30 days', t('Last_30_days')],
@@ -21,7 +23,7 @@ const MessagesSentSection = () => {
 		[t],
 	);
 
-	const [periodId, setPeriodId] = useState('last 7 days');
+	const [periodId, setPeriodId] = useState<Period>('last 7 days');
 
 	const period = useMemo(() => {
 		switch (periodId) {
@@ -51,7 +53,7 @@ const MessagesSentSection = () => {
 		}
 	}, [periodId]);
 
-	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -92,10 +94,10 @@ const MessagesSentSection = () => {
 			];
 		}, [data, period]);
 
-	const downloadData = () => {
+	const downloadData = (): void => {
 		const data = [
 			['Date', 'Messages'],
-			...values.map(({ date, newMessages }) => [date, newMessages]),
+			...(values?.map(({ date, newMessages }) => [date, newMessages]) ?? []),
 		];
 		downloadCsvAs(data, `MessagesSentSection_start_${params.start}_end_${params.end}`);
 	};
@@ -122,7 +124,7 @@ const MessagesSentSection = () => {
 					{
 						count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
 						variation: data ? variatonFromPeriod : 0,
-						description: periodOptions.find(([id]) => id === periodId)[1],
+						description: periodOptions.find(([id]) => id === periodId)?.[1],
 					},
 					{
 						count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,
@@ -144,7 +146,7 @@ const MessagesSentSection = () => {
 									}}
 								>
 									<ResponsiveBar
-										data={values}
+										data={values ?? []}
 										indexBy='date'
 										keys={['newMessages']}
 										groupMode='grouped'
@@ -162,17 +164,18 @@ const MessagesSentSection = () => {
 										axisTop={null}
 										axisRight={null}
 										axisBottom={
-											(values.length === 7 && {
+											(values?.length === 7 && {
 												tickSize: 0,
 												// TODO: Get it from theme
 												tickPadding: 4,
 												tickRotation: 0,
-												format: (date) => moment(date).format('dddd'),
+												format: (date): string => moment(date).format('dddd'),
 											}) ||
 											null
 										}
 										axisLeft={null}
 										animate={true}
+										// @ts-ignore
 										motionStiffness={90}
 										motionDamping={15}
 										theme={{
@@ -185,7 +188,7 @@ const MessagesSentSection = () => {
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
 														fontStyle: 'normal',
-														fontWeight: '600',
+														fontWeight: 600,
 														letterSpacing: '0.2px',
 														lineHeight: '12px',
 													},
@@ -200,7 +203,7 @@ const MessagesSentSection = () => {
 												},
 											},
 										}}
-										tooltip={({ value }) => (
+										tooltip={({ value }): ReactElement => (
 											<Box fontScale='p2' color='alternative'>
 												{t('Value_messages', { value })}
 											</Box>

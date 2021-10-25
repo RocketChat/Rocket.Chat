@@ -1,37 +1,53 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 
-const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }) => {
+type ContentForDaysProps = {
+	displacement: number;
+	onPreviousDateClick: () => void;
+	onNextDateClick: () => void;
+	timezone: 'utc' | 'local';
+};
+
+const ContentForDays = ({
+	displacement,
+	onPreviousDateClick,
+	onNextDateClick,
+	timezone,
+}: ContentForDaysProps): ReactElement => {
 	const utc = timezone === 'utc';
+
 	const currentDate = useMemo(() => {
 		if (utc) {
 			return moment.utc().subtract(displacement, 'weeks');
 		}
 		return moment().subtract(displacement, 'weeks');
 	}, [displacement, utc]);
+
 	const formattedCurrentDate = useMemo(() => {
 		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
 		return `${startOfWeekDate.format('L')} - ${currentDate.format('L')}`;
 	}, [currentDate]);
+
 	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
+
 	const { value: data } = useEndpointData(
 		'engagement-dashboard/users/chat-busier/weekly-data',
 		useMemo(() => params, [params]),
 	);
+
 	const values = useMemo(
 		() =>
-			data
-				? data.month
-						.map(({ users, day, month, year }) => ({
-							users,
-							day: String(moment({ year, month: month - 1, day }).valueOf()),
-						}))
-						.sort(({ day: a }, { day: b }) => a - b)
-				: [],
+			data?.month
+				?.map(({ users, day, month, year }) => ({
+					users,
+					day: moment({ year, month: month - 1, day }),
+				}))
+				?.sort(({ day: a }, { day: b }) => a.diff(b))
+				?.map(({ users, day }) => ({ users, day: String(day.valueOf()) })) ?? [],
 		[data],
 	);
 
@@ -90,10 +106,11 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (timestamp) => moment(parseInt(timestamp, 10)).format('L'),
+											format: (timestamp): string => moment(parseInt(timestamp, 10)).format('L'),
 										}}
 										axisLeft={null}
 										animate={true}
+										// @ts-ignore
 										motionStiffness={90}
 										motionDamping={15}
 										theme={{
@@ -106,7 +123,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
 														fontStyle: 'normal',
-														fontWeight: '600',
+														fontWeight: 600,
 														letterSpacing: '0.2px',
 														lineHeight: '12px',
 													},

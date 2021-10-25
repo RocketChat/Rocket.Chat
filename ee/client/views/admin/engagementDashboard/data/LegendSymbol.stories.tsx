@@ -1,23 +1,24 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Meta, Story } from '@storybook/react';
+import React, { ReactElement } from 'react';
 
-import { LegendSymbol } from './LegendSymbol';
+import LegendSymbol from './LegendSymbol';
 import { monochromaticColors, polychromaticColors } from './colors';
 
 export default {
 	title: 'admin/engagementDashboard/data/LegendSymbol',
 	component: LegendSymbol,
-	decorators: [(fn) => <Margins children={fn()} all='x16' />],
-};
+	decorators: [(fn): ReactElement => <Margins children={fn()} all='x16' />],
+} as Meta;
 
-export const _default = () => (
+export const withoutColor: Story = () => (
 	<Box>
 		<LegendSymbol />
 		Legend text
 	</Box>
 );
 
-export const withColor = () => (
+export const withColor: Story = () => (
 	<>
 		{monochromaticColors.map((color) => (
 			<Box key={color}>

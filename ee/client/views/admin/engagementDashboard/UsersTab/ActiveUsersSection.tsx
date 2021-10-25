@@ -1,17 +1,21 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
-import { LegendSymbol } from '../data/LegendSymbol';
+import Section from '../Section';
+import LegendSymbol from '../data/LegendSymbol';
 
-const ActiveUsersSection = ({ timezone }) => {
+type ActiveUsersSectionProps = {
+	timezone: 'utc' | 'local';
+};
+
+const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement => {
 	const t = useTranslation();
 	const utc = timezone === 'utc';
 	const formatDate = useFormatDate();
@@ -43,20 +47,20 @@ const ActiveUsersSection = ({ timezone }) => {
 		diffWeeklyActiveUsers,
 		countMonthlyActiveUsers,
 		diffMonthlyActiveUsers,
-		dauValues,
-		wauValues,
-		mauValues,
+		dauValues = [],
+		wauValues = [],
+		mauValues = [],
 	] = useMemo(() => {
 		if (!data) {
 			return [];
 		}
 
-		const createPoint = (i) => ({
+		const createPoint = (i: number): { x: Date; y: number } => ({
 			x: moment(period.start).add(i, 'days').toDate(),
 			y: 0,
 		});
 
-		const createPoints = () =>
+		const createPoints = (): { x: Date; y: number }[] =>
 			Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) =>
 				createPoint(i),
 			);
@@ -68,7 +72,7 @@ const ActiveUsersSection = ({ timezone }) => {
 		const mauValues = createPoints();
 		const prevMauValue = createPoint(-1);
 
-		const usersListsMap = data.month.reduce((map, dayData) => {
+		const usersListsMap = data.month.reduce<{ [x: number]: string[] }>((map, dayData) => {
 			const date = utc
 				? moment
 						.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day })
@@ -82,7 +86,12 @@ const ActiveUsersSection = ({ timezone }) => {
 			return map;
 		}, {});
 
-		const distributeValueOverPoints = (usersListsMap, dateOffset, T, array) => {
+		const distributeValueOverPoints = (
+			usersListsMap: { [x: number]: string[] },
+			dateOffset: number,
+			T: number,
+			array: { x: Date; y: number }[],
+		): void => {
 			const usersSet = new Set();
 			for (let k = dateOffset; T > 0; k--, T--) {
 				if (usersListsMap[k]) {
@@ -113,7 +122,7 @@ const ActiveUsersSection = ({ timezone }) => {
 		];
 	}, [data, period.end, period.start, utc]);
 
-	const downloadData = () => {
+	const downloadData = (): void => {
 		const values = [];
 
 		for (let i = 0; i < 30; i++) {
@@ -251,7 +260,8 @@ const ActiveUsersSection = ({ timezone }) => {
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (date) => moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
+											format: (date): string =>
+												moment(date).format(dauValues.length === 7 ? 'dddd' : 'L'),
 										}}
 										animate={true}
 										motionStiffness={90}
@@ -266,7 +276,7 @@ const ActiveUsersSection = ({ timezone }) => {
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
 														fontStyle: 'normal',
-														fontWeight: '600',
+														fontWeight: 600,
 														letterSpacing: '0.2px',
 														lineHeight: '12px',
 													},
@@ -282,7 +292,7 @@ const ActiveUsersSection = ({ timezone }) => {
 											},
 										}}
 										enableSlices='x'
-										sliceTooltip={({ slice: { points } }) => (
+										sliceTooltip={({ slice: { points } }): ReactElement => (
 											<Tile elevation='2'>
 												<Box>
 													<Box>{formatDate(points[0].data.x)}</Box>

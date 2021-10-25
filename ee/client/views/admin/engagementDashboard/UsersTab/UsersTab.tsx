@@ -1,13 +1,17 @@
 import { Box, Divider, Flex, Margins } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import ActiveUsersSection from './ActiveUsersSection';
 import BusiestChatTimesSection from './BusiestChatTimesSection';
 import NewUsersSection from './NewUsersSection';
 import UsersByTimeOfTheDaySection from './UsersByTimeOfTheDaySection';
 
-const UsersTab = ({ timezone }) => {
+type UsersTabProps = {
+	timezone: 'utc' | 'local';
+};
+
+const UsersTab = ({ timezone }: UsersTabProps): ReactElement => {
 	const isXxlScreen = useBreakpoints().includes('xxl');
 
 	return (

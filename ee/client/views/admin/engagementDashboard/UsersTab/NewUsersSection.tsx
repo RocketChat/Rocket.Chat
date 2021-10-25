@@ -2,22 +2,28 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
+import Section from '../Section';
+
+type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
 
 const TICK_WIDTH = 45;
 
-const NewUsersSection = ({ timezone }) => {
+type NewUsersSectionProps = {
+	timezone: 'utc' | 'local';
+};
+
+const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 	const t = useTranslation();
 	const utc = timezone === 'utc';
 
-	const periodOptions = useMemo(
+	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
 		() => [
 			['last 7 days', t('Last_7_days')],
 			['last 30 days', t('Last_30_days')],
@@ -26,7 +32,7 @@ const NewUsersSection = ({ timezone }) => {
 		[t],
 	);
 
-	const [periodId, setPeriodId] = useState('last 7 days');
+	const [periodId, setPeriodId] = useState<Period>('last 7 days');
 
 	const formatDate = useFormatDate();
 
@@ -82,7 +88,7 @@ const NewUsersSection = ({ timezone }) => {
 		}
 	}, [periodId, utc]);
 
-	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -104,7 +110,7 @@ const NewUsersSection = ({ timezone }) => {
 	const tickValues = useMemo(() => {
 		const arrayLength = moment(period.end).diff(period.start, 'days') + 1;
 		if (arrayLength <= maxTicks || !maxTicks) {
-			return null;
+			return undefined;
 		}
 
 		const values = Array.from({ length: arrayLength }, (_, i) =>
@@ -118,7 +124,7 @@ const NewUsersSection = ({ timezone }) => {
 				acc = [...acc, cur];
 			}
 			return acc;
-		}, []);
+		}, [] as string[]);
 	}, [period, maxTicks]);
 
 	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
@@ -152,8 +158,11 @@ const NewUsersSection = ({ timezone }) => {
 			];
 		}, [data, period, utc]);
 
-	const downloadData = () => {
-		const data = [['Date', 'New Users'], ...values.map(({ date, newUsers }) => [date, newUsers])];
+	const downloadData = (): void => {
+		const data = [
+			['Date', 'New Users'],
+			...(values?.map(({ date, newUsers }) => [date, newUsers]) ?? []),
+		];
 		downloadCsvAs(data, `NewUsersSection_start_${params.start}_end_${params.end}`);
 	};
 
@@ -162,7 +171,7 @@ const NewUsersSection = ({ timezone }) => {
 			title={t('New_users')}
 			filter={
 				<>
-					<Select small options={periodOptions} value={periodId} onChange={handlePeriodChange} />
+					<Select options={periodOptions} value={periodId} onChange={handlePeriodChange} />
 					<ActionButton
 						small
 						mis='x16'
@@ -179,7 +188,7 @@ const NewUsersSection = ({ timezone }) => {
 					{
 						count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
 						variation: data ? variatonFromPeriod : 0,
-						description: periodOptions.find(([id]) => id === periodId)[1],
+						description: periodOptions.find(([id]) => id === periodId)?.[1],
 					},
 					{
 						count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,
@@ -201,7 +210,7 @@ const NewUsersSection = ({ timezone }) => {
 									}}
 								>
 									<ResponsiveBar
-										data={values}
+										data={values ?? []}
 										indexBy='date'
 										keys={['newUsers']}
 										groupMode='grouped'
@@ -226,7 +235,8 @@ const NewUsersSection = ({ timezone }) => {
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues,
-											format: (date) => moment(date).format(values.length === 7 ? 'dddd' : 'DD/MM'),
+											format: (date): string =>
+												moment(date).format(values?.length === 7 ? 'dddd' : 'DD/MM'),
 										}}
 										axisLeft={{
 											tickSize: 0,
@@ -247,13 +257,14 @@ const NewUsersSection = ({ timezone }) => {
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
 														fontStyle: 'normal',
-														fontWeight: '600',
+														fontWeight: 600,
 														letterSpacing: '0.2px',
 														lineHeight: '12px',
 													},
 												},
 											},
 											tooltip: {
+												// @ts-ignore
 												backgroundColor: '#1F2329',
 												boxShadow:
 													'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
@@ -261,7 +272,7 @@ const NewUsersSection = ({ timezone }) => {
 												padding: 4,
 											},
 										}}
-										tooltip={({ value, indexValue }) => (
+										tooltip={({ value, indexValue }): ReactElement => (
 											<Box fontScale='p2' color='alternative'>
 												{t('Value_users', { value })}, {formatDate(indexValue)}
 											</Box>

@@ -1,10 +1,10 @@
 import { Divider } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import MessagesPerChannelSection from './MessagesPerChannelSection';
 import MessagesSentSection from './MessagesSentSection';
 
-const MessagesTab = () => (
+const MessagesTab = (): ReactElement => (
 	<>
 		<MessagesSentSection />
 		<Divider />

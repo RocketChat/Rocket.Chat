@@ -1,18 +1,26 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Box, Flex, Select, Skeleton, ActionButton } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
+import Section from '../Section';
 
-const UsersByTimeOfTheDaySection = ({ timezone }) => {
+type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+
+type UsersByTimeOfTheDaySectionProps = {
+	timezone: 'utc' | 'local';
+};
+
+const UsersByTimeOfTheDaySection = ({
+	timezone,
+}: UsersByTimeOfTheDaySectionProps): ReactElement => {
 	const t = useTranslation();
 	const utc = timezone === 'utc';
 
-	const periodOptions = useMemo(
+	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
 		() => [
 			['last 7 days', t('Last_7_days')],
 			['last 30 days', t('Last_30_days')],
@@ -21,7 +29,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 		[t],
 	);
 
-	const [periodId, setPeriodId] = useState('last 7 days');
+	const [periodId, setPeriodId] = useState<Period>('last 7 days');
 
 	const period = useMemo(() => {
 		switch (periodId) {
@@ -51,7 +59,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 		}
 	}, [periodId, utc]);
 
-	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -83,12 +91,16 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 					.add(utc ? i : i + 1, 'days'),
 		);
 
-		const values = Array.from({ length: 24 }, (_, hour) => ({
-			hour: String(hour),
-			...dates
-				.map((date) => ({ [date.toISOString()]: 0 }))
-				.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
-		}));
+		const values = Array.from(
+			{ length: 24 },
+			(_, hour) =>
+				({
+					hour: String(hour),
+					...dates
+						.map((date) => ({ [date.toISOString()]: 0 }))
+						.reduce((obj, elem) => ({ ...obj, ...elem }), {}),
+				} as { [date: string]: number } & { hour: string }),
+		);
 
 		const timezoneOffset = moment().utcOffset() / 60;
 
@@ -105,16 +117,16 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 		return [dates.map((date) => date.toISOString()), values];
 	}, [data, period.end, period.start, utc]);
 
-	const downloadData = () => {
+	const downloadData = (): void => {
 		const _data = [
 			['Date', 'Users'],
-			...data.week
-				.map(({ users, hour, day, month, year }) => ({
+			...(data?.week
+				?.map(({ users, hour, day, month, year }) => ({
 					date: moment([year, month - 1, day, hour, 0, 0, 0]),
 					users,
 				}))
-				.sort((a, b) => a > b)
-				.map(({ date, users }) => [date.toISOString(), users]),
+				?.sort((a, b) => a.date.diff(b.date))
+				?.map(({ date, users }) => [date.toISOString(), users]) ?? []),
 		];
 		downloadCsvAs(_data, `UsersByTimeOfTheDaySection_start_${params.start}_end_${params.end}`);
 	};
@@ -148,7 +160,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 								}}
 							>
 								<ResponsiveHeatMap
-									data={values}
+									data={values ?? []}
 									indexBy='hour'
 									keys={dates}
 									padding={4}
@@ -176,21 +188,21 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (isoString) =>
-											dates.length === 7 ? moment(isoString).format('dddd') : '',
+										format: (isoString): string =>
+											dates?.length === 7 ? moment(isoString).format('dddd') : '',
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
 										tickSize: 0,
 										tickPadding: 4,
 										tickRotation: 0,
-										format: (hour) =>
+										format: (hour): string =>
 											moment()
 												.set({ hour: parseInt(hour, 10), minute: 0, second: 0 })
 												.format('LT'),
 									}}
 									hoverTarget='cell'
-									animate={dates.length <= 7}
+									animate={dates && dates.length <= 7}
 									motionStiffness={90}
 									motionDamping={15}
 									theme={{
@@ -203,7 +215,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 														'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 													fontSize: 10,
 													fontStyle: 'normal',
-													fontWeight: '600',
+													fontWeight: 600,
 													letterSpacing: '0.2px',
 													lineHeight: '12px',
 												},
@@ -218,7 +230,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }) => {
 											},
 										},
 									}}
-									tooltip={({ value }) => (
+									tooltip={({ value }): ReactElement => (
 										<Box fontScale='p2' color='alternative'>
 											{t('Value_users', { value })}
 										</Box>

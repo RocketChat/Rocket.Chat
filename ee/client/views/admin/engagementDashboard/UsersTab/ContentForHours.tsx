@@ -2,25 +2,36 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 
-const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }) => {
+type ContentForHoursProps = {
+	displacement: number;
+	onPreviousDateClick: () => void;
+	onNextDateClick: () => void;
+	timezone: 'utc' | 'local';
+};
+
+const ContentForHours = ({
+	displacement,
+	onPreviousDateClick,
+	onNextDateClick,
+	timezone,
+}: ContentForHoursProps): ReactElement => {
 	const t = useTranslation();
 	const isLgScreen = useBreakpoints().includes('lg');
 	const utc = timezone === 'utc';
 
 	const currentDate = useMemo(() => {
 		if (utc) {
-			return moment()
+			return moment
 				.utc({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 				.subtract(1, 'days')
 				.subtract(displacement, 'days');
 		}
-		return moment()
-			.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+		return moment({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 			.subtract(1)
 			.subtract(displacement, 'days');
 	}, [displacement, utc]);
@@ -64,7 +75,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 			</Box>
 			{data ? (
 				<Box display='flex' height='196px'>
-					<Box align='stretch' flexGrow={1} flexShrink={0} position='relative'>
+					<Box alignSelf='stretch' flexGrow={1} flexShrink={0} position='relative'>
 						<Box position='absolute' width='100%' height='100%'>
 							<ResponsiveBar
 								data={values}
@@ -91,7 +102,8 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 									tickPadding: 4,
 									tickRotation: isLgScreen ? 0 : 25,
 									tickValues: 'every 2 hours',
-									format: (hour) => moment().set({ hour, minute: 0, second: 0 }).format('LT'),
+									format: (hour): string =>
+										moment().set({ hour, minute: 0, second: 0 }).format('LT'),
 								}}
 								axisLeft={null}
 								animate={true}
@@ -107,13 +119,14 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 													'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 												fontSize: '10px',
 												fontStyle: 'normal',
-												fontWeight: '600',
+												fontWeight: 600,
 												letterSpacing: '0.2px',
 												lineHeight: '12px',
 											},
 										},
 									},
 									tooltip: {
+										// @ts-ignore
 										backgroundColor: '#1F2329',
 										boxShadow:
 											'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
@@ -121,7 +134,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 										padding: 4,
 									},
 								}}
-								tooltip={({ value }) => (
+								tooltip={({ value }): ReactElement => (
 									<Box fontScale='p2' color='alternative'>
 										{t('Value_users', { value })}
 									</Box>

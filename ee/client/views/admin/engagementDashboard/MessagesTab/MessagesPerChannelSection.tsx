@@ -11,18 +11,20 @@ import {
 	ActionButton,
 } from '@rocket.chat/fuselage';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { downloadCsvAs } from '../../../../../../client/lib/download';
-import { Section } from '../Section';
-import { LegendSymbol } from '../data/LegendSymbol';
+import Section from '../Section';
+import LegendSymbol from '../data/LegendSymbol';
 
-const MessagesPerChannelSection = () => {
+type Period = 'last 7 days' | 'last 30 days' | 'last 90 days';
+
+const MessagesPerChannelSection = (): ReactElement => {
 	const t = useTranslation();
 
-	const periodOptions = useMemo(
+	const periodOptions = useMemo<readonly [periodId: Period, label: string][]>(
 		() => [
 			['last 7 days', t('Last_7_days')],
 			['last 30 days', t('Last_30_days')],
@@ -31,7 +33,7 @@ const MessagesPerChannelSection = () => {
 		[t],
 	);
 
-	const [periodId, setPeriodId] = useState('last 7 days');
+	const [periodId, setPeriodId] = useState<Period>('last 7 days');
 
 	const period = useMemo(() => {
 		switch (periodId) {
@@ -61,7 +63,7 @@ const MessagesPerChannelSection = () => {
 		}
 	}, [periodId]);
 
-	const handlePeriodChange = (periodId) => setPeriodId(periodId);
+	const handlePeriodChange = (periodId: string): void => setPeriodId(periodId as Period);
 
 	const params = useMemo(
 		() => ({
@@ -82,12 +84,22 @@ const MessagesPerChannelSection = () => {
 			return [];
 		}
 
-		const pie = pieData.origins.reduce((obj, { messages, t }) => ({ ...obj, [t]: messages }), {});
+		const pie = pieData.origins.reduce<{ [roomType: string]: number }>(
+			(obj, { messages, t }) => ({ ...obj, [t]: messages }),
+			{},
+		);
 
-		const table = tableData.channels.reduce(
+		const table = tableData.channels.reduce<
+			{
+				i: number;
+				t: string;
+				name?: string;
+				messages: number;
+			}[]
+		>(
 			(entries, { t, messages, name, usernames }, i) => [
 				...entries,
-				{ i, t, name: name || usernames.join(' × '), messages },
+				{ i, t, name: name || usernames?.join(' × '), messages },
 			],
 			[],
 		);
@@ -95,10 +107,10 @@ const MessagesPerChannelSection = () => {
 		return [pie, table];
 	}, [pieData, tableData]);
 
-	const downloadData = () => {
+	const downloadData = (): void => {
 		const data = [
 			['Room Type', 'Messages'],
-			...pieData.origins.map(({ t, messages }) => [t, messages]),
+			...(pieData?.origins.map(({ t, messages }) => [t, messages]) ?? []),
 		];
 		downloadCsvAs(data, `MessagesPerChannelSection_start_${params.start}_end_${params.end}`);
 	};
@@ -167,6 +179,7 @@ const MessagesPerChannelSection = () => {
 																	]}
 																	innerRadius={0.6}
 																	colors={['#FFD031', '#2DE0A5', '#1D74F5']}
+																	// @ts-ignore
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
 																	animate={true}
@@ -182,7 +195,7 @@ const MessagesPerChannelSection = () => {
 																						'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 																					fontSize: 10,
 																					fontStyle: 'normal',
-																					fontWeight: '600',
+																					fontWeight: 600,
 																					letterSpacing: '0.2px',
 																					lineHeight: '12px',
 																				},
@@ -197,7 +210,8 @@ const MessagesPerChannelSection = () => {
 																			},
 																		},
 																	}}
-																	tooltip={({ value }) => (
+																	// @ts-ignore
+																	tooltip={({ value }): ReactElement => (
 																		<Box fontScale='p2' color='alternative'>
 																			{t('Value_messages', { value })}
 																		</Box>
