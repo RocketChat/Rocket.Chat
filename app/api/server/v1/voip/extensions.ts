@@ -49,7 +49,8 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
 	get() {
 		const config: IVoipServerConfig = Promise.await(
-			Voip.getServerConfigData(ServerType.CALL_SERVER)) as unknown as IVoipServerConfig;
+			Voip.getServerConfigData(ServerType.CALL_SERVER),
+		) as unknown as IVoipServerConfig;
 		if (!config) {
 			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
 			return API.v1.notFound();
