@@ -49,7 +49,7 @@ type Callbacks = {
 
 let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
-const { disableOplog } = Package;
+const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
 
 if (disableOplog) {
