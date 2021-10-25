@@ -66849,6 +66849,115 @@
           ]
         }
       ]
+    },
+    "4.0.4": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23532",
+          "title": "Release 4.0.4",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "KevLehman",
+            "sampaiodiego",
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23411",
+          "title": "[FIX] SAML Users' roles being reset to default on login",
+          "userLogin": "matheusbsilva137",
+          "description": "- Remove `roles` field update on `insertOrUpdateSAMLUser` function;\r\n- Add SAML `syncRoles` event;",
+          "milestone": "4.0.4",
+          "contributors": [
+            "matheusbsilva137",
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23522",
+          "title": "[FIX] Queue error handling and unlocking behavior",
+          "userLogin": "KevLehman",
+          "milestone": "4.0.4",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
+    },
+    "4.0.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23554",
+          "title": "Release 4.0.5",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23541",
+          "title": "[FIX] OAuth login not working on mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.0.5",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
+    },
+    "4.1.0-rc.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23552",
+          "title": "Regression: Mail body contains `undefined` text",
+          "userLogin": "tassoevan",
+          "description": "### Before\r\n![image](https://user-images.githubusercontent.com/2263066/138733018-10449892-5c2d-46fb-9355-00e98e0d6c9f.png)\r\n\r\n### After\r\n![image](https://user-images.githubusercontent.com/2263066/138733074-a1b88a77-bf64-41c3-a6c3-ac9e1cb63de1.png)",
+          "contributors": [
+            "tassoevan",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23541",
+          "title": "[FIX] OAuth login not working on mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.0.5",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
