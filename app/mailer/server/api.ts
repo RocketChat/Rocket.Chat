@@ -8,15 +8,12 @@ import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
-import { ISetting, SettingValue } from '../../../definition/ISetting';
+import { ISetting } from '../../../definition/ISetting';
 import { replaceVariables } from './replaceVariables';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
 let body: string | undefined;
-
-let getSetting = <T extends SettingValue = SettingValue>(_id: ISetting['_id']): T | undefined => undefined;
-let watchSetting = <T extends SettingValue = SettingValue>(_id: ISetting['_id'], _cb: (args: T) => void): (() => void) => () => (): void => undefined;
 
 // define server language for email translations
 // @TODO: change TAPi18n.__ function to use the server language by default
@@ -41,11 +38,11 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 
 	const options = {
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		Site_Name: getSetting<string>('Site_Name'),
+		Site_Name: settings.get<string>('Site_Name'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		Site_URL: getSetting<string>('Site_Url'),
+		Site_URL: settings.get<string>('Site_Url'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		Site_URL_Slash: getSetting<string>('Site_Url')?.replace(/\/?$/, '/'),
+		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
 		...data.name ? {
 			fname: s.strLeft(String(data.name), ' '),
 			lname: s.strRightBack(String(data.name), ' '),
@@ -60,8 +57,8 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 const nonEscapeKeys = ['room_path'];
 
 export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {}): string => {
-	const siteName = getSetting<string>('Site_Name');
-	const siteUrl = getSetting<string>('Site_Url');
+	const siteName = settings.get<string>('Site_Name');
+	const siteUrl = settings.get<string>('Site_Url');
 
 	return replace(str, {
 		// eslint-disable-next-line @typescript-eslint/camelcase
@@ -89,38 +86,37 @@ export const wrap = (html: string, data: { [key: string]: unknown } = {}): strin
 	return replaceEscaped(body.replace('{{body}}', html), data);
 };
 export const inlinecss = (html: string): string => {
-	const css = getSetting<string>('email_style');
+	const css = settings.get<string>('email_style');
 	return css ? juice.inlineContent(html, css) : html;
 };
 
 export const getTemplate = (template: ISetting['_id'], fn: (html: string) => void, escape = true): void => {
 	let html = '';
 
-	watchSetting<string>(template, (value) => {
+	settings.watch<string>(template, (value) => {
 		html = value || '';
 		fn(escape ? inlinecss(html) : html);
 	});
 
-	watchSetting<string>('email_style', () => {
+	settings.watch<string>('email_style', () => {
 		fn(escape ? inlinecss(html) : html);
 	});
 };
+
 export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string) => void): void => {
 	let html = '';
 	const wrapInlineCSS = _.debounce(() => fn(wrap(inlinecss(html))), 100);
 
-	watchSetting<string>('Email_Header', () => html && wrapInlineCSS());
-	watchSetting<string>('Email_Footer', () => html && wrapInlineCSS());
-	watchSetting<string>('email_style', () => html && wrapInlineCSS());
-	watchSetting<string>(template, (value) => {
+	settings.watch<string>('Email_Header', () => html && wrapInlineCSS());
+	settings.watch<string>('Email_Footer', () => html && wrapInlineCSS());
+	settings.watch<string>('email_style', () => html && wrapInlineCSS());
+	settings.watch<string>(template, (value) => {
 		html = value || '';
 		return html && wrapInlineCSS();
 	});
 };
-export const setSettings = (s: typeof settings): void => {
-	getSetting = s.get.bind(s);
-	watchSetting = s.watch.bind(s);
 
+settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 	getTemplate('Email_Header', (value) => {
 		contentHeader = replace(value || '');
 		body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
@@ -132,7 +128,7 @@ export const setSettings = (s: typeof settings): void => {
 	}, false);
 
 	body = inlinecss(`${ contentHeader } {{body}} ${ contentFooter }`);
-};
+});
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
