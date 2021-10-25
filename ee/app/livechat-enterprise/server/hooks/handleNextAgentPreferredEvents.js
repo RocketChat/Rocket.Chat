@@ -86,7 +86,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 
 	return inquiry;
 };
-settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
+settings.watch('Livechat_last_chatted_agent_routing', function(value) {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
@@ -98,7 +98,7 @@ settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
 	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 });
 
-settings.get('Omnichannel_contact_manager_routing', function(key, value) {
+settings.watch('Omnichannel_contact_manager_routing', function(value) {
 	contactManagerPreferred = value;
 });
 

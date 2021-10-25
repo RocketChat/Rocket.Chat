@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import './Presence';
+
 class Notifications {
 	constructor(...args) {
 		this.logged = Meteor.userId() !== null;
@@ -17,6 +19,7 @@ class Notifications {
 		this.streamRoom = new Meteor.Streamer('notify-room');
 		this.streamRoomUsers = new Meteor.Streamer('notify-room-users');
 		this.streamUser = new Meteor.Streamer('notify-user');
+
 		if (this.debug === true) {
 			this.onAll(function() {
 				return console.log('RocketChat.Notifications: onAll', args);

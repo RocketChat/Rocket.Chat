@@ -104,7 +104,6 @@ import '../app/models';
 import '../app/metrics';
 import '../app/callbacks';
 import '../app/notifications';
-import '../app/promises/server';
 import '../app/ui-utils';
 import '../app/action-links/server';
 import '../app/reactions/server';

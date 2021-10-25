@@ -32,7 +32,7 @@
 		"moleculer": "^0.14.14",
 		"mongodb": "^3.6.9",
 		"nats": "^1.4.12",
-		"pino": "^7.0.0-rc.6",
+		"pino": "^7.0.3",
 		"sodium-native": "^3.2.1",
 		"sodium-plus": "^0.9.0",
 		"underscore.string": "^3.3.5",
@@ -47,7 +47,7 @@
 		"@types/mongodb": "^3.6.19",
 		"@types/node": "^14.17.4",
 		"@types/ws": "^7.4.7",
-		"pino-pretty": "^7.0.1",
+		"pino-pretty": "^7.1.0",
 		"pm2": "^5.1.1",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.3.5"
