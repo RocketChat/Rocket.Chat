@@ -22,6 +22,7 @@ Meteor.startup(() => {
 			credentialSecret: escape(options.credentialSecret),
 			storagePrefix: escape(OAuth._storageTokenPrefix),
 			redirectUrl: escape(options.redirectUrl),
+			isCordova: Boolean(options.isCordova),
 		};
 
 		let template;
@@ -64,12 +65,14 @@ Meteor.startup(() => {
 			}
 		}
 
+		const isCordova = OAuth._isCordovaFromQuery(details.query);
 
 		if (details.error) {
 			res.end(renderEndOfLoginResponse({
 				loginStyle: details.loginStyle,
 				setCredentialToken: false,
 				redirectUrl,
+				isCordova,
 			}), 'utf-8');
 			return;
 		}
@@ -83,6 +86,7 @@ Meteor.startup(() => {
 			credentialToken: details.credentials.token,
 			credentialSecret: details.credentials.secret,
 			redirectUrl,
+			isCordova,
 		}), 'utf-8');
 	};
 });
