@@ -66254,6 +66254,29 @@
           ]
         }
       ]
+    },
+    "4.0.5": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23541",
+          "title": "[FIX] OAuth login not working on mobile app",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.0.5",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        }
+      ]
     }
   }
 }
