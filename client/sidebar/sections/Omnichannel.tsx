@@ -1,8 +1,11 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useCallback, useState } from 'react';
+import React, { memo, ReactElement, useState, useCallback } from 'react';
 
+import { VoipEvents } from '../../components/voip/SimpleVoipUser';
 import {
+	useIsVoipLibReady,
+	useVoipUser,
 	useOmnichannelShowQueueLink,
 	useOmnichannelQueueLink,
 	useOmnichannelDirectoryLink,
@@ -18,8 +21,10 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
-	const [voipCallAvailable, setVoipCallAvailable] = useState(useOmnichannelVoipCallAvailable());
-
+	const voipCallAvailable = useState(useOmnichannelVoipCallAvailable());
+	const [registered, setRegistered] = useState(false);
+	const voipLibIsReady = useIsVoipLibReady();
+	const voipLib = useVoipUser();
 	const agentAvailable = useOmnichannelAgentAvailable();
 
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
@@ -27,9 +32,9 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const directoryLink = useOmnichannelDirectoryLink();
 
 	const voipCallIcon = {
-		title: voipCallAvailable ? t('Available') : t('Not_Available'),
-		color: voipCallAvailable ? 'success' : undefined,
-		icon: voipCallAvailable ? 'phone' : 'phone-disabled',
+		title: !registered ? t('Enable') : t('Disable'),
+		color: !registered ? 'success' : undefined,
+		icon: !registered ? 'phone' : 'phone-disabled',
 	};
 
 	const availableIcon = {
@@ -52,10 +57,53 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 		}
 	});
 
+	const onUnregistrationError = useCallback((): void => {
+		console.log('Unregistration error');
+		voipLib?.removeListener(VoipEvents.unregistrationerror, onUnregistrationError);
+	}, [voipLib]);
+
+	const onUnregistered = useCallback((): void => {
+		console.log('unRegistered');
+		setRegistered(!registered);
+		voipLib?.removeListener(VoipEvents.unregistered, onUnregistered);
+		voipLib?.removeListener(VoipEvents.registrationerror, onUnregistrationError);
+	}, [onUnregistrationError, registered, voipLib]);
+
+	const onRegistrationError = useCallback((): void => {
+		console.log('Registration Error');
+		voipLib?.removeListener(VoipEvents.registrationerror, onRegistrationError);
+	}, [voipLib]);
+
+	const onRegistered = useCallback((): void => {
+		console.log('Registered');
+		setRegistered(!registered);
+		voipLib?.removeListener(VoipEvents.registered, onRegistered);
+		voipLib?.removeListener(VoipEvents.registrationerror, onRegistrationError);
+	}, [onRegistrationError, registered, voipLib]);
+
 	const handleVoipCallStatusChange = useCallback(() => {
 		// TODO: backend set voip call status
-		setVoipCallAvailable(!voipCallAvailable);
-	}, [voipCallAvailable]);
+		if (voipLibIsReady && voipCallAvailable) {
+			if (!registered) {
+				voipLib?.setListener(VoipEvents.registered, onRegistered);
+				voipLib?.setListener(VoipEvents.registrationerror, onRegistrationError);
+				voipLib?.registerEndpoint();
+			} else {
+				voipLib?.setListener(VoipEvents.unregistered, onUnregistered);
+				voipLib?.setListener(VoipEvents.unregistrationerror, onUnregistrationError);
+				voipLib?.unregisterEndpoint();
+			}
+		}
+	}, [
+		voipLibIsReady,
+		voipCallAvailable,
+		registered,
+		voipLib,
+		onRegistered,
+		onRegistrationError,
+		onUnregistered,
+		onUnregistrationError,
+	]);
 
 	return (
 		<Sidebar.TopBar.ToolBox {...props}>

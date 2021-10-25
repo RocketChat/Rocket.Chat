@@ -3,9 +3,12 @@ import React, { useState, useEffect, FC, useMemo, useCallback, memo } from 'reac
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { Notifications } from '../../app/notifications/client';
+import { APIClient } from '../../app/utils/client/lib/RestApiClient';
 import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { IRoom } from '../../definition/IRoom';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
+import { IExtensionConfig } from '../components/voip/IExtensionConfig';
+import { CallType, SimpleVoipUser } from '../components/voip/SimpleVoipUser';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { useMethod } from '../contexts/ServerContext';
@@ -41,6 +44,10 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const [routeConfig, setRouteConfig] = useState<OmichannelRoutingConfig | undefined>(undefined);
 
+	const [extensionConfig, setExtensionConfig] = useState<IExtensionConfig | undefined>(undefined);
+
+	const [voipUser, setVoipUser] = useState<SimpleVoipUser | undefined>(undefined);
+
 	const accessible = hasAccess && omniChannelEnabled;
 
 	useEffect(() => {
@@ -48,6 +55,31 @@ const OmnichannelProvider: FC = ({ children }) => {
 			return;
 		}
 
+		const initVoipLib = async (): Promise<void> => {
+			/* Init extension */
+			let extensionConfig = undefined;
+			let voipUser: SimpleVoipUser;
+			const extension = '80000';
+			try {
+				if (!extensionConfig) {
+					extensionConfig = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+						extension,
+					})) as unknown as IExtensionConfig;
+					setExtensionConfig(extensionConfig);
+					voipUser = new SimpleVoipUser(
+						extensionConfig.extension,
+						extensionConfig.password,
+						extensionConfig.sipRegistrar,
+						extensionConfig.websocketUri,
+						CallType.AUDIO_VIDEO,
+					);
+					await voipUser.initUserAgent();
+					setVoipUser(voipUser);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		};
 		const update = async (): Promise<void> => {
 			try {
 				const routeConfig = await getRoutingConfig();
@@ -60,16 +92,21 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, omnichannelRouting]);
+		if (voipCallAvailable) {
+			initVoipLib();
+		}
+	}, [accessible, getRoutingConfig, omnichannelRouting, voipCallAvailable]);
 
-	const enabled = accessible && !!user && !!routeConfig;
+	const enabled = accessible && !!user && !!routeConfig && !!extensionConfig && !!voipUser;
 	const manuallySelected =
 		enabled &&
 		canViewOmnichannelQueue &&
 		!!routeConfig &&
 		routeConfig.showQueue &&
 		!routeConfig.autoAssignAgent &&
-		agentAvailable;
+		agentAvailable &&
+		!!extensionConfig &&
+		!!voipUser;
 
 	useEffect(() => {
 		if (!manuallySelected) {
@@ -123,6 +160,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 				agentAvailable,
 				voipCallAvailable,
 				routeConfig,
+				voipUser,
+				extensionConfig,
 			};
 		}
 
@@ -139,6 +178,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 				  }
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
+			voipUser,
+			extensionConfig,
 		};
 	}, [
 		agentAvailable,
@@ -148,6 +189,8 @@ const OmnichannelProvider: FC = ({ children }) => {
 		queue,
 		routeConfig,
 		showOmnichannelQueueLink,
+		voipUser,
+		extensionConfig,
 	]);
 
 	return <OmnichannelContext.Provider children={children} value={contextValue} />;
