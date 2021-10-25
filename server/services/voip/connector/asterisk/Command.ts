@@ -1,5 +1,6 @@
 import { IConnection } from './IConnection';
-import { IVoipExtensionConfig, IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
+import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+
 /**
  * This class serves as a a base class for the different kind of call server objects
  * @remarks
@@ -40,14 +41,14 @@ export class Command {
 		this._connection = connection;
 	}
 
-	private _actionId: any | undefined;
+	private _actionid: any | undefined;
 
-	get actionId(): any {
-		return this._actionId;
+	get actionid(): any {
+		return this._actionid;
 	}
 
-	set actionId(id) {
-		this._actionId = id;
+	set actionid(id) {
+		this._actionid = id;
 	}
 
 	private _result: any;
@@ -83,6 +84,7 @@ export class Command {
 
 	constructor(command: string, parametersNeeded: boolean) {
 		this._commandText = command;
+		this._actionid = -1;
 		this._parametersNeeded = parametersNeeded;
 		this.result = {};
 	}
@@ -99,7 +101,7 @@ export class Command {
 		return returnPromise;
 	}
 
-	executeCommand(_data: any): Promise <IVoipExtensionConfig | IVoipExtensionBase []> {
+	executeCommand(_data: any): Promise <IVoipConnectorResult> {
 		return new Promise((_resolve, _reject) => {
 			_reject('unimplemented');
 		});
