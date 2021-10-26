@@ -135,5 +135,11 @@ module.exports = {
 				'react/no-multi-comp': 'off',
 			},
 		},
+		{
+			files: ['**/*.stories.tsx'],
+			rules: {
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
+			},
+		},
 	],
 };

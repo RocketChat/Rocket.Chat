@@ -148,5 +148,11 @@ module.exports = {
 				mocha: true,
 			},
 		},
+		{
+			files: ['**/*.stories.tsx'],
+			rules: {
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
+			},
+		},
 	],
 };
