@@ -4,8 +4,7 @@ import React, { PropsWithChildren, ReactElement } from 'react';
 import {
 	TranslationContext,
 	TranslationContextValue,
-} from '../../client/contexts/TranslationContext';
-import ServerProvider from '../../client/providers/ServerProvider';
+} from '../../../client/contexts/TranslationContext';
 
 let contextValue: TranslationContextValue;
 
@@ -19,7 +18,7 @@ const getContextValue = (): TranslationContextValue => {
 		defaultNS: 'project',
 		resources: {
 			en: {
-				project: require('../../packages/rocketchat-i18n/i18n/en.i18n.json'),
+				project: require('../../../packages/rocketchat-i18n/i18n/en.i18n.json'),
 			},
 		},
 		interpolation: {
@@ -69,9 +68,5 @@ function TranslationProviderMock({ children }: PropsWithChildren<{}>): ReactElem
 
 // eslint-disable-next-line react/no-multi-comp
 export function MeteorProviderMock({ children }: PropsWithChildren<{}>): ReactElement {
-	return (
-		<ServerProvider>
-			<TranslationProviderMock>{children}</TranslationProviderMock>
-		</ServerProvider>
-	);
+	return <TranslationProviderMock>{children}</TranslationProviderMock>;
 }
