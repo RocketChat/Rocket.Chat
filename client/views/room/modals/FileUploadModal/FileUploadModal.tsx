@@ -37,6 +37,9 @@ const FilePreviewModal = ({
 	invalidContentType,
 }: FilePreviewModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
+	useEffect(() => {
+		setName(fileName);
+	}, [fileName]);
 	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
