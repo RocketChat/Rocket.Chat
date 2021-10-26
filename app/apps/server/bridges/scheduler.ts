@@ -198,7 +198,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		}
 	}
 
-	public async startScheduler(): Promise<void> {
+	private async startScheduler(): Promise<void> {
 		if (!this.isConnected) {
 			await this.scheduler.start();
 			this.isConnected = true;
