@@ -1,7 +1,13 @@
 import { ISetting, ISettingColor, isSettingColor } from '../../../../definition/ISetting';
 
-export const getSettingDefaults = (setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>, blockedSettings: Set<string> = new Set(), hiddenSettings: Set<string> = new Set(), wizardRequiredSettings: Set<string> = new Set()): ISetting => {
+export const getSettingDefaults = (
+	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,
+	blockedSettings: Set<string> = new Set(),
+	hiddenSettings: Set<string> = new Set(),
+	wizardRequiredSettings: Set<string> = new Set(),
+): ISetting => {
 	const { _id, value, sorter, ...options } = setting;
+
 	return {
 		_id,
 		value,
