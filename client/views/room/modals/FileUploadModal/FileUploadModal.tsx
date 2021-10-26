@@ -37,9 +37,6 @@ const FilePreviewModal = ({
 	invalidContentType,
 }: FilePreviewModalProps): ReactElement => {
 	const [name, setName] = useState<string>(fileName);
-	useEffect(() => {
-		setName(fileName);
-	}, [fileName]);
 	const [description, setDescription] = useState<string>('');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -64,6 +61,10 @@ const FilePreviewModal = ({
 		}
 		onSubmit(name, description);
 	};
+
+	useEffect(() => {
+		setName(fileName);
+	}, [fileName]);
 
 	useEffect(() => {
 		if (invalidContentType) {
