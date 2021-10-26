@@ -63,12 +63,8 @@ module.exports = {
 			plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
 			rules: {
 				'@typescript-eslint/ban-ts-ignore': 'off',
-				'@typescript-eslint/explicit-function-return-type': [
-					'warn',
-					{
-						allowExpressions: true,
-					},
-				],
+				'@typescript-eslint/explicit-function-return-type': 'off',
+				'@typescript-eslint/explicit-module-boundary-types': 'warn',
 				'@typescript-eslint/indent': 'off',
 				'@typescript-eslint/interface-name-prefix': ['error', 'always'],
 				'@typescript-eslint/no-extra-parens': 'off',
