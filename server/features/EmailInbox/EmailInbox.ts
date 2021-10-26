@@ -7,6 +7,7 @@ import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
+import { settings } from '../../../app/settings/server';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -81,5 +82,7 @@ export async function configureEmailInboxes(): Promise<void> {
 }
 
 Meteor.startup(() => {
-	configureEmailInboxes();
+	settings.watchOnce('Livechat_Routing_Method', (_) => {
+		configureEmailInboxes();
+	});
 });

@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 
 /**
  * Microsoft translation service provider class representation.
@@ -31,7 +31,7 @@ class MsAutoTranslate extends AutoTranslate {
 		this.apiGetLanguages = 'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
 		this.breakSentence = 'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_MicrosoftAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_MicrosoftAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}

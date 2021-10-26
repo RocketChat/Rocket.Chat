@@ -7,7 +7,6 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { promises } from '../../../promises/client';
 import { RoomManager } from './RoomManager';
 import { readMessage } from './readMessages';
 import { renderMessageBody } from '../../../../client/lib/utils/renderMessageBody';
@@ -16,6 +15,7 @@ import { ChatMessage, ChatSubscription, ChatRoom } from '../../../models';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
 import { getUserPreference } from '../../../utils/client';
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {
@@ -69,7 +69,7 @@ export const upsertMessage = async ({ msg, subscription, uid = Tracker.nonreacti
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
-	msg = await promises.run('onClientMessageReceived', msg) || msg;
+	msg = await onClientMessageReceived(msg) || msg;
 
 	const { _id, ...messageToUpsert } = msg;
 

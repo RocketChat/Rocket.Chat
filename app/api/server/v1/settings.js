@@ -147,10 +147,7 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 				value: Match.Any,
 			});
 			if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
-				settings.storeSettingValue({
-					_id: this.urlParams._id,
-					value: this.bodyParams.value,
-				});
+				settings.set(Settings.findOneNotHiddenById(this.urlParams._id));
 				setValue(this.urlParams._id, this.bodyParams.value);
 				return API.v1.success();
 			}

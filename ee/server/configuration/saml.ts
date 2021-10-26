@@ -5,7 +5,6 @@ import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
 import { Users } from '../../../app/models/server';
 
-
 onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser}) => {
 		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;

@@ -74,7 +74,7 @@ const handleAfterCloseRoom = async (room: any = {}): Promise<any> => {
 	return room;
 };
 
-settings.get('Livechat_auto_transfer_chat_timeout', function(_, value) {
+settings.watch('Livechat_auto_transfer_chat_timeout', function(value) {
 	autoTransferTimeout = value as number;
 	if (!autoTransferTimeout || autoTransferTimeout === 0) {
 		callbacks.remove('livechat.afterTakeInquiry', 'livechat-auto-transfer-job-inquiry');
