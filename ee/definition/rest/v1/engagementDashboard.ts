@@ -22,7 +22,7 @@ export type EngagementDashboardEndpoints = {
 			total: number;
 		};
 	};
-	'engagement-dashboard/messages/origin': {
+	'/v1/engagement-dashboard/messages/origin': {
 		GET: (params: { start: Date; end: Date }) => {
 			origins: {
 				t: IRoom['t'];
@@ -30,7 +30,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/messages/top-five-popular-channels': {
+	'/v1/engagement-dashboard/messages/top-five-popular-channels': {
 		GET: (params: { start: Date; end: Date }) => {
 			channels: {
 				t: IRoom['t'];
@@ -40,7 +40,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/messages/messages-sent': {
+	'/v1/engagement-dashboard/messages/messages-sent': {
 		GET: (params: { start: Date; end: Date }) => {
 			days: { day: Date; messages: number }[];
 			period: {

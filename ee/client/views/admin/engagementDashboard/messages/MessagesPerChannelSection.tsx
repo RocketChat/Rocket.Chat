@@ -1,60 +1,53 @@
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
 import { usePeriod } from '../usePeriod';
+import { useMessageOrigins } from './useMessageOrigins';
+import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
 const MessagesPerChannelSection = (): ReactElement => {
-	const [period, periodSelectProps] = usePeriod();
+	const [, periodSelectProps] = usePeriod();
 
 	const t = useTranslation();
 
-	const params = useMemo(
-		() => ({
-			start: period.start.toISOString(),
-			end: period.end.toISOString(),
-		}),
-		[period],
+	const { data: messageOriginsData } = useMessageOrigins({ period: periodSelectProps.value });
+	const { data: topFivePopularChannelsData } = useTopFivePopularChannels({
+		period: periodSelectProps.value,
+	});
+
+	const pie = useMemo(
+		() =>
+			messageOriginsData?.origins?.reduce<{ [roomType: string]: number }>(
+				(obj, { messages, t }) => ({ ...obj, [t]: messages }),
+				{},
+			),
+		[messageOriginsData],
 	);
 
-	const { value: pieData } = useEndpointData('engagement-dashboard/messages/origin', params);
-	const { value: tableData } = useEndpointData(
-		'engagement-dashboard/messages/top-five-popular-channels',
-		params,
+	const table = useMemo(
+		() =>
+			topFivePopularChannelsData?.channels?.reduce<
+				{
+					i: number;
+					t: string;
+					name?: string;
+					messages: number;
+				}[]
+			>(
+				(entries, { t, messages, name, usernames }, i) => [
+					...entries,
+					{ i, t, name: name || usernames?.join(' × '), messages },
+				],
+				[],
+			),
+		[topFivePopularChannelsData],
 	);
-
-	const [pie, table] = useMemo(() => {
-		if (!pieData || !tableData) {
-			return [];
-		}
-
-		const pie = pieData.origins.reduce<{ [roomType: string]: number }>(
-			(obj, { messages, t }) => ({ ...obj, [t]: messages }),
-			{},
-		);
-
-		const table = tableData.channels.reduce<
-			{
-				i: number;
-				t: string;
-				name?: string;
-				messages: number;
-			}[]
-		>(
-			(entries, { t, messages, name, usernames }, i) => [
-				...entries,
-				{ i, t, name: name || usernames?.join(' × '), messages },
-			],
-			[],
-		);
-
-		return [pie, table];
-	}, [pieData, tableData]);
 
 	return (
 		<Section
@@ -63,10 +56,12 @@ const MessagesPerChannelSection = (): ReactElement => {
 				<>
 					<Select {...periodSelectProps} />
 					<DownloadDataButton
-						attachmentName={`MessagesPerChannelSection_start_${params.start}_end_${params.end}`}
+						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
 						headers={['Room Type', 'Messages']}
-						dataAvailable={!!pieData}
-						dataExtractor={() => pieData?.origins.map(({ t, messages }) => [t, messages])}
+						dataAvailable={!!messageOriginsData}
+						dataExtractor={() =>
+							messageOriginsData?.origins.map(({ t, messages }) => [t, messages])
+						}
 					/>
 				</>
 			}
@@ -101,23 +96,23 @@ const MessagesPerChannelSection = (): ReactElement => {
 																			id: 'd',
 																			label: t('Direct_Messages'),
 																			value: pie.d,
-																			color: '#FFD031',
+																			color: colors.y500,
 																		},
 																		{
 																			id: 'c',
 																			label: t('Private_Channels'),
 																			value: pie.c,
-																			color: '#2DE0A5',
+																			color: colors.g500,
 																		},
 																		{
 																			id: 'p',
 																			label: t('Public_Channels'),
 																			value: pie.p,
-																			color: '#1D74F5',
+																			color: colors.b500,
 																		},
 																	]}
 																	innerRadius={0.6}
-																	colors={['#FFD031', '#2DE0A5', '#1D74F5']}
+																	colors={[colors.y500, colors.g500, colors.b500]}
 																	// @ts-ignore
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
@@ -165,15 +160,15 @@ const MessagesPerChannelSection = (): ReactElement => {
 														<Box>
 															<Margins block='x4'>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color='#FFD031' />
+																	<LegendSymbol color={colors.y500} />
 																	{t('Private_Chats')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color='#2DE0A5' />
+																	<LegendSymbol color={colors.g500} />
 																	{t('Private_Channels')}
 																</Box>
 																<Box color='info' fontScale='p1'>
-																	<LegendSymbol color='#1D74F5' />
+																	<LegendSymbol color={colors.b500} />
 																	{t('Public_Channels')}
 																</Box>
 															</Margins>

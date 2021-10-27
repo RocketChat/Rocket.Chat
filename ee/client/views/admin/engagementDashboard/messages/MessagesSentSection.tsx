@@ -1,29 +1,22 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
+import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
-	const [period, periodSelectProps, periodLabel] = usePeriod();
+	const [, periodSelectProps, periodLabel] = usePeriod();
 
 	const t = useTranslation();
 
-	const params = useMemo(
-		() => ({
-			start: period.start.toISOString(),
-			end: period.end.toISOString(),
-		}),
-		[period],
-	);
-
-	const { value: data } = useEndpointData('engagement-dashboard/messages/messages-sent', params);
+	const { data } = useMessagesSent({ period: periodSelectProps.value });
 
 	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
 		useMemo(() => {
@@ -32,27 +25,28 @@ const MessagesSentSection = (): ReactElement => {
 			}
 
 			const values = Array.from(
-				{ length: moment(period.end).diff(period.start, 'days') + 1 },
+				{ length: moment(data.end).diff(data.start, 'days') + 1 },
 				(_, i) => ({
-					date: moment(period.start).add(i, 'days').toISOString(),
+					date: moment(data.start).add(i, 'days').toISOString(),
 					newMessages: 0,
 				}),
 			);
-			for (const { day, messages } of data.days) {
-				const i = moment(day).diff(period.start, 'days');
+
+			for (const { day, messages } of data.days ?? []) {
+				const i = moment(day).diff(data.start, 'days');
 				if (i >= 0) {
 					values[i].newMessages += messages;
 				}
 			}
 
 			return [
-				data.period.count,
-				data.period.variation,
-				data.yesterday.count,
-				data.yesterday.variation,
+				data.period?.count,
+				data.period?.variation,
+				data.yesterday?.count,
+				data.yesterday?.variation,
 				values,
 			];
-		}, [data, period]);
+		}, [data]);
 
 	return (
 		<Section
@@ -61,7 +55,7 @@ const MessagesSentSection = (): ReactElement => {
 				<>
 					<Select {...periodSelectProps} />
 					<DownloadDataButton
-						attachmentName={`MessagesSentSection_start_${params.start}_end_${params.end}`}
+						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Messages']}
 						dataAvailable={!!data}
 						dataExtractor={() => values?.map(({ date, newMessages }) => [date, newMessages])}
@@ -107,7 +101,7 @@ const MessagesSentSection = (): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											'#1d74f5',
+											colors.b500,
 										]}
 										enableLabel={false}
 										enableGridY={false}
@@ -133,7 +127,7 @@ const MessagesSentSection = (): ReactElement => {
 											axis: {
 												ticks: {
 													text: {
-														fill: '#9EA2A8',
+														fill: colors.n600,
 														fontFamily:
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
@@ -146,7 +140,7 @@ const MessagesSentSection = (): ReactElement => {
 											},
 											tooltip: {
 												container: {
-													backgroundColor: '#1F2329',
+													backgroundColor: colors.n900,
 													boxShadow:
 														'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 													borderRadius: 2,

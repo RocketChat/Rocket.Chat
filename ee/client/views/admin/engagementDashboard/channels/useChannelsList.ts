@@ -1,14 +1,7 @@
 import { useQuery } from 'react-query';
 
-import { APIClient } from '../../../../../../app/utils/client/lib/RestApiClient';
-import { Serialized } from '../../../../../../definition/Serialized';
-import { Params, Return } from '../../../../../../definition/rest';
+import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
-
-const getChannelsList = async (
-	params: Serialized<Params<'GET', '/v1/engagement-dashboard/channels/list'>[0]>,
-): Promise<Serialized<Return<'GET', '/v1/engagement-dashboard/channels/list'>>> =>
-	APIClient.get('/v1/engagement-dashboard/channels/list', params);
 
 export const useChannelsList = ({
 	period,
@@ -22,16 +15,20 @@ export const useChannelsList = ({
 	const fetchChannelsList = async () => {
 		const { start, end } = getPeriodRange(period);
 
-		return {
-			...(await getChannelsList({
-				start: start.toISOString(),
-				end: end.toISOString(),
-				offset,
-				count,
-			})),
-			start,
-			end,
-		};
+		const response = await getFromRestApi('/v1/engagement-dashboard/channels/list')({
+			start: start.toISOString(),
+			end: end.toISOString(),
+			offset,
+			count,
+		});
+
+		return response
+			? {
+					...response,
+					start,
+					end,
+			  }
+			: undefined;
 	};
 
 	return useQuery(
