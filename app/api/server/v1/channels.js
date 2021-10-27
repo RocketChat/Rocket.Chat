@@ -619,10 +619,15 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
 		// Special check for the permissions
-		if (hasPermission(this.userId, 'view-joined-room') && !Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
+
+		if (!canAccessRoom(findResult._id, this.userId)){
 			return API.v1.unauthorized();
 		}
-		if (!hasPermission(this.userId, 'view-c-room')) {
+
+		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
+		const canPreview = hasPermission(this.userId, 'preview-c-room') || hasPermission(this.userId, 'view-c-room');
+
+		if (findResult.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
 			return API.v1.unauthorized();
 		}
 
