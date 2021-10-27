@@ -111,7 +111,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			await roomsExport({
 				rid,
 				type: 'email',
-				toUsers: [toUsers],
+				toUsers,
 				toEmails: additionalEmails.split(','),
 				subject,
 				messages: selectedMessages,
