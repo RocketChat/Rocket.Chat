@@ -1,9 +1,10 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Flex, Margins, Skeleton } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { useWeeklyChatActivity } from './useWeeklyChatActivity';
 
 type ContentForDaysProps = {
 	displacement: number;
@@ -19,25 +20,17 @@ const ContentForDays = ({
 	timezone,
 }: ContentForDaysProps): ReactElement => {
 	const utc = timezone === 'utc';
-
-	const currentDate = useMemo(() => {
-		if (utc) {
-			return moment.utc().subtract(displacement, 'weeks');
-		}
-		return moment().subtract(displacement, 'weeks');
-	}, [displacement, utc]);
+	const { data } = useWeeklyChatActivity({ displacement, utc });
 
 	const formattedCurrentDate = useMemo(() => {
-		const startOfWeekDate = currentDate.clone().subtract(6, 'days');
-		return `${startOfWeekDate.format('L')} - ${currentDate.format('L')}`;
-	}, [currentDate]);
+		if (!data) {
+			return null;
+		}
 
-	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-
-	const { value: data } = useEndpointData(
-		'engagement-dashboard/users/chat-busier/weekly-data',
-		useMemo(() => params, [params]),
-	);
+		const endOfWeek = moment(data.day);
+		const startOfWeek = moment(data.day).subtract(6, 'days');
+		return `${startOfWeek.format('L')} - ${endOfWeek.format('L')}`;
+	}, [data]);
 
 	const values = useMemo(
 		() =>
@@ -94,7 +87,7 @@ const ContentForDays = ({
 										}}
 										colors={[
 											// TODO: Get it from theme
-											'#1d74f5',
+											colors.b500,
 										]}
 										enableLabel={false}
 										enableGridY={false}
@@ -118,7 +111,7 @@ const ContentForDays = ({
 											axis: {
 												ticks: {
 													text: {
-														fill: '#9EA2A8',
+														fill: colors.n600,
 														fontFamily:
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',

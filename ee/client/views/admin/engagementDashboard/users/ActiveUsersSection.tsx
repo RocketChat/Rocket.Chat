@@ -1,44 +1,24 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
+import { useActiveUsers } from './useActiveUsers';
 
 type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
 const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement => {
-	const t = useTranslation();
 	const utc = timezone === 'utc';
-	const formatDate = useFormatDate();
-	const period = useMemo(
-		() => ({
-			start: utc ? moment.utc().subtract(30, 'days') : moment().subtract(30, 'days'),
-			end: utc ? moment.utc().subtract(1, 'days') : moment().subtract(1, 'days'),
-		}),
-		[utc],
-	);
-
-	const params = useMemo(
-		() => ({
-			start: period.start.clone().subtract(29, 'days').toISOString(),
-			end: period.end.toISOString(),
-		}),
-		[period],
-	);
-
-	const { value: data } = useEndpointData(
-		'engagement-dashboard/users/active-users',
-		useMemo(() => params, [params]),
-	);
+	const { data } = useActiveUsers({ utc });
 
 	const [
 		countDailyActiveUsers,
@@ -56,12 +36,12 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		}
 
 		const createPoint = (i: number): { x: Date; y: number } => ({
-			x: moment(period.start).add(i, 'days').toDate(),
+			x: moment(data.start).add(i, 'days').toDate(),
 			y: 0,
 		});
 
 		const createPoints = (): { x: Date; y: number }[] =>
-			Array.from({ length: moment(period.end).diff(period.start, 'days') + 1 }, (_, i) =>
+			Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) =>
 				createPoint(i),
 			);
 
@@ -78,7 +58,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 						.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day })
 						.endOf('day')
 				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
-			const dateOffset = date.diff(period.start, 'days');
+			const dateOffset = date.diff(data.start, 'days');
 			if (dateOffset >= 0) {
 				map[dateOffset] = dayData.usersList;
 				dauValues[dateOffset].y = dayData.users;
@@ -120,14 +100,17 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 			wauValues,
 			mauValues,
 		];
-	}, [data, period.end, period.start, utc]);
+	}, [data, utc]);
+
+	const formatDate = useFormatDate();
+	const t = useTranslation();
 
 	return (
 		<Section
 			title={t('Active_users')}
 			filter={
 				<DownloadDataButton
-					attachmentName={`ActiveUsersSection_start_${params.start}_end_${params.end}`}
+					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end}`}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
 					dataExtractor={() => {
@@ -135,7 +118,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 
 						for (let i = 0; i < 30; i++) {
 							values.push([
-								moment(dauValues[i].x).format('YYYY-MM-DD'),
+								dauValues[i].x.toISOString(),
 								dauValues[i].y,
 								wauValues[i].y,
 								mauValues[i].y,
@@ -150,41 +133,29 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 			<CounterSet
 				counters={[
 					{
-						count: data ? (
-							countDailyActiveUsers
-						) : (
-							<Skeleton variant='rect' width='3ex' height='1em' />
-						),
-						variation: data ? diffDailyActiveUsers : 0,
+						count: countDailyActiveUsers ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: diffDailyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color='#D1EBFE' /> {t('Daily_Active_Users')}
+								<LegendSymbol color={colors.b200} /> {t('Daily_Active_Users')}
 							</>
 						),
 					},
 					{
-						count: data ? (
-							countWeeklyActiveUsers
-						) : (
-							<Skeleton variant='rect' width='3ex' height='1em' />
-						),
-						variation: data ? diffWeeklyActiveUsers : 0,
+						count: countWeeklyActiveUsers ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: diffWeeklyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color='#76B7FC' /> {t('Weekly_Active_Users')}
+								<LegendSymbol color={colors.b300} /> {t('Weekly_Active_Users')}
 							</>
 						),
 					},
 					{
-						count: data ? (
-							countMonthlyActiveUsers
-						) : (
-							<Skeleton variant='rect' width='3ex' height='1em' />
-						),
-						variation: data ? diffMonthlyActiveUsers : 0,
+						count: countMonthlyActiveUsers ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: diffMonthlyActiveUsers ?? 0,
 						description: (
 							<>
-								<LegendSymbol color='#1D74F5' /> {t('Monthly_Active_Users')}
+								<LegendSymbol color={colors.b500} /> {t('Monthly_Active_Users')}
 							</>
 						),
 					},
@@ -242,7 +213,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											right: 0,
 											left: 40,
 										}}
-										colors={['#D1EBFE', '#76B7FC', '#1D74F5']}
+										colors={[colors.b200, colors.b300, colors.b500]}
 										axisLeft={{
 											// TODO: Get it from theme
 											tickSize: 0,

@@ -6,11 +6,11 @@ import React, { ReactElement, useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
+import { useNewUsers } from './useNewUsers';
 
 const TICK_WIDTH = 45;
 
@@ -20,37 +20,29 @@ type NewUsersSectionProps = {
 
 const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 	const utc = timezone === 'utc';
-	const [period, periodSelectProps, periodLabel] = usePeriod({ utc });
+	const [, periodSelectProps, periodLabel] = usePeriod({ utc });
+	const { data } = useNewUsers({ period: periodSelectProps.value, utc });
 
 	const t = useTranslation();
 
 	const formatDate = useFormatDate();
-
-	const params = useMemo(
-		() => ({
-			start: period.start.toISOString(),
-			end: period.end.toISOString(),
-		}),
-		[period],
-	);
-
-	const { value: data } = useEndpointData(
-		'engagement-dashboard/users/new-users',
-		useMemo(() => params, [params]),
-	);
 
 	const { ref: sizeRef, contentBoxSize: { inlineSize = 600 } = {} } = useResizeObserver();
 
 	const maxTicks = Math.ceil(inlineSize / TICK_WIDTH);
 
 	const tickValues = useMemo(() => {
-		const arrayLength = moment(period.end).diff(period.start, 'days') + 1;
+		if (!data) {
+			return undefined;
+		}
+
+		const arrayLength = moment(data.end).diff(data.start, 'days') + 1;
 		if (arrayLength <= maxTicks || !maxTicks) {
 			return undefined;
 		}
 
 		const values = Array.from({ length: arrayLength }, (_, i) =>
-			moment(period.start).add(i, 'days').format('YYYY-MM-DD'),
+			moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
 		);
 
 		const relation = Math.ceil(values.length / maxTicks);
@@ -61,7 +53,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			}
 			return acc;
 		}, [] as string[]);
-	}, [period, maxTicks]);
+	}, [data, maxTicks]);
 
 	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
 		useMemo(() => {
@@ -70,16 +62,16 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			}
 
 			const values = Array.from(
-				{ length: moment(period.end).diff(period.start, 'days') + 1 },
+				{ length: moment(data.end).diff(data.start, 'days') + 1 },
 				(_, i) => ({
-					date: moment(period.start).add(i, 'days').format('YYYY-MM-DD'),
+					date: moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
 					newUsers: 0,
 				}),
 			);
 			for (const { day, users } of data.days) {
 				const i = utc
-					? moment(day).utc().diff(period.start, 'days')
-					: moment(day).diff(period.start, 'days');
+					? moment(day).utc().diff(data.start, 'days')
+					: moment(day).diff(data.start, 'days');
 				if (i >= 0) {
 					values[i].newUsers += users;
 				}
@@ -92,7 +84,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 				data.yesterday.variation,
 				values,
 			];
-		}, [data, period, utc]);
+		}, [data, utc]);
 
 	return (
 		<Section
@@ -101,7 +93,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 				<>
 					<Select {...periodSelectProps} />
 					<DownloadDataButton
-						attachmentName={`NewUsersSection_start_${params.start}_end_${params.end}`}
+						attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'New Users']}
 						dataAvailable={!!data}
 						dataExtractor={() => values?.map(({ date, newUsers }) => [date, newUsers])}

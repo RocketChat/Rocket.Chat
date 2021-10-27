@@ -4,10 +4,10 @@ import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
+import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 
 type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
@@ -17,23 +17,11 @@ const UsersByTimeOfTheDaySection = ({
 	timezone,
 }: UsersByTimeOfTheDaySectionProps): ReactElement => {
 	const utc = timezone === 'utc';
+	const [, periodSelectProps] = usePeriod({ utc });
 
-	const [period, periodSelectProps] = usePeriod({ utc });
+	const { data } = useUsersByTimeOfTheDay({ period: periodSelectProps.value, utc });
 
 	const t = useTranslation();
-
-	const params = useMemo(
-		() => ({
-			start: period.start.toISOString(),
-			end: period.end.toISOString(),
-		}),
-		[period],
-	);
-
-	const { value: data } = useEndpointData(
-		'engagement-dashboard/users/users-by-time-of-the-day-in-a-week',
-		useMemo(() => params, [params]),
-	);
 
 	const [dates, values] = useMemo(() => {
 		if (!data) {
@@ -43,11 +31,11 @@ const UsersByTimeOfTheDaySection = ({
 		const dates = Array.from(
 			{
 				length: utc
-					? moment(period.end).diff(period.start, 'days') + 1
-					: moment(period.end).diff(period.start, 'days') - 1,
+					? moment(data.end).diff(data.start, 'days') + 1
+					: moment(data.end).diff(data.start, 'days') - 1,
 			},
 			(_, i) =>
-				moment(period.start)
+				moment(data.start)
 					.endOf('day')
 					.add(utc ? i : i + 1, 'days'),
 		);
@@ -70,13 +58,13 @@ const UsersByTimeOfTheDaySection = ({
 				? moment.utc([year, month - 1, day, hour])
 				: moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
 
-			if (utc || (!date.isSame(period.end) && !date.clone().startOf('day').isSame(period.start))) {
+			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
 				values[date.hour()][date.endOf('day').toISOString()] += users;
 			}
 		}
 
 		return [dates.map((date) => date.toISOString()), values];
-	}, [data, period.end, period.start, utc]);
+	}, [data, utc]);
 
 	return (
 		<Section
@@ -85,7 +73,7 @@ const UsersByTimeOfTheDaySection = ({
 				<>
 					<Select {...periodSelectProps} />
 					<DownloadDataButton
-						attachmentName={`UsersByTimeOfTheDaySection_start_${params.start}_end_${params.end}`}
+						attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Users']}
 						dataAvailable={!!data}
 						dataExtractor={() =>

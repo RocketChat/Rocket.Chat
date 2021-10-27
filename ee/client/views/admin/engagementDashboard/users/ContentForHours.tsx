@@ -1,11 +1,12 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Button, Chevron, Skeleton } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
+import { useHourlyChatActivity } from './useHourlyChatActivity';
 
 type ContentForHoursProps = {
 	displacement: number;
@@ -20,27 +21,12 @@ const ContentForHours = ({
 	onNextDateClick,
 	timezone,
 }: ContentForHoursProps): ReactElement => {
+	const utc = timezone === 'utc';
+	const { data } = useHourlyChatActivity({ displacement, utc });
+
 	const t = useTranslation();
 	const isLgScreen = useBreakpoints().includes('lg');
-	const utc = timezone === 'utc';
 
-	const currentDate = useMemo(() => {
-		if (utc) {
-			return moment
-				.utc({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-				.subtract(1, 'days')
-				.subtract(displacement, 'days');
-		}
-		return moment({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-			.subtract(1)
-			.subtract(displacement, 'days');
-	}, [displacement, utc]);
-
-	const params = useMemo(() => ({ start: currentDate.toISOString() }), [currentDate]);
-	const { value: data } = useEndpointData(
-		'engagement-dashboard/users/chat-busier/hourly-data',
-		useMemo(() => params, [params]),
-	);
 	const values = useMemo(() => {
 		if (!data) {
 			return [];
@@ -51,7 +37,8 @@ const ContentForHours = ({
 			hour: String(divider * i),
 			users: 0,
 		}));
-		for (const { hour, users } of data.hours) {
+
+		for (const { hour, users } of data?.hours ?? []) {
 			const i = Math.floor(hour / divider);
 			values[i] = values[i] || { hour: String(divider * i), users: 0 };
 			values[i].users += users;
@@ -67,7 +54,7 @@ const ContentForHours = ({
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
 				<Box mi='x8' flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
-					{currentDate.format(displacement < 7 ? 'dddd' : 'L')}
+					{data ? moment(data.day).format(displacement < 7 ? 'dddd' : 'L') : null}
 				</Box>
 				<Button ghost square small disabled={displacement === 0} onClick={onNextDateClick}>
 					<Chevron right size='x20' style={{ verticalAlign: 'middle' }} />
@@ -90,7 +77,7 @@ const ContentForHours = ({
 								}}
 								colors={[
 									// TODO: Get it from theme
-									'#1d74f5',
+									colors.b500,
 								]}
 								enableLabel={false}
 								enableGridY={false}
@@ -114,7 +101,7 @@ const ContentForHours = ({
 									axis: {
 										ticks: {
 											text: {
-												fill: '#9EA2A8',
+												fill: colors.n600,
 												fontFamily:
 													'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 												fontSize: '10px',
@@ -127,7 +114,7 @@ const ContentForHours = ({
 									},
 									tooltip: {
 										// @ts-ignore
-										backgroundColor: '#1F2329',
+										backgroundColor: colors.n900,
 										boxShadow:
 											'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 										borderRadius: 2,

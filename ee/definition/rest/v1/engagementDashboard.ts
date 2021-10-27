@@ -53,12 +53,12 @@ export type EngagementDashboardEndpoints = {
 			};
 		};
 	};
-	'engagement-dashboard/users/active-users': {
+	'/v1/engagement-dashboard/users/active-users': {
 		GET: (params: { start: Date; end: Date }) => {
 			month: IDailyActiveUsers[];
 		};
 	};
-	'engagement-dashboard/users/chat-busier/weekly-data': {
+	'/v1/engagement-dashboard/users/chat-busier/weekly-data': {
 		GET: (params: { start: Date }) => {
 			month: {
 				users: number;
@@ -68,7 +68,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/users/chat-busier/hourly-data': {
+	'/v1/engagement-dashboard/users/chat-busier/hourly-data': {
 		GET: (params: { start: Date }) => {
 			hours: {
 				users: number;
@@ -76,7 +76,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/users/users-by-time-of-the-day-in-a-week': {
+	'/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week': {
 		GET: (params: { start: Date; end: Date }) => {
 			week: {
 				users: number;
@@ -87,7 +87,7 @@ export type EngagementDashboardEndpoints = {
 			}[];
 		};
 	};
-	'engagement-dashboard/users/new-users': {
+	'/v1/engagement-dashboard/users/new-users': {
 		GET: (params: { start: Date; end: Date }) => {
 			days: { day: Date; users: number }[];
 			period: {
