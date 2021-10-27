@@ -123,7 +123,7 @@ export class AMIConnection implements IConnection {
 	}
 
 	closeConnection(): void {
-		this.logger.log({ msg: 'closeConnection()' });
+		this.logger.info({ msg: 'closeConnection()' });
 		this.connection.disconnect();
 	}
 }

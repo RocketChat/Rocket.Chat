@@ -17,7 +17,7 @@ class VoIPLayout
 	extends React.Component<{}, IState>
 	implements IRegisterHandlerDelegate, IConnectionDelegate, ICallEventDelegate
 {
-	extensionConfig: any;
+	VoipUserIdentity: any;
 
 	userHandler: VoIPUser | undefined;
 
@@ -47,7 +47,112 @@ class VoIPLayout
 		this.webSocketPath = React.createRef();
 		this.callTypeSelection = React.createRef();
 		this.logger = new ClientLogger('VoIPLayout');
-		this.extensionConfig = null;
+		this.VoipUserIdentity = null;
+	}
+
+	private async apitest(): Promise<void> {
+		/*
+		try {
+			this.logger.info('Executing voipServerConfig.callServer');
+			const output = await APIClient.v1.post(
+				'voipServerConfig.callServer',
+				{},
+				{
+					host: 'omni-asterisk.dev.rocket.chat',
+					websocketPort: 443,
+					serverName: 'OmniAsterisk',
+					websocketPath: 'wss://omni-asterisk.dev.rocket.chat/ws',
+				},
+			);
+			this.logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+		try {
+			this.logger.info('Executing voipServerConfig.management');
+			const output = await APIClient.v1.post(
+				'voipServerConfig.management',
+				{},
+				{
+					host: 'omni-asterisk.dev.rocket.chat',
+					port: 5038,
+					serverName: 'OmniAsterisk',
+					username: 'amol',
+					password: '1234',
+				},
+			);
+			this.logger.info('voipServerConfig.management output = ', JSON.stringify(output));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+		*/
+		try {
+			this.logger.info('Executing connector.getVersion');
+			const list = await APIClient.v1.get('connector.getVersion');
+			this.logger.info('connector.getVersion output = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+		try {
+			this.logger.info('Executing voipServerConfig.management');
+			const output = await APIClient.v1.get('voipServerConfig.management');
+			this.logger.info('voipServerConfig.management output = ', JSON.stringify(output));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+		try {
+			this.logger.info('Executing voipServerConfig.callServer');
+			const output = await APIClient.v1.get('voipServerConfig.callServer');
+			this.logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+
+		try {
+			this.logger.info('Executing queues.getSummary');
+			const list = await APIClient.v1.get('voip/queues.getSummary');
+			this.logger.info('queues.getSummary output = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+
+		try {
+			this.logger.info('Executing queues.getQueuedCallsForThisExtension');
+			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
+				extension: '80000',
+			});
+			this.logger.info('queues.getQueuedCallsForThisExtension output = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+
+		try {
+			this.logger.info('Executing connector.extension.list');
+			const list = await APIClient.v1.get('connector.extension.list');
+			this.logger.info('connector.extension.list output = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+
+		try {
+			this.logger.info('Executing connector.extension.getDetails');
+			const list = await APIClient.v1.get('connector.extension.getDetails', {
+				extension: '80000',
+			});
+			this.logger.info('connector.extension.getDetails output = ', JSON.stringify(list));
+		} catch (error) {
+			this.logger.error('error in API');
+		}
+
+		try {
+			const userIdentity = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+				extension: '80000',
+			});
+			this.logger.info('list = ', JSON.stringify(userIdentity));
+		} catch (error) {
+			this.logger.error('error in API');
+			throw error;
+		}
 	}
 
 	private async initUserAgent(): Promise<void> {
@@ -56,34 +161,34 @@ class VoIPLayout
 			extension = this.userName.current.value;
 		}
 		try {
-			this.extensionConfig = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+			this.VoipUserIdentity = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
 				extension,
 			});
-			this.logger.info('list = ', JSON.stringify(this.extensionConfig));
+			this.logger.info('list = ', JSON.stringify(this.VoipUserIdentity));
 		} catch (error) {
 			this.logger.error('error in API');
 			throw error;
 		}
 
-		if (this.extensionConfig.extension && this.userName.current) {
-			this.userName.current.textContent = this.extensionConfig.extension;
+		if (this.VoipUserIdentity.extensionDetails.extension && this.userName.current) {
+			this.userName.current.textContent = this.VoipUserIdentity.extensionDetails.extension;
 			this.userName.current.disabled = true;
-			this.config.authUserName = this.extensionConfig.extension;
+			this.config.authUserName = this.VoipUserIdentity.extensionDetails.extension;
 		}
-		if (this.extensionConfig.password && this.password.current) {
-			this.password.current.value = this.extensionConfig.password;
+		if (this.VoipUserIdentity.extensionDetails.password && this.password.current) {
+			this.password.current.value = this.VoipUserIdentity.extensionDetails.password;
 			this.password.current.disabled = true;
-			this.config.authPassword = this.extensionConfig.password;
+			this.config.authPassword = this.VoipUserIdentity.extensionDetails.password;
 		}
-		if (this.extensionConfig.sipRegistrar && this.registrar.current) {
-			this.registrar.current.value = this.extensionConfig.sipRegistrar;
+		if (this.VoipUserIdentity.host && this.registrar.current) {
+			this.registrar.current.value = this.VoipUserIdentity.host;
 			this.registrar.current.disabled = true;
-			this.config.sipRegistrarHostnameOrIP = this.extensionConfig.sipRegistrar;
+			this.config.sipRegistrarHostnameOrIP = this.VoipUserIdentity.host;
 		}
-		if (this.extensionConfig.websocketUri && this.webSocketPath.current) {
-			this.webSocketPath.current.value = this.extensionConfig.websocketUri;
+		if (this.VoipUserIdentity.callServerConfig.websocketPath && this.webSocketPath.current) {
+			this.webSocketPath.current.value = this.VoipUserIdentity.callServerConfig.websocketPath;
 			this.webSocketPath.current.disabled = true;
-			this.config.webSocketURI = this.extensionConfig.websocketUri;
+			this.config.webSocketURI = this.VoipUserIdentity.callServerConfig.websocketPath;
 		}
 
 		this.config.enableVideo = this.state.enableVideo;
@@ -106,7 +211,7 @@ class VoIPLayout
 	}
 
 	private async resetUserAgent(): Promise<void> {
-		this.extensionConfig = null;
+		this.VoipUserIdentity = null;
 		if (this.userName.current) {
 			this.userName.current.textContent = '';
 			this.userName.current.disabled = false;
@@ -225,6 +330,7 @@ class VoIPLayout
 	/* CallEventDelegate implementation end */
 
 	async componentDidMount(): Promise<void> {
+		this.apitest();
 		let element = document.getElementById('register');
 		if (element) {
 			element.style.display = 'none';

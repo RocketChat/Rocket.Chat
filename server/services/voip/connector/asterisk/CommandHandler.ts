@@ -21,30 +21,52 @@ import { CommandType } from './Command';
 import { AMIConnection } from './ami/AMIConnection';
 import { CommandFactory } from './ami/CommandFactory';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
+import { IVoipService } from '../../../../sdk/types/IVoipService';
+import { IManagementConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
 
 const version = 'Asterisk Connector 1.0';
 
 export class CommandHandler {
 	private connections: Map<CommandType, IConnection>;
 
+	private service: IVoipService;
+
 	private logger: Logger;
 
-	constructor() {
+	constructor(service: IVoipService) {
 		this.logger = new Logger('CommandHandler');
 		this.connections = new Map<CommandType, IConnection>();
+		this.service = service;
+	}
 
+	async initConnection(commandType: CommandType): Promise<void> {
 		// Initialize available connections
 		// const connection = new AMIConnection();
 		const connection = new AMIConnection();
-		/* TODO(Amol) : This information must come from
-		 * an API/Database.
-		 * Currently hardcoded. Hence commenting the code
+		let config: IVoipServerConfig | null;
+		if (commandType === CommandType.AMI) {
+			config = await this.service.getServerConfigData(ServerType.MANAGEMENT);
+		} else {
+			config = null;
+		}
+		if (!config) {
+			this.logger.warn('Management server configuration not found');
+			throw Error('Management server configuration not found');
+		}
+		/**
+		 * If we have the same type of connection already established, close it
+		 * and remove it from the map.
 		 */
-		connection.connect('omni-asterisk.dev.rocket.chat',
-			'5038',
-			'amol',
-			'1234');
-		this.connections.set(CommandType.AMI, connection);
+		if (this.connections.get(commandType) && this.connections.get(commandType)?.isConnected()) {
+			this.logger.error({ msg: 'connection exists. Closing the connection.' });
+			this.connections.get(commandType)?.closeConnection();
+			this.connections.delete(commandType);
+		}
+		connection.connect(config.host,
+			(config.configData as IManagementConfigData).port.toString(),
+			(config.configData as IManagementConfigData).username,
+			(config.configData as IManagementConfigData).password);
+		this.connections.set(commandType, connection);
 	}
 
 	/* Executes |commandToExecute| on a particular command object
