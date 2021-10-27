@@ -1,7 +1,6 @@
 import debounce from 'lodash.debounce';
 import memoize from 'lodash.memoize';
 
-
 export interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
 	(...args: Parameters<F>): void;
 	flush: (...args: Parameters<F>) => void;

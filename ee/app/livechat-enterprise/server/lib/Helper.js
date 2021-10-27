@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import memoizeDebounce from './debounceByParams';
+import { memoizeDebounce } from './debounceByParams';
 import {
 	LivechatDepartment,
 	Users,
