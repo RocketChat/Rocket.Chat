@@ -13,30 +13,24 @@ import React, { ReactElement, useMemo, useState } from 'react';
 
 import Growth from '../../../../../../client/components/data/Growth';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
-import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import { usePeriod } from '../usePeriod';
+import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {
-	const [period, periodSelectProps] = usePeriod();
+	const [, periodSelectProps] = usePeriod();
 
 	const t = useTranslation();
 
 	const [current, setCurrent] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 
-	const params = useMemo(
-		() => ({
-			start: period.start.toISOString(),
-			end: period.end.toISOString(),
-			offset: current,
-			count: itemsPerPage,
-		}),
-		[period, current, itemsPerPage],
-	);
-
-	const { value: data } = useEndpointData('engagement-dashboard/channels/list', params);
+	const { data } = useChannelsList({
+		period: periodSelectProps.value,
+		offset: current,
+		count: itemsPerPage,
+	});
 
 	const channels = useMemo(() => {
 		if (!data) {
@@ -61,7 +55,7 @@ const ChannelsTab = (): ReactElement => {
 				<>
 					<Select {...periodSelectProps} />
 					<DownloadDataButton
-						attachmentName={`Channels_start_${params.start}_end_${params.end}`}
+						attachmentName={`Channels_start_${data?.start}_end_${data?.end}`}
 						headers={['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date']}
 						dataAvailable={!!data}
 						dataExtractor={() =>
@@ -142,8 +136,8 @@ const ChannelsTab = (): ReactElement => {
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={(): string => t('Items_per_page:')}
-					showingResultsLabel={({ count, current, itemsPerPage }): string =>
+					itemsPerPageLabel={() => t('Items_per_page:')}
+					showingResultsLabel={({ count, current, itemsPerPage }) =>
 						t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)
 					}
 					count={(data && data.total) || 0}
