@@ -1,4 +1,4 @@
-export const getDefaultSubscriptionPref = (userPref) => {
+export const agetDefaultSubscriptionPref = (userPref) => {
 	const subscription = {};
 
 	const {
@@ -26,5 +26,6 @@ export const getDefaultSubscriptionPref = (userPref) => {
 		subscription.emailNotifications = emailNotificationMode;
 		subscription.emailPrefOrigin = 'user';
 	}
+
 	return subscription;
 };
