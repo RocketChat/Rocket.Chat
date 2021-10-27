@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { render } from 'react-dom';
 
 import AppRoot from '../views/root/AppRoot';
+import { ErrorBoundary } from '../views/root/ErrorBoundary';
 
 const createContainer = (): Element => {
 	const container = document.getElementById('react-root');
@@ -16,7 +16,10 @@ const createContainer = (): Element => {
 	return container;
 };
 
-Meteor.startup(() => {
-	const container = createContainer();
-	render(<AppRoot />, container);
-});
+const container = createContainer();
+render(
+	<ErrorBoundary>
+		<AppRoot />
+	</ErrorBoundary>,
+	container,
+);

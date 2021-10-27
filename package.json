@@ -152,7 +152,8 @@
 	},
 	"dependencies": {
 		"@babel/runtime": "^7.14.6",
-		"@bugsnag/js": "^7.11.0",
+		"@bugsnag/js": "^7.13.2",
+		"@bugsnag/plugin-react": "^7.13.2",
 		"@google-cloud/language": "^3.8.0",
 		"@google-cloud/storage": "^2.5.0",
 		"@nivo/bar": "0.73.1",
