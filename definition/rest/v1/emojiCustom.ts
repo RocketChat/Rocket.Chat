@@ -1,4 +1,4 @@
-import type { ICustomEmojiDescriptor } from '../../../../../definition/ICustomEmojiDescriptor';
+import type { ICustomEmojiDescriptor } from '../../ICustomEmojiDescriptor';
 
 export type EmojiCustomEndpoints = {
 	'emoji-custom.list': {

@@ -1,4 +1,4 @@
-import type { IStats } from '../../../../../definition/IStats';
+import type { IStats } from '../../IStats';
 
 export type StatisticsEndpoints = {
 	statistics: {

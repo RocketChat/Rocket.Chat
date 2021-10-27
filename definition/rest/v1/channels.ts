@@ -1,6 +1,6 @@
-import type { IMessage } from '../../../../../definition/IMessage/IMessage';
-import type { IRoom } from '../../../../../definition/IRoom';
-import type { IUser } from '../../../../../definition/IUser';
+import type { IMessage } from '../../IMessage/IMessage';
+import type { IRoom } from '../../IRoom';
+import type { IUser } from '../../IUser';
 
 export type ChannelsEndpoints = {
 	'channels.files': {

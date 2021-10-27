@@ -1,5 +1,5 @@
-import type { ITeam } from '../../../../../definition/ITeam';
-import type { IUser } from '../../../../../definition/IUser';
+import type { ITeam } from '../../ITeam';
+import type { IUser } from '../../IUser';
 
 export type UsersEndpoints = {
 	'users.2fa.sendEmailCode': {

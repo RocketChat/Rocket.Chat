@@ -1,25 +1,25 @@
-import type { ExtractKeys, ValueOf } from '../../../definition/utils';
-import type { EngagementDashboardEndpoints } from '../../../ee/client/contexts/ServerContext/endpoints/v1/engagementDashboard';
-import type { AppsEndpoints } from './endpoints/apps';
-import type { ChannelsEndpoints } from './endpoints/v1/channels';
-import type { ChatEndpoints } from './endpoints/v1/chat';
-import type { CloudEndpoints } from './endpoints/v1/cloud';
-import type { CustomUserStatusEndpoints } from './endpoints/v1/customUserStatus';
-import type { DmEndpoints } from './endpoints/v1/dm';
-import type { DnsEndpoints } from './endpoints/v1/dns';
-import type { EmojiCustomEndpoints } from './endpoints/v1/emojiCustom';
-import type { GroupsEndpoints } from './endpoints/v1/groups';
-import type { ImEndpoints } from './endpoints/v1/im';
-import type { LDAPEndpoints } from './endpoints/v1/ldap';
-import type { LicensesEndpoints } from './endpoints/v1/licenses';
-import type { MiscEndpoints } from './endpoints/v1/misc';
-import type { OmnichannelEndpoints } from './endpoints/v1/omnichannel';
-import type { RoomsEndpoints } from './endpoints/v1/rooms';
-import type { StatisticsEndpoints } from './endpoints/v1/statistics';
-import type { TeamsEndpoints } from './endpoints/v1/teams';
-import type { UsersEndpoints } from './endpoints/v1/users';
+import type { EnterpriseEndpoints } from '../../ee/definition/rest';
+import type { ExtractKeys, ValueOf } from '../utils';
+import type { AppsEndpoints } from './apps';
+import type { ChannelsEndpoints } from './v1/channels';
+import type { ChatEndpoints } from './v1/chat';
+import type { CloudEndpoints } from './v1/cloud';
+import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
+import type { DmEndpoints } from './v1/dm';
+import type { DnsEndpoints } from './v1/dns';
+import type { EmojiCustomEndpoints } from './v1/emojiCustom';
+import type { GroupsEndpoints } from './v1/groups';
+import type { ImEndpoints } from './v1/im';
+import type { LDAPEndpoints } from './v1/ldap';
+import type { LicensesEndpoints } from './v1/licenses';
+import type { MiscEndpoints } from './v1/misc';
+import type { OmnichannelEndpoints } from './v1/omnichannel';
+import type { RoomsEndpoints } from './v1/rooms';
+import type { StatisticsEndpoints } from './v1/statistics';
+import type { TeamsEndpoints } from './v1/teams';
+import type { UsersEndpoints } from './v1/users';
 
-type Endpoints = ChatEndpoints &
+type CommunityEndpoints = ChatEndpoints &
 	ChannelsEndpoints &
 	CloudEndpoints &
 	CustomUserStatusEndpoints &
@@ -32,12 +32,13 @@ type Endpoints = ChatEndpoints &
 	RoomsEndpoints &
 	TeamsEndpoints &
 	UsersEndpoints &
-	EngagementDashboardEndpoints &
 	AppsEndpoints &
 	OmnichannelEndpoints &
 	StatisticsEndpoints &
 	LicensesEndpoints &
 	MiscEndpoints;
+
+type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 
 type Endpoint = UnionizeEndpoints<Endpoints>;
 

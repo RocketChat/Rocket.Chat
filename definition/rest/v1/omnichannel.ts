@@ -1,10 +1,10 @@
-import { ILivechatDepartment } from '../../../../../definition/ILivechatDepartment';
-import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
-import { ILivechatTag } from '../../../../../definition/ILivechatTag';
-import { IOmnichannelCannedResponse } from '../../../../../definition/IOmnichannelCannedResponse';
-import { IOmnichannelRoom, IRoom } from '../../../../../definition/IRoom';
-import { ISetting } from '../../../../../definition/ISetting';
-import { IUser } from '../../../../../definition/IUser';
+import { ILivechatDepartment } from '../../ILivechatDepartment';
+import { ILivechatMonitor } from '../../ILivechatMonitor';
+import { ILivechatTag } from '../../ILivechatTag';
+import { IOmnichannelCannedResponse } from '../../IOmnichannelCannedResponse';
+import { IOmnichannelRoom, IRoom } from '../../IRoom';
+import { ISetting } from '../../ISetting';
+import { IUser } from '../../IUser';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {

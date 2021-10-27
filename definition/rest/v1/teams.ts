@@ -1,6 +1,6 @@
-import type { IRoom } from '../../../../../definition/IRoom';
-import type { IRecordsWithTotal, ITeam } from '../../../../../definition/ITeam';
-import type { IUser } from '../../../../../definition/IUser';
+import type { IRoom } from '../../IRoom';
+import type { IRecordsWithTotal, ITeam } from '../../ITeam';
+import type { IUser } from '../../IUser';
 
 export type TeamsEndpoints = {
 	'teams.addRooms': {

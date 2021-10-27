@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
+import { Method, Params, PathFor, Return } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
-import { Method, Params, PathFor, Return } from '../contexts/ServerContext/endpoints';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
 export const useEndpointAction = <M extends Method, P extends PathFor<M>>(

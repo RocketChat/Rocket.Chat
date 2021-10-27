@@ -1,4 +1,4 @@
-import type { TranslationKey } from '../../../TranslationContext';
+import type { TranslationKey } from '../../../client/contexts/TranslationContext';
 
 export type LDAPEndpoints = {
 	'ldap.testConnection': {
