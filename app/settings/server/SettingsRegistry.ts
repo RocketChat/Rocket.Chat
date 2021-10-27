@@ -96,8 +96,6 @@ export class SettingsRegistry {
 			throw new Error('Invalid arguments');
 		}
 
-		const nonEmptyOptions = Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined));
-
 		const sorterKey = group && section ? `${ group }_${ section }` : group;
 
 		if (sorterKey && this._sorter[sorterKey] == null) {
@@ -117,8 +115,8 @@ export class SettingsRegistry {
 			value,
 			sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]++),
 			group,
-			...section && { section },
-			...nonEmptyOptions,
+			section,
+			...options,
 		}, blockedSettings, hiddenSettings, wizardRequiredSettings);
 
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
@@ -147,9 +145,9 @@ export class SettingsRegistry {
 
 			this.model.upsert({ _id }, {
 				$set: { ...settingOverwrittenProps },
-				...removedKeys.length > 0 ? {
+				...removedKeys.length && {
 					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
-				} : {},
+				},
 			});
 			return;
 		}
