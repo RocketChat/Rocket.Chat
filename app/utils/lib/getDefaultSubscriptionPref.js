@@ -1,4 +1,4 @@
-export const agetDefaultSubscriptionPref = (userPref) => {
+export const getDefaultSubscriptionPref = (userPref) => {
 	const subscription = {};
 
 	const {
