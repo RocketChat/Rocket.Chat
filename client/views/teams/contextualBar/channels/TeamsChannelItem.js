@@ -1,4 +1,4 @@
-import { ActionButton, Box, Icon, Option, Tag } from '@rocket.chat/fuselage';
+import { ActionButton, Box, Icon, Option, OptionContent, Tag } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import React, { useState } from 'react';
 
@@ -35,7 +35,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 			<Option.Column>
 				{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}
 			</Option.Column>
-			<Option.Content>
+			<OptionContent>
 				<Box display='inline-flex' alignItems='center'>
 					{roomTypes.getRoomName(room.t, room)}{' '}
 					{room.teamDefault ? (
@@ -46,7 +46,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 						''
 					)}
 				</Box>
-			</Option.Content>
+			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<Option.Menu onClick={onClick}>
 					{showButton ? (

@@ -10,7 +10,6 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageReactions,
-
 	ReactionEmoji,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
@@ -30,7 +29,11 @@ import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions } from '../../contexts/MessageContext';
 import Toolbox from './Toolbox';
 
-const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequential }) => {
+const Message: FC<{ message: IMessage; sequential: boolean }> = ({
+	message,
+	sequential,
+	...props
+}) => {
 	const {
 		broadcast,
 		actions: { openDiscussion, openThread, openUserCard, replyBroadcast },
@@ -39,7 +42,7 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 
 	const user: UserPresence = useUserData(message.u._id) || message.u;
 	return (
-		<MessageTemplate>
+		<MessageTemplate {...props}>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && (
 					<UserAvatar username={message.u.username} size={'x36'} />
@@ -85,9 +88,9 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({ message, sequ
 						{Object.entries(message.reactions).map(([name, reactions]) => (
 							<>
 								<MessageReactions.Reaction key={name} counter={reactions.usernames.length}>
-								 <ReactionEmoji>
-									<Emoji emojiHandle={name} />
-								 </ReactionEmoji>
+									<ReactionEmoji>
+										<Emoji emojiHandle={name} />
+									</ReactionEmoji>
 								</MessageReactions.Reaction>
 							</>
 						))}

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
-import { Messages, Subscriptions } from '../../models';
+import { Messages, Subscriptions } from '../../models/server';
 
 Meteor.methods({
 	unreadMessages(firstUnreadMessage, room) {

@@ -23,9 +23,9 @@ const emitter = new Emitter<Events>();
 
 const store = new Map<string, UserPresence>();
 
-export type UserPresence = Pick<
-	IUser,
-	'_id' | 'username' | 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'
+export type UserPresence = Readonly<
+	Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles'> &
+		Required<Pick<IUser, '_id' | 'username'>>
 >;
 
 type UsersPresencePayload = {
@@ -97,7 +97,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					notify({ _id: uid, status: UserStatus.OFFLINE, roles: [] });
+					notify({ _id: uid, username: '', status: UserStatus.OFFLINE, roles: [] });
 				});
 
 				currentUids.clear();

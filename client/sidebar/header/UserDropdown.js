@@ -1,4 +1,4 @@
-import { Box, Margins, Divider, Option } from '@rocket.chat/fuselage';
+import { Box, Margins, Divider, Option, OptionContent } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
@@ -146,7 +146,7 @@ const UserDropdown = ({ user, onClose }) => {
 								<Option.Column>
 									<UserStatus status={modifier} />
 								</Option.Column>
-								<Option.Content>{name}</Option.Content>
+								<OptionContent>{name}</OptionContent>
 							</Option>
 						);
 					})}
