@@ -31,7 +31,7 @@ const callMethod = <MethodName extends ServerMethodName>(
 const callEndpoint = <M extends Method, P extends PathFor<M>>(
 	method: M,
 	path: P,
-	params: Params<M, P>[0],
+	params: Serialized<Params<M, P>[0]>,
 ): Promise<Serialized<Return<M, P>>> => {
 	const api = path[0] === '/' ? APIClient : APIClient.v1;
 	const endpointPath = path[0] === '/' ? path.slice(1) : path;

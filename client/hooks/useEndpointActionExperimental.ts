@@ -9,7 +9,7 @@ export const useEndpointActionExperimental = <M extends Method, P extends PathFo
 	method: M,
 	path: P,
 	successMessage?: string,
-): ((params: Params<M, P>[0]) => Promise<Serialized<Return<M, P>>>) => {
+): ((params: Serialized<Params<M, P>[0]>) => Promise<Serialized<Return<M, P>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 
