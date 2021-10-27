@@ -1,12 +1,12 @@
 export const getDefaultSubscriptionPref = (userPref) => {
 	const subscription = {};
-
 	const {
 		desktopNotifications,
 		mobileNotifications,
 		emailNotificationMode,
 		highlights,
 	} = (userPref.settings && userPref.settings.preferences) || {};
+
 
 	if (Array.isArray(highlights) && highlights.length) {
 		subscription.userHighlights = highlights;
@@ -26,6 +26,5 @@ export const getDefaultSubscriptionPref = (userPref) => {
 		subscription.emailNotifications = emailNotificationMode;
 		subscription.emailPrefOrigin = 'user';
 	}
-
 	return subscription;
 };
