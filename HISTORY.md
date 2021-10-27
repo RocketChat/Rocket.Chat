@@ -1,6 +1,27 @@
 
 # 4.1.0 (Under Release Candidate Process)
 
+## 4.1.0-rc.3
+`2021-10-27  ·  3 🔍  ·  3 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump: fuselage 0.30.1 ([#23391](https://github.com/RocketChat/Rocket.Chat/pull/23391))
+
+- Regression: Prevent settings from getting updated ([#23556](https://github.com/RocketChat/Rocket.Chat/pull/23556))
+
+- Regression: Routing method not available when called from listeners at startup ([#23568](https://github.com/RocketChat/Rocket.Chat/pull/23568))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@dougfabris](https://github.com/dougfabris)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 4.1.0-rc.2
 `2021-10-25  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
