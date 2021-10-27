@@ -66958,6 +66958,45 @@
           ]
         }
       ]
+    },
+    "4.1.0-rc.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23556",
+          "title": "Regression: Prevent settings from getting updated",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23568",
+          "title": "Regression: Routing method not available when called from listeners at startup",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23391",
+          "title": "Bump: fuselage 0.30.1",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "dougfabris"
+          ]
+        }
+      ]
     }
   }
 }
