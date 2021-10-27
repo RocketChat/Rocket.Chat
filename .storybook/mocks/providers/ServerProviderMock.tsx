@@ -2,16 +2,19 @@ import { action } from '@storybook/addon-actions';
 import React, { ContextType, FC } from 'react';
 
 import {
-	Method,
-	Params,
-	PathFor,
-	Return,
 	ServerContext,
 	ServerMethodName,
 	ServerMethodParameters,
 	ServerMethodReturn,
 } from '../../../client/contexts/ServerContext';
 import { Serialized } from '../../../definition/Serialized';
+import {
+	MatchPathPattern,
+	Method,
+	OperationParams,
+	OperationResult,
+	PathFor,
+} from '../../../definition/rest';
 
 const logAction = action('ServerProvider');
 
@@ -27,11 +30,11 @@ const callMethod = <MethodName extends ServerMethodName>(
 		.then(randomDelay)
 		.then(() => undefined as any);
 
-const callEndpoint = <M extends Method, P extends PathFor<M>>(
-	method: M,
-	path: P,
-	params: Serialized<Params<M, P>[0]>,
-): Promise<Serialized<Return<M, P>>> =>
+const callEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
+	method: TMethod,
+	path: TPath,
+	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+): Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>> =>
 	Promise.resolve(logAction('callEndpoint', method, path, params))
 		.then(randomDelay)
 		.then(() => undefined as any);

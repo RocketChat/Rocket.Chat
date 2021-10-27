@@ -2,7 +2,10 @@ import Ajv, { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv();
 
-export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string }) & { userId: string; rooms?: Array<string> };
+export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string }) & {
+	userId: string;
+	rooms?: Array<string>;
+};
 
 const teamsRemoveMemberPropsSchema: JSONSchemaType<TeamsRemoveMemberProps> = {
 	oneOf: [
