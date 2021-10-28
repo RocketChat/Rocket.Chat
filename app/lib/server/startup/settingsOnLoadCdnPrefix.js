@@ -2,19 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 
 function testWebAppInternals(fn) {
 	typeof WebAppInternals !== 'undefined' && fn(WebAppInternals);
 }
-settings.onload('CDN_PREFIX', function(key, value) {
+settings.change('CDN_PREFIX', function(value) {
 	const useForAll = settings.get('CDN_PREFIX_ALL');
 	if (_.isString(value) && value.trim() && useForAll) {
 		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));
 	}
 });
 
-settings.onload('CDN_JSCSS_PREFIX', function(key, value) {
+settings.change('CDN_JSCSS_PREFIX', function(value) {
 	const useForAll = settings.get('CDN_PREFIX_ALL');
 	if (_.isString(value) && value.trim() && !useForAll) {
 		return testWebAppInternals((WebAppInternals) => WebAppInternals.setBundledJsCssPrefix(value));

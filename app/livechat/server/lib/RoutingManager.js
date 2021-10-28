@@ -22,7 +22,7 @@ export const RoutingManager = {
 	methodName: null,
 	methods: {},
 
-	startQueue() {
+	startQueue() { // todo: move to eventemitter or middleware
 		// queue shouldn't start on CE
 	},
 

@@ -12,9 +12,9 @@ import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models';
 import { getUserPreference } from '../../../utils';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
-import { promises } from '../../../promises/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
+import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -34,7 +34,7 @@ export const KonchatNotification = {
 	notify(notification) {
 		if (window.Notification && Notification.permission === 'granted') {
 			const message = { rid: notification.payload != null ? notification.payload.rid : undefined, msg: notification.text, notification: true };
-			return promises.run('onClientMessageReceived', message).then(function(message) {
+			return onClientMessageReceived(message).then(function(message) {
 				const requireInteraction = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction');
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),

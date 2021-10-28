@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../app/callbacks';
-import { settings } from '../../../../../app/settings';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { cbLogger } from '../lib/logger';
 
@@ -26,17 +25,3 @@ callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
 	cbLogger.debug('Callback success. Queue timing properties added');
 	return Object.assign({ ...props }, { ts, queueOrder, estimatedWaitingTimeQueue, estimatedServiceTimeAt });
 }, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');
-
-callbacks.add('livechat.beforeInquiry', (extraData = {}) => {
-	const queueInactivityAction = settings.get('Livechat_max_queue_wait_time_action');
-	if (!queueInactivityAction || queueInactivityAction === 'Nothing') {
-		cbLogger.debug('Skipping callback. Disabled by setting');
-		return extraData;
-	}
-
-	const maxQueueWaitTimeMinutes = settings.get('Livechat_max_queue_wait_time');
-	const estimatedInactivityCloseTimeAt = new Date(new Date().getTime() + maxQueueWaitTimeMinutes * 60000);
-
-	cbLogger.debug(`Setting maximum queue wait time to ${ maxQueueWaitTimeMinutes } minutes`);
-	return Object.assign(extraData, { estimatedInactivityCloseTimeAt });
-}, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry-append-queue-timer');

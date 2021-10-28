@@ -53,7 +53,7 @@ export const useRoomList = (): Array<ISubscription> => {
 					return favorite.add(room);
 				}
 
-				if (room.teamMain) {
+				if (sidebarGroupByType && room.teamMain) {
 					return team.add(room);
 				}
 
@@ -90,7 +90,7 @@ export const useRoomList = (): Array<ISubscription> => {
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
-			team.size && groups.set('Teams', team);
+			sidebarGroupByType && team.size && groups.set('Teams', team);
 			sidebarGroupByType &&
 				isDiscussionEnabled &&
 				discussion.size &&

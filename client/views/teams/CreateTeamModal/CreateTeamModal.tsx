@@ -298,7 +298,11 @@ const CreateTeamModal: FC<CreateTeamModalProps> = ({ onClose }) => {
 						<Box display='flex' justifyContent='space-between' alignItems='start'>
 							<Box display='flex' flexDirection='column' width='full'>
 								<Field.Label>{t('Teams_New_Read_only_Label')}</Field.Label>
-								<Field.Description>{t('Teams_New_Read_only_Description')}</Field.Description>
+								<Field.Description>
+									{readOnly
+										? t('Only_authorized_users_can_write_new_messages')
+										: t('Teams_New_Read_only_Description')}
+								</Field.Description>
 							</Box>
 							<ToggleSwitch
 								checked={readOnly}
