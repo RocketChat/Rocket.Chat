@@ -1,92 +1,12 @@
 
-# 4.1.0 (Under Release Candidate Process)
+# 4.1.0
+`2021-10-27  ·  1 🎉  ·  4 🚀  ·  25 🐛  ·  38 🔍  ·  23 👩‍💻👨‍💻`
 
-## 4.1.0-rc.4
-`2021-10-27  ·  1 🔍  ·  1 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Debounce call based on params on omnichannel queue dispatch ([#23577](https://github.com/RocketChat/Rocket.Chat/pull/23577))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-
-## 4.1.0-rc.3
-`2021-10-27  ·  3 🔍  ·  3 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Bump: fuselage 0.30.1 ([#23391](https://github.com/RocketChat/Rocket.Chat/pull/23391))
-
-- Regression: Prevent settings from getting updated ([#23556](https://github.com/RocketChat/Rocket.Chat/pull/23556))
-
-- Regression: Routing method not available when called from listeners at startup ([#23568](https://github.com/RocketChat/Rocket.Chat/pull/23568))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@dougfabris](https://github.com/dougfabris)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-
-## 4.1.0-rc.2
-`2021-10-25  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
-
-### 🐛 Bug fixes
-
-
-- OAuth login not working on mobile app ([#23541](https://github.com/RocketChat/Rocket.Chat/pull/23541))
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Mail body contains `undefined` text ([#23552](https://github.com/RocketChat/Rocket.Chat/pull/23552))
-
-  ### Before
-  ![image](https://user-images.githubusercontent.com/2263066/138733018-10449892-5c2d-46fb-9355-00e98e0d6c9f.png)
-
-  ### After
-  ![image](https://user-images.githubusercontent.com/2263066/138733074-a1b88a77-bf64-41c3-a6c3-ac9e1cb63de1.png)
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
-- [@sampaiodiego](https://github.com/sampaiodiego)
-- [@tassoevan](https://github.com/tassoevan)
-
-## 4.1.0-rc.1
-`2021-10-21  ·  3 🔍  ·  2 👩‍💻👨‍💻`
-
-<details>
-<summary>🔍 Minor changes</summary>
-
-
-- Regression: Settings order ([#23528](https://github.com/RocketChat/Rocket.Chat/pull/23528))
-
-- Regression: Waiting_queue setting not being applied due to missing module key ([#23531](https://github.com/RocketChat/Rocket.Chat/pull/23531))
-
-- Regression: watchByRegex without Fibers ([#23529](https://github.com/RocketChat/Rocket.Chat/pull/23529))
-
-</details>
-
-### 👩‍💻👨‍💻 Core Team 🤓
-
-- [@KevLehman](https://github.com/KevLehman)
-- [@ggazzo](https://github.com/ggazzo)
-
-## 4.1.0-rc.0
-`2021-10-20  ·  1 🎉  ·  4 🚀  ·  24 🐛  ·  30 🔍  ·  23 👩‍💻👨‍💻`
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
 
 ### 🎉 New features
 
@@ -161,6 +81,8 @@
 
 - MongoDB deprecation link ([#23381](https://github.com/RocketChat/Rocket.Chat/pull/23381))
 
+- OAuth login not working on mobile app ([#23541](https://github.com/RocketChat/Rocket.Chat/pull/23541))
+
 - Omni-Webhook's retry mechanism going in infinite loop ([#23394](https://github.com/RocketChat/Rocket.Chat/pull/23394))
 
 - Prevent starting Omni-Queue if Omnichannel is disabled ([#23396](https://github.com/RocketChat/Rocket.Chat/pull/23396))
@@ -203,6 +125,8 @@
 
 
 - Bump url-parse from 1.4.7 to 1.5.3 ([#23376](https://github.com/RocketChat/Rocket.Chat/pull/23376) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Bump: fuselage 0.30.1 ([#23391](https://github.com/RocketChat/Rocket.Chat/pull/23391))
 
 - Chore: clean README ([#23342](https://github.com/RocketChat/Rocket.Chat/pull/23342) by [@AbhJ](https://github.com/AbhJ))
 
@@ -282,11 +206,31 @@
 
 - Merge master into develop & Set version to 4.1.0-develop ([#23362](https://github.com/RocketChat/Rocket.Chat/pull/23362))
 
+- Regression: Debounce call based on params on omnichannel queue dispatch ([#23577](https://github.com/RocketChat/Rocket.Chat/pull/23577))
+
 - Regression: Fix enterprise setting validation ([#23519](https://github.com/RocketChat/Rocket.Chat/pull/23519))
 
 - Regression: Fix user typings style ([#23511](https://github.com/RocketChat/Rocket.Chat/pull/23511))
 
+- Regression: Mail body contains `undefined` text ([#23552](https://github.com/RocketChat/Rocket.Chat/pull/23552))
+
+  ### Before
+  ![image](https://user-images.githubusercontent.com/2263066/138733018-10449892-5c2d-46fb-9355-00e98e0d6c9f.png)
+
+  ### After
+  ![image](https://user-images.githubusercontent.com/2263066/138733074-a1b88a77-bf64-41c3-a6c3-ac9e1cb63de1.png)
+
+- Regression: Prevent settings from getting updated ([#23556](https://github.com/RocketChat/Rocket.Chat/pull/23556))
+
 - Regression: Prevent Settings Unit Test Error  ([#23506](https://github.com/RocketChat/Rocket.Chat/pull/23506))
+
+- Regression: Routing method not available when called from listeners at startup ([#23568](https://github.com/RocketChat/Rocket.Chat/pull/23568))
+
+- Regression: Settings order ([#23528](https://github.com/RocketChat/Rocket.Chat/pull/23528))
+
+- Regression: Waiting_queue setting not being applied due to missing module key ([#23531](https://github.com/RocketChat/Rocket.Chat/pull/23531))
+
+- Regression: watchByRegex without Fibers ([#23529](https://github.com/RocketChat/Rocket.Chat/pull/23529))
 
 - Update the community open call link in README ([#23497](https://github.com/RocketChat/Rocket.Chat/pull/23497))
 
