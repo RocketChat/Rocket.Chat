@@ -77,4 +77,5 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
+	alias?: string;
 }

@@ -1,0 +1,110 @@
+/* eslint-env mocha */
+import { expect } from 'chai';
+
+import { IMessage } from '../../../../../definition/IMessage';
+import { isMessageSequential } from './isMessageSequential';
+
+const date = new Date('2021-10-27T00:00:00.000Z');
+const baseMessage = {
+	ts: date,
+	u: {
+		_id: 'userId',
+		name: 'userName',
+	},
+	msg: 'message',
+	rid: 'roomId',
+	_id: 'messageId',
+	_updatedAt: date,
+	urls: [],
+};
+
+describe('isMessageSequential', () => {
+	it('should return false if no previous message', () => {
+		const current: IMessage = {
+			...baseMessage,
+		};
+		expect(isMessageSequential(current, undefined)).to.be.false;
+	});
+
+	it("should return false if both messages doesn't belong to the same user", () => {
+		const previous: IMessage = {
+			...baseMessage,
+		};
+		const current: IMessage = {
+			...baseMessage,
+			u: {
+				_id: 'userId2',
+				name: 'userName2',
+			},
+		};
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+
+	it('should return false if both messages belongs to the same user but have more than five minutes of difference', () => {
+		const previous: IMessage = {
+			...baseMessage,
+		};
+
+		const current: IMessage = {
+			...previous,
+			ts: new Date('2021-10-27T00:05:00.001Z'),
+		};
+
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+	it('should return true if both messages belongs to the same user and have less than five minutes of difference', () => {
+		const previous: IMessage = {
+			...baseMessage,
+		};
+		const current: IMessage = {
+			...previous,
+			ts: new Date('2021-10-27T00:04:59.999Z'),
+		};
+		expect(isMessageSequential(current, previous)).to.be.true;
+	});
+	it('should return false if message are not groupable', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			groupable: false,
+		};
+		const current: IMessage = {
+			...previous,
+			groupable: false,
+		};
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+	it('should return false if both messages are not from the same thread', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			tmid: 'threadId',
+		};
+		const current: IMessage = {
+			...previous,
+			tmid: 'threadId2',
+		};
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+
+	it('should return true if both messages are from the same thread same user and bellow the time range', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			tmid: 'threadId',
+		};
+		const current: IMessage = {
+			...previous,
+			tmid: 'threadId',
+		};
+		expect(isMessageSequential(current, previous)).to.be.true;
+	});
+	it("should return false if both messages don't have the same alias", () => {
+		const previous: IMessage = {
+			...baseMessage,
+			alias: 'alias',
+		};
+		const current: IMessage = {
+			...previous,
+			alias: 'alias2',
+		};
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+});

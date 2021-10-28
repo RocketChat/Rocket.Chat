@@ -19,11 +19,11 @@ const replyBroadcast = () => {
 	console.log('replyBroadcast');
 };
 
-const MessageProvider: FC = ({ children }): JSX.Element => {
+export const MessageProvider: FC<{ broadcast?: boolean }> = ({ broadcast, children }) => {
 	const messageHeader = useFormatTime();
 	const context = useMemo(
 		() => ({
-			broadcast: true,
+			broadcast: Boolean(broadcast),
 			actions: {
 				openUserCard,
 				followMessage,
@@ -36,10 +36,8 @@ const MessageProvider: FC = ({ children }): JSX.Element => {
 				messageHeader,
 			},
 		}),
-		[messageHeader],
+		[messageHeader, broadcast],
 	);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
 };
-
-export default memo(MessageProvider);
