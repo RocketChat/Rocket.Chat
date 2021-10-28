@@ -1,4 +1,4 @@
-import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
+import { addUserRoles } from '../../../../app/authorization/server';
 import { Roles, Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
@@ -41,13 +41,6 @@ export class OAuthEEManager {
 			if (!Array.isArray(user.roles)) {
 				user.roles = [];
 			}
-
-			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val));
-
-			// loop through roles that user has that sso doesnt have and remove each one
-			toRemove.forEach(function(role: any) {
-				removeUserFromRoles(user._id, role);
-			});
 
 			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val));
 
