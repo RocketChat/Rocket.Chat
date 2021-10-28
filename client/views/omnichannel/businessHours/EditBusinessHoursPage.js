@@ -68,7 +68,10 @@ const EditBusinessHoursPage = ({ id, type }) => {
 
 			await save(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
-			router.push({});
+			router.push({
+				context: 'edit',
+				type: 'default',
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -82,7 +85,10 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		try {
 			await deleteBH(id, type);
 			dispatchToastMessage({ type: 'success', message: t('Business_Hour_Removed') });
-			router.push({});
+			router.push({
+				context: 'edit',
+				type: 'default',
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
