@@ -217,9 +217,8 @@ export class SimpleVoipUser
 	removeListener(event: VoipEvents, listener: (evData?: any) => void): void {
 		if (this.voipEventEmitter.has(VoipEvents[event])) {
 			this.voipEventEmitter.off(VoipEvents[event], listener);
-		} else {
-			this.logger.error('removeListener() Event listener not found', VoipEvents[event]);
 		}
+		this.logger.error('removeListener() Event listener not found', VoipEvents[event]);
 	}
 
 	getState(): CallState | undefined {
