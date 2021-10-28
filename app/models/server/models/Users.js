@@ -262,6 +262,23 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+				system: false,
+			},
+		};
+
+		return this.update(query, update);
+	}
+
+	setLivechatStatusIf(userId, status, extraCondition = {}, extraFields = {}) {
+		const query = {
+			_id: userId,
+			...extraCondition,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+				...extraFields,
 			},
 		};
 

@@ -886,6 +886,12 @@ export const Livechat = {
 		return user;
 	},
 
+	setUserStatusLivechatIf(userId, status, condition, fields) {
+		const user = Users.setLivechatStatusIf(userId, status, condition, fields);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	},
+
 	cleanGuestHistory(_id) {
 		const guest = LivechatVisitors.findOneById(_id);
 		if (!guest) {
