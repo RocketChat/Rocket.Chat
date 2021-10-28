@@ -108,7 +108,7 @@ export class VoipService extends ServiceClass implements IVoipService {
 			extension: '',
 		};
 		membershipDetails.extension = requestParams.extension;
-		const queueSummary	= Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
+		const queueSummary = Promise.await(this.commandHandler.executeCommand(Commands.queue_summary)) as IVoipConnectorResult;
 		for (const queue of queueSummary.result as IQueueSummary[]) {
 			const queueDetails = Promise.await(this.commandHandler.executeCommand(
 				Commands.queue_details,
