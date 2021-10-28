@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { RocketChatAssets } from '../../assets/server';
 
 WebApp.connectHandlers.use('/_blockstack/manifest', Meteor.bindEnvironment(function(req, res) {

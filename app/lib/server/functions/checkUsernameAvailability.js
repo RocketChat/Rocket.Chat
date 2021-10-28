@@ -3,7 +3,7 @@ import s from 'underscore.string';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Team } from '../../../../server/sdk';
 import { validateName } from './validateName';
 
@@ -11,7 +11,7 @@ let usernameBlackList = [];
 
 const toRegExp = (username) => new RegExp(`^${ escapeRegExp(username).trim() }$`, 'i');
 
-settings.get('Accounts_BlockedUsernameList', (key, value) => {
+settings.watch('Accounts_BlockedUsernameList', (value) => {
 	usernameBlackList = ['all', 'here'].concat(value.split(',')).map(toRegExp);
 });
 

@@ -64,7 +64,7 @@ export const processThreads = (message, room) => {
 };
 
 Meteor.startup(function() {
-	settings.get('Threads_enabled', function(key, value) {
+	settings.watch('Threads_enabled', function(value) {
 		if (!value) {
 			callbacks.remove('afterSaveMessage', 'threads-after-save-message');
 			return;

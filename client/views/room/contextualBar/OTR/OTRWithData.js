@@ -22,7 +22,7 @@ const OTRWithData = ({ rid, tabBar }) => {
 		),
 	);
 
-	const userStatus = usePresence(otr.peerId);
+	const userStatus = usePresence(otr.peerId)?.status;
 
 	const isOnline = !['offline', 'loading'].includes(userStatus);
 

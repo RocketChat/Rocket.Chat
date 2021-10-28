@@ -268,8 +268,8 @@ const queueWorker = {
 	},
 };
 
-let omnichannelIsEnabled = false;
 
+let omnichannelIsEnabled = false;
 function shouldQueueStart() {
 	if (!omnichannelIsEnabled) {
 		queueWorker.stop();
@@ -288,7 +288,7 @@ function shouldQueueStart() {
 
 RoutingManager.startQueue = shouldQueueStart;
 
-settings.get('Livechat_enabled', (_, value) => {
-	omnichannelIsEnabled = value;
+settings.watch('Livechat_enabled', (enabled) => {
+	omnichannelIsEnabled = enabled;
 	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
 });
