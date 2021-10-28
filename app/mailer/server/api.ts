@@ -132,7 +132,7 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 
 export const rfcMailPatternWithName = /^(?:.*<)?([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)(?:>?)$/;
 
-export const checkAddressFormat = (from) => [].concat(from).every((address) => rfcMailPatternWithName.test(address));
+export const checkAddressFormat = (from: any): boolean => [].concat(from).every((address) => rfcMailPatternWithName.test(address));
 
 export const sendNoWrap = ({
 	to,
