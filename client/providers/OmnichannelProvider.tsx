@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC, useMemo, useCallback, memo } from 'react';
+import React, { useState, useEffect, FC, useMemo, useCallback, memo, useRef } from 'react';
 
 import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
@@ -7,6 +7,7 @@ import { APIClient } from '../../app/utils/client/lib/RestApiClient';
 import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { IRoom } from '../../definition/IRoom';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
+import { ClientLogger } from '../../lib/ClientLogger';
 import { IExtensionConfig } from '../components/voip/IExtensionConfig';
 import { CallType, SimpleVoipUser } from '../components/voip/SimpleVoipUser';
 import { usePermission } from '../contexts/AuthorizationContext';
@@ -32,6 +33,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		'Livechat_guest_pool_max_number_incoming_livechats_displayed',
 	) as number;
 
+	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 
@@ -54,30 +56,30 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (!accessible) {
 			return;
 		}
-
 		const initVoipLib = async (): Promise<void> => {
 			/* Init extension */
 			let extensionConfig = undefined;
 			let voipUser: SimpleVoipUser;
 			const extension = '80000';
 			try {
-				if (!extensionConfig) {
-					extensionConfig = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
-						extension,
-					})) as unknown as IExtensionConfig;
-					setExtensionConfig(extensionConfig);
-					voipUser = new SimpleVoipUser(
-						extensionConfig.extension,
-						extensionConfig.password,
-						extensionConfig.sipRegistrar,
-						extensionConfig.websocketUri,
-						CallType.AUDIO_VIDEO,
-					);
-					await voipUser.initUserAgent();
-					setVoipUser(voipUser);
+				if (extensionConfig) {
+					return;
 				}
+				extensionConfig = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+					extension,
+				})) as unknown as IExtensionConfig;
+				setExtensionConfig(extensionConfig);
+				voipUser = new SimpleVoipUser(
+					extensionConfig.extension,
+					extensionConfig.password,
+					extensionConfig.sipRegistrar,
+					extensionConfig.websocketUri,
+					CallType.AUDIO_VIDEO,
+				);
+				await voipUser.initUserAgent();
+				setVoipUser(voipUser);
 			} catch (error) {
-				console.error(error);
+				loggerRef.current.error(`initVoipLib() error in initialising ${error}`);
 			}
 		};
 		const update = async (): Promise<void> => {
@@ -85,7 +87,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				const routeConfig = await getRoutingConfig();
 				setRouteConfig(routeConfig);
 			} catch (error) {
-				console.error(error);
+				loggerRef.current.error(`update() error in routeConfig ${error}`);
 			}
 		};
 

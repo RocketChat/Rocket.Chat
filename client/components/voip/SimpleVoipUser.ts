@@ -36,7 +36,7 @@ export class SimpleVoipUser
 {
 	state: IState;
 
-	userHandler: VoIPUser | undefined;
+	userHandler: VoIPUser;
 
 	userName: string;
 
@@ -174,7 +174,7 @@ export class SimpleVoipUser
 
 	async resetUserAgent(): Promise<void> {
 		this.config = {};
-		this.userHandler = undefined;
+		this.state.isReady = false;
 	}
 
 	async registerEndpoint(): Promise<void> {
@@ -187,27 +187,26 @@ export class SimpleVoipUser
 			}
 		}
 		// await this._apitest_debug();
-		this.userHandler?.register();
+		this.userHandler.register();
 	}
 
 	unregisterEndpoint(): void {
-		this.userHandler?.unregister();
-		this.resetUserAgent();
+		this.userHandler.unregister();
 	}
 
 	async acceptCall(mediaRenderer?: IMediaStreamRenderer): Promise<any> {
 		if (mediaRenderer) {
 			this.mediaStreamRendered = mediaRenderer;
 		}
-		return this.userHandler?.acceptCall(this.mediaStreamRendered);
+		return this.userHandler.acceptCall(this.mediaStreamRendered);
 	}
 
 	async rejectCall(): Promise<any> {
-		return this.userHandler?.rejectCall();
+		return this.userHandler.rejectCall();
 	}
 
 	async endCall(): Promise<any> {
-		return this.userHandler?.endCall();
+		return this.userHandler.endCall();
 	}
 
 	setListener(event: VoipEvents, listener: (evData?: any) => void): void {
@@ -223,6 +222,6 @@ export class SimpleVoipUser
 	}
 
 	getState(): CallState | undefined {
-		return this.userHandler?.callState;
+		return this.userHandler.callState;
 	}
 }
