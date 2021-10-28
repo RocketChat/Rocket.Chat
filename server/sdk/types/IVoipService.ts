@@ -10,9 +10,9 @@ export interface IVoipService {
 	deactivateServerConfigDataIfAvailable(serverType: ServerType): Promise<boolean>;
 	getConnector(): Promise<CommandHandler>;
 	getConnectorVersion(): Promise<string>;
-	getQueueSummary(requestParams: any): Promise<IVoipConnectorResult>;
+	getQueueSummary(): Promise<IVoipConnectorResult>;
 	getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult>;
 	getExtensionList(): Promise<IVoipConnectorResult>;
-	getExtensionDetails(extension: string): Promise<IVoipConnectorResult>;
-	getRegistrationInfo(agentId: string): Promise<IVoipConnectorResult>;
+	getExtensionDetails(requestParams: any): Promise<IVoipConnectorResult>;
+	getRegistrationInfo(requestParams: any): Promise<IVoipConnectorResult>;
 }

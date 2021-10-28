@@ -50,7 +50,11 @@ class VoIPLayout
 		this.VoipUserIdentity = null;
 	}
 
-	private async apitest(): Promise<void> {
+	/**
+	 * This function is just to verify all the REST APIs for the development phase.
+	 * Once we have final UI, this file will be deleted.
+	 */
+	private async apiVerificationRoutine(): Promise<void> {
 		/*
 		try {
 			this.logger.info('Executing voipServerConfig.callServer');
@@ -66,7 +70,7 @@ class VoIPLayout
 			);
 			this.logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API voipServerConfig.callServer`);
 		}
 		try {
 			this.logger.info('Executing voipServerConfig.management');
@@ -83,7 +87,7 @@ class VoIPLayout
 			);
 			this.logger.info('voipServerConfig.management output = ', JSON.stringify(output));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API voipServerConfig.management`);
 		}
 		*/
 		try {
@@ -91,21 +95,21 @@ class VoIPLayout
 			const list = await APIClient.v1.get('connector.getVersion');
 			this.logger.info('connector.getVersion output = ', JSON.stringify(list));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API connector.getVersion`);
 		}
 		try {
 			this.logger.info('Executing voipServerConfig.management');
 			const output = await APIClient.v1.get('voipServerConfig.management');
 			this.logger.info('voipServerConfig.management output = ', JSON.stringify(output));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API voipServerConfig.management`);
 		}
 		try {
 			this.logger.info('Executing voipServerConfig.callServer');
 			const output = await APIClient.v1.get('voipServerConfig.callServer');
 			this.logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API voipServerConfig.callServer`);
 		}
 
 		try {
@@ -113,7 +117,7 @@ class VoIPLayout
 			const list = await APIClient.v1.get('voip/queues.getSummary');
 			this.logger.info('queues.getSummary output = ', JSON.stringify(list));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API queues.getSummary`);
 		}
 
 		try {
@@ -123,7 +127,7 @@ class VoIPLayout
 			});
 			this.logger.info('queues.getQueuedCallsForThisExtension output = ', JSON.stringify(list));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API queues.getQueuedCallsForThisExtension`);
 		}
 
 		try {
@@ -131,7 +135,7 @@ class VoIPLayout
 			const list = await APIClient.v1.get('connector.extension.list');
 			this.logger.info('connector.extension.list output = ', JSON.stringify(list));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API onnector.extension.list`);
 		}
 
 		try {
@@ -141,7 +145,7 @@ class VoIPLayout
 			});
 			this.logger.info('connector.extension.getDetails output = ', JSON.stringify(list));
 		} catch (error) {
-			this.logger.error('error in API');
+			this.logger.error(`error ${error} in API connector.extension.getDetails`);
 		}
 
 		try {
@@ -150,8 +154,7 @@ class VoIPLayout
 			});
 			this.logger.info('list = ', JSON.stringify(userIdentity));
 		} catch (error) {
-			this.logger.error('error in API');
-			throw error;
+			this.logger.error(`error ${error} in API connector.extension.getRegistrationInfo`);
 		}
 	}
 
@@ -330,7 +333,7 @@ class VoIPLayout
 	/* CallEventDelegate implementation end */
 
 	async componentDidMount(): Promise<void> {
-		this.apitest();
+		this.apiVerificationRoutine();
 		let element = document.getElementById('register');
 		if (element) {
 			element.style.display = 'none';

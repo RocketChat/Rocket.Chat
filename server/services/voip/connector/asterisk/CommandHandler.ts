@@ -43,11 +43,9 @@ export class CommandHandler {
 		// Initialize available connections
 		// const connection = new AMIConnection();
 		const connection = new AMIConnection();
-		let config: IVoipServerConfig | null;
+		let config: IVoipServerConfig | null = null;
 		if (commandType === CommandType.AMI) {
 			config = await this.service.getServerConfigData(ServerType.MANAGEMENT);
-		} else {
-			config = null;
 		}
 		if (!config) {
 			this.logger.warn('Management server configuration not found');

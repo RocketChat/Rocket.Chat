@@ -95,10 +95,8 @@ export class VoipService extends ServiceClass implements IVoipService {
 		return Promise.resolve(this.commandHandler);
 	}
 
-	async getQueueSummary(requestParams: any): Promise<IVoipConnectorResult> {
-		return this.commandHandler.executeCommand(
-			Commands.queue_summary,
-			requestParams);
+	async getQueueSummary(): Promise<IVoipConnectorResult> {
+		return this.commandHandler.executeCommand(Commands.queue_summary);
 	}
 
 	async getQueuedCallsForThisExtension(requestParams: any): Promise<IVoipConnectorResult> {
