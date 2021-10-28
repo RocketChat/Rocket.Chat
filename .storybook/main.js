@@ -7,9 +7,10 @@ module.exports = {
 		reactDocgen: 'none',
 	},
 	stories: [
-		'../app/**/*.stories.{js,tsx}',
-		'../client/**/*.stories.{js,tsx}',
-		'../ee/**/*.stories.{js,tsx}',
+		// '../app/**/*.stories.{js,tsx}',
+		// '../client/**/*.stories.{js,tsx}',
+		// '../ee/**/*.stories.{js,tsx}',
+		'../client/views/admin/apps/components/*.stories.tsx',
 	],
 	addons: [
 		'@storybook/addon-essentials',
