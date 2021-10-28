@@ -14,7 +14,9 @@ export const downloadAs = (
 ): void => {
 	const blob = new Blob(data, options);
 
+	// @ts-ignore
 	if (navigator.msSaveOrOpenBlob) {
+		// @ts-ignore
 		navigator.msSaveOrOpenBlob(blob);
 		return;
 	}

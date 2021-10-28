@@ -20,7 +20,7 @@ export const getAvatarAsPng = (
 		context.drawImage(image, 0, 0);
 		try {
 			return cb(canvas.toDataURL('image/png'));
-		} catch (e) {
+		} catch (e: any) {
 			return cb('');
 		}
 	};

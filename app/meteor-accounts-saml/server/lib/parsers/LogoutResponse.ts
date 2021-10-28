@@ -29,7 +29,7 @@ export class LogoutResponseParser {
 		try {
 			inResponseTo = response.getAttribute('InResponseTo');
 			SAMLUtils.log(`In Response to: ${ inResponseTo }`);
-		} catch (e) {
+		} catch (e: any) {
 			SAMLUtils.log(`Caught error: ${ e }`);
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${ msg }`);

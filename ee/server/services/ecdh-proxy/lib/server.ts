@@ -97,7 +97,7 @@ app.post('/api/ecdh_proxy/initEncryptedSession', async (req, res) => {
 			success: true,
 			publicKeyString: session.publicKeyString,
 		});
-	} catch (e) {
+	} catch (e: any) {
 		res.status(400).send(e.message);
 	}
 });
@@ -116,7 +116,7 @@ app.post('/api/ecdh_proxy/echo', async (req, res) => {
 	try {
 		const result = await session.decrypt(req.body.text);
 		res.send(await session.encrypt(result));
-	} catch (e) {
+	} catch (e: any) {
 		console.error(e);
 		res.status(400).send(e.message);
 	}
@@ -168,7 +168,7 @@ wss.on('connection', async (ws, req) => {
 	ws.on('close', (code, reason) => {
 		try {
 			proxy.close(code, reason);
-		} catch (e) {
+		} catch (e: any) {
 			//
 		}
 	});
@@ -186,7 +186,7 @@ app.use('/api/*', async (req, res) => {
 
 	try {
 		proxy(req, res, session);
-	} catch (e) {
+	} catch (e: any) {
 		res.status(400).send(e.message);
 	}
 });
@@ -222,7 +222,7 @@ app.use('/sockjs/:id1/:id2/xhr_send', async (req, res) => {
 
 	try {
 		proxy(req, res, session, xhrDataRequestProcess, xhrDataResponseProcess);
-	} catch (e) {
+	} catch (e: any) {
 		res.status(400).send(e.message);
 	}
 });
@@ -238,7 +238,7 @@ app.use('/sockjs/:id1/:id2/xhr', async (req, res) => {
 
 	try {
 		proxy(req, res, session, undefined, xhrDataResponseProcess);
-	} catch (e) {
+	} catch (e: any) {
 		res.status(400).send(e.message);
 	}
 });

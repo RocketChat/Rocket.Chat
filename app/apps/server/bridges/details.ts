@@ -12,7 +12,7 @@ export class AppDetailChangesBridge extends DetailChangesBridge {
 	protected onAppSettingsChange(appId: string, setting: ISetting): void {
 		try {
 			this.orch.getNotifier().appSettingsChange(appId, setting);
-		} catch (e) {
+		} catch (e: any) {
 			console.warn('failed to notify about the setting change.', appId);
 		}
 	}

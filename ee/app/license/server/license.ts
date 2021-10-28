@@ -250,7 +250,7 @@ export function addLicense(encryptedLicense: string): boolean {
 		License.lockLicense(encryptedLicense);
 
 		return true;
-	} catch (e) {
+	} catch (e: any) {
 		console.error('##### Invalid license');
 		if (process.env.LICENSE_DEBUG && process.env.LICENSE_DEBUG !== 'false') {
 			console.error('##### Invalid raw license ->', encryptedLicense, e);

@@ -16,7 +16,7 @@ export class AppRealStorage extends AppMetadataStorage {
 
 			try {
 				doc = this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
-			} catch (e) {
+			} catch (e: any) {
 				return reject(e);
 			}
 
@@ -29,7 +29,7 @@ export class AppRealStorage extends AppMetadataStorage {
 				item._id = id;
 
 				resolve(item);
-			} catch (e) {
+			} catch (e: any) {
 				reject(e);
 			}
 		});
@@ -41,7 +41,7 @@ export class AppRealStorage extends AppMetadataStorage {
 
 			try {
 				doc = this.db.findOne({ $or: [{ _id: id }, { id }] });
-			} catch (e) {
+			} catch (e: any) {
 				return reject(e);
 			}
 
@@ -55,7 +55,7 @@ export class AppRealStorage extends AppMetadataStorage {
 
 			try {
 				docs = this.db.find({}).fetch();
-			} catch (e) {
+			} catch (e: any) {
 				return reject(e);
 			}
 
@@ -72,7 +72,7 @@ export class AppRealStorage extends AppMetadataStorage {
 			try {
 				this.db.update({ id: item.id }, item);
 				resolve(item.id);
-			} catch (e) {
+			} catch (e: any) {
 				return reject(e);
 			}
 		}).then(this.retrieveOne.bind(this));
@@ -82,7 +82,7 @@ export class AppRealStorage extends AppMetadataStorage {
 		return new Promise((resolve, reject) => {
 			try {
 				this.db.remove({ id });
-			} catch (e) {
+			} catch (e: any) {
 				return reject(e);
 			}
 

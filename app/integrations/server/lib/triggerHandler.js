@@ -369,6 +369,11 @@ export class RocketChatIntegrationHandler {
 					argObject.room = args[2];
 				}
 				break;
+			case 'roomChange':
+				if (args.length >= 3) {
+					argObject.room = args[1];
+				}
+				break;
 			case 'userCreated':
 				if (args.length >= 2) {
 					argObject.user = args[1];
@@ -619,6 +624,12 @@ export class RocketChatIntegrationHandler {
 		const data = {
 			token: trigger.token,
 			bot: false,
+			t: room.t ? room.t : '',
+			usersCount: room.usersCount ? room.usersCount : 0,
+			customFields: room.customFields ? room.customFields : {},
+			ts: room.ts ? room.ts : '',
+			lm: room.lm ? room.lm : '',
+			u: room.u ? room.u : {},
 		};
 
 		if (word) {

@@ -45,7 +45,7 @@ class NotificationClass {
 		setTimeout(() => {
 			try {
 				this.worker();
-			} catch (e) {
+			} catch (e: any) {
 				SystemLogger.error('Error sending notification', e);
 				this.executeWorkerLater();
 			}
@@ -81,7 +81,7 @@ class NotificationClass {
 			}
 
 			NotificationQueue.removeById(notification._id);
-		} catch (e) {
+		} catch (e: any) {
 			SystemLogger.error(e);
 			await NotificationQueue.setErrorById(notification._id, e.message);
 		}

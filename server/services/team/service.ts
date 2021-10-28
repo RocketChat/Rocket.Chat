@@ -151,7 +151,7 @@ export class TeamService extends ServiceClass implements ITeamService {
 				_id: teamId,
 				...teamData,
 			};
-		} catch (e) {
+		} catch (e: any) {
 			throw new Error('error-team-creation');
 		}
 	}

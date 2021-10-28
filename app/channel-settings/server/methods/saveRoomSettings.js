@@ -332,6 +332,9 @@ Meteor.methods({
 			callbacks.run('afterSaveRoomSettings', room);
 		});
 
+		// Room change
+		callbacks.run('afterRoomChange', room);
+
 		return {
 			result: true,
 			rid: room._id,

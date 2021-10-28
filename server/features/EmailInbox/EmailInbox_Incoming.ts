@@ -222,7 +222,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 			try {
 				attachments.push(await uploadAttachment(attachment, rid, guest.token));
-			} catch (e) {
+			} catch (e: any) {
 				Livechat.logger.error('Error uploading attachment from email', e);
 			}
 		}

@@ -20,7 +20,7 @@
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "meteor npm run stylelint && meteor npm run eslint",
-		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"eslint": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"typecheck": "tsc --noEmit --skipLibCheck",

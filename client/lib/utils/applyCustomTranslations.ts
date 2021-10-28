@@ -16,7 +16,7 @@ export const applyCustomTranslations = (): void => {
 			TAPi18next.addResourceBundle(lang, 'project', translations);
 		}
 		TAPi18n._language_changed_tracker.changed();
-	} catch (e) {
+	} catch (e: any) {
 		console.error('Invalid setting Custom_Translations', e);
 	}
 };

@@ -54,6 +54,15 @@ export const integrations = {
 				targetRoom: false,
 			},
 		},
+		roomChange: {
+			label: 'Integrations_Outgoing_Type_RoomChange',
+			value: 'roomChange',
+			use: {
+				channel: true,
+				triggerWords: true,
+				targetRoom: false,
+			},
+		},
 		userCreated: {
 			label: 'Integrations_Outgoing_Type_UserCreated',
 			value: 'userCreated',

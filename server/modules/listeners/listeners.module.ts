@@ -3,6 +3,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { EnterpriseSettings, MeteorService } from '../../sdk/index';
 import { IRoutingManagerConfig } from '../../../definition/IRoutingManagerConfig';
 import { UserStatus } from '../../../definition/UserStatus';
+import { callbacks } from '../../../app/callbacks/server';
 
 const STATUS_MAP: {[k: string]: number} = {
 	[UserStatus.OFFLINE]: 0,
@@ -216,6 +217,8 @@ export class ListenersModule {
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
 			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
+			// Update room change
+			callbacks.run('afterRoomChange', room);
 		});
 
 		service.onEvent('watch.users', ({ clientAction, data, diff, unset, id }): void => {

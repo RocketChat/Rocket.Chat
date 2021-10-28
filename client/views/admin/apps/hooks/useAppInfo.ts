@@ -19,7 +19,7 @@ const getBundledIn = async (appId: string, appVersion: string): Promise<App['bun
 				return bundle;
 			}),
 		);
-	} catch (e) {
+	} catch (e: any) {
 		handleAPIError(e);
 		return [];
 	}
@@ -32,7 +32,7 @@ const getSettings = async (appId: string, installed: boolean): Promise<Record<st
 
 	try {
 		return Apps.getAppSettings(appId);
-	} catch (e) {
+	} catch (e: any) {
 		handleAPIError(e);
 		return {};
 	}
@@ -45,7 +45,7 @@ const getApis = async (appId: string, installed: boolean): Promise<Record<string
 
 	try {
 		return Apps.getAppApis(appId);
-	} catch (e) {
+	} catch (e: any) {
 		handleAPIError(e);
 		return {};
 	}

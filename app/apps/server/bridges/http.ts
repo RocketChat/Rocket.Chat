@@ -63,7 +63,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		try {
 			return HTTP.call(info.method, info.url, info.request) as IHttpResponse;
-		} catch (e) {
+		} catch (e: any) {
 			return e.response;
 		}
 	}

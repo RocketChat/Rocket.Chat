@@ -37,7 +37,7 @@ export class LogoutRequestParser {
 			const id = request.getAttribute('ID');
 
 			return callback(null, { idpSession, nameID, id });
-		} catch (e) {
+		} catch (e: any) {
 			SAMLUtils.error(e);
 			SAMLUtils.log(`Caught error: ${ e }`);
 

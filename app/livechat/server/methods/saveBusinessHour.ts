@@ -7,7 +7,7 @@ Meteor.methods({
 	'livechat:saveBusinessHour'(businessHourData: ILivechatBusinessHour) {
 		try {
 			Promise.await(businessHourManager.saveBusinessHour(businessHourData));
-		} catch (e) {
+		} catch (e: any) {
 			throw new Meteor.Error(e.message);
 		}
 	},

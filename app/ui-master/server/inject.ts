@@ -60,7 +60,7 @@ const callback: NextHandleFunction = (req, res, next) => {
 			return;
 		}
 		next();
-	} catch (e) {
+	} catch (e: any) {
 		next();
 	}
 };

@@ -82,7 +82,7 @@ Meteor.methods({
 						type: thumbnail.type,
 					});
 				}
-			} catch (e) {
+			} catch (e: any) {
 				SystemLogger.error(e);
 			}
 			attachments.push(attachment);

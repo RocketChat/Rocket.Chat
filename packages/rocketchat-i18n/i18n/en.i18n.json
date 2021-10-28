@@ -2254,6 +2254,7 @@
   "Integrations": "Integrations",
   "Integrations_for_all_channels": "Enter <strong>all_public_channels</strong> to listen on all public channels, <strong>all_private_groups</strong> to listen on all private groups, and <strong>all_direct_messages</strong> to listen to all direct messages.",
   "Integrations_Outgoing_Type_FileUploaded": "File Uploaded",
+  "Integrations_Outgoing_Type_RoomChange": "Room Change",
   "Integrations_Outgoing_Type_RoomArchived": "Room Archived",
   "Integrations_Outgoing_Type_RoomCreated": "Room Created (public and private)",
   "Integrations_Outgoing_Type_RoomJoined": "User Joined Room",

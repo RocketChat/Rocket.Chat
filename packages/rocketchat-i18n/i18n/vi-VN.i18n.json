@@ -1365,6 +1365,7 @@
   "Integrations": "Tích hợp",
   "Integrations_for_all_channels": "Nhập <strong>all_public_channels</strong> để lắng nghe trên tất cả các kênh công khai, <strong>all_private_groups</strong> để lắng nghe trên tất cả các nhóm riêng và <strong>all_direct_messages</strong> để lắng nghe tất cả các tin nhắn trực tiếp.",
   "Integrations_Outgoing_Type_FileUploaded": "File đã được tải lên",
+  "Integrations_Outgoing_Type_RoomChange": "Thuộc tính phòng thay đổi",
   "Integrations_Outgoing_Type_RoomArchived": "Phòng lưu trữ",
   "Integrations_Outgoing_Type_RoomCreated": "Phòng đã tạo (công cộng và riêng tư)",
   "Integrations_Outgoing_Type_RoomJoined": "Phòng Người dùng Tham gia",

@@ -334,7 +334,7 @@ export class ImportDataConverter {
 				if (afterImportFn) {
 					afterImportFn(data, 'user', isNewUser);
 				}
-			} catch (e) {
+			} catch (e: any) {
 				this._logger.error(e);
 				this.saveError(_id, e);
 			}
@@ -550,7 +550,7 @@ export class ImportDataConverter {
 
 				try {
 					insertMessage(creator, msgObj, rid, true);
-				} catch (e) {
+				} catch (e: any) {
 					this._logger.warn(`Failed to import message with timestamp ${ String(msgObj.ts) } to room ${ rid }`);
 					this._logger.error(e);
 				}
@@ -558,7 +558,7 @@ export class ImportDataConverter {
 				if (afterImportFn) {
 					afterImportFn(m, 'message', true);
 				}
-			} catch (e) {
+			} catch (e: any) {
 				this.saveError(_id, e);
 			}
 		});
@@ -566,7 +566,7 @@ export class ImportDataConverter {
 		for (const rid of rids) {
 			try {
 				Rooms.resetLastMessageById(rid);
-			} catch (e) {
+			} catch (e: any) {
 				this._logger.warn(`Failed to update last message of room ${ rid }`);
 				this._logger.error(e);
 			}
@@ -766,7 +766,7 @@ export class ImportDataConverter {
 
 				roomData._id = roomInfo.rid;
 			});
-		} catch (e) {
+		} catch (e: any) {
 			this._logger.warn({ msg: 'Failed to create new room', name: roomData.name, members });
 			this._logger.error(e);
 			throw e;
@@ -865,7 +865,7 @@ export class ImportDataConverter {
 				if (afterImportFn) {
 					afterImportFn(c, 'channel', !existingRoom);
 				}
-			} catch (e) {
+			} catch (e: any) {
 				this.saveError(_id, e);
 			}
 		});

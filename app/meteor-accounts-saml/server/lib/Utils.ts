@@ -206,7 +206,7 @@ export class SAMLUtils {
 
 		try {
 			map = JSON.parse(userDataFieldMap);
-		} catch (e) {
+		} catch (e: any) {
 			SAMLUtils.log(userDataFieldMap);
 			SAMLUtils.log(e);
 			throw new Error('Failed to parse custom user field map');

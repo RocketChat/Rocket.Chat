@@ -41,23 +41,19 @@ type Endpoints = ChatEndpoints &
 
 type Endpoint = UnionizeEndpoints<Endpoints>;
 
-type UnionizeEndpoints<EE extends Endpoints> = ValueOf<
-	{
-		[P in keyof EE]: UnionizeMethods<P, EE[P]>;
-	}
->;
+type UnionizeEndpoints<EE extends Endpoints> = ValueOf<{
+	[P in keyof EE]: UnionizeMethods<P, EE[P]>;
+}>;
 
 type ExtractOperations<OO, M extends keyof OO> = ExtractKeys<OO, M, (...args: any[]) => any>;
 
-type UnionizeMethods<P, OO> = ValueOf<
-	{
-		[M in keyof OO as ExtractOperations<OO, M>]: (
-			method: M,
-			path: OO extends { path: string } ? OO['path'] : P,
-			...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
-		) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
-	}
->;
+type UnionizeMethods<P, OO> = ValueOf<{
+	[M in keyof OO as ExtractOperations<OO, M>]: (
+		method: M,
+		path: OO extends { path: string } ? OO['path'] : P,
+		...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
+	) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
+}>;
 
 export type Method = Parameters<Endpoint>[0];
 export type Path = Parameters<Endpoint>[1];

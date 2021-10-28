@@ -33,7 +33,7 @@ class CustomOplogHandle {
 			}
 
 			await mongo.db.admin().command({ replSetGetStatus: 1 });
-		} catch (e) {
+		} catch (e: any) {
 			if (e.message.startsWith('not authorized')) {
 				console.info('Change Stream is available for your installation, give admin permissions to your database user to use this improved version.');
 			}
@@ -50,7 +50,7 @@ class CustomOplogHandle {
 		let urlParsed;
 		try {
 			urlParsed = await urlParser(oplogUrl);
-		} catch (e) {
+		} catch (e: any) {
 			throw Error(`Error parsing database URL (${ oplogUrl })`);
 		}
 
@@ -198,7 +198,7 @@ if (!process.env.DISABLE_DB_WATCH) {
 	if (Package['disable-oplog']) {
 		try {
 			oplogHandle = Promise.await(new CustomOplogHandle().start());
-		} catch (e) {
+		} catch (e: any) {
 			console.error(e.message);
 		}
 	}

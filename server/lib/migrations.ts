@@ -208,7 +208,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 
 		try {
 			migrate('up', migration);
-		} catch (e) {
+		} catch (e: any) {
 			showError(version, control, e);
 			log.error({ err: e });
 			process.exit(1);
@@ -254,7 +254,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 				});
 			}
 		}
-	} catch (e) {
+	} catch (e: any) {
 		showError(version, control, e);
 		log.error({ err: e });
 		process.exit(1);

@@ -1,4 +1,5 @@
 node_modules
+data
 packages/autoupdate/
 packages/meteor-streams/
 packages/meteor-timesync/

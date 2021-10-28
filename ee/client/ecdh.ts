@@ -59,7 +59,7 @@ async function initEncryptedSession(): Promise<void> {
 		await session.setServerKey(data.publicKeyString);
 		resolveSession(session);
 		init(session);
-	} catch (e) {
+	} catch (e: any) {
 		console.log(e);
 		resolveSession();
 		Meteor.connection._stream.allowConnection();

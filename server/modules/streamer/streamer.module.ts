@@ -310,7 +310,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 
 		try {
 			this.registerMethod(method);
-		} catch (e) {
+		} catch (e: any) {
 			SystemLogger.error(e);
 		}
 	}
