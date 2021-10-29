@@ -1,4 +1,4 @@
-import { addUserRoles } from '../../../../app/authorization/server';
+import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
 import { Roles, Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
@@ -34,7 +34,7 @@ export class OAuthEEManager {
 		}
 	}
 
-	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string): void {
+	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string, rolesToSync: string[]): void {
 		if (user && identity && roleClaimName) {
 			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
 
@@ -42,12 +42,15 @@ export class OAuthEEManager {
 				user.roles = [];
 			}
 
-			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val));
+			const toRemove = user.roles.filter((val: any) => !rolesFromSSO.includes(val) && rolesToSync.includes(val));
 
-			// loop through sso roles and add the new ones
-			toAdd.forEach(function(role: any) {
-				addUserRoles(user._id, role);
-			});
+			// remove all roles that the user has, but sso doesnt
+			removeUserFromRoles(user._id, toRemove);
+
+			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val) && rolesToSync.includes(val));
+
+			// add all roles that sso has, but the user doesnt
+			addUserRoles(user._id, toAdd);
 		}
 	}
 

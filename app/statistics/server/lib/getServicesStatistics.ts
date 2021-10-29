@@ -4,6 +4,7 @@ import { Users } from '../../../models/server';
 function getCustomOAuthServices(): Record<string, {
 	enabled: boolean;
 	mergeRoles: boolean;
+	rolesToSync: string[];
 	users: number;
 }> {
 	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/mi);
@@ -11,7 +12,8 @@ function getCustomOAuthServices(): Record<string, {
 		const name = key.replace('Accounts_OAuth_Custom-', '');
 		return [name, {
 			enabled: Boolean(value),
-			mergeRoles: Boolean(settings.get(`Accounts_OAuth_Custom-${ name }-merge_roles`)),
+			mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${ name }-merge_roles`),
+			rolesToSync: settings.get<string>(`Accounts_OAuth_Custom-${ name }-roles_to_sync`).split(','),
 			users: Users.countActiveUsersByService(name),
 		}];
 	}));
