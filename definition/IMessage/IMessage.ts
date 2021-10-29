@@ -77,6 +77,8 @@ export interface IMessage extends IRocketChatRecord {
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 	alias?: string;
+
+	private?: boolean;
 }
 
 export interface IThreadMessage extends IMessage {
@@ -98,4 +100,13 @@ export interface IDiscussionMessage extends IMessage {
 
 export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => {
 	return !!message.drid;
+};
+
+
+export interface IPrivateMessage extends IMessage {
+	private: true;
+}
+
+export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => {
+	return !!message.private;
 };

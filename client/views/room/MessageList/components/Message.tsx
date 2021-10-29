@@ -13,6 +13,7 @@ import {
 	MessageReaction,
 	ReactionEmoji,
 	ReactionCouter,
+	MessagePrivateIndicator,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
@@ -24,6 +25,7 @@ import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
@@ -39,6 +41,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 	subscription,
 	...props
 }) => {
+	const t = useTranslation();
 	const {
 		broadcast,
 		actions: { openDiscussion, openThread, openUserCard, replyBroadcast },
@@ -76,6 +79,11 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 						<MessageTimestamp data-time={message.ts.toISOString()}>
 							{formatters.messageHeader(message.ts)}
 						</MessageTimestamp>
+						{message.private && (
+							<MessagePrivateIndicator>
+								{t('Only_you_can_see_this_message')}
+							</MessagePrivateIndicator>
+						)}
 					</MessageHeader>
 				)}
 				<MessageBody>
@@ -93,12 +101,10 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{message.reactions && Object.keys(message.reactions).length > 0 && (
 					<MessageReactions>
 						{Object.entries(message.reactions).map(([name, reactions]) => (
-							<>
-								<MessageReaction key={name}>
-									<ReactionEmoji {...getEmojiClassNameAndDataTitle(name)} />
-									<ReactionCouter counter={reactions.usernames.length} />
-								</MessageReaction>
-							</>
+							<MessageReaction key={name}>
+								<ReactionEmoji {...getEmojiClassNameAndDataTitle(name)} />
+								<ReactionCouter counter={reactions.usernames.length} />
+							</MessageReaction>
 						))}
 						<MessageReactions.Action />
 					</MessageReactions>
@@ -134,7 +140,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />
 				)}
 			</MessageContainer>
-			<Toolbox message={message} />
+			{!message.private && <Toolbox message={message} />}
 		</MessageTemplate>
 	);
 };
