@@ -1,5 +1,5 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { FC, Fragment } from 'react';
 
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 
@@ -9,8 +9,8 @@ const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDro
 }) {
 	return (
 		<Tile pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
-			{groups.map((group) => (
-				<>
+			{groups.map((group, index) => (
+				<Fragment key={index}>
 					{group.label && (
 						<Box
 							pi='x16'
@@ -32,7 +32,7 @@ const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDro
 							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
 						</Option>
 					))}
-				</>
+				</Fragment>
 			))}
 		</Tile>
 	);
