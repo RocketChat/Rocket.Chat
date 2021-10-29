@@ -281,6 +281,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 	}
 
 	getRoutingManagerConfig(): IRoutingManagerConfig {
-		return RoutingManager.getConfig();
+		// return false if called before routing method is set
+		// this will cause that oplog events received on early stages of server startup
+		// won't be fired (at least, inquiry events)
+		return RoutingManager.isMethodSet() && RoutingManager.getConfig();
 	}
 }
