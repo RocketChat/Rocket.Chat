@@ -1,6 +1,11 @@
 import { ActionButton } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ComponentProps, forwardRef } from 'react';
 
-const CategoryDropDownAnchor: FC = () => <ActionButton icon='doner' />;
+const CategoryDropDownAnchor = forwardRef<
+	HTMLElement,
+	Partial<ComponentProps<typeof ActionButton>>
+>(function CategoryDropDownAnchor(props, ref) {
+	return <ActionButton ref={ref} icon='doner' {...props} />;
+});
 
 export default CategoryDropDownAnchor;

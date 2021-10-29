@@ -1,11 +1,12 @@
+import { ButtonGroup } from '@rocket.chat/fuselage';
 import { Story } from '@storybook/react';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 
+import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import { useCategoryDropdown } from '../hooks/useCategoryDropdown';
+import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
-import CategoryDropDownList, {
-	CategoryDropdownItem,
-	CategoryDropDownListProps,
-} from './CategoryDropDownList';
+import CategoryDropDownList from './CategoryDropDownList';
 
 export default {
 	title: 'apps/components/CategoryDropDown',
@@ -52,37 +53,20 @@ const testGroup: CategoryDropDownListProps['groups'] = [
 	},
 ];
 
-export const Default: Story = () => <CategoryDropDownAnchor />;
+export const Achor: Story = () => <CategoryDropDownAnchor />;
 export const List: Story = () => {
-	const [data, setData] = useState(testGroup);
+	const [data, onSelected] = useCategoryDropdown(testGroup);
 
-	const onSelected = useCallback(
-		(item: CategoryDropdownItem) =>
-			setData((prev) => {
-				const items = prev.flatMap((group) => group.items);
-
-				const itemsWithoutAll = items.filter((item) => item.id !== 'all');
-
-				const itemAll = items.find(({ id }) => id === 'all');
-
-				if (item.id === 'all') {
-					itemsWithoutAll.forEach((i) => {
-						i.checked = !item.checked;
-					});
-				}
-
-				const itemPrev = prev.flatMap((group) => group.items).find(({ id }) => id === item.id);
-				if (itemPrev) {
-					itemPrev.checked = !itemPrev.checked;
-				}
-
-				if (itemAll) {
-					itemAll.checked = itemsWithoutAll.every((i) => i.checked);
-				}
-
-				return [...prev];
-			}),
-		[],
-	);
 	return <CategoryDropDownList groups={data} onSelected={onSelected} />;
+};
+
+export const Default: Story = () => {
+	const [data, onSelected] = useCategoryDropdown(testGroup);
+	return (
+		<ButtonGroup>
+			<CategoryDropDown mini {...{ data, onSelected }} />
+			<CategoryDropDown small {...{ data, onSelected }} />
+			<CategoryDropDown {...{ data, onSelected }} />
+		</ButtonGroup>
+	);
 };

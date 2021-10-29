@@ -1,47 +1,24 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-export type CategoryDropdownItem = {
-	id: string;
-	label: string;
-	checked?: boolean;
-};
+import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 
-export type CategoryDropDownListProps = {
-	groups: {
-		label?: string;
-		items: CategoryDropdownItem[];
-	}[];
-	onSelected: (item: CategoryDropdownItem) => void;
-};
-
-const style = {
-	boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.08), 0px 0px 12px rgba(47, 52, 61, 0.1)',
-};
-
-const CategoryDropDownList: FC<CategoryDropDownListProps> = ({ groups, onSelected }) => (
-	<Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-		{JSON.stringify(groups)}
-		<Tile
-			style={style}
-			padding={0}
-			paddingBlock={'x12'}
-			paddingInline={0}
-			elevation='2'
-			width='224px'
-			backgroundColor='#ffffff'
-			borderRadius='2px'
-		>
+const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDropDownList({
+	groups,
+	onSelected,
+}) {
+	return (
+		<Tile pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
 			{groups.map((group) => (
 				<>
 					{group.label && (
 						<Box
-							padding='0.5rem 1rem 0.75rem 1rem'
-							fontFamily='Inter'
-							fontSize='0.625rem'
-							lineHeight='0.75rem'
+							pi='x16'
+							pbs='x8'
+							pbe='x4'
+							fontScale='micro'
 							textTransform='uppercase'
-							color='#2F343D'
+							color='default'
 						>
 							{group.label}
 						</Box>
@@ -58,7 +35,7 @@ const CategoryDropDownList: FC<CategoryDropDownListProps> = ({ groups, onSelecte
 				</>
 			))}
 		</Tile>
-	</Box>
-);
+	);
+};
 
 export default CategoryDropDownList;
