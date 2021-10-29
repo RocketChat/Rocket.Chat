@@ -593,7 +593,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
-				mobileNotifications: Match.Maybe(String),
+				pushNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),
