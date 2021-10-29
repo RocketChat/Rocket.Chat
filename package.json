@@ -82,7 +82,7 @@
 		"@types/less": "^3.0.2",
 		"@types/lodash.get": "^4.4.6",
 		"@types/mailparser": "^3.0.2",
-		"@types/marked": "^1.2.2",
+		"@types/marked": "^3.0.2",
 		"@types/meteor": "1.4.74",
 		"@types/mkdirp": "^1.0.1",
 		"@types/mocha": "^8.2.2",
