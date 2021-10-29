@@ -9,7 +9,7 @@ const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'cha
 	typeof tab === 'string' && ['users', 'messages', 'channels'].includes(tab);
 
 const EngagementDashboardRoute = (): ReactElement | null => {
-	const canViewEngagementDashboard = usePermission('view-statistics');
+	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
 	const engagementDashboardRoute = useRoute('engagement-dashboard');
 	const [routeName, routeParams] = useCurrentRoute();
 	const { tab } = routeParams ?? {};

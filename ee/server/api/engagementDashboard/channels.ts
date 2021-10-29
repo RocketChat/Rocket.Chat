@@ -6,7 +6,7 @@ import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/da
 
 API.v1.addRoute('engagement-dashboard/channels/list', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({

@@ -6,7 +6,7 @@ import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashb
 
 API.v1.addRoute('engagement-dashboard/messages/messages-sent', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -23,7 +23,7 @@ API.v1.addRoute('engagement-dashboard/messages/messages-sent', {
 
 API.v1.addRoute('engagement-dashboard/messages/origin', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -40,7 +40,7 @@ API.v1.addRoute('engagement-dashboard/messages/origin', {
 
 API.v1.addRoute('engagement-dashboard/messages/top-five-popular-channels', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({

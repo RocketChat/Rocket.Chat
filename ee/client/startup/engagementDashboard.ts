@@ -21,7 +21,7 @@ onToggledFeature('engagement-dashboard', {
 				href: '/admin/engagement-dashboard',
 				i18nLabel: 'Engagement Dashboard',
 				icon: 'file-keynote',
-				permissionGranted: () => hasAllPermission('view-statistics'),
+				permissionGranted: () => hasAllPermission('view-engagement-dashboard'),
 			});
 			registerRoute();
 		}),

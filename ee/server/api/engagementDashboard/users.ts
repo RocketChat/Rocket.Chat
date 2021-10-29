@@ -12,7 +12,7 @@ import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashb
 
 API.v1.addRoute('engagement-dashboard/users/new-users', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -29,7 +29,7 @@ API.v1.addRoute('engagement-dashboard/users/new-users', {
 
 API.v1.addRoute('engagement-dashboard/users/active-users', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -46,7 +46,7 @@ API.v1.addRoute('engagement-dashboard/users/active-users', {
 
 API.v1.addRoute('engagement-dashboard/users/chat-busier/hourly-data', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -62,7 +62,7 @@ API.v1.addRoute('engagement-dashboard/users/chat-busier/hourly-data', {
 
 API.v1.addRoute('engagement-dashboard/users/chat-busier/weekly-data', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
@@ -78,7 +78,7 @@ API.v1.addRoute('engagement-dashboard/users/chat-busier/weekly-data', {
 
 API.v1.addRoute('engagement-dashboard/users/users-by-time-of-the-day-in-a-week', {
 	authRequired: true,
-	permissionsRequired: ['view-statistics'],
+	permissionsRequired: ['view-engagement-dashboard'],
 }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
