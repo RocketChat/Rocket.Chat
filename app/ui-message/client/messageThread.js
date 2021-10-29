@@ -7,7 +7,7 @@ import { Messages } from '../../models/client';
 import { normalizeThreadTitle } from '../../threads/client/lib/normalizeThreadTitle';
 import './messageThread.html';
 
-const findParentMessage = (() => {
+export const findParentMessage = (() => {
 	const waiting = [];
 	let resolve;
 	let pending = new Promise((r) => { resolve = r; });

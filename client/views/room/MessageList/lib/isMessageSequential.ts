@@ -9,15 +9,19 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return false;
 	}
 
+	if (current.t || previous.t) {
+		return false;
+	}
+
+	if (current.tmid) {
+		return [previous.tmid, previous._id].includes(current.tmid);
+	}
+
 	if (current.groupable === false) {
 		return false;
 	}
 
 	if (current.u._id !== previous.u._id) {
-		return false;
-	}
-
-	if (current.tmid !== previous.tmid) {
 		return false;
 	}
 

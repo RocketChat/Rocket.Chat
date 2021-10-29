@@ -7,14 +7,13 @@ import { useUserSubscription } from '../../../contexts/UserContext';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { MessageProvider } from '../providers/MessageProvider';
 import Message from './components/Message';
+import { ThreadMessage } from './components/ThreadMessage';
 import { useMessages } from './hooks/useMessages';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { isMessageUnread } from './lib/isMessageUnread';
 
 export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
-	// const room = useRoom() as IRoom;
-
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useUserSubscription(rid);
@@ -32,6 +31,10 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 
 				const shouldShowAsSequential = sequential && !newDay;
 
+				const { tmid } = message;
+
+				const MessageTemplate = tmid ? ThreadMessage : Message;
+
 				return (
 					<Fragment key={message._id}>
 						{shouldShowDivider && (
@@ -39,12 +42,16 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 								{newDay && format(message.ts)}
 							</MessageDivider>
 						)}
-						<Message
-							data-mid={message._id}
-							data-unread={unread}
-							sequential={shouldShowAsSequential}
-							message={message}
-						/>
+						{!message.t && (
+							<MessageTemplate
+								data-system-message={Boolean(message.t)}
+								data-mid={message._id}
+								data-unread={unread}
+								data-sequential={sequential}
+								sequential={shouldShowAsSequential}
+								message={message}
+							/>
+						)}
 					</Fragment>
 				);
 			})}

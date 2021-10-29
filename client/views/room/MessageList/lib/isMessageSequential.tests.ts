@@ -96,6 +96,18 @@ describe('isMessageSequential', () => {
 		};
 		expect(isMessageSequential(current, previous)).to.be.true;
 	});
+
+	it('should return true if message is a reply from a previous message', () => {
+		const previous: IMessage = {
+			...baseMessage,
+			_id: 'threadId',
+		};
+		const current: IMessage = {
+			...previous,
+			tmid: 'threadId',
+		};
+		expect(isMessageSequential(current, previous)).to.be.true;
+	});
 	it("should return false if both messages don't have the same alias", () => {
 		const previous: IMessage = {
 			...baseMessage,
@@ -104,6 +116,18 @@ describe('isMessageSequential', () => {
 		const current: IMessage = {
 			...previous,
 			alias: 'alias2',
+		};
+		expect(isMessageSequential(current, previous)).to.be.false;
+	});
+
+	it('should return false if message is from system', () => {
+		const previous: IMessage = {
+			...baseMessage,
+		};
+		const current: IMessage = {
+			...previous,
+			ts: new Date('2021-10-27T00:04:59.999Z'),
+			t: 'au',
 		};
 		expect(isMessageSequential(current, previous)).to.be.false;
 	});

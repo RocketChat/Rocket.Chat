@@ -10,28 +10,33 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageReactions,
+	MessageReaction,
 	ReactionEmoji,
+	ReactionCouter,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { IMessage } from '../../../../../definition/IMessage';
-import Emoji from '../../../../components/Emoji';
+import { IMessage, isDiscussionMessage, isThreadMessage } from '../../../../../definition/IMessage';
+import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
 import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
 import { UserPresence } from '../../../../lib/presence';
+import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions } from '../../contexts/MessageContext';
 import Toolbox from './Toolbox';
 
-const Message: FC<{ message: IMessage; sequential: boolean }> = ({
+const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
 	message,
 	sequential,
+	subscription,
 	...props
 }) => {
 	const {
@@ -40,7 +45,9 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({
 		formatters,
 	} = useMessageActions();
 
-	const user: UserPresence = useUserData(message.u._id) || message.u;
+	const meUid = useUserId();
+
+	const user: UserPresence = useUserData(message.u._id) || { ...message.u, roles: [] };
 	return (
 		<MessageTemplate {...props}>
 			<MessageLeftContainer>
@@ -87,28 +94,41 @@ const Message: FC<{ message: IMessage; sequential: boolean }> = ({
 					<MessageReactions>
 						{Object.entries(message.reactions).map(([name, reactions]) => (
 							<>
-								<MessageReactions.Reaction key={name} counter={reactions.usernames.length}>
-									<ReactionEmoji>
-										<Emoji emojiHandle={name} />
-									</ReactionEmoji>
-								</MessageReactions.Reaction>
+								<MessageReaction key={name}>
+									<ReactionEmoji {...getEmojiClassNameAndDataTitle(name)} />
+									<ReactionCouter counter={reactions.usernames.length} />
+								</MessageReaction>
 							</>
 						))}
 						<MessageReactions.Action />
 					</MessageReactions>
 				)}
 
-				{message.tcount && <Thread openThread={openThread} counter={message.tcount} />}
-				{/* //following={following} lm={message.tlm} rid={message.rid} mid={message._id} unread={unread} mention={mention all={all openThread={actions.openThread }} */}
+				{isThreadMessage(message) && (
+					<Thread
+						openThread={openThread}
+						counter={message.tcount}
+						following={message?.replies.indexOf(meUid) > -1}
+						mid={message._id}
+						rid={message.rid}
+						lm={message.tlm}
+						unread={subscription?.tunread?.includes(message._id)}
+						mention={subscription?.tunreadUser?.includes(message._id)}
+						all={subscription?.tunreadGroup?.includes(message._id)}
+						participants={message?.replies.length}
+					/>
+				)}
 
-				{message.drid && (
+				{isDiscussionMessage(message) && (
 					<Discussion
 						count={message.dcount}
 						drid={message.drid}
 						lm={message.dlm}
+						rid={message.rid}
 						openDiscussion={openDiscussion}
 					/>
 				)}
+
 				{message.location && <MessageLocation location={message.location} />}
 				{broadcast && user.username && (
 					<Broadcast replyBroadcast={replyBroadcast} mid={message._id} username={user.username} />

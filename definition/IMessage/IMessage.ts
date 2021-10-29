@@ -36,14 +36,14 @@ type MessageTypesValues =
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
+
 	tmid?: string;
+	tlm?: Date;
+
 	ts: Date;
-	mentions?: {
-		_id: string;
+	mentions?: ({
 		type: MentionType;
-		name?: string;
-		username?: string;
-	}[];
+	} & Pick<IUser, '_id' | 'username' | 'name'>)[];
 	groupable?: false;
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
@@ -60,7 +60,6 @@ export interface IMessage extends IRocketChatRecord {
 	starred?: {_id: IUser['_id']}[];
 	pinned?: boolean;
 	drid?: RoomID;
-	tlm?: Date;
 
 	dcount?: number;
 
@@ -72,10 +71,31 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending';
 
-	urls: any;
+	urls: unknown[];
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 	alias?: string;
 }
+
+export interface IThreadMessage extends IMessage {
+	tcount: number;
+	tmid: string;
+	tlm: Date;
+	replies: IUser['_id'][];
+}
+
+export const isThreadMessage = (message: IMessage): message is IThreadMessage => {
+	return !!message.tcount;
+};
+
+export interface IDiscussionMessage extends IMessage {
+	drid: string;
+	dlm?: Date;
+	dcount: number;
+}
+
+export const isDiscussionMessage = (message: IMessage): message is IDiscussionMessage => {
+	return !!message.drid;
+};
