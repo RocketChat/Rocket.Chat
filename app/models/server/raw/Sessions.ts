@@ -1,7 +1,8 @@
 import { AggregationCursor, BulkWriteOperation, BulkWriteOpResultObject, Collection, IndexSpecification, UpdateWriteOpResult, FilterQuery } from 'mongodb';
 
-import { ISession } from '../../../../definition/ISession';
+import type { ISession } from '../../../../definition/ISession';
 import { BaseRaw, ModelOptionalId } from './BaseRaw';
+import type { IUser } from '../../../../definition/IUser';
 
 type DestructuredDate = {year: number; month: number; day: number};
 type DestructuredDateWithType = {year: number; month: number; day: number; type?: 'month' | 'week'};
@@ -627,8 +628,20 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		});
 	}
 
-	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
-		return this.col.aggregate([
+	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<{
+		day: number;
+		month: number;
+		year: number;
+		usersList: IUser['_id'][];
+		users: number;
+	}[]> {
+		return this.col.aggregate<{
+			day: number;
+			month: number;
+			year: number;
+			usersList: IUser['_id'][];
+			users: number;
+		}>([
 			{
 				$match: {
 					...matchBasedOnDate(start, end),
@@ -675,7 +688,10 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		]).toArray();
 	}
 
-	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DestructuredRange & {groupSize: number}): Promise<ISession[]> {
+	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DestructuredRange & { groupSize: number }): Promise<{
+		hour: number;
+		users: number;
+	}[]> {
 		const match = {
 			$match: {
 				type: 'computed-session',
@@ -706,11 +722,24 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				hour: -1,
 			},
 		};
-		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
+		return this.col.aggregate<{
+			hour: number;
+			users: number;
+		}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
 	}
 
-	async getTotalOfSessionsByDayBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
-		return this.col.aggregate([
+	async getTotalOfSessionsByDayBetweenDates({ start, end }: DestructuredRange): Promise<{
+		day: number;
+		month: number;
+		year: number;
+		users: number;
+	}[]> {
+		return this.col.aggregate<{
+			day: number;
+			month: number;
+			year: number;
+			users: number;
+		}>([
 			{
 				$match: {
 					...matchBasedOnDate(start, end),
@@ -739,7 +768,13 @@ export class SessionsRaw extends BaseRaw<ISession> {
 		]).toArray();
 	}
 
-	async getTotalOfSessionByHourAndDayBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
+	async getTotalOfSessionByHourAndDayBetweenDates({ start, end }: DestructuredRange): Promise<{
+		hour: number;
+		day: number;
+		month: number;
+		year: number;
+		users: number;
+	}[]> {
 		const match = {
 			$match: {
 				type: 'computed-session',
@@ -775,7 +810,14 @@ export class SessionsRaw extends BaseRaw<ISession> {
 				hour: -1,
 			},
 		};
-		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
+
+		return this.col.aggregate<{
+			hour: number;
+			day: number;
+			month: number;
+			year: number;
+			users: number;
+		}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
 	}
 
 	async getUniqueUsersOfYesterday(): Promise<FullReturn> {

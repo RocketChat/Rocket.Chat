@@ -1,8 +1,8 @@
-import { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
-import { IDailyActiveUsers } from '../../../../definition/IUser';
+import type { IDirectMessageRoom, IRoom } from '../../../../definition/IRoom';
+import type { IUser } from '../../../../definition/IUser';
 
 export type EngagementDashboardEndpoints = {
-	'engagement-dashboard/channels/list': {
+	'/v1/engagement-dashboard/channels/list': {
 		GET: (params: { start: Date; end: Date; offset: number; count: number }) => {
 			channels: {
 				room: {
@@ -55,7 +55,13 @@ export type EngagementDashboardEndpoints = {
 	};
 	'/v1/engagement-dashboard/users/active-users': {
 		GET: (params: { start: Date; end: Date }) => {
-			month: IDailyActiveUsers[];
+			month: {
+				day: number;
+				month: number;
+				year: number;
+				usersList: IUser['_id'][];
+				users: number;
+			}[];
 		};
 	};
 	'/v1/engagement-dashboard/users/chat-busier/weekly-data': {

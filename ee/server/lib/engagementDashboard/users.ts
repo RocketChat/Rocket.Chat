@@ -2,20 +2,21 @@ import moment from 'moment';
 
 import { Users, Analytics, Sessions } from '../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
+import { IUser } from '../../../../definition/IUser';
 
-export const handleUserCreated = (user) => {
+export const handleUserCreated = (user: IUser): IUser => {
 	if (user.roles?.includes('anonymous')) {
-		return;
+		return user;
 	}
 
 	Promise.await(Analytics.saveUserData({
-		date: convertDateToInt(user.ts),
-		user,
+		date: convertDateToInt(user.createdAt),
 	}));
+
 	return user;
 };
 
-export const fillFirstDaysOfUsersIfNeeded = async (date) => {
+export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> => {
 	const usersFromAnalytics = await Analytics.findByTypeBeforeDate({
 		type: 'users',
 		date: convertDateToInt(date),
@@ -33,7 +34,17 @@ export const fillFirstDaysOfUsersIfNeeded = async (date) => {
 	}
 };
 
-export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
+export const findWeeklyUsersRegisteredData = async ({ start, end }: { start: Date; end: Date }): Promise<{
+	days: { day: Date; users: number }[];
+	period: {
+		count: number;
+		variation: number;
+	};
+	yesterday: {
+		count: number;
+		variation: number;
+	};
+}> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
 	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
@@ -66,66 +77,73 @@ export const findWeeklyUsersRegisteredData = async ({ start, end }) => {
 	};
 };
 
-export const findActiveUsersMonthlyData = async ({ start, end }) => {
-	const startOfPeriod = moment(start);
-	const endOfPeriod = moment(end);
+const createDestructuredDate = (input: moment.MomentInput): {
+	year: number;
+	month: number;
+	day: number;
+} => {
+	const date = moment(input);
 
 	return {
-		month: await Sessions.getActiveUsersOfPeriodByDayBetweenDates({
-			start: {
-				year: startOfPeriod.year(),
-				month: startOfPeriod.month() + 1,
-				day: startOfPeriod.date(),
-			},
-			end: {
-				year: endOfPeriod.year(),
-				month: endOfPeriod.month() + 1,
-				day: endOfPeriod.date(),
-			},
-		}),
+		year: date.year(),
+		month: date.month() + 1,
+		day: date.date(),
 	};
 };
 
-export const findBusiestsChatsInADayByHours = async ({ start }) => {
-	const now = moment(start);
-	const yesterday = moment(now).clone().subtract(24, 'hours');
-	return {
-		hours: await Sessions.getBusiestTimeWithinHoursPeriod({
-			start: yesterday.toDate(),
-			end: now.toDate(),
-			groupSize: 2,
-		}),
-	};
-};
+export const findActiveUsersMonthlyData = async ({ start, end }: { start: Date; end: Date }): Promise<{
+	month: {
+		day: number;
+		month: number;
+		year: number;
+		usersList: IUser['_id'][];
+		users: number;
+	}[];
+}> => ({
+	month: await Sessions.getActiveUsersOfPeriodByDayBetweenDates({
+		start: createDestructuredDate(start),
+		end: createDestructuredDate(end),
+	}),
+});
 
-export const findBusiestsChatsWithinAWeek = async ({ start }) => {
-	const today = moment(start);
-	const startOfCurrentWeek = moment(today).clone().subtract(7, 'days');
+export const findBusiestsChatsInADayByHours = async ({ start }: { start: Date }): Promise<{
+	hours: {
+		hour: number;
+		users: number;
+	}[];
+}> => ({
+	hours: await Sessions.getBusiestTimeWithinHoursPeriod({
+		start: createDestructuredDate(moment(start).subtract(24, 'hours')),
+		end: createDestructuredDate(start),
+		groupSize: 2,
+	}),
+});
 
-	return {
-		month: await Sessions.getTotalOfSessionsByDayBetweenDates({
-			start: {
-				year: startOfCurrentWeek.year(),
-				month: startOfCurrentWeek.month() + 1,
-				day: startOfCurrentWeek.date(),
-			},
-			end: {
-				year: today.year(),
-				month: today.month() + 1,
-				day: today.date(),
-			},
-		}),
-	};
-};
+export const findBusiestsChatsWithinAWeek = async ({ start }: { start: Date }): Promise<{
+	month: {
+		day: number;
+		month: number;
+		year: number;
+		users: number;
+	}[];
+}> => ({
+	month: await Sessions.getTotalOfSessionsByDayBetweenDates({
+		start: createDestructuredDate(moment(start).subtract(7, 'days')),
+		end: createDestructuredDate(start),
+	}),
+});
 
-export const findUserSessionsByHourWithinAWeek = async ({ start, end }) => {
-	const startOfPeriod = moment(start);
-	const endOfPeriod = moment(end);
-
-	return {
-		week: await Sessions.getTotalOfSessionByHourAndDayBetweenDates({
-			start: startOfPeriod.toDate(),
-			end: endOfPeriod.toDate(),
-		}),
-	};
-};
+export const findUserSessionsByHourWithinAWeek = async ({ start, end }: { start: Date; end: Date }): Promise<{
+	week: {
+		hour: number;
+		day: number;
+		month: number;
+		year: number;
+		users: number;
+	}[];
+}> => ({
+	week: await Sessions.getTotalOfSessionByHourAndDayBetweenDates({
+		start: createDestructuredDate(start),
+		end: createDestructuredDate(end),
+	}),
+});

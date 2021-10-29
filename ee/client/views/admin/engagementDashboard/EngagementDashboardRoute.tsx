@@ -1,5 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 
+import NotAuthorizedPage from '../../../../../client/components/NotAuthorizedPage';
+import { usePermission } from '../../../../../client/contexts/AuthorizationContext';
 import { useCurrentRoute, useRoute } from '../../../../../client/contexts/RouterContext';
 import EngagementDashboardPage from './EngagementDashboardPage';
 
@@ -7,6 +9,7 @@ const isValidTab = (tab: string | undefined): tab is 'users' | 'messages' | 'cha
 	typeof tab === 'string' && ['users', 'messages', 'channels'].includes(tab);
 
 const EngagementDashboardRoute = (): ReactElement | null => {
+	const canViewEngagementDashboard = usePermission('view-statistics');
 	const engagementDashboardRoute = useRoute('engagement-dashboard');
 	const [routeName, routeParams] = useCurrentRoute();
 	const { tab } = routeParams ?? {};
@@ -23,6 +26,10 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	if (!isValidTab(tab)) {
 		return null;
+	}
+
+	if (!canViewEngagementDashboard) {
+		return <NotAuthorizedPage />;
 	}
 
 	return (

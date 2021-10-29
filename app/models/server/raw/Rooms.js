@@ -367,18 +367,20 @@ export class RoomsRaw extends BaseRaw {
 		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup, lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params = [...firstParams, sort];
+
 		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params);
 		}
+
 		if (options.offset) {
 			params.push({ $skip: options.offset });
 		}
+
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params).toArray();
+		return this.col.aggregate(params);
 	}
 
 	findOneByName(name, options = {}) {
