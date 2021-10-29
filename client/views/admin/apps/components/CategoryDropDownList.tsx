@@ -1,33 +1,30 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-type Item = {
+export type CategoryDropdownItem = {
 	id: string;
 	label: string;
-	checked: boolean;
+	checked?: boolean;
 };
 
-type CategoryDropDownListProps = {
+export type CategoryDropDownListProps = {
 	groups: {
 		label?: string;
-		items: Item[];
+		items: CategoryDropdownItem[];
 	}[];
-	onSelected: (item: Item) => void;
+	onSelected: (item: CategoryDropdownItem) => void;
 };
 
 const CategoryDropDownList: FC<CategoryDropDownListProps> = ({ groups, onSelected }) => (
 	<Box>
+		{JSON.stringify(groups)}
 		<Tile padding={0} paddingBlock={'x12'} paddingInline={0} elevation='2'>
 			{groups.map((group) => (
 				<>
 					{group.label && <Box>{group.label}</Box>}
 					{group.items.map((item) => (
-						<Option
-							key={item.id}
-							{...({ label: item.label } as any)}
-							onClick={(): void => onSelected(item)}
-						>
-							<CheckBox checked={item.checked} />
+						<Option key={item.id} {...({ label: item.label } as any)}>
+							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
 						</Option>
 					))}
 				</>
