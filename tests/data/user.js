@@ -20,7 +20,7 @@ export const preferences = {
 		unreadAlert: true,
 		notificationsSoundVolume: 100,
 		desktopNotifications: 'default',
-		mobileNotifications: 'default',
+		pushNotifications: 'default',
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationRequireInteraction: false,
