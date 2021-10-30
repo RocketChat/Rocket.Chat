@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
@@ -8,15 +8,22 @@ import CounterSet from '../../../../../../client/components/data/CounterSet';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
-import { usePeriod } from '../usePeriod';
+import PeriodSelector from '../data/PeriodSelector';
+import { usePeriodLabel } from '../data/usePeriodLabel';
+import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useMessagesSent } from './useMessagesSent';
 
 const MessagesSentSection = (): ReactElement => {
-	const [, periodSelectProps, periodLabel] = usePeriod();
+	const [period, periodSelectorProps] = usePeriodSelectorState(
+		'last 7 days',
+		'last 30 days',
+		'last 90 days',
+	);
+	const periodLabel = usePeriodLabel(period);
 
 	const t = useTranslation();
 
-	const { data } = useMessagesSent({ period: periodSelectProps.value });
+	const { data } = useMessagesSent({ period });
 
 	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] =
 		useMemo(() => {
@@ -53,7 +60,7 @@ const MessagesSentSection = (): ReactElement => {
 			title={t('Messages_sent')}
 			filter={
 				<>
-					<Select {...periodSelectProps} />
+					<PeriodSelector {...periodSelectorProps} />
 					<DownloadDataButton
 						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Messages']}
@@ -68,13 +75,13 @@ const MessagesSentSection = (): ReactElement => {
 			<CounterSet
 				counters={[
 					{
-						count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
-						variation: data ? variatonFromPeriod : 0,
+						count: countFromPeriod ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: variatonFromPeriod ?? 0,
 						description: periodLabel,
 					},
 					{
-						count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,
-						variation: data ? variationFromYesterday : 0,
+						count: countFromYesterday ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: variationFromYesterday ?? 0,
 						description: t('Yesterday'),
 					},
 				]}

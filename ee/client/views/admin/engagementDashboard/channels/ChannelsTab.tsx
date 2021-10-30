@@ -1,13 +1,4 @@
-import {
-	Box,
-	Icon,
-	Margins,
-	Pagination,
-	Select,
-	Skeleton,
-	Table,
-	Tile,
-} from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo, useState } from 'react';
 
@@ -15,11 +6,16 @@ import Growth from '../../../../../../client/components/data/Growth';
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
-import { usePeriod } from '../usePeriod';
+import PeriodSelector from '../data/PeriodSelector';
+import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useChannelsList } from './useChannelsList';
 
 const ChannelsTab = (): ReactElement => {
-	const [, periodSelectProps] = usePeriod();
+	const [period, periodSelectorProps] = usePeriodSelectorState(
+		'last 7 days',
+		'last 30 days',
+		'last 90 days',
+	);
 
 	const t = useTranslation();
 
@@ -27,7 +23,7 @@ const ChannelsTab = (): ReactElement => {
 	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
 
 	const { data } = useChannelsList({
-		period: periodSelectProps.value,
+		period,
 		offset: current,
 		count: itemsPerPage,
 	});
@@ -53,7 +49,7 @@ const ChannelsTab = (): ReactElement => {
 		<Section
 			filter={
 				<>
-					<Select {...periodSelectProps} />
+					<PeriodSelector {...periodSelectorProps} />
 					<DownloadDataButton
 						attachmentName={`Channels_start_${data?.start}_end_${data?.end}`}
 						headers={['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date']}

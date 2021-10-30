@@ -1,5 +1,5 @@
 import { ResponsivePie } from '@nivo/pie';
-import { Box, Flex, Icon, Margins, Select, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
+import { Box, Flex, Icon, Margins, Skeleton, Table, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -7,19 +7,22 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
 import LegendSymbol from '../data/LegendSymbol';
-import { usePeriod } from '../usePeriod';
+import PeriodSelector from '../data/PeriodSelector';
+import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useMessageOrigins } from './useMessageOrigins';
 import { useTopFivePopularChannels } from './useTopFivePopularChannels';
 
 const MessagesPerChannelSection = (): ReactElement => {
-	const [, periodSelectProps] = usePeriod();
+	const [period, periodSelectorProps] = usePeriodSelectorState(
+		'last 7 days',
+		'last 30 days',
+		'last 90 days',
+	);
 
 	const t = useTranslation();
 
-	const { data: messageOriginsData } = useMessageOrigins({ period: periodSelectProps.value });
-	const { data: topFivePopularChannelsData } = useTopFivePopularChannels({
-		period: periodSelectProps.value,
-	});
+	const { data: messageOriginsData } = useMessageOrigins({ period });
+	const { data: topFivePopularChannelsData } = useTopFivePopularChannels({ period });
 
 	const pie = useMemo(
 		() =>
@@ -54,7 +57,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 			title={t('Where_are_the_messages_being_sent?')}
 			filter={
 				<>
-					<Select {...periodSelectProps} />
+					<PeriodSelector {...periodSelectorProps} />
 					<DownloadDataButton
 						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
 						headers={['Room Type', 'Messages']}

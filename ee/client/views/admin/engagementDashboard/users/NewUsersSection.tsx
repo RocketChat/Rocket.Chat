@@ -1,6 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -9,7 +10,9 @@ import { useTranslation } from '../../../../../../client/contexts/TranslationCon
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
-import { usePeriod } from '../usePeriod';
+import PeriodSelector from '../data/PeriodSelector';
+import { usePeriodLabel } from '../data/usePeriodLabel';
+import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useNewUsers } from './useNewUsers';
 
 const TICK_WIDTH = 45;
@@ -19,9 +22,15 @@ type NewUsersSectionProps = {
 };
 
 const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
+	const [period, periodSelectorProps] = usePeriodSelectorState(
+		'last 7 days',
+		'last 30 days',
+		'last 90 days',
+	);
+	const periodLabel = usePeriodLabel(period);
+
 	const utc = timezone === 'utc';
-	const [, periodSelectProps, periodLabel] = usePeriod({ utc });
-	const { data } = useNewUsers({ period: periodSelectProps.value, utc });
+	const { data } = useNewUsers({ period, utc });
 
 	const t = useTranslation();
 
@@ -91,7 +100,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			title={t('New_users')}
 			filter={
 				<>
-					<Select {...periodSelectProps} />
+					<PeriodSelector {...periodSelectorProps} />
 					<DownloadDataButton
 						attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'New Users']}
@@ -106,19 +115,19 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			<CounterSet
 				counters={[
 					{
-						count: data ? countFromPeriod : <Skeleton variant='rect' width='3ex' height='1em' />,
-						variation: data ? variatonFromPeriod : 0,
+						count: countFromPeriod ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: variatonFromPeriod ?? 0,
 						description: periodLabel,
 					},
 					{
-						count: data ? countFromYesterday : <Skeleton variant='rect' width='3ex' height='1em' />,
-						variation: data ? variationFromYesterday : 0,
+						count: countFromYesterday ?? <Skeleton variant='rect' width='3ex' height='1em' />,
+						variation: variationFromYesterday ?? 0,
 						description: t('Yesterday'),
 					},
 				]}
 			/>
 			<Flex.Container>
-				{data ? (
+				{values ? (
 					<Box style={{ height: 240 }}>
 						<Flex.Item align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }} ref={sizeRef}>
@@ -143,7 +152,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											'#1d74f5',
+											colors.b500,
 										]}
 										enableLabel={false}
 										enableGridY={false}
@@ -172,7 +181,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											axis: {
 												ticks: {
 													text: {
-														fill: '#9EA2A8',
+														fill: colors.n600,
 														fontFamily:
 															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 														fontSize: '10px',
@@ -185,7 +194,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											},
 											tooltip: {
 												// @ts-ignore
-												backgroundColor: '#1F2329',
+												backgroundColor: colors.n900,
 												boxShadow:
 													'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 												borderRadius: 2,

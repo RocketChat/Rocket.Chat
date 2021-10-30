@@ -1,12 +1,13 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
-import { Box, Flex, Select, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
 import { useTranslation } from '../../../../../../client/contexts/TranslationContext';
 import Section from '../Section';
 import DownloadDataButton from '../data/DownloadDataButton';
-import { usePeriod } from '../usePeriod';
+import PeriodSelector from '../data/PeriodSelector';
+import { usePeriodSelectorState } from '../data/usePeriodSelectorState';
 import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 
 type UsersByTimeOfTheDaySectionProps = {
@@ -16,10 +17,15 @@ type UsersByTimeOfTheDaySectionProps = {
 const UsersByTimeOfTheDaySection = ({
 	timezone,
 }: UsersByTimeOfTheDaySectionProps): ReactElement => {
-	const utc = timezone === 'utc';
-	const [, periodSelectProps] = usePeriod({ utc });
+	const [period, periodSelectorProps] = usePeriodSelectorState(
+		'last 7 days',
+		'last 30 days',
+		'last 90 days',
+	);
 
-	const { data } = useUsersByTimeOfTheDay({ period: periodSelectProps.value, utc });
+	const utc = timezone === 'utc';
+
+	const { data } = useUsersByTimeOfTheDay({ period, utc });
 
 	const t = useTranslation();
 
@@ -71,7 +77,7 @@ const UsersByTimeOfTheDaySection = ({
 			title={t('Users_by_time_of_day')}
 			filter={
 				<>
-					<Select {...periodSelectProps} />
+					<PeriodSelector {...periodSelectorProps} />
 					<DownloadDataButton
 						attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Users']}

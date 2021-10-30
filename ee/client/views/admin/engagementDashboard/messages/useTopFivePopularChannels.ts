@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
-import { getPeriodRange, Period } from '../utils/periods';
+import { getPeriodRange, Period } from '../data/periods';
 
 type UseTopFivePopularChannelsOptions = { period: Period['key'] };
 
