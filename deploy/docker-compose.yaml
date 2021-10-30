@@ -23,7 +23,7 @@ services:
         mode: host
 
   mongo:
-    image: bitnami/mongodb:5.0
+    image: bitnami/mongodb:4.4
     restart: on-failure
     volumes:
       - data:/bitnami/mongodb
