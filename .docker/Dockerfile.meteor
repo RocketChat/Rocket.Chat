@@ -1,0 +1,25 @@
+FROM ubuntu:focal
+
+ARG RELEASE
+
+ADD https://s3.amazonaws.com/com.meteor.static/packages-bootstrap/$RELEASE/meteor-bootstrap-os.linux.x86_64.tar.gz /
+
+RUN tar xzf /meteor-bootstrap-os.linux.x86_64.tar.gz
+
+FROM ubuntu:focal
+
+# Rocket.Chat build dependencies: g++ git build-essential (make + etc.) python
+RUN apt update && \
+    apt install --no-install-recommends -y \
+        g++ sudo git build-essential python && \
+    useradd -mG sudo meteor && \
+    echo '%meteor ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/meteor
+
+USER meteor
+WORKDIR /home/meteor
+
+COPY --from=0 /.meteor .meteor
+
+VOLUME [ "/home/meteor/.meteor/packages" ]
+
+ENV PATH=/home/meteor/.meteor:$PATH
