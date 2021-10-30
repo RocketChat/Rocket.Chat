@@ -80,6 +80,10 @@ const highlight = function(code, lang) {
 	}
 };
 
+renderer.paragraph = function(text) {
+	return text;
+};
+
 export const marked = (message, {
 	marked: {
 		gfm,
