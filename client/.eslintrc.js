@@ -63,8 +63,8 @@ module.exports = {
 			plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
 			rules: {
 				'@typescript-eslint/ban-ts-ignore': 'off',
-				'@typescript-eslint/explicit-function-return-type': 'off',
-				'@typescript-eslint/explicit-module-boundary-types': 'off',
+				'@typescript-eslint/explicit-function-return-type': 'warn',
+				// '@typescript-eslint/explicit-module-boundary-types': 'off',
 				'@typescript-eslint/indent': 'off',
 				'@typescript-eslint/interface-name-prefix': ['error', 'always'],
 				'@typescript-eslint/no-extra-parens': 'off',
@@ -149,8 +149,9 @@ module.exports = {
 			},
 		},
 		{
-			files: ['**/*.stories.tsx'],
+			files: ['**/*.stories.ts', '**/*.stories.tsx'],
 			rules: {
+				'@typescript-eslint/explicit-function-return-type': 'off',
 				'@typescript-eslint/explicit-module-boundary-types': 'off',
 			},
 		},

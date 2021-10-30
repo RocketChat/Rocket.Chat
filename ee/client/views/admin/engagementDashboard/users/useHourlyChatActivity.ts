@@ -3,13 +3,13 @@ import { useQuery } from 'react-query';
 
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 
-export const useHourlyChatActivity = ({
-	displacement,
-	utc,
-}: {
+type UseHourlyChatActivityOptions = {
 	displacement: number;
 	utc: boolean;
-}) =>
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/users/hourly-chat-activity', { displacement, utc }],
 		async () => {

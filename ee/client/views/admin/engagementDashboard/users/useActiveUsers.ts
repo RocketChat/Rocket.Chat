@@ -4,7 +4,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange } from '../utils/periods';
 
-export const useActiveUsers = ({ utc }: { utc: boolean }) =>
+type UseActiveUsersOptions = { utc: boolean };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useActiveUsers = ({ utc }: UseActiveUsersOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/users/active', { utc }],
 		async () => {

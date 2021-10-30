@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
 
-export const useUsersByTimeOfTheDay = ({ period, utc }: { period: Period['key']; utc: boolean }) =>
+type UseUsersByTimeOfTheDayOptions = { period: Period['key']; utc: boolean };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/users/users-by-time-of-the-day', { period }],
 		async () => {

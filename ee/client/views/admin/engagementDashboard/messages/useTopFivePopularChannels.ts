@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
 
-export const useTopFivePopularChannels = ({ period }: { period: Period['key'] }) =>
+type UseTopFivePopularChannelsOptions = { period: Period['key'] };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/messages/top-five-popular-channels', { period }],
 		async () => {

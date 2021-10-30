@@ -113,7 +113,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end}`}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
-					dataExtractor={() => {
+					dataExtractor={(): unknown[][] | undefined => {
 						const values = [];
 
 						for (let i = 0; i < 30; i++) {

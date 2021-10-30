@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
 
-export const useMessagesSent = ({ period }: { period: Period['key'] }) =>
+type UseMessagesSentOptions = { period: Period['key'] };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useMessagesSent = ({ period }: UseMessagesSentOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/messages/messages-sent', { period }],
 		async () => {

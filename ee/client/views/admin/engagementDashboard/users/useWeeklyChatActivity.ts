@@ -3,13 +3,13 @@ import { useQuery } from 'react-query';
 
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 
-export const useWeeklyChatActivity = ({
-	displacement,
-	utc,
-}: {
+type UseWeeklyChatActivityOptions = {
 	displacement: number;
 	utc: boolean;
-}) =>
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
 		async () => {

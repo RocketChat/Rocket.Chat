@@ -96,7 +96,9 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 						attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'New Users']}
 						dataAvailable={!!data}
-						dataExtractor={() => values?.map(({ date, newUsers }) => [date, newUsers])}
+						dataExtractor={(): unknown[][] | undefined =>
+							values?.map(({ date, newUsers }) => [date, newUsers])
+						}
 					/>
 				</>
 			}

@@ -59,7 +59,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 						attachmentName={`MessagesPerChannelSection_start_${messageOriginsData?.start}_end_${messageOriginsData?.end}`}
 						headers={['Room Type', 'Messages']}
 						dataAvailable={!!messageOriginsData}
-						dataExtractor={() =>
+						dataExtractor={(): unknown[][] | undefined =>
 							messageOriginsData?.origins.map(({ t, messages }) => [t, messages])
 						}
 					/>

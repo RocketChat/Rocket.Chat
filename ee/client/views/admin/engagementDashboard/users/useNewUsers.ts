@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
 
-export const useNewUsers = ({ period, utc }: { period: Period['key']; utc: boolean }) =>
+type UseNewUsersOptions = { period: Period['key']; utc: boolean };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useNewUsers = ({ period, utc }: UseNewUsersOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/users/new', { period }],
 		async () => {

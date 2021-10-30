@@ -58,7 +58,7 @@ const ChannelsTab = (): ReactElement => {
 						attachmentName={`Channels_start_${data?.start}_end_${data?.end}`}
 						headers={['Room type', 'Name', 'Messages', 'Last Update Date', 'Creation Date']}
 						dataAvailable={!!data}
-						dataExtractor={() =>
+						dataExtractor={(): unknown[][] | undefined =>
 							data?.channels?.map(({ room: { t, name, usernames, ts, _updatedAt }, messages }) => [
 								t,
 								name || usernames?.join(' × '),
@@ -136,8 +136,8 @@ const ChannelsTab = (): ReactElement => {
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={() => t('Items_per_page:')}
-					showingResultsLabel={({ count, current, itemsPerPage }) =>
+					itemsPerPageLabel={(): string => t('Items_per_page:')}
+					showingResultsLabel={({ count, current, itemsPerPage }): string =>
 						t('Showing_results_of', current + 1, Math.min(current + itemsPerPage, count), count)
 					}
 					count={(data && data.total) || 0}

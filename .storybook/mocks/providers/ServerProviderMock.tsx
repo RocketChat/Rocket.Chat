@@ -18,7 +18,8 @@ import {
 
 const logAction = action('ServerProvider');
 
-const randomDelay = () => new Promise<void>((resolve) => setTimeout(resolve, Math.random() * 1000));
+const randomDelay = (): Promise<void> =>
+	new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
 
 const absoluteUrl = (path: string): string => new URL(path, '/').toString();
 

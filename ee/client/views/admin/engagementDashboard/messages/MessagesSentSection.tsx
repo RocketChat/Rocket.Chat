@@ -58,7 +58,9 @@ const MessagesSentSection = (): ReactElement => {
 						attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Messages']}
 						dataAvailable={!!data}
-						dataExtractor={() => values?.map(({ date, newMessages }) => [date, newMessages])}
+						dataExtractor={(): unknown[][] | undefined =>
+							values?.map(({ date, newMessages }) => [date, newMessages])
+						}
 					/>
 				</>
 			}

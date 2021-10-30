@@ -17,7 +17,7 @@ const lastNDays =
 		start: Date;
 		end: Date;
 	}) =>
-	(utc) => ({
+	(utc): { start: Date; end: Date } => ({
 		start: utc
 			? moment.utc().startOf('day').subtract(n, 'days').toDate()
 			: moment()

@@ -3,7 +3,10 @@ import { useQuery } from 'react-query';
 import { getFromRestApi } from '../../../../lib/getFromRestApi';
 import { getPeriodRange, Period } from '../utils/periods';
 
-export const useMessageOrigins = ({ period }: { period: Period['key'] }) =>
+type UseMessageOriginsOptions = { period: Period['key'] };
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) =>
 	useQuery(
 		['admin/engagement-dashboard/messages/origins', { period }],
 		async () => {

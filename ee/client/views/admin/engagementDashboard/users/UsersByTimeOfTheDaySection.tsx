@@ -76,7 +76,7 @@ const UsersByTimeOfTheDaySection = ({
 						attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
 						headers={['Date', 'Users']}
 						dataAvailable={!!data}
-						dataExtractor={() =>
+						dataExtractor={(): unknown[][] | undefined =>
 							data?.week
 								?.map(({ users, hour, day, month, year }) => ({
 									date: moment([year, month - 1, day, hour, 0, 0, 0]),
