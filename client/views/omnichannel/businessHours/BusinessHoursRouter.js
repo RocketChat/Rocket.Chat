@@ -27,6 +27,7 @@ const BusinessHoursRouter = () => {
 				type: 'default',
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	if ((context === 'edit' && type) || (isSingleBH && (context !== 'edit' || type !== 'default'))) {
