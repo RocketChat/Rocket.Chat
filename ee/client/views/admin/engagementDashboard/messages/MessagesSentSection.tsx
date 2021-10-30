@@ -87,7 +87,7 @@ const MessagesSentSection = (): ReactElement => {
 				]}
 			/>
 			<Flex.Container>
-				{data ? (
+				{values ? (
 					<Box style={{ height: 240 }}>
 						<Flex.Item align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
@@ -99,7 +99,7 @@ const MessagesSentSection = (): ReactElement => {
 									}}
 								>
 									<ResponsiveBar
-										data={values ?? []}
+										data={values}
 										indexBy='date'
 										keys={['newMessages']}
 										groupMode='grouped'
@@ -117,7 +117,7 @@ const MessagesSentSection = (): ReactElement => {
 										axisTop={null}
 										axisRight={null}
 										axisBottom={
-											(values?.length === 7 && {
+											(values.length === 7 && {
 												tickSize: 0,
 												// TODO: Get it from theme
 												tickPadding: 4,

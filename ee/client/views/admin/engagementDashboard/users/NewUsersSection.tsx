@@ -139,7 +139,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 									}}
 								>
 									<ResponsiveBar
-										data={values ?? []}
+										data={values}
 										indexBy='date'
 										keys={['newUsers']}
 										groupMode='grouped'

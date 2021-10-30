@@ -1,5 +1,6 @@
 import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import React, { ReactElement, useMemo } from 'react';
 
@@ -95,7 +96,7 @@ const UsersByTimeOfTheDaySection = ({
 				</>
 			}
 		>
-			{data ? (
+			{values ? (
 				<Box display='flex' style={{ height: 696 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
@@ -107,7 +108,7 @@ const UsersByTimeOfTheDaySection = ({
 								}}
 							>
 								<ResponsiveHeatMap
-									data={values ?? []}
+									data={values}
 									indexBy='hour'
 									keys={dates}
 									padding={4}
@@ -118,13 +119,13 @@ const UsersByTimeOfTheDaySection = ({
 									}}
 									colors={[
 										// TODO: Get it from theme
-										'#E8F2FF',
-										'#D1EBFE',
-										'#A4D3FE',
-										'#76B7FC',
-										'#549DF9',
-										'#1D74F5',
-										'#10529E',
+										colors.b100,
+										colors.b200,
+										colors.b300,
+										colors.b400,
+										colors.b500,
+										colors.b600,
+										colors.b700,
 									]}
 									cellOpacity={1}
 									enableLabels={false}
@@ -157,7 +158,7 @@ const UsersByTimeOfTheDaySection = ({
 										axis: {
 											ticks: {
 												text: {
-													fill: '#9EA2A8',
+													fill: colors.n600,
 													fontFamily:
 														'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
 													fontSize: 10,
@@ -170,7 +171,7 @@ const UsersByTimeOfTheDaySection = ({
 										},
 										tooltip: {
 											container: {
-												backgroundColor: '#1F2329',
+												backgroundColor: colors.n900,
 												boxShadow:
 													'0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 												borderRadius: 2,
