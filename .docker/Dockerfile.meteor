@@ -2,9 +2,9 @@ FROM ubuntu:focal
 
 ARG RELEASE
 
-ADD https://s3.amazonaws.com/com.meteor.static/packages-bootstrap/$RELEASE/meteor-bootstrap-os.linux.x86_64.tar.gz /
+ADD https://packages.meteor.com/bootstrap-link?arch=os.linux.x86_64&release=$RELEASE /meteor.tar.gz
 
-RUN tar xzf /meteor-bootstrap-os.linux.x86_64.tar.gz
+RUN tar xzf /meteor.tar.gz
 
 FROM ubuntu:focal
 
