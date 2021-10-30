@@ -1,4 +1,4 @@
-import { fetchFeatures } from '../../../client/queries/fetchFeatures';
+import { fetchFeatures } from '../../../client/lib/fetchFeatures';
 import { queryClient } from '../../../../client/lib/queryClient';
 
 const allModules = queryClient.fetchQuery({

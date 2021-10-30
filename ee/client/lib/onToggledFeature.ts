@@ -2,7 +2,7 @@ import { QueryObserver } from 'react-query';
 
 import { queryClient } from '../../../client/lib/queryClient';
 import type { BundleFeature } from '../../app/license/server/bundles';
-import { fetchFeatures } from '../queries/fetchFeatures';
+import { fetchFeatures } from './fetchFeatures';
 
 export const onToggledFeature = (
 	feature: BundleFeature,
