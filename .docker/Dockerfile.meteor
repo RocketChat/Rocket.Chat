@@ -11,7 +11,7 @@ FROM ubuntu:focal
 # Rocket.Chat build dependencies: g++ git build-essential (make + etc.) python
 RUN apt update && \
     apt install --no-install-recommends -y \
-        g++ sudo git build-essential python && \
+        g++ sudo git build-essential python ca-certificates && \
     useradd -mG sudo meteor && \
     echo '%meteor ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/meteor
 
