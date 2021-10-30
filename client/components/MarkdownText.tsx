@@ -14,14 +14,16 @@ type MarkdownTextParams = {
 } & ComponentProps<typeof Box>;
 
 // change Marked default paragraph rules in order to have line breaks (line breaks are normally considered as a new paragraph)
-marked.Lexer.rules.block.paragraph = new RegExp(
-	marked.Lexer.rules.block.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'),
+const markedRulesBlock: any = marked.Lexer.rules.block;
+markedRulesBlock.paragraph = new RegExp(
+	markedRulesBlock.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'),
 	'',
 );
-marked.Lexer.rules.block.gfm.paragraph = new RegExp(
-	marked.Lexer.rules.block.gfm.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'),
+markedRulesBlock.gfm.paragraph = new RegExp(
+	markedRulesBlock.gfm.paragraph.source.replace('[^\\n]+)*', '[^\\n|]*)*'),
 	'',
 );
+marked.Lexer.rules.block = markedRulesBlock;
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	`<a href="${href}" target="_blank" rel="nofollow">${text}</a> `;
