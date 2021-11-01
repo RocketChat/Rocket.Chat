@@ -19,7 +19,7 @@ const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\
 
 const user: IUser = Users.findOneById('rocket.cat');
 
-const language = settings.get('Language') || 'en';
+const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 const sendErrorReplyMessage = (error: string, options: any): void => {
