@@ -649,7 +649,7 @@ describe('SAML', () => {
 				expect(userObject).to.have.property('emailList').that.is.an('array').that.includes('testing@server.com');
 				expect(userObject).to.have.property('fullName').that.is.equal('[AnotherName]');
 				expect(userObject).to.have.property('username').that.is.equal('[AnotherUserName]');
-				expect(userObject).to.have.property('roles').that.is.an('array').with.members(['user']);
+				expect(userObject).to.not.have.property('roles');
 				expect(userObject).to.have.property('channels').that.is.an('array').with.members(['pets', 'pics', 'funny', 'random', 'babies']);
 			});
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
@@ -79,24 +79,6 @@ export class TranslationProviderRegistry {
 		}
 
 		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
-	}
-
-	/**
-	 * Make the activated provider by setting as the active.
-	 */
-	static loadActiveServiceProvider() {
-		/** Register the active service provider on the 'AfterSaveMessage' callback.
-		 *  So the registered provider will be invoked when a message is saved.
-		 *  All the other inactive service provider must be deactivated.
-		 */
-		settings.get('AutoTranslate_ServiceProvider', (key, providerName) => {
-			TranslationProviderRegistry.setCurrentProvider(providerName);
-		});
-
-		// Get Auto Translate Active flag
-		settings.get('AutoTranslate_Enabled', (key, value) => {
-			TranslationProviderRegistry.setEnable(value);
-		});
 	}
 }
 
@@ -352,5 +334,16 @@ export class AutoTranslate {
 }
 
 Meteor.startup(() => {
-	TranslationProviderRegistry.loadActiveServiceProvider();
+	/** Register the active service provider on the 'AfterSaveMessage' callback.
+	 *  So the registered provider will be invoked when a message is saved.
+	 *  All the other inactive service provider must be deactivated.
+	 */
+	settings.watch('AutoTranslate_ServiceProvider', (providerName) => {
+		TranslationProviderRegistry.setCurrentProvider(providerName);
+	});
+
+	// Get Auto Translate Active flag
+	settings.watch('AutoTranslate_Enabled', (value) => {
+		TranslationProviderRegistry.setEnable(value);
+	});
 });

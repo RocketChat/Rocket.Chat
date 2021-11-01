@@ -4,7 +4,6 @@ import React from 'react';
 import { RoomManager } from '../../../../../../app/ui-utils/client/lib/RoomManager';
 import { roomTypes, UiTextContext } from '../../../../../../app/utils/client';
 import GenericModal from '../../../../../components/GenericModal';
-import MarkdownText from '../../../../../components/MarkdownText';
 import { usePermission } from '../../../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../../../contexts/ModalContext';
 import { useRoute } from '../../../../../contexts/RouterContext';
@@ -39,7 +38,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	room.type = room.t;
 	room.rid = rid;
 
-	const { type, fname, prid, broadcast, archived, joined = true } = room; // TODO implement joined
+	const { type, fname, prid, joined = true } = room; // TODO implement joined
 
 	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
 	const retentionPolicy = {
@@ -195,11 +194,11 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	});
 
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
+	const allowConvertToTeam = !room.teamId && !prid && canConvertRoomToTeam && canEdit;
 
 	return (
 		<RoomInfo
-			archived={archived}
-			broadcast={broadcast}
+			room={room}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickBack={onClickBack}
@@ -209,16 +208,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			onClickLeave={canLeave && handleLeave}
 			onClickHide={joined && handleHide}
 			onClickMoveToTeam={!room.teamId && !prid && canEdit && onMoveToTeam}
-			onClickConvertToTeam={
-				!room.teamId && !prid && canConvertRoomToTeam && canEdit && onConvertToTeam
-			}
+			onClickConvertToTeam={allowConvertToTeam && onConvertToTeam}
 			onClickEnterRoom={onEnterRoom && onClickEnterRoom}
-			{...room}
-			announcement={
-				room.announcement && <MarkdownText variant='inline' content={room.announcement} />
-			}
-			description={room.description && <MarkdownText variant='inline' content={room.description} />}
-			topic={room.topic && <MarkdownText variant='inline' content={room.topic} />}
 		/>
 	);
 };

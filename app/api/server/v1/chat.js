@@ -12,7 +12,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import Subscriptions from '../../../models/server/models/Subscriptions';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {

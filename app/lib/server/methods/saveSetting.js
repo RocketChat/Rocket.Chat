@@ -3,7 +3,6 @@ import { Match, check } from 'meteor/check';
 
 import { hasPermission, hasAllPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
-import { settings } from '../../../settings';
 import { Settings } from '../../../models';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
@@ -45,7 +44,7 @@ Meteor.methods({
 				break;
 		}
 
-		settings.updateById(_id, value, editor);
+		Settings.updateValueAndEditorById(_id, value, editor);
 		return true;
 	}),
 });

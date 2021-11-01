@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
 import { Subscriptions, Users } from '../../../models/server';
 import { roomTypes } from '../../../utils';
@@ -393,7 +393,7 @@ export async function sendAllNotifications(message, room) {
 	return message;
 }
 
-settings.get('Troubleshoot_Disable_Notifications', (key, value) => {
+settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 	if (TroubleshootDisableNotifications === value) { return; }
 	TroubleshootDisableNotifications = value;
 

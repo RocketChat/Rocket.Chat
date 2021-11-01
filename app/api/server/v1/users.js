@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
@@ -314,12 +314,14 @@ API.v1.addRoute('users.resetAvatar', { authRequired: true }, {
 	post() {
 		const user = this.getUserFromParams();
 
-		if (user._id === this.userId) {
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
-		} else if (hasPermission(this.userId, 'edit-other-user-info')) {
-			Meteor.runAsUser(user._id, () => Meteor.call('resetAvatar'));
+		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+			Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 		} else {
-			return API.v1.unauthorized();
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
 		}
 
 		return API.v1.success();
@@ -333,8 +335,9 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			userId: Match.Maybe(String),
 			username: Match.Maybe(String),
 		}));
+		const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
 
-		if (!settings.get('Accounts_AllowUserAvatarChange')) {
+		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
 				method: 'users.setAvatar',
 			});
@@ -343,7 +346,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 		let user;
 		if (this.isUserFromParams()) {
 			user = Meteor.users.findOne(this.userId);
-		} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+		} else if (canEditOtherUserAvatar) {
 			user = this.getUserFromParams();
 		} else {
 			return API.v1.unauthorized();
@@ -375,7 +378,7 @@ API.v1.addRoute('users.setAvatar', { authRequired: true }, {
 			}
 
 			const isAnotherUser = this.userId !== user._id;
-			if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-info')) {
+			if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-avatar')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 		}
@@ -903,10 +906,17 @@ API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true
 
 API.v1.addRoute('users.listTeams', { authRequired: true }, {
 	get() {
-		const { userId } = this.bodyParams;
+		check(this.queryParams, Match.ObjectIncluding({
+			userId: Match.Maybe(String),
+		}));
+		const { userId } = this.queryParams;
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
 
 		// If the caller has permission to view all teams, there's no need to filter the teams
-		const adminId = hasPermission(this.userId, 'view-all-teams') ? '' : this.userId;
+		const adminId = hasPermission(this.userId, 'view-all-teams') ? undefined : this.userId;
 
 		const teams = Promise.await(Team.findBySubscribedUserIds(userId, adminId));
 

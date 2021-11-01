@@ -27,7 +27,7 @@ function _bugsnagDebug(message: any, stack: any, ...args: any): void {
 	return originalMeteorDebug(message, stack, ...args);
 }
 
-settings.get('Bugsnag_api_key', (_key, value) => {
+settings.watch('Bugsnag_api_key', (value) => {
 	if (!value) {
 		return;
 	}
