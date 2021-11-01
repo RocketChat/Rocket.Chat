@@ -76,6 +76,7 @@ export interface ITeamService {
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
+	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam: P>): Promise<ITeam| P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
