@@ -1,7 +1,8 @@
 import { Box, Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement, useState, useCallback } from 'react';
+import React, { memo, ReactElement, useState, useCallback, useRef } from 'react';
 
+import { ClientLogger } from '../../../lib/ClientLogger';
 import { VoipEvents } from '../../components/voip/SimpleVoipUser';
 import {
 	useIsVoipLibReady,
@@ -19,7 +20,7 @@ import { useTranslation } from '../../contexts/TranslationContext';
 const OmnichannelSection = (props: typeof Box): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-
+	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const changeAgentStatus = useMethod('livechat:changeLivechatStatus');
 	const voipCallAvailable = useState(useOmnichannelVoipCallAvailable());
 	const [registered, setRegistered] = useState(false);
@@ -53,29 +54,29 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 			await changeAgentStatus();
 		} catch (error: any) {
 			dispatchToastMessage({ type: 'error', message: error });
-			console.log(error);
+			loggerRef.current?.error(`handleAvailableStatusChange ${error}`);
 		}
 	});
 
 	const onUnregistrationError = useCallback((): void => {
-		console.log('Unregistration error');
+		loggerRef.current?.error('onUnregistrationError');
 		voipLib?.removeListener(VoipEvents.unregistrationerror, onUnregistrationError);
 	}, [voipLib]);
 
 	const onUnregistered = useCallback((): void => {
-		console.log('unRegistered');
+		loggerRef.current?.debug('unRegistered');
 		setRegistered(!registered);
 		voipLib?.removeListener(VoipEvents.unregistered, onUnregistered);
 		voipLib?.removeListener(VoipEvents.registrationerror, onUnregistrationError);
 	}, [onUnregistrationError, registered, voipLib]);
 
 	const onRegistrationError = useCallback((): void => {
-		console.log('Registration Error');
+		loggerRef.current?.error('onRegistrationError');
 		voipLib?.removeListener(VoipEvents.registrationerror, onRegistrationError);
 	}, [voipLib]);
 
 	const onRegistered = useCallback((): void => {
-		console.log('Registered');
+		loggerRef.current?.debug('onRegistered');
 		setRegistered(!registered);
 		voipLib?.removeListener(VoipEvents.registered, onRegistered);
 		voipLib?.removeListener(VoipEvents.registrationerror, onRegistrationError);
