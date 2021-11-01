@@ -5,7 +5,7 @@ services:
     image: registry.rocket.chat/rocketchat/rocket.chat:latest
     command: >
       bash -c
-        "for (( ; ; )); do
+        "for i in `seq 1 30`; do
           node main.js &&
           s=$$? && break || s=$$?;
           echo \"Could not start Rocket.Chat. Waiting 5 secs...\";
@@ -39,8 +39,7 @@ services:
     restart: unless-stopped
     volumes:
      - ./data/db:/data/db
-     # Enable (remove the #) the data dump mount below, if migration not already done, else leave it as is.
-     #- ./data/dump:/dump
+     - ./data/dump:/dump
     command: mongod --oplogSize 128 --replSet rs0
     labels:
       - "traefik.enable=false"
@@ -51,7 +50,7 @@ services:
     image: mongo:4.2
     command: >
       bash -c
-        "for (( ; ; )); do
+        "for i in `seq 1 30`; do
           mongo mongo/rocketchat --eval \"
             rs.initiate({
               _id: 'rs0',
