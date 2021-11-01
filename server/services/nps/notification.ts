@@ -9,7 +9,7 @@ import { IBanner, BannerPlatform } from '../../../definition/IBanner';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins.js';
 
 export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<IBanner, '_id'> => {
-	const lng = settings.get('Language') || 'en';
+	const lng = settings.get<string>('Language') || 'en';
 
 	return {
 		platform: [BannerPlatform.Web],

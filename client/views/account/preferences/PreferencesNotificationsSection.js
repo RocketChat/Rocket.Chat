@@ -50,7 +50,7 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 		{
 			desktopNotificationRequireInteraction: userDesktopNotificationRequireInteraction,
 			desktopNotifications: userDesktopNotifications,
-			mobileNotifications: userMobileNotifications,
+			pushNotifications: userMobileNotifications,
 			emailNotificationMode: userEmailNotificationMode,
 		},
 		onChange,
@@ -59,14 +59,14 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 	const {
 		desktopNotificationRequireInteraction,
 		desktopNotifications,
-		mobileNotifications,
+		pushNotifications,
 		emailNotificationMode,
 	} = values;
 
 	const {
 		handleDesktopNotificationRequireInteraction,
 		handleDesktopNotifications,
-		handleMobileNotifications,
+		handlePushNotifications,
 		handleEmailNotificationMode,
 	} = handlers;
 
@@ -171,8 +171,8 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }) => {
 					<Field.Label>{t('Notification_Push_Default_For')}</Field.Label>
 					<Field.Row>
 						<Select
-							value={mobileNotifications}
-							onChange={handleMobileNotifications}
+							value={pushNotifications}
+							onChange={handlePushNotifications}
 							options={mobileNotificationOptions}
 						/>
 					</Field.Row>

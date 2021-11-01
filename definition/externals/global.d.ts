@@ -22,4 +22,5 @@ interface Window {
 
 interface PromiseConstructor {
 	await<T>(promise: Promise<T>): T;
+	await<T>(value: T): T;
 }
