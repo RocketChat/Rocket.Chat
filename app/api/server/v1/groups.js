@@ -9,6 +9,7 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { settings } from '../../../settings/server';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
@@ -229,6 +230,10 @@ API.v1.addRoute('groups.create', { authRequired: true }, {
 		}
 		if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
 			return API.v1.failure('Body param "extraData" must be an object if provided');
+		}
+
+		if (settings.get('E2E_Enabled_Default_PrivateRooms')) {
+			this.bodyParams.extraData = Object.assign({}, this.bodyParams.extraData, { encrypted: true });
 		}
 
 		const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
