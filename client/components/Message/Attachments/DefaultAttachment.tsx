@@ -15,7 +15,8 @@ const applyMarkdownIfRequires = (
 	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
 	key: MarkdownFields,
 	text: string,
-): ReactNode => (list?.includes(key) ? <MarkdownText variant='inline' content={text} /> : text);
+): ReactNode =>
+	list?.includes(key) ? <MarkdownText parseEmoji variant='inline' content={text} /> : text;
 
 const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
@@ -77,15 +78,25 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 										return field;
 									}
 
-									const { value, ...rest } = field;
+									const { value, title, ...rest } = field;
 
-									const cleanValue = (value as string).replace(/(.*)/g, (line: string) => {
-										if (line.trim() === '') {
-											return `${line}  <br/>`;
-										}
-										return `${line}  `;
-									});
-									return { ...rest, value: <MarkdownText variant='inline' content={cleanValue} /> };
+									return {
+										...rest,
+										title: (
+											<MarkdownText
+												variant='inline'
+												parseEmoji
+												content={title.replace(/(.*)/g, (line: string) => `${line}  `)}
+											/>
+										),
+										value: (
+											<MarkdownText
+												variant='inline'
+												parseEmoji
+												content={value.replace(/(.*)/g, (line: string) => `${line}  `)}
+											/>
+										),
+									};
 								})}
 							/>
 						)}

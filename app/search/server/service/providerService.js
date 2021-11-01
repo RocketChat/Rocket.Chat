@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { validationService } from './validationService';
-import { settings } from '../../../settings';
+import { settings, settingsRegistry } from '../../../settings/server';
 import SearchLogger from '../logger/logger';
 
 class SearchProviderService {
@@ -72,7 +72,7 @@ class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		settings.addGroup('Search', function() {
+		settingsRegistry.addGroup('Search', function() {
 			const self = this;
 
 			self.add('Search.Provider', 'defaultProvider', {
@@ -114,7 +114,7 @@ class SearchProviderService {
 			}
 		}), 1000);
 
-		settings.get(/^Search\./, configProvider);
+		settings.watchByRegex(/^Search\./, configProvider);
 	}
 }
 
@@ -142,7 +142,7 @@ Meteor.methods({
 					throw new Error('Provider currently not active');
 				}
 
-				SearchLogger.debug('search: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+				SearchLogger.debug({ msg: 'search', text, context, payload });
 
 				searchProviderService.activeProvider.search(text, context, payload, (error, data) => {
 					if (error) {
@@ -163,7 +163,7 @@ Meteor.methods({
 			try {
 				if (!searchProviderService.activeProvider) { throw new Error('Provider currently not active'); }
 
-				SearchLogger.debug('suggest: ', `\n\tText:${ text }\n\tContext:${ JSON.stringify(context) }\n\tPayload:${ JSON.stringify(payload) }`);
+				SearchLogger.debug({ msg: 'suggest', text, context, payload });
 
 				searchProviderService.activeProvider.suggest(text, context, payload, (error, data) => {
 					if (error) {

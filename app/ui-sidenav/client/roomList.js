@@ -152,12 +152,14 @@ const mergeSubRoom = (subscription) => {
 			announcement: 1,
 			broadcast: 1,
 			archived: 1,
+			avatarETag: 1,
 			retention: 1,
 			teamId: 1,
 			teamMain: 1,
 
 			onHold: 1,
 			metrics: 1,
+			muted: 1,
 			servedBy: 1,
 			ts: 1,
 			waitingResponse: 1,
@@ -169,6 +171,7 @@ const mergeSubRoom = (subscription) => {
 			priorityId: 1,
 			livechatData: 1,
 			departmentId: 1,
+			source: 1,
 		},
 	};
 
@@ -184,6 +187,7 @@ const mergeSubRoom = (subscription) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -200,12 +204,14 @@ const mergeSubRoom = (subscription) => {
 		tags,
 		closedAt,
 		metrics,
+		muted,
 		waitingResponse,
 		responseBy,
 		priorityId,
 		livechatData,
 		departmentId,
 		ts,
+		source,
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -218,6 +224,7 @@ const mergeSubRoom = (subscription) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -234,12 +241,14 @@ const mergeSubRoom = (subscription) => {
 		tags,
 		closedAt,
 		metrics,
+		muted,
 		waitingResponse,
 		responseBy,
 		priorityId,
 		livechatData,
 		departmentId,
 		ts,
+		source,
 	});
 };
 
@@ -257,6 +266,7 @@ const mergeRoomSub = (room) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -273,13 +283,14 @@ const mergeRoomSub = (room) => {
 		tags,
 		closedAt,
 		metrics,
+		muted,
 		waitingResponse,
 		responseBy,
 		priorityId,
 		livechatData,
 		departmentId,
 		ts,
-
+		source,
 	} = room;
 
 	Subscriptions.update({
@@ -293,6 +304,7 @@ const mergeRoomSub = (room) => {
 			announcement,
 			broadcast,
 			archived,
+			avatarETag,
 			retention,
 			uids,
 			usernames,
@@ -307,6 +319,7 @@ const mergeRoomSub = (room) => {
 			tags,
 			closedAt,
 			metrics,
+			muted,
 			waitingResponse,
 			responseBy,
 			priorityId,
@@ -314,6 +327,7 @@ const mergeRoomSub = (room) => {
 			departmentId,
 			jitsiTimeout,
 			ts,
+			source,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});

@@ -20,14 +20,15 @@ import {
 	deriveKey,
 } from './helper';
 import * as banners from '../../../client/lib/banners';
-import { Rooms, Subscriptions, Messages } from '../../models';
-import { call, modal } from '../../ui-utils';
+import { Rooms, Subscriptions, Messages } from '../../models/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
-import { waitUntilFind } from './waitUntilFind';
+import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
-import EnterE2EPasswordModal from './EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
+import { call } from '../../../client/lib/utils/call';
 
 let failedToDecodeKey = false;
 
@@ -147,26 +148,26 @@ class E2E extends Emitter {
 			});
 
 			this.openAlert({
-				title: TAPi18n.__('Save_your_encryption_password'),
+				title: TAPi18n.__('Save_Your_Encryption_Password'),
 				html: TAPi18n.__('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
 				action: () => {
-					modal.open({
-						title: TAPi18n.__('Save_your_encryption_password'),
-						html: true,
-						text: `<div>${ passwordRevealText }</div>`,
-						showConfirmButton: true,
-						showCancelButton: true,
-						confirmButtonText: TAPi18n.__('I_saved_my_password_close_this_message'),
-						cancelButtonText: TAPi18n.__('I_ll_do_it_later'),
-					}, (confirm) => {
-						if (!confirm) {
-							return;
-						}
-						Meteor._localStorage.removeItem('e2e.randomPassword');
-						this.closeAlert();
+					imperativeModal.open({ component: SaveE2EPasswordModal,
+						props: {
+							passwordRevealText,
+							onClose: imperativeModal.close,
+							onCancel: () => {
+								this.closeAlert();
+								imperativeModal.close();
+							},
+							onConfirm: () => {
+								Meteor._localStorage.removeItem('e2e.randomPassword');
+								this.closeAlert();
+								imperativeModal.close();
+							},
+						},
 					});
 				},
 			});

@@ -586,21 +586,19 @@ async function processDataDownloads() {
 const name = 'Generate download files for user data';
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
-		let TroubleshootDisableDataExporterProcessor;
-		settings.get('Troubleshoot_Disable_Data_Exporter_Processor', (key, value) => {
-			if (TroubleshootDisableDataExporterProcessor === value) { return; }
-			TroubleshootDisableDataExporterProcessor = value;
+	let TroubleshootDisableDataExporterProcessor;
+	settings.watch('Troubleshoot_Disable_Data_Exporter_Processor', (value) => {
+		if (TroubleshootDisableDataExporterProcessor === value) { return; }
+		TroubleshootDisableDataExporterProcessor = value;
 
-			if (value) {
-				return SyncedCron.remove(name);
-			}
+		if (value) {
+			return SyncedCron.remove(name);
+		}
 
-			SyncedCron.add({
-				name,
-				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
-				job: processDataDownloads,
-			});
+		SyncedCron.add({
+			name,
+			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+			job: processDataDownloads,
 		});
 	});
 });

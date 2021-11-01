@@ -25,7 +25,7 @@ const reduceSendOptions = (options) =>
 		return acc;
 	}, []);
 
-const integrationsUrl = 'https://rocket.chat/docs/administrator-guides/livechat/#integrations';
+const integrationsUrl = 'https://docs.rocket.chat/guides/omnichannel/webhooks-managers-guide';
 
 const getInitialValues = ({
 	Livechat_webhookUrl,

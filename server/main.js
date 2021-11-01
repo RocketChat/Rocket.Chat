@@ -1,4 +1,6 @@
 import '../ee/server/broker';
+import '../app/settings/server/startup';
+import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
 
@@ -15,6 +17,7 @@ import './startup/presence';
 import './startup/serverRunning';
 import './startup/coreApps';
 import './configuration/accounts_meld';
+import './configuration/ldap';
 import './methods/OEmbedCacheCleanup';
 import './methods/addAllUserToRoom';
 import './methods/addRoomLeader';
@@ -45,7 +48,6 @@ import './methods/loadNextMessages';
 import './methods/loadSurroundingMessages';
 import './methods/logoutCleanUp';
 import './methods/messageSearch';
-import './methods/migrate';
 import './methods/muteUserInRoom';
 import './methods/openRoom';
 import './methods/readMessages';
@@ -75,6 +77,8 @@ import './publications/settings';
 import './publications/spotlight';
 import './publications/subscription';
 import './routes/avatar';
+import './stream/stdout';
 import './stream/streamBroadcast';
+import './settings/index';
 
 import './features/EmailInbox/index';

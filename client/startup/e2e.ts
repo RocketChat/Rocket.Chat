@@ -3,15 +3,16 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { waitUntilFind } from '../../app/e2e/client/waitUntilFind';
 import { Subscriptions, Rooms } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { promises } from '../../app/promises/client';
 import { settings } from '../../app/settings/client';
-import { Layout } from '../../app/ui-utils/client';
 import { IMessage } from '../../definition/IMessage';
 import { IRoom } from '../../definition/IRoom';
 import { ISubscription } from '../../definition/ISubscription';
+import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../lib/onClientMessageReceived';
+import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
+import { waitUntilFind } from '../lib/utils/waitUntilFind';
 
 const handle = async (roomId: IRoom['_id'], keyId: string): Promise<void> => {
 	const e2eRoom = await e2e.getInstanceByRoomId(roomId);
@@ -28,7 +29,7 @@ Meteor.startup(() => {
 			return;
 		}
 
-		const adminEmbedded = Layout.isEmbedded() && FlowRouter.current().path.startsWith('/admin');
+		const adminEmbedded = isLayoutEmbedded() && FlowRouter.current().path.startsWith('/admin');
 
 		if (!adminEmbedded && settings.get('E2E_Enable') && window.crypto) {
 			e2e.startClient();
@@ -40,12 +41,15 @@ Meteor.startup(() => {
 	});
 
 	let observable: Meteor.LiveQueryHandle | null = null;
+	let offClientMessageReceived: undefined | (() => void);
+	let offClientBeforeSendMessage: undefined | (() => void);
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
-			promises.remove('onClientMessageReceived', 'e2e-decript-message');
+			offClientMessageReceived?.();
 			Notifications.unUser('e2ekeyRequest', handle);
 			observable?.stop();
-			return promises.remove('onClientBeforeSendMessage', 'e2e');
+			offClientBeforeSendMessage?.();
+			return;
 		}
 
 		Notifications.onUser('e2ekeyRequest', handle);
@@ -92,47 +96,37 @@ Meteor.startup(() => {
 			},
 		});
 
-		promises.add(
-			'onClientMessageReceived',
-			async (msg: IMessage) => {
-				const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
-				if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
-					return msg;
-				}
-				return e2e.decryptMessage(msg);
-			},
-			promises.priority.HIGH,
-			'e2e-decript-message',
-		);
+		offClientMessageReceived = onClientMessageReceived.use(async (msg: IMessage) => {
+			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
+			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
+				return msg;
+			}
+			return e2e.decryptMessage(msg);
+		});
 
 		// Encrypt messages before sending
-		promises.add(
-			'onClientBeforeSendMessage',
-			async (message: IMessage) => {
-				const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
+		offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message: IMessage) => {
+			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
-				if (!e2eRoom) {
-					return message;
-				}
-
-				const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
-
-				subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-
-				if (!(await e2eRoom.shouldConvertSentMessages())) {
-					return message;
-				}
-
-				// Should encrypt this message.
-				const msg = await e2eRoom.encrypt(message);
-
-				message.msg = msg;
-				message.t = 'e2e';
-				message.e2e = 'pending';
+			if (!e2eRoom) {
 				return message;
-			},
-			promises.priority.HIGH,
-			'e2e',
-		);
+			}
+
+			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
+
+			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+			if (!(await e2eRoom.shouldConvertSentMessages())) {
+				return message;
+			}
+
+			// Should encrypt this message.
+			const msg = await e2eRoom.encrypt(message);
+
+			message.msg = msg;
+			message.t = 'e2e';
+			message.e2e = 'pending';
+			return message;
+		});
 	});
 });

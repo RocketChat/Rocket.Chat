@@ -4,19 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { Logger } from '../../logger';
 
 
-const logger = new Logger('CORS', {});
+const logger = new Logger('CORS');
 
-// Deprecated setting
-let Support_Cordova_App = false;
-settings.get('Support_Cordova_App', (key, value) => {
-	Support_Cordova_App = value;
-});
-
-settings.get('Enable_CSP', (_, enabled) => {
+settings.watch('Enable_CSP', (enabled) => {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
 });
 
@@ -32,23 +26,26 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 	}
 
 	if (settings.get('Enable_CSP')) {
-		res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src * 'self' data:; img-src data: 'self' http://* https://*; style-src 'self' 'unsafe-inline'; media-src 'self' http://* https://*; frame-src 'self' http://* https://*; font-src 'self' data:;");
+		const cdn_prefixes = [
+			settings.get('CDN_PREFIX'),
+			settings.get('CDN_PREFIX_ALL') ? null : settings.get('CDN_JSCSS_PREFIX'),
+		].filter(Boolean).join(' ');
+
+		res.setHeader(
+			'Content-Security-Policy',
+			[
+				`default-src 'self' ${ cdn_prefixes }`,
+				'connect-src *',
+				`font-src 'self' ${ cdn_prefixes } data:`,
+				'frame-src *',
+				'img-src * data:',
+				'media-src * data:',
+				`script-src 'self' 'unsafe-eval' ${ cdn_prefixes }`,
+				`style-src 'self' 'unsafe-inline' ${ cdn_prefixes }`,
+			].join('; '),
+		);
 	}
 
-	// Deprecated behavior
-	if (Support_Cordova_App === true) {
-		if (/^\/(api|_timesync|sockjs|tap-i18n)(\/|$)/.test(req.url)) {
-			res.setHeader('Access-Control-Allow-Origin', '*');
-		}
-
-		const { setHeader } = res;
-		res.setHeader = function(key, val, ...args) {
-			if (key.toLowerCase() === 'access-control-allow-origin' && val === 'http://meteor.local') {
-				return;
-			}
-			return setHeader.apply(this, [key, val, ...args]);
-		};
-	}
 
 	return next();
 });

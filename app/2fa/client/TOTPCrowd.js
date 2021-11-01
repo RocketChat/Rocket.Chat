@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Utils2fa } from './lib/2fa';
 import '../../crowd/client/index';
+import { reportError } from '../../../client/lib/2fa/utils';
+import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 
 Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 	const loginRequest = {
@@ -20,7 +21,7 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 		}],
 		userCallback(error) {
 			if (error) {
-				Utils2fa.reportError(error, callback);
+				reportError(error, callback);
 			} else {
 				callback && callback();
 			}
@@ -31,5 +32,5 @@ Meteor.loginWithCrowdAndTOTP = function(username, password, code, callback) {
 const { loginWithCrowd } = Meteor;
 
 Meteor.loginWithCrowd = function(username, password, callback) {
-	Utils2fa.overrideLoginMethod(loginWithCrowd, [username, password], callback, Meteor.loginWithCrowdAndTOTP);
+	overrideLoginMethod(loginWithCrowd, [username, password], callback, Meteor.loginWithCrowdAndTOTP);
 };

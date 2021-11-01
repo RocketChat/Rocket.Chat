@@ -17,6 +17,7 @@ import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { ISAMLAction } from '../definition/ISAMLAction';
 import { ISAMLUser } from '../definition/ISAMLUser';
 import { SAMLUtils } from './Utils';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const showErrorMessage = function(res: ServerResponse, err: string): void {
 	res.writeHead(200, {
@@ -71,7 +72,7 @@ export class SAML {
 	}
 
 	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): {userId: string; token: string} {
-		const { roleAttributeSync, generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate } = SAMLUtils.globalSettings;
+		const { generateUsername, immutableProperty, nameOverwrite, mailOverwrite, channelsAttributeUpdate, defaultUserRole = 'user' } = SAMLUtils.globalSettings;
 
 		let customIdentifierMatch = false;
 		let customIdentifierAttributeName: string | null = null;
@@ -102,15 +103,19 @@ export class SAML {
 			address: email,
 			verified: settings.get('Accounts_Verify_Email_For_External_Accounts'),
 		}));
-		const globalRoles = userObject.roles;
 
 		let { username } = userObject;
 
+		const active = !settings.get('Accounts_ManuallyApproveNewUsers');
+
 		if (!user) {
+			// If we received any role from the mapping, use them - otherwise use the default role for creation.
+			const roles = userObject.roles?.length ? userObject.roles : SAMLUtils.ensureArray<string>(defaultUserRole.split(','));
+
 			const newUser: Record<string, any> = {
 				name: userObject.fullName,
-				active: true,
-				globalRoles,
+				active,
+				globalRoles: roles,
 				emails,
 				services: {
 					saml: {
@@ -167,10 +172,6 @@ export class SAML {
 			updateData[`services.saml.${ customIdentifierAttributeName }`] = userObject.attributeList.get(customIdentifierAttributeName);
 		}
 
-		for (const [customField, value] of userObject.customFields) {
-			updateData[`customFields.${ customField }`] = value;
-		}
-
 		// Overwrite mail if needed
 		if (mailOverwrite === true && (customIdentifierMatch === true || immutableProperty !== 'EMail')) {
 			updateData.emails = emails;
@@ -181,8 +182,9 @@ export class SAML {
 			updateData.name = userObject.fullName;
 		}
 
-		if (roleAttributeSync) {
-			updateData.roles = globalRoles;
+		// When updating an user, we only update the roles if we received them from the mapping
+		if (userObject.roles?.length) {
+			updateData.roles = userObject.roles;
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
@@ -213,7 +215,7 @@ export class SAML {
 			res.writeHead(200);
 			res.write(serviceProvider.generateServiceProviderMetadata());
 			res.end();
-		} catch (err) {
+		} catch (err: any) {
 			showErrorMessage(res, err);
 		}
 	}
@@ -238,7 +240,7 @@ export class SAML {
 		const serviceProvider = new SAMLServiceProvider(service);
 		serviceProvider.validateLogoutRequest(req.query.SAMLRequest, (err, result) => {
 			if (err) {
-				console.error(err);
+				SystemLogger.error({ err });
 				throw new Meteor.Error('Unable to Validate Logout Request');
 			}
 
@@ -291,14 +293,14 @@ export class SAML {
 
 					serviceProvider.logoutResponseToUrl(response, (err, url) => {
 						if (err) {
-							console.error(err);
+							SystemLogger.error({ err });
 							return redirect();
 						}
 
 						redirect(url);
 					});
-				} catch (e) {
-					console.error(e);
+				} catch (e: any) {
+					SystemLogger.error(e);
 					redirect();
 				}
 			}).run();
@@ -469,8 +471,8 @@ export class SAML {
 					}
 				}
 			}
-		} catch (err) {
-			console.error(err);
+		} catch (err: any) {
+			SystemLogger.error(err);
 		}
 	}
 }

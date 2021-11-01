@@ -31,14 +31,16 @@ const Medium = ({
 		<Sidebar.Item {...props} href={href} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
-				{icon}
-				<Sidebar.Item.Title
-					data-qa='sidebar-item-title'
-					className={unread && 'rcx-sidebar-item--highlighted'}
-				>
-					{title}
-				</Sidebar.Item.Title>
-				{badges}
+				<Sidebar.Item.Wrapper>
+					{icon}
+					<Sidebar.Item.Title
+						data-qa='sidebar-item-title'
+						className={unread && 'rcx-sidebar-item--highlighted'}
+					>
+						{title}
+					</Sidebar.Item.Title>
+				</Sidebar.Item.Wrapper>
+				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
 				{menu && (
 					<Sidebar.Item.Menu {...handleMenuEvent}>
 						{menuVisibility ? (

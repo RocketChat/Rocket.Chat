@@ -1,5 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 
+import { SystemLogger } from '../../lib/logger/system';
+
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};
 
@@ -74,6 +76,8 @@ export interface IStreamer {
 	emitWithoutBroadcast(event: string, ...data: any[]): void;
 
 	changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
+
+	_publish(publication: IPublication, eventName: string, options: boolean | {useCollection?: boolean; args?: any}): Promise<void>;
 }
 
 export interface IStreamerConstructor {
@@ -146,7 +150,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			}
 
 			if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
-				console.error(`${ name } shortcut '${ fn }' is invalid`);
+				SystemLogger.error(`${ name } shortcut '${ fn }' is invalid`);
 			}
 
 			if (fn === 'all' || fn === true) {
@@ -307,7 +311,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		try {
 			this.registerMethod(method);
 		} catch (e) {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 	}
 

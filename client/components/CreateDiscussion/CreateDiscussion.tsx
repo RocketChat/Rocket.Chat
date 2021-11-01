@@ -8,6 +8,7 @@ import {
 	ButtonGroup,
 	Button,
 	Icon,
+	Box,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactElement } from 'react';
@@ -16,9 +17,9 @@ import { IMessage } from '../../../definition/IMessage';
 import { IRoom } from '../../../definition/IRoom';
 import { IUser } from '../../../definition/IUser';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useEndpointActionExperimental } from '../../hooks/useEndpointAction';
+import { useEndpointActionExperimental } from '../../hooks/useEndpointActionExperimental';
 import { useForm } from '../../hooks/useForm';
-import { goToRoomById } from '../../lib/goToRoomById';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 import DefaultParentRoomField from './DefaultParentRoomField';
@@ -75,7 +76,7 @@ const CreateDiscussion = ({
 				...(parentMessageId && { pmid: parentMessageId }),
 			});
 
-			goToRoomById(result?.discussion?.rid);
+			goToRoomById(result.discussion._id);
 			onClose();
 		} catch (error) {
 			console.warn(error);
@@ -120,11 +121,17 @@ const CreateDiscussion = ({
 							)}
 						</Field.Row>
 					</Field>
-					<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Field.Label>{t('Encrypted')}</Field.Label>
-						<Field.Row>
-							<ToggleSwitch checked={encrypted} onChange={handleEncrypted} />
-						</Field.Row>
+					<Field
+						display='flex'
+						alignItems='center'
+						flexDirection='row'
+						justifyContent='spaceBetween'
+						flexGrow={1}
+					>
+						<Box display='flex' flexDirection='column' width='full'>
+							<Field.Label>{t('Encrypted')}</Field.Label>
+						</Box>
+						<ToggleSwitch checked={encrypted} onChange={handleEncrypted} />
 					</Field>
 					<Field>
 						<Field.Label>{t('Discussion_name')}</Field.Label>
@@ -139,7 +146,7 @@ const CreateDiscussion = ({
 					</Field>
 					<Field>
 						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row>
+						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
 							<UserAutoCompleteMultiple
 								value={usernames}
 								onChange={onChangeUsers}
@@ -168,6 +175,7 @@ const CreateDiscussion = ({
 			</Modal.Content>
 			<Modal.Footer>
 				<ButtonGroup align='end'>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!canCreate} onClick={create}>
 						{t('Create')}
 					</Button>

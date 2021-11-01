@@ -6,42 +6,22 @@ We are a MERN based application enabling real-time conversations between colleag
 
 Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust [Rocket.Chat](https://rocket.chat) to keep their communications completely private and secure.
 
- * [Review product documentation](https://docs.rocket.chat/)
- * [Review developer documentation](https://developer.rocket.chat/)
+ * [Review product documentation](https://docs.rocket.chat)
+ * [Review developer documentation](https://developer.rocket.chat)
+ 
+Using our self-managed offerings you can deploy Rocket.Chat on your own server, or you can use SaaS Rocket.Chat. We offer support for both community as well as commercial plans.
  
 <img src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/blob/master/Product%20Images/Welcome%20to%20RC%20(Readme).jpg" width="919" height="511" />
 
-Table of Contents
-=================
-* [Editions](#editions)
-* [Installation](#installation)
-* [Feature Request](#feature-request)
-* [Community](#community)
-* [Contributions](#contributions)
-* [Credits](#credits)
-* [Mobile Apps](#mobile-apps)
-* [Learn More](#learn-more)
-* [Become a Rocketeer](#become-a-rocketeer)
-* [Get the Latest News](#get-the-latest-news)
 
+## Cloud Hosted Rocket.Chat
 
-## Editions
+https://cloud.rocket.chat/trial
 
-Rocket.Chat offers endless [possibilities](https://rocket.chat/pricing/):
-
-### Self-Managed ###
-Host your own workplace on-premises or in your own cloud.
-
-**Plans:** Community, Pro, Enterprise  
-
-### SAAS ###
-Free trial on our website. 
-
-**Plans:** Bronze, Silver, Gold 
 
 ## Installation
-Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about the supported operating systems.
-Please refer to [Install Rocket.Chat](https://rocket.chat/install/) to install your Rocket.Chat instance.
+Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 
 ## Feature Request 
@@ -50,9 +30,10 @@ Please refer to [Install Rocket.Chat](https://rocket.chat/install/) to install y
 
 ## Community
 
-Join thousands of members worldwide in our [community server](https://open.rocket.chat/).
+Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#Support](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
 Join [#Dev](https://open.rocket.chat/channel/dev) for needing help from the community to develop new features.
+Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/watch?v=RdbqOdUb3Wk), held monthly.  Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
 
 ## Contributions
 
@@ -60,33 +41,33 @@ Rocket.Chat is an open source project and we are very happy to accept community 
 
 ## Credits
 
-* Emoji provided graciously by [JoyPixels](https://www.joypixels.com/)
-* Testing with [BrowserStack](https://www.browserstack.com/)
-* Translations done with [LingoHub](https://lingohub.com/)
+* Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+* Testing with [BrowserStack](https://www.browserstack.com).
+* Translations done with [LingoHub](https://lingohub.com).
 
 
 ## Mobile Apps
 
 In addition to the web interface, you can also download Rocket.Chat clients for:
 
-[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)  [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android/)
+[![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)  [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android)
 
 ## Learn More
-* [API](https://developer.rocket.chat/)
-* [See who's using Rocket.Chat](https://rocket.chat/customer-stories/)
+* [API](https://developer.rocket.chat)
+* [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
 
 ## Become a Rocketeer
-We're hiring developers, support people, and product managers all the time. Please check our [jobs page](https://rocket.chat/jobs/).
+We're hiring developers, support people, and product managers all the time. Please check our [jobs page](https://rocket.chat/jobs).
 
 ## Get the Latest News
 
 * [Twitter](https://twitter.com/RocketChat)
-* [Blog](https://rocket.chat/blog/)
-* [Facebook](https://www.facebook.com/RocketChatApp/)
-* [LinkedIn](https://www.linkedin.com/company/rocket-chat/)
+* [Blog](https://rocket.chat/blog)
+* [Facebook](https://www.facebook.com/RocketChatApp)
+* [LinkedIn](https://www.linkedin.com/company/rocket-chat)
 * [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
-* [Email Newsletter](https://rocket.chat/newsletter/)
+* [Email Newsletter](https://rocket.chat/newsletter)
 
-Any other questions, mail us at [info@rocket.chat](info@rocket.chat). We’d love to meet you!
+Any other questions, reach out to us at [contact@rocket.chat](contact@rocket.chat). We’d happy to help!
 
 

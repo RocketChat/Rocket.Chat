@@ -2,7 +2,7 @@ import {
 	Settings,
 	Users,
 } from '../../../app/models/server';
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 
 function updateFieldMap() {
 	const _id = 'SAML_Custom_Default_user_data_fieldmap';
@@ -102,7 +102,7 @@ function setOldLogoutResponseTemplate() {
 	});
 }
 
-Migrations.add({
+addMigration({
 	version: 194,
 	up() {
 		updateFieldMap();

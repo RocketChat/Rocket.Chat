@@ -18,9 +18,9 @@ apiServer.disable('x-powered-by');
 let corsEnabled = false;
 let allowListOrigins = [];
 
-settings.get('API_Enable_CORS', (_, value) => { corsEnabled = value; });
+settings.watch('API_Enable_CORS', (value) => { corsEnabled = value; });
 
-settings.get('API_CORS_Origin', (_, value) => {
+settings.watch('API_CORS_Origin', (value) => {
 	allowListOrigins = value ? value.trim().split(',').map((origin) => String(origin).trim().toLocaleLowerCase()) : [];
 });
 
@@ -263,7 +263,6 @@ const appsRoutes = (orch) => (req, res) => {
 
 				res.sendStatus(200);
 			} catch (e) {
-				console.error(e);
 				res.status(500).send(e.message);
 			}
 			break;
@@ -296,6 +295,10 @@ const appsRoutes = (orch) => (req, res) => {
 				res.status(500).send(e.message);
 			}
 			break;
+		}
+
+		default: {
+			res.status(500).send({ error: 'Unknown action' });
 		}
 	}
 

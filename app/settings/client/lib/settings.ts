@@ -12,7 +12,13 @@ class Settings extends SettingsBase {
 
 	dict = new ReactiveDict('settings');
 
-	get(_id: string): any {
+	get(_id: string | RegExp, ...args: []): any {
+		if (_id instanceof RegExp) {
+			throw new Error('RegExp Settings.get(RegExp)');
+		}
+		if (args.length > 0) {
+			throw new Error('settings.get(String, callback) only works on backend');
+		}
 		return this.dict.get(_id);
 	}
 

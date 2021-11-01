@@ -7,8 +7,8 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { logger } from './logger';
-import { settings } from '../../settings';
+import { msLogger } from './logger';
+import { settings } from '../../settings/server';
 
 /**
  * Microsoft translation service provider class representation.
@@ -31,7 +31,7 @@ class MsAutoTranslate extends AutoTranslate {
 		this.apiGetLanguages = 'https://api.cognitive.microsofttranslator.com/languages?api-version=3.0';
 		this.breakSentence = 'https://api.cognitive.microsofttranslator.com/breaksentence?api-version=3.0';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_MicrosoftAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_MicrosoftAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}
@@ -137,7 +137,7 @@ class MsAutoTranslate extends AutoTranslate {
 		try {
 			return this._translate(msgs, targetLanguages);
 		} catch (e) {
-			logger.microsoft.error('Error translating message', e);
+			msLogger.error({ err: e, msg: 'Error translating message' });
 		}
 		return {};
 	}
@@ -155,7 +155,7 @@ class MsAutoTranslate extends AutoTranslate {
 				Text: attachment.description || attachment.text,
 			}], targetLanguages);
 		} catch (e) {
-			logger.microsoft.error('Error translating message attachment', e);
+			msLogger.error({ err: e, msg: 'Error translating message attachment' });
 		}
 		return {};
 	}

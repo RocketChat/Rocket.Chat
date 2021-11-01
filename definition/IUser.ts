@@ -33,6 +33,13 @@ export interface IUserEmailCode {
 type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
 export type Username = string;
 
+export type ILoginUsername = {
+	username: string;
+} | {
+	email: string;
+}
+export type LoginUsername = string | ILoginUsername;
+
 export interface IUserServices {
 	password?: {
 		bcrypt: string;
@@ -64,6 +71,10 @@ export interface IUserServices {
 		idpSession?: string;
 		nameID?: string;
 	};
+	ldap?: {
+		id: string;
+		idAttribute?: string;
+	};
 }
 
 export interface IUserEmail {
@@ -85,6 +96,14 @@ export interface IRole {
 	protected: boolean;
 	scope?: string;
 	_id: string;
+}
+
+export interface IDailyActiveUsers {
+	usersList: string[];
+	users: number;
+	day: number;
+	month: number;
+	year: number;
 }
 
 export interface IUser extends IRocketChatRecord {
@@ -121,6 +140,7 @@ export interface IUser extends IRocketChatRecord {
 	};
 	settings?: IUserSettings;
 	defaultRoom?: string;
+	ldap?: boolean;
 }
 
 export type IUserDataEvent = {

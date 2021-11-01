@@ -1,3 +1,4 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -11,7 +12,7 @@ import { API } from '../api';
 import Rooms from '../../../models/server/models/Rooms';
 import Users from '../../../models/server/models/Users';
 import Subscriptions from '../../../models/server/models/Subscriptions';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { findMentionedMessages, findStarredMessages, findSnippetedMessageById, findSnippetedMessages, findDiscussionsFromRoom } from '../lib/messages';
 
 API.v1.addRoute('chat.delete', { authRequired: true }, {
@@ -147,7 +148,7 @@ API.v1.addRoute('chat.postMessage', { authRequired: true }, {
 API.v1.addRoute('chat.search', { authRequired: true }, {
 	get() {
 		const { roomId, searchText } = this.queryParams;
-		const { count } = this.getPaginationItems();
+		const { offset, count } = this.getPaginationItems();
 
 		if (!roomId) {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -158,7 +159,7 @@ API.v1.addRoute('chat.search', { authRequired: true }, {
 		}
 
 		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count).message.docs; });
+		Meteor.runAsUser(this.userId, () => { result = Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs; });
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(result, this.userId),
@@ -448,11 +449,7 @@ API.v1.addRoute('chat.getThreadsList', { authRequired: true }, {
 			_hidden: { $ne: true },
 			...type === 'following' && { replies: { $in: [this.userId] } },
 			...type === 'unread' && { _id: { $in: Subscriptions.findOneByRoomIdAndUserId(room._id, user._id).tunread } },
-			...text && {
-				$text: {
-					$search: text,
-				},
-			},
+			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
 		const threadQuery = { ...query, ...typeThread, rid, tcount: { $exists: true } };

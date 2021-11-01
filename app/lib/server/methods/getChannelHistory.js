@@ -53,7 +53,7 @@ Meteor.methods({
 
 		const records = _.isUndefined(oldest)
 			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch()
-			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, oldest, latest, options, showThreadMessages, inclusive).fetch();
+			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, oldest, latest, hiddenMessageTypes, options, showThreadMessages, inclusive).fetch();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 

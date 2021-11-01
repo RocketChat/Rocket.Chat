@@ -6,15 +6,15 @@ import { Tracker } from 'meteor/tracker';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { TimeSync } from 'meteor/mizzao:timesync';
 import _ from 'underscore';
-import toastr from 'toastr';
 
 import { OTR } from './rocketchat.otr';
 import { Notifications } from '../../notifications';
-import { getUidDirectMessage } from '../../ui-utils/client/lib/getUidDirectMessage';
+import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { Presence } from '../../../client/lib/presence';
-import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import GenericModal from '../../../client/components/GenericModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 
 OTR.Room = class {
 	constructor(userId, roomId) {
@@ -95,7 +95,7 @@ OTR.Room = class {
 				Meteor.call('deleteOldOTRMessages', this.roomId);
 			})
 			.catch((e) => {
-				toastr.error(e);
+				dispatchToastMessage({ type: 'error', message: e });
 			});
 	}
 
@@ -174,7 +174,7 @@ OTR.Room = class {
 				return data;
 			})
 			.catch((e) => {
-				toastr.error(e);
+				dispatchToastMessage({ type: 'error', message: e });
 				return message;
 			});
 	}

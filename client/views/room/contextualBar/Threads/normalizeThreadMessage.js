@@ -1,6 +1,6 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { renderMessageBody } from '../../../../lib/renderMessageBody';
+import { renderMessageBody } from '../../../../lib/utils/renderMessageBody';
 
 export const normalizeThreadMessage = ({ ...message }) => {
 	if (message.msg) {

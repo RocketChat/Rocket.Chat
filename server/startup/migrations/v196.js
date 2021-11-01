@@ -1,4 +1,4 @@
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { LivechatDepartmentAgents } from '../../../app/models/server';
 
 const removeOrphanDepartmentAgents = async () => {
@@ -22,7 +22,7 @@ const removeOrphanDepartmentAgents = async () => {
 	LivechatDepartmentAgents.remove({ _id: { $in: orphanAgentIds } });
 };
 
-Migrations.add({
+addMigration({
 	version: 196,
 	up() {
 		Promise.await(removeOrphanDepartmentAgents());

@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
-import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
-import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
+import { dispatchToastMessage } from '../lib/toast';
+import { handleError } from '../lib/utils/handleError';
 
 const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
@@ -64,7 +64,7 @@ FlowRouter.route('/home', {
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
 					if (error.reason) {
-						toastr.error(error.reason);
+						dispatchToastMessage({ type: 'error', message: error.reason });
 					} else {
 						handleError(error);
 					}

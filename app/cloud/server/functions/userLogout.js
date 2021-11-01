@@ -4,6 +4,7 @@ import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { Users } from '../../../models';
 import { settings } from '../../../settings';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function userLogout(userId) {
 	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
@@ -41,9 +42,9 @@ export function userLogout(userId) {
 			});
 		} catch (e) {
 			if (e.response && e.response.data && e.response.data.error) {
-				console.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
+				SystemLogger.error(`Failed to get Revoke refresh token to logout of Rocket.Chat Cloud.  Error: ${ e.response.data.error }`);
 			} else {
-				console.error(e);
+				SystemLogger.error(e);
 			}
 		}
 	}
