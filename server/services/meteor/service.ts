@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
@@ -50,7 +49,7 @@ type Callbacks = {
 
 let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
-const disableOplog = Package['disable-oplog'];
+const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
 
 if (disableOplog) {

@@ -21,12 +21,13 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 	get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields } = this.parseJsonQuery();
-		const { agents, departmentId, open, tags, roomName } = this.requestParams();
+		const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
 		let { createdAt, customFields, closedAt } = this.requestParams();
 		check(agents, Match.Maybe([String]));
 		check(roomName, Match.Maybe(String));
 		check(departmentId, Match.Maybe(String));
 		check(open, Match.Maybe(String));
+		check(onhold, Match.Maybe(String));
 		check(tags, Match.Maybe([String]));
 
 		const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
@@ -51,6 +52,7 @@ API.v1.addRoute('livechat/rooms', { authRequired: true }, {
 			closedAt,
 			tags,
 			customFields,
+			onhold,
 			options: { offset, count, sort, fields },
 		})));
 	},

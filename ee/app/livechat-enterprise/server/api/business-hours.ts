@@ -1,5 +1,3 @@
-import { Promise } from 'meteor/promise';
-
 import { API } from '../../../../../app/api/server';
 import { findBusinessHours } from '../business-hour/lib/business-hour';
 
