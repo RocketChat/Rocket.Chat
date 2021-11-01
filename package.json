@@ -93,8 +93,8 @@
 		"@types/nodemailer": "^6.4.2",
 		"@types/parseurl": "^1.3.1",
 		"@types/psl": "^1.1.0",
-		"@types/react": "^17.0.11",
-		"@types/react-dom": "^17.0.8",
+		"@types/react": "^17.0.32",
+		"@types/react-dom": "^17.0.10",
 		"@types/rewire": "^2.5.28",
 		"@types/semver": "^7.3.6",
 		"@types/sharp": "^0.28.3",
@@ -304,7 +304,7 @@
 	"meteor": {
 		"mainModule": {
 			"client": "client/main.ts",
-			"server": "server/main.js"
+			"server": "server/main.ts"
 		}
 	},
 	"houston": {
@@ -322,6 +322,7 @@
 		"last 2 versions"
 	],
 	"volta": {
-		"node": "12.22.1"
+		"node": "12.22.1",
+		"npm": "6.14.12"
 	}
 }
