@@ -17,10 +17,10 @@ function DirectoryPage() {
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('tab');
 	const directoryRoute = useRoute('directory');
-
+	const navRoute = useRoute(routeName);
 	useEffect(() => {
 		if (routeName !== 'directory') {
-			return;
+			return navRoute.push();
 		}
 
 		if (!tab || (tab === 'external' && !federationEnabled)) {
