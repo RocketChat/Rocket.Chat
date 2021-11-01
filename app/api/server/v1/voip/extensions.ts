@@ -6,7 +6,6 @@ import { Voip } from '../../../../../server/sdk';
 import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
-// const commandHandler: CommandHandler = Promise.await(Voip.getConnector());
 // Get the connector version and type
 API.v1.addRoute('connector.getVersion', { authRequired: true }, {
 	get() {

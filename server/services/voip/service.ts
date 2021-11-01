@@ -112,15 +112,21 @@ export class VoipService extends ServiceClass implements IVoipService {
 				Commands.queue_details,
 				{ queueName: queue.name })) as IVoipConnectorResult;
 			this.logger.debug({ msg: 'API = voip/queues.getCallWaitingInQueuesForThisExtension queue details = ', result: queueDetails });
-			if ((queueDetails.result as unknown as IQueueDetails).members) {
-				const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some(
-					(element) => element.name.endsWith(requestParams.extension),
-				);
-				if (isAMember) {
-					membershipDetails.callWaitingCount += Number((queueDetails.result as unknown as IQueueDetails).calls);
-					membershipDetails.queueCount++;
-				}
+			if (!(queueDetails.result as unknown as IQueueDetails).members) {
+				// Go to the next queue if queue does not have any
+				// memmbers.
+				continue;
 			}
+			const isAMember = (queueDetails.result as unknown as IQueueDetails).members.some(
+				(element) => element.name.endsWith(requestParams.extension),
+			);
+			if (!isAMember) {
+				// Current extension is not a member of queue in question.
+				// continue with next queue.
+				continue;
+			}
+			membershipDetails.callWaitingCount += Number((queueDetails.result as unknown as IQueueDetails).calls);
+			membershipDetails.queueCount++;
 		}
 		const result: IVoipConnectorResult = {
 			result: membershipDetails,

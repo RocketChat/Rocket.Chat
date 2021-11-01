@@ -55,7 +55,7 @@ export class CommandHandler {
 		 * If we have the same type of connection already established, close it
 		 * and remove it from the map.
 		 */
-		if (this.connections.get(commandType) && this.connections.get(commandType)?.isConnected()) {
+		if (this.connections.get(commandType)?.isConnected()) {
 			this.logger.error({ msg: 'connection exists. Closing the connection.' });
 			this.connections.get(commandType)?.closeConnection();
 			this.connections.delete(commandType);
@@ -63,7 +63,8 @@ export class CommandHandler {
 		connection.connect(config.host,
 			(config.configData as IManagementConfigData).port.toString(),
 			(config.configData as IManagementConfigData).username,
-			(config.configData as IManagementConfigData).password);
+			(config.configData as IManagementConfigData).password,
+		);
 		this.connections.set(commandType, connection);
 	}
 
