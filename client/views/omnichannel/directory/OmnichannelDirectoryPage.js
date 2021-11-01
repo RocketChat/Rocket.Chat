@@ -14,10 +14,10 @@ const OmnichannelDirectoryPage = () => {
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
-
+	const navRoute = useRoute(routeName);
 	useEffect(() => {
 		if (routeName !== 'omnichannel-directory') {
-			return;
+			return navRoute.push();
 		}
 
 		if (!tab) {
