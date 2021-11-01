@@ -279,6 +279,7 @@ export class LDAPConnection {
 			values[key] = this.extractLdapAttribute(values._raw[key]);
 
 			const dataType = typeof values[key];
+			// eslint-disable-next-line no-control-regex
 			if (dataType === 'string' && values[key].length > 100 && /[\x00-\x1F]/.test(values[key])) {
 				mapLogger.debug({ msg: 'Extracted Attribute', key, type: dataType, length: values[key].length, value: `${ values[key].substr(0, 100) }...` });
 				return;

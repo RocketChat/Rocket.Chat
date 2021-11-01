@@ -383,7 +383,7 @@ export class LDAPEEManager extends LDAPManager {
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
 
-		const attributeNames = (settings.get<string>('LDAP_Teams_Name_Field') ?? '').split(',').map(attributeName => attributeName.trim());
+		const attributeNames = (settings.get<string>('LDAP_Teams_Name_Field') ?? '').split(',').map((attributeName) => attributeName.trim());
 		if (!attributeNames.length) {
 			attributeNames.push('ou');
 		}
@@ -395,7 +395,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		return ldapUserGroups.map((entry) => {
 			if (!entry?.raw) {
-				return;
+				return undefined;
 			}
 
 			for (const attributeName of attributeNames) {
@@ -403,6 +403,8 @@ export class LDAPEEManager extends LDAPManager {
 					return ldap.extractLdapAttribute(entry.raw[attributeName]) as string;
 				}
 			}
+
+			return undefined;
 		}).filter((entry): entry is string => Boolean(entry)).flat();
 	}
 
