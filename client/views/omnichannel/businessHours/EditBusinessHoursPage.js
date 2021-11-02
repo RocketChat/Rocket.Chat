@@ -14,7 +14,7 @@ import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { useIsSingleBusinessHours } from './BusinessHoursRouter';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
-const EditBusinessHoursPage = ({ id, type }) => {
+const EditBusinessHoursPage = ({ id, type, updateFromParent }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
@@ -68,12 +68,12 @@ const EditBusinessHoursPage = ({ id, type }) => {
 
 			await save(payload);
 			dispatchToastMessage({ type: 'success', message: t('Business_hours_updated') });
-			router.push({
-				context: 'edit',
-				type: 'default',
-			});
+			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		}
+		if (isSingleBH) {
+			updateFromParent();
 		}
 	});
 
@@ -85,10 +85,10 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		try {
 			await deleteBH(id, type);
 			dispatchToastMessage({ type: 'success', message: t('Business_Hour_Removed') });
-			router.push({
-				context: 'edit',
-				type: 'default',
-			});
+			router.push({});
+			if (isSingleBH) {
+				updateFromParent();
+			}
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -125,6 +125,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 							{t('Delete')}
 						</Button>
 					)}
+					{/* haschanges = false disabled = true */}
 					<Button primary onClick={handleSave} disabled={!hasChanges}>
 						{t('Save')}
 					</Button>
