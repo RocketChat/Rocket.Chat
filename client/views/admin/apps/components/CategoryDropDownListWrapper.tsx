@@ -15,7 +15,7 @@ const CategoryDropDownListWrapper = forwardRef<
 	const target = useOutsideClick(onClose);
 	const { style } = usePosition(ref as Parameters<typeof usePosition>[0], target as any, options);
 	return (
-		<Box ref={target} style={style as any} width='224'>
+		<Box ref={target} style={style as any} minWidth={224}>
 			{children}
 		</Box>
 	);
