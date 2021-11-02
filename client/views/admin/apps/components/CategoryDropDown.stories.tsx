@@ -4,9 +4,11 @@ import React from 'react';
 
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 import { useCategoryDropdown } from '../hooks/useCategoryDropdown';
+import { useTagList } from '../hooks/useTagList';
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
+import TagList from './TagList';
 
 export default {
 	title: 'apps/components/CategoryDropDown',
@@ -23,7 +25,7 @@ const testGroup: CategoryDropDownListProps['groups'] = [
 		],
 	},
 	{
-		label: 'Filter by Catergory',
+		label: 'Filter by Category',
 		items: [
 			{ id: '0', label: 'Analytics', checked: false },
 			{ id: '1', label: 'Bots', checked: false },
@@ -62,11 +64,15 @@ export const List: Story = () => {
 
 export const Default: Story = () => {
 	const [data, onSelected] = useCategoryDropdown(testGroup);
+	const [selectedCategories, onRemoved] = useTagList(testGroup);
 	return (
-		<ButtonGroup>
-			<CategoryDropDown mini {...{ data, onSelected }} />
-			<CategoryDropDown small {...{ data, onSelected }} />
-			<CategoryDropDown {...{ data, onSelected }} />
-		</ButtonGroup>
+		<>
+			<ButtonGroup>
+				<CategoryDropDown mini {...{ data, onSelected }} />
+				<CategoryDropDown small {...{ data, onSelected }} />
+				<CategoryDropDown {...{ data, onSelected }} />
+			</ButtonGroup>
+			<TagList {...{ selectedCategories, onRemoved }} />
+		</>
 	);
 };
