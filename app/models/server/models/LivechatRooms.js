@@ -279,6 +279,17 @@ export class LivechatRooms extends Base {
 		return this.findOne(query, options);
 	}
 
+	findOneOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			t: 'l',
+			open: true,
+			'v.token': visitorToken,
+			departmentId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
 		const query = {
 			t: 'l',

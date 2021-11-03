@@ -74,7 +74,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		const visitor = defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
-		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
