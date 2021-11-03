@@ -20,29 +20,17 @@ const BusinessHoursRouter = () => {
 
 	const router = useRoute('omnichannel-businessHours');
 
-	// this state is used for updating the component, from EditBusinessHoursPage
-	const [updateComponent, setUpdateComponent] = useState(false);
-
 	useEffect(() => {
-		if (isSingleBH && (context !== 'edit' || type !== 'default')) {
+		if (isSingleBH) {
 			router.push({
 				context: 'edit',
 				type: 'default',
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isSingleBH, updateComponent]);
+	}, [isSingleBH, router]);
 
-	if ((context === 'edit' && type) || (isSingleBH && (context !== 'edit' || type !== 'default'))) {
-		return type ? (
-			<EditBusinessHoursPage
-				type={type}
-				id={id}
-				updateFromParent={() => {
-					setUpdateComponent(!updateComponent);
-				}}
-			/>
-		) : null;
+	if (context === 'edit' || isSingleBH) {
+		return type ? <EditBusinessHoursPage type={type} id={id} /> : null;
 	}
 
 	if (context === 'new') {
