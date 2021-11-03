@@ -36,25 +36,23 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			await ldap.connect();
 
-			try {
-				const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
-				const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+			const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
+			const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
 
-				if (createNewUsers) {
-					await this.importNewUsers(ldap, converter, updateExistingUsers);
-				} else if (updateExistingUsers) {
-					await this.updateExistingUsers(ldap, converter);
-				}
-
-				converter.convertUsers({
-					afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void => Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
-				});
-			} finally {
-				ldap.disconnect();
+			if (createNewUsers) {
+				await this.importNewUsers(ldap, converter, updateExistingUsers);
+			} else if (updateExistingUsers) {
+				await this.updateExistingUsers(ldap, converter);
 			}
+
+			converter.convertUsers({
+				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void => Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
+			});
 		} catch (error) {
 			logger.error(error);
 		}
+
+		ldap.disconnect();
 	}
 
 	public static async syncAvatars(): Promise<void> {
