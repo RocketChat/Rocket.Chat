@@ -58,17 +58,16 @@ const OmnichannelProvider: FC = ({ children }) => {
 		}
 		const initVoipLib = async (): Promise<void> => {
 			/* Init extension */
-			let extensionConfig = undefined;
+			let extensionConfigLocal = undefined;
 			let voipUser: SimpleVoipUser;
 			const extension = '80000';
 			try {
 				if (extensionConfig) {
 					return;
 				}
-				extensionConfig = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+				extensionConfigLocal = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
 					extension,
 				})) as unknown as IExtensionConfig;
-				setExtensionConfig(extensionConfig);
 				const iceServers: Array<object> = [];
 				if (iceServersSetting && iceServersSetting.trim() !== '') {
 					const serversListStr = iceServersSetting.replace(/\s/g, '');
@@ -87,17 +86,17 @@ const OmnichannelProvider: FC = ({ children }) => {
 					});
 				}
 				loggerRef.current.debug(JSON.stringify(iceServers));
-
 				voipUser = new SimpleVoipUser(
-					extensionConfig.extension,
-					extensionConfig.password,
-					extensionConfig.sipRegistrar,
-					extensionConfig.websocketUri,
+					extensionConfigLocal.extension,
+					extensionConfigLocal.password,
+					extensionConfigLocal.sipRegistrar,
+					extensionConfigLocal.websocketUri,
 					iceServers,
 					CallType.AUDIO_VIDEO,
 				);
 				await voipUser.initUserAgent();
 				setVoipUser(voipUser);
+				setExtensionConfig(extensionConfigLocal);
 			} catch (error) {
 				loggerRef.current.error(`initVoipLib() error in initialising ${error}`);
 			}
@@ -117,7 +116,14 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (voipCallAvailable) {
 			initVoipLib();
 		}
-	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, voipCallAvailable]);
+	}, [
+		accessible,
+		extensionConfig,
+		getRoutingConfig,
+		iceServersSetting,
+		omnichannelRouting,
+		voipCallAvailable,
+	]);
 
 	const enabled = accessible && !!user && !!routeConfig && !!extensionConfig && !!voipUser;
 	const manuallySelected =
