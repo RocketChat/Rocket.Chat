@@ -2,7 +2,7 @@ import { CategoryDropdownItem } from './CategoryDropdownDefinitions';
 
 export type TagListProps = {
 	selectedCategories: CategoryDropdownItem[];
-	onRemoved: CategoryOnRemoved;
+	onClick: CategoryOnClick;
 };
 
-export type CategoryOnRemoved = (category: CategoryDropdownItem) => void;
+export type CategoryOnClick = (category: CategoryDropdownItem) => void;

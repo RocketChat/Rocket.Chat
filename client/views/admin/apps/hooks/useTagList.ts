@@ -8,14 +8,15 @@ import { TagListProps } from '../definitions/TagListDefinitions';
 
 export const useTagList = (
 	data: CategoryDropDownListProps['groups'],
-): [TagListProps['selectedCategories'], TagListProps['onRemoved']] => {
-	const [selectedCategories, setSelectedCategories] = useState(
+): [TagListProps['selectedCategories'], TagListProps['onClick']] => {
+	const [selectedCategories, setSelectedCategories] = useState(() =>
 		data
 			.flatMap((group) => group.items)
 			.filter(({ id, checked }) => id !== 'all' && checked === true),
 	);
 
 	useEffect(() => {
+		console.log('TESTE');
 		setSelectedCategories(
 			data
 				.flatMap((group) => group.items)
@@ -23,7 +24,7 @@ export const useTagList = (
 		);
 	}, [data, selectedCategories]);
 
-	const onRemoved = useCallback(
+	const onClick = useCallback(
 		(category: CategoryDropdownItem) =>
 			setSelectedCategories((prev) => {
 				const changedItem = prev.find(({ id }) => id === category.id);
@@ -37,5 +38,5 @@ export const useTagList = (
 		[],
 	);
 
-	return [selectedCategories, onRemoved];
+	return [selectedCategories, onClick];
 };
