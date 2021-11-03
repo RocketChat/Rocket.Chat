@@ -36,7 +36,6 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
-
 	const user = useUser() as IOmnichannelAgent;
 
 	const agentAvailable = user?.statusLivechat === 'available';
@@ -51,6 +50,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const [voipUser, setVoipUser] = useState<SimpleVoipUser | undefined>(undefined);
 
 	const accessible = hasAccess && omniChannelEnabled;
+	const iceServersSetting: any = useSetting('WebRTC_Servers');
 
 	useEffect(() => {
 		if (!accessible) {
@@ -69,11 +69,31 @@ const OmnichannelProvider: FC = ({ children }) => {
 					extension,
 				})) as unknown as IExtensionConfig;
 				setExtensionConfig(extensionConfig);
+				const iceServers: Array<object> = [];
+				if (iceServersSetting && iceServersSetting.trim() !== '') {
+					const serversListStr = iceServersSetting.replace(/\s/g, '');
+					const serverList = serversListStr.split(',');
+					serverList.forEach((server: any) => {
+						server = server.split('@');
+						const serverConfig: any = {
+							urls: server.pop(),
+						};
+						if (server.length === 1) {
+							server = server[0].split(':');
+							serverConfig.username = decodeURIComponent(server[0]);
+							serverConfig.credential = decodeURIComponent(server[1]);
+						}
+						iceServers.push(serverConfig);
+					});
+				}
+				loggerRef.current.debug(JSON.stringify(iceServers));
+
 				voipUser = new SimpleVoipUser(
 					extensionConfig.extension,
 					extensionConfig.password,
 					extensionConfig.sipRegistrar,
 					extensionConfig.websocketUri,
+					iceServers,
 					CallType.AUDIO_VIDEO,
 				);
 				await voipUser.initUserAgent();
@@ -97,7 +117,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		if (voipCallAvailable) {
 			initVoipLib();
 		}
-	}, [accessible, getRoutingConfig, omnichannelRouting, voipCallAvailable]);
+	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, voipCallAvailable]);
 
 	const enabled = accessible && !!user && !!routeConfig && !!extensionConfig && !!voipUser;
 	const manuallySelected =

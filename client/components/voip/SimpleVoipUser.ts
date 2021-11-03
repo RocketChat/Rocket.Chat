@@ -50,6 +50,8 @@ export class SimpleVoipUser
 
 	mediaStreamRendered?: IMediaStreamRenderer;
 
+	iceServers: Array<object>;
+
 	config: VoIPUserConfiguration = {};
 
 	voipEventEmitter: Emitter;
@@ -61,6 +63,7 @@ export class SimpleVoipUser
 		password: string,
 		registrar: string,
 		webSocketPath: string,
+		iceServers: Array<object>,
 		callType?: CallType,
 		mediaStreamRendered?: IMediaStreamRenderer,
 	) {
@@ -75,6 +78,7 @@ export class SimpleVoipUser
 		this.callType = callType;
 		this.mediaStreamRendered = mediaStreamRendered;
 		this.voipEventEmitter = new Emitter();
+		this.iceServers = iceServers;
 		this.logger = new ClientLogger('SimpleVoipUser');
 	}
 
@@ -161,13 +165,7 @@ export class SimpleVoipUser
 
 		this.config.enableVideo = this.callType === CallType.AUDIO_VIDEO;
 		this.config.connectionDelegate = this;
-		/**
-		 * Note : Following hardcoding needs to be removed. Where to get this data from, needs to
-		 * be decided. Administration -> RateLimiter -> WebRTC has a setting for stun/turn servers.
-		 * Nevertheless, whether it is configurebla by agent or not is to be found out.
-		 * Agent will control these settings.
-		 */
-		this.config.iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+		this.config.iceServers = this.iceServers;
 		this.userHandler = new VoIPUser(this.config, this, this, this, this.mediaStreamRendered);
 		await this.userHandler.init();
 	}
