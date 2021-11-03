@@ -130,9 +130,9 @@ const CannedResponsesRoute: FC = () => {
 				<GenericTable.HeaderCell
 					key={'sharing'}
 					direction={sort[1]}
-					active={sort[0] === 'sharing'}
+					active={sort[0] === 'scope'}
 					onClick={onHeaderClick}
-					sort='sharing'
+					sort='scope'
 				>
 					{t('Sharing')}
 				</GenericTable.HeaderCell>,
@@ -148,9 +148,9 @@ const CannedResponsesRoute: FC = () => {
 				<GenericTable.HeaderCell
 					key={'createdAt'}
 					direction={sort[1]}
-					active={sort[0] === 'createdAt'}
+					active={sort[0] === '_createdAt'}
 					onClick={onHeaderClick}
-					sort='createdAt'
+					sort='_createdAt'
 				>
 					{t('Created_at')}
 				</GenericTable.HeaderCell>,
