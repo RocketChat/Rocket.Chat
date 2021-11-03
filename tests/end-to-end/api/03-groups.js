@@ -39,7 +39,6 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
-					group._id = res.body.group._id;
 				});
 		});
 
@@ -60,7 +59,6 @@ describe('[Groups]', function() {
 					expect(res.body).to.have.nested.property('group.t', 'p');
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 					expect(res.body).to.have.nested.property('group.encrypted', true);
-					group._id = res.body.group._id;
 				});
 		});
 
@@ -79,7 +77,6 @@ describe('[Groups]', function() {
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.msgs', 0);
 						expect(res.body).to.have.nested.property('group.encrypted', true);
-						group._id = res.body.group._id;
 					});
 			});
 		});
