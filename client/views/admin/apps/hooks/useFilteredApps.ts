@@ -1,8 +1,9 @@
 import { useContext } from 'react';
 
 import { AppsContext } from '../AppsContext';
+import { filterAppByCategories } from '../helpers/filterAppByCategories';
 import { App } from '../types';
-
+// TODO: memoize app list if props don't change
 export const useFilteredApps = ({
 	filterFunction = (text: string): ((app: App) => boolean) => {
 		if (!text) {
@@ -13,6 +14,7 @@ export const useFilteredApps = ({
 	text,
 	sort: [, sortDirection],
 	current,
+	categories = [],
 	itemsPerPage,
 }: {
 	filterFunction: (text: string) => (app: App) => boolean;
@@ -20,6 +22,7 @@ export const useFilteredApps = ({
 	sort: [string, 'asc' | 'desc'];
 	current: number;
 	itemsPerPage: number;
+	categories: string[];
 	apps: App[];
 }): [App[] | null, number] => {
 	const { apps } = useContext(AppsContext);
@@ -28,7 +31,9 @@ export const useFilteredApps = ({
 		return [null, 0];
 	}
 
-	const filtered = apps.filter(filterFunction(text));
+	const filtered = apps
+		.filter((app) => filterAppByCategories(app, categories))
+		.filter(filterFunction(text));
 	if (sortDirection === 'desc') {
 		filtered.reverse();
 	}

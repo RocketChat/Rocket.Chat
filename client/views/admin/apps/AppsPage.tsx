@@ -11,7 +11,7 @@ import MarketplaceTable from './MarketplaceTable';
 
 type AppsPageProps = {
 	isMarketPlace: boolean;
-	context: string;
+	context: 'installed' | '';
 };
 
 const AppsPage = ({ isMarketPlace, context }: AppsPageProps): ReactElement => {
