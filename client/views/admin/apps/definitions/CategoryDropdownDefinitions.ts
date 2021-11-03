@@ -14,3 +14,4 @@ export type CategoryDropDownListProps = {
 };
 
 export type CategoryOnSelected = (item: CategoryDropdownItem) => void;
+export type CategoryOnRemoved = (category: CategoryDropdownItem) => void;

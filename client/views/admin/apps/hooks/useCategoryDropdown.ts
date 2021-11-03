@@ -15,9 +15,9 @@ export const useCategoryDropdown = (
 			setData((prev) => {
 				const items = prev.flatMap((group) => group.items);
 
-				const itemsWithoutAll = items.filter((item) => item.id !== 'all');
-
+				const itemsWithoutAll = items.filter(({ id }) => id !== 'all');
 				const itemAll = items.find(({ id }) => id === 'all');
+				const itemPrev = items.find(({ id }) => id === item.id);
 
 				if (item.id === 'all') {
 					itemsWithoutAll.forEach((i) => {
@@ -25,7 +25,6 @@ export const useCategoryDropdown = (
 					});
 				}
 
-				const itemPrev = prev.flatMap((group) => group.items).find(({ id }) => id === item.id);
 				if (itemPrev) {
 					itemPrev.checked = !itemPrev.checked;
 				}
