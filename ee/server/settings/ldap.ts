@@ -221,7 +221,7 @@ export function addSettings(): void {
 				this.add('LDAP_Teams_Name_Field', 'ou,cn', {
 					type: 'string',
 					enableQuery: enableQueryTeams,
-					invalidValue: 'ou,cn',
+					invalidValue: '',
 				});
 
 				this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=#{userdn}))', {
