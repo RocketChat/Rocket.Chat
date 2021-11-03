@@ -227,7 +227,7 @@ export function addSettings(): void {
 				this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=#{userdn}))', {
 					type: 'string',
 					enableQuery: enableQueryTeams,
-					invalidValue: '(&(ou=*)(uniqueMember=#{userdn}))',
+					invalidValue: '',
 				});
 			});
 		});
