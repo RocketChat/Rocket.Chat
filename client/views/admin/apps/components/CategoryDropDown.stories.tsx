@@ -64,7 +64,7 @@ export const List: Story = () => {
 
 export const Default: Story = () => {
 	const [data, onSelected] = useCategoryDropdown(testGroup);
-	const [selectedCategories, onRemoved] = useTagList(testGroup);
+	const [selectedCategories, onClick] = useTagList(data);
 	return (
 		<>
 			<ButtonGroup>
@@ -72,7 +72,7 @@ export const Default: Story = () => {
 				<CategoryDropDown small {...{ data, onSelected }} />
 				<CategoryDropDown {...{ data, onSelected }} />
 			</ButtonGroup>
-			<TagList {...{ selectedCategories, onRemoved }} />
+			<TagList {...{ selectedCategories, onClick }} />
 		</>
 	);
 };

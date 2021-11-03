@@ -3,19 +3,11 @@ import React, { FC } from 'react';
 
 import { TagListProps } from '../definitions/TagListDefinitions';
 
-const TagList: FC<TagListProps> = ({ selectedCategories, onRemoved }) => (
+const TagList: FC<TagListProps> = ({ selectedCategories, onClick }) => (
 	<>
 		{selectedCategories &&
 			selectedCategories.map((category) => (
-				<Chip
-					key={category.id}
-					display='inline'
-					mie='x6'
-					mb='x6'
-					bg='#EEEFF1'
-					borderRadius='2px'
-					onClick={(): void => onRemoved(category)}
-				>
+				<Chip key={category.id} onClick={(): void => onClick(category)}>
 					{category.label}
 				</Chip>
 			))}
