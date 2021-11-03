@@ -32,6 +32,10 @@ API.v1.addRoute('livechat/room.onHold', { authRequired: true }, {
 			return API.v1.failure('Room is already On-Hold');
 		}
 
+		if (!room.open) {
+			return API.v1.failure('Room cannot be placed on hold after being closed');
+		}
+
 		const user = Meteor.user();
 		if (!user) {
 			return API.v1.failure('Invalid user');

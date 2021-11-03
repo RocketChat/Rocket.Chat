@@ -1,5 +1,3 @@
-import { Promise } from 'meteor/promise';
-
 import { onLicense } from '../../license/server';
 import { overwriteClassOnLicense } from '../../license/server/license';
 import { SpotlightEnterprise } from './EESpotlight';
