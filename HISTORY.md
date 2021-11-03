@@ -1,4 +1,458 @@
 
+# 4.1.0
+`2021-10-27  ·  1 🎉  ·  4 🚀  ·  25 🐛  ·  38 🔍  ·  23 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🎉 New features
+
+
+- Stream to get individual presence updates ([#22950](https://github.com/RocketChat/Rocket.Chat/pull/22950))
+
+### 🚀 Improvements
+
+
+- Add markdown to custom fields in user Info ([#20947](https://github.com/RocketChat/Rocket.Chat/pull/20947) by [@yash-rajpal](https://github.com/yash-rajpal))
+
+  Added markdown to custom fields to render links
+
+- Allow Omnichannel to handle huge queues  ([#23392](https://github.com/RocketChat/Rocket.Chat/pull/23392))
+
+- Make Livechat Instructions setting multi-line ([#23515](https://github.com/RocketChat/Rocket.Chat/pull/23515))
+
+  Since now we're supporting markdown text on this field (via this PR   - https://github.com/RocketChat/Rocket.Chat.Livechat/pull/648), it would be nice to make this setting multiline so users can have more space to edit the text
+  ![image](https://user-images.githubusercontent.com/34130764/138146712-13e4968b-5312-4d53-b44c-b5699c5e49c1.png)
+
+- optimized groups.listAll response time ([#22941](https://github.com/RocketChat/Rocket.Chat/pull/22941))
+
+  groups.listAll endpoint was having performance issues, specially when the total number of groups was high. This happened because the endpoint was loading all objects in memory then using splice to paginate, instead of paginating beforehand.
+
+  Considering 70k groups, this was the performance improvement:
+
+  before
+  ![image](https://user-images.githubusercontent.com/28611993/129601314-bdf89337-79fa-4446-9f44-95264af4adb3.png)
+
+  after
+  ![image](https://user-images.githubusercontent.com/28611993/129601358-5872e166-f923-4c1c-b21d-eb9507365ecf.png)
+
+### 🐛 Bug fixes
+
+
+- **APPS:** Communication problem when updating and uninstalling apps in cluster ([#23418](https://github.com/RocketChat/Rocket.Chat/pull/23418))
+
+  - Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.  
+  - Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.
+
+- **ENTERPRISE:** Omnichannel agent is not leaving the room when a forwarded chat is queued ([#23404](https://github.com/RocketChat/Rocket.Chat/pull/23404))
+
+- Admins can't update or reset user avatars when the "Allow User Avatar Change" setting is off ([#23228](https://github.com/RocketChat/Rocket.Chat/pull/23228))
+
+  - Allow admins (or any other user with the `edit-other-user-avatar` permission) to update or reset user avatars even when the "Allow User Avatar Change" setting is off.
+
+- Attachment buttons overlap in mobile view ([#23377](https://github.com/RocketChat/Rocket.Chat/pull/23377) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+- Avoid last admin deactivate itself ([#22949](https://github.com/RocketChat/Rocket.Chat/pull/22949))
+
+  Co-authored-by: @Kartik18g
+
+- BigBlueButton integration error due to missing file import ([#23366](https://github.com/RocketChat/Rocket.Chat/pull/23366) by [@wolbernd](https://github.com/wolbernd))
+
+  Fixes BigBlueButton integration
+
+- Delay start of email inbox ([#23521](https://github.com/RocketChat/Rocket.Chat/pull/23521))
+
+- imported migration v240 ([#23374](https://github.com/RocketChat/Rocket.Chat/pull/23374))
+
+- LDAP not stoping after wrong password ([#23382](https://github.com/RocketChat/Rocket.Chat/pull/23382))
+
+- Markdown quote message style ([#23462](https://github.com/RocketChat/Rocket.Chat/pull/23462))
+
+  Before:
+  ![image](https://user-images.githubusercontent.com/17487063/137496669-3abecab4-cf90-45cb-8b1b-d9411a5682dd.png)
+
+  After:
+  ![image](https://user-images.githubusercontent.com/17487063/137496905-fd727f90-f707-4ec6-8139-ba2eb1a2146e.png)
+
+- MONGO_OPTIONS being ignored for oplog connection ([#23314](https://github.com/RocketChat/Rocket.Chat/pull/23314) by [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+
+- MongoDB deprecation link ([#23381](https://github.com/RocketChat/Rocket.Chat/pull/23381))
+
+- OAuth login not working on mobile app ([#23541](https://github.com/RocketChat/Rocket.Chat/pull/23541))
+
+- Omni-Webhook's retry mechanism going in infinite loop ([#23394](https://github.com/RocketChat/Rocket.Chat/pull/23394))
+
+- Prevent starting Omni-Queue if Omnichannel is disabled ([#23396](https://github.com/RocketChat/Rocket.Chat/pull/23396))
+
+  Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.
+
+- Queue error handling and unlocking behavior ([#23522](https://github.com/RocketChat/Rocket.Chat/pull/23522))
+
+- Read only description in team creation ([#23213](https://github.com/RocketChat/Rocket.Chat/pull/23213))
+
+  ![image](https://user-images.githubusercontent.com/27704687/133608433-8ca788a3-71a8-4d40-8c40-8156ab03c606.png)
+
+  ![image](https://user-images.githubusercontent.com/27704687/133608400-4cdc7a67-95e5-46c6-8c65-29ab107cd314.png)
+
+- resumeToken not working ([#23379](https://github.com/RocketChat/Rocket.Chat/pull/23379))
+
+- Rewrite missing webRTC feature ([#23172](https://github.com/RocketChat/Rocket.Chat/pull/23172))
+
+- SAML Users' roles being reset to default on login ([#23411](https://github.com/RocketChat/Rocket.Chat/pull/23411))
+
+  - Remove `roles` field update on `insertOrUpdateSAMLUser` function;  
+  - Add SAML `syncRoles` event;
+
+- Server crashing when Routing method is not available at start ([#23473](https://github.com/RocketChat/Rocket.Chat/pull/23473))
+
+- unwanted toastr error message when deleting user ([#23372](https://github.com/RocketChat/Rocket.Chat/pull/23372))
+
+- useEndpointAction replace by useEndpointActionExperimental ([#23469](https://github.com/RocketChat/Rocket.Chat/pull/23469))
+
+- user/agent upload not working via Apps Engine after 3.16.0 ([#23393](https://github.com/RocketChat/Rocket.Chat/pull/23393))
+
+  Fixes #22974
+
+- Users' `roles` and `type` being reset to default on LDAP DataSync ([#23378](https://github.com/RocketChat/Rocket.Chat/pull/23378))
+
+  - Update `roles` and `type` fields only if they are specified in the data imported from LDAP (otherwise, no changes are applied).
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump url-parse from 1.4.7 to 1.5.3 ([#23376](https://github.com/RocketChat/Rocket.Chat/pull/23376) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Bump: fuselage 0.30.1 ([#23391](https://github.com/RocketChat/Rocket.Chat/pull/23391))
+
+- Chore: clean README ([#23342](https://github.com/RocketChat/Rocket.Chat/pull/23342) by [@AbhJ](https://github.com/AbhJ))
+
+- Chore: Document REST API endpoints (banners) ([#23361](https://github.com/RocketChat/Rocket.Chat/pull/23361))
+
+  Describes endpoints for banners on REST API using a JSDoc annotation compatible with OpenAPI spec.
+
+- Chore: Document REST API endpoints (DNS) ([#23405](https://github.com/RocketChat/Rocket.Chat/pull/23405))
+
+  Describes endpoints for DNS on REST API using a JSDoc annotation compatible with OpenAPI spec.
+
+- Chore: Document REST API endpoints (E2E) ([#23430](https://github.com/RocketChat/Rocket.Chat/pull/23430))
+
+  Describes endpoints for end-to-end encryption on REST API using a JSDoc annotation compatible with OpenAPI spec.
+
+- Chore: Document REST API endpoints (Misc) ([#23428](https://github.com/RocketChat/Rocket.Chat/pull/23428))
+
+  Describes miscellaneous endpoints on REST API using a JSDoc annotation compatible with OpenAPI spec.
+
+- Chore: Ensure all permissions are created up to this point ([#23514](https://github.com/RocketChat/Rocket.Chat/pull/23514))
+
+- Chore: Fix some TS warnings ([#23524](https://github.com/RocketChat/Rocket.Chat/pull/23524))
+
+- Chore: Fixed a Typo in 11-admin.js test ([#23355](https://github.com/RocketChat/Rocket.Chat/pull/23355) by [@badbart](https://github.com/badbart))
+
+- Chore: Improve watch OAuth settings logic ([#23505](https://github.com/RocketChat/Rocket.Chat/pull/23505))
+
+  Just prevent to perform 200 deletions for registers that not even exist
+
+- Chore: Make omnichannel settings dependent on omnichannel being enabled ([#23495](https://github.com/RocketChat/Rocket.Chat/pull/23495))
+
+- Chore: Migrate some React components/hooks to TypeScript ([#23370](https://github.com/RocketChat/Rocket.Chat/pull/23370))
+
+  Just low-hanging fruits.
+
+- Chore: Move `addMinutesToADate` helper ([#23490](https://github.com/RocketChat/Rocket.Chat/pull/23490))
+
+- Chore: Move `isEmail` helper ([#23489](https://github.com/RocketChat/Rocket.Chat/pull/23489))
+
+- Chore: Move `isJSON` helper ([#23491](https://github.com/RocketChat/Rocket.Chat/pull/23491))
+
+- Chore: Move components away from /app/ ([#23360](https://github.com/RocketChat/Rocket.Chat/pull/23360))
+
+  We currently do NOT recommend placing React components under `/app`.
+
+- Chore: Partially migrate 2FA client code to TypeScript ([#23419](https://github.com/RocketChat/Rocket.Chat/pull/23419))
+
+  Additionally, hides `toastr` behind an module to handle UI's toast notifications.
+
+- Chore: Remove dangling README file ([#23385](https://github.com/RocketChat/Rocket.Chat/pull/23385))
+
+  Removes the elderly `server/restapi/README.md`.
+
+- Chore: Replace `promises` helper ([#23488](https://github.com/RocketChat/Rocket.Chat/pull/23488))
+
+- Chore: Startup Time ([#23210](https://github.com/RocketChat/Rocket.Chat/pull/23210))
+
+  The settings logic has been improved as a whole.
+
+  All the logic to get the data from the env var was confusing.
+
+  Setting default values was tricky to understand.
+
+  Every time the server booted, all settings were updated and callbacks were called 2x or more (horrible for environments with multiple instances and generating a turbulent startup).
+
+  `Settings.get(......, callback);` was deprecated. We now have better methods for each case.
+
+- Chore: Update Apps-Engine version ([#23375](https://github.com/RocketChat/Rocket.Chat/pull/23375))
+
+- Chore: Update Livechat Package ([#23523](https://github.com/RocketChat/Rocket.Chat/pull/23523))
+
+- Chore: Update pino and pino-pretty ([#23510](https://github.com/RocketChat/Rocket.Chat/pull/23510))
+
+- Chore: Upgrade Storybook ([#23364](https://github.com/RocketChat/Rocket.Chat/pull/23364))
+
+- i18n: Language update from LingoHub 🤖 on 2021-10-18Z ([#23486](https://github.com/RocketChat/Rocket.Chat/pull/23486))
+
+- Merge master into develop & Set version to 4.1.0-develop ([#23362](https://github.com/RocketChat/Rocket.Chat/pull/23362))
+
+- Regression: Debounce call based on params on omnichannel queue dispatch ([#23577](https://github.com/RocketChat/Rocket.Chat/pull/23577))
+
+- Regression: Fix enterprise setting validation ([#23519](https://github.com/RocketChat/Rocket.Chat/pull/23519))
+
+- Regression: Fix user typings style ([#23511](https://github.com/RocketChat/Rocket.Chat/pull/23511))
+
+- Regression: Mail body contains `undefined` text ([#23552](https://github.com/RocketChat/Rocket.Chat/pull/23552))
+
+  ### Before
+  ![image](https://user-images.githubusercontent.com/2263066/138733018-10449892-5c2d-46fb-9355-00e98e0d6c9f.png)
+
+  ### After
+  ![image](https://user-images.githubusercontent.com/2263066/138733074-a1b88a77-bf64-41c3-a6c3-ac9e1cb63de1.png)
+
+- Regression: Prevent settings from getting updated ([#23556](https://github.com/RocketChat/Rocket.Chat/pull/23556))
+
+- Regression: Prevent Settings Unit Test Error  ([#23506](https://github.com/RocketChat/Rocket.Chat/pull/23506))
+
+- Regression: Routing method not available when called from listeners at startup ([#23568](https://github.com/RocketChat/Rocket.Chat/pull/23568))
+
+- Regression: Settings order ([#23528](https://github.com/RocketChat/Rocket.Chat/pull/23528))
+
+- Regression: Waiting_queue setting not being applied due to missing module key ([#23531](https://github.com/RocketChat/Rocket.Chat/pull/23531))
+
+- Regression: watchByRegex without Fibers ([#23529](https://github.com/RocketChat/Rocket.Chat/pull/23529))
+
+- Update the community open call link in README ([#23497](https://github.com/RocketChat/Rocket.Chat/pull/23497))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@AbhJ](https://github.com/AbhJ)
+- [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+- [@badbart](https://github.com/badbart)
+- [@cuonghuunguyen](https://github.com/cuonghuunguyen)
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@wolbernd](https://github.com/wolbernd)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@Sing-Li](https://github.com/Sing-Li)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@ostjen](https://github.com/ostjen)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 4.0.5
+`2021-10-25  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- OAuth login not working on mobile app ([#23541](https://github.com/RocketChat/Rocket.Chat/pull/23541))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.0.5 ([#23554](https://github.com/RocketChat/Rocket.Chat/pull/23554))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 4.0.4
+`2021-10-21  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- Queue error handling and unlocking behavior ([#23522](https://github.com/RocketChat/Rocket.Chat/pull/23522))
+
+- SAML Users' roles being reset to default on login ([#23411](https://github.com/RocketChat/Rocket.Chat/pull/23411))
+
+  - Remove `roles` field update on `insertOrUpdateSAMLUser` function;  
+  - Add SAML `syncRoles` event;
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.0.4 ([#23532](https://github.com/RocketChat/Rocket.Chat/pull/23532))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 4.0.3
+`2021-10-18  ·  2 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- **APPS:** Communication problem when updating and uninstalling apps in cluster ([#23418](https://github.com/RocketChat/Rocket.Chat/pull/23418))
+
+  - Make the hook responsible for receiving app update events inside a cluster fetch the app's package (zip file) in the correct place.  
+  - Also shows a warning message on uninstalls inside a cluster. As there are many servers writing to the same place, some race conditions may occur. This prevents problems related to terminating the process in the middle due to errors being thrown and leaving the server in a faulty state.
+
+- Server crashing when Routing method is not available at start ([#23473](https://github.com/RocketChat/Rocket.Chat/pull/23473))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.0.3 ([#23496](https://github.com/RocketChat/Rocket.Chat/pull/23496))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@thassiov](https://github.com/thassiov)
+
+# 4.0.2
+`2021-10-14  ·  4 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel agent is not leaving the room when a forwarded chat is queued ([#23404](https://github.com/RocketChat/Rocket.Chat/pull/23404))
+
+- Attachment buttons overlap in mobile view ([#23377](https://github.com/RocketChat/Rocket.Chat/pull/23377) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+- Prevent starting Omni-Queue if Omnichannel is disabled ([#23396](https://github.com/RocketChat/Rocket.Chat/pull/23396))
+
+  Whenever the Routing system setting changes, and omnichannel is disabled, then we shouldn't start the queue.
+
+- user/agent upload not working via Apps Engine after 3.16.0 ([#23393](https://github.com/RocketChat/Rocket.Chat/pull/23393))
+
+  Fixes #22974
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 4.0.2 ([#23460](https://github.com/RocketChat/Rocket.Chat/pull/23460) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 4.0.1
+`2021-10-06  ·  7 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.0`
+
+### 🐛 Bug fixes
+
+
+- BigBlueButton integration error due to missing file import ([#23366](https://github.com/RocketChat/Rocket.Chat/pull/23366) by [@wolbernd](https://github.com/wolbernd))
+
+  Fixes BigBlueButton integration
+
+- imported migration v240 ([#23374](https://github.com/RocketChat/Rocket.Chat/pull/23374))
+
+- LDAP not stoping after wrong password ([#23382](https://github.com/RocketChat/Rocket.Chat/pull/23382))
+
+- MongoDB deprecation link ([#23381](https://github.com/RocketChat/Rocket.Chat/pull/23381))
+
+- resumeToken not working ([#23379](https://github.com/RocketChat/Rocket.Chat/pull/23379))
+
+- unwanted toastr error message when deleting user ([#23372](https://github.com/RocketChat/Rocket.Chat/pull/23372))
+
+- Users' `roles` and `type` being reset to default on LDAP DataSync ([#23378](https://github.com/RocketChat/Rocket.Chat/pull/23378))
+
+  - Update `roles` and `type` fields only if they are specified in the data imported from LDAP (otherwise, no changes are applied).
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Update Apps-Engine version ([#23375](https://github.com/RocketChat/Rocket.Chat/pull/23375))
+
+- Release 4.0.1 ([#23386](https://github.com/RocketChat/Rocket.Chat/pull/23386) by [@wolbernd](https://github.com/wolbernd))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@wolbernd](https://github.com/wolbernd)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@ostjen](https://github.com/ostjen)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 # 4.0.0
 `2021-10-01  ·  15 ️️️⚠️  ·  4 🎉  ·  11 🚀  ·  24 🐛  ·  67 🔍  ·  26 👩‍💻👨‍💻`
 
@@ -8733,7 +9187,7 @@
 
 - Slash command preview: Wrong item being selected, Horizontal scroll ([#16750](https://github.com/RocketChat/Rocket.Chat/pull/16750))
 
-- Text formatted to remain within button even on screen resize  ([#14136](https://github.com/RocketChat/Rocket.Chat/pull/14136) by [@Rodriq](https://github.com/Rodriq))
+- Text formatted to remain within button even on screen resize  ([#14136](https://github.com/RocketChat/Rocket.Chat/pull/14136))
 
 - There is no option to pin a thread message by admin ([#16457](https://github.com/RocketChat/Rocket.Chat/pull/16457) by [@ashwaniYDV](https://github.com/ashwaniYDV))
 
@@ -8939,7 +9393,6 @@
 - [@GOVINDDIXIT](https://github.com/GOVINDDIXIT)
 - [@MarcosSpessatto](https://github.com/MarcosSpessatto)
 - [@Nikhil713](https://github.com/Nikhil713)
-- [@Rodriq](https://github.com/Rodriq)
 - [@aKn1ghtOut](https://github.com/aKn1ghtOut)
 - [@antkaz](https://github.com/antkaz)
 - [@aryamanpuri](https://github.com/aryamanpuri)
@@ -8967,6 +9420,7 @@
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@PrajvalRaval](https://github.com/PrajvalRaval)
+- [@Rodriq](https://github.com/Rodriq)
 - [@Sing-Li](https://github.com/Sing-Li)
 - [@d-gubert](https://github.com/d-gubert)
 - [@engelgabriel](https://github.com/engelgabriel)
@@ -14727,7 +15181,7 @@
 <summary>🔍 Minor changes</summary>
 
 
-- Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227))
+- Add reetp to the issues' bot whitelist ([#12227](https://github.com/RocketChat/Rocket.Chat/pull/12227) by [@theorenck](https://github.com/theorenck))
 
 - Fix: Remove semver satisfies from Apps details that is already done my marketplace ([#12268](https://github.com/RocketChat/Rocket.Chat/pull/12268))
 
@@ -14735,7 +15189,7 @@
 
 - Regression: fix modal submit ([#12233](https://github.com/RocketChat/Rocket.Chat/pull/12233))
 
-- Release 0.70.1 ([#12270](https://github.com/RocketChat/Rocket.Chat/pull/12270) by [@Hudell](https://github.com/Hudell) & [@edzluhan](https://github.com/edzluhan))
+- Release 0.70.1 ([#12270](https://github.com/RocketChat/Rocket.Chat/pull/12270) by [@Hudell](https://github.com/Hudell) & [@edzluhan](https://github.com/edzluhan) & [@theorenck](https://github.com/theorenck))
 
 </details>
 
@@ -14745,6 +15199,7 @@
 - [@cardoso](https://github.com/cardoso)
 - [@edzluhan](https://github.com/edzluhan)
 - [@kaiiiiiiiii](https://github.com/kaiiiiiiiii)
+- [@theorenck](https://github.com/theorenck)
 - [@timkinnane](https://github.com/timkinnane)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
@@ -14754,7 +15209,6 @@
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tassoevan](https://github.com/tassoevan)
-- [@theorenck](https://github.com/theorenck)
 
 # 0.70.0
 `2018-09-28  ·  2 ️️️⚠️  ·  18 🎉  ·  3 🚀  ·  35 🐛  ·  19 🔍  ·  32 👩‍💻👨‍💻`
