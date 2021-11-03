@@ -1,10 +1,10 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
 import { Story } from '@storybook/react';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
-import { useCategoryDropdown } from '../hooks/useCategoryDropdown';
-import { useTagList } from '../hooks/useTagList';
+import { useCategoryTagList } from '../hooks/useCategoryTagList';
+import { useCategoryToggle } from '../hooks/useCategoryToggle';
 import CategoryDropDown from './CategoryDropDown';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
@@ -57,22 +57,27 @@ const testGroup: CategoryDropDownListProps['groups'] = [
 
 export const Achor: Story = () => <CategoryDropDownAnchor />;
 export const List: Story = () => {
-	const [data, onSelected] = useCategoryDropdown(testGroup);
+	const [data, setData] = useState(() => testGroup);
+
+	const onSelected = useCategoryToggle(setData);
 
 	return <CategoryDropDownList groups={data} onSelected={onSelected} />;
 };
 
 export const Default: Story = () => {
-	const [data, onSelected] = useCategoryDropdown(testGroup);
-	const [selectedCategories, onClick] = useTagList(data);
+	const [data, setData] = useState(() => testGroup);
+
+	const onSelected = useCategoryToggle(setData);
+	const selectedCategories = useCategoryTagList(data);
+
 	return (
 		<>
 			<ButtonGroup>
-				<CategoryDropDown mini {...{ data, onSelected }} />
-				<CategoryDropDown small {...{ data, onSelected }} />
-				<CategoryDropDown {...{ data, onSelected }} />
+				<CategoryDropDown mini data={data} onSelected={onSelected} />
+				<CategoryDropDown small data={data} onSelected={onSelected} />
+				<CategoryDropDown data={data} onSelected={onSelected} />
 			</ButtonGroup>
-			<TagList {...{ selectedCategories, onClick }} />
+			<TagList categories={selectedCategories} onClick={onSelected} />
 		</>
 	);
 };

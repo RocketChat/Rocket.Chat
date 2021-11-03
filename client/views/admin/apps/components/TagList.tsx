@@ -1,13 +1,19 @@
 import { Chip } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
-import { TagListProps } from '../definitions/TagListDefinitions';
+import {
+	CategoryDropdownItem,
+	CategoryDropDownListProps,
+} from '../definitions/CategoryDropdownDefinitions';
 
-const TagList: FC<TagListProps> = ({ selectedCategories, onClick }) => (
+const TagList: FC<{
+	categories: (CategoryDropdownItem & { checked: true })[];
+	onClick: CategoryDropDownListProps['onSelected'];
+}> = ({ categories, onClick }) => (
 	<>
-		{selectedCategories &&
-			selectedCategories.map((category) => (
-				<Chip key={category.id} onClick={(): void => onClick(category)}>
+		{categories &&
+			categories.map((category) => (
+				<Chip key={category.id} onClick={(): void => onClick(category)} disabled={undefined}>
 					{category.label}
 				</Chip>
 			))}

@@ -1,15 +1,13 @@
-import { useCallback, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 
 import {
 	CategoryDropdownItem,
 	CategoryDropDownListProps,
 } from '../definitions/CategoryDropdownDefinitions';
 
-export const useCategoryDropdown = (
-	originalData: CategoryDropDownListProps['groups'],
-): [CategoryDropDownListProps['groups'], CategoryDropDownListProps['onSelected']] => {
-	const [data, setData] = useState(originalData);
-
+export const useCategoryToggle = (
+	setData: Dispatch<SetStateAction<CategoryDropDownListProps['groups']>>,
+): CategoryDropDownListProps['onSelected'] => {
 	const onSelected = useCallback(
 		(item: CategoryDropdownItem) =>
 			setData((prev) => {
@@ -35,7 +33,8 @@ export const useCategoryDropdown = (
 
 				return [...prev];
 			}),
-		[],
+		[setData],
 	);
-	return [data, onSelected];
+
+	return onSelected;
 };
