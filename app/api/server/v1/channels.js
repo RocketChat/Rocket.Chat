@@ -620,7 +620,9 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 
 		// Special check for the permissions
 
-		if (!canAccessRoom(findResult._id, this.userId)){
+		const room = Meteor.call('canAccessRoom', findResult._id, this.userId);
+
+		if (!room) {
 			return API.v1.unauthorized();
 		}
 
