@@ -262,7 +262,7 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
-				system: false,
+				livechatStatusSystemModified: false,
 			},
 		};
 
