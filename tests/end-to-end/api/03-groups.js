@@ -25,7 +25,7 @@ describe('[Groups]', function() {
 
 	before((done) => getCredentials(done));
 
-	describe.only('/groups.create', () => {
+	describe('/groups.create', () => {
 		it('should create a new group', async () => {
 			await request.post(api('groups.create'))
 				.set(credentials)
