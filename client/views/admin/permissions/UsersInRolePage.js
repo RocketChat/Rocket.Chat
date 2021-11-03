@@ -4,11 +4,12 @@ import React, { useState, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import RoomAutoComplete from '../../../components/RoomAutoComplete';
-import UserAutoComplete from '../../../components/UserAutoComplete';
+import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
+import { useForm } from '../../../hooks/useForm';
 import UsersInRoleTableContainer from './UsersInRoleTableContainer';
 
 const UsersInRolePage = ({ data }) => {
@@ -17,9 +18,12 @@ const UsersInRolePage = ({ data }) => {
 
 	const reload = useRef();
 
-	const [user, setUser] = useState('');
 	const [rid, setRid] = useState();
 	const [userError, setUserError] = useState();
+
+	const { values, handlers } = useForm({ users: [] });
+	const { users } = values;
+	const { handleUsers } = handlers;
 
 	const { _id, name, description } = data;
 
@@ -35,26 +39,29 @@ const UsersInRolePage = ({ data }) => {
 	});
 
 	const handleAdd = useMutableCallback(async () => {
-		if (!user) {
+		if (users.length === 0) {
 			return setUserError(t('User_cant_be_empty'));
 		}
 
 		try {
-			await addUser({ roleName: _id, username: user, roomId: rid });
-			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser();
-			reload.current();
+			users.map(async (u) => {
+				await addUser({ roleName: _id, username: u, roomId: rid });
+				dispatchToastMessage({ type: 'success', message: t('User_added') });
+				reload.current();
+			});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleUserChange = useMutableCallback((user) => {
-		if (user !== '') {
-			setUserError();
+	const handleUserChange = useMutableCallback((value, action) => {
+		if (!action) {
+			if (users.includes(value)) {
+				return;
+			}
+			return handleUsers([...users, value]);
 		}
-
-		return setUser(user);
+		handleUsers(users.filter((current) => current !== value));
 	});
 
 	return (
@@ -78,14 +85,14 @@ const UsersInRolePage = ({ data }) => {
 						<Field>
 							<Field.Label>{t('Add_user')}</Field.Label>
 							<Field.Row>
-								<UserAutoComplete
-									value={user}
+								<UserAutoCompleteMultiple
+									value={users}
 									onChange={handleUserChange}
 									placeholder={t('User')}
 								/>
 
 								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleAdd}>
+									<Button primary onClick={handleAdd} disabled={!users.length}>
 										{t('Add')}
 									</Button>
 								</ButtonGroup>
