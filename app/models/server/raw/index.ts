@@ -72,6 +72,7 @@ import { ImportDataRaw } from './ImportData';
 import { OEmbedCacheRaw } from './OEmbedCache';
 import { InvitesRaw } from './Invites';
 import { AnalyticsRaw } from './Analytics';
+import { CredentialTokensRaw } from './CredentialTokens';
 
 const trashCollection = trash.rawCollection();
 
@@ -117,6 +118,7 @@ export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trash
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
 export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
+export const CredentialTokens = new CredentialTokensRaw(db.collection(`${ prefix }credential_tokens`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

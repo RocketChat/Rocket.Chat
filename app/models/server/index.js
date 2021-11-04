@@ -18,7 +18,6 @@ import CustomUserStatus from './models/CustomUserStatus';
 import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
-import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
 import SmarshHistory from './models/SmarshHistory';
@@ -65,7 +64,6 @@ export {
 	Imports,
 	Integrations,
 	IntegrationHistory,
-	CredentialTokens,
 	EmojiCustom,
 	OAuthApps,
 	SmarshHistory,
