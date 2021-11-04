@@ -22,8 +22,8 @@ export const useFilteredApps = ({
 	sort: [string, 'asc' | 'desc'];
 	current: number;
 	itemsPerPage: number;
-	categories: string[];
-	apps: App[];
+	categories?: string[];
+	// apps: App[];
 }): [App[] | null, number] => {
 	const { apps } = useContext(AppsContext);
 

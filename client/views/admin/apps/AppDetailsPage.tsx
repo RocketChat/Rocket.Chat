@@ -12,7 +12,7 @@ import SettingsDisplay from './SettingsDisplay';
 import { handleAPIError } from './helpers';
 import { useAppInfo } from './hooks/useAppInfo';
 
-function AppDetailsPage({ id }) {
+const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 	const t = useTranslation();
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -23,7 +23,7 @@ function AppDetailsPage({ id }) {
 
 	const [currentRouteName] = useCurrentRoute();
 	const router = useRoute(currentRouteName);
-	const handleReturn = () => router.push({});
+	const handleReturn = (): void => router.push({});
 
 	const isLoading = Object.values(data).length === 0;
 
@@ -80,6 +80,6 @@ function AppDetailsPage({ id }) {
 			</Page.ScrollableContentWithShadow>
 		</Page>
 	);
-}
+};
 
 export default AppDetailsPage;

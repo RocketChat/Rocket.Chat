@@ -6,10 +6,10 @@ import { useTranslation } from '../contexts/TranslationContext';
 type FilterByTextProps = {
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
-	displayButton: boolean;
-	textButton: string;
-	onButtonClick: () => void;
-	inputRef: () => void;
+	displayButton?: boolean;
+	textButton?: string;
+	onButtonClick?: () => void;
+	inputRef?: () => void;
 };
 
 const FilterByText: FC<FilterByTextProps> = ({

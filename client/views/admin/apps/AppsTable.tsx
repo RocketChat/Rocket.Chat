@@ -1,26 +1,29 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useContext } from 'react';
+import React, { useState, FC, ReactNode } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericTable from '../../../components/GenericTable';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
-import { AppsContext } from './AppsContext';
-import MarketplaceRow from './MarketplaceRow';
+import AppRow from './AppRow';
 import { useFilteredApps } from './hooks/useFilteredApps';
+import { App } from './types';
 
-const filterFunction =
-	(text) =>
-	({ name, marketplace }) =>
-		marketplace !== false && name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+const filterFunction = (text: string): ((app: App) => boolean) => {
+	if (!text) {
+		return (app): boolean => app.installed;
+	}
 
-function MarketplaceTable() {
+	return (app): boolean => app.installed && app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+};
+
+const AppsTable: FC = () => {
 	const t = useTranslation();
 
-	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint([800, 600], 200);
+	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
 
-	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
-	const [sort, setSort] = useState(['name', 'asc']);
+	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
+	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(() => ['name', 'asc']);
 
 	const { text, current, itemsPerPage } = params;
 
@@ -32,10 +35,9 @@ function MarketplaceTable() {
 		sort: useDebouncedValue(sort, 200),
 	});
 
-	const { finishedLoading } = useContext(AppsContext);
-
 	const [sortBy, sortDirection] = sort;
-	const onHeaderCellClick = (id) => {
+
+	const handleHeaderCellClick = (id): void => {
 		setSort(([sortBy, sortDirection]) =>
 			sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc'],
 		);
@@ -49,35 +51,27 @@ function MarketplaceTable() {
 					<GenericTable.HeaderCell
 						direction={sortDirection}
 						active={sortBy === 'name'}
-						onClick={onHeaderCellClick}
 						sort='name'
 						width={onMediumBreakpoint ? 'x240' : 'x180'}
+						onClick={handleHeaderCellClick}
 					>
 						{t('Name')}
 					</GenericTable.HeaderCell>
-					{onLargeBreakpoint && <GenericTable.HeaderCell>{t('Details')}</GenericTable.HeaderCell>}
-					{onMediumBreakpoint && <GenericTable.HeaderCell>{t('Price')}</GenericTable.HeaderCell>}
+					{onMediumBreakpoint && <GenericTable.HeaderCell>{t('Details')}</GenericTable.HeaderCell>}
 					<GenericTable.HeaderCell width='x160'>{t('Status')}</GenericTable.HeaderCell>
 				</>
 			}
-			results={(filteredApps?.length || finishedLoading) && filteredApps}
+			results={filteredApps}
 			total={filteredAppsCount}
-			setParams={setParams}
 			params={params}
-			renderFilter={({ onChange, ...props }) => (
+			setParams={setParams}
+			renderFilter={({ onChange, ...props }): ReactNode => (
 				<FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />
 			)}
 		>
-			{(props) => (
-				<MarketplaceRow
-					key={props.id}
-					medium={onMediumBreakpoint}
-					large={onLargeBreakpoint}
-					{...props}
-				/>
-			)}
+			{(props): ReactNode => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
 		</GenericTable>
 	);
-}
+};
 
-export default MarketplaceTable;
+export default AppsTable;
