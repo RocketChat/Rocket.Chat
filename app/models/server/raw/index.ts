@@ -36,7 +36,6 @@ import IntegrationsModel from '../models/Integrations';
 import { IntegrationsRaw } from './Integrations';
 import EmojiCustomModel from '../models/EmojiCustom';
 import { EmojiCustomRaw } from './EmojiCustom';
-import WebdavAccountsModel from '../models/WebdavAccounts';
 import { WebdavAccountsRaw } from './WebdavAccounts';
 import OAuthAppsModel from '../models/OAuthApps';
 import { OAuthAppsRaw } from './OAuthApps';
@@ -91,7 +90,6 @@ export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.mo
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
 export const Integrations = new IntegrationsRaw(IntegrationsModel.model.rawCollection(), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection(), trashCollection);
-export const WebdavAccounts = new WebdavAccountsRaw(WebdavAccountsModel.model.rawCollection(), trashCollection);
 export const OAuthApps = new OAuthAppsRaw(OAuthAppsModel.model.rawCollection(), trashCollection);
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
@@ -114,6 +112,7 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
 
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }_statistics`), trashCollection);
+export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

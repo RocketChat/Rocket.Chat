@@ -1,6 +1,7 @@
 import {
 	Collection,
 	CollectionInsertOneOptions,
+	CommonOptions,
 	Cursor,
 	DeleteWriteOpResultObject,
 	FilterQuery,
@@ -173,6 +174,10 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
 		const query: object = { _id };
 		return this.col.deleteOne(query);
+	}
+
+	removeOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteOne(filter, options);
 	}
 
 	// Trash
