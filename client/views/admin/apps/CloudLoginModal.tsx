@@ -5,26 +5,26 @@ import { useSetModal } from '../../../contexts/ModalContext';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 
-const CloudLoginModal = (props) => {
+const CloudLoginModal = (): JSX.Element => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const cloudRoute = useRoute('cloud');
 
-	const handleCloseButtonClick = () => {
+	const handleCloseButtonClick = (): void => {
 		setModal(null);
 	};
 
-	const handleCancelButtonClick = () => {
+	const handleCancelButtonClick = (): void => {
 		setModal(null);
 	};
 
-	const handleLoginButtonClick = () => {
+	const handleLoginButtonClick = (): void => {
 		cloudRoute.push();
 		setModal(null);
 	};
 
 	return (
-		<Modal {...props}>
+		<Modal>
 			<Modal.Header>
 				<Icon color='danger' name='info-circled' size={20} />
 				<Modal.Title>{t('Apps_Marketplace_Login_Required_Title')}</Modal.Title>

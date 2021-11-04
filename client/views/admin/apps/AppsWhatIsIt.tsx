@@ -1,5 +1,5 @@
 import { Button, Box, Throbber } from '@rocket.chat/fuselage';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 
 import { Apps } from '../../../../app/apps/client';
 import ExternalLink from '../../../components/ExternalLink';
@@ -10,16 +10,16 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 
 const readMeUrl = 'https://go.rocket.chat/i/developing-an-app';
 
-function AppsWhatIsIt() {
+const AppsWhatIsIt: FC = () => {
 	const t = useTranslation();
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<false | Error>(false);
 
 	const appsRouter = useRoute('admin-marketplace');
 	const enableAppsEngine = useMethod('apps/go-enable');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
 
-	const handleClick = async () => {
+	const handleClick = async (): Promise<void> => {
 		setLoading(true);
 		try {
 			await enableAppsEngine();
@@ -57,6 +57,6 @@ function AppsWhatIsIt() {
 			</Page.ScrollableContent>
 		</Page>
 	);
-}
+};
 
 export default AppsWhatIsIt;
