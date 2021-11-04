@@ -106,6 +106,11 @@ const DefaultAttachment: FC<MessageAttachmentDefault> = (attachment) => {
 								src={attachment.image_url}
 							/>
 						)}
+
+						{attachment.video_url && <Attachment.Video src={attachment.video_url} />}
+
+						{attachment.audio_url && <Attachment.Audio src={attachment.audio_url} />}
+
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

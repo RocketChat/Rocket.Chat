@@ -1,4 +1,6 @@
+import Audio from '../components/Audio';
 import Image from '../components/Image';
+import Video from '../components/Video';
 import Attachment from './Attachment';
 import Author from './Author';
 import AuthorAvatar from './AuthorAvatar';
@@ -18,6 +20,8 @@ import TitleLink from './TitleLink';
 
 export default Object.assign(Attachment, {
 	Image,
+	Video,
+	Audio,
 	Row,
 	Title,
 	Text,
