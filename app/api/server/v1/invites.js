@@ -46,7 +46,7 @@ API.v1.addRoute('validateInviteToken', { authRequired: false }, {
 
 		let valid = true;
 		try {
-			validateInviteToken(token);
+			Promise.await(validateInviteToken(token));
 		} catch (e) {
 			valid = false;
 		}
