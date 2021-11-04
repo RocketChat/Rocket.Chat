@@ -72,6 +72,7 @@ import { initWatchers } from '../../../../server/modules/watchers/watchers.modul
 import ImportDataModel from '../models/ImportData';
 import { ImportDataRaw } from './ImportData';
 import { OEmbedCacheRaw } from './OEmbedCache';
+import { InvitesRaw } from './Invites';
 
 const trashCollection = trash.rawCollection();
 
@@ -115,6 +116,7 @@ const prefix = 'rocketchat_';
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
+export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
