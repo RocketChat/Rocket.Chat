@@ -46,7 +46,6 @@ import { CustomUserStatusRaw } from './CustomUserStatus';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
 import { StatisticsRaw } from './Statistics';
-import NotificationQueueModel from '../models/NotificationQueue';
 import { NotificationQueueRaw } from './NotificationQueue';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
@@ -95,7 +94,6 @@ export const OAuthApps = new OAuthAppsRaw(OAuthAppsModel.model.rawCollection(), 
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
-export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
@@ -115,6 +113,7 @@ const prefix = 'rocketchat_';
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
+export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
