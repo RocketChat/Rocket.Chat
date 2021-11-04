@@ -1,14 +1,15 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { FC, ReactNode } from 'react';
+import React, { FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
 import CallToolBox from './CallToolBox';
+import { ButtonsList } from './hooks/useButtonsLists';
 
-const Header: FC<{ calls: number; state: string; buttonList: Array<ReactNode> }> = ({
-	calls,
-	state,
-	buttonList,
-}) => {
+const Header: FC<{
+	calls: number;
+	state: string;
+	buttonList: ButtonsList;
+}> = ({ calls, state, buttonList }) => {
 	const t = useTranslation();
 	const compactHeaderStates = ['incoming', 'current'];
 	return (

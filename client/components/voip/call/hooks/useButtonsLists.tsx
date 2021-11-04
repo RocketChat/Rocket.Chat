@@ -1,12 +1,18 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { ReactNode } from 'react';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import React, { ReactNode, useState } from 'react';
 
 export type ButtonInfo = {
 	name: string;
-	handler: () => void;
+	handler?: () => void;
 	states: Array<string>;
 	icon: string;
 	label: string;
+};
+
+export type ButtonsList = {
+	buttons: Array<ReactNode>;
+	internalStates: Array<{ id: string; state: boolean }>;
 };
 
 const defaultButtonsList = [
@@ -15,33 +21,28 @@ const defaultButtonsList = [
 		icon: 'customize',
 		label: 'audio-settings',
 		states: ['incoming', 'current', 'disabled'],
-		handler: (): void => {
-			console.log('audio-settings');
-		},
 	},
 
 	{
 		name: 'hold-call',
 		icon: 'pause-unfilled',
 		label: 'hold-call',
-		states: ['incoming', 'current'],
-		handler: (): void => {
-			console.log('hold-call');
-		},
+		states: ['current'],
 	},
 
 	{
 		name: 'mute',
 		icon: 'mic-off',
 		label: 'mute',
-		states: ['incoming', 'current'],
-		handler: (): void => {
-			console.log('mute');
-		},
+		states: ['current'],
 	},
 ];
 
-const renderButtons = (buttonList: Array<ButtonInfo>, currentState: string): Array<ReactNode> =>
+const renderButtons = (
+	buttonList: Array<ButtonInfo>,
+	currentState: string,
+	handlers: Array<{ id: string; handler: () => void }>,
+): Array<ReactNode> =>
 	buttonList
 		.slice(0)
 		.reverse()
@@ -55,7 +56,7 @@ const renderButtons = (buttonList: Array<ButtonInfo>, currentState: string): Arr
 				borderWidth={0}
 				p={0}
 				size={28}
-				onClick={button.handler}
+				onClick={handlers.find((handler) => handler.id === button.name)?.handler || button.handler}
 			>
 				<Icon color='neutral-500-50' size={24} name={button.icon} />
 			</Button>
@@ -64,9 +65,46 @@ const renderButtons = (buttonList: Array<ButtonInfo>, currentState: string): Arr
 export const useButtonsList = (
 	currentState: string,
 	customButtonsList?: Array<ButtonInfo>,
-): Array<ReactNode> =>
+): ButtonsList => {
 	// Returns default buttons list plus custom buttons passed via params
-	renderButtons(
+	const [paused, setPaused] = useState(false);
+	const handlePaused = useMutableCallback(() => {
+		console.log('TODO: ADD VOIP METHODS FOR PAUSE HERE', paused);
+		setPaused(!paused);
+	});
+
+	const [muted, setMuted] = useState(false);
+	const handleMuted = useMutableCallback(() => {
+		console.log('TODO: ADD VOIP METHODS FOR PAUSE HERE', muted);
+		setMuted(!muted);
+	});
+
+	const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+	const handleSettingsModal = (): void => {
+		console.log('TODO: CREATE THE MODAL!');
+		setSettingsModalOpen(!settingsModalOpen);
+	};
+
+	const handlers = [
+		{ id: 'hold-call', handler: handlePaused },
+		{ id: 'audio-settings', handler: handleSettingsModal },
+		{ id: 'mute', handler: handleMuted },
+	];
+
+	const states = [
+		{ id: 'hold-call', state: paused },
+		{ id: 'audio-settings', state: settingsModalOpen },
+		{ id: 'mute', state: muted },
+	];
+
+	const Buttons = renderButtons(
 		customButtonsList ? [...defaultButtonsList, ...customButtonsList] : defaultButtonsList,
 		currentState,
+		handlers,
 	);
+
+	return {
+		buttons: Buttons,
+		internalStates: states,
+	};
+};
