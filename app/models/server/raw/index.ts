@@ -71,6 +71,7 @@ import { api } from '../../../../server/sdk/api';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import ImportDataModel from '../models/ImportData';
 import { ImportDataRaw } from './ImportData';
+import { OEmbedCacheRaw } from './OEmbedCache';
 
 const trashCollection = trash.rawCollection();
 
@@ -111,8 +112,9 @@ export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
 
-export const Statistics = new StatisticsRaw(db.collection(`${ prefix }_statistics`), trashCollection);
+export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
+export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

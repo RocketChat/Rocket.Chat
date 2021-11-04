@@ -6,6 +6,7 @@ import {
 	DeleteWriteOpResultObject,
 	FilterQuery,
 	FindOneOptions,
+	IndexSpecification,
 	InsertOneWriteOpResult,
 	InsertWriteOpResult,
 	ObjectID,
@@ -21,6 +22,10 @@ import {
 } from 'mongodb';
 
 import { setUpdatedAt } from '../lib/setUpdatedAt';
+
+export {
+	IndexSpecification,
+} from 'mongodb';
 
 // [extracted from @types/mongo] TypeScript Omit (Exclude to be specific) does not work for objects with an "any" indexed type, and breaks discriminated unions
 type EnhancedOmit<T, K> = string | number extends keyof T
@@ -59,6 +64,8 @@ const warnFields = process.env.NODE_ENV !== 'production'
 export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBaseRaw<T> {
 	public readonly defaultFields: C;
 
+	protected indexes?: IndexSpecification[];
+
 	protected name: string;
 
 	constructor(
@@ -66,6 +73,10 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		public readonly trash?: Collection<T>,
 	) {
 		this.name = this.col.collectionName.replace(baseName, '');
+
+		if (this.indexes?.length) {
+			this.col.createIndexes(this.indexes);
+		}
 	}
 
 	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
@@ -176,9 +187,14 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.deleteOne(query);
 	}
 
-	removeOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject> {
+	deleteOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject> {
 		return this.col.deleteOne(filter, options);
 	}
+
+	deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject> {
+		return this.col.deleteMany(filter, options);
+	}
+
 
 	// Trash
 	trashFind<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P> | undefined {

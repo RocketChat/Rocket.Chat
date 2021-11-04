@@ -22,7 +22,6 @@ import Invites from './models/Invites';
 import CredentialTokens from './models/CredentialTokens';
 import EmojiCustom from './models/EmojiCustom';
 import OAuthApps from './models/OAuthApps';
-import OEmbedCache from './models/OEmbedCache';
 import SmarshHistory from './models/SmarshHistory';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
@@ -73,7 +72,6 @@ export {
 	CredentialTokens,
 	EmojiCustom,
 	OAuthApps,
-	OEmbedCache,
 	SmarshHistory,
 	LivechatCustomField,
 	LivechatDepartment,

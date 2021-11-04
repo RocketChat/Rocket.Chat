@@ -41,6 +41,6 @@ export class WebdavAccountsRaw extends BaseRaw<T> {
 	}
 
 	removeByUserAndId(_id: string, user_id: string): Promise<DeleteWriteOpResultObject> {
-		return this.removeOne({ _id, user_id });
+		return this.deleteOne({ _id, user_id });
 	}
 }
