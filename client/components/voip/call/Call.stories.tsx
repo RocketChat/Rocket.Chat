@@ -15,14 +15,6 @@ const callData = {
 	host: 'vps-c2120808',
 };
 
-const dataPaused = {
-	callsInQueue: 7,
-	state: 'current',
-	buttonsList: useButtonsList,
-	callTime: '02:29',
-	paused: true,
-};
-
 const dataIncoming = {
 	callsInQueue: 10,
 	state: 'incoming',
