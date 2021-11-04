@@ -10,14 +10,20 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 	MessageReactions,
-	MessageReaction,
 	ReactionEmoji,
 	ReactionCouter,
 	MessagePrivateIndicator,
+	MessageReactionAction,
 } from '@rocket.chat/fuselage';
 import React, { FC, memo } from 'react';
 
-import { IMessage, isDiscussionMessage, isThreadMessage } from '../../../../../definition/IMessage';
+import {
+	IMessage,
+	IMessageReactionsNormalized,
+	isDiscussionMessage,
+	isMessageReactionsNormalized,
+	isThreadMessage,
+} from '../../../../../definition/IMessage';
 import { ISubscription } from '../../../../../definition/ISubscription';
 import Attachments from '../../../../components/Message/Attachments';
 import MessageBodyRender from '../../../../components/Message/MessageBodyRender';
@@ -25,6 +31,7 @@ import Broadcast from '../../../../components/Message/Metrics/Broadcast';
 import Discussion from '../../../../components/Message/Metrics/Discussion';
 import Thread from '../../../../components/Message/Metrics/Thread';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { useTooltipClose, useTooltipOpen } from '../../../../contexts/TooltipContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserId } from '../../../../contexts/UserContext';
 import { useUserData } from '../../../../hooks/useUserData';
@@ -33,6 +40,16 @@ import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji
 import MessageBlock from '../../../blocks/MessageBlock';
 import MessageLocation from '../../../location/MessageLocation';
 import { useMessageActions } from '../../contexts/MessageContext';
+import { MessageReaction } from '../MessageReaction';
+import {
+	useMessageListShowRoles,
+	useMessageListShowUsernames,
+	useOpenEmojiPicker,
+	useReactionsFilter,
+	useReactToMessage,
+	useUserHasReacted,
+} from '../contexts/MessageListContext';
+import { MessageIndicators } from './MessageIndicators';
 import Toolbox from './Toolbox';
 
 const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubscription }> = ({
@@ -48,6 +65,15 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 		formatters,
 	} = useMessageActions();
 
+	const hasReacted = useUserHasReacted(message);
+	const reactToMessage = useReactToMessage(message);
+	const filterReactions = useReactionsFilter(message);
+
+	const openEmojiPicker = useOpenEmojiPicker(message);
+
+	const showRoles = useMessageListShowRoles();
+	const showUsername = useMessageListShowUsernames();
+
 	const meUid = useUserId();
 
 	const user: UserPresence = useUserData(message.u._id) || { ...message.u, roles: [] };
@@ -57,23 +83,25 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{!sequential && message.u.username && (
 					<UserAvatar username={message.u.username} size={'x36'} />
 				)}
+				{sequential && <MessageIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
 				{!sequential && (
 					<MessageHeader>
 						<MessageName data-username={user.username} onClick={openUserCard}>
-							{user.name || user.username}
+							{(showUsername && user.name) || user.username}
 						</MessageName>
-						{user.name && user.name !== user.username && (
+						{!showUsername && user.name && user.name !== user.username && (
 							<MessageUsername data-username={user.username} onClick={openUserCard}>
 								@{user.username}
 							</MessageUsername>
 						)}
-						{Array.isArray(user.roles) && user.roles.length > 0 && (
+						{showRoles && Array.isArray(user.roles) && user.roles.length > 0 && (
 							<MessageRoles>
 								{user.roles.map((role) => (
 									<MessageRole>{role}</MessageRole>
 								))}
+								{message.bot && <MessageRole>{t('Bot')}</MessageRole>}
 							</MessageRoles>
 						)}
 						<MessageTimestamp data-time={message.ts.toISOString()}>
@@ -84,6 +112,7 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 								{t('Only_you_can_see_this_message')}
 							</MessagePrivateIndicator>
 						)}
+						<MessageIndicators message={message} />
 					</MessageHeader>
 				)}
 				<MessageBody>
@@ -101,12 +130,16 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 				{message.reactions && Object.keys(message.reactions).length > 0 && (
 					<MessageReactions>
 						{Object.entries(message.reactions).map(([name, reactions]) => (
-							<MessageReaction key={name}>
-								<ReactionEmoji {...getEmojiClassNameAndDataTitle(name)} />
-								<ReactionCouter counter={reactions.usernames.length} />
-							</MessageReaction>
+							<MessageReaction
+								key={name}
+								counter={reactions.usernames.length}
+								hasReacted={hasReacted}
+								reactToMessage={reactToMessage}
+								name={name}
+								names={filterReactions(name)}
+							/>
 						))}
-						<MessageReactions.Action />
+						<MessageReactionAction onClick={openEmojiPicker} />
 					</MessageReactions>
 				)}
 
@@ -114,13 +147,13 @@ const Message: FC<{ message: IMessage; sequential: boolean; subscription?: ISubs
 					<Thread
 						openThread={openThread}
 						counter={message.tcount}
-						following={message?.replies.indexOf(meUid) > -1}
+						following={Boolean(meUid && message?.replies.indexOf(meUid) > -1)}
 						mid={message._id}
 						rid={message.rid}
 						lm={message.tlm}
-						unread={subscription?.tunread?.includes(message._id)}
-						mention={subscription?.tunreadUser?.includes(message._id)}
-						all={subscription?.tunreadGroup?.includes(message._id)}
+						unread={Boolean(subscription?.tunread?.includes(message._id))}
+						mention={Boolean(subscription?.tunreadUser?.includes(message._id))}
+						all={Boolean(subscription?.tunreadGroup?.includes(message._id))}
 						participants={message?.replies.length}
 					/>
 				)}

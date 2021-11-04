@@ -36,7 +36,6 @@ import './components/selectDropdown.html';
 
 import './components/header/header';
 import './components/tooltip';
-import './lib/Tooltip';
 
 export { ChatMessages } from './lib/chatMessages';
 export { fileUpload } from './lib/fileUpload';

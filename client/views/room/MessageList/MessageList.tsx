@@ -1,5 +1,5 @@
 import { MessageDivider } from '@rocket.chat/fuselage';
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, memo } from 'react';
 
 import { IRoom } from '../../../../definition/IRoom';
 import { useTranslation } from '../../../contexts/TranslationContext';
@@ -12,6 +12,7 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { isMessageUnread } from './lib/isMessageUnread';
+import { MessageListProvider } from './providers/MessageListProvider';
 
 export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const t = useTranslation();
@@ -19,45 +20,49 @@ export const MessageList: FC<{ rid: IRoom['_id'] }> = ({ rid }) => {
 	const subscription = useUserSubscription(rid);
 	const format = useFormatDate();
 	return (
-		<MessageProvider>
-			{messages.map((message, index, arr) => {
-				const previous = arr[index - 1];
+		<MessageListProvider rid={rid}>
+			<MessageProvider>
+				{messages.map((message, index, arr) => {
+					const previous = arr[index - 1];
 
-				const newDay = isMessageNewDay(message, previous);
-				const sequential = isMessageSequential(message, previous);
-				const unread = isMessageUnread(subscription, message);
+					const newDay = isMessageNewDay(message, previous);
+					const sequential = isMessageSequential(message, previous);
+					const unread = isMessageUnread(subscription, message);
 
-				const shouldShowDivider = newDay || unread;
+					const shouldShowDivider = newDay || unread;
 
-				const shouldShowAsSequential = sequential && !newDay;
+					const shouldShowAsSequential = sequential && !newDay;
 
-				const { tmid } = message;
+					const { tmid } = message;
 
-				const MessageTemplate = tmid ? ThreadMessage : Message;
+					const MessageTemplate = tmid ? ThreadMessage : Message;
 
-				return (
-					<Fragment key={message._id}>
-						{shouldShowDivider && (
-							<MessageDivider unreadLabel={unread ? t('Unread_Messages').toLowerCase() : undefined}>
-								{newDay && format(message.ts)}
-							</MessageDivider>
-						)}
-						{!message.t && (
-							<MessageTemplate
-								data-system-message={Boolean(message.t)}
-								data-mid={message._id}
-								data-unread={unread}
-								data-sequential={sequential}
-								sequential={shouldShowAsSequential}
-								message={message}
-								subscription={subscription}
-							/>
-						)}
-					</Fragment>
-				);
-			})}
-		</MessageProvider>
+					return (
+						<Fragment key={message._id}>
+							{shouldShowDivider && (
+								<MessageDivider
+									unreadLabel={unread ? t('Unread_Messages').toLowerCase() : undefined}
+								>
+									{newDay && format(message.ts)}
+								</MessageDivider>
+							)}
+							{!message.t && (
+								<MessageTemplate
+									data-system-message={Boolean(message.t)}
+									data-mid={message._id}
+									data-unread={unread}
+									data-sequential={sequential}
+									sequential={shouldShowAsSequential}
+									message={message}
+									subscription={subscription}
+								/>
+							)}
+						</Fragment>
+					);
+				})}
+			</MessageProvider>
+		</MessageListProvider>
 	);
 };
 
-export default MessageList;
+export default memo(MessageList);

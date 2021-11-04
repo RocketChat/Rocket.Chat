@@ -6,7 +6,6 @@ import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Meteor.startup(function() {
@@ -19,9 +18,8 @@ Meteor.startup(function() {
 			icon: 'bell-off',
 			label: 'Unfollow_message',
 			context: ['message', 'message-mobile', 'threads'],
-			async action() {
-				const { msg } = messageArgs(this);
-				callWithErrorHandling('unfollowMessage', { mid: msg._id }).then(() =>
+			async action(_, { message }) {
+				callWithErrorHandling('unfollowMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_unfollowed_this_message') }),
 				);
 			},

@@ -1,21 +1,12 @@
-import { FC, memo, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-const getModalRoot = (): Element => {
-	const modalRoot = document.getElementById('modal-root');
-	if (modalRoot) {
-		return modalRoot;
-	}
-	const newElement = document.createElement('div');
-
-	newElement.id = 'modal-root';
-
-	document.body.appendChild(newElement);
-	return newElement;
-};
+import { createAnchor } from '../lib/utils/createAnchor';
+import { deleteAnchor } from '../lib/utils/deleteAnchor';
 
 const ModalPortal: FC = ({ children }) => {
-	const [modalRoot] = useState(getModalRoot);
+	const [modalRoot] = useState(() => createAnchor('modal-root'));
+	useEffect(() => (): void => deleteAnchor(modalRoot), [modalRoot]);
 	return createPortal(children, modalRoot);
 };
 

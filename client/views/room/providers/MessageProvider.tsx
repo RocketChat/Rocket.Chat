@@ -19,7 +19,7 @@ const replyBroadcast = () => {
 	console.log('replyBroadcast');
 };
 
-export const MessageProvider: FC<{ broadcast?: boolean }> = ({ broadcast, children }) => {
+export const MessageProvider: FC<{ broadcast?: boolean }> = memo(({ broadcast, children }) => {
 	const messageHeader = useFormatTime();
 	const context = useMemo(
 		() => ({
@@ -40,4 +40,4 @@ export const MessageProvider: FC<{ broadcast?: boolean }> = ({ broadcast, childr
 	);
 
 	return <MessageContext.Provider value={context}>{children}</MessageContext.Provider>;
-};
+});

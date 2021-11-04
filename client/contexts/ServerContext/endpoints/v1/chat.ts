@@ -2,6 +2,17 @@ import type { IMessage } from '../../../../../definition/IMessage';
 import type { IRoom } from '../../../../../definition/IRoom';
 
 export type ChatEndpoints = {
+	'chat.react': {
+		POST: (
+			params: {
+				messageId: IMessage['_id'];
+				shouldReact?: boolean;
+			} & (
+				| { emoji: keyof Required<IMessage>['reactions'] }
+				| { reaction: keyof Required<IMessage>['reactions'] }
+			),
+		) => void;
+	};
 	'chat.getMessage': {
 		GET: (params: { msgId: IMessage['_id'] }) => {
 			message: IMessage;

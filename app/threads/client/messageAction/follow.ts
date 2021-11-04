@@ -5,7 +5,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MessageAction } from '../../../ui-utils/client';
-import { messageArgs } from '../../../ui-utils/client/lib/messageArgs';
 import { roomTypes } from '../../../utils/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
@@ -20,9 +19,8 @@ Meteor.startup(function() {
 			icon: 'bell',
 			label: 'Follow_message',
 			context: ['message', 'message-mobile', 'threads'],
-			async action() {
-				const { msg } = messageArgs(this);
-				callWithErrorHandling('followMessage', { mid: msg._id }).then(() =>
+			async action(_, { message }) {
+				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({ type: 'success', message: TAPi18n.__('You_followed_this_message') }),
 				);
 			},

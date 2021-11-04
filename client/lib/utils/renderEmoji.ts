@@ -15,23 +15,24 @@ export const renderEmoji = (emojiName: string): string | undefined => {
 
 export const getEmojiClassNameAndDataTitle = (
 	emojiName: string,
-): { 'className': string; 'data-title': string; 'children': string } => {
+): { 'className': string; 'name': string; 'data-title': string; 'children': string } => {
 	const html = renderEmoji(emojiName);
 	if (!html) {
-		return { 'className': '', 'data-title': '', 'children': '' };
+		return { 'className': '', 'data-title': '', 'children': '', 'name': '' };
 	}
 	const result =
 		/class="(?<className>[a-z_ \-0-9]+)" title="(?<datatitle>[\:a-z_\-]+)">(?<children>[^\<]+)</.exec(
 			html,
 		);
 	if (!result) {
-		return { 'className': '', 'data-title': '', 'children': '' };
+		return { 'className': '', 'data-title': '', 'children': '', 'name': '' };
 	}
 
 	const { groups } = result;
 	return {
 		'className': groups?.className,
 		'data-title': groups?.datatitle,
+		'name': groups?.datatitle,
 		'children': groups?.children,
 	} as unknown as ReturnType<typeof getEmojiClassNameAndDataTitle>;
 };

@@ -14,6 +14,7 @@ import SessionProvider from './SessionProvider';
 import SettingsProvider from './SettingsProvider';
 import SidebarProvider from './SidebarProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
+import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
 import UserProvider from './UserProvider';
 
@@ -24,25 +25,27 @@ const MeteorProvider: FC = ({ children }) => (
 				<TranslationProvider>
 					<SessionProvider>
 						<SidebarProvider>
-							<ToastMessagesProvider>
-								<SettingsProvider>
-									<LayoutProvider>
-										<AvatarUrlProvider>
-											<CustomSoundProvider>
-												<UserProvider>
-													<AuthorizationProvider>
-														<OmnichannelProvider>
-															<ModalProvider>
-																<AttachmentProvider>{children}</AttachmentProvider>
-															</ModalProvider>
-														</OmnichannelProvider>
-													</AuthorizationProvider>
-												</UserProvider>
-											</CustomSoundProvider>
-										</AvatarUrlProvider>
-									</LayoutProvider>
-								</SettingsProvider>
-							</ToastMessagesProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
+									<SettingsProvider>
+										<LayoutProvider>
+											<AvatarUrlProvider>
+												<CustomSoundProvider>
+													<UserProvider>
+														<AuthorizationProvider>
+															<OmnichannelProvider>
+																<ModalProvider>
+																	<AttachmentProvider>{children}</AttachmentProvider>
+																</ModalProvider>
+															</OmnichannelProvider>
+														</AuthorizationProvider>
+													</UserProvider>
+												</CustomSoundProvider>
+											</AvatarUrlProvider>
+										</LayoutProvider>
+									</SettingsProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
 						</SidebarProvider>
 					</SessionProvider>
 				</TranslationProvider>

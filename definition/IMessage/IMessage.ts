@@ -79,7 +79,27 @@ export interface IMessage extends IRocketChatRecord {
 	alias?: string;
 
 	private?: boolean;
+	/* @deprecated */
+	bot?: boolean;
+	sentByEmail?: boolean;
 }
+
+export interface IEditedMessage extends IMessage {
+	editedAt: Date;
+	editedBy: Pick<IUser, '_id' | 'username'>;
+}
+
+export const isEditedMessage = (message: IMessage): message is IEditedMessage => {
+	return 'editedAt' in message && 'editedBy' in message;
+};
+
+export interface ITranslatedMessage extends IMessage {
+	translations: {	[key: string]: unknown };
+}
+
+export const isTranslatedMessage = (message: IMessage): message is ITranslatedMessage => {
+	return 'translations' in message;
+};
 
 export interface IThreadMessage extends IMessage {
 	tcount: number;
@@ -110,3 +130,16 @@ export interface IPrivateMessage extends IMessage {
 export const isPrivateMessage = (message: IMessage): message is IPrivateMessage => {
 	return !!message.private;
 };
+
+
+export interface IMessageReactionsNormalized extends IMessage {
+	reactions: {
+		[key: string]: {
+			usernames: Required<IUser['_id']>[];
+			names: Required<IUser>['name'][];
+		};
+	};
+}
+
+
+export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized => Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);

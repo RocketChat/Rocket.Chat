@@ -31,8 +31,8 @@ Meteor.methods({
 		return ChatMessage.update({
 			_id: message._id,
 		}, {
-			$set: {
-				starred: !!message.starred,
+			$addToSet: {
+				_id: Meteor.userId(),
 			},
 		});
 	},
