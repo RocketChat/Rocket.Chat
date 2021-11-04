@@ -30,7 +30,6 @@ import LivechatTrigger from './models/LivechatTrigger';
 import LivechatVisitors from './models/LivechatVisitors';
 import LivechatAgentActivity from './models/LivechatAgentActivity';
 import LivechatInquiry from './models/LivechatInquiry';
-import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
 import OmnichannelQueue from './models/OmnichannelQueue';
 import ImportData from './models/ImportData';
@@ -75,7 +74,6 @@ export {
 	LivechatTrigger,
 	LivechatVisitors,
 	LivechatAgentActivity,
-	ReadReceipts,
 	LivechatExternalMessage,
 	LivechatInquiry,
 	OmnichannelQueue,
