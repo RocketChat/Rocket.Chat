@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 import phoneNumberParser from './hooks/PhoneNumberParser';
 
 export const PhoneNumberDisplay: FC<{ phoneNumber: string }> = ({ phoneNumber }) => {
-	const { parsedNumber, numberRegionCode, error } = phoneNumberParser(phoneNumber, 'US');
+	const { parsedNumber, numberRegionCode, error } = phoneNumberParser(phoneNumber);
 	return (
 		<Box color='surface'>
 			{!error ? (

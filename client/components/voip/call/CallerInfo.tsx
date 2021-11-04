@@ -10,10 +10,8 @@ const CallerInfo: FC<{ callerData: any }> = ({ callerData }) => {
 
 	return (
 		<Box>
-			<Box>
-				<PhoneNumberDisplay phoneNumber={callerId} />
-				<Box color='neutral-500-50'>{t('Calling' as 'color')}</Box>
-			</Box>
+			<PhoneNumberDisplay phoneNumber={callerId} />
+			<Box color='neutral-500-50'>{t('Calling')}</Box>
 		</Box>
 	);
 };

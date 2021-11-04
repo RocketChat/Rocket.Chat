@@ -4,6 +4,7 @@ import React, { ReactNode } from 'react';
 export type ButtonInfo = {
 	name: string;
 	handler: () => void;
+	states: Array<string>;
 	icon: string;
 	label: string;
 };
@@ -13,6 +14,7 @@ const defaultButtonsList = [
 		name: 'audio-settings',
 		icon: 'customize',
 		label: 'audio-settings',
+		states: ['incoming', 'current', 'disabled'],
 		handler: (): void => {
 			console.log('audio-settings');
 		},
@@ -22,6 +24,7 @@ const defaultButtonsList = [
 		name: 'hold-call',
 		icon: 'pause-unfilled',
 		label: 'hold-call',
+		states: ['incoming', 'current'],
 		handler: (): void => {
 			console.log('hold-call');
 		},
@@ -31,16 +34,18 @@ const defaultButtonsList = [
 		name: 'mute',
 		icon: 'mic-off',
 		label: 'mute',
+		states: ['incoming', 'current'],
 		handler: (): void => {
 			console.log('mute');
 		},
 	},
 ];
 
-const renderButtons = (buttonList: Array<ButtonInfo>): Array<ReactNode> =>
+const renderButtons = (buttonList: Array<ButtonInfo>, currentState: string): Array<ReactNode> =>
 	buttonList
 		.slice(0)
 		.reverse()
+		.filter((button) => button.states.includes(currentState))
 		.map((button) => (
 			<Button
 				nude
@@ -56,8 +61,12 @@ const renderButtons = (buttonList: Array<ButtonInfo>): Array<ReactNode> =>
 			</Button>
 		));
 
-export const useButtonsList = (customButtonsList?: Array<ButtonInfo>): Array<ReactNode> =>
+export const useButtonsList = (
+	currentState: string,
+	customButtonsList?: Array<ButtonInfo>,
+): Array<ReactNode> =>
 	// Returns default buttons list plus custom buttons passed via params
 	renderButtons(
 		customButtonsList ? [...defaultButtonsList, ...customButtonsList] : defaultButtonsList,
+		currentState,
 	);
