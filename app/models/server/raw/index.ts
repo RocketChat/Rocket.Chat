@@ -34,6 +34,7 @@ import { OmnichannelQueueRaw } from './OmnichannelQueue';
 import { PermissionsRaw } from './Permissions';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { ReadReceiptsRaw } from './ReadReceipts';
+import { ReportsRaw } from './Reports';
 import { RolesRaw } from './Roles';
 import { RoomsRaw } from './Rooms';
 import { ServerEventsRaw } from './ServerEvents';
@@ -117,6 +118,7 @@ export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trash
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
 export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_receipts`), trashCollection);
+export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
