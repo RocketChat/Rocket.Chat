@@ -7,7 +7,7 @@ const CallControls: FC<{ state: any }> = ({ state }) => {
 
 	return (
 		<ButtonGroup align='end' flexGrow={1} maxWidth='full'>
-			{state === 'current' && (
+			{state === 'incoming' && (
 				<Button mis={4} p={0} m={0} size={28} primary success onClick={onPickup}>
 					<Icon size={16} name='phone' />
 				</Button>

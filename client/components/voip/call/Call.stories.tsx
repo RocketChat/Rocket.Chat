@@ -14,7 +14,7 @@ const callData = {
 };
 const data = {
 	callsInQueue: 10,
-	state: 'Current',
+	state: 'disabled',
 	buttonsList: useButtonsList,
 };
 
@@ -25,11 +25,11 @@ export default {
 
 export const FullCallComponent: Story = () => (
 	<div style={{ width: '336px', backgroundColor: '#2f343d' }}>
-		<CallComponent data={data} callData={callData} buttons={useButtonsList()} />
+		<CallComponent data={data} callData={callData} buttons={useButtonsList(data.state)} />
 	</div>
 );
 
-export const ButtonGroup: Story = () => <CallControls state={'current'} />;
+export const ButtonGroup: Story = () => <CallControls state={'incoming'} />;
 
 export const PhoneNumber: Story = () => {
 	const [phoneNumber, setPhoneNumber] = useState('+912312324349');

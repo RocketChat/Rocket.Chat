@@ -19,10 +19,10 @@ const CallComponent: FC<CallComponentProps> = ({ data, callData, buttons }) => (
 			<Header state={data.state} buttonList={buttons} calls={data.callsInQueue} />
 		)}
 
-		{data.state === 'Current' && (
+		{data.state === 'Incoming' && (
 			<Box display='flex'>
 				<CallerInfo callerData={callData} />
-				<CallControls state={'current'} />
+				<CallControls state={data.state} />
 			</Box>
 		)}
 	</Box>

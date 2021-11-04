@@ -1,8 +1,8 @@
-import { PhoneNumberUtil } from 'google-libphonenumber';
+import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 const phoneNumberParser = (
 	phoneNumber: string,
-	currentCountryCode: string,
+	// currentCountryCode: string,
 ): { numberRegionCode?: string; parsedNumber?: string; error?: string } => {
 	const phoneNumberUtil = PhoneNumberUtil.getInstance();
 	let numberRegionCode;
@@ -11,7 +11,7 @@ const phoneNumberParser = (
 	try {
 		const number = phoneNumberUtil.parse(phoneNumber);
 		numberRegionCode = phoneNumberUtil.getRegionCodeForNumber(number);
-		parsedNumber = phoneNumberUtil.formatOutOfCountryCallingNumber(number, currentCountryCode);
+		parsedNumber = phoneNumberUtil.format(number, PhoneNumberFormat.INTERNATIONAL);
 	} catch (e) {
 		error = e as string | undefined;
 	}

@@ -10,7 +10,7 @@ const CallToolBox: FC<{
 	const t = useTranslation();
 	return (
 		<Box display='flex' mbe={8} alignItems='center' justifyContent='space-between'>
-			<Box color='surface'>{t('Phone Call' as 'color')}</Box>
+			<Box color='surface'>{t('Phone_call')}</Box>
 			<ButtonGroup align='end'>{buttonList}</ButtonGroup>
 		</Box>
 	);
