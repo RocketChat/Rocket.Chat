@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 
+import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import PermissionsModel from '../models/Permissions';
 import { PermissionsRaw } from './Permissions';
 import RolesModel from '../models/Roles';
@@ -70,6 +71,7 @@ import ImportDataModel from '../models/ImportData';
 import { ImportDataRaw } from './ImportData';
 import { OEmbedCacheRaw } from './OEmbedCache';
 import { InvitesRaw } from './Invites';
+import { AnalyticsRaw } from './Analytics';
 
 const trashCollection = trash.rawCollection();
 
@@ -114,6 +116,7 @@ export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ pref
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
+export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

@@ -34,7 +34,6 @@ import LivechatInquiry from './models/LivechatInquiry';
 import ReadReceipts from './models/ReadReceipts';
 import LivechatExternalMessage from './models/LivechatExternalMessages';
 import OmnichannelQueue from './models/OmnichannelQueue';
-import Analytics from './models/Analytics';
 import ImportData from './models/ImportData';
 
 export { AppsLogsModel } from './models/apps-logs-model';
@@ -81,7 +80,6 @@ export {
 	ReadReceipts,
 	LivechatExternalMessage,
 	LivechatInquiry,
-	Analytics,
 	OmnichannelQueue,
 	ImportData,
 };

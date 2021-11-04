@@ -61,6 +61,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	sysMes?: string[];
 	muted?: string[];
+
+	usernames?: string[];
 }
 
 export interface ICreatedRoom extends IRoom {
