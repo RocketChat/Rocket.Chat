@@ -71,6 +71,7 @@ import { initWatchers } from '../../../../server/modules/watchers/watchers.modul
 import ImportDataModel from '../models/ImportData';
 import { ImportDataRaw } from './ImportData';
 import { OEmbedCacheRaw } from './OEmbedCache';
+import { InvitesRaw } from './Invites';
 
 const trashCollection = trash.rawCollection();
 
@@ -114,6 +115,7 @@ export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
+export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

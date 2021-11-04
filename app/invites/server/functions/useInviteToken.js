@@ -5,7 +5,7 @@ import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
 
-export const useInviteToken = (userId, token) => {
+export const useInviteToken = async (userId, token) => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'The user is invalid', { method: 'useInviteToken', field: 'userId' });
 	}
@@ -25,7 +25,7 @@ export const useInviteToken = (userId, token) => {
 
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { fields: { _id: 1 } });
 	if (!subscription) {
-		Invites.increaseUsageById(inviteData._id);
+		await Invites.increaseUsageById(inviteData._id);
 	}
 
 	// If the user already has an username, then join the invite room,
