@@ -18,7 +18,6 @@ import Imports from './models/Imports';
 import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import EmojiCustom from './models/EmojiCustom';
-import OAuthApps from './models/OAuthApps';
 import SmarshHistory from './models/SmarshHistory';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
@@ -62,7 +61,6 @@ export {
 	Integrations,
 	IntegrationHistory,
 	EmojiCustom,
-	OAuthApps,
 	SmarshHistory,
 	LivechatCustomField,
 	LivechatDepartment,

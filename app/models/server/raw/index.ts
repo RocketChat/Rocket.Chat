@@ -64,7 +64,6 @@ import LivechatTriggerModel from '../models/LivechatTrigger';
 import LivechatVisitorsModel from '../models/LivechatVisitors';
 import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
 import MessagesModel from '../models/Messages';
-import OAuthAppsModel from '../models/OAuthApps';
 import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import PermissionsModel from '../models/Permissions';
 import RolesModel from '../models/Roles';
@@ -93,7 +92,6 @@ export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.mo
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
 export const Integrations = new IntegrationsRaw(IntegrationsModel.model.rawCollection(), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection(), trashCollection);
-export const OAuthApps = new OAuthAppsRaw(OAuthAppsModel.model.rawCollection(), trashCollection);
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
@@ -116,6 +114,7 @@ export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbo
 export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${ prefix }email_message_history`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
+export const OAuthApps = new OAuthAppsRaw(db.collection(`${ prefix }oauth_apps`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
 export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_receipts`), trashCollection);
 export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
