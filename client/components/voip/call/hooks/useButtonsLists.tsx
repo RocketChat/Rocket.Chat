@@ -42,25 +42,36 @@ const renderButtons = (
 	buttonList: Array<ButtonInfo>,
 	currentState: string,
 	handlers: Array<{ id: string; handler: () => void }>,
-): Array<ReactNode> =>
-	buttonList
+	internalStates: Array<{ id: string; state: boolean }>,
+): Array<ReactNode> => {
+	console.log(buttonList, currentState, handlers, internalStates);
+	// const callOnHold = internalStates.find((state) => state.id === 'hold-call')?.state;
+	return buttonList
 		.slice(0)
 		.reverse()
 		.filter((button) => button.states.includes(currentState))
-		.map((button) => (
-			<Button
-				nude
-				key={button.name}
-				mis={8}
-				mie={0}
-				borderWidth={0}
-				p={0}
-				size={28}
-				onClick={handlers.find((handler) => handler.id === button.name)?.handler || button.handler}
-			>
-				<Icon color='neutral-500-50' size={24} name={button.icon} />
-			</Button>
-		));
+		.map((button) => {
+			const active = internalStates.find((state) => state.id === button.name)?.state;
+
+			return (
+				<Button
+					nude
+					key={button.name}
+					mis={8}
+					mie={0}
+					borderWidth={0}
+					p={0}
+					size={28}
+					onClick={
+						handlers.find((handler) => handler.id === button.name)?.handler || button.handler
+					}
+					// disabled={callOnHold && button.name !== 'hold-call'}
+				>
+					<Icon color={active ? 'surface' : 'neutral-500-50'} size={24} name={button.icon} />
+				</Button>
+			);
+		});
+};
 
 export const useButtonsList = (
 	currentState: string,
@@ -101,6 +112,7 @@ export const useButtonsList = (
 		customButtonsList ? [...defaultButtonsList, ...customButtonsList] : defaultButtonsList,
 		currentState,
 		handlers,
+		states,
 	);
 
 	return {
