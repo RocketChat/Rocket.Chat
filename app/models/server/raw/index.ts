@@ -49,7 +49,6 @@ import { StatisticsRaw } from './Statistics';
 import { NotificationQueueRaw } from './NotificationQueue';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import { LivechatBusinessHoursRaw } from './LivechatBusinessHours';
-import ServerEventModel from '../models/ServerEvents';
 import { UsersSessionsRaw } from './UsersSessions';
 import UsersSessionsModel from '../models/UsersSessions';
 import { ServerEventsRaw } from './ServerEvents';
@@ -96,7 +95,6 @@ export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawColle
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
-export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
 export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
@@ -116,6 +114,7 @@ export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }we
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
+export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
