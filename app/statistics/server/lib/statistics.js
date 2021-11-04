@@ -14,13 +14,12 @@ import {
 	Messages,
 	LivechatVisitors,
 	Integrations,
-	Statistics,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw, Statistics } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -215,10 +214,10 @@ export const statistics = {
 
 		return statistics;
 	},
-	save() {
+	async save() {
 		const rcStatistics = statistics.get();
 		rcStatistics.createdAt = new Date();
-		Statistics.insert(rcStatistics);
+		await Statistics.insertOne(rcStatistics);
 		return rcStatistics;
 	},
 };

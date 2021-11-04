@@ -1,3 +1,5 @@
+import { MongoInternals } from 'meteor/mongo';
+
 import PermissionsModel from '../models/Permissions';
 import { PermissionsRaw } from './Permissions';
 import RolesModel from '../models/Roles';
@@ -44,7 +46,6 @@ import CustomUserStatusModel from '../models/CustomUserStatus';
 import { CustomUserStatusRaw } from './CustomUserStatus';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import { LivechatAgentActivityRaw } from './LivechatAgentActivity';
-import StatisticsModel from '../models/Statistics';
 import { StatisticsRaw } from './Statistics';
 import NotificationQueueModel from '../models/NotificationQueue';
 import { NotificationQueueRaw } from './NotificationQueue';
@@ -95,7 +96,6 @@ export const OAuthApps = new OAuthAppsRaw(OAuthAppsModel.model.rawCollection(), 
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
-export const Statistics = new StatisticsRaw(StatisticsModel.model.rawCollection(), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(NotificationQueueModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const ServerEvents = new ServerEventsRaw(ServerEventModel.model.rawCollection(), trashCollection);
@@ -109,6 +109,11 @@ export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.mo
 export const EmailInbox = new EmailInboxRaw(EmailInboxModel.model.rawCollection(), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
 export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection);
+
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+const prefix = 'rocketchat_';
+
+export const Statistics = new StatisticsRaw(db.collection(`${ prefix }_statistics`), trashCollection);
 
 const map = {
 	[Messages.col.collectionName]: MessagesModel,

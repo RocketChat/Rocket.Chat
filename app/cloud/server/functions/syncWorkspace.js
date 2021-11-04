@@ -10,13 +10,13 @@ import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCre
 import { NPS, Banner } from '../../../../server/sdk';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function syncWorkspace(reconnectCheck = false) {
+export async function syncWorkspace(reconnectCheck = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}
 
-	const info = buildWorkspaceRegistrationData();
+	const info = await buildWorkspaceRegistrationData();
 
 	const workspaceUrl = settings.get('Cloud_Workspace_Registration_Client_Uri');
 
