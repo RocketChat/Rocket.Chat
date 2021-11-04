@@ -140,7 +140,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 		]);
 	}
 
-	findByTypeBeforeDate({ type, date }: { type: IAnalytic['type']; date: IAnalytic['date'] }): Cursor<T> {
+	findByTypeBeforeDate({ type, date }: { type: T['type']; date: T['date'] }): Cursor<T> {
 		return this.find({ type, date: { $lte: date } });
 	}
 }
