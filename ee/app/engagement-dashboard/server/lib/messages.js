@@ -39,10 +39,10 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		Promise.await(Promise.all(messages.map((message) => Analytics.insertOne({
+		await Promise.all(messages.map((message) => Analytics.insertOne({
 			...message,
 			date: parseInt(message.date),
-		}))));
+		})));
 	}
 };
 

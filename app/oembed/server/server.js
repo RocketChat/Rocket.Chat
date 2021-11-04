@@ -265,7 +265,7 @@ const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe',
 
 OEmbed.rocketUrlParser = async function(message) {
 	if (Array.isArray(message.urls)) {
-		let attachments = [];
+		const attachments = [];
 		let changed = false;
 		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
@@ -277,7 +277,7 @@ OEmbed.rocketUrlParser = async function(message) {
 			const data = await OEmbed.getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (data.attachments) {
-					attachments = _.union(attachments, data.attachments);
+					attachments.push(...data.attachments);
 					return;
 				}
 				if (data.meta != null) {

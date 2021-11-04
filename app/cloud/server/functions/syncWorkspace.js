@@ -64,11 +64,11 @@ export async function syncWorkspace(reconnectCheck = false) {
 
 		const startAt = new Date(data.nps.startAt);
 
-		Promise.await(NPS.create({
+		await NPS.create({
 			npsId,
 			startAt,
 			expireAt: new Date(expireAt),
-		}));
+		});
 
 		const now = new Date();
 
@@ -79,19 +79,19 @@ export async function syncWorkspace(reconnectCheck = false) {
 
 	// add banners
 	if (data.banners) {
-		for (const banner of data.banners) {
+		for await (const banner of data.banners) {
 			const {
 				createdAt,
 				expireAt,
 				startAt,
 			} = banner;
 
-			Promise.await(Banner.create({
+			await Banner.create({
 				...banner,
 				createdAt: new Date(createdAt),
 				expireAt: new Date(expireAt),
 				startAt: new Date(startAt),
-			}));
+			});
 		}
 	}
 
