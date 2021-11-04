@@ -46,7 +46,6 @@ import { UsersSessionsRaw } from './UsersSessions';
 import { WebdavAccountsRaw } from './WebdavAccounts';
 import CustomSoundsModel from '../models/CustomSounds';
 import CustomUserStatusModel from '../models/CustomUserStatus';
-import EmailMessageHistoryModel from '../models/EmailMessageHistory';
 import EmojiCustomModel from '../models/EmojiCustom';
 import ImportDataModel from '../models/ImportData';
 import InstanceStatusModel from '../models/InstanceStatus';
@@ -105,7 +104,6 @@ export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.ra
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
 export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
-export const EmailMessageHistory = new EmailMessageHistoryRaw(EmailMessageHistoryModel.model.rawCollection(), trashCollection);
 export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection);
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -114,6 +112,7 @@ const prefix = 'rocketchat_';
 export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
 export const CredentialTokens = new CredentialTokensRaw(db.collection(`${ prefix }credential_tokens`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
+export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${ prefix }email_message_history`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
