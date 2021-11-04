@@ -30,31 +30,14 @@ const actions = {
 	d: 'remove',
 };
 
-export class BaseDb extends EventEmitter {
-	constructor(model, baseModel, options = {}) {
+export class BaseDbWatch extends EventEmitter {
+	constructor(collectionName) {
 		super();
-
-		if (Match.test(model, String)) {
-			this.name = model;
-			this.collectionName = this.baseName + this.name;
-			this.model = new Mongo.Collection(this.collectionName);
-		} else {
-			this.name = model._name;
-			this.collectionName = this.name;
-			this.model = model;
-		}
-
-		this.baseModel = baseModel;
-
-		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
-
-		this.wrapModel();
+		this.collectionName = collectionName;
 
 		if (!process.env.DISABLE_DB_WATCH) {
 			this.initDbWatch();
 		}
-
-		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
 
 	initDbWatch() {
@@ -95,6 +78,104 @@ export class BaseDb extends EventEmitter {
 		if (_oplogHandle) {
 			this.on('newListener', handleListener);
 		}
+	}
+
+	processOplogRecord({ id, op }) {
+		const action = actions[op.op];
+		metrics.oplog.inc({
+			collection: this.collectionName,
+			op: action,
+		});
+
+		if (action === 'insert') {
+			this.emit('change', {
+				action,
+				clientAction: 'inserted',
+				id: op.o._id,
+				data: op.o,
+				oplog: true,
+			});
+			return;
+		}
+
+		if (action === 'update') {
+			if (!op.o.$set && !op.o.$unset) {
+				this.emit('change', {
+					action,
+					clientAction: 'updated',
+					id,
+					data: op.o,
+					oplog: true,
+				});
+				return;
+			}
+
+			const diff = {};
+			if (op.o.$set) {
+				for (const key in op.o.$set) {
+					if (op.o.$set.hasOwnProperty(key)) {
+						diff[key] = op.o.$set[key];
+					}
+				}
+			}
+			const unset = {};
+			if (op.o.$unset) {
+				for (const key in op.o.$unset) {
+					if (op.o.$unset.hasOwnProperty(key)) {
+						diff[key] = undefined;
+						unset[key] = 1;
+					}
+				}
+			}
+
+			this.emit('change', {
+				action,
+				clientAction: 'updated',
+				id,
+				diff,
+				unset,
+				oplog: true,
+			});
+			return;
+		}
+
+		if (action === 'remove') {
+			this.emit('change', {
+				action,
+				clientAction: 'removed',
+				id,
+				oplog: true,
+			});
+		}
+	}
+}
+
+
+export class BaseDb extends BaseDbWatch {
+	constructor(model, baseModel, options = {}) {
+		const collectionName = Match.test(model, String) ? baseName + model : model._name;
+
+		super(collectionName);
+
+		this.collectionName = collectionName;
+
+		if (Match.test(model, String)) {
+			this.name = model;
+			this.collectionName = this.baseName + this.name;
+			this.model = new Mongo.Collection(this.collectionName);
+		} else {
+			this.name = model._name;
+			this.collectionName = this.name;
+			this.model = model;
+		}
+
+		this.baseModel = baseModel;
+
+		this.preventSetUpdatedAt = !!options.preventSetUpdatedAt;
+
+		this.wrapModel();
+
+		this.tryEnsureIndex({ _updatedAt: 1 }, options._updatedAtIndexOptions);
 	}
 
 	get baseName() {
@@ -202,75 +283,6 @@ export class BaseDb extends EventEmitter {
 				|| (Match.test(update[key], Object)
 					&& this.updateHasPositionalOperator(update[key])),
 		);
-	}
-
-	processOplogRecord({ id, op }) {
-		const action = actions[op.op];
-		metrics.oplog.inc({
-			collection: this.collectionName,
-			op: action,
-		});
-
-		if (action === 'insert') {
-			this.emit('change', {
-				action,
-				clientAction: 'inserted',
-				id: op.o._id,
-				data: op.o,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action === 'update') {
-			if (!op.o.$set && !op.o.$unset) {
-				this.emit('change', {
-					action,
-					clientAction: 'updated',
-					id,
-					data: op.o,
-					oplog: true,
-				});
-				return;
-			}
-
-			const diff = {};
-			if (op.o.$set) {
-				for (const key in op.o.$set) {
-					if (op.o.$set.hasOwnProperty(key)) {
-						diff[key] = op.o.$set[key];
-					}
-				}
-			}
-			const unset = {};
-			if (op.o.$unset) {
-				for (const key in op.o.$unset) {
-					if (op.o.$unset.hasOwnProperty(key)) {
-						diff[key] = undefined;
-						unset[key] = 1;
-					}
-				}
-			}
-
-			this.emit('change', {
-				action,
-				clientAction: 'updated',
-				id,
-				diff,
-				unset,
-				oplog: true,
-			});
-			return;
-		}
-
-		if (action === 'remove') {
-			this.emit('change', {
-				action,
-				clientAction: 'removed',
-				id,
-				oplog: true,
-			});
-		}
 	}
 
 	insert(record, ...args) {
