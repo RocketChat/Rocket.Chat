@@ -5,9 +5,10 @@ import _ from 'underscore';
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload';
 import { addUserRoles, getUsersInRole } from '../../app/authorization';
-import { Users, Settings, Rooms } from '../../app/models';
+import { Users, Rooms } from '../../app/models';
 import { settings } from '../../app/settings';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
+import { Settings } from '../../app/models/server/raw';
 
 Meteor.startup(function() {
 	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {

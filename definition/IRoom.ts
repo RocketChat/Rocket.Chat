@@ -75,6 +75,8 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	usernames: Array<Username>;
 }
 
+export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
+
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',
 	EMAIL = 'email',

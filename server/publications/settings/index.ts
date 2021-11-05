@@ -1,19 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Settings } from '../../../app/models/server';
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
+import { Settings } from '../../../app/models/server/raw';
+import { ISetting } from '../../../definition/ISetting';
 
 Meteor.methods({
-	'public-settings/get'(updatedAt) {
+	async 'public-settings/get'(updatedAt) {
 		if (updatedAt instanceof Date) {
-			const records = Settings.findNotHiddenPublicUpdatedAfter(updatedAt).fetch();
+			const records = await Settings.findNotHiddenPublicUpdatedAfter(updatedAt).toArray();
 			SettingsEvents.emit('fetch-settings', records);
 
 			return {
 				update: records,
-				remove: Settings.trashFindDeletedAfter(updatedAt, {
+				remove: await Settings.trashFindDeletedAfter(updatedAt, {
 					hidden: {
 						$ne: true,
 					},
@@ -23,16 +24,16 @@ Meteor.methods({
 						_id: 1,
 						_deletedAt: 1,
 					},
-				}).fetch(),
+				}).toArray(),
 			};
 		}
 
-		const publicSettings = Settings.findNotHiddenPublic().fetch();
+		const publicSettings = await Settings.findNotHiddenPublic().toArray() as ISetting[];
 		SettingsEvents.emit('fetch-settings', publicSettings);
 
 		return publicSettings;
 	},
-	'private-settings/get'(updatedAfter) {
+	async 'private-settings/get'(updatedAfter) {
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -46,13 +47,13 @@ Meteor.methods({
 			return [];
 		}
 
-		const bypass = (settings) => settings;
+		const bypass = <T>(settings): T => settings;
 
 		const applyFilter = (fn, args) => fn(args);
 
-		const getAuthorizedSettingsFiltered = (settings) => settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));
+		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] => settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));
 
-		const getAuthorizedSettings = (updatedAfter, privilegedSetting) => applyFilter(privilegedSetting ? bypass : getAuthorizedSettingsFiltered, Settings.findNotHidden(updatedAfter && { updatedAfter }).fetch());
+		const getAuthorizedSettings = async (updatedAfter: Date, privilegedSetting: boolean): Promise<ISetting[]> => applyFilter(privilegedSetting ? bypass : getAuthorizedSettingsFiltered, await Settings.findNotHidden(updatedAfter && { updatedAfter }).fetch());
 
 		if (!(updatedAfter instanceof Date)) {
 			// this does not only imply an unfiltered setting range, it also identifies the caller's context:
@@ -62,8 +63,8 @@ Meteor.methods({
 		}
 
 		return {
-			update: getAuthorizedSettings(updatedAfter, privilegedSetting),
-			remove: Settings.trashFindDeletedAfter(updatedAfter, {
+			update: await getAuthorizedSettings(updatedAfter, privilegedSetting),
+			remove: await Settings.trashFindDeletedAfter(updatedAfter, {
 				hidden: {
 					$ne: true,
 				},
@@ -72,7 +73,7 @@ Meteor.methods({
 					_id: 1,
 					_deletedAt: 1,
 				},
-			}).fetch(),
+			}).toArray(),
 		};
 	},
 });

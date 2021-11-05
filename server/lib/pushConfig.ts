@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { hasRole } from '../../app/authorization';
-import { settings } from '../../app/settings';
+import { hasRole } from '../../app/authorization/server';
+import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
 
 Meteor.methods({
-	push_test() {
+	'push_test'() {
 		const user = Meteor.user();
 
 		if (!user) {
@@ -71,17 +71,25 @@ Meteor.methods({
 	},
 });
 
-function configurePush() {
-	if (!settings.get('Push_enable')) {
+settings.watch<boolean>('Push_enable', async function(enabled) {
+	if (!enabled) {
 		return;
 	}
-
 	const gateways = settings.get('Push_enable_gateway') && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms')
-		? settings.get('Push_gateway').split('\n')
+		? settings.get<string>('Push_gateway').split('\n')
 		: undefined;
 
-	let apn;
-	let gcm;
+	let apn: {
+		apiKey?: string;
+		passphrase: string;
+		key: string;
+		cert: string;
+		gateway?: string;
+	} | undefined;
+	let gcm: {
+		apiKey: string;
+		projectNumber: string;
+	} | undefined;
 
 	if (!gateways) {
 		gcm = {
@@ -120,9 +128,7 @@ function configurePush() {
 		gateways,
 		uniqueId: settings.get('uniqueID'),
 		getAuthorization() {
-			return `Bearer ${ getWorkspaceAccessToken() }`;
+			return `Bearer ${ Promise.await(getWorkspaceAccessToken()) }`;
 		},
 	});
-}
-
-Meteor.startup(configurePush);
+});
