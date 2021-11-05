@@ -6,8 +6,9 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../cloud/server';
-import { Settings, Users } from '../../models/server';
+import { Users } from '../../models/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
+import { Settings } from '../../models/server/raw';
 
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdminsAboutInvalidApps(apps) {
@@ -65,13 +66,13 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdmi
 });
 
 export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
-	const token = getWorkspaceAccessToken();
+	const token = Promise.await(getWorkspaceAccessToken());
 	const baseUrl = Apps.getMarketplaceUrl();
-	const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+	const workspaceIdSetting = Promise.await(Settings.getValueById('Cloud_Workspace_Id'));
 
 	const currentSeats = Users.getActiveLocalUserCount();
 
-	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting.value }/apps?seats=${ currentSeats }`;
+	const fullUrl = `${ baseUrl }/v1/workspaces/${ workspaceIdSetting }/apps?seats=${ currentSeats }`;
 	const options = {
 		headers: {
 			Authorization: `Bearer ${ token }`,
