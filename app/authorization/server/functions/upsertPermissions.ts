@@ -5,6 +5,7 @@ import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
 import { Settings } from '../../../models/server/raw';
 import { IPermission } from '../../../../definition/IPermission';
+import { ISetting } from '../../../../definition/ISetting';
 
 export const upsertPermissions = (): void => {
 	// Note:
@@ -176,7 +177,9 @@ export const upsertPermissions = (): void => {
 	}
 
 	const getPreviousPermissions = function(settingId?: string): Record<string, IPermission> {
-		const previousSettingPermissions = {};
+		const previousSettingPermissions: {
+			[key: string]: IPermission;
+		} = {};
 
 		const selector = { level: CONSTANTS.SETTINGS_LEVEL, ...settingId && { settingId } };
 		if (settingId) {
@@ -184,13 +187,15 @@ export const upsertPermissions = (): void => {
 		}
 
 		Permissions.find(selector).forEach(
-			function(permission) {
+			function(permission: IPermission) {
 				previousSettingPermissions[permission._id] = permission;
 			});
 		return previousSettingPermissions;
 	};
 
-	const createSettingPermission = function(setting, previousSettingPermissions): void {
+	const createSettingPermission = function(setting: ISetting, previousSettingPermissions: {
+		[key: string]: IPermission;
+	}): void {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission: Omit<IPermission, '_id'> = {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
