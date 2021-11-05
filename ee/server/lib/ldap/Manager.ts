@@ -456,7 +456,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const deleted = this.isUserDeactivated(ldapUser);
-		if (deleted === userData.deleted || (userData.deleted === undefined && !deleted)) {
+		if (deleted === userData.deleted) {
 			return;
 		}
 
