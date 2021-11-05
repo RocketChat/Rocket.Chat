@@ -445,7 +445,7 @@ const eventHandlers = {
 };
 
 API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } }, {
-	async post() {
+	post() {
 		if (!isFederationEnabled()) {
 			return API.v1.failure('Federation not enabled');
 		}
@@ -473,7 +473,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 			let eventResult;
 
 			if (eventHandlers[event.type]) {
-				eventResult = await eventHandlers[event.type](event);
+				eventResult = Promise.await(eventHandlers[event.type](event));
 			}
 
 			// If there was an error handling the event, take action

@@ -8,7 +8,7 @@ import { isFederationEnabled } from '../lib/isFederationEnabled';
 import { dispatchEvents } from '../handler';
 
 API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, {
-	async post() {
+	post() {
 		if (!isFederationEnabled()) {
 			return API.v1.failure('Federation not enabled');
 		}
