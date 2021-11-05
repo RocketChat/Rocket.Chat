@@ -4,12 +4,13 @@ import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
 import {
-	FederationRoomEvents, FederationServers,
+	FederationRoomEvents,
 	Messages,
 	Rooms,
 	Subscriptions,
 	Users,
 } from '../../../models/server';
+import { FederationServers } from '../../../models/server/raw';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { Notifications } from '../../../notifications/server';
@@ -139,7 +140,7 @@ const eventHandlers = {
 
 			// Refresh the servers list
 			if (federationAltered) {
-				FederationServers.refreshServers();
+				await FederationServers.refreshServers();
 
 				// Update the room's federation property
 				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
@@ -163,7 +164,7 @@ const eventHandlers = {
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
@@ -186,7 +187,7 @@ const eventHandlers = {
 			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
-			FederationServers.refreshServers();
+			await FederationServers.refreshServers();
 
 			// Update the room's federation property
 			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });

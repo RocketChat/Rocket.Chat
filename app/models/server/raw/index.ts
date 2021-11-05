@@ -11,6 +11,7 @@ import { EmailInboxRaw } from './EmailInbox';
 import { EmailMessageHistoryRaw } from './EmailMessageHistory';
 import { EmojiCustomRaw } from './EmojiCustom';
 import { ExportOperationsRaw } from './ExportOperations';
+import { FederationServersRaw } from './FederationServers';
 import { ImportDataRaw } from './ImportData';
 import { initWatchers } from '../../../../server/modules/watchers/watchers.module';
 import { InstanceStatusRaw } from './InstanceStatus';
@@ -105,6 +106,7 @@ export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbo
 export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${ prefix }email_message_history`), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(db.collection(`${ prefix }custom_emoji`), trashCollection);
 export const ExportOperations = new ExportOperationsRaw(db.collection(`${ prefix }export_operations`), trashCollection);
+export const FederationServers = new FederationServersRaw(db.collection(`${ prefix }federation_servers`), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), trashCollection, { preventSetUpdatedAt: true });
 export const Integrations = new IntegrationsRaw(db.collection(`${ prefix }integrations`), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(db.collection(`${ prefix }integration_history`), trashCollection);
