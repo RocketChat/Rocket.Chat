@@ -14,8 +14,7 @@ import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
-import Uploads from '../../../models/server/models/Uploads';
-import { Avatars, UserDataFiles } from '../../../models/server/raw';
+import { Avatars, UserDataFiles, Uploads } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
@@ -43,6 +42,7 @@ settings.watch('FileUpload_MaxFileSize', function(value) {
 
 const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
 const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
+const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
 
 export const FileUpload = {
 	handlers: {},
@@ -141,7 +141,7 @@ export const FileUpload = {
 
 	defaultUploads() {
 		return {
-			collection: Uploads.model,
+			collection: UploadsModel,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -256,7 +256,7 @@ export const FileUpload = {
 	},
 
 	resizeImagePreview(file) {
-		file = Uploads.findOneById(file._id);
+		file = Promise.await(Uploads.findOneById(file._id));
 		file = FileUpload.addExtensionTo(file);
 		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
@@ -281,7 +281,7 @@ export const FileUpload = {
 			return;
 		}
 
-		file = Uploads.findOneById(file._id);
+		file = Promise.await(Uploads.findOneById(file._id));
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
 		const image = store._store.getReadStream(file._id, file);

@@ -49,6 +49,8 @@ import { StatisticsRaw } from './Statistics';
 import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';
 import { UsersSessionsRaw } from './UsersSessions';
+import { UserDataFilesRaw } from './UserDataFiles';
+import { UploadsRaw } from './Uploads';
 import { WebdavAccountsRaw } from './WebdavAccounts';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
@@ -70,7 +72,6 @@ import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
-import { UserDataFilesRaw } from './UserDataFiles';
 
 const trashCollection = trash.rawCollection();
 
@@ -124,6 +125,7 @@ export const SmarshHistory = new SmarshHistoryRaw(db.collection(`${ prefix }smar
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), trashCollection, { preventSetUpdatedAt: true });
 export const UserDataFiles = new UserDataFilesRaw(db.collection(`${ prefix }user_data_files`), trashCollection);
+export const Uploads = new UploadsRaw(db.collection(`${ prefix }uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
 const map = {

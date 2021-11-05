@@ -4,7 +4,6 @@ import Messages from './models/Messages';
 import Rooms from './models/Rooms';
 import Settings from './models/Settings';
 import Subscriptions from './models/Subscriptions';
-import Uploads from './models/Uploads';
 import Users from './models/Users';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
@@ -34,7 +33,6 @@ export {
 	Rooms,
 	Settings,
 	Subscriptions,
-	Uploads,
 	Users,
 	Permissions,
 	Roles,

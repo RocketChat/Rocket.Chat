@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Rooms, Subscriptions, Messages, Uploads, Users } from '../../../models/server';
-import { Integrations } from '../../../models/server/raw';
+import { Rooms, Subscriptions, Messages, Users } from '../../../models/server';
+import { Integrations, Uploads } from '../../../models/server/raw';
 import { canAccessRoom, hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -295,19 +295,19 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 
 		const ourQuery = Object.assign({}, query, { rid: findResult._id });
 
-		const files = Uploads.find(ourQuery, {
+		const files = Promise.await(Uploads.find(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
 			fields,
-		}).fetch();
+		}).toArray());
 
 		return API.v1.success({
 			files: files.map(addUserObjectToEveryObject),
 			count:
 			files.length,
 			offset,
-			total: Uploads.find(ourQuery).count(),
+			total: Promise.await(Uploads.find(ourQuery).count()),
 		});
 	},
 });

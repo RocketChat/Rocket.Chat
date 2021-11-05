@@ -10,8 +10,8 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
-import { Subscriptions, Rooms, Users, Uploads, Messages } from '../../models/server';
-import { Avatars, ExportOperations, UserDataFiles } from '../../models/server/raw';
+import { Subscriptions, Rooms, Users, Messages } from '../../models/server';
+import { Avatars, ExportOperations, UserDataFiles, Uploads } from '../../models/server/raw';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
@@ -187,8 +187,8 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 	return messageObject;
 };
 
-export const copyFile = function(attachmentData, assetsPath) {
-	const file = Uploads.findOneById(attachmentData._id);
+export const copyFile = async function(attachmentData, assetsPath) {
+	const file = await Uploads.findOneById(attachmentData._id);
 	if (!file) {
 		return;
 	}
@@ -512,9 +512,9 @@ const continueExportOperation = async function(exportOperation) {
 		const generatedFileName = uuidv4();
 
 		if (exportOperation.status === 'downloading') {
-			exportOperation.fileList.forEach((attachmentData) => {
-				copyFile(attachmentData, exportOperation.assetsPath);
-			});
+			for await (const attachmentData of exportOperation.fileList) {
+				await copyFile(attachmentData, exportOperation.assetsPath);
+			}
 
 			const targetFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (await fsExists(targetFile)) {
