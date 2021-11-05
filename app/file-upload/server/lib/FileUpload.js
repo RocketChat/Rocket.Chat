@@ -2,6 +2,7 @@ import fs from 'fs';
 import stream from 'stream';
 
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
@@ -15,7 +16,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { settings } from '../../../settings/server';
 import Uploads from '../../../models/server/models/Uploads';
 import UserDataFiles from '../../../models/server/models/UserDataFiles';
-import Avatars from '../../../models/server/models/Avatars';
+import { Avatars } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
@@ -41,6 +42,7 @@ settings.watch('FileUpload_MaxFileSize', function(value) {
 	}
 });
 
+const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
 
 export const FileUpload = {
 	handlers: {},
@@ -161,7 +163,7 @@ export const FileUpload = {
 
 	defaultAvatars() {
 		return {
-			collection: Avatars.model,
+			collection: AvatarModel,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
@@ -378,11 +380,11 @@ export const FileUpload = {
 		}
 		// update file record to match user's username
 		const user = Users.findOneById(file.userId);
-		const oldAvatar = Avatars.findOneByName(user.username);
+		const oldAvatar = Promise.await(Avatars.findOneByName(user.username));
 		if (oldAvatar) {
-			Avatars.deleteFile(oldAvatar._id);
+			Promise.await(Avatars.deleteFile(oldAvatar._id));
 		}
-		Avatars.updateFileNameById(file._id, user.username);
+		Promise.await(Avatars.updateFileNameById(file._id, user.username));
 		// console.log('upload finished ->', file);
 	},
 
@@ -571,11 +573,11 @@ export class FileUploadClass {
 			this.store.delete(fileId);
 		}
 
-		return this.model.deleteFile(fileId);
+		return Promise.await(this.model.deleteFile(fileId));
 	}
 
 	deleteById(fileId) {
-		const file = this.model.findOneById(fileId);
+		const file = Promise.await(this.model.findOneById(fileId));
 
 		if (!file) {
 			return;
@@ -587,7 +589,7 @@ export class FileUploadClass {
 	}
 
 	deleteByName(fileName) {
-		const file = this.model.findOneByName(fileName);
+		const file = Promise.await(this.model.findOneByName(fileName));
 
 		if (!file) {
 			return;
@@ -600,7 +602,7 @@ export class FileUploadClass {
 
 
 	deleteByRoomId(rid) {
-		const file = this.model.findOneByRoomId(rid);
+		const file = Promise.await(this.model.findOneByRoomId(rid));
 
 		if (!file) {
 			return;

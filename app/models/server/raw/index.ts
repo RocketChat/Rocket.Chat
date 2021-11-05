@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 
+import { AvatarsRaw } from './Avatars';
 import { AnalyticsRaw } from './Analytics';
 import { api } from '../../../../server/sdk/api';
 import { BaseDbWatch, trash } from '../models/_BaseDb';
@@ -93,6 +94,7 @@ export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
 
+export const Avatars = new AvatarsRaw(db.collection(`${ prefix }avatars`), trashCollection);
 export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
 export const CustomSounds = new CustomSoundsRaw(db.collection(`${ prefix }custom_sounds`), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(db.collection(`${ prefix }custom_user_status`), trashCollection);

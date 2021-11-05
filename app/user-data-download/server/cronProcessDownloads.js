@@ -10,7 +10,8 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
+import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations } from '../../models/server';
+import { Avatars } from '../../models/server/raw';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
@@ -439,12 +440,12 @@ const generateUserFile = function(exportOperation, userData) {
 	}
 };
 
-const generateUserAvatarFile = function(exportOperation, userData) {
+const generateUserAvatarFile = async function(exportOperation, userData) {
 	if (!userData) {
 		return;
 	}
 
-	const file = Avatars.findOneByName(userData.username);
+	const file = await Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
 	}
@@ -478,7 +479,7 @@ const continueExportOperation = async function(exportOperation) {
 		}
 
 		if (!exportOperation.generatedAvatar) {
-			generateUserAvatarFile(exportOperation, exportOperation.userData);
+			await generateUserAvatarFile(exportOperation, exportOperation.userData);
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
