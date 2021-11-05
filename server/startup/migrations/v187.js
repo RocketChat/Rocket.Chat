@@ -61,7 +61,7 @@ addMigration({
 		await Settings.removeById('Notifications_Always_Notify_Mobile');
 
 		try {
-			Promise.await(migrateNotifications());
+			await migrateNotifications();
 		} catch (err) {
 			// Ignore if the collection does not exist
 			if (!err.code || err.code !== 26) {
