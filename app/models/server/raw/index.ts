@@ -46,7 +46,6 @@ import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';
 import { UsersSessionsRaw } from './UsersSessions';
 import { WebdavAccountsRaw } from './WebdavAccounts';
-import CustomSoundsModel from '../models/CustomSounds';
 import EmojiCustomModel from '../models/EmojiCustom';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
@@ -86,7 +85,6 @@ export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatEx
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection(), trashCollection);
-export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
@@ -98,6 +96,7 @@ const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 const prefix = 'rocketchat_';
 
 export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
+export const CustomSounds = new CustomSoundsRaw(db.collection(`${ prefix }custom_sounds`), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(db.collection(`${ prefix }custom_user_status`), trashCollection);
 export const CredentialTokens = new CredentialTokensRaw(db.collection(`${ prefix }credential_tokens`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
