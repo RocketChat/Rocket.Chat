@@ -36,17 +36,13 @@ export class LDAPEEManager extends LDAPManager {
 		try {
 			await ldap.connect();
 
-			try {
-				const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
-				const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+			const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
+			const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
 
-				if (createNewUsers) {
-					await this.importNewUsers(ldap, converter, updateExistingUsers);
-				} else if (updateExistingUsers) {
-					await this.updateExistingUsers(ldap, converter);
-				}
-			} finally {
-				ldap.disconnect();
+			if (createNewUsers) {
+				await this.importNewUsers(ldap, converter, updateExistingUsers);
+			} else if (updateExistingUsers) {
+				await this.updateExistingUsers(ldap, converter);
 			}
 
 			converter.convertUsers({
@@ -55,6 +51,8 @@ export class LDAPEEManager extends LDAPManager {
 		} catch (error) {
 			logger.error(error);
 		}
+
+		ldap.disconnect();
 	}
 
 	public static async syncAvatars(): Promise<void> {
@@ -116,12 +114,12 @@ export class LDAPEEManager extends LDAPManager {
 	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
 		await this.syncUserRoles(ldap, user, dn);
 		await this.syncUserChannels(ldap, user, dn);
-		await this.syncUserTeams(ldap, user, isNewRecord);
+		await this.syncUserTeams(ldap, user, dn, isNewRecord);
 	}
 
 	private static async advancedSync(ldap: LDAPConnection, importUser: IImportUser, converter: LDAPDataConverter, isNewRecord: boolean): Promise<void> {
 		const user = converter.findExistingUser(importUser);
-		if (!user || user.username) {
+		if (!user?.username) {
 			return;
 		}
 
@@ -140,6 +138,7 @@ export class LDAPEEManager extends LDAPManager {
 		};
 
 		const result = await ldap.searchRaw(baseDN, searchOptions);
+
 		if (!Array.isArray(result) || result.length === 0) {
 			logger.debug(`${ username } is not in ${ groupName } group!!!`);
 		} else {
@@ -314,7 +313,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, isNewRecord: boolean): Promise<void> {
+	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, dn: string, isNewRecord: boolean): Promise<void> {
 		if (!user.username) {
 			return;
 		}
@@ -324,7 +323,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const ldapUserTeams = await this.getLdapTeamsByUsername(ldap, user.username);
+		const ldapUserTeams = await this.getLdapTeamsByUsername(ldap, user.username, dn);
 		const mapJson = settings.get<string>('LDAP_Groups_To_Rocket_Chat_Teams');
 		if (!mapJson) {
 			return;
@@ -369,24 +368,42 @@ export class LDAPEEManager extends LDAPManager {
 		return [...new Set(filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]).flat())];
 	}
 
-	private static async getLdapTeamsByUsername(ldap: LDAPConnection, username: string): Promise<Array<string>> {
+	private static async getLdapTeamsByUsername(ldap: LDAPConnection, username: string, dn: string): Promise<Array<string>> {
+		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
 		const query = settings.get<string>('LDAP_Query_To_Get_User_Teams');
 		if (!query) {
 			return [];
 		}
 
 		const searchOptions = {
-			filter: query.replace(/#{username}/g, username),
+			filter: query.replace(/#{username}/g, username).replace(/#{userdn}/g, dn),
 			scope: ldap.options.userSearchScope || 'sub',
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
 
-		const ldapUserGroups = await ldap.searchRaw(ldap.options.baseDN, searchOptions);
+		const attributeNames = (settings.get<string>('LDAP_Teams_Name_Field') ?? '').split(',').map((attributeName) => attributeName.trim());
+		if (!attributeNames.length) {
+			attributeNames.push('ou');
+		}
+
+		const ldapUserGroups = await ldap.searchRaw(baseDN, searchOptions);
 		if (!Array.isArray(ldapUserGroups)) {
 			return [];
 		}
 
-		return ldapUserGroups.filter((entry) => entry?.raw?.ou).map((entry) => (ldap.extractLdapAttribute(entry.raw.ou) as string)).flat();
+		return ldapUserGroups.map((entry) => {
+			if (!entry?.raw) {
+				return undefined;
+			}
+
+			for (const attributeName of attributeNames) {
+				if (entry.raw[attributeName]) {
+					return ldap.extractLdapAttribute(entry.raw[attributeName]) as string;
+				}
+			}
+
+			return undefined;
+		}).filter((entry): entry is string => Boolean(entry)).flat();
 	}
 
 	private static isUserDeactivated(ldapUser: ILDAPEntry): boolean {
