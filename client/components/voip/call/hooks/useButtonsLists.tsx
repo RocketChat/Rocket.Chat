@@ -2,12 +2,15 @@ import { Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactNode, useState } from 'react';
 
+import { useTranslation } from '../../../../contexts/TranslationContext';
+
 export type ButtonInfo = {
 	name: string;
 	handler?: () => void;
 	states: Array<string>;
 	icon: string;
 	label: string;
+	order: number;
 };
 
 export type ButtonsList = {
@@ -19,22 +22,25 @@ const defaultButtonsList = [
 	{
 		name: 'audio-settings',
 		icon: 'customize',
-		label: 'audio-settings',
+		label: 'Audio_settings',
 		states: ['incoming', 'current', 'disabled'],
+		order: 15,
 	},
 
 	{
 		name: 'hold-call',
 		icon: 'pause-unfilled',
-		label: 'hold-call',
+		label: 'Hold_call',
 		states: ['current'],
+		order: 10,
 	},
 
 	{
 		name: 'mute',
 		icon: 'mic-off',
-		label: 'mute',
+		label: 'Mute',
 		states: ['current'],
+		order: 5,
 	},
 ];
 
@@ -43,15 +49,15 @@ const renderButtons = (
 	currentState: string,
 	handlers: Array<{ id: string; handler: () => void }>,
 	internalStates: Array<{ id: string; state: boolean }>,
-): Array<ReactNode> => {
-	console.log(buttonList, currentState, handlers, internalStates);
+): Array<ReactNode> =>
 	// const callOnHold = internalStates.find((state) => state.id === 'hold-call')?.state;
-	return buttonList
+	buttonList
 		.slice(0)
-		.reverse()
+		.sort((a, b) => a.order - b.order)
 		.filter((button) => button.states.includes(currentState))
 		.map((button) => {
 			const active = internalStates.find((state) => state.id === button.name)?.state;
+			const t = useTranslation();
 
 			return (
 				<Button
@@ -61,18 +67,17 @@ const renderButtons = (
 					mie={0}
 					borderWidth={0}
 					p={0}
+					// TODO: find a way to use generic strings on the useTranslation types
+					title={t(button.label as 'Audio_settings')}
 					size={28}
 					onClick={
 						handlers.find((handler) => handler.id === button.name)?.handler || button.handler
 					}
-					// disabled={callOnHold && button.name !== 'hold-call'}
 				>
 					<Icon color={active ? 'surface' : 'neutral-500-50'} size={24} name={button.icon} />
 				</Button>
 			);
 		});
-};
-
 export const useButtonsList = (
 	currentState: string,
 	customButtonsList?: Array<ButtonInfo>,
