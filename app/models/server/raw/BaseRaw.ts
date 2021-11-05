@@ -68,15 +68,20 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	protected name: string;
 
+	private preventSetUpdatedAt: boolean;
+
 	constructor(
 		public readonly col: Collection<T>,
 		public readonly trash?: Collection<T>,
+		options?: { preventSetUpdatedAt?: boolean },
 	) {
 		this.name = this.col.collectionName.replace(baseName, '');
 
 		if (this.indexes?.length) {
 			this.col.createIndexes(this.indexes);
 		}
+
+		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
 	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
@@ -142,17 +147,17 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	}
 
 	update(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<WriteOpResult> {
-		setUpdatedAt(update);
+		this.setUpdatedAt(update);
 		return this.col.update(filter, update, options);
 	}
 
 	updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateOneOptions & { multi?: boolean }): Promise<UpdateWriteOpResult> {
-		setUpdatedAt(update);
+		this.setUpdatedAt(update);
 		return this.col.updateOne(filter, update, options);
 	}
 
 	updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>, options?: UpdateManyOptions): Promise<UpdateWriteOpResult> {
-		setUpdatedAt(update);
+		this.setUpdatedAt(update);
 		return this.col.updateMany(filter, update, options);
 	}
 
@@ -162,7 +167,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 				const oid = new ObjectID();
 				return { _id: oid.toHexString(), ...doc };
 			}
-			setUpdatedAt(doc);
+			this.setUpdatedAt(doc);
 			return doc;
 		});
 
@@ -176,7 +181,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			doc = { _id: oid.toHexString(), ...doc };
 		}
 
-		setUpdatedAt(doc);
+		this.setUpdatedAt(doc);
 
 		// TODO reavaluate following type casting
 		return this.col.insertOne(doc as unknown as OptionalId<T>, options);
@@ -234,5 +239,12 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			return trash.findOne(query, options);
 		}
 		return trash.findOne(query, options);
+	}
+
+	private setUpdatedAt(record: UpdateQuery<T> | InsertionModel<T>): void {
+		if (this.preventSetUpdatedAt) {
+			return;
+		}
+		setUpdatedAt(record);
 	}
 }

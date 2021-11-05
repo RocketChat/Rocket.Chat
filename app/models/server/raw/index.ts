@@ -71,7 +71,6 @@ import SessionsModel from '../models/Sessions';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
-import UsersSessionsModel from '../models/UsersSessions';
 
 const trashCollection = trash.rawCollection();
 
@@ -95,7 +94,6 @@ export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.mo
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
-export const UsersSessions = new UsersSessionsRaw(UsersSessionsModel.model.rawCollection(), trashCollection);
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
@@ -119,6 +117,7 @@ export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_r
 export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
+export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), trashCollection, { preventSetUpdatedAt: true });
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
 const map = {
@@ -130,7 +129,6 @@ const map = {
 	[Permissions.col.collectionName]: PermissionsModel,
 	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
 	[LivechatDepartmentAgents.col.collectionName]: LivechatDepartmentAgentsModel,
-	[UsersSessions.col.collectionName]: UsersSessionsModel,
 	[Rooms.col.collectionName]: RoomsModel,
 	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
