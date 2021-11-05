@@ -3,22 +3,65 @@ import { Match, check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
-import { Settings } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { Settings } from '../../../models/server/raw';
+import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '../../../../definition/ISetting';
 
-const fetchSettings = (query, sort, offset, count, fields) => {
-	const settings = Settings.find(query, {
+
+const fetchSettings = async (query: Parameters<typeof Settings.find>[0], sort: Parameters<typeof Settings.find>[1]['sort'], offset: Parameters<typeof Settings.find>[1]['skip'], count: Parameters<typeof Settings.find>[1]['limit'], fields: Parameters<typeof Settings.find>[1]['projection']): Promise<ISetting[]> => {
+	const settings = await Settings.find(query, {
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
-		fields: Object.assign({ _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1 }, fields),
-	}).fetch();
+		projection: { _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
+	}).toArray() as unknown as ISetting[];
+
 
 	SettingsEvents.emit('fetch-settings', settings);
 	return settings;
+};
+
+type OauthCustomConfiguration = {
+	_id: string;
+	clientId?: string;
+	custom: unknown;
+	service?: string;
+	serverURL: unknown;
+	tokenPath: unknown;
+	identityPath: unknown;
+	authorizePath: unknown;
+	scope: unknown;
+	loginStyle: unknown;
+	tokenSentVia: unknown;
+	identityTokenSentVia: unknown;
+	keyField: unknown;
+	usernameField: unknown;
+	emailField: unknown;
+	nameField: unknown;
+	avatarField: unknown;
+	rolesClaim: unknown;
+	groupsClaim: unknown;
+	mapChannels: unknown;
+	channelsMap: unknown;
+	channelsAdmin: unknown;
+	mergeUsers: unknown;
+	mergeRoles: unknown;
+	accessTokenParam: unknown;
+	showButton: unknown;
+
+	appId: unknown;
+	consumerKey: unknown;
+
+	clientConfig: unknown;
+	buttonLabelText: unknown;
+	buttonLabelColor: unknown;
+	buttonColor: unknown;
+}
+const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => {
+	return Boolean(config);
 };
 
 // settings endpoints
@@ -34,7 +77,7 @@ API.v1.addRoute('settings.public', { authRequired: false }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
+		const settings = Promise.await(fetchSettings(ourQuery, sort, offset, count, fields));
 
 		return API.v1.success({
 			settings,
@@ -51,7 +94,11 @@ API.v1.addRoute('settings.oauth', { authRequired: false }, {
 			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 
 			return oAuthServicesEnabled.map((service) => {
-				if (service.custom || ['saml', 'cas', 'wordpress'].includes(service.service)) {
+				if (!isOauthCustomConfiguration(service)) {
+					return service;
+				}
+
+				if (service.custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
 					return { ...service };
 				}
 
@@ -93,7 +140,7 @@ API.v1.addRoute('settings', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
 
-		let ourQuery = {
+		let ourQuery: Parameters<typeof Settings.find>[0] = {
 			hidden: { $ne: true },
 		};
 
@@ -103,7 +150,7 @@ API.v1.addRoute('settings', { authRequired: true }, {
 
 		ourQuery = Object.assign({}, query, ourQuery);
 
-		const settings = fetchSettings(ourQuery, sort, offset, count, fields);
+		const settings = Promise.await(fetchSettings(ourQuery, sort, offset, count, fields));
 
 		return API.v1.success({
 			settings,
@@ -119,26 +166,34 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 		if (!hasPermission(this.userId, 'view-privileged-setting')) {
 			return API.v1.unauthorized();
 		}
-
-		return API.v1.success(_.pick(Settings.findOneNotHiddenById(this.urlParams._id), '_id', 'value'));
+		const setting = Promise.await(Settings.findOneNotHiddenById(this.urlParams._id));
+		if (!setting) {
+			return API.v1.failure();
+		}
+		return API.v1.success(_.pick(setting, '_id', 'value'));
 	},
 	post: {
 		twoFactorRequired: true,
-		action() {
+		action(this: any): void {
 			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 				return API.v1.unauthorized();
 			}
 
 			// allow special handling of particular setting types
-			const setting = Settings.findOneNotHiddenById(this.urlParams._id);
-			if (setting.type === 'action' && this.bodyParams && this.bodyParams.execute) {
+			const setting = Promise.await(Settings.findOneNotHiddenById(this.urlParams._id));
+
+			if (!setting) {
+				return API.v1.failure();
+			}
+
+			if (isSettingAction(setting) && this.bodyParams && this.bodyParams.execute) {
 				// execute the configured method
 				Meteor.call(setting.value);
 				return API.v1.success();
 			}
 
-			if (setting.type === 'color' && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
-				Settings.updateOptionsById(this.urlParams._id, { editor: this.bodyParams.editor });
+			if (isSettingColor(setting) && this.bodyParams && this.bodyParams.editor && this.bodyParams.value) {
+				Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
 				Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
 				return API.v1.success();
 			}
@@ -146,8 +201,12 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 			check(this.bodyParams, {
 				value: Match.Any,
 			});
-			if (Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value)) {
-				settings.set(Settings.findOneNotHiddenById(this.urlParams._id));
+			if (Promise.await(Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))) {
+				const s = Promise.await(Settings.findOneNotHiddenById(this.urlParams._id));
+				if (!s) {
+					return API.v1.failure();
+				}
+				settings.set(s);
 				setValue(this.urlParams._id, this.bodyParams.value);
 				return API.v1.success();
 			}

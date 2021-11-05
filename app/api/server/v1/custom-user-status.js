@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { CustomUserStatus } from '../../../models/server/raw';
+import { CustomUserStatus } from '../../../models';
 import { API } from '../api';
 import { findCustomUserStatus } from '../lib/custom-user-status';
 
@@ -38,7 +38,7 @@ API.v1.addRoute('custom-user-status.create', { authRequired: true }, {
 		});
 
 		return API.v1.success({
-			customUserStatus: Promise.await(CustomUserStatus.findOneByName(userStatusData.name)),
+			customUserStatus: CustomUserStatus.findOneByName(userStatusData.name),
 		});
 	},
 });
@@ -70,7 +70,7 @@ API.v1.addRoute('custom-user-status.update', { authRequired: true }, {
 			statusType: this.bodyParams.statusType,
 		};
 
-		const customUserStatus = Promise.await(CustomUserStatus.findOneById(userStatusData._id));
+		const customUserStatus = CustomUserStatus.findOneById(userStatusData._id);
 
 		// Ensure the message exists
 		if (!customUserStatus) {
@@ -82,7 +82,7 @@ API.v1.addRoute('custom-user-status.update', { authRequired: true }, {
 		});
 
 		return API.v1.success({
-			customUserStatus: Promise.await(CustomUserStatus.findOneById(userStatusData._id)),
+			customUserStatus: CustomUserStatus.findOneById(userStatusData._id),
 		});
 	},
 });
