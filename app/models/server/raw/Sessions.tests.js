@@ -4,8 +4,6 @@ import assert from 'assert';
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import './Sessions.mocks.js';
-
 const { MongoClient } = require('mongodb');
 
 const { aggregates } = require('./Sessions');
