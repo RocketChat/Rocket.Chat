@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { slashCommands } from '../../../utils';
-import { Rooms, Messages } from '../../../models';
+import { slashCommands } from '../../../utils/server';
+import { Rooms, Messages } from '../../../models/server';
+import { canAccessRoom } from '../../../authorization/server';
 import { API } from '../api';
 
 API.v1.addRoute('commands.get', { authRequired: true }, {
@@ -78,8 +79,9 @@ API.v1.addRoute('commands.run', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		// This will throw an error if they can't or the room is invalid
-		Meteor.call('canAccessRoom', body.roomId, user._id);
+		if (!canAccessRoom({ _id: body.roomId }, user)) {
+			return API.v1.unauthorized();
+		}
 
 		const params = body.params ? body.params : '';
 		const message = {
@@ -127,8 +129,9 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		// This will throw an error if they can't or the room is invalid
-		Meteor.call('canAccessRoom', query.roomId, user._id);
+		if (!canAccessRoom({ _id: query.roomId }, user)) {
+			return API.v1.unauthorized();
+		}
 
 		const params = query.params ? query.params : '';
 
@@ -177,8 +180,9 @@ API.v1.addRoute('commands.preview', { authRequired: true }, {
 			return API.v1.failure('The command provided does not exist (or is disabled).');
 		}
 
-		// This will throw an error if they can't or the room is invalid
-		Meteor.call('canAccessRoom', body.roomId, user._id);
+		if (!canAccessRoom({ _id: body.roomId }, user)) {
+			return API.v1.unauthorized();
+		}
 
 		const params = body.params ? body.params : '';
 		const message = {

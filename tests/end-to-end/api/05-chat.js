@@ -750,7 +750,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
 						})
 						.end(done);
-				}, 500);
+				}, 1000);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
