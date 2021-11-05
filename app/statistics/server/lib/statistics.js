@@ -12,13 +12,12 @@ import {
 	Uploads,
 	Messages,
 	LivechatVisitors,
-	Integrations,
 } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw, Statistics, Sessions } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw, Statistics, Sessions, Integrations } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -187,7 +186,7 @@ export const statistics = {
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();
 
-		const integrations = Promise.await(Integrations.model.rawCollection().find({}, {
+		const integrations = Promise.await(Integrations.find({}, {
 			projection: {
 				_id: 0,
 				type: 1,
