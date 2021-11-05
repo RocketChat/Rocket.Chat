@@ -75,18 +75,6 @@ export class Roles extends Base {
 		return true;
 	}
 
-	removeUserRoles(userId, roles, scope) {
-		roles = [].concat(roles);
-		for (const roleName of roles) {
-			const role = this.findOneByName(roleName);
-			const roleScope = (role && role.scope) || 'Users';
-			const model = Models[roleScope];
-
-			model && model.removeRolesByUserId && model.removeRolesByUserId(userId, roleName, scope);
-		}
-		return true;
-	}
-
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [{
