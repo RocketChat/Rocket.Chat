@@ -18,7 +18,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 		let payload;
 
 		try {
-			payload = decryptIfNeeded(this.request, this.bodyParams);
+			payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
 		} catch (err) {
 			return API.v1.failure('Could not decrypt payload');
 		}
@@ -54,7 +54,7 @@ API.v1.addRoute('federation.events.requestFromLatest', { authRequired: false }, 
 		}
 
 		// Dispatch all the events, on the same request
-		dispatchEvents([fromDomain], missingEvents);
+		Promise.await(dispatchEvents([fromDomain], missingEvents));
 
 		return API.v1.success();
 	},

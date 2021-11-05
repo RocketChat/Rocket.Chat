@@ -10,7 +10,7 @@ export async function addUser(query) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUser' });
 	}
 
-	const user = getUserByUsername(query);
+	const user = await getUserByUsername(query);
 
 	if (!user) {
 		throw federationErrors.userNotFound(query);

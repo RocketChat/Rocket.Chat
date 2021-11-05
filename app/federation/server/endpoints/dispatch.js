@@ -227,7 +227,7 @@ const eventHandlers = {
 
 					const { federation: { origin } } = denormalizedMessage;
 
-					const { upload, buffer } = getUpload(origin, denormalizedMessage.file._id);
+					const { upload, buffer } = await getUpload(origin, denormalizedMessage.file._id);
 
 					const oldUploadId = upload._id;
 
@@ -455,7 +455,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 		let payload;
 
 		try {
-			payload = decryptIfNeeded(this.request, this.bodyParams);
+			payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
 		} catch (err) {
 			return API.v1.failure('Could not decrypt payload');
 		}
@@ -481,7 +481,7 @@ API.v1.addRoute('federation.events.dispatch', { authRequired: false, rateLimiter
 				try {
 					serverLogger.debug({ msg: 'federation.events.dispatch => Event has missing parents', event });
 
-					requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds);
+					Promise.await(requestEventsFromLatest(event.origin, getFederationDomain(), contextDefinitions.defineType(event), event.context, eventResult.latestEventIds));
 
 					// And stop handling the events
 					break;
