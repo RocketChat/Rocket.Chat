@@ -14,7 +14,6 @@ import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
 import Imports from './models/Imports';
-import IntegrationHistory from './models/IntegrationHistory';
 import EmojiCustom from './models/EmojiCustom';
 import SmarshHistory from './models/SmarshHistory';
 import LivechatCustomField from './models/LivechatCustomField';
@@ -55,7 +54,6 @@ export {
 	CustomSounds,
 	CustomUserStatus,
 	Imports,
-	IntegrationHistory,
 	EmojiCustom,
 	SmarshHistory,
 	LivechatCustomField,

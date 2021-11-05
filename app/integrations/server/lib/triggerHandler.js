@@ -10,7 +10,7 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import * as Models from '../../../models/server';
-import { Integrations } from '../../../models/server/raw';
+import { Integrations, IntegrationHistory } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
@@ -143,11 +143,11 @@ export class RocketChatIntegrationHandler {
 		}
 
 		if (historyId) {
-			Models.IntegrationHistory.update({ _id: historyId }, { $set: history });
+			Promise.await(IntegrationHistory.updateOne({ _id: historyId }, { $set: history }));
 			return historyId;
 		}
 		history._createdAt = new Date();
-		return Models.IntegrationHistory.insert(Object.assign({ _id: Random.id() }, history));
+		return Promise.await(IntegrationHistory.insertOne({ _id: Random.id(), ...history }));
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
