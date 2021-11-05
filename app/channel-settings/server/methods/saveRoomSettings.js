@@ -128,7 +128,7 @@ const validators = {
 
 const settingSavers = {
 	roomName({ value, rid, user, room }) {
-		if (!saveRoomName(rid, value, user)) {
+		if (!Promise.await(saveRoomName(rid, value, user))) {
 			return;
 		}
 

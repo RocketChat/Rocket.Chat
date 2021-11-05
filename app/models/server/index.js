@@ -15,7 +15,6 @@ import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
 import CustomUserStatus from './models/CustomUserStatus';
 import Imports from './models/Imports';
-import Integrations from './models/Integrations';
 import IntegrationHistory from './models/IntegrationHistory';
 import EmojiCustom from './models/EmojiCustom';
 import SmarshHistory from './models/SmarshHistory';
@@ -58,7 +57,6 @@ export {
 	CustomSounds,
 	CustomUserStatus,
 	Imports,
-	Integrations,
 	IntegrationHistory,
 	EmojiCustom,
 	SmarshHistory,

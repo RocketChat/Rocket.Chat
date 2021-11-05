@@ -10,7 +10,7 @@ import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { api } from '../../../../server/sdk/api';
 
-export const deleteUser = function(userId, confirmRelinquish = false) {
+export async function deleteUser(userId, confirmRelinquish = false) {
 	const user = Users.findOneById(userId, {
 		fields: { username: 1, avatarOrigin: 1, federation: 1 },
 	});
@@ -64,7 +64,7 @@ export const deleteUser = function(userId, confirmRelinquish = false) {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
-		Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		Promise.await(Integrations.disableByUserId(userId)); // Disables all the integrations which rely on the user being deleted.
 		api.broadcast('user.deleted', user);
 	}
 
@@ -76,4 +76,4 @@ export const deleteUser = function(userId, confirmRelinquish = false) {
 
 	// Refresh the servers list
 	FederationServers.refreshServers();
-};
+}

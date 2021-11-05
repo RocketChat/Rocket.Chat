@@ -51,7 +51,6 @@ import EmojiCustomModel from '../models/EmojiCustom';
 import ImportDataModel from '../models/ImportData';
 import InstanceStatusModel from '../models/InstanceStatus';
 import IntegrationHistoryModel from '../models/IntegrationHistory';
-import IntegrationsModel from '../models/Integrations';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
 import LivechatCustomFieldModel from '../models/LivechatCustomField';
@@ -90,7 +89,6 @@ export const Messages = new MessagesRaw(MessagesModel.model.rawCollection(), tra
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection(), trashCollection);
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
-export const Integrations = new IntegrationsRaw(IntegrationsModel.model.rawCollection(), trashCollection);
 export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection(), trashCollection);
 export const CustomSounds = new CustomSoundsRaw(CustomSoundsModel.model.rawCollection(), trashCollection);
 export const CustomUserStatus = new CustomUserStatusRaw(CustomUserStatusModel.model.rawCollection(), trashCollection);
@@ -112,6 +110,7 @@ export const Analytics = new AnalyticsRaw(db.collection(`${ prefix }analytics`, 
 export const CredentialTokens = new CredentialTokensRaw(db.collection(`${ prefix }credential_tokens`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${ prefix }email_message_history`), trashCollection);
+export const Integrations = new IntegrationsRaw(db.collection(`${ prefix }integrations`), trashCollection);
 export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trashCollection);
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const OAuthApps = new OAuthAppsRaw(db.collection(`${ prefix }oauth_apps`), trashCollection);
@@ -136,7 +135,6 @@ const map = {
 	[LoginServiceConfiguration.col.collectionName]: LoginServiceConfigurationModel,
 	[InstanceStatus.col.collectionName]: InstanceStatusModel,
 	[IntegrationHistory.col.collectionName]: IntegrationHistoryModel,
-	[Integrations.col.collectionName]: IntegrationsModel,
 };
 
 if (!process.env.DISABLE_DB_WATCH) {
