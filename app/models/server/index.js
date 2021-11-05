@@ -12,7 +12,6 @@ import Users from './models/Users';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
-import CustomUserStatus from './models/CustomUserStatus';
 import Imports from './models/Imports';
 import EmojiCustom from './models/EmojiCustom';
 import LivechatCustomField from './models/LivechatCustomField';
@@ -51,7 +50,6 @@ export {
 	Permissions,
 	Roles,
 	CustomSounds,
-	CustomUserStatus,
 	Imports,
 	EmojiCustom,
 	LivechatCustomField,
