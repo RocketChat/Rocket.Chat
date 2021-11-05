@@ -68,6 +68,7 @@ import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
+import { UserDataFilesRaw } from './UserDataFiles';
 
 const trashCollection = trash.rawCollection();
 
@@ -118,6 +119,7 @@ export const Sessions = new SessionsRaw(db.collection(`${ prefix }sessions`), db
 export const SmarshHistory = new SmarshHistoryRaw(db.collection(`${ prefix }smarsh_history`), trashCollection);
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), trashCollection, { preventSetUpdatedAt: true });
+export const UserDataFiles = new UserDataFilesRaw(db.collection(`${ prefix }user_data_files`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
 const map = {

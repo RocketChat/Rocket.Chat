@@ -10,8 +10,8 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles } from '../../models/server';
-import { Avatars, ExportOperations } from '../../models/server/raw';
+import { Subscriptions, Rooms, Users, Uploads, Messages } from '../../models/server';
+import { Avatars, ExportOperations, UserDataFiles } from '../../models/server/raw';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
@@ -572,7 +572,7 @@ async function processDataDownloads() {
 	await ExportOperations.updateOperation(operation);
 
 	if (operation.status === 'completed') {
-		const file = operation.fileId ? UserDataFiles.findOneById(operation.fileId) : UserDataFiles.findLastFileByUser(operation.userId);
+		const file = operation.fileId ? await UserDataFiles.findOneById(operation.fileId) : await UserDataFiles.findLastFileByUser(operation.userId);
 		if (!file) {
 			return;
 		}

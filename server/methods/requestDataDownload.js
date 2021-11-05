@@ -4,8 +4,7 @@ import path from 'path';
 import mkdirp from 'mkdirp';
 import { Meteor } from 'meteor/meteor';
 
-import { UserDataFiles } from '../../app/models/server';
-import { ExportOperations } from '../../app/models/server/raw';
+import { ExportOperations, UserDataFiles } from '../../app/models/server/raw';
 import { settings } from '../../app/settings/server';
 import { DataExport } from '../../app/user-data-download/server/DataExport';
 
@@ -31,7 +30,7 @@ Meteor.methods({
 
 			if (lastOperation.createdAt > yesterday) {
 				if (lastOperation.status === 'completed') {
-					const file = lastOperation.fileId ? UserDataFiles.findOneById(lastOperation.fileId) : UserDataFiles.findLastFileByUser(userId);
+					const file = lastOperation.fileId ? await UserDataFiles.findOneById(lastOperation.fileId) : await UserDataFiles.findLastFileByUser(userId);
 					if (file) {
 						return {
 							requested: false,
