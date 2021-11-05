@@ -97,14 +97,14 @@ API.v1.addRoute('integrations.list', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields: projection, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query);
 		const cursor = Integrations.find(ourQuery, {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
-			fields,
+			projection,
 		});
 
 		const total = Promise.await(cursor.count());

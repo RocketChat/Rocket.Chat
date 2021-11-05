@@ -1,7 +1,9 @@
 import { Integrations } from '../../../models/server/raw';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { IIntegration } from '../../../../definition/IIntegration';
+import { IUser } from '../../../../definition/IUser';
 
-const hasIntegrationsPermission = async (userId, integration) => {
+const hasIntegrationsPermission = async (userId: string, integration: IIntegration): Promise<boolean> => {
 	const type = integration.type === 'webhook-incoming' ? 'incoming' : 'outgoing';
 
 	if (await hasPermissionAsync(userId, `manage-${ type }-integrations`)) {
@@ -15,7 +17,15 @@ const hasIntegrationsPermission = async (userId, integration) => {
 	return false;
 };
 
-export const findOneIntegration = async ({ userId, integrationId, createdBy }) => {
+export const findOneIntegration = async ({
+	userId,
+	integrationId,
+	createdBy,
+}: {
+	userId: string;
+	integrationId: string;
+	createdBy: IUser;
+}): Promise<IIntegration> => {
 	const integration = await Integrations.findOneByIdAndCreatedByIfExists({ _id: integrationId, createdBy });
 	if (!integration) {
 		throw new Error('The integration does not exists.');

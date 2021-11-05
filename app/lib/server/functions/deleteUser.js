@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms, Integrations, FederationServers } from '../../../models/server';
+import { Users, Subscriptions, Messages, Rooms, FederationServers } from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
