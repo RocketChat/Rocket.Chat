@@ -47,7 +47,7 @@ export class OAuthEEManager {
 			// remove all roles that the user has, but sso doesnt
 			removeUserFromRoles(user._id, toRemove);
 
-			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val) && rolesToSync.includes(val));
+			const toAdd = rolesFromSSO.filter((val: any) => !user.roles.includes(val) && (!rolesToSync.length || rolesToSync.includes(val)));
 
 			// add all roles that sso has, but the user doesnt
 			addUserRoles(user._id, toAdd);

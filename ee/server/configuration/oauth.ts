@@ -63,7 +63,7 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			OAuthEEManager.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim, settings.rolesToSync.split(','));
+			OAuthEEManager.updateRolesFromSSO(auth.user, auth.serviceData, settings.rolesClaim, settings.rolesToSync.split(',').map((role) => role.trim()));
 		}
 	});
 
