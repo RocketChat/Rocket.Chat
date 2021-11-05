@@ -4,14 +4,11 @@ type AudioProps = {
 	src: string;
 };
 
-const Audio: FC<AudioProps> = ({ src }) => {
-	console.log('audio', src);
-	return (
-		<audio controls>
-			<source src={src} data-rel='noopener noreferrer' />
-			Your browser does not support the audio element.
-		</audio>
-	);
-};
+const Audio: FC<AudioProps> = ({ src }) => (
+	<audio controls>
+		<source src={src} data-rel='noopener noreferrer' />
+		Your browser does not support the audio element.
+	</audio>
+);
 
 export default memo(Audio);
