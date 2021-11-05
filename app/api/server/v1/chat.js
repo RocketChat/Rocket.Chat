@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Messages } from '../../../models';
-import { canAccessRoom, hasPermission } from '../../../authorization';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { processWebhookMessage } from '../../../lib/server';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
@@ -404,12 +404,12 @@ API.v1.addRoute('chat.getPinnedMessages', { authRequired: true }, {
 		if (!roomId) {
 			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 		}
-		const room = Meteor.call('canAccessRoom', roomId, this.userId);
-		if (!room) {
+
+		if (!canAccessRoom({ _id: roomId }, { _id: this.userId })) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		const cursor = Messages.findPinnedByRoom(room._id, {
+		const cursor = Messages.findPinnedByRoom(roomId, {
 			skip: offset,
 			limit: count,
 		});

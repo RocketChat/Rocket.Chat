@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { check } from 'meteor/check';
 import xml2js from 'xml2js';
 
 import BigBlueButtonApi from '../../../bigbluebutton/server';
-import { settings } from '../../../settings';
-import { Rooms, Users } from '../../../models';
-import { saveStreamingOptions } from '../../../channel-settings';
+import { settings } from '../../../settings/server';
+import { Rooms, Users } from '../../../models/server';
+import { saveStreamingOptions } from '../../../channel-settings/server';
+import { canAccessRoom } from '../../../authorization/server';
 import { API } from '../../../api/server';
 
 const parser = new xml2js.Parser({
@@ -23,11 +25,27 @@ const getBBBAPI = () => {
 
 Meteor.methods({
 	bbbJoin({ rid }) {
+		check(rid, String);
+
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}
 
-		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'bbbJoin' });
+		}
+
+		const user = Users.findOneById(this.userId);
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
+		}
+
+		const room = Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'bbbJoin' });
+		}
+
+		if (!canAccessRoom(room, user)) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbJoin' });
 		}
 
@@ -37,7 +55,6 @@ Meteor.methods({
 
 		const { api } = getBBBAPI();
 		const meetingID = settings.get('uniqueID') + rid;
-		const room = Rooms.findOneById(rid);
 		const createUrl = api.urlFor('create', {
 			name: room.t === 'd' ? 'Direct' : room.name,
 			meetingID,
@@ -55,8 +72,6 @@ Meteor.methods({
 		const doc = parseString(createResult.content);
 
 		if (doc.response.returncode[0]) {
-			const user = Users.findOneById(this.userId);
-
 			const hookApi = api.urlFor('hooks/create', {
 				meetingID,
 				callbackURL: Meteor.absoluteUrl(`api/v1/videoconference.bbb.update/${ meetingID }`),
@@ -89,11 +104,17 @@ Meteor.methods({
 	},
 
 	bbbEnd({ rid }) {
+		check(rid, String);
+
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
-		if (!Meteor.call('canAccessRoom', rid, this.userId)) {
+		if (!rid) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'bbbEnd' });
+		}
+
+		if (!canAccessRoom({ _id: rid }, { _id: this.userId })) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'bbbEnd' });
 		}
 
