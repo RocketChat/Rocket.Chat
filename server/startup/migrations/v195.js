@@ -85,6 +85,6 @@ addMigration({
 			Permissions.upsert({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } });
 			Permissions.remove({ _id: 'view-livechat-officeHours' });
 		}
-		Promise.await(migrateCollection());
+		await migrateCollection();
 	},
 });
