@@ -186,7 +186,7 @@ function customOAuthServicesInit() {
 					mergeUsers: process.env[`${ serviceKey }_merge_users`] === 'true',
 					mapChannels: process.env[`${ serviceKey }_map_channels`],
 					mergeRoles: process.env[`${ serviceKey }_merge_roles`] === 'true',
-					rolesToSync: process.env[`${ serviceKey }roles_to_sync`],
+					rolesToSync: process.env[`${ serviceKey }_roles_to_sync`],
 					showButton: process.env[`${ serviceKey }_show_button`] === 'true',
 					avatarField: process.env[`${ serviceKey }_avatar_field`],
 				};
