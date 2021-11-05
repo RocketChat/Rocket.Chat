@@ -9,7 +9,7 @@ import { Users } from '../../../models';
 import { deleteUser } from '../functions';
 
 Meteor.methods({
-	async deleteUserOwnAccount(password, confirmRelinquish) {
+	deleteUserOwnAccount(password, confirmRelinquish) {
 		check(password, String);
 
 		if (!Meteor.userId()) {
@@ -39,7 +39,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'deleteUserOwnAccount' });
 		}
 
-		await deleteUser(userId, confirmRelinquish);
+		deleteUser(userId, confirmRelinquish);
 
 		return true;
 	},

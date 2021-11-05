@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { hasPermission } from '../../../authorization';
-import { Settings } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { Settings } from '../../../models/server/raw';
 
 Meteor.methods({
-	refreshOAuthService() {
+	async refreshOAuthService() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'refreshOAuthService' });
 		}
@@ -16,6 +16,6 @@ Meteor.methods({
 
 		ServiceConfiguration.configurations.remove({});
 
-		Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_|Blockstack_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
+		await Settings.update({ _id: /^(Accounts_OAuth_|SAML_|CAS_|Blockstack_).+/ }, { $set: { _updatedAt: new Date() } }, { multi: true });
 	},
 });
