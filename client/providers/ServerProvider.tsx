@@ -62,18 +62,6 @@ const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise
 	return APIClient.v1.upload(endpoint, params, formData).promise;
 };
 
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		// eslint-disable-next-line @typescript-eslint/no-namespace
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: typeof Meteor.Streamer;
-			};
-		}
-	}
-}
-
 const getStream = (
 	streamName: string,
 	options: {} = {},

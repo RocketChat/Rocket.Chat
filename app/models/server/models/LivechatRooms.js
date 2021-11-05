@@ -563,6 +563,7 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
+						onHold: '$onHold',
 					},
 					messagesCount: {
 						$sum: 1,
@@ -578,6 +579,7 @@ export class LivechatRooms extends Base {
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
 					msgs: '$messagesCount',
+					onHold: '$_id.onHold',
 				},
 			},
 		]);
