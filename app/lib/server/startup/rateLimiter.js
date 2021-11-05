@@ -5,7 +5,7 @@ import { RateLimiter } from 'meteor/rate-limit';
 
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('RateLimiter');
 

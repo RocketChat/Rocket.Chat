@@ -8,7 +8,7 @@ import * as localCommandHandlers from './localHandlers';
 import { callbacks } from '../../../callbacks/server';
 import * as servers from '../servers';
 import { Settings } from '../../../models/server';
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');

@@ -5,7 +5,7 @@ import { LivechatRooms } from '../../../models';
 import { LivechatRooms as LivechatRoomsRaw } from '../../../models/server/raw';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');

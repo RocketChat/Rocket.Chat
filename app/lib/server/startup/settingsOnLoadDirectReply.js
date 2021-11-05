@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { settings } from '../../../settings/server';
 import { IMAPIntercepter, POP3Helper, POP3 } from '../lib/interceptDirectReplyEmails.js';
 

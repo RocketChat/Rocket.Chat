@@ -1,4 +1,4 @@
-import { Logger } from '../../logger/server';
+import { Logger } from '../../../server/lib/logger/Logger';
 
 const logger = new Logger('AutoTranslate');
 

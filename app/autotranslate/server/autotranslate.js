@@ -6,7 +6,7 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../callbacks';
 import { Subscriptions, Messages } from '../../models';
 import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger';
+import { Logger } from '../../../server/lib/logger/Logger';
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');

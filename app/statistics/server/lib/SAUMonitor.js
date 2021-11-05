@@ -5,7 +5,7 @@ import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 import { Sessions } from '../../../models/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { aggregates } from '../../../models/server/models/Sessions';
 import { getMostImportantRole } from './getMostImportantRole';
 

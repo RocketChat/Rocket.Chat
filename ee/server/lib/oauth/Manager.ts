@@ -1,7 +1,7 @@
 import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
 import { Roles, Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
-import { Logger } from '../../../../app/logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 export const logger = new Logger('OAuth');
 

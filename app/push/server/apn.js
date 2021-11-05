@@ -1,7 +1,7 @@
 import apn from 'apn';
 import { EJSON } from 'meteor/ejson';
 
-import { logger } from './logger';
+import { logger } from '../../../server/lib/logger/Logger';
 
 let apnConnection;
 

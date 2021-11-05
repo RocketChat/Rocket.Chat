@@ -3,7 +3,7 @@ import { SHA256 } from 'meteor/sha';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 
-import { Logger } from '../../logger';
+import { Logger } from '../../../server/lib/logger/Logger';
 import { _setRealName } from '../../lib';
 import { Users } from '../../models';
 import { settings } from '../../settings';

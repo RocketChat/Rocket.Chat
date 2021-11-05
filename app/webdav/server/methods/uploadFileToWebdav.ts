@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavAccounts } from '../../../models/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';

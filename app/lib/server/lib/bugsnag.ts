@@ -3,7 +3,7 @@ import Bugsnag from '@bugsnag/js';
 
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/server';
-import { Logger } from '../../../logger/server';
+import { Logger } from '../../../../server/lib/logger/Logger';
 
 const logger = new Logger('bugsnag');
 

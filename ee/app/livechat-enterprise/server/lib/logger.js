@@ -1,4 +1,4 @@
-import { Logger } from '../../../../../app/logger/server';
+import { Logger } from '../../../../../server/lib/logger/Logger';
 
 export const logger = new Logger('LivechatEnterprise');
 

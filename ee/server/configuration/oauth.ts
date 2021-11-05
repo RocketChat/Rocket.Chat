@@ -4,7 +4,7 @@ import { OAuthEEManager } from '../lib/oauth/Manager';
 import { onLicense } from '../../app/license/server';
 import { callbacks } from '../../../app/callbacks/server';
 import { settings } from '../../../app/settings/server';
-import { Logger } from '../../../app/logger/server';
+import { Logger } from '../../../server/lib/logger/Logger';
 
 interface IOAuthUserService {
 	serviceName: string;

@@ -1,4 +1,4 @@
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';

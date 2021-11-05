@@ -1,7 +1,7 @@
 import gcm from 'node-gcm';
 import { EJSON } from 'meteor/ejson';
 
-import { logger } from './logger';
+import { logger } from '../../../server/lib/logger/Logger';
 
 export const sendGCM = function({ userTokens, notification, _replaceToken, _removeToken, options }) {
 	if (typeof notification.gcm === 'object') {

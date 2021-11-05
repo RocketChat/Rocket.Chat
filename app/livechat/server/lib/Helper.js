@@ -8,7 +8,7 @@ import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, 
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../callbacks/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { settings } from '../../../settings';
 import { Apps, AppEvents } from '../../../apps/server';
 import notifications from '../../../notifications/server/lib/Notifications';
