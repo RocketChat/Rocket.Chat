@@ -94,7 +94,8 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	scope?: string;
+	// scope?: string;
+	scope?: 'Users' | 'Subscriptions';
 	_id: string;
 }
 
