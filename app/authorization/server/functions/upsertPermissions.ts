@@ -1,11 +1,12 @@
 /* eslint no-multi-spaces: 0 */
 import Roles from '../../../models/server/models/Roles';
 import Permissions from '../../../models/server/models/Permissions';
-import Settings from '../../../models/server/models/Settings';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
+import { Settings } from '../../../models/server/raw';
+import { IPermission } from '../../../../definition/IPermission';
 
-export const upsertPermissions = () => {
+export const upsertPermissions = (): void => {
 	// Note:
 	// 1.if we need to create a role that can only edit channel message, but not edit group message
 	// then we can define edit-<type>-message instead of edit-message
@@ -174,10 +175,10 @@ export const upsertPermissions = () => {
 		Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
 	}
 
-	const getPreviousPermissions = function(settingId) {
+	const getPreviousPermissions = function(settingId?: string): Record<string, IPermission> {
 		const previousSettingPermissions = {};
 
-		const selector = { level: CONSTANTS.SETTINGS_LEVEL };
+		const selector = { level: CONSTANTS.SETTINGS_LEVEL, ...settingId && { settingId } };
 		if (settingId) {
 			selector.settingId = settingId;
 		}
@@ -189,10 +190,10 @@ export const upsertPermissions = () => {
 		return previousSettingPermissions;
 	};
 
-	const createSettingPermission = function(setting, previousSettingPermissions) {
+	const createSettingPermission = function(setting, previousSettingPermissions): void {
 		const permissionId = getSettingPermissionId(setting._id);
-		const permission = {
-			level: CONSTANTS.SETTINGS_LEVEL,
+		const permission: Omit<IPermission, '_id'> = {
+			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
@@ -231,10 +232,10 @@ export const upsertPermissions = () => {
 		delete previousSettingPermissions[permissionId];
 	};
 
-	const createPermissionsForExistingSettings = function() {
+	const createPermissionsForExistingSettings = async function(): Promise<void> {
 		const previousSettingPermissions = getPreviousPermissions();
 
-		Settings.findNotHidden().fetch().forEach((setting) => {
+		(await Settings.findNotHidden().toArray()).forEach((setting) => {
 			createSettingPermission(setting, previousSettingPermissions);
 		});
 
@@ -250,9 +251,9 @@ export const upsertPermissions = () => {
 	createPermissionsForExistingSettings();
 
 	// register a callback for settings for be create in higher-level-packages
-	settings.on('*', function([settingId]) {
+	settings.on('*', async function([settingId]) {
 		const previousSettingPermissions = getPreviousPermissions(settingId);
-		const setting = Settings.findOneById(settingId);
+		const setting = await Settings.findOneById(settingId);
 		if (setting) {
 			if (!setting.hidden) {
 				createSettingPermission(setting, previousSettingPermissions);
