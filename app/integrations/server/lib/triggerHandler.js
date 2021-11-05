@@ -10,6 +10,7 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 
 import * as Models from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';
@@ -22,7 +23,7 @@ export class RocketChatIntegrationHandler {
 		this.compiledScripts = {};
 		this.triggers = {};
 
-		Models.Integrations.find({ type: 'webhook-outgoing' }).fetch().forEach((data) => this.addIntegration(data));
+		Promise.await(Integrations.find({ type: 'webhook-outgoing' }).forEach((data) => this.addIntegration(data)));
 	}
 
 	addIntegration(record) {
