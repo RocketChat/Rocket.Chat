@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { logger } from '../../../server/lib/logger/Logger';
+import { logger } from './logger';
 import { settings } from '../../settings/server';
 import { generateUsernameSuggestion } from '../../lib';
 

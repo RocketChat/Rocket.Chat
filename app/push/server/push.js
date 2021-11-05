@@ -6,7 +6,7 @@ import _ from 'underscore';
 
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
-import { logger } from '../../../server/lib/logger/Logger';
+import { logger } from './logger';
 import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });

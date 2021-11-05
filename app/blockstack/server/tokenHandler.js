@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 
-import { logger } from '../../../server/lib/logger/Logger';
+import { logger } from './logger';
 
 // Handler extracts data from JSON and tokenised reponse.
 // Reflects OAuth token service, with some slight modifications for Blockstack.

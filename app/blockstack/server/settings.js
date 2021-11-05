@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { logger } from '../../../server/lib/logger/Logger';
+import { logger } from './logger';
 import { settings, settingsRegistry } from '../../settings/server';
 
 const defaults = {

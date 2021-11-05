@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 
 import { _matchToken, appTokensCollection } from './push';
-import { logger } from '../../../server/lib/logger/Logger';
+import { logger } from './logger';
 
 Meteor.methods({
 	'raix:push-update'(options) {
