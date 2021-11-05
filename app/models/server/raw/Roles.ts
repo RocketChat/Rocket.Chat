@@ -112,7 +112,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 			}
 
 			switch (role.scope) {
-				case 'Subscription':
+				case 'Subscriptions':
 					scope && await this.models.Subscriptions.removeRolesByUserId(userId, [roleName], scope);
 					break;
 				case 'Users':
@@ -161,7 +161,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		}
 
 		switch (role.scope) {
-			case 'Subscription':
+			case 'Subscriptions':
 				return this.models.Subscriptions.findUsersInRoles([name], scope);
 			case 'Users':
 			default:

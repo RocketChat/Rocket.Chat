@@ -32,7 +32,7 @@ Meteor.methods({
 
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
 		if (hasRole(user._id, 'owner', room._id)) {
-			const numOwners = getUsersInRole('owner', room._id).count();
+			const numOwners = getUsersInRole('owner', room._id).length;
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}
