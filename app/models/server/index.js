@@ -12,7 +12,6 @@ import Users from './models/Users';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import Imports from './models/Imports';
-import EmojiCustom from './models/EmojiCustom';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
@@ -49,7 +48,6 @@ export {
 	Permissions,
 	Roles,
 	Imports,
-	EmojiCustom,
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,

@@ -46,7 +46,6 @@ import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';
 import { UsersSessionsRaw } from './UsersSessions';
 import { WebdavAccountsRaw } from './WebdavAccounts';
-import EmojiCustomModel from '../models/EmojiCustom';
 import ImportDataModel from '../models/ImportData';
 import LivechatAgentActivityModel from '../models/LivechatAgentActivity';
 import LivechatBusinessHoursModel from '../models/LivechatBusinessHours';
@@ -84,7 +83,6 @@ export const Messages = new MessagesRaw(MessagesModel.model.rawCollection(), tra
 export const LivechatExternalMessage = new LivechatExternalMessageRaw(LivechatExternalMessagesModel.model.rawCollection(), trashCollection);
 export const LivechatVisitors = new LivechatVisitorsRaw(LivechatVisitorsModel.model.rawCollection(), trashCollection);
 export const LivechatInquiry = new LivechatInquiryRaw(LivechatInquiryModel.model.rawCollection(), trashCollection);
-export const EmojiCustom = new EmojiCustomRaw(EmojiCustomModel.model.rawCollection(), trashCollection);
 export const LivechatAgentActivity = new LivechatAgentActivityRaw(LivechatAgentActivityModel.model.rawCollection(), trashCollection);
 export const LivechatBusinessHours = new LivechatBusinessHoursRaw(LivechatBusinessHoursModel.model.rawCollection(), trashCollection);
 export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollection, { Users, Subscriptions });
@@ -101,6 +99,7 @@ export const CustomUserStatus = new CustomUserStatusRaw(db.collection(`${ prefix
 export const CredentialTokens = new CredentialTokensRaw(db.collection(`${ prefix }credential_tokens`), trashCollection);
 export const EmailInbox = new EmailInboxRaw(db.collection(`${ prefix }email_inbox`), trashCollection);
 export const EmailMessageHistory = new EmailMessageHistoryRaw(db.collection(`${ prefix }email_message_history`), trashCollection);
+export const EmojiCustom = new EmojiCustomRaw(db.collection(`${ prefix }custom_emoji`), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(db.collection('instances'), trashCollection, { preventSetUpdatedAt: true });
 export const Integrations = new IntegrationsRaw(db.collection(`${ prefix }integrations`), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(db.collection(`${ prefix }integration_history`), trashCollection);

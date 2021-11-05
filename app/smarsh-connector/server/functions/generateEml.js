@@ -32,8 +32,8 @@ smarsh.generateEml = () => {
 		const smarshMissingEmail = settings.get('Smarsh_MissingEmail_Email');
 		const timeZone = settings.get('Smarsh_Timezone');
 
-		Rooms.find().forEach((room) => {
-			const smarshHistory = SmarshHistory.findOne({ _id: room._id });
+		Rooms.find().forEach(async (room) => {
+			const smarshHistory = await SmarshHistory.findOne({ _id: room._id });
 			const query = { rid: room._id };
 
 			if (smarshHistory) {
