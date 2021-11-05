@@ -1,7 +1,6 @@
 import moment from 'moment';
 
-import Sessions from '../../../../../app/models/server/raw/Sessions';
-import { Users, Analytics } from '../../../../../app/models/server/raw';
+import { Users, Analytics, Sessions } from '../../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = (user) => {

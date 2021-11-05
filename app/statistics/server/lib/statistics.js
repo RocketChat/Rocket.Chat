@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
 
 import {
-	Sessions,
 	Settings,
 	Users,
 	Rooms,
@@ -19,7 +18,7 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw, Statistics } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw, Statistics, Sessions } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -175,15 +174,15 @@ export const statistics = {
 		statistics.mongoVersion = mongoVersion;
 		statistics.mongoStorageEngine = mongoStorageEngine;
 
-		statistics.uniqueUsersOfYesterday = Sessions.getUniqueUsersOfYesterday();
-		statistics.uniqueUsersOfLastWeek = Sessions.getUniqueUsersOfLastWeek();
-		statistics.uniqueUsersOfLastMonth = Sessions.getUniqueUsersOfLastMonth();
-		statistics.uniqueDevicesOfYesterday = Sessions.getUniqueDevicesOfYesterday();
-		statistics.uniqueDevicesOfLastWeek = Sessions.getUniqueDevicesOfLastWeek();
-		statistics.uniqueDevicesOfLastMonth = Sessions.getUniqueDevicesOfLastMonth();
-		statistics.uniqueOSOfYesterday = Sessions.getUniqueOSOfYesterday();
-		statistics.uniqueOSOfLastWeek = Sessions.getUniqueOSOfLastWeek();
-		statistics.uniqueOSOfLastMonth = Sessions.getUniqueOSOfLastMonth();
+		statistics.uniqueUsersOfYesterday = Promise.await(Sessions.getUniqueUsersOfYesterday());
+		statistics.uniqueUsersOfLastWeek = Promise.await(Sessions.getUniqueUsersOfLastWeek());
+		statistics.uniqueUsersOfLastMonth = Promise.await(Sessions.getUniqueUsersOfLastMonth());
+		statistics.uniqueDevicesOfYesterday = Promise.await(Sessions.getUniqueDevicesOfYesterday());
+		statistics.uniqueDevicesOfLastWeek = Promise.await(Sessions.getUniqueDevicesOfLastWeek());
+		statistics.uniqueDevicesOfLastMonth = Promise.await(Sessions.getUniqueDevicesOfLastMonth());
+		statistics.uniqueOSOfYesterday = Promise.await(Sessions.getUniqueOSOfYesterday());
+		statistics.uniqueOSOfLastWeek = Promise.await(Sessions.getUniqueOSOfLastWeek());
+		statistics.uniqueOSOfLastMonth = Promise.await(Sessions.getUniqueOSOfLastMonth());
 
 		statistics.apps = getAppsStatistics();
 		statistics.services = getServicesStatistics();

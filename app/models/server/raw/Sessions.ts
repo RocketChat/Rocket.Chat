@@ -1,8 +1,118 @@
-import { Base } from './_Base';
-import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { AggregationCursor, BulkWriteOperation, BulkWriteOpResultObject, Collection, IndexSpecification, UpdateWriteOpResult, FilterQuery } from 'mongodb';
+
+import { ISession as T } from '../../../../definition/ISession';
+import { BaseRaw, ModelOptionalId } from './BaseRaw';
+
+type DestructuredDate = {year: number; month: number; day: number};
+type DestructuredDateWithType = {year: number; month: number; day: number; type?: 'month' | 'week'};
+type DestructuredRange = {start: DestructuredDate; end: DestructuredDate};
+type FullReturn = { year: number; month: number; day: number; data: T[] };
+
+const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): FilterQuery<T> => {
+	if (start.year === end.year && start.month === end.month) {
+		return {
+			year: start.year,
+			month: start.month,
+			day: { $gte: start.day, $lte: end.day },
+		};
+	}
+
+	if (start.year === end.year) {
+		return {
+			year: start.year,
+			$and: [{
+				$or: [{
+					month: { $gt: start.month },
+				}, {
+					month: start.month,
+					day: { $gte: start.day },
+				}],
+			}, {
+				$or: [{
+					month: { $lt: end.month },
+				}, {
+					month: end.month,
+					day: { $lte: end.day },
+				}],
+			}],
+		};
+	}
+
+	return {
+		$and: [{
+			$or: [{
+				year: { $gt: start.year },
+			}, {
+				year: start.year,
+				month: { $gt: start.month },
+			}, {
+				year: start.year,
+				month: start.month,
+				day: { $gte: start.day },
+			}],
+		}, {
+			$or: [{
+				year: { $lt: end.year },
+			}, {
+				year: end.year,
+				month: { $lt: end.month },
+			}, {
+				year: end.year,
+				month: end.month,
+				day: { $lte: end.day },
+			}],
+		}],
+	};
+};
+
+const getGroupSessionsByHour = (_id: { range: string; day: string; month: string; year: string } | string): {listGroup: object; countGroup: object} => {
+	const isOpenSession = { $not: ['$session.closedAt'] };
+	const isAfterLoginAt = { $gte: ['$range', { $hour: '$session.loginAt' }] };
+	const isBeforeClosedAt = { $lte: ['$range', { $hour: '$session.closedAt' }] };
+
+	const listGroup = {
+		$group: {
+			_id,
+			usersList: {
+				$addToSet: {
+					$cond: [
+						{
+							$or: [
+								{ $and: [isOpenSession, isAfterLoginAt] },
+								{ $and: [isAfterLoginAt, isBeforeClosedAt] },
+							],
+						},
+						'$session.userId',
+						'$$REMOVE',
+					],
+				},
+			},
+		},
+	};
+
+	const countGroup = {
+		$addFields: {
+			users: { $size: '$usersList' },
+		},
+	};
+
+	return { listGroup, countGroup };
+};
+
+const getSortByFullDate = (): { year: number; month: number; day: number } => ({
+	year: -1,
+	month: -1,
+	day: -1,
+});
+
+const getProjectionByFullDate = (): { day: string; month: string; year: string } => ({
+	day: '$_id.day',
+	month: '$_id.month',
+	year: '$_id.year',
+});
 
 export const aggregates = {
-	dailySessionsOfYesterday(collection, { year, month, day }) {
+	dailySessionsOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): AggregationCursor<T> {
 		return collection.aggregate([{
 			$match: {
 				userId: { $exists: true },
@@ -91,7 +201,7 @@ export const aggregates = {
 		}], { allowDiskUse: true });
 	},
 
-	getUniqueUsersOfYesterday(collection, { year, month, day }) {
+	async getUniqueUsersOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				year,
@@ -153,7 +263,7 @@ export const aggregates = {
 		}]).toArray();
 	},
 
-	getUniqueUsersOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
+	async getUniqueUsersOfLastMonthOrWeek(collection: Collection<T>, { year, month, day, type = 'month' }: DestructuredDateWithType): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
@@ -223,7 +333,7 @@ export const aggregates = {
 		}], { allowDiskUse: true }).toArray();
 	},
 
-	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }) {
+	getMatchOfLastMonthOrWeek({ year, month, day, type = 'month' }: DestructuredDateWithType): FilterQuery<T> {
 		let startOfPeriod;
 
 		if (type === 'month') {
@@ -298,7 +408,7 @@ export const aggregates = {
 		};
 	},
 
-	getUniqueDevicesOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
+	async getUniqueDevicesOfLastMonthOrWeek(collection: Collection<T>, { year, month, day, type = 'month' }: DestructuredDateWithType): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
@@ -336,7 +446,7 @@ export const aggregates = {
 		}], { allowDiskUse: true }).toArray();
 	},
 
-	getUniqueDevicesOfYesterday(collection, { year, month, day }) {
+	getUniqueDevicesOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				year,
@@ -376,7 +486,7 @@ export const aggregates = {
 		}]).toArray();
 	},
 
-	getUniqueOSOfLastMonthOrWeek(collection, { year, month, day, type = 'month' }) {
+	getUniqueOSOfLastMonthOrWeek(collection: Collection<T>, { year, month, day, type = 'month' }: DestructuredDateWithType): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				type: 'user_daily',
@@ -415,7 +525,7 @@ export const aggregates = {
 		}], { allowDiskUse: true }).toArray();
 	},
 
-	getUniqueOSOfYesterday(collection, { year, month, day }) {
+	getUniqueOSOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): Promise<T[]> {
 		return collection.aggregate([{
 			$match: {
 				year,
@@ -457,25 +567,208 @@ export const aggregates = {
 	},
 };
 
-export class Sessions extends Base {
-	constructor(...args) {
-		super(...args);
+export class SessionsRaw extends BaseRaw<T> {
+	protected indexes: IndexSpecification[] = [
+		{ key: { instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 } },
+		{ key: { instanceId: 1, sessionId: 1, userId: 1 } },
+		{ key: { instanceId: 1, sessionId: 1 } },
+		{ key: { sessionId: 1 } },
+		{ key: { userId: 1 } },
+		{ key: { year: 1, month: 1, day: 1, type: 1 } },
+		{ key: { type: 1 } },
+		{ key: { ip: 1, loginAt: 1 } },
+		{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
+	]
 
-		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, year: 1, month: 1, day: 1 });
-		this.tryEnsureIndex({ instanceId: 1, sessionId: 1, userId: 1 });
-		this.tryEnsureIndex({ instanceId: 1, sessionId: 1 });
-		this.tryEnsureIndex({ sessionId: 1 });
-		this.tryEnsureIndex({ userId: 1 });
-		this.tryEnsureIndex({ year: 1, month: 1, day: 1, type: 1 });
-		this.tryEnsureIndex({ type: 1 });
-		this.tryEnsureIndex({ ip: 1, loginAt: 1 });
-		this.tryEnsureIndex({ _computedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 45 });
+	private secondaryCollection: Collection<T>;
 
-		const db = this.model.rawDatabase();
-		this.secondaryCollection = db.collection(this.model._name, { readPreference: readSecondaryPreferred(db) });
+	constructor(
+		public readonly col: Collection<T>,
+		public readonly colSecondary: Collection<T>,
+		public readonly trash?: Collection<T>,
+	) {
+		super(col, trash);
+
+		this.secondaryCollection = colSecondary;
 	}
 
-	getUniqueUsersOfYesterday() {
+	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<T[]> {
+		return this.col.aggregate([
+			{
+				$match: {
+					...matchBasedOnDate(start, end),
+					type: 'user_daily',
+				},
+			},
+			{
+				$group: {
+					_id: '$userId',
+				},
+			},
+		]).toArray();
+	}
+
+	async findLastLoginByIp(ip: string): Promise<T | null> {
+		return this.findOne({
+			ip,
+		}, {
+			sort: { loginAt: -1 },
+			limit: 1,
+		});
+	}
+
+	async getActiveUsersOfPeriodByDayBetweenDates({ start, end }: DestructuredRange): Promise<T[]> {
+		return this.col.aggregate([
+			{
+				$match: {
+					...matchBasedOnDate(start, end),
+					type: 'user_daily',
+					mostImportantRole: { $ne: 'anonymous' },
+				},
+			},
+			{
+				$group: {
+					_id: {
+						day: '$day',
+						month: '$month',
+						year: '$year',
+						userId: '$userId',
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						day: '$_id.day',
+						month: '$_id.month',
+						year: '$_id.year',
+					},
+					usersList: {
+						$addToSet: '$_id.userId',
+					},
+					users: { $sum: 1 },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					...getProjectionByFullDate(),
+					usersList: 1,
+					users: 1,
+				},
+			},
+			{
+				$sort: {
+					...getSortByFullDate(),
+				},
+			},
+		]).toArray();
+	}
+
+	async getBusiestTimeWithinHoursPeriod({ start, end, groupSize }: DestructuredRange & {groupSize: number}): Promise<T[]> {
+		const match = {
+			$match: {
+				type: 'computed-session',
+				loginAt: { $gte: start, $lte: end },
+			},
+		};
+		const rangeProject = {
+			$project: {
+				range: {
+					$range: [0, 24, groupSize],
+				},
+				session: '$$ROOT',
+			},
+		};
+		const unwind = {
+			$unwind: '$range',
+		};
+		const groups = getGroupSessionsByHour('$range');
+		const presentationProject = {
+			$project: {
+				_id: 0,
+				hour: '$_id',
+				users: 1,
+			},
+		};
+		const sort = {
+			$sort: {
+				hour: -1,
+			},
+		};
+		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
+	}
+
+	async getTotalOfSessionsByDayBetweenDates({ start, end }: DestructuredRange): Promise<T[]> {
+		return this.col.aggregate([
+			{
+				$match: {
+					...matchBasedOnDate(start, end),
+					type: 'user_daily',
+					mostImportantRole: { $ne: 'anonymous' },
+				},
+			},
+			{
+				$group: {
+					_id: { year: '$year', month: '$month', day: '$day' },
+					users: { $sum: 1 },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					...getProjectionByFullDate(),
+					users: 1,
+				},
+			},
+			{
+				$sort: {
+					...getSortByFullDate(),
+				},
+			},
+		]).toArray();
+	}
+
+	async getTotalOfSessionByHourAndDayBetweenDates({ start, end }: DestructuredRange): Promise<T[]> {
+		const match = {
+			$match: {
+				type: 'computed-session',
+				loginAt: { $gte: start, $lte: end },
+			},
+		};
+		const rangeProject = {
+			$project: {
+				range: {
+					$range: [
+						{ $hour: '$loginAt' },
+						{ $sum: [{ $ifNull: [{ $hour: '$closedAt' }, 23] }, 1] }],
+				},
+				session: '$$ROOT',
+			},
+
+		};
+		const unwind = {
+			$unwind: '$range',
+		};
+		const groups = getGroupSessionsByHour({ range: '$range', day: '$session.day', month: '$session.month', year: '$session.year' });
+		const presentationProject = {
+			$project: {
+				_id: 0,
+				hour: '$_id.range',
+				...getProjectionByFullDate(),
+				users: 1,
+			},
+		};
+		const sort = {
+			$sort: {
+				...getSortByFullDate(),
+				hour: -1,
+			},
+		};
+		return this.col.aggregate([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort]).toArray();
+	}
+
+	async getUniqueUsersOfYesterday(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -487,11 +780,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfYesterday(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueUsersOfYesterday(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueUsersOfLastMonth() {
+	async getUniqueUsersOfLastMonth(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -503,11 +796,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueUsersOfLastWeek() {
+	async getUniqueUsersOfLastWeek(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -519,11 +812,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
+			data: await aggregates.getUniqueUsersOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' }),
 		};
 	}
 
-	getUniqueDevicesOfYesterday() {
+	async getUniqueDevicesOfYesterday(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -535,11 +828,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfYesterday(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueDevicesOfYesterday(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueDevicesOfLastMonth() {
+	async getUniqueDevicesOfLastMonth(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -551,11 +844,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueDevicesOfLastWeek() {
+	async getUniqueDevicesOfLastWeek(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -567,11 +860,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
+			data: await aggregates.getUniqueDevicesOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' }),
 		};
 	}
 
-	getUniqueOSOfYesterday() {
+	async getUniqueOSOfYesterday(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -583,11 +876,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfYesterday(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueOSOfYesterday(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueOSOfLastMonth() {
+	async getUniqueOSOfLastMonth(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -599,11 +892,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day })),
+			data: await aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day }),
 		};
 	}
 
-	getUniqueOSOfLastWeek() {
+	async getUniqueOSOfLastWeek(): Promise<FullReturn> {
 		const date = new Date();
 		date.setDate(date.getDate() - 1);
 
@@ -615,11 +908,11 @@ export class Sessions extends Base {
 			year,
 			month,
 			day,
-			data: Promise.await(aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' })),
+			data: await aggregates.getUniqueOSOfLastMonthOrWeek(this.secondaryCollection, { year, month, day, type: 'week' }),
 		};
 	}
 
-	createOrUpdate(data = {}) {
+	async createOrUpdate(data: T): Promise<UpdateWriteOpResult | undefined> {
 		const { year, month, day, sessionId, instanceId } = data;
 
 		if (!year || !month || !day || !sessionId || !instanceId) {
@@ -628,19 +921,19 @@ export class Sessions extends Base {
 
 		const now = new Date();
 
-		return this.upsert({ instanceId, sessionId, year, month, day }, {
+		return this.updateOne({ instanceId, sessionId, year, month, day }, {
 			$set: data,
 			$setOnInsert: {
 				createdAt: now,
 			},
-		});
+		}, { upsert: true });
 	}
 
-	closeByInstanceIdAndSessionId(instanceId, sessionId) {
+	async closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateWriteOpResult> {
 		const query = {
 			instanceId,
 			sessionId,
-			closedAt: { $exists: 0 },
+			closedAt: { $exists: false },
 		};
 
 		const closeTime = new Date();
@@ -651,27 +944,27 @@ export class Sessions extends Base {
 			},
 		};
 
-		return this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
-	updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day } = {}, instanceId, sessions, data = {}) {
+	async updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }: Partial<DestructuredDate> = {}, instanceId: string, sessions: string[], data = {}): Promise<UpdateWriteOpResult> {
 		const query = {
 			instanceId,
 			year,
 			month,
 			day,
 			sessionId: { $in: sessions },
-			closedAt: { $exists: 0 },
+			closedAt: { $exists: false },
 		};
 
 		const update = {
 			$set: data,
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId, sessionId, userId) {
+	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateWriteOpResult> {
 		const query = {
 			instanceId,
 			sessionId,
@@ -686,15 +979,15 @@ export class Sessions extends Base {
 			},
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	createBatch(sessions) {
+	async createBatch(sessions: ModelOptionalId<T>[]): Promise<BulkWriteOpResultObject | undefined> {
 		if (!sessions || sessions.length === 0) {
 			return;
 		}
 
-		const ops = [];
+		const ops: BulkWriteOperation<T>[] = [];
 		sessions.forEach((doc) => {
 			const { year, month, day, sessionId, instanceId } = doc;
 			delete doc._id;
@@ -710,8 +1003,6 @@ export class Sessions extends Base {
 			});
 		});
 
-		return this.model.rawCollection().bulkWrite(ops, { ordered: false });
+		return this.col.bulkWrite(ops, { ordered: false });
 	}
 }
-
-export default new Sessions('sessions');

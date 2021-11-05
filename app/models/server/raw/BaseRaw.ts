@@ -43,7 +43,7 @@ type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user has defin
 			: U
 	: ObjectId;
 
-type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
+export type ModelOptionalId<T> = EnhancedOmit<T, '_id'> & { _id?: ExtractIdType<T> };
 // InsertionModel forces both _id and _updatedAt to be optional, regardless of how they are declared in T
 export type InsertionModel<T> = EnhancedOmit<ModelOptionalId<T>, '_updatedAt'> & { _updatedAt?: Date };
 

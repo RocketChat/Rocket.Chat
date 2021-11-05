@@ -67,7 +67,6 @@ import OmnichannelQueueModel from '../models/OmnichannelQueue';
 import PermissionsModel from '../models/Permissions';
 import RolesModel from '../models/Roles';
 import RoomsModel from '../models/Rooms';
-import SessionsModel from '../models/Sessions';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
 import UsersModel from '../models/Users';
@@ -97,7 +96,6 @@ export const Roles = new RolesRaw(RolesModel.model.rawCollection(), trashCollect
 export const LoginServiceConfiguration = new LoginServiceConfigurationRaw(LoginServiceConfigurationModel.model.rawCollection(), trashCollection);
 export const InstanceStatus = new InstanceStatusRaw(InstanceStatusModel.model.rawCollection(), trashCollection);
 export const IntegrationHistory = new IntegrationHistoryRaw(IntegrationHistoryModel.model.rawCollection(), trashCollection);
-export const Sessions = new SessionsRaw(SessionsModel.model.rawCollection(), trashCollection);
 export const OmnichannelQueue = new OmnichannelQueueRaw(OmnichannelQueueModel.model.rawCollection(), trashCollection);
 export const ImportData = new ImportDataRaw(ImportDataModel.model.rawCollection(), trashCollection);
 
@@ -116,6 +114,7 @@ export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_c
 export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_receipts`), trashCollection);
 export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
+export const Sessions = new SessionsRaw(db.collection(`${ prefix }sessions`), db.collection(`${ prefix }sessions`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), trashCollection, { preventSetUpdatedAt: true });
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);

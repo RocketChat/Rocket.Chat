@@ -9,7 +9,6 @@ import Subscriptions from './models/Subscriptions';
 import Uploads from './models/Uploads';
 import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
-import Sessions from './models/Sessions';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
 import CustomSounds from './models/CustomSounds';
@@ -51,7 +50,6 @@ export {
 	Uploads,
 	UserDataFiles,
 	Users,
-	Sessions,
 	Permissions,
 	Roles,
 	CustomSounds,

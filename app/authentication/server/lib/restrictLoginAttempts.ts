@@ -1,11 +1,10 @@
 import moment from 'moment';
 
 import { ILoginAttempt } from '../ILoginAttempt';
-import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
+import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
 import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
-import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
 import { Logger } from '../../../logger/server';
@@ -51,7 +50,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip) as {loginAt?: Date} | undefined;
+	const lastLogin = await Sessions.findLastLoginByIp(ip);
 	let failedAttemptsSinceLastLogin;
 
 	if (!lastLogin || !lastLogin.loginAt) {
