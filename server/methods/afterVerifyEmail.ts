@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Roles } from '../../app/models';
+import { Users } from '../../app/models/server';
+import { Roles } from '../../app/models/server/raw';
 
 Meteor.methods({
-	afterVerifyEmail() {
+	async afterVerifyEmail() {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -19,10 +20,10 @@ Meteor.methods({
 			const rolesThatNeedChanges = user.roles.filter((role) => rolesToChangeTo[role]);
 
 			if (rolesThatNeedChanges.length && verifiedEmail) {
-				rolesThatNeedChanges.forEach((role) => {
-					Roles.addUserRoles(user._id, rolesToChangeTo[role]);
-					Roles.removeUserRoles(user._id, role);
-				});
+				await Promise.all(rolesThatNeedChanges.map(async (role) => {
+					await Roles.addUserRoles(user._id, rolesToChangeTo[role]);
+					await Roles.removeUserRoles(user._id, role);
+				}));
 			}
 		}
 	},
