@@ -60,9 +60,7 @@ type OauthCustomConfiguration = {
 	buttonLabelColor: unknown;
 	buttonColor: unknown;
 }
-const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => {
-	return Boolean(config);
-};
+const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
 
 // settings endpoints
 API.v1.addRoute('settings.public', { authRequired: false }, {
@@ -90,7 +88,7 @@ API.v1.addRoute('settings.public', { authRequired: false }, {
 
 API.v1.addRoute('settings.oauth', { authRequired: false }, {
 	get() {
-		const mountOAuthServices = () => {
+		const mountOAuthServices = (): object => {
 			const oAuthServicesEnabled = ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
 
 			return oAuthServicesEnabled.map((service) => {

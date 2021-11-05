@@ -47,13 +47,13 @@ Meteor.methods({
 			return [];
 		}
 
-		const bypass = <T>(settings): T => settings;
+		const bypass = <T>(settings: T): T => settings;
 
-		const applyFilter = (fn, args) => fn(args);
+		const applyFilter = (fn: Function, args: any[]): any => fn(args);
 
 		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] => settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));
 
-		const getAuthorizedSettings = async (updatedAfter: Date, privilegedSetting: boolean): Promise<ISetting[]> => applyFilter(privilegedSetting ? bypass : getAuthorizedSettingsFiltered, await Settings.findNotHidden(updatedAfter && { updatedAfter }).fetch());
+		const getAuthorizedSettings = async (updatedAfter: Date, privilegedSetting: boolean): Promise<ISetting[]> => applyFilter(privilegedSetting ? bypass : getAuthorizedSettingsFiltered, await Settings.findNotHidden(updatedAfter && { updatedAfter }).toArray());
 
 		if (!(updatedAfter instanceof Date)) {
 			// this does not only imply an unfiltered setting range, it also identifies the caller's context:
