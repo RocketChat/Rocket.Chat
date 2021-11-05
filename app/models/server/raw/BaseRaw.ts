@@ -5,6 +5,8 @@ import {
 	Cursor,
 	DeleteWriteOpResultObject,
 	FilterQuery,
+	FindAndModifyWriteOpResultObject,
+	FindOneAndUpdateOption,
 	FindOneOptions,
 	IndexSpecification,
 	InsertOneWriteOpResult,
@@ -82,6 +84,10 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		}
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+	}
+
+	public findOneAndUpdate(query: FilterQuery<T>, update: UpdateQuery<T> | T, options?: FindOneAndUpdateOption<T>): Promise<FindAndModifyWriteOpResultObject<T>> {
+		return this.col.findOneAndUpdate(query, update, options);
 	}
 
 	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
@@ -246,5 +252,23 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			return;
 		}
 		setUpdatedAt(record);
+	}
+
+	trashFindDeletedAfter<P extends T>(deletedAt: Date, query: FilterQuery<T> = {}, options: any): Cursor <T | P> {
+		const q = {
+			__collection__: this.name,
+			_deletedAt: {
+				$gt: deletedAt,
+			},
+			...query,
+		} as FilterQuery<T>;
+
+		const { trash } = this;
+
+		if (!trash) {
+			throw new Error('Trash is not enabled for this collection');
+		}
+
+		return trash.find(q, options);
 	}
 }

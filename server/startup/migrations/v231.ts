@@ -5,12 +5,12 @@ import { addMigration } from '../../lib/migrations';
 import { BannerPlatform } from '../../../definition/IBanner';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
-import { Settings } from '../../../app/models/server';
 import { isEnterprise } from '../../../ee/app/license/server';
+import { Settings } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 231,
-	up() {
+	async up() {
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
@@ -18,7 +18,7 @@ addMigration({
 			_id: { $in: [/^Accounts_OAuth_(Custom-)?([^-_]+)$/, 'Accounts_OAuth_GitHub_Enterprise'] },
 			value: true,
 		};
-		const CustomOauthEnabled = !!Settings.findOne(query);
+		const CustomOauthEnabled = !! await Settings.findOne(query);
 
 		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
 

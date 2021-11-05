@@ -2,14 +2,14 @@ import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 205,
+	version: 184,
 	up() {
-		// Disable this new enforcement setting for existent installations.
+		// Set SAML signature validation type to 'Either'
 		Settings.update({
-			_id: 'Accounts_TwoFactorAuthentication_Enforce_Password_Fallback',
+			_id: 'SAML_Custom_Default_signature_validation_type',
 		}, {
 			$set: {
-				value: false,
+				value: 'Either',
 			},
 		}, {
 			upsert: true,

@@ -2,8 +2,8 @@ import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 240,
+	version: 176,
 	up() {
-		return Settings.removeById('Support_Cordova_App');
+		Promise.await(Settings.remove({ _id: 'Livechat', type: 'group' }));
 	},
 });
