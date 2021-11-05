@@ -65,7 +65,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 			FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
-		Promise.await(Integrations.disableByUserId(userId)); // Disables all the integrations which rely on the user being deleted.
+		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
 		api.broadcast('user.deleted', user);
 	}
 
