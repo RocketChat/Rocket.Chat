@@ -1,6 +1,5 @@
 import { Base } from './models/_Base';
 import { BaseDb } from './models/_BaseDb';
-import ExportOperations from './models/ExportOperations';
 import Messages from './models/Messages';
 import Rooms from './models/Rooms';
 import Settings from './models/Settings';
@@ -35,7 +34,6 @@ export { FederationServers } from './models/FederationServers';
 export {
 	Base,
 	BaseDb,
-	ExportOperations,
 	Messages,
 	Rooms,
 	Settings,
