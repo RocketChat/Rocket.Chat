@@ -40,6 +40,7 @@ import { RoomsRaw } from './Rooms';
 import { ServerEventsRaw } from './ServerEvents';
 import { SessionsRaw } from './Sessions';
 import { SettingsRaw } from './Settings';
+import { SmarshHistoryRaw } from './SmarshHistory';
 import { StatisticsRaw } from './Statistics';
 import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';
@@ -113,6 +114,7 @@ export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_r
 export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
 export const Sessions = new SessionsRaw(db.collection(`${ prefix }sessions`), db.collection(`${ prefix }sessions`, { readPreference: readSecondaryPreferred(db) }), trashCollection);
+export const SmarshHistory = new SmarshHistoryRaw(db.collection(`${ prefix }smarsh_history`), trashCollection);
 export const Statistics = new StatisticsRaw(db.collection(`${ prefix }statistics`), trashCollection);
 export const UsersSessions = new UsersSessionsRaw(db.collection('usersSessions'), trashCollection, { preventSetUpdatedAt: true });
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
