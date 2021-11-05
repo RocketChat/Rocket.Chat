@@ -11,11 +11,8 @@ import UserDataFiles from './models/UserDataFiles';
 import Users from './models/Users';
 import Permissions from './models/Permissions';
 import Roles from './models/Roles';
-import CustomSounds from './models/CustomSounds';
-import CustomUserStatus from './models/CustomUserStatus';
 import Imports from './models/Imports';
 import EmojiCustom from './models/EmojiCustom';
-import SmarshHistory from './models/SmarshHistory';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
@@ -51,11 +48,8 @@ export {
 	Users,
 	Permissions,
 	Roles,
-	CustomSounds,
-	CustomUserStatus,
 	Imports,
 	EmojiCustom,
-	SmarshHistory,
 	LivechatCustomField,
 	LivechatDepartment,
 	LivechatDepartmentAgents,

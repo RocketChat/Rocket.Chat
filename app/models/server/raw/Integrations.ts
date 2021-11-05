@@ -6,6 +6,10 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> {
 		{ key: { type: 1 } },
 	]
 
+	findOneByUrl(url: string): Promise<IIntegration | null> {
+		return this.findOne({ url });
+	}
+
 	updateRoomName(oldRoomName: string, newRoomName: string): ReturnType<BaseRaw<IIntegration>['updateMany']> {
 		const hashedOldRoomName = `#${ oldRoomName }`;
 		const hashedNewRoomName = `#${ newRoomName }`;

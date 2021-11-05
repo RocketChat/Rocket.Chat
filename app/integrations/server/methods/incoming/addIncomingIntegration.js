@@ -4,8 +4,9 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { hasPermission, hasAllPermission } from '../../../../authorization';
-import { Users, Rooms, Integrations, Roles, Subscriptions } from '../../../../models';
+import { hasPermission, hasAllPermission } from '../../../../authorization/server';
+import { Users, Rooms, Roles, Subscriptions } from '../../../../models/server';
+import { Integrations } from '../../../../models/server/raw';
 
 const validChannelChars = ['@', '#'];
 
@@ -97,7 +98,9 @@ Meteor.methods({
 
 		Roles.addUserRoles(user._id, 'bot');
 
-		integration._id = Integrations.insert(integration);
+		const result = Promise.await(Integrations.insertOne(integration));
+
+		integration._id = result.insertedId;
 
 		return integration;
 	},

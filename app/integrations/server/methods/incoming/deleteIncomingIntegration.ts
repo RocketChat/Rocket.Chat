@@ -1,16 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../authorization';
-import { Integrations } from '../../../../models';
+import { hasPermission } from '../../../../authorization/server';
+import { Integrations } from '../../../../models/server/raw';
 
 Meteor.methods({
-	deleteIncomingIntegration(integrationId) {
+	async deleteIncomingIntegration(integrationId) {
 		let integration;
 
 		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
-			integration = Integrations.findOne(integrationId);
+			integration = Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
-			integration = Integrations.findOne(integrationId, { fields: { '_createdBy._id': this.userId } });
+			integration = Integrations.findOne({
+				_id: integrationId,
+				'_createdBy._id': this.userId,
+			});
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'deleteIncomingIntegration' });
 		}
@@ -19,7 +22,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', { method: 'deleteIncomingIntegration' });
 		}
 
-		Integrations.remove({ _id: integrationId });
+		await Integrations.removeById(integrationId);
 
 		return true;
 	},

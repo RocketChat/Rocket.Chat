@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
-import { Subscriptions, Rooms, Messages, Uploads, Integrations, Users } from '../../../models/server';
+import { Subscriptions, Rooms, Messages, Uploads, Users } from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { hasPermission, hasAtLeastOnePermission, canAccessRoom, hasAllPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -312,21 +313,24 @@ API.v1.addRoute('groups.getIntegrations', { authRequired: true }, {
 		}
 
 		const { offset, count } = this.getPaginationItems();
-		const { sort, fields, query } = this.parseJsonQuery();
+		const { sort, fields: projection, query } = this.parseJsonQuery();
 
 		const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, { channel: { $in: channelsToSearch } });
-		const integrations = Integrations.find(ourQuery, {
+		const cursor = Integrations.find(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
-			fields,
-		}).fetch();
+			projection,
+		});
+
+		const integrations = Promise.await(cursor.toArray());
+		const total = Promise.await(cursor.count());
 
 		return API.v1.success({
 			integrations,
 			count: integrations.length,
 			offset,
-			total: Integrations.find(ourQuery).count(),
+			total,
 		});
 	},
 });
