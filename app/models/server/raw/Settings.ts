@@ -120,7 +120,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 	}
 
 	findSetupWizardSettings(): Cursor<ISetting> {
-		return this.find({ wizard: { $exists: true, $ne: null } });
+		return this.find({ wizard: { $exists: true } });
 	}
 
 	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<WriteOpResult> {

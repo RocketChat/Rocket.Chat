@@ -15,7 +15,7 @@ addMigration({
 			_id: 'Accounts_Default_User_Preferences_sidebarDisplayAvatar',
 		}, {
 			$set: {
-				value: !hideAvatarsSidebarSetting.value,
+				value: !hideAvatarsSidebarSetting?.value,
 			},
 		}, {
 			upsert: true,
@@ -26,7 +26,7 @@ addMigration({
 			_id: 'Accounts_Default_User_Preferences_displayAvatars',
 		}, {
 			$set: {
-				value: !hideAvatarsSetting.value,
+				value: !hideAvatarsSetting?.value,
 			},
 		}, {
 			upsert: true,
