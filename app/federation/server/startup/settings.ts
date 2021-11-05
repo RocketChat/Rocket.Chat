@@ -68,23 +68,23 @@ Meteor.startup(function() {
 const updateSettings = function(): void {
 	// Get the key pair
 
-	if (getFederationDiscoveryMethod() === 'hub' && !isRegisteringOrEnabled()) {
+	if (getFederationDiscoveryMethod() === 'hub' && !Promise.await(isRegisteringOrEnabled())) {
 		// Register with hub
 		try {
-			updateStatus(STATUS_REGISTERING);
+			Promise.await(updateStatus(STATUS_REGISTERING));
 
 			registerWithHub(getFederationDomain(), settings.get('Site_Url'), FederationKeys.getPublicKeyString());
 
-			updateStatus(STATUS_ENABLED);
+			Promise.await(updateStatus(STATUS_ENABLED));
 		} catch (err) {
 			// Disable federation
-			updateEnabled(false);
+			Promise.await(updateEnabled(false));
 
-			updateStatus(STATUS_ERROR_REGISTERING);
+			Promise.await(updateStatus(STATUS_ERROR_REGISTERING));
 		}
-	} else {
-		updateStatus(STATUS_ENABLED);
+		return;
 	}
+	Promise.await(updateStatus(STATUS_ENABLED));
 };
 
 // Add settings listeners
@@ -92,11 +92,11 @@ settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${ value ? 'enabled' : 'disabled' }`);
 
 	if (value) {
-		updateSettings();
+		Promise.await(updateSettings());
 
 		enableCallbacks();
 	} else {
-		updateStatus(STATUS_DISABLED);
+		Promise.await(updateStatus(STATUS_DISABLED));
 
 		disableCallbacks();
 	}
