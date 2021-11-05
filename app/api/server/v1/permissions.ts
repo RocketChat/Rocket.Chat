@@ -10,13 +10,12 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
 
-		let updatedSinceDate;
+		let updatedSinceDate: Date;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
 			}
+			updatedSinceDate = new Date(updatedSince);
 		}
 
 		let result;
