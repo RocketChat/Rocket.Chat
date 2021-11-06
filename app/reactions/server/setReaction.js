@@ -4,10 +4,10 @@ import _ from 'underscore';
 
 import { Messages, Rooms } from '../../models/server';
 import { EmojiCustom } from '../../models/server/raw';
-import { callbacks } from '../../callbacks';
-import { emoji } from '../../emoji';
-import { isTheLastMessage, msgStream } from '../../lib';
-import { hasPermission } from '../../authorization/server/functions/hasPermission';
+import { callbacks } from '../../callbacks/server';
+import { emoji } from '../../emoji/server';
+import { isTheLastMessage, msgStream } from '../../lib/server';
+import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { api } from '../../../server/sdk/api';
 
 const removeUserReaction = (message, reaction, username) => {
@@ -92,15 +92,17 @@ export const executeSetReaction = async function(reaction, messageId, shouldReac
 	}
 
 	const message = Messages.findOneById(messageId);
-
 	if (!message) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	const room = Meteor.call('canAccessRoom', message.rid, Meteor.userId());
-
+	const room = Rooms.findOneById(message.rid);
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+	}
+
+	if (!canAccessRoom(room, user)) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
 	return setReaction(room, user, message, reaction, shouldReact);
