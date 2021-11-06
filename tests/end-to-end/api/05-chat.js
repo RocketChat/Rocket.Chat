@@ -750,7 +750,7 @@ describe('[Chat]', function() {
 								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
 						})
 						.end(done);
-				}, 500);
+				}, 1000);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -1055,20 +1055,21 @@ describe('[Chat]', function() {
 	});
 
 	describe('/chat.search', () => {
-		beforeEach((done) => {
-			const sendMessage = (text) => {
-				request.post(api('chat.sendMessage'))
-					.set(credentials)
-					.send({
-						message: {
-							rid: 'GENERAL',
-							msg: text,
-						},
-					})
-					.end(() => {});
-			};
-			for (let i = 0; i < 5; i++) { sendMessage('msg1'); }
-			done();
+		before(async () => {
+			const sendMessage = (text) => request.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: 'GENERAL',
+						msg: text,
+					},
+				});
+
+			await sendMessage('msg1');
+			await sendMessage('msg1');
+			await sendMessage('msg1');
+			await sendMessage('msg1');
+			await sendMessage('msg1');
 		});
 
 		it('should return a list of messages when execute successfully', (done) => {
