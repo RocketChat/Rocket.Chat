@@ -424,8 +424,13 @@ export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
-		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id)) {
-			e.currentTarget.classList.add('over');
+		if (types != null && types.length > 0 && userCanDrop(this._id)) {
+			for (const type of types) {
+				if (type === 'Files') {
+					e.currentTarget.classList.add('over');
+					break;
+				}
+			}
 		}
 		e.stopPropagation();
 	},
