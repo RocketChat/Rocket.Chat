@@ -28,7 +28,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 	const rocketCatMessage = 'There is one or more apps in an invalid state. Go to Administration > Apps to review.';
 	const link = '/admin/apps';
 
-	sendMessagesToAdmins({
+	Promise.await(sendMessagesToAdmins({
 		msgs: ({ adminUser }) => ({ msg: `*${ TAPi18n.__(title, adminUser.language) }*\n${ TAPi18n.__(rocketCatMessage, adminUser.language) }` }),
 		banners: ({ adminUser }) => {
 			Users.removeBannerById(adminUser._id, { id });
@@ -42,7 +42,7 @@ const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(function _notifyAdmi
 				link,
 			}];
 		},
-	});
+	}));
 
 	return apps;
 });
@@ -60,9 +60,9 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdmi
 
 	const rocketCatMessage = 'There is one or more disabled apps with valid licenses. Go to Administration > Apps to review.';
 
-	sendMessagesToAdmins({
+	Promise.await(sendMessagesToAdmins({
 		msgs: ({ adminUser }) => ({ msg: `${ TAPi18n.__(rocketCatMessage, adminUser.language) }` }),
-	});
+	}));
 });
 
 export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {

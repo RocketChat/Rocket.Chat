@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission, hasRole, getUsersInRole } from '../../../authorization';
-import { Subscriptions, Rooms } from '../../../models';
+import { hasPermission, hasRole } from '../../../authorization/server';
+import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
+import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
-	leaveRoom(rid) {
+	async leaveRoom(rid) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -17,7 +18,7 @@ Meteor.methods({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user();
 
-		if (!roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.LEAVE)) {
+		if (!user || !roomTypes.getConfig(room.t).allowMemberAction(room, RoomMemberActions.LEAVE)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
@@ -32,7 +33,8 @@ Meteor.methods({
 
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
 		if (hasRole(user._id, 'owner', room._id)) {
-			const numOwners = getUsersInRole('owner', room._id).count();
+			const cursor = await Roles.findUsersInRole('owner', room._id);
+			const numOwners = Promise.await(cursor.count());
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', { method: 'leaveRoom' });
 			}

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Roles } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
+import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
-	'authorization:saveRole'(roleData) {
+	async 'authorization:saveRole'(roleData) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:saveRole',
@@ -24,7 +24,7 @@ Meteor.methods({
 			roleData.scope = 'Users';
 		}
 
-		const update = Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
+		const update = await Roles.createOrUpdate(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
 				type: 'changed',

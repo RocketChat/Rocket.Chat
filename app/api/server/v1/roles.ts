@@ -1,15 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { Roles, Users } from '../../../models';
+import { Users } from '../../../models/server';
 import { API } from '../api';
 import { getUsersInRole, hasPermission, hasRole } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { api } from '../../../../server/sdk/api';
+import { Roles } from '../../../models/server/raw';
 
 API.v1.addRoute('roles.list', { authRequired: true }, {
 	get() {
-		const roles = Roles.find({}, { fields: { _updatedAt: 0 } }).fetch();
+		const roles = Promise.await(Roles.find({}, { fields: { _updatedAt: 0 } }).toArray());
 
 		return API.v1.success({ roles });
 	},
@@ -25,8 +26,8 @@ API.v1.addRoute('roles.sync', { authRequired: true }, {
 
 		return API.v1.success({
 			roles: {
-				update: Roles.findByUpdatedDate(new Date(updatedSince), { fields: API.v1.defaultFieldsToExclude }).fetch(),
-				remove: Roles.trashFindDeletedAfter(new Date(updatedSince)).fetch(),
+				update: Promise.await(Roles.findByUpdatedDate(new Date(updatedSince), { fields: API.v1.defaultFieldsToExclude }).toArray()),
+				remove: Promise.await(Roles.trashFindDeletedAfter(new Date(updatedSince)).toArray()),
 			},
 		});
 	},
@@ -52,15 +53,15 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
-		if (Roles.findOneByIdOrName(roleData.name)) {
+		if (Promise.await(Roles.findOneByIdOrName(roleData.name))) {
 			throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 
 		if (['Users', 'Subscriptions'].includes(roleData.scope) === false) {
 			roleData.scope = 'Users';
 		}
-
-		const roleId = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
+		const a = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa)
+		const roleId = Promise.await(a).insertedId;
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -70,7 +71,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			role: Roles.findOneByIdOrName(roleId, { fields: API.v1.defaultFieldsToExclude }),
+			role: Promise.await(Roles.findOneByIdOrName(roleId, { fields: API.v1.defaultFieldsToExclude })),
 		});
 	},
 });
@@ -95,7 +96,7 @@ API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 		});
 
 		return API.v1.success({
-			role: Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: API.v1.defaultFieldsToExclude }),
+			role: Promise.await(Roles.findOneByIdOrName(this.bodyParams.roleName, { fields: API.v1.defaultFieldsToExclude })),
 		});
 	},
 });
@@ -127,7 +128,8 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			skip: offset,
 			fields,
 		});
-		return API.v1.success({ users: users.fetch(), total: users.count() });
+
+		return API.v1.success({ users: Promise.await(users.toArray()), total: users.count() });
 	},
 });
 
@@ -149,7 +151,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			mandatory2fa: this.bodyParams.mandatory2fa,
 		};
 
-		const role = Roles.findOneByIdOrName(roleData.roleId);
+		const role = Promise.await(Roles.findOneByIdOrName(roleData.roleId));
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
@@ -160,7 +162,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 		}
 
 		if (roleData.name) {
-			const otherRole = Roles.findOneByIdOrName(roleData.name);
+			const otherRole = Promise.await(Roles.findOneByIdOrName(roleData.name));
 			if (otherRole && otherRole._id !== role._id) {
 				throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 			}
@@ -172,7 +174,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 			}
 		}
 
-		Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
+		Promise.await(Roles.updateById(roleData.roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa));
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -182,7 +184,7 @@ API.v1.addRoute('roles.update', { authRequired: true }, {
 		}
 
 		return API.v1.success({
-			role: Roles.findOneByIdOrName(roleData.roleId, { fields: API.v1.defaultFieldsToExclude }),
+			role: Promise.await(Roles.findOneByIdOrName(roleData.roleId, { fields: API.v1.defaultFieldsToExclude })),
 		});
 	},
 });
@@ -197,7 +199,7 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
-		const role = Roles.findOneByIdOrName(this.bodyParams.roleId);
+		const role = Promise.await(Roles.findOneByIdOrName(this.bodyParams.roleId));
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
@@ -207,13 +209,13 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 			throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
 		}
 
-		const existingUsers = Roles.findUsersInRole(role.name, role.scope);
+		const existingUsers = Promise.await(Roles.findUsersInRole(role.name, role.scope));
 
-		if (existingUsers && existingUsers.count() > 0) {
+		if (existingUsers && Promise.await(existingUsers.count()) > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
 		}
 
-		Roles.remove(role._id);
+		Promise.await(Roles.removeById(role._id));
 
 		return API.v1.success();
 	},
@@ -243,7 +245,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 		}
 
-		const role = Roles.findOneByIdOrName(data.roleName);
+		const role = Promise.await(Roles.findOneByIdOrName(data.roleName));
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
@@ -254,13 +256,13 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 		}
 
 		if (role._id === 'admin') {
-			const adminCount = Roles.findUsersInRole('admin').count();
+			const adminCount = Promise.await(Promise.await(Roles.findUsersInRole('admin')).count());
 			if (adminCount === 1) {
 				throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 			}
 		}
 
-		Roles.removeUserRoles(user._id, role.name, data.scope);
+		Promise.await(Roles.removeUserRoles(user._id, [role.name], data.scope));
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {

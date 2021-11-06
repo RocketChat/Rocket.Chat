@@ -45,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		const numOwners = getUsersInRole('owner', rid).count();
+		const numOwners = getUsersInRole('owner', rid).length;
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {

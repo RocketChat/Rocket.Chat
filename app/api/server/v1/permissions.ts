@@ -1,21 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
-import { Permissions, Roles } from '../../../models/server';
+import { hasPermission } from '../../../authorization/server';
+import { Permissions } from '../../../models/server';
 import { API } from '../api';
+import { Roles } from '../../../models/server/raw';
 
 API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
 
-		let updatedSinceDate;
+		let updatedSinceDate: Date;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
 			}
+			updatedSinceDate = new Date(updatedSince);
 		}
 
 		let result;
@@ -57,9 +57,9 @@ API.v1.addRoute('permissions.update', { authRequired: true }, {
 			}
 
 			Object.keys(element.roles).forEach((key) => {
-				const subelement = element.roles[key];
+				const subElement = element.roles[key];
 
-				if (!Roles.findOneById(subelement)) {
+				if (!Promise.await(Roles.findOneById(subElement))) {
 					roleNotFound = true;
 				}
 			});

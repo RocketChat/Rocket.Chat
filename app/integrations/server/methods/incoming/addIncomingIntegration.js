@@ -5,13 +5,13 @@ import _ from 'underscore';
 import s from 'underscore.string';
 
 import { hasPermission, hasAllPermission } from '../../../../authorization/server';
-import { Users, Rooms, Roles, Subscriptions } from '../../../../models/server';
-import { Integrations } from '../../../../models/server/raw';
+import { Users, Rooms, Subscriptions } from '../../../../models/server';
+import { Integrations, Roles } from '../../../../models/server/raw';
 
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
-	addIncomingIntegration(integration) {
+	async addIncomingIntegration(integration) {
 		if (!hasPermission(this.userId, 'manage-incoming-integrations') && !hasPermission(this.userId, 'manage-own-incoming-integrations')) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'addIncomingIntegration' });
 		}
@@ -96,7 +96,7 @@ Meteor.methods({
 		integration._createdAt = new Date();
 		integration._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
 
-		Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, 'bot');
 
 		const result = Promise.await(Integrations.insertOne(integration));
 

@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { RocketChatFile } from '../../app/file';
 import { FileUpload } from '../../app/file-upload';
-import { addUserRoles, getUsersInRole } from '../../app/authorization';
+import { addUserRoles, getUsersInRole } from '../../app/authorization/server';
 import { Users, Rooms } from '../../app/models';
 import { settings } from '../../app/settings';
 import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
@@ -49,7 +49,7 @@ Meteor.startup(function() {
 	}
 
 	if (process.env.ADMIN_PASS) {
-		if (_.isEmpty(getUsersInRole('admin').fetch())) {
+		if (_.isEmpty(getUsersInRole('admin'))) {
 			console.log('Inserting admin user:'.green);
 			const adminUser = {
 				name: 'Administrator',
@@ -135,7 +135,7 @@ Meteor.startup(function() {
 		}
 	}
 
-	if (_.isEmpty(getUsersInRole('admin').fetch())) {
+	if (_.isEmpty(getUsersInRole('admin'))) {
 		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 		if (oldestUser) {
@@ -144,7 +144,7 @@ Meteor.startup(function() {
 		}
 	}
 
-	if (!_.isEmpty(getUsersInRole('admin').fetch())) {
+	if (!_.isEmpty(getUsersInRole('admin'))) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
