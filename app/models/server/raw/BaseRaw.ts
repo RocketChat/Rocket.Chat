@@ -86,8 +86,23 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
-	public findOneAndUpdate(query: FilterQuery<T>, update: UpdateQuery<T> | T, options?: FindOneAndUpdateOption<T>): Promise<FindAndModifyWriteOpResultObject<T>> {
-		return this.col.findOneAndUpdate(query, update, options);
+	private doNotMixInclusionAndExclusionFields(options: FindOneOptions<T> = {}): FindOneOptions<T> {
+		const optionsDef = this.ensureDefaultFields(options);
+		if (optionsDef?.projection === undefined) {
+			return optionsDef;
+		}
+
+		const projection: Record<string, any> = optionsDef?.projection;
+		const keys = Object.keys(projection);
+		const removeKeys = keys.filter((key) => projection[key] === 0);
+		if (keys.length > removeKeys.length) {
+			removeKeys.forEach((key) => delete projection[key]);
+		}
+
+		return {
+			...optionsDef,
+			projection,
+		};
 	}
 
 	private ensureDefaultFields(options?: undefined): C extends void ? undefined : WithoutProjection<FindOneOptions<T>>;
@@ -101,17 +116,23 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 			return options;
 		}
 
-		const { fields, ...rest } = options || {};
+		const { fields: deprecatedFields, projection, ...rest } = options || {};
 
-		if (fields) {
+		if (deprecatedFields) {
 			warnFields('Using \'fields\' in models is deprecated.', options);
 		}
 
+		const fields = { ...deprecatedFields, ...projection };
+
 		return {
 			projection: this.defaultFields,
-			...fields && { projection: fields },
+			...fields && Object.values(fields).length && { projection: fields },
 			...rest,
 		};
+	}
+
+	public findOneAndUpdate(query: FilterQuery<T>, update: UpdateQuery<T> | T, options?: FindOneAndUpdateOption<T>): Promise<FindAndModifyWriteOpResultObject<T>> {
+		return this.col.findOneAndUpdate(query, update, options);
 	}
 
 	async findOneById(_id: string, options?: WithoutProjection<FindOneOptions<T>> | undefined): Promise<T | null>;
@@ -120,7 +141,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	async findOneById<P>(_id: string, options?: any): Promise<T | P | null> {
 		const query = { _id } as FilterQuery<T>;
-		const optionsDef = this.ensureDefaultFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.findOne(query, optionsDef);
 	}
 
@@ -133,7 +154,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	async findOne<P>(query: FilterQuery<T> | string = {}, options?: any): Promise<T | P | null> {
 		const q = typeof query === 'string' ? { _id: query } as FilterQuery<T> : query;
 
-		const optionsDef = this.ensureDefaultFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.findOne(q, optionsDef);
 	}
 
@@ -148,7 +169,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	find<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
 
 	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
-		const optionsDef = this.ensureDefaultFields(options);
+		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.find(query, optionsDef);
 	}
 

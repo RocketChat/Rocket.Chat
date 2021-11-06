@@ -286,9 +286,9 @@ API.v1.addRoute('channels.files', { authRequired: true }, {
 			return file;
 		};
 
-		Meteor.runAsUser(this.userId, () => {
-			Meteor.call('canAccessRoom', findResult._id, this.userId);
-		});
+		if (!canAccessRoom(findResult, { _id: this.userId })) {
+			return API.v1.unauthorized();
+		}
 
 		const { offset, count } = this.getPaginationItems();
 		const { sort, fields, query } = this.parseJsonQuery();
