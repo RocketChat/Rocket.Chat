@@ -25,9 +25,9 @@ Meteor.methods({
 			});
 		}
 
-		const users = await Roles.findUsersInRole(roleName);
+		const users = await(await Roles.findUsersInRole(roleName)).count();
 
-		if (users?.length > 0) {
+		if (users > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use', {
 				method: 'authorization:deleteRole',
 			});

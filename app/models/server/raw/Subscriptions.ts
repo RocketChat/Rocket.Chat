@@ -1,4 +1,4 @@
-import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection } from 'mongodb';
+import { FindOneOptions, Cursor, UpdateQuery, FilterQuery, UpdateWriteOpResult, Collection, WithoutProjection } from 'mongodb';
 import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
@@ -6,12 +6,12 @@ import { ISubscription } from '../../../../definition/ISubscription';
 import { IUser } from '../../../../definition/IUserAction';
 import { IRole } from '../../../../definition/IUser';
 import { IRoom } from '../../../../definition/IRoom';
-import { IUserRaw } from './Users';
+import { UsersRaw } from './Users';
 
 type T = ISubscription;
 export class SubscriptionsRaw extends BaseRaw<T> {
 	constructor(public readonly col: Collection<T>,
-		private readonly models: { Users: IUserRaw },
+		private readonly models: { Users: UsersRaw },
 		public readonly trash?: Collection<T>) {
 		super(col, trash);
 	}
@@ -107,7 +107,14 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 		return this.updateOne(query, update);
 	}
 
-	async findUsersInRoles(roles: IRole['name'][], rid?: IRoom['_id']): Promise<IUser[]> {
+
+	findUsersInRoles(name: IRole['name'][], scope?: string): Promise<Cursor<IUser>>;
+
+	findUsersInRoles(name: IRole['name'][], scope: string | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
+
+	findUsersInRoles<P>(name: IRole['name'][], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>>;
+
+	async findUsersInRoles(roles: IRole['name'][], rid?: IRoom['_id']): Promise<Cursor<IUser>> {
 		const query = {
 			roles: { $in: roles },
 			...rid && { rid },
@@ -117,7 +124,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
-		return this.models.Users.find({ _id: { $in: users } }).toArray();
+		return this.models.Users.find({ _id: { $in: users } });
 	}
 
 

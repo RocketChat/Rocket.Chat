@@ -60,8 +60,8 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 		if (['Users', 'Subscriptions'].includes(roleData.scope) === false) {
 			roleData.scope = 'Users';
 		}
-
-		const roleId = Promise.await(Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa));
+		const a = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa)
+		const roleId = Promise.await(a).insertedId;
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -128,7 +128,8 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 			skip: offset,
 			fields,
 		});
-		return API.v1.success({ users: users.fetch(), total: users.count() });
+
+		return API.v1.success({ users: Promise.await(users.toArray()), total: users.count() });
 	},
 });
 
@@ -210,7 +211,7 @@ API.v1.addRoute('roles.delete', { authRequired: true }, {
 
 		const existingUsers = Promise.await(Roles.findUsersInRole(role.name, role.scope));
 
-		if (existingUsers && existingUsers.count() > 0) {
+		if (existingUsers && Promise.await(existingUsers.count()) > 0) {
 			throw new Meteor.Error('error-role-in-use', 'Cannot delete role because it\'s in use');
 		}
 
@@ -255,13 +256,13 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 		}
 
 		if (role._id === 'admin') {
-			const adminCount = Promise.await(Roles.findUsersInRole('admin')).length;
+			const adminCount = Promise.await(Promise.await(Roles.findUsersInRole('admin')).count());
 			if (adminCount === 1) {
 				throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
 			}
 		}
 
-		Promise.await(Roles.removeUserRoles(user._id, role.name, data.scope));
+		Promise.await(Roles.removeUserRoles(user._id, [role.name], data.scope));
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {

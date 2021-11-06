@@ -1,4 +1,7 @@
-import { Roles } from '../../../models/server/raw';
-import { IUser } from '../../../../definition/IUser';
 
-export const getUsersInRole = (roleName: string, scope?: string): IUser[] => Promise.await(Roles.findUsersInRole(roleName, scope));
+
+import { Roles } from '../../../models/server/raw';
+
+type Awaited<T> = T extends PromiseLike<infer U> ? U : T
+
+export const getUsersInRole = (...args: Parameters<typeof Roles['findUsersInRole']>): Awaited<ReturnType<typeof Roles['findUsersInRole']>> => Promise.await(Roles.findUsersInRole(...args));

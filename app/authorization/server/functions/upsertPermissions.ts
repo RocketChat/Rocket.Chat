@@ -172,7 +172,7 @@ export const upsertPermissions = (): void => {
 	];
 
 	for (const role of defaultRoles) {
-		Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscription', role.description, true, false);
+		Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
 	}
 
 	const getPreviousPermissions = function(settingId?: string): Record<string, IPermission> {
