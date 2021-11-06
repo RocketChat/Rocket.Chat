@@ -137,9 +137,9 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		return this.col.findOne(q, optionsDef);
 	}
 
-	findUsersInRoles(): void {
-		throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
-	}
+	// findUsersInRoles(): void {
+	// 	throw new Error('[overwrite-function] You must overwrite this function in the extended classes');
+	// }
 
 	find(query?: FilterQuery<T>): Cursor<ResultFields<T, C>>;
 
@@ -254,7 +254,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 		setUpdatedAt(record);
 	}
 
-	trashFindDeletedAfter<P extends T>(deletedAt: Date, query: FilterQuery<T> = {}, options: any): Cursor <T | P> {
+	trashFindDeletedAfter<P extends T>(deletedAt: Date, query: FilterQuery<T> = {}, options?: any): Cursor <T | P> {
 		const q = {
 			__collection__: this.name,
 			_deletedAt: {

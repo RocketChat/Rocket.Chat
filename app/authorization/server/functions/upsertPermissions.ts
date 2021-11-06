@@ -1,9 +1,8 @@
 /* eslint no-multi-spaces: 0 */
-import Roles from '../../../models/server/models/Roles';
 import Permissions from '../../../models/server/models/Permissions';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { Settings } from '../../../models/server/raw';
+import { Roles, Settings } from '../../../models/server/raw';
 import { IPermission } from '../../../../definition/IPermission';
 import { ISetting } from '../../../../definition/ISetting';
 
@@ -173,7 +172,7 @@ export const upsertPermissions = (): void => {
 	];
 
 	for (const role of defaultRoles) {
-		Roles.createOrUpdate(role.name, role.scope, role.description, true, false);
+		Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
 	}
 
 	const getPreviousPermissions = function(settingId?: string): Record<string, IPermission> {

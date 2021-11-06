@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
 import { addMigration } from '../../lib/migrations';
-import { Rooms, Messages, Subscriptions, Uploads, Users } from '../../../app/models/server';
-import { Settings } from '../../../app/models/server/raw';
+import { Rooms, Messages, Subscriptions, Users } from '../../../app/models/server';
+import { Settings, Uploads } from '../../../app/models/server/raw';
 
 const unifyRooms = (room) => {
 	// verify if other DM already exists
@@ -60,8 +60,8 @@ const fixSelfDMs = () => {
 		}, { multi: true });
 
 		// Fix error of upload permission check using Meteor.userId()
-		Meteor.runAsUser(room.uids[0], () => {
-			Uploads.update({ rid: room._id }, {
+		Meteor.runAsUser(room.uids[0], async () => {
+			await Uploads.update({ rid: room._id }, {
 				$set: {
 					rid: correctId,
 				},

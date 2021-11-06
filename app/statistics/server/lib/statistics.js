@@ -3,13 +3,13 @@ import os from 'os';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { InstanceStatus } from 'meteor/konecty:multiple-instances-status';
+import { MongoInternals } from 'meteor/mongo';
 
 import {
 	Settings,
 	Users,
 	Rooms,
 	Subscriptions,
-	Uploads,
 	Messages,
 	LivechatVisitors,
 } from '../../../models/server';
@@ -17,7 +17,7 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw, Statistics, Sessions, Integrations } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw, Statistics, Sessions, Integrations, Uploads } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -52,9 +52,11 @@ const getUserLanguages = (totalUsers) => {
 	return languages;
 };
 
+const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
 export const statistics = {
 	get: function _getStatistics() {
-		const readPreference = readSecondaryPreferred(Uploads.model.rawDatabase());
+		const readPreference = readSecondaryPreferred(db);
 
 		const statistics = {};
 
@@ -159,8 +161,8 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 
-		statistics.uploadsTotal = Uploads.find().count();
-		const [result] = Promise.await(Uploads.model.rawCollection().aggregate([{
+		statistics.uploadsTotal = Promise.await(Uploads.find().count());
+		const [result] = Promise.await(Uploads.col.aggregate([{
 			$group: { _id: 'total', total: { $sum: '$size' } },
 		}], { readPreference }).toArray());
 		statistics.uploadsTotalSize = result ? result.total : 0;

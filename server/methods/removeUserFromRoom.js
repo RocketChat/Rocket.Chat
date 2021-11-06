@@ -48,7 +48,7 @@ Meteor.methods({
 		}
 
 		if (hasRole(removedUser._id, 'owner', room._id)) {
-			const numOwners = getUsersInRole('owner', room._id).fetch().length;
+			const numOwners = getUsersInRole('owner', room._id).length;
 
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {

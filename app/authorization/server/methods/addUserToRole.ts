@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { Users, Roles } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { api } from '../../../../server/sdk/api';
+import { Roles } from '../../../models/server/raw';
 
 Meteor.methods({
-	'authorization:addUserToRole'(roleName, username, scope) {
+	async 'authorization:addUserToRole'(roleName, username, scope) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:addUserToRole',
@@ -41,13 +42,13 @@ Meteor.methods({
 		}
 
 		// verify if user can be added to given scope
-		if (scope && !Roles.canAddUserToRole(user._id, roleName, scope)) {
+		if (scope && !await Roles.canAddUserToRole(user._id, roleName, scope)) {
 			throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
 				method: 'authorization:addUserToRole',
 			});
 		}
 
-		const add = Roles.addUserRoles(user._id, roleName, scope);
+		const add = await Roles.addUserRoles(user._id, [roleName], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {

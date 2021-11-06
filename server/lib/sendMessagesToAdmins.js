@@ -1,47 +1,45 @@
+
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from './logger/system';
-import { Roles, Users } from '../../app/models/server';
+import { Users } from '../../app/models/server';
+import { Roles } from '../../app/models/server/raw';
 
-export function sendMessagesToAdmins({
-	fromId = 'rocket.cat',
-	checkFrom = true,
-	msgs = [],
-	banners = [],
-}) {
-	const fromUser = checkFrom ? Users.findOneById(fromId, { fields: { _id: 1 } }) : true;
+export async function sendMessagesToAdmins(message) {
+	const fromUser = message.checkFrom ? Users.findOneById(message.fromId, { fields: { _id: 1 } }) : true;
+	const users = await Roles.findUsersInRole('admin');
 
-	Roles.findUsersInRole('admin').forEach((adminUser) => {
+	users.forEach((adminUser) => {
 		if (fromUser) {
 			try {
-				Meteor.runAsUser(fromId, () => Meteor.call('createDirectMessage', adminUser.username));
+				Meteor.runAsUser(message.fromId, () => Meteor.call('createDirectMessage', adminUser.username));
 
-				const rid = [adminUser._id, fromId].sort().join('');
+				const rid = [adminUser._id, message.fromId].sort().join('');
 
-				if (typeof msgs === 'function') {
-					msgs = msgs({ adminUser });
+				if (typeof message.msgs === 'function') {
+					message.msgs = message.msgs({ adminUser });
 				}
 
-				if (!Array.isArray(msgs)) {
-					msgs = [msgs];
+				if (!Array.isArray(message.msgs)) {
+					message.msgs = [message.msgs];
 				}
 
-				if (typeof banners === 'function') {
-					banners = banners({ adminUser });
+				if (typeof message.banners === 'function') {
+					message.banners = message.banners({ adminUser });
 				}
 
-				if (!Array.isArray(banners)) {
-					banners = Array.from(banners);
+				if (!Array.isArray(message.banners)) {
+					message.banners = [message.banners];
 				}
 
-				Meteor.runAsUser(fromId, () => {
-					msgs.forEach((msg) => Meteor.call('sendMessage', Object.assign({ rid }, msg)));
+				Meteor.runAsUser(message.fromId, () => {
+					message.msgs.forEach((msg) => Meteor.call('sendMessage', Object.assign({ rid }, msg)));
 				});
 			} catch (e) {
 				SystemLogger.error(e);
 			}
 		}
 
-		banners.forEach((banner) => Users.addBannerById(adminUser._id, banner));
+		message.banners.forEach((banner) => Users.addBannerById(adminUser._id, banner));
 	});
 }

@@ -3,8 +3,8 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Rooms, Users, Roles, Subscriptions } from '../../../../models/server';
-import { Integrations } from '../../../../models/server/raw';
+import { Rooms, Users, Subscriptions } from '../../../../models/server';
+import { Integrations, Roles } from '../../../../models/server/raw';
 import { hasAllPermission, hasPermission } from '../../../../authorization/server';
 
 const validChannelChars = ['@', '#'];
@@ -101,7 +101,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', { method: 'updateIncomingIntegration' });
 		}
 
-		Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, 'bot');
 
 		await Integrations.updateOne({ _id: integrationId }, {
 			$set: {

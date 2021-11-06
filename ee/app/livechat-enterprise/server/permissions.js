@@ -1,6 +1,7 @@
-import { Permissions, Roles } from '../../../../app/models/server';
+import { Permissions } from '../../../../app/models/server';
+import { Roles } from '../../../../app/models/server/raw';
 
-export const createPermissions = () => {
+export const createPermissions = async () => {
 	if (!Permissions) {
 		return;
 	}
@@ -9,9 +10,9 @@ export const createPermissions = () => {
 	const livechatManagerRole = 'livechat-manager';
 	const adminRole = 'admin';
 
-	const monitorRole = Roles.findOneById(livechatMonitorRole, { fields: { _id: 1 } });
+	const monitorRole = await Roles.findOneById(livechatMonitorRole, { fields: { _id: 1 } });
 	if (!monitorRole) {
-		Roles.createOrUpdate(livechatMonitorRole);
+		await Roles.createOrUpdate(livechatMonitorRole);
 	}
 
 	Permissions.create('manage-livechat-units', [adminRole, livechatManagerRole]);
