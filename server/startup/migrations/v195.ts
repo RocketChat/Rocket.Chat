@@ -3,11 +3,10 @@ import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
-import { Permissions } from '../../../app/models/server';
-import { LivechatBusinessHours, Settings } from '../../../app/models/server/raw';
-import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
+import { LivechatBusinessHours, Permissions, Settings } from '../../../app/models/server/raw';
+import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
-const migrateCollection = () => {
+const migrateCollection = async (): Promise<void> => {
 	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const officeHours = [];
@@ -22,7 +21,7 @@ const migrateCollection = () => {
 		return;
 	}
 
-	const businessHour = {
+	const businessHour: Omit<ILivechatBusinessHour, '_id'> = {
 		name: '',
 		active: true,
 		type: LivechatBusinessHourTypes.DEFAULT,
@@ -56,10 +55,10 @@ const migrateCollection = () => {
 		})),
 		timezone: {
 			name: moment.tz.guess(),
-			utc: moment().utcOffset() / 60,
+			utc: String(moment().utcOffset() / 60),
 		},
 	};
-	if (LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
+	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
 		businessHour._id = new ObjectId().toHexString();
 		LivechatBusinessHours.insertOne(businessHour);
 	} else {
@@ -78,12 +77,12 @@ const migrateCollection = () => {
 addMigration({
 	version: 195,
 	async up() {
-		Settings.removeById('Livechat_enable_office_hours');
-		Settings.remove('Livechat_allow_online_agents_outside_office_hours');
+		await Settings.removeById('Livechat_enable_office_hours');
+		await Settings.removeById('Livechat_allow_online_agents_outside_office_hours');
 		const permission = Permissions.findOneById('view-livechat-officeHours');
 		if (permission) {
-			Permissions.upsert({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } });
-			Permissions.remove({ _id: 'view-livechat-officeHours' });
+			await Permissions.update({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } }, { upsert: true });
+			await Permissions.deleteOne({ _id: 'view-livechat-officeHours' });
 		}
 		await migrateCollection();
 	},

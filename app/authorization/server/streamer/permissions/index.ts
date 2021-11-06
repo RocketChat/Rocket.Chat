@@ -1,22 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 
-import Permissions from '../../../../models/server/models/Permissions';
+import { Permissions } from '../../../../models/server/raw';
 
 Meteor.methods({
-	'permissions/get'(updatedAt) {
+	async 'permissions/get'(updatedAt: Date) {
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 
-		const records = Permissions.find().fetch();
+		const records = await Permissions.find({ _updatedAt: { $gt: updatedAt } }).toArray();
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: records.filter((record) => record._updatedAt > updatedAt),
-				remove: Permissions.trashFindDeletedAfter(
+				update: records,
+				remove: await Permissions.trashFindDeletedAfter(
 					updatedAt,
 					{},
 					{ fields: { _id: 1, _deletedAt: 1 } },
-				).fetch(),
+				).toArray(),
 			};
 		}
 

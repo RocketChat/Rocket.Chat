@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization/server';
-import { Permissions } from '../../../models/server';
 import { API } from '../api';
-import { Roles } from '../../../models/server/raw';
+import { Permissions, Roles } from '../../../models/server/raw';
 
 API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 	get() {
@@ -52,7 +51,7 @@ API.v1.addRoute('permissions.update', { authRequired: true }, {
 		Object.keys(this.bodyParams.permissions).forEach((key) => {
 			const element = this.bodyParams.permissions[key];
 
-			if (!Permissions.findOneById(element._id)) {
+			if (!Promise.await(Permissions.findOneById(element._id))) {
 				permissionNotFound = true;
 			}
 

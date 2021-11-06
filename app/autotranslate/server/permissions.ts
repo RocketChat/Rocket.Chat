@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Permissions } from '../../models';
+import { Permissions } from '../../models/server/raw';
 
 Meteor.startup(() => {
 	if (Permissions) {
 		if (!Permissions.findOne({ _id: 'auto-translate' })) {
-			Permissions.insert({ _id: 'auto-translate', roles: ['admin'] });
+			Permissions.create('auto-translate', ['admin']);
 		}
 	}
 });

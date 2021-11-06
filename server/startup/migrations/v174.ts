@@ -1,5 +1,5 @@
+import { Permissions } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
-import { Permissions } from '../../../app/models/server';
 
 const appRolePermissions = [
 	'api-bypass-rate-limit',
@@ -18,9 +18,9 @@ const appRolePermissions = [
 addMigration({
 	version: 174,
 	up() {
-		Permissions.update({ _id: { $in: appRolePermissions } }, { $addToSet: { roles: 'app' } }, { multi: true });
+		return Permissions.update({ _id: { $in: appRolePermissions } }, { $addToSet: { roles: 'app' } }, { multi: true });
 	},
 	down() {
-		Permissions.update({ _id: { $in: appRolePermissions } }, { $pull: { roles: 'app' } }, { multi: true });
+		return Permissions.update({ _id: { $in: appRolePermissions } }, { $pull: { roles: 'app' } }, { multi: true });
 	},
 });

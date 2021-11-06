@@ -1,12 +1,11 @@
 /* eslint no-multi-spaces: 0 */
-import Permissions from '../../../models/server/models/Permissions';
 import { settings } from '../../../settings/server';
 import { getSettingPermissionId, CONSTANTS } from '../../lib';
-import { Roles, Settings } from '../../../models/server/raw';
+import { Permissions, Roles, Settings } from '../../../models/server/raw';
 import { IPermission } from '../../../../definition/IPermission';
 import { ISetting } from '../../../../definition/ISetting';
 
-export const upsertPermissions = (): void => {
+export const upsertPermissions = async (): Promise<void> => {
 	// Note:
 	// 1.if we need to create a role that can only edit channel message, but not edit group message
 	// then we can define edit-<type>-message instead of edit-message
@@ -153,8 +152,8 @@ export const upsertPermissions = (): void => {
 	];
 
 
-	for (const permission of permissions) {
-		Permissions.create(permission._id, permission.roles);
+	for await (const permission of permissions) {
+		await Permissions.create(permission._id, permission.roles);
 	}
 
 	const defaultRoles = [
@@ -171,30 +170,27 @@ export const upsertPermissions = (): void => {
 		{ name: 'livechat-manager', scope: 'Users',         description: 'Livechat Manager' },
 	];
 
-	for (const role of defaultRoles) {
-		Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
+	for await (const role of defaultRoles) {
+		await Roles.createOrUpdate(role.name, role.scope as 'Users' | 'Subscriptions', role.description, true, false);
 	}
 
-	const getPreviousPermissions = function(settingId?: string): Record<string, IPermission> {
+	const getPreviousPermissions = async function(settingId?: string): Promise<Record<string, IPermission>> {
 		const previousSettingPermissions: {
 			[key: string]: IPermission;
 		} = {};
 
-		const selector = { level: CONSTANTS.SETTINGS_LEVEL, ...settingId && { settingId } };
-		if (settingId) {
-			selector.settingId = settingId;
-		}
+		const selector = { level: 'settings' as const, ...settingId && { settingId } };
 
-		Permissions.find(selector).forEach(
+		await Permissions.find(selector).forEach(
 			function(permission: IPermission) {
 				previousSettingPermissions[permission._id] = permission;
 			});
 		return previousSettingPermissions;
 	};
 
-	const createSettingPermission = function(setting: ISetting, previousSettingPermissions: {
+	const createSettingPermission = async function(setting: ISetting, previousSettingPermissions: {
 		[key: string]: IPermission;
-	}): void {
+	}): Promise<void> {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission: Omit<IPermission, '_id'> = {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
@@ -216,19 +212,19 @@ export const upsertPermissions = (): void => {
 			permission.sectionPermissionId = getSettingPermissionId(setting.section);
 		}
 
-		const existent = Permissions.findOne({
+		const existent = await Permissions.findOne({
 			_id: permissionId,
 			...permission,
 		}, { fields: { _id: 1 } });
 
 		if (!existent) {
 			try {
-				Permissions.upsert({ _id: permissionId }, { $set: permission });
+				await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
 			} catch (e) {
 				if (!e.message.includes('E11000')) {
 					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
 					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
-					Permissions.upsert({ _id: permissionId }, { $set: permission });
+					await Permissions.update({ _id: permissionId }, { $set: permission }, { upsert: true });
 				}
 			}
 		}
@@ -237,16 +233,16 @@ export const upsertPermissions = (): void => {
 	};
 
 	const createPermissionsForExistingSettings = async function(): Promise<void> {
-		const previousSettingPermissions = getPreviousPermissions();
+		const previousSettingPermissions = await getPreviousPermissions();
 
 		(await Settings.findNotHidden().toArray()).forEach((setting) => {
 			createSettingPermission(setting, previousSettingPermissions);
 		});
 
 		// remove permissions for non-existent settings
-		for (const obsoletePermission in previousSettingPermissions) {
+		for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
 			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
-				Permissions.remove({ _id: obsoletePermission });
+				await Permissions.deleteOne({ _id: obsoletePermission });
 			}
 		}
 	};
@@ -256,7 +252,7 @@ export const upsertPermissions = (): void => {
 
 	// register a callback for settings for be create in higher-level-packages
 	settings.on('*', async function([settingId]) {
-		const previousSettingPermissions = getPreviousPermissions(settingId);
+		const previousSettingPermissions = await getPreviousPermissions(settingId);
 		const setting = await Settings.findOneById(settingId);
 		if (setting) {
 			if (!setting.hidden) {

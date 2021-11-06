@@ -66,7 +66,6 @@ import LivechatVisitorsModel from '../models/LivechatVisitors';
 import LoginServiceConfigurationModel from '../models/LoginServiceConfiguration';
 import MessagesModel from '../models/Messages';
 import OmnichannelQueueModel from '../models/OmnichannelQueue';
-import PermissionsModel from '../models/Permissions';
 import RoomsModel from '../models/Rooms';
 import SettingsModel from '../models/Settings';
 import SubscriptionsModel from '../models/Subscriptions';
@@ -74,9 +73,8 @@ import UsersModel from '../models/Users';
 
 const trashCollection = trash.rawCollection();
 
-export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection(), trashCollection);
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
-export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), { Users },trashCollection);
+export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), { Users }, trashCollection);
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection(), trashCollection);
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection(), trashCollection);
@@ -116,6 +114,7 @@ export const Invites = new InvitesRaw(db.collection(`${ prefix }invites`), trash
 export const NotificationQueue = new NotificationQueueRaw(db.collection(`${ prefix }notification_queue`), trashCollection);
 export const OAuthApps = new OAuthAppsRaw(db.collection(`${ prefix }oauth_apps`), trashCollection);
 export const OEmbedCache = new OEmbedCacheRaw(db.collection(`${ prefix }oembed_cache`), trashCollection);
+export const Permissions = new PermissionsRaw(db.collection(`${ prefix }permissions`), trashCollection);
 export const ReadReceipts = new ReadReceiptsRaw(db.collection(`${ prefix }read_receipts`), trashCollection);
 export const Reports = new ReportsRaw(db.collection(`${ prefix }reports`), trashCollection);
 export const ServerEvents = new ServerEventsRaw(db.collection(`${ prefix }server_events`), trashCollection);
@@ -128,15 +127,11 @@ export const UserDataFiles = new UserDataFilesRaw(db.collection(`${ prefix }user
 export const Uploads = new UploadsRaw(db.collection(`${ prefix }uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
-console.log('asddd', Roles, Object.keys(Roles));
-
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,
 	[Subscriptions.col.collectionName]: SubscriptionsModel,
 	[Settings.col.collectionName]: SettingsModel,
-	// [Roles.col.collectionName]: RolesModel,
-	[Permissions.col.collectionName]: PermissionsModel,
 	[LivechatInquiry.col.collectionName]: LivechatInquiryModel,
 	[LivechatDepartmentAgents.col.collectionName]: LivechatDepartmentAgentsModel,
 	[Rooms.col.collectionName]: RoomsModel,
