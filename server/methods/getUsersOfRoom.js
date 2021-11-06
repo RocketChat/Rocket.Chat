@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Subscriptions } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
+import { Subscriptions, Rooms } from '../../app/models/server';
+import { canAccessRoom, hasPermission } from '../../app/authorization/server';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 Meteor.methods({
@@ -11,9 +11,17 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
 		}
 
-		const room = Meteor.call('canAccessRoom', rid, userId);
-		if (!room) {
+		if (!rid) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
+		}
+
+		const room = Rooms.findOneById(rid, { fields: { broadcast: 1 } });
+		if (!room) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
+		}
+
+		if (!canAccessRoom(room, { _id: userId })) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'getUsersOfRoom' });
 		}
 
 		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
