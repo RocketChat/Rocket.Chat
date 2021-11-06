@@ -6,7 +6,6 @@ import Settings from './models/Settings';
 import Subscriptions from './models/Subscriptions';
 import Users from './models/Users';
 import Permissions from './models/Permissions';
-import Roles from './models/Roles';
 import Imports from './models/Imports';
 import LivechatCustomField from './models/LivechatCustomField';
 import LivechatDepartment from './models/LivechatDepartment';
@@ -35,7 +34,6 @@ export {
 	Subscriptions,
 	Users,
 	Permissions,
-	Roles,
 	Imports,
 	LivechatCustomField,
 	LivechatDepartment,
