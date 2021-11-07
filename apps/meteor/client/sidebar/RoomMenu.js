@@ -202,8 +202,19 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				},
 			}),
 		}),
-		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave, handleThreadsToBeRead,
-			threadUnread],
+		[
+			t,
+			handleHide,
+			isUnread,
+			handleToggleRead,
+			threadUnread,
+			handleThreadsToBeRead,
+			canFavorite,
+			isFavorite,
+			handleToggleFavorite,
+			canLeave,
+			handleLeave,
+		],
 	);
 
 	return (
