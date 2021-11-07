@@ -8,7 +8,7 @@ import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import { useRoute } from '../contexts/RouterContext';
-import { useMethod } from '../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../contexts/ServerContext';
 import { useSetting } from '../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useTranslation } from '../contexts/TranslationContext';
@@ -31,11 +31,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const closeModal = useMutableCallback(() => setModal());
 
 	const router = useRoute('home');
-
+	
 	const subscription = useUserSubscription(rid, fields);
 	const canFavorite = useSetting('Favorite_Rooms');
 	const isFavorite = (subscription != null ? subscription.f : undefined) != null && subscription.f;
-
+	const getThreadsList = useEndpoint('GET', 'chat.getThreadsList');
+	
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
 	const hideRoom = useMethod('hideRoom');
@@ -43,6 +44,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const unreadMessages = useMethod('unreadMessages');
 	const toggleFavorite = useMethod('toggleFavorite');
 	const leaveRoom = useMethod('leaveRoom');
+	const readThreads = useMethod('readThreads');
 
 	const isUnread = alert || unread || threadUnread;
 
@@ -139,6 +141,22 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		}
 	});
 
+	const handleThreadsToBeRead = useMutableCallback(async () => {
+		try {
+			if (threadUnread) {
+				const { threads } = await getThreadsList({
+					rid,
+					type: 'unread',
+				});
+				for (const thread of threads) {
+					await readThreads(thread?._id);
+				}
+			}
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	})
+
 	const handleToggleFavorite = useMutableCallback(async () => {
 		try {
 			await toggleFavorite(rid, !isFavorite);
@@ -157,6 +175,15 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 				action: handleToggleRead,
 			},
+			...(threadUnread && {
+				threadsToRead: {
+					label: {
+						label: 'Mark Threads Read',
+						icon: 'thread'
+					},
+					action: handleThreadsToBeRead,
+				},
+			}),
 			...(canFavorite && {
 				toggleFavorite: {
 					label: {
