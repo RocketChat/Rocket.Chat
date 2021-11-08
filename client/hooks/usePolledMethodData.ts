@@ -4,7 +4,11 @@ import { ServerMethods } from '../contexts/ServerContext';
 import { AsyncState } from './useAsyncState';
 import { useMethodData } from './useMethodData';
 
-export const usePolledMethodData = <T>(methodName: keyof ServerMethods, args: any[] = [], intervalMs: number): AsyncState<T> & { reload: () => void } => {
+export const usePolledMethodData = <T>(
+	methodName: keyof ServerMethods,
+	args: any[] = [],
+	intervalMs: number,
+): AsyncState<T> & { reload: () => void } => {
 	const { reload, ...state } = useMethodData<T>(methodName, args);
 
 	useEffect(() => {

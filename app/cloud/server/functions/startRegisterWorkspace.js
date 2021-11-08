@@ -2,9 +2,10 @@ import { HTTP } from 'meteor/http';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
 export function startRegisterWorkspace(resend = false) {
@@ -15,7 +16,7 @@ export function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	settings.updateById('Register_Server', true);
+	Settings.updateValueById('Register_Server', true);
 
 	const regInfo = buildWorkspaceRegistrationData();
 
@@ -28,9 +29,9 @@ export function startRegisterWorkspace(resend = false) {
 		});
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			console.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
 		} else {
-			console.error(e);
+			SystemLogger.error(e);
 		}
 
 		return false;

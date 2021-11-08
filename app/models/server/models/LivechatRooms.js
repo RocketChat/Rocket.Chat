@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import s from 'underscore.string';
 import _ from 'underscore';
 
@@ -138,6 +137,21 @@ export class LivechatRooms extends Base {
 		return this.find(query, options);
 	}
 
+	findByIds(ids, fields) {
+		const options = {};
+
+		if (fields) {
+			options.fields = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id: { $in: ids },
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneById(_id, fields = {}) {
 		const options = {};
 
@@ -174,6 +188,17 @@ export class LivechatRooms extends Base {
 			t: 'l',
 			'v.token': visitorToken,
 			'email.thread': emailThread,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			t: 'l',
+			'v.token': visitorToken,
+			'email.thread': emailThread,
+			...departmentId && { departmentId },
 		};
 
 		return this.findOne(query, options);
@@ -219,9 +244,6 @@ export class LivechatRooms extends Base {
 	}
 
 	updateRoomCount = function() {
-		const settingsRaw = Settings.model.rawCollection();
-		const findAndModify = Meteor.wrapAsync(settingsRaw.findAndModify, settingsRaw);
-
 		const query = {
 			_id: 'Livechat_Room_Count',
 		};
@@ -232,7 +254,7 @@ export class LivechatRooms extends Base {
 			},
 		};
 
-		const livechatCount = findAndModify(query, null, update);
+		const livechatCount = Settings.findAndModify(query, null, update);
 
 		return livechatCount.value.value;
 	}
@@ -426,11 +448,11 @@ export class LivechatRooms extends Base {
 		return this.find(query, { fields: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 } });
 	}
 
-	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
 		return this.model.rawCollection().aggregate([
 			{
 				$match: {
-					t: 'l',
+					t,
 					ts: {
 						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
 						$lt: new Date(date.lt),	// ISODate, ts < date.lt
@@ -438,11 +460,24 @@ export class LivechatRooms extends Base {
 					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
+			{ $addFields: { roomId: '$_id' } },
 			{
 				$lookup: {
 					from: 'rocketchat_message',
-					localField: '_id',
-					foreignField: 'rid',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+								// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}, ...extraQuery ? [extraQuery] : []],
+							},
+						},
+					}],
 					as: 'messages',
 				},
 			},
@@ -461,16 +496,9 @@ export class LivechatRooms extends Base {
 						open: '$open',
 						servedBy: '$servedBy',
 						metrics: '$metrics',
-						msgs: '$msgs',
 					},
-					messages: {
-						$sum: {
-							$cond: [{
-								$and: [
-									{ $ifNull: ['$messages.t', false] },
-								],
-							}, 1, 0],
-						},
+					messagesCount: {
+						$sum: 1,
 					},
 				},
 			},
@@ -482,10 +510,78 @@ export class LivechatRooms extends Base {
 					open: '$_id.open',
 					servedBy: '$_id.servedBy',
 					metrics: '$_id.metrics',
-					msgs: { $subtract: ['$_id.msgs', '$messages'] },
+					msgs: '$messagesCount',
+				},
+			}]);
+	}
+
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+		return this.model.rawCollection().aggregate([
+			{
+				$match: {
+					t: 'l',
+					ts: {
+						$gte: new Date(date.gte),	// ISO Date, ts >= date.gte
+						$lt: new Date(date.lt),	// ISODate, ts < date.lt
+					},
+					...departmentId && departmentId !== 'undefined' && { departmentId },
 				},
 			},
-
+			{ $addFields: { roomId: '$_id' } },
+			{
+				$lookup: {
+					from: 'rocketchat_message',
+					// mongo doesn't like _id as variable name here :(
+					let: { roomId: '$roomId' },
+					pipeline: [{
+						$match: {
+							$expr: {
+								$and: [{
+									$eq: ['$$roomId', '$rid'],
+								}, {
+									// this is similar to do { $exists: false }
+									$lte: ['$t', null],
+								}],
+							},
+						},
+					}],
+					as: 'messages',
+				},
+			},
+			{
+				$unwind: {
+					path: '$messages',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						_id: '$_id',
+						ts: '$ts',
+						departmentId: '$departmentId',
+						open: '$open',
+						servedBy: '$servedBy',
+						metrics: '$metrics',
+						onHold: '$onHold',
+					},
+					messagesCount: {
+						$sum: 1,
+					},
+				},
+			},
+			{
+				$project: {
+					_id: '$_id._id',
+					ts: '$_id.ts',
+					departmentId: '$_id.departmentId',
+					open: '$_id.open',
+					servedBy: '$_id.servedBy',
+					metrics: '$_id.metrics',
+					msgs: '$messagesCount',
+					onHold: '$_id.onHold',
+				},
+			},
 		]);
 	}
 

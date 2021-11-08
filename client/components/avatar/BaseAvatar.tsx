@@ -1,5 +1,5 @@
-import React, { FC, useState } from 'react';
 import { Avatar, AvatarProps, Skeleton } from '@rocket.chat/fuselage';
+import React, { FC, useState } from 'react';
 
 export type BaseAvatarProps = AvatarProps;
 
@@ -10,7 +10,7 @@ const BaseAvatar: FC<BaseAvatarProps> = ({ size, ...props }) => {
 		return <Skeleton variant='rect' {...props} />;
 	}
 
-	return <Avatar onError={setError} size={size} {...props}/>;
+	return <Avatar onError={setError} size={size} {...props} />;
 };
 
 export default BaseAvatar;

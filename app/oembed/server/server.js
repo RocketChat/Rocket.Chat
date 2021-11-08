@@ -14,6 +14,7 @@ import { OEmbedCache, Messages } from '../../models';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 const request = HTTPInternals.NpmModules.request.module;
 const OEmbed = {};
@@ -102,6 +103,7 @@ const getUrlContent = Meteor.wrapAsync(function(urlObj, redirectCount = 5, callb
 		maxRedirects: redirectCount,
 		headers: {
 			'User-Agent': settings.get('API_Embed_UserAgent'),
+			'Accept-Language': settings.get('Language') || 'en',
 		},
 	};
 	let headers = null;
@@ -223,7 +225,7 @@ OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 		try {
 			OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
-			console.error('OEmbed duplicated record', url);
+			SystemLogger.error('OEmbed duplicated record', url);
 		}
 		return data;
 	}
@@ -258,7 +260,7 @@ const getRelevantMetaTags = function(metaObj) {
 	}
 };
 
-const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%\"');
+const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
 
 OEmbed.rocketUrlParser = function(message) {
 	if (Array.isArray(message.urls)) {
@@ -300,7 +302,7 @@ OEmbed.rocketUrlParser = function(message) {
 	return message;
 };
 
-settings.get('API_Embed', function(key, value) {
+settings.watch('API_Embed', function(value) {
 	if (value) {
 		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
 	}

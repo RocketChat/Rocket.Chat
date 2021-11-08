@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
+import { settingsRegistry } from '../../../settings/server';
 
 Meteor.startup(function() {
-	settings.addGroup('Accounts', function() {
+	settingsRegistry.addGroup('Accounts', function() {
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
 		this.section('Login_Attempts', function() {
@@ -48,6 +48,17 @@ Meteor.startup(function() {
 			this.add('Block_Multiple_Failed_Logins_Ip_Whitelist', '', {
 				type: 'string',
 				enableQuery: enableQueryByIp,
+			});
+
+			this.add('Block_Multiple_Failed_Logins_Notify_Failed', false, {
+				type: 'boolean',
+				enableQuery: [enableQueryCollectData],
+			});
+
+			this.add('Block_Multiple_Failed_Logins_Notify_Failed_Channel', '', {
+				type: 'string',
+				i18nDescription: 'Block_Multiple_Failed_Logins_Notify_Failed_Channel_Desc',
+				enableQuery: [enableQueryCollectData, { _id: 'Block_Multiple_Failed_Logins_Notify_Failed', value: true }],
 			});
 		});
 

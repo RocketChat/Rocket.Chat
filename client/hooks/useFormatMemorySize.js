@@ -18,7 +18,7 @@ const formatMemorySize = (memorySize) => {
 
 	const divider = Math.pow(1024, order);
 	const decimalDigits = order === 0 ? 0 : 2;
-	return `${ s.numberFormat(memorySize / divider, decimalDigits) } ${ units[order] }`;
+	return `${s.numberFormat(memorySize / divider, decimalDigits)} ${units[order]}`;
 };
 
 export const useFormatMemorySize = () => formatMemorySize;

@@ -1,24 +1,23 @@
-import React, {
-	useEffect,
-	useRef,
-	useState,
-	FC,
-} from 'react';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import React, { useEffect, useRef, useState, FC } from 'react';
 
-import { Apps } from '../../../../app/apps/client/orchestrator';
 import { AppEvents } from '../../../../app/apps/client/communication';
+import { Apps } from '../../../../app/apps/client/orchestrator';
+import { AppsContext } from './AppsContext';
 import { handleAPIError } from './helpers';
 import { App } from './types';
-import { AppsContext } from './AppsContext';
 
 type ListenersMapping = {
 	readonly [P in keyof typeof AppEvents]?: (...args: any[]) => void;
 };
 
 const registerListeners = (listeners: ListenersMapping): (() => void) => {
-	const entries = Object.entries(listeners) as Exclude<{
-		[K in keyof ListenersMapping]: [K, ListenersMapping[K]];
-	}[keyof ListenersMapping], undefined>[];
+	const entries = Object.entries(listeners) as Exclude<
+		{
+			[K in keyof ListenersMapping]: [K, ListenersMapping[K]];
+		}[keyof ListenersMapping],
+		undefined
+	>[];
 
 	for (const [event, callback] of entries) {
 		Apps.getWsListener()?.registerListener(AppEvents[event], callback);
@@ -52,15 +51,16 @@ const AppsProvider: FC = ({ children }) => {
 
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			try {
-				const { status, version } = await Apps.getApp(appId);
+				const { status, version, licenseValidation } = await Apps.getApp(appId);
 				const app = await Apps.getAppFromMarketplace(appId, version);
 				const updatedData = getDataCopy();
-				const index = updatedData.findIndex(({ id }: {id: string}) => id === appId);
+				const index = updatedData.findIndex(({ id }: { id: string }) => id === appId);
 				updatedData[index] = {
 					...app,
 					installed: true,
 					status,
 					version,
+					licenseValidation,
 					marketplaceVersion: app.version,
 				};
 				setApps(updatedData);
@@ -75,7 +75,7 @@ const AppsProvider: FC = ({ children }) => {
 			APP_UPDATED: handleAppAddedOrUpdated,
 			APP_REMOVED: (appId: string): void => {
 				const updatedData = getDataCopy();
-				const index = updatedData.findIndex(({ id }: {id: string}) => id === appId);
+				const index = updatedData.findIndex(({ id }: { id: string }) => id === appId);
 				if (!updatedData[index]) {
 					return;
 				}
@@ -91,14 +91,15 @@ const AppsProvider: FC = ({ children }) => {
 				setApps(updatedData);
 				invalidateData();
 			},
-			APP_STATUS_CHANGE: ({ appId, status }: {appId: string; status: unknown}): void => {
+			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: unknown }): void => {
 				const updatedData = getDataCopy();
-				const app = updatedData.find(({ id }: {id: string}) => id === appId);
+				const app = updatedData.find(({ id }: { id: string }) => id === appId);
 
 				if (!app) {
 					return;
 				}
-				app.status = status;
+
+				app.status = status as AppStatus;
 				setApps(updatedData);
 				invalidateData();
 			},
@@ -111,40 +112,47 @@ const AppsProvider: FC = ({ children }) => {
 
 		const fetchData = async (): Promise<void> => {
 			try {
-				const installedApps = await Apps.getApps().then((result) => {
+				const installedApps = (await Apps.getApps().then((result) => {
 					let apps: App[] = [];
 					if (result.length) {
-						apps = result.map((current: App) => ({ ...current, installed: true, marketplace: false }));
+						apps = result.map((current: App) => ({
+							...current,
+							installed: true,
+							marketplace: false,
+						}));
 						updateData(apps);
 					}
 					return apps;
-				}) as App[];
+				})) as App[];
 
-				const marketplaceApps = await Apps.getAppsFromMarketplace() as App[];
+				const marketplaceApps = (await Apps.getAppsFromMarketplace()) as App[];
 
-				const appsData = marketplaceApps.length ? marketplaceApps.map<App>((app) => {
-					const appIndex = installedApps.findIndex(({ id }) => id === app.id);
-					if (!installedApps[appIndex]) {
-						return {
-							...app,
-							status: undefined,
-							marketplaceVersion: app.version,
-							bundledIn: app.bundledIn,
-						};
-					}
+				const appsData = marketplaceApps.length
+					? marketplaceApps.map<App>((app) => {
+							const appIndex = installedApps.findIndex(({ id }) => id === app.id);
+							if (!installedApps[appIndex]) {
+								return {
+									...app,
+									status: undefined,
+									marketplaceVersion: app.version,
+									bundledIn: app.bundledIn,
+								};
+							}
 
-					const installedApp = installedApps.splice(appIndex, 1).pop();
-					return {
-						...app,
-						installed: true,
-						...installedApp && {
-							status: installedApp.status,
-							version: installedApp.version,
-						},
-						bundledIn: app.bundledIn,
-						marketplaceVersion: app.version,
-					};
-				}) : [];
+							const installedApp = installedApps.splice(appIndex, 1).pop();
+							return {
+								...app,
+								installed: true,
+								...(installedApp && {
+									status: installedApp.status,
+									version: installedApp.version,
+									licenseValidation: installedApp.licenseValidation,
+								}),
+								bundledIn: app.bundledIn,
+								marketplaceVersion: app.version,
+							};
+					  })
+					: [];
 
 				if (installedApps.length) {
 					appsData.push(...installedApps);

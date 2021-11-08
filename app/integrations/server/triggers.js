@@ -1,9 +1,9 @@
 import { callbacks } from '../../callbacks';
-import { integrations } from '../lib/rocketchat';
+import { triggerHandler } from './lib/triggerHandler';
 
 const callbackHandler = function _callbackHandler(eventType) {
 	return function _wrapperFunction(...args) {
-		return integrations.triggerHandler.executeTriggers(eventType, ...args);
+		return triggerHandler.executeTriggers(eventType, ...args);
 	};
 };
 

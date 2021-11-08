@@ -1,7 +1,7 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings } from '../../../app/models';
 
-Migrations.add({
+addMigration({
 	version: 216,
 	up() {
 		Settings.find({ _id: /Accounts_OAuth_Custom/, i18nLabel: 'Accounts_OAuth_Custom_Enable' }).forEach(function(customOauth) {

@@ -96,7 +96,9 @@ describe('Comparisons service', () => {
 		it('should run .some on array', () => {
 			const arr = [1, 2, 4, 6, 9];
 			const isEven = (v: number | number[]): boolean => {
-				if (Array.isArray(v)) { return false; }
+				if (Array.isArray(v)) {
+					return false;
+				}
 				return v % 2 === 0;
 			};
 
@@ -106,7 +108,9 @@ describe('Comparisons service', () => {
 		it('should run the function on the value when its not an array', () => {
 			const val = 1;
 			const isEven = (v: number | number[]): boolean => {
-				if (Array.isArray(v)) { return false; }
+				if (Array.isArray(v)) {
+					return false;
+				}
 				return v % 2 === 0;
 			};
 

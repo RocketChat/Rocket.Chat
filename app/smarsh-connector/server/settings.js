@@ -1,9 +1,9 @@
 import moment from 'moment';
 
-import { settings } from '../../settings';
+import { settingsRegistry } from '../../settings/server';
 import 'moment-timezone';
 
-settings.addGroup('Smarsh', function addSettings() {
+settingsRegistry.addGroup('Smarsh', function addSettings() {
 	this.add('Smarsh_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Smarsh_Enabled',

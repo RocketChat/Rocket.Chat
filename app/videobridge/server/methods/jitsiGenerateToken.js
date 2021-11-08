@@ -4,6 +4,7 @@ import { jws } from 'jsrsasign';
 import { Rooms } from '../../../models';
 import { settings } from '../../../settings';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 
 Meteor.methods({
 	'jitsi:generateAccessToken': (rid) => {
@@ -34,7 +35,7 @@ Meteor.methods({
 			payload.context = {
 				user: {
 					name: user.name,
-					email: user.emails[0].address,
+					email: getUserEmailAddress(user),
 					avatar: Meteor.absoluteUrl(`avatar/${ user.username }`),
 					id: user._id,
 				},

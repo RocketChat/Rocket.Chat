@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import Future from 'fibers/future';
 
 import { Users, Subscriptions } from '../../../app/models/server/raw';
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 
 const batchSize = 5000;
 
@@ -44,7 +44,7 @@ async function migrateUserRecords(total, current) {
 	return batch;
 }
 
-Migrations.add({
+addMigration({
 	version: 199,
 	up() {
 		const fut = new Future();

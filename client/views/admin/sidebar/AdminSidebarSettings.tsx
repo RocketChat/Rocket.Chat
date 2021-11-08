@@ -3,9 +3,9 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import React, { useCallback, useState, useMemo, FC } from 'react';
 
 import { ISetting } from '../../../../definition/ISetting';
+import Sidebar from '../../../components/Sidebar';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { TranslationKey, useTranslation } from '../../../contexts/TranslationContext';
-import Sidebar from '../../../components/Sidebar';
 
 const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();
@@ -17,11 +17,12 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 			return (): boolean => true;
 		}
 
-		const getMatchableStrings = (setting: ISetting): string[] => [
-			setting.i18nLabel && t(setting.i18nLabel as TranslationKey),
-			t(setting._id as TranslationKey),
-			setting._id,
-		].filter(Boolean);
+		const getMatchableStrings = (setting: ISetting): string[] =>
+			[
+				setting.i18nLabel && t(setting.i18nLabel as TranslationKey),
+				t(setting._id as TranslationKey),
+				setting._id,
+			].filter(Boolean);
 
 		try {
 			const filterRegex = new RegExp(filter, 'i');
@@ -34,21 +35,25 @@ const useSettingsGroups = (filter: string): ISetting[] => {
 	}, [filter, t]);
 
 	return useMemo(() => {
-		const groupIds = Array.from(new Set(
-			settings
-				.filter(filterPredicate)
-				.map((setting) => {
+		const groupIds = Array.from(
+			new Set(
+				settings.filter(filterPredicate).map((setting) => {
 					if (setting.type === 'group') {
 						return setting._id;
 					}
 
 					return setting.group;
 				}),
-		));
+			),
+		);
 
 		return settings
 			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
-			.sort((a, b) => t((a.i18nLabel || a._id) as TranslationKey).localeCompare(t((b.i18nLabel || b._id) as TranslationKey)));
+			.sort((a, b) =>
+				t((a.i18nLabel || a._id) as TranslationKey).localeCompare(
+					t((b.i18nLabel || b._id) as TranslationKey),
+				),
+			);
 	}, [settings, filterPredicate, t]);
 };
 
@@ -64,29 +69,39 @@ const AdminSidebarSettings: FC<AdminSidebarSettingsProps> = ({ currentPath }) =>
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = false; // TODO: get from PrivilegedSettingsContext
 
-	return <Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>
-		<Box pi='x24' pb='x8' fontScale='p2' color='info'>{t('Settings')}</Box>
-		<Box pi='x24' pb='x8' display='flex'>
-			<SearchInput
-				value={filter}
-				placeholder={t('Search')}
-				onChange={handleChange}
-				addon={<Icon name='magnifier' size='x20'/>}
-			/>
+	return (
+		<Box is='section' display='flex' flexDirection='column' flexShrink={0} pb='x24'>
+			<Box pi='x24' pb='x8' fontScale='p2' color='info'>
+				{t('Settings')}
+			</Box>
+			<Box pi='x24' pb='x8' display='flex'>
+				<SearchInput
+					value={filter}
+					placeholder={t('Search')}
+					onChange={handleChange}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
+			</Box>
+			<Box pb='x16' display='flex' flexDirection='column'>
+				{isLoadingGroups && <Skeleton />}
+				{!isLoadingGroups && !!groups.length && (
+					<Sidebar.ItemsAssembler
+						items={groups.map((group) => ({
+							name: t((group.i18nLabel || group._id) as TranslationKey),
+							pathSection: 'admin',
+							pathGroup: group._id,
+						}))}
+						currentPath={currentPath}
+					/>
+				)}
+				{!isLoadingGroups && !groups.length && (
+					<Box pi='x28' mb='x4' color='hint'>
+						{t('Nothing_found')}
+					</Box>
+				)}
+			</Box>
 		</Box>
-		<Box pb='x16' display='flex' flexDirection='column'>
-			{isLoadingGroups && <Skeleton/>}
-			{!isLoadingGroups && !!groups.length && <Sidebar.ItemsAssembler
-				items={groups.map((group) => ({
-					name: t((group.i18nLabel || group._id) as TranslationKey),
-					pathSection: 'admin',
-					pathGroup: group._id,
-				}))}
-				currentPath={currentPath}
-			/>}
-			{!isLoadingGroups && !groups.length && <Box pi='x28' mb='x4' color='hint'>{t('Nothing_found')}</Box>}
-		</Box>
-	</Box>;
+	);
 };
 
 export default AdminSidebarSettings;

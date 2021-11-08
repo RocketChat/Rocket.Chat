@@ -1,4 +1,5 @@
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
@@ -42,8 +43,10 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, options = {}) {
+	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const teamCondition = teams ? {} : {
 			teamMain: {
@@ -64,16 +67,19 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			...teamCondition,
+			...onlyTeamsQuery,
 		};
 		return this.find(query, options);
 	}
 
-	findByTypes(types, discussion = false, teams = false, options = {}) {
+	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const teamCondition = teams ? {} : {
 			teamMain: {
 				$exists: false,
 			},
 		};
+
+		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const query = {
 			t: {
@@ -81,11 +87,12 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			...teamCondition,
+			...onlyTeamsCondition,
 		};
 		return this.find(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, options = {}) {
+	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams ? {} : {
@@ -93,6 +100,8 @@ export class RoomsRaw extends BaseRaw {
 				$exists: false,
 			},
 		};
+
+		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
 		const query = {
 			prid: { $exists: discussion },
@@ -104,6 +113,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			...teamCondition,
+			...onlyTeamsCondition,
 		};
 
 		return this.find(query, options);
@@ -120,21 +130,26 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findByTeamIdContainingNameAndDefault(teamId, name, teamDefault, ids, options = {}) {
+		const query = {
+			teamId,
+			teamMain: {
+				$exists: false,
+			},
+			...name ? { name: new RegExp(escapeRegExp(name), 'i') } : {},
+			...teamDefault === true ? { teamDefault } : {},
+			...ids ? { $or: [{ t: 'c' }, { _id: { $in: ids } }] } : {},
+		};
+
+		return this.find(query, options);
+	}
+
 	findByTeamIdAndRoomsId(teamId, rids, options = {}) {
 		const query = {
 			teamId,
 			_id: {
 				$in: rids,
 			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findPublicByTeamId(uid, teamId, options = {}) {
-		const query = {
-			teamId,
-			t: 'c',
 		};
 
 		return this.find(query, options);
@@ -168,16 +183,64 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			_id: {
+				$in: roomIds,
+			},
+			t: {
+				$in: ['c', 'p'],
+			},
+			name: nameRegex,
+			$or: [{
+				teamId: {
+					$exists: false,
+				},
+			}, {
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: roomIds,
+				},
+			}],
+			prid: { $exists: false },
+		};
+
+		return this.find(query, options);
+	}
+
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			teamId: {
+				$exists: false,
+			},
+			prid: {
+				$exists: false,
+			},
+			_id: {
+				$in: groupsToAccept,
+			},
+			name: nameRegex,
+		};
+		return this.find(query, options);
+	}
+
 	unsetTeamId(teamId, options = {}) {
 		const query = { teamId };
 		const update = {
 			$unset: {
 				teamId: '',
 				teamDefault: '',
+				teamMain: '',
 			},
 		};
 
-		return this.update(query, update, options);
+		return this.updateMany(query, update, options);
 	}
 
 	unsetTeamById(rid, options = {}) {
@@ -331,5 +394,9 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.update(query, update, { multi: true });
+	}
+
+	findOneByNameOrFname(name, options = {}) {
+		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { Option, Badge } from '@rocket.chat/fuselage';
 
 import { useSetting } from '../../../client/contexts/SettingsContext';
@@ -19,10 +19,10 @@ addAction('livestream', ({ room }) => {
 		icon: 'podcast',
 		template: 'liveStreamTab',
 		order: isLive ? -1 : 15,
-		renderAction: (props): React.ReactNode => <Header.ToolBoxAction {...props}>
+		renderAction: (props): ReactNode => <Header.ToolBoxAction {...props}>
 			{isLive ? <Header.Badge title={t('Livestream_live_now')} variant='danger'>!</Header.Badge> : null}
 		</Header.ToolBoxAction>,
-		renderOption: ({ label: { title, icon }, ...props }: any): React.ReactNode => <Option label={title} title={title} icon={icon} {...props}>
+		renderOption: ({ label: { title, icon }, ...props }: any): ReactNode => <Option label={title} title={title} icon={icon} {...props}>
 			{isLive ? <Badge title={t('Livestream_live_now')} variant='danger'>!</Badge> : null }
 		</Option>,
 	} : null), [enabled, isLive, t]);

@@ -7,6 +7,15 @@ addAction('room-info', {
 	id: 'room-info',
 	title: 'Room_Info',
 	icon: 'info-circled',
-	template: lazy(() => import('../../../client/omnichannel/directory/chats/contextualBar')),
+	template: lazy(() => import('../../../client/views/omnichannel/directory/chats/contextualBar/ChatsContextualBar')),
 	order: 0,
+});
+
+addAction('contact-chat-history', {
+	groups: ['live'],
+	id: 'contact-chat-history',
+	title: 'Contact_Chat_History',
+	icon: 'clock',
+	template: 'contactChatHistory',
+	order: 11,
 });

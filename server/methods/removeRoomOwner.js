@@ -65,7 +65,7 @@ Meteor.methods({
 			role: 'owner',
 		});
 
-		const team = Promise.await(Team.getOneByRoomId(rid));
+		const team = Promise.await(Team.getOneByMainRoomId(rid));
 		if (team) {
 			Promise.await(Team.removeRolesFromMember(team._id, userId, ['owner']));
 		}

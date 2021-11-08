@@ -1,5 +1,5 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import React, { FC, useCallback } from 'react';
+import React, { ComponentProps, FC, useCallback } from 'react';
 
 import SortIcon from './SortIcon';
 
@@ -8,7 +8,7 @@ type HeaderCellProps = {
 	direction?: 'asc' | 'desc';
 	sort?: string;
 	onClick?: (sort: string) => void;
-};
+} & ComponentProps<typeof Box>;
 
 const HeaderCell: FC<HeaderCellProps> = ({
 	children,
@@ -19,12 +19,14 @@ const HeaderCell: FC<HeaderCellProps> = ({
 	...props
 }) => {
 	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);
-	return <Table.Cell clickable={!!sort} onClick={fn} { ...props }>
-		<Box display='flex' alignItems='center' wrap='no-wrap'>
-			{children}
-			{sort && <SortIcon direction={active ? direction : undefined} />}
-		</Box>
-	</Table.Cell>;
+	return (
+		<Table.Cell clickable={!!sort} onClick={fn} {...props}>
+			<Box display='flex' alignItems='center' wrap='no-wrap'>
+				{children}
+				{sort && <SortIcon direction={active ? direction : undefined} />}
+			</Box>
+		</Table.Cell>
+	);
 };
 
 export default HeaderCell;

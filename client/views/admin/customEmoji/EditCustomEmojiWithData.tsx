@@ -1,10 +1,10 @@
-import React, { useMemo, FC } from 'react';
 import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import React, { useMemo, FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import EditCustomEmoji from './EditCustomEmoji';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
+import EditCustomEmoji from './EditCustomEmoji';
 
 type EditCustomEmojiWithDataProps = {
 	_id: string;
@@ -28,23 +28,35 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 	} = useEndpointData('emoji-custom.list', query);
 
 	if (state === AsyncStatePhase.LOADING) {
-		return <Box pb='x20'>
-			<Skeleton mbs='x8'/>
-			<InputBox.Skeleton w='full'/>
-			<Skeleton mbs='x8'/>
-			<InputBox.Skeleton w='full'/>
-			<ButtonGroup stretch w='full' mbs='x8'>
-				<Button disabled><Throbber inheritColor/></Button>
-				<Button primary disabled><Throbber inheritColor/></Button>
-			</ButtonGroup>
-			<ButtonGroup stretch w='full' mbs='x8'>
-				<Button primary danger disabled><Throbber inheritColor/></Button>
-			</ButtonGroup>
-		</Box>;
+		return (
+			<Box pb='x20'>
+				<Skeleton mbs='x8' />
+				<InputBox.Skeleton w='full' />
+				<Skeleton mbs='x8' />
+				<InputBox.Skeleton w='full' />
+				<ButtonGroup stretch w='full' mbs='x8'>
+					<Button disabled>
+						<Throbber inheritColor />
+					</Button>
+					<Button primary disabled>
+						<Throbber inheritColor />
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch w='full' mbs='x8'>
+					<Button primary danger disabled>
+						<Throbber inheritColor />
+					</Button>
+				</ButtonGroup>
+			</Box>
+		);
 	}
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
-		return <Box fontScale='h1' pb='x20'>{t('Custom_User_Status_Error_Invalid_User_Status')}</Box>;
+		return (
+			<Box fontScale='h1' pb='x20'>
+				{t('Custom_User_Status_Error_Invalid_User_Status')}
+			</Box>
+		);
 	}
 
 	const handleChange = (): void => {
@@ -52,7 +64,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 		reload && reload();
 	};
 
-	return <EditCustomEmoji data={data.emojis.update[0]} onChange={handleChange} {...props}/>;
+	return <EditCustomEmoji data={data.emojis.update[0]} onChange={handleChange} {...props} />;
 };
 
 export default EditCustomEmojiWithData;

@@ -1,4 +1,8 @@
+import { IRoom } from '../../../definition/IRoom';
+import { IUser } from '../../../definition/IUser';
 import { FollowMessageMethod } from './methods/followMessage';
+import { GetReadReceiptsMethod } from './methods/getReadReceipts';
+import { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import { RoomNameExistsMethod } from './methods/roomNameExists';
 import { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import { SaveSettingsMethod } from './methods/saveSettings';
@@ -57,6 +61,7 @@ export type ServerMethods = {
 	'jitsi:generateAccessToken': (...args: any[]) => any;
 	'jitsi:updateTimeout': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
+	'license:getModules': () => string[];
 	'license:getTags': (...args: any[]) => any;
 	'livechat:addMonitor': (...args: any[]) => any;
 	'livechat:changeLivechatStatus': (...args: any[]) => any;
@@ -103,6 +108,7 @@ export type ServerMethods = {
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
 	'removeWebdavAccount': (...args: any[]) => any;
+	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
@@ -119,6 +125,7 @@ export type ServerMethods = {
 	'setAvatarFromService': (...args: any[]) => any;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
+	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unfollowMessage': UnfollowMessageMethod;
@@ -129,12 +136,21 @@ export type ServerMethods = {
 	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
+	'Mailer:unsubscribe': MailerUnsubscribeMethod;
+	'getRoomById': (rid: IRoom['_id']) => IRoom;
+	'getReadReceipts': GetReadReceiptsMethod;
 };
 
 export type ServerMethodName = keyof ServerMethods;
 
-export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
+export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<
+	ServerMethods[MethodName]
+>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<
+	ServerMethods[MethodName]
+>;
 
-export type ServerMethodFunction<MethodName extends ServerMethodName> = (...args: ServerMethodParameters<MethodName>) => Promise<ServerMethodReturn<MethodName>>;
+export type ServerMethodFunction<MethodName extends ServerMethodName> = (
+	...args: ServerMethodParameters<MethodName>
+) => Promise<ServerMethodReturn<MethodName>>;

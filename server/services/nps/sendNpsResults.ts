@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { INpsVote } from '../../../definition/INps';
+import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {
 	total: number;
@@ -26,6 +27,7 @@ export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(nps
 			data,
 		});
 	} catch (e) {
-		throw new Error(e);
+		SystemLogger.error(e);
+		return false;
 	}
 });

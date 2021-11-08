@@ -14,7 +14,17 @@ export interface IBanner extends IRocketChatRecord {
 	createdBy: Pick<IUser, '_id' | 'username' >;
 	createdAt: Date;
 	view: UiKitBannerPayload;
+	active?: boolean;
+	inactivedAt?: Date;
+	snapshot?: string;
 }
+
+export type InactiveBanner = IBanner & {
+	active: false;
+	inactivedAt: Date;
+};
+
+export const isInactiveBanner = (banner: IBanner): banner is InactiveBanner => banner.active === false;
 
 export interface IBannerDismiss extends IRocketChatRecord {
 	userId: IUser['_id']; // user receiving the banner dismissed
