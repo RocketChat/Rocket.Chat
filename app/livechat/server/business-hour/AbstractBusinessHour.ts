@@ -47,7 +47,7 @@ export abstract class AbstractBusinessHourBehavior {
 	}
 
 	async changeAgentActiveStatus(agentId: string, status: string): Promise<any> {
-		return this.UsersRepository.setLivechatStatus(agentId, status);
+		return this.UsersRepository.setLivechatStatusIf(agentId, status, { livechatStatusSystemModified: true }, { livechatStatusSystemModified: true });
 	}
 }
 
