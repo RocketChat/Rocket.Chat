@@ -26,7 +26,6 @@ export class UsersRaw extends BaseRaw {
 				roles: { $each: roles },
 			},
 		};
-		console.log('this.updateOne', query, update);
 		return this.updateOne(query, update);
 	}
 
