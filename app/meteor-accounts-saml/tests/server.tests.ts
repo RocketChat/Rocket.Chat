@@ -38,7 +38,6 @@ import {
 	privateKeyCert,
 	privateKey,
 } from './data';
-import '../../../definition/xml-encryption';
 
 const { expect } = chai;
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Subscriptions, Uploads, Users, Messages, Rooms } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -19,7 +19,7 @@ function findDirectMessageRoom(params, user, allowAdminOverride) {
 		nameOrId: params.username || params.roomId,
 	});
 
-	const canAccess = Meteor.call('canAccessRoom', room._id, user._id)
+	const canAccess = canAccessRoom(room, user)
 		|| (allowAdminOverride && hasPermission(user._id, 'view-room-administration'));
 	if (!canAccess || !room || room.t !== 'd') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "username" param provided does not match any direct message');

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
-import { hasPermission } from '../../../authorization/server';
+import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { sendMessage as _sendMessage } from '../functions';
 
@@ -55,29 +55,25 @@ export const processDirectEmail = function(email) {
 		}
 		message.rid = prevMessage.rid;
 
-		const room = Meteor.call('canAccessRoom', message.rid, user._id);
-		if (!room) {
+		const room = Rooms.findOneById(message.rid);
+
+		if (!canAccessRoom(room, user)) {
 			return false;
 		}
 
-		const roomInfo = Rooms.findOneById(message.rid, {
-			t: 1,
-			name: 1,
-		});
-
 		// check mention
-		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1 && roomInfo.t !== 'd') {
+		if (message.msg.indexOf(`@${ prevMessage.u.username }`) === -1 && room.t !== 'd') {
 			message.msg = `@${ prevMessage.u.username } ${ message.msg }`;
 		}
 
 		// reply message link
 		let prevMessageLink = `[ ](${ Meteor.absoluteUrl().replace(/\/$/, '') }`;
-		if (roomInfo.t === 'c') {
-			prevMessageLink += `/channel/${ roomInfo.name }?msg=${ email.headers.mid }) `;
-		} else if (roomInfo.t === 'd') {
+		if (room.t === 'c') {
+			prevMessageLink += `/channel/${ room.name }?msg=${ email.headers.mid }) `;
+		} else if (room.t === 'd') {
 			prevMessageLink += `/direct/${ prevMessage.u.username }?msg=${ email.headers.mid }) `;
-		} else if (roomInfo.t === 'p') {
-			prevMessageLink += `/group/${ roomInfo.name }?msg=${ email.headers.mid }) `;
+		} else if (room.t === 'p') {
+			prevMessageLink += `/group/${ room.name }?msg=${ email.headers.mid }) `;
 		}
 		// add reply message link
 		message.msg = prevMessageLink + message.msg;

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { MongoInternals, OplogHandle } from 'meteor/mongo';
 import semver from 'semver';
 import { MongoClient, Cursor, Timestamp, Db } from 'mongodb';
@@ -193,12 +192,12 @@ class CustomOplogHandle {
 	}
 }
 
-let oplogHandle: Promise<CustomOplogHandle>;
+let oplogHandle: CustomOplogHandle;
 
 if (!process.env.DISABLE_DB_WATCH) {
-	// @ts-ignore
-	// eslint-disable-next-line no-undef
-	if (Package['disable-oplog']) {
+	const disableOplog = !!(global.Package as any)['disable-oplog'];
+
+	if (disableOplog) {
 		try {
 			oplogHandle = Promise.await(new CustomOplogHandle().start());
 		} catch (e) {
