@@ -50,6 +50,7 @@ function ChatInfo({ id, route }) {
 		priorityId,
 		livechatData,
 		source,
+		queuedAt,
 	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -58,6 +59,7 @@ function ChatInfo({ id, route }) {
 	const hasGlobalEditRoomPermission = hasPermission('save-others-livechat-room-info');
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
+	const queueStartedAt = queuedAt || ts;
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
@@ -126,13 +128,13 @@ function ChatInfo({ id, route }) {
 							<Info>{topic}</Info>
 						</Field>
 					)}
-					{ts && (
+					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
 							{servedBy ? (
-								<Info>{moment(servedBy.ts).from(moment(ts), true)}</Info>
+								<Info>{moment(servedBy.ts).from(moment(queueStartedAt), true)}</Info>
 							) : (
-								<Info>{moment(ts).fromNow(true)}</Info>
+								<Info>{moment(queueStartedAt).fromNow(true)}</Info>
 							)}
 						</Field>
 					)}
