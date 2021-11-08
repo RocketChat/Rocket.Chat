@@ -130,11 +130,10 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['name'][], rid?: IRoom['_id']): Promise<UpdateWriteOpResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addRolesByUserId: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
 		}
 
 		const query = {
-			roles: { $in: roles },
 			'u._id': uid,
 			rid,
 		};

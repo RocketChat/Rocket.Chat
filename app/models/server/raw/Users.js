@@ -14,11 +14,10 @@ export class UsersRaw extends BaseRaw {
 	addRolesByUserId(uid, roles) {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
-			process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addRolesByUserId: roles should be an array');
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
 		}
 
 		const query = {
-			roles: { $in: roles },
 			_id: uid,
 		};
 
@@ -27,7 +26,7 @@ export class UsersRaw extends BaseRaw {
 				roles: { $each: roles },
 			},
 		};
-
+		console.log('this.updateOne', query, update);
 		return this.updateOne(query, update);
 	}
 
