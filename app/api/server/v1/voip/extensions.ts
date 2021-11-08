@@ -1,26 +1,23 @@
 
+import { Match, check } from 'meteor/check';
+
 import { API } from '../../api';
-import { Commands } from '../../../../../server/services/voip/connector/asterisk/Commands';
-import { CommandHandler } from '../../../../../server/services/voip/connector/asterisk/CommandHandler';
 import { Voip } from '../../../../../server/sdk';
-import { ICallServerConfigData, IVoipServerConfig, ServerType } from '../../../../../definition/IVoipServerConfig';
-import { IVoipExtensionBase, IVoipExtensionConfig } from '../../../../../definition/IVoipExtension';
+import { IVoipExtensionBase } from '../../../../../definition/IVoipExtension';
 import { IVoipConnectorResult } from '../../../../../definition/IVoipConnectorResult';
 
-const commandHandler = new CommandHandler();
 // Get the connector version and type
 API.v1.addRoute('connector.getVersion', { authRequired: true }, {
 	get() {
-		return API.v1.success(commandHandler.getVersion());
+		const version = Promise.await(Voip.getConnectorVersion());
+		return API.v1.success(version);
 	},
 });
 
 // Get the extensions available on the call server
 API.v1.addRoute('connector.extension.list', { authRequired: true }, {
 	get() {
-		const list = Promise.await(
-			commandHandler.executeCommand(Commands.extension_list, undefined),
-		) as IVoipConnectorResult;
+		const list = Promise.await(Voip.getExtensionList()) as IVoipConnectorResult;
 		const result: IVoipExtensionBase[] = list.result as IVoipExtensionBase[];
 		this.logger.debug({ msg: 'API = connector.extension.list length ', result: result.length });
 		return API.v1.success({ extensions: result });
@@ -33,13 +30,11 @@ API.v1.addRoute('connector.extension.list', { authRequired: true }, {
  */
 API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
 	get() {
-		const endpointDetails = Promise.await(
-			commandHandler.executeCommand(
-				Commands.extension_info,
-				this.requestParams()),
-		) as IVoipConnectorResult;
+		check(this.requestParams(), Match.ObjectIncluding({
+			extension: String,
+		}));
+		const endpointDetails = Promise.await(Voip.getExtensionDetails(this.requestParams())) as IVoipConnectorResult;
 		this.logger.debug({ msg: 'API = connector.extension.getDetails', result: endpointDetails.result });
-
 		return API.v1.success({ ...endpointDetails.result });
 	},
 });
@@ -48,27 +43,11 @@ API.v1.addRoute('connector.extension.getDetails', { authRequired: true }, {
  */
 API.v1.addRoute('connector.extension.getRegistrationInfo', { authRequired: true }, {
 	get() {
-		const config: IVoipServerConfig = Promise.await(
-			Voip.getServerConfigData(ServerType.CALL_SERVER),
-		) as unknown as IVoipServerConfig;
-		if (!config) {
-			this.logger.warn({ msg: 'API = connector.extension.getRegistrationInfo callserver settings not found' });
-			return API.v1.notFound();
-		}
-		const endpointDetails = Promise.await(commandHandler.executeCommand(
-			Commands.extension_info,
-			this.requestParams(),
-		)) as IVoipConnectorResult;
-		const callServerConfig: ICallServerConfigData = config.configData as unknown as ICallServerConfigData;
-		const endpointInfo: IVoipExtensionConfig = endpointDetails.result as IVoipExtensionConfig;
-		const extensionRegistrationInfo = {
-			sipRegistrar: config.host,
-			websocketUri: callServerConfig.websocketPath,
-			extension: endpointInfo.name,
-			password: endpointInfo.password,
-		};
+		check(this.requestParams(), Match.ObjectIncluding({
+			extension: String,
+		}));
+		const endpointDetails = Promise.await(Voip.getRegistrationInfo(this.requestParams()));
 		this.logger.debug({ msg: 'API = connector.extension.getRegistrationInfo', result: endpointDetails });
-
-		return API.v1.success({ ...extensionRegistrationInfo });
+		return API.v1.success({ ...endpointDetails.result });
 	},
 });

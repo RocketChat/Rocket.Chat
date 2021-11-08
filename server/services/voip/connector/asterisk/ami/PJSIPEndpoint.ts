@@ -32,7 +32,7 @@ import { Command, CommandType } from '../Command';
 import { Logger } from '../../../../../lib/logger/Logger';
 import { Commands } from '../Commands';
 import { CallbackContext } from './CallbackContext';
-import { EndpointState } from '../../../../../../definition/IVoipExtension';
+import { EndpointState, IExtensionDetails } from '../../../../../../definition/IVoipExtension';
 import { IVoipConnectorResult } from '../../../../../../definition/IVoipConnectorResult';
 
 export class PJSIPEndpoint extends Command {
@@ -67,9 +67,11 @@ export class PJSIPEndpoint extends Command {
 			});
 			return;
 		}
-		const endPoint = {
-			name: event.objectname,
+		const endPoint: IExtensionDetails = {
+			extension: event.objectname,
 			state: this.getState(event.devicestate),
+			password: '',
+			authtype: '',
 		};
 		const { result } = this;
 		if (result.endpoints) {
@@ -97,7 +99,7 @@ export class PJSIPEndpoint extends Command {
 		}
 		this.resetEventHandlers();
 		const { result } = this;
-		this.logger.info({ msg: `onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }` });
+		this.logger.debug({ msg: `onEndpointListComplete() Complete. Data = ${ JSON.stringify(result) }` });
 		this.returnResolve({ result: result.endpoints } as IVoipConnectorResult);
 	}
 
@@ -120,22 +122,24 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		const { result } = this;
+
 		if (!result.endpoint) {
-			result.endpoint = {
-				name: '',
+			const endpointDetails: IExtensionDetails = {
+				extension: '',
 				state: '',
 				password: '',
 				authtype: '',
 			};
+			result.endpoint = endpointDetails;
+		}
+		if (event.event.toLowerCase() === 'endpointdetail') {
+			(result.endpoint as IExtensionDetails).extension = event.objectname;
+			(result.endpoint as IExtensionDetails).state = this.getState(event.devicestate);
+		} else if (event.event.toLowerCase() === 'authdetail') {
+			(result.endpoint as IExtensionDetails).password = event.password;
+			(result.endpoint as IExtensionDetails).authtype = event.authtype;
 		}
 
-		if (event.event.toLowerCase() === 'endpointdetail') {
-			result.endpoint.name = event.objectname;
-			result.endpoint.state = this.getState(event.devicestate);
-		} else if (event.event.toLowerCase() === 'authdetail') {
-			result.endpoint.password = event.password;
-			result.endpoint.authtype = event.authtype;
-		}
 		this.logger.debug({ msg: `onEndpointList Data = ${ JSON.stringify(result.endpoint) }` });
 	}
 
