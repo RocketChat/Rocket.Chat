@@ -76,7 +76,7 @@ const trashCollection = trash.rawCollection();
 
 export const Permissions = new PermissionsRaw(PermissionsModel.model.rawCollection(), trashCollection);
 export const Users = new UsersRaw(UsersModel.model.rawCollection(), trashCollection);
-export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), trashCollection);
+export const Subscriptions = new SubscriptionsRaw(SubscriptionsModel.model.rawCollection(), { Users }, trashCollection);
 export const Settings = new SettingsRaw(SettingsModel.model.rawCollection(), trashCollection);
 export const Rooms = new RoomsRaw(RoomsModel.model.rawCollection(), trashCollection);
 export const LivechatCustomField = new LivechatCustomFieldRaw(LivechatCustomFieldModel.model.rawCollection(), trashCollection);
