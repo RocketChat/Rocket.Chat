@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization';
-import { Users, Subscriptions, Rooms, Messages } from '../../app/models';
-import { callbacks } from '../../app/callbacks';
+import { hasPermission, hasRole, getUsersInRole, removeUserFromRoles } from '../../app/authorization/server';
+import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
+import { callbacks } from '../../app/callbacks/server';
 import { roomTypes, RoomMemberActions } from '../../app/utils/server';
 import { Team } from '../sdk';
 
 Meteor.methods({
-	removeUserFromRoom(data) {
+	async removeUserFromRoom(data) {
 		check(data, Match.ObjectIncluding({
 			rid: String,
 			username: String,
@@ -48,7 +48,7 @@ Meteor.methods({
 		}
 
 		if (hasRole(removedUser._id, 'owner', room._id)) {
-			const numOwners = getUsersInRole('owner', room._id).length;
+			const numOwners = await getUsersInRole('owner', room._id).count();
 
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {

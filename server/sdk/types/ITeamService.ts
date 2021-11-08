@@ -90,4 +90,5 @@ export interface ITeamService {
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
+	removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
 }

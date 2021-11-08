@@ -122,14 +122,14 @@ API.v1.addRoute('roles.getUsersInRole', { authRequired: true }, {
 		if (roomId && !hasPermission(this.userId, 'view-other-user-channels')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
-		const users = getUsersInRole(role, roomId, {
+		const users = Promise.await(getUsersInRole(role, roomId, {
 			limit: count,
 			sort: { username: 1 },
 			skip: offset,
 			fields,
-		});
+		}));
 
-		return API.v1.success({ users: Promise.await(users.toArray()), total: users.count() });
+		return API.v1.success({ users: Promise.await(users.toArray()), total: Promise.await(users.count()) });
 	},
 });
 

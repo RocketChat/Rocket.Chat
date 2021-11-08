@@ -1,7 +1,6 @@
 import type { Collection, Cursor, FilterQuery, FindOneOptions, InsertOneWriteOpResult, UpdateWriteOpResult, WithId, WithoutProjection } from 'mongodb';
 
-import { IRole } from '../../../../definition/IUser';
-import { IUser } from '../../../../definition/IUserAction';
+import { IRole, IUser } from '../../../../definition/IUser';
 import { BaseRaw } from './BaseRaw';
 import { SubscriptionsRaw } from './Subscriptions';
 import { UsersRaw } from './Users';

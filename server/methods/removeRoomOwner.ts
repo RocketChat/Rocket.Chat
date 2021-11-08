@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission, getUsersInRole } from '../../app/authorization';
-import { Users, Subscriptions, Messages } from '../../app/models';
-import { settings } from '../../app/settings';
+import { hasPermission, getUsersInRole } from '../../app/authorization/server';
+import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
 import { api } from '../sdk/api';
 import { Team } from '../sdk';
 
 Meteor.methods({
-	removeRoomOwner(rid, userId) {
+	async removeRoomOwner(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -45,7 +45,7 @@ Meteor.methods({
 			});
 		}
 
-		const numOwners = getUsersInRole('owner', rid).length;
+		const numOwners = await (await getUsersInRole('owner', rid)).count();
 
 		if (numOwners === 1) {
 			throw new Meteor.Error('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {
@@ -65,9 +65,9 @@ Meteor.methods({
 			role: 'owner',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['owner']));
+			await Team.removeRolesFromMember(team._id, userId, ['owner']);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {

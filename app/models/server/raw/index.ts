@@ -128,8 +128,6 @@ export const UserDataFiles = new UserDataFilesRaw(db.collection(`${ prefix }user
 export const Uploads = new UploadsRaw(db.collection(`${ prefix }uploads`), trashCollection);
 export const WebdavAccounts = new WebdavAccountsRaw(db.collection(`${ prefix }webdav_accounts`), trashCollection);
 
-console.log('asddd', Roles, Object.keys(Roles));
-
 const map = {
 	[Messages.col.collectionName]: MessagesModel,
 	[Users.col.collectionName]: UsersModel,

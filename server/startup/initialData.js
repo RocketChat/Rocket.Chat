@@ -1,16 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
 import { RocketChatFile } from '../../app/file';
-import { FileUpload } from '../../app/file-upload';
+import { FileUpload } from '../../app/file-upload/server';
 import { addUserRoles, getUsersInRole } from '../../app/authorization/server';
-import { Users, Rooms } from '../../app/models';
-import { settings } from '../../app/settings';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib';
+import { Users, Rooms } from '../../app/models/server';
+import { settings } from '../../app/settings/server';
+import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
 import { Settings } from '../../app/models/server/raw';
 
-Meteor.startup(function() {
+Meteor.startup(async function() {
 	if (settings.get('Show_Setup_Wizard') === 'pending' && !Rooms.findOneById('GENERAL')) {
 		Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 			default: true,
@@ -49,7 +48,7 @@ Meteor.startup(function() {
 	}
 
 	if (process.env.ADMIN_PASS) {
-		if (_.isEmpty(getUsersInRole('admin'))) {
+		if (await (await getUsersInRole('admin')).count() === 0) {
 			console.log('Inserting admin user:'.green);
 			const adminUser = {
 				name: 'Administrator',
@@ -135,16 +134,16 @@ Meteor.startup(function() {
 		}
 	}
 
-	if (_.isEmpty(getUsersInRole('admin'))) {
+	if (await (await getUsersInRole('admin')).count() === 0) {
 		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
 
 		if (oldestUser) {
-			addUserRoles(oldestUser._id, 'admin');
+			addUserRoles(oldestUser._id, ['admin']);
 			console.log(`No admins are found. Set ${ oldestUser.username || oldestUser.name } as admin for being the oldest user`);
 		}
 	}
 
-	if (!_.isEmpty(getUsersInRole('admin'))) {
+	if (await (await getUsersInRole('admin')).count() !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
@@ -190,7 +189,7 @@ Meteor.startup(function() {
 
 		Accounts.setPassword(adminUser._id, adminUser._id);
 
-		addUserRoles(adminUser._id, 'admin');
+		addUserRoles(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
