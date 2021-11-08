@@ -16,8 +16,7 @@ const handleOnAgentAssignmentFailed = async ({ inquiry, room, options }: { inqui
 		const { _id: roomId } = room;
 
 		const { _id: inquiryId } = inquiry;
-		LivechatInquiry.queueInquiry(inquiryId);
-		LivechatInquiry.removeDefaultAgentById(inquiryId);
+		LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId);
 		LivechatRooms.removeAgentByRoomId(roomId);
 		Subscriptions.removeByRoomId(roomId);
 		dispatchAgentDelegated(roomId, null);

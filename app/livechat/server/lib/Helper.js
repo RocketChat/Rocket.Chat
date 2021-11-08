@@ -40,6 +40,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const newRoomAt = new Date();
 
 	logger.debug(`Creating livechat room for visitor ${ _id }`);
 
@@ -47,10 +48,10 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		_id: rid,
 		msgs: 0,
 		usersCount: 1,
-		lm: new Date(),
+		lm: newRoomAt,
 		fname: name,
 		t: 'l',
-		ts: new Date(),
+		ts: newRoomAt,
 		departmentId,
 		v: {
 			_id,
@@ -67,6 +68,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 			type: OmnichannelSourceType.OTHER,
 			alias: 'unknown',
 		},
+		queuedAt: newRoomAt,
 	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
