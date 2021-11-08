@@ -31,11 +31,13 @@ callbacks.add('livechat.beforeRouteChat', async (inquiry, agent) => {
 
 	saveQueueInquiry(inquiry);
 
-	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
-	if (inq) {
-		dispatchInquiryPosition(inq);
+	if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({ _id, department });
+		if (inq) {
+			dispatchInquiryPosition(inq);
+			cbLogger.debug(`Callback success. Inquiry ${ _id } position has been notified`);
+		}
 	}
 
-	cbLogger.debug(`Callback success. Inquiry ${ _id } position has been notified`);
 	return LivechatInquiry.findOneById(_id);
 }, callbacks.priority.HIGH, 'livechat-before-routing-chat');
