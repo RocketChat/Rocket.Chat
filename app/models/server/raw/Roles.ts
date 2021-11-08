@@ -158,7 +158,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 	findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>>;
 
-	async findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options?: any | undefined): Promise<Cursor<IUser | P>> {
+	async findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);
 
 		if (!role) {

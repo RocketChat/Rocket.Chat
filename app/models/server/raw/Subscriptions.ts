@@ -3,8 +3,7 @@ import { compact } from 'lodash';
 
 import { BaseRaw } from './BaseRaw';
 import { ISubscription } from '../../../../definition/ISubscription';
-import { IUser } from '../../../../definition/IUserAction';
-import { IRole } from '../../../../definition/IUser';
+import { IRole, IUser } from '../../../../definition/IUser';
 import { IRoom } from '../../../../definition/IRoom';
 import { UsersRaw } from './Users';
 
@@ -108,13 +107,13 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 	}
 
 
-	findUsersInRoles(name: IRole['name'][], scope?: string): Promise<Cursor<IUser>>;
+	findUsersInRoles(name: IRole['name'][], rid: string | undefined): Promise<Cursor<IUser>>;
 
-	findUsersInRoles(name: IRole['name'][], scope: string | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
+	findUsersInRoles(name: IRole['name'][], rid: string | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
 
-	findUsersInRoles<P>(name: IRole['name'][], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>>;
+	findUsersInRoles<P = IUser>(name: IRole['name'][], rid: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>>;
 
-	async findUsersInRoles(roles: IRole['name'][], rid?: IRoom['_id']): Promise<Cursor<IUser>> {
+	async findUsersInRoles<P = IUser>(roles: IRole['name'][], rid: IRoom['_id'] | undefined, options?: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>> {
 		const query = {
 			roles: { $in: roles },
 			...rid && { rid },
@@ -124,7 +123,7 @@ export class SubscriptionsRaw extends BaseRaw<T> {
 
 		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
 
-		return this.models.Users.find({ _id: { $in: users } });
+		return !options ? this.models.Users.find({ _id: { $in: users } }) : this.models.Users.find({ _id: { $in: users } } as FilterQuery<IUser>, options);
 	}
 
 

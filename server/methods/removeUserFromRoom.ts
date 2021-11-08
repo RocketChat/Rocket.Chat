@@ -48,7 +48,7 @@ Meteor.methods({
 		}
 
 		if (hasRole(removedUser._id, 'owner', room._id)) {
-			const numOwners = await getUsersInRole('owner', room._id).count();
+			const numOwners = await (await getUsersInRole('owner', room._id)).count();
 
 			if (numOwners === 1) {
 				throw new Meteor.Error('error-you-are-last-owner', 'You are the last owner. Please set new owner before leaving the room.', {
@@ -74,7 +74,7 @@ Meteor.methods({
 
 		if (room.teamId && room.teamMain) {
 			// if a user is kicked from the main team room, delete the team membership
-			Promise.await(Team.removeMember(room.teamId, removedUser._id));
+			await Team.removeMember(room.teamId, removedUser._id);
 		}
 
 		Meteor.defer(function() {
