@@ -8,7 +8,7 @@ import { IOmnichannelAgent } from '../../definition/IOmnichannelAgent';
 import { IRoom } from '../../definition/IRoom';
 import { OmichannelRoutingConfig } from '../../definition/OmichannelRoutingConfig';
 import { ClientLogger } from '../../lib/ClientLogger';
-import { IExtensionConfig } from '../components/voip/IExtensionConfig';
+import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
 import { CallType, SimpleVoipUser } from '../components/voip/SimpleVoipUser';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { OmnichannelContext, OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -45,7 +45,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 
 	const [routeConfig, setRouteConfig] = useState<OmichannelRoutingConfig | undefined>(undefined);
 
-	const [extensionConfig, setExtensionConfig] = useState<IExtensionConfig | undefined>(undefined);
+	const [extensionConfig, setExtensionConfig] = useState<IRegistrationInfo | undefined>(undefined);
 
 	const [voipUser, setVoipUser] = useState<SimpleVoipUser | undefined>(undefined);
 
@@ -67,7 +67,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				}
 				extensionConfigLocal = (await APIClient.v1.get('connector.extension.getRegistrationInfo', {
 					extension,
-				})) as unknown as IExtensionConfig;
+				})) as unknown as IRegistrationInfo;
 				const iceServers: Array<object> = [];
 				if (iceServersSetting && iceServersSetting.trim() !== '') {
 					const serversListStr = iceServersSetting.replace(/\s/g, '');
@@ -87,10 +87,10 @@ const OmnichannelProvider: FC = ({ children }) => {
 				}
 				loggerRef.current.debug(JSON.stringify(iceServers));
 				voipUser = new SimpleVoipUser(
-					extensionConfigLocal.extension,
-					extensionConfigLocal.password,
-					extensionConfigLocal.sipRegistrar,
-					extensionConfigLocal.websocketUri,
+					extensionConfigLocal.extensionDetails.extension,
+					extensionConfigLocal.extensionDetails.password,
+					extensionConfigLocal.host,
+					extensionConfigLocal.callServerConfig.websocketPath,
 					iceServers,
 					CallType.AUDIO_VIDEO,
 				);
@@ -189,7 +189,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				voipCallAvailable,
 				routeConfig,
 				voipUser,
-				extensionConfig,
+				registrationConfig: extensionConfig,
 			};
 		}
 
@@ -207,7 +207,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 				: { enabled: false },
 			showOmnichannelQueueLink: showOmnichannelQueueLink && !!agentAvailable,
 			voipUser,
-			extensionConfig,
+			registrationConfig: extensionConfig,
 		};
 	}, [
 		agentAvailable,

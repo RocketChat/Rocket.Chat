@@ -77,13 +77,16 @@ export class AMIConnection implements IConnection {
 		}
 		this.logger.debug({ msg: 'eventHandlerCallback() Event found', event: event.event });
 		const handlers: CallbackContext[] = this.eventHandlers.get(event.event.toLowerCase());
-		this.logger.debug({ msg: `eventHandlerCallback() Handler count = ${ handlers.length }` });
+		this.logger.error({ msg: `eventHandlerCallback() Handler count = ${ handlers.length }` });
 		/* Go thru all the available handlers  and call each one of them if the actionid matches */
 		for (const handler of handlers) {
 			if (handler.call(event)) {
 				this.logger.debug({ msg: `eventHandlerCallback() called callback for action = ${ event.actionid }` });
 			} else {
-				this.logger.warn({ msg: `eventHandlerCallback() No command found for action = ${ event.actionid }` });
+				this.logger.debug({
+					msg: `eventHandlerCallback() No command found for action = ${ event.actionid }`,
+					event: event.event,
+				});
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
 import { OmichannelRoutingConfig, Inquiries } from '../../definition/OmichannelRoutingConfig';
-import { IExtensionConfig } from '../components/voip/IExtensionConfig';
+import { IRegistrationInfo } from '../components/voip/IRegistrationInfo';
 import { SimpleVoipUser } from '../components/voip/SimpleVoipUser';
 
 export type OmnichannelContextValue = {
@@ -11,7 +11,7 @@ export type OmnichannelContextValue = {
 	voipCallAvailable: boolean;
 	routeConfig?: OmichannelRoutingConfig;
 	showOmnichannelQueueLink: boolean;
-	extensionConfig?: IExtensionConfig;
+	registrationConfig?: IRegistrationInfo;
 	voipUser?: SimpleVoipUser;
 };
 
@@ -35,8 +35,8 @@ export const useVoipUser = (): SimpleVoipUser | undefined => {
 	}
 };
 
-export const useExtensionConfig = (): IExtensionConfig | undefined => {
-	const { extensionConfig } = useOmnichannel();
+export const useRegistrationInfo = (): IRegistrationInfo | undefined => {
+	const { registrationConfig: extensionConfig } = useOmnichannel();
 	if (useOmnichannel().voipUser?.isReady()) {
 		return extensionConfig;
 	}

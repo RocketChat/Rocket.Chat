@@ -1,14 +1,15 @@
 import React, { FC, useRef, useState, useCallback, useEffect, useMemo } from 'react';
 
+import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { ClientLogger } from '../../../lib/ClientLogger';
 import { ICallerInfo } from '../../components/voip/ICallEventDelegate';
 import { VoipEvents } from '../../components/voip/SimpleVoipUser';
 import { IMediaStreamRenderer } from '../../components/voip/VoIPUserConfiguration';
-import { useVoipUser, useExtensionConfig } from '../../contexts/OmnichannelContext';
+import { useVoipUser, useRegistrationInfo } from '../../contexts/OmnichannelContext';
 
 const VoIPLayout: FC = () => {
 	const [enableVideo, setEnableVideo] = useState(true);
-	const extensionConfig = useExtensionConfig();
+	const extensionConfig = useRegistrationInfo();
 	const voipUser = useVoipUser();
 	const remoteVideoMedia = useRef<HTMLVideoElement>(null);
 	const remoteAudioMedia = useRef<HTMLAudioElement>(null);
@@ -28,6 +29,110 @@ const VoIPLayout: FC = () => {
 			setEnableVideo(callTypeSelection.current?.checked);
 		}
 	}, []);
+
+	const apiTest = async (): Promise<void> => {
+		/*
+		try {
+			logger.info('Executing voipServerConfig.callServer');
+			const output = await APIClient.v1.post(
+				'voipServerConfig.callServer',
+				{},
+				{
+					host: 'omni-asterisk.dev.rocket.chat',
+					websocketPort: 443,
+					serverName: 'OmniAsterisk',
+					websocketPath: 'wss://omni-asterisk.dev.rocket.chat/ws',
+				},
+			);
+			logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
+		try {
+			logger.info('Executing voipServerConfig.management');
+			const output = await APIClient.v1.post(
+				'voipServerConfig.management',
+				{},
+				{
+					host: 'omni-asterisk.dev.rocket.chat',
+					port: 5038,
+					serverName: 'OmniAsterisk',
+					username: 'amol',
+					password: '1234',
+				},
+			);
+			logger.info('voipServerConfig.management output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.management`);
+		}
+		*/
+		try {
+			logger.info('Executing connector.getVersion');
+			const list = await APIClient.v1.get('connector.getVersion');
+			logger.info('connector.getVersion output = ', JSON.stringify(list));
+		} catch (error) {
+			logger.error(`error ${error} in API connector.getVersion`);
+		}
+		try {
+			logger.info('Executing voipServerConfig.management');
+			const output = await APIClient.v1.get('voipServerConfig.management');
+			logger.info('voipServerConfig.management output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.management`);
+		}
+		try {
+			logger.info('Executing voipServerConfig.callServer');
+			const output = await APIClient.v1.get('voipServerConfig.callServer');
+			logger.info('voipServerConfig.callServer output = ', JSON.stringify(output));
+		} catch (error) {
+			logger.error(`error ${error} in API voipServerConfig.callServer`);
+		}
+
+		try {
+			logger.info('Executing queues.getSummary');
+			const list = await APIClient.v1.get('voip/queues.getSummary');
+			logger.info('queues.getSummary output = ', JSON.stringify(list));
+		} catch (error) {
+			logger.error(`error ${error} in API queues.getSummary`);
+		}
+
+		try {
+			logger.info('Executing queues.getQueuedCallsForThisExtension');
+			const list = await APIClient.v1.get('voip/queues.getQueuedCallsForThisExtension', {
+				extension: '80000',
+			});
+			logger.info('queues.getQueuedCallsForThisExtension output = ', JSON.stringify(list));
+		} catch (error) {
+			logger.error(`error ${error} in API queues.getQueuedCallsForThisExtension`);
+		}
+
+		try {
+			logger.info('Executing connector.extension.list');
+			const list = await APIClient.v1.get('connector.extension.list');
+			logger.info('connector.extension.list output = ', JSON.stringify(list));
+		} catch (error) {
+			logger.error(`error ${error} in API onnector.extension.list`);
+		}
+
+		try {
+			logger.info('Executing connector.extension.getDetails');
+			const list = await APIClient.v1.get('connector.extension.getDetails', {
+				extension: '80000',
+			});
+			logger.info('connector.extension.getDetails output = ', JSON.stringify(list));
+		} catch (error) {
+			logger.error(`error ${error} in API connector.extension.getDetails`);
+		}
+
+		try {
+			const userIdentity = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
+				extension: '80000',
+			});
+			logger.info('list = ', JSON.stringify(userIdentity));
+		} catch (error) {
+			logger.error(`error ${error} in API connector.extension.getRegistrationInfo`);
+		}
+	};
 
 	const registerCallback = (): void => {
 		if (callTypeSelection.current) {
@@ -109,20 +214,21 @@ const VoIPLayout: FC = () => {
 	}, [logger, voipUser]);
 
 	useEffect(() => {
-		if (extensionConfig?.extension && userName.current) {
-			userName.current.value = extensionConfig.extension;
+		apiTest();
+		if (extensionConfig?.extensionDetails.extension && userName.current) {
+			userName.current.value = extensionConfig.extensionDetails.extension;
 			userName.current.disabled = true;
 		}
-		if (extensionConfig?.password && password.current) {
-			password.current.value = extensionConfig.password;
+		if (extensionConfig?.extensionDetails.password && password.current) {
+			password.current.value = extensionConfig.extensionDetails.password;
 			password.current.disabled = true;
 		}
-		if (extensionConfig?.sipRegistrar && registrar.current) {
-			registrar.current.value = extensionConfig.sipRegistrar;
+		if (extensionConfig?.host && registrar.current) {
+			registrar.current.value = extensionConfig.host;
 			registrar.current.disabled = true;
 		}
-		if (extensionConfig?.websocketUri && webSocketPath.current) {
-			webSocketPath.current.value = extensionConfig.websocketUri;
+		if (extensionConfig?.callServerConfig.websocketPath && webSocketPath.current) {
+			webSocketPath.current.value = extensionConfig.callServerConfig.websocketPath;
 			webSocketPath.current.disabled = true;
 		}
 		if (acceptCall.current) {
