@@ -269,22 +269,6 @@ export class Users extends Base {
 		return this.update(query, update);
 	}
 
-	setLivechatStatusIf(userId, status, extraCondition = {}, extraFields = {}) {
-		const query = {
-			_id: userId,
-			...extraCondition,
-		};
-
-		const update = {
-			$set: {
-				statusLivechat: status,
-				...extraFields,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setLivechatData(userId, data = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,

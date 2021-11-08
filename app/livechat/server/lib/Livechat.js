@@ -40,6 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Users as UsersRaw } from '../../../models/server/raw';
 
 const logger = new Logger('Livechat');
 
@@ -887,7 +888,7 @@ export const Livechat = {
 	},
 
 	setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = Users.setLivechatStatusIf(userId, status, condition, fields);
+		const user = Promise.await(UsersRaw.setLivechatStatusIf(userId, status, condition, fields));
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
