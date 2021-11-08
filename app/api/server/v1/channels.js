@@ -620,17 +620,15 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 
 		// Special check for the permissions
 
-		const room = Meteor.call('canAccessRoom', findResult._id, this.userId);
-
-		if (!room) {
-			return API.v1.unauthorized();
+		if (!canAccessRoom(findResult, {_id: this.userId})) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = hasPermission(this.userId, 'preview-c-room') || hasPermission(this.userId, 'view-c-room');
 
 		if (findResult.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
-			return API.v1.unauthorized();
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
 		const cursor = Messages.find(ourQuery, {
