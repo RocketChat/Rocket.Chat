@@ -120,7 +120,7 @@ export const createSettings = (): void => {
 				i18nLabel: 'Omnichannel_calculate_dispatch_service_queue_statistics',
 				enableQuery: [{ _id: 'Livechat_waiting_queue', value: true }, omnichannelEnabledQuery],
 				enterprise: true,
-				invalidValue: 0,
+				invalidValue: false,
 				modules: [
 					'livechat-enterprise',
 				],
