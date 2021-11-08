@@ -555,6 +555,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Непрекъснати звукови известия за нова стая livechat",
   "Conversation": "разговор",
   "Conversation_closed": "Разговорът е затворен: __comment__.",
+  "Conversation_finished": "Разговорът завърши",
   "Conversation_finished_message": "Готово съобщение за разговор",
   "conversation_with_s": "разговора с %s",
   "Convert_Ascii_Emojis": "Конвертиране на ASCII в Emoji",

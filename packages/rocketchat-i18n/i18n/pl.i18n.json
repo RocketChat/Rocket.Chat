@@ -345,7 +345,7 @@
   "API_Add_Personal_Access_Token": "Dodaj nowy osobisty token dostępowy",
   "API_Allow_Infinite_Count": "Pozwól uzyskać wszystko",
   "API_Allow_Infinite_Count_Description": "Czy połączenia z interfejsem REST API powinny zwracać wszystko w jednym wywołaniu?",
-  "API_Analytics": "Analityka",
+  "API_Analytics": "Analytics",
   "API_CORS_Origin": "CORS Origin",
   "API_Default_Count": "Domyślny licznik",
   "API_Default_Count_Description": "Domyślna liczba dla REST API wynika, jeśli konsument nie podał żadnych.",

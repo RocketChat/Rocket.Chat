@@ -555,6 +555,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Deurlopende klank kennisgewings vir nuwe livechat kamer",
   "Conversation": "gesprek",
   "Conversation_closed": "Gesprek gesluit: __comment__.",
+  "Conversation_finished": "Gesprek afgehandel",
   "Conversation_finished_message": "Gesprek Beëindigde Boodskap",
   "conversation_with_s": "die gesprek met %s",
   "Convert_Ascii_Emojis": "Skakel ASCII om na Emoji",

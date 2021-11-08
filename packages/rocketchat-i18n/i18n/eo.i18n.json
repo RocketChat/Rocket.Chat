@@ -555,6 +555,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Kontinua sono-sciigoj por nova viva ĉambro",
   "Conversation": "Konversacio",
   "Conversation_closed": "Konversacio fermita: __comment__.",
+  "Conversation_finished": "Konversacio finis",
   "Conversation_finished_message": "Konversacio Finita Mesaĝo",
   "conversation_with_s": "la konversacio kun %s",
   "Convert_Ascii_Emojis": "Konvertu ASCII al Emoji",

@@ -2888,6 +2888,7 @@
   "Room_archivation_state_false": "აქტიური",
   "Room_archivation_state_true": "დაარქივებულია",
   "Room_archived": "ოთახი დაარქივებულია",
+  "room_changed_privacy": "ოთახის ტიპი შეიცვალა: <em>__room_type__</em>, <em>__username__-ის მიერ</em>",
   "room_changed_topic": "ოთახის თემა შეიცვალა: <em>__room_topic__</em>  <em>__user_by__</em>",
   "Room_default_change_to_private_will_be_default_no_more": "ეს არის დეფაულტ არხი და პირად ჯგუფად გადაკეთების შემთხვევაში აღარ იქნება დეფაულტ არხი.გსურთ გაგრძელება?",
   "Room_description_changed_successfully": "ოთახის აღწერა წარმატებით შეიცვალა",

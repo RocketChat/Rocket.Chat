@@ -605,6 +605,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Nuolatiniai pranešimai apie garsą naujam \"Livechat\" kambariui",
   "Conversation": "Pokalbis",
   "Conversation_closed": "Pokalbis uždarytas: __comment__.",
+  "Conversation_finished": "Pokalbis baigtas",
   "Conversation_finished_message": "Pokalbis baigtas pranešimas",
   "conversation_with_s": "pokalbis su %s",
   "Convert_Ascii_Emojis": "Konvertuoti ASCII į Emoji",
