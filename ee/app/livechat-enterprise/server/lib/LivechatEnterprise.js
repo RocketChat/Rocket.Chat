@@ -295,6 +295,5 @@ settings.watch('Livechat_enabled', (enabled) => {
 });
 
 settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {
-	console.log('timeout === ', timeout);
 	queue_delay_timeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 });
