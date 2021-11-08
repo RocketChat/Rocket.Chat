@@ -98,7 +98,7 @@ Meteor.methods({
 
 		await Roles.addUserRoles(user._id, 'bot');
 
-		const result = Promise.await(Integrations.insertOne(integration));
+		const result = await Integrations.insertOne(integration);
 
 		integration._id = result.insertedId;
 

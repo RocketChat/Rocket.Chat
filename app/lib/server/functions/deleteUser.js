@@ -37,7 +37,7 @@ export async function deleteUser(userId, confirmRelinquish = false) {
 
 	// Users without username can't do anything, so there is nothing to remove
 	if (user.username != null) {
-		relinquishRoomOwnerships(userId, subscribedRooms);
+		await relinquishRoomOwnerships(userId, subscribedRooms);
 
 		const messageErasureType = settings.get('Message_ErasureType');
 		switch (messageErasureType) {
