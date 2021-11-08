@@ -1,4 +1,5 @@
-
+import { Command } from './Command';
+import { ICallbackContext } from './ICallbackContext';
 /**
  * Delegate interface for Asterisk management connection.
  * @remarks
@@ -28,7 +29,13 @@ export interface IConnection {
 	 * Called for setting up event handling
 	 * @remarks
 	 */
-	on(event: string, callback: any): void;
+	on(event: string, callbackContext: ICallbackContext): void;
+
+	/**
+	 * Called for resetting all event handlers
+	 * @remarks
+	 */
+	off(event: string, command: Command): void;
 	/**
 	 * Called for closing the connection.
 	 * @remarks
