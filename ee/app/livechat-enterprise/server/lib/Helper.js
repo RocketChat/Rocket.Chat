@@ -95,18 +95,14 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
-	if (!settings.get('Livechat_waiting_queue')) {
-		return;
-	}
-
-	if (!settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		return;
 	}
 
 	helperLogger.debug(`Updating statuses for queue ${ department || 'Public' }`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
 
-	if (queue.length === 0) {
+	if (!queue.length) {
 		return;
 	}
 
