@@ -20,28 +20,30 @@ function getRoomInfo(roomId) {
 	});
 }
 
-describe('[Groups]', function() {
+describe.only('[Groups]', function() {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
-	describe('/groups.create', () => {
-		it('should create a new group', async () => {
-			await request.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: apiPrivateChannelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-				});
-		});
-
+	before('/groups.create', (done) => {
+		request.post(api('groups.create'))
+			.set(credentials)
+			.send({
+				name: apiPrivateChannelName,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('group._id');
+				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
+				expect(res.body).to.have.nested.property('group.t', 'p');
+				expect(res.body).to.have.nested.property('group.msgs', 0);
+				group._id = res.body.group._id;
+			})
+			.end(done);
+	});
+	describe('/groups.create (encrypted)', () => {
 		it('should create a new encrypted group', async () => {
 			await request.post(api('groups.create'))
 				.set(credentials)
@@ -81,7 +83,6 @@ describe('[Groups]', function() {
 			});
 		});
 	});
-
 	describe('[/groups.info]', () => {
 		let testGroup = {};
 		let groupMessage = {};
@@ -215,7 +216,6 @@ describe('[Groups]', function() {
 
 	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
-
 		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({

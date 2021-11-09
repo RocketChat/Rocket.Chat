@@ -18,6 +18,7 @@ import ReactionList from '../../../../client/views/room/modals/ReactionListModal
 import { call } from '../../../../client/lib/utils/call';
 import { canDeleteMessage } from '../../../../client/lib/utils/canDeleteMessage';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { settings } from '../../../settings';
 
 export const addMessageToList = (messagesList, message) => {
 	// checks if the message is not already on the list
@@ -218,24 +219,27 @@ Meteor.startup(async function() {
 		group: ['message', 'menu'],
 	});
 
-	MessageAction.addButton({
-		id: 'permalink',
-		icon: 'permalink',
-		label: 'Get_link',
-		classes: 'clipboard',
-		context: ['message', 'message-mobile', 'threads'],
-		async action() {
-			const { msg: message } = messageArgs(this);
-			const permalink = await MessageAction.getPermaLink(message._id);
-			navigator.clipboard.writeText(permalink);
-			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
-		},
-		condition({ subscription }) {
-			return !!subscription;
-		},
-		order: 4,
-		group: 'menu',
-	});
+	if (settings.get('Message_AllowSharing')) {
+		MessageAction.addButton({
+			id: 'permalink',
+			icon: 'permalink',
+			label: 'Get_link',
+			classes: 'clipboard',
+			context: ['message', 'message-mobile', 'threads'],
+			async action() {
+				const { msg: message } = messageArgs(this);
+				const permalink = await MessageAction.getPermaLink(message._id);
+				navigator.clipboard.writeText(permalink);
+				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
+			},
+			condition({ subscription }) {
+				return !!subscription;
+			},
+			order: 4,
+			group: 'menu',
+		});
+	}
+
 
 	MessageAction.addButton({
 		id: 'copy',
