@@ -1,4 +1,3 @@
-import { Promise } from 'meteor/promise';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
