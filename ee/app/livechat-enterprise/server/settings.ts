@@ -113,6 +113,37 @@ export const createSettings = (): void => {
 				],
 			});
 
+			this.add('Omnichannel_calculate_dispatch_service_queue_statistics', true, {
+				type: 'boolean',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Omnichannel_calculate_dispatch_service_queue_statistics',
+				enableQuery: [{ _id: 'Livechat_waiting_queue', value: true }, omnichannelEnabledQuery],
+				enterprise: true,
+				invalidValue: false,
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+
+			this.add('Omnichannel_queue_delay_timeout', 5, {
+				type: 'int',
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Queue_delay_timeout',
+				i18nDescription: 'Time_in_seconds',
+				enableQuery: [
+					{ _id: 'Livechat_waiting_queue', value: true },
+					{ _id: 'Livechat_Routing_Method', value: { $ne: 'Manual_Selection' } },
+					omnichannelEnabledQuery,
+				],
+				enterprise: true,
+				invalidValue: 5,
+				modules: [
+					'livechat-enterprise',
+				],
+			});
+
 			this.add('Livechat_number_most_recent_chats_estimate_wait_time', 100, {
 				type: 'int',
 				group: 'Omnichannel',
