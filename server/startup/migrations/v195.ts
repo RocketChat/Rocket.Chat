@@ -1,5 +1,4 @@
 import moment from 'moment-timezone';
-import { ObjectId } from 'mongodb';
 import { Mongo } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
