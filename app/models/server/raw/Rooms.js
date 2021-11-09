@@ -183,6 +183,23 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findRoomsByNameOrFnameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			$or: [{
+				name: nameRegex,
+			}, {
+				fname: nameRegex,
+			}],
+		};
+
+		return this.find(query, options);
+	}
+
 	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
