@@ -26,7 +26,7 @@ export const fillFirstDaysOfUsersIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		users.forEach((user) => Analytics.insert({
+		users.forEach((user) => Analytics.insertOne({
 			...user,
 			date: parseInt(user.date),
 		}));

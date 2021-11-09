@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import Permissions from '../../../../app/models/server/models/Permissions';
+import { Permissions } from '../../../../app/models/server/raw';
 
 Meteor.startup(() => {
 	Permissions.create('view-canned-responses', ['livechat-agent', 'livechat-monitor', 'livechat-manager', 'admin']);
