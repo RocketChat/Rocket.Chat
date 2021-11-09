@@ -1,5 +1,24 @@
+/* eslint-disable @typescript-eslint/interface-name-prefix */
+
 declare module 'meteor/meteor' {
 	namespace Meteor {
+		interface ErrorStatic {
+			new (error: string | number, reason?: string, details?: any): Error;
+		}
+
+		interface Error extends globalThis.Error {
+			error: string | number;
+			reason?: string;
+		}
+
+		const server: any;
+
+		const runAsUser: (userId: string, scope: Function) => any;
+
+		interface MethodThisType {
+			twoFactorChecked: boolean | undefined;
+		}
+
 		interface IDDPMessage {
 			msg: 'method';
 			method: string;
@@ -36,7 +55,7 @@ declare module 'meteor/meteor' {
 
 		const connection: IMeteorConnection;
 
-		function _relativeToSiteRootUrl(path: string): void;
+		function _relativeToSiteRootUrl(path: string): string;
 		const _localStorage: Window['localStorage'];
 	}
 }

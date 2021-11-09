@@ -1,6 +1,5 @@
 import { FilterQuery } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { Match, check } from 'meteor/check';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -160,6 +159,9 @@ API.v1.addRoute('teams.updateRoom', { authRequired: true }, {
 		const { roomId, isDefault } = this.bodyParams;
 
 		const team = Promise.await(Team.getOneByRoomId(roomId));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
 
 		if (!hasPermission(this.userId, 'edit-team-channel', team.roomId)) {
 			return API.v1.unauthorized();
@@ -352,6 +354,9 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 		const { teamId, teamName, rooms } = this.bodyParams;
 
 		const team = teamId ? Promise.await(Team.getOneById(teamId)) : Promise.await(Team.getOneByName(teamName));
+		if (!team) {
+			return API.v1.failure('team-does-not-exist');
+		}
 
 		Promise.await(Team.removeMembers(this.userId, team._id, [{
 			userId: this.userId,

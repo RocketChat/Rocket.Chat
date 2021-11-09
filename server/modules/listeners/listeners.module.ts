@@ -152,7 +152,7 @@ export class ListenersModule {
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
 			const config = await getRoutingManagerConfig();
-			if (config.autoAssignAgent) {
+			if (!config || config.autoAssignAgent) {
 				return;
 			}
 

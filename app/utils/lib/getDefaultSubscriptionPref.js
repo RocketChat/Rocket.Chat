@@ -3,7 +3,7 @@ export const getDefaultSubscriptionPref = (userPref) => {
 
 	const {
 		desktopNotifications,
-		mobileNotifications,
+		pushNotifications,
 		emailNotificationMode,
 		highlights,
 	} = (userPref.settings && userPref.settings.preferences) || {};
@@ -17,8 +17,8 @@ export const getDefaultSubscriptionPref = (userPref) => {
 		subscription.desktopPrefOrigin = 'user';
 	}
 
-	if (mobileNotifications && mobileNotifications !== 'default') {
-		subscription.mobilePushNotifications = mobileNotifications;
+	if (pushNotifications && pushNotifications !== 'default') {
+		subscription.mobilePushNotifications = pushNotifications;
 		subscription.mobilePrefOrigin = 'user';
 	}
 

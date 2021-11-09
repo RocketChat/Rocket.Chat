@@ -75,6 +75,7 @@ const compareSettingsIgnoringKeys = (keys: Array<keyof ISetting>) =>
 			.every((key) => isEqual(a[key as keyof ISetting], b[key as keyof ISetting]));
 
 const compareSettings = compareSettingsIgnoringKeys(['value', 'ts', 'createdAt', 'valueSource', 'packageValue', 'processEnvValue', '_updatedAt']);
+
 export class SettingsRegistry {
 	private model: typeof SettingsModel;
 
@@ -97,12 +98,26 @@ export class SettingsRegistry {
 
 		const sorterKey = group && section ? `${ group }_${ section }` : group;
 
-		if (sorterKey) {
-			this._sorter[sorterKey] = this._sorter[sorterKey] ?? -1;
-			this._sorter[sorterKey]++;
+		if (sorterKey && this._sorter[sorterKey] == null) {
+			if (group && section) {
+				const currentGroupValue = this._sorter[group] ?? 0;
+				this._sorter[sorterKey] = currentGroupValue * 1000;
+			}
 		}
 
-		const settingFromCode = getSettingDefaults({ _id, type: 'string', section, value, sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]), group, ...options }, blockedSettings, hiddenSettings, wizardRequiredSettings);
+		if (sorterKey) {
+			this._sorter[sorterKey] = this._sorter[sorterKey] ?? -1;
+		}
+
+		const settingFromCode = getSettingDefaults({
+			_id,
+			type: 'string',
+			value,
+			sorter: sorter ?? (sorterKey?.length && this._sorter[sorterKey]++),
+			group,
+			section,
+			...options,
+		}, blockedSettings, hiddenSettings, wizardRequiredSettings);
 
 		if (isSettingEnterprise(settingFromCode) && !('invalidValue' in settingFromCode)) {
 			SystemLogger.error(`Enterprise setting ${ _id } is missing the invalidValue option`);
@@ -111,10 +126,11 @@ export class SettingsRegistry {
 
 		const settingStored = this.store.getSetting(_id);
 		const settingOverwritten = overwriteSetting(settingFromCode);
+
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${ _id }: ${ e.message }`);
+			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${ _id }: ${ (e as Error).message }`);
 		}
 
 		const isOverwritten = settingFromCode !== settingOverwritten;
@@ -123,7 +139,16 @@ export class SettingsRegistry {
 
 		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
 			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
-			this.model.upsert({ _id }, { $set: { ...settingOverwrittenProps } });
+
+			const overwrittenKeys = Object.keys(settingOverwritten);
+			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
+
+			this.model.upsert({ _id }, {
+				$set: { ...settingOverwrittenProps },
+				...removedKeys.length && {
+					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
+				},
+			});
 			return;
 		}
 
@@ -138,7 +163,7 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${ _id }: ${ e.message }`);
+				IS_DEVELOPMENT && SystemLogger.error(`Invalid setting stored ${ _id }: ${ (e as Error).message }`);
 			}
 			return;
 		}
@@ -162,9 +187,6 @@ export class SettingsRegistry {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');
 		}
-
-		this._sorter[_id] = this._sorter[_id] || -1;
-		this._sorter[_id]++;
 
 		const callback = groupOptions instanceof Function ? groupOptions : cb;
 

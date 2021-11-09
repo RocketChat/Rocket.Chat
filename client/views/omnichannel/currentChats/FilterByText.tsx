@@ -31,6 +31,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 		['all', t('All')],
 		['closed', t('Closed')],
 		['opened', t('Open')],
+		['onhold', t('On_Hold_Chats')],
 	];
 	const customFieldsOptions: [string, string][] = useMemo(
 		() =>
@@ -110,7 +111,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, ...props }) => {
 				reload && reload();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
+				dispatchToastMessage({ type: 'error', message: (error as Error).message });
 			}
 			setModal(null);
 		};
