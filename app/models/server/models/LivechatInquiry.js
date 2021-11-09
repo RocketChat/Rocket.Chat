@@ -48,7 +48,7 @@ export class LivechatInquiry extends Base {
 		this.update({
 			_id: inquiryId,
 		}, {
-			$set: { status: 'taken' },
+			$set: { status: 'taken', takenAt: new Date() },
 			$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
 		});
 	}
@@ -71,9 +71,17 @@ export class LivechatInquiry extends Base {
 		return this.update({
 			_id: inquiryId,
 		}, {
-			$set: {
-				status: 'queued',
-			},
+			$set: { status: 'queued', queuedAt: new Date() },
+			$unset: { takenAt: 1 },
+		});
+	}
+
+	queueInquiryAndRemoveDefaultAgent(inquiryId) {
+		return this.update({
+			_id: inquiryId,
+		}, {
+			$set: { status: 'queued', queuedAt: new Date() },
+			$unset: { takenAt: 1, defaultAgent: 1 },
 		});
 	}
 
