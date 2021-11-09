@@ -2,9 +2,8 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms, Messages, Users } from '../../../../models/server';
+import { LivechatRooms, Messages } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
-import { canAccessRoom } from '../../../../authorization';
 import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
@@ -70,18 +69,14 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequi
 		check(this.urlParams, {
 			rid: String,
 		});
+
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 
 		const room = LivechatRooms.findOneById(this.urlParams.rid);
-		const user = Users.findOneById(this.userId, { fields: { _id: 1 } });
 
 		if (!room) {
 			throw new Error('invalid-room');
-		}
-
-		if (!canAccessRoom(room, user)) {
-			throw new Error('error-not-allowed');
 		}
 
 		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
