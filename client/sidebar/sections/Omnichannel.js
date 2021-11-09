@@ -2,6 +2,7 @@ import { Sidebar } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
+import { hasPermission } from '../../../app/authorization/client';
 import {
 	useOmnichannelShowQueueLink,
 	useOmnichannelAgentAvailable,
@@ -49,7 +50,9 @@ const OmnichannelSection = (props) => {
 					<Sidebar.TopBar.Action icon='queue' title={t('Queue')} is='a' href={queueLink} />
 				)}
 				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
-				<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+				{hasPermission(['view-omnichannel-contact-center']) && (
+					<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+				)}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
 	);
