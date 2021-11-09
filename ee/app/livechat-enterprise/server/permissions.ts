@@ -11,10 +11,11 @@ export const createPermissions = async (): Promise<void> => {
 		await Roles.createOrUpdate(livechatMonitorRole);
 	}
 
-	await Promise.all([Permissions.create('manage-livechat-units', [adminRole, livechatManagerRole]),
+	await Promise.all([
+		Permissions.create('manage-livechat-units', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-monitors', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-tags', [adminRole, livechatManagerRole]),
 		Permissions.create('manage-livechat-priorities', [adminRole, livechatManagerRole]),
-		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole])
+		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
 	]);
 };

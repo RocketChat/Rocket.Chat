@@ -60,7 +60,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 		if (['Users', 'Subscriptions'].includes(roleData.scope) === false) {
 			roleData.scope = 'Users';
 		}
-		const a = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa)
+		const a = Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa);
 		const roleId = Promise.await(a).insertedId;
 
 		if (settings.get('UI_DisplayRoles')) {
