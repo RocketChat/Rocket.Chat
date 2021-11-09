@@ -5,6 +5,7 @@ export class AppsPersistenceModel extends Base {
 		super('apps_persistence');
 
 		this.tryEnsureIndex({ appId: 1 });
+		this.tryEnsureIndex({ appId: 1, associations: 1 });
 	}
 
 	// Bypass trash collection
