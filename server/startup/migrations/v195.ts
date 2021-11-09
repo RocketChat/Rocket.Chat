@@ -3,12 +3,12 @@ import { Mongo } from 'meteor/mongo';
 
 import { addMigration } from '../../lib/migrations';
 import { LivechatBusinessHours, Permissions, Settings } from '../../../app/models/server/raw';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
+import { ILivechatBusinessHour, IBusinessHourWorkHour, LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
 const migrateCollection = async (): Promise<void> => {
-	const LivechatOfficeHour = new Mongo.Collection('rocketchat_livechat_office_hour');
+	const LivechatOfficeHour = new Mongo.Collection<IBusinessHourWorkHour>('rocketchat_livechat_office_hour');
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	const officeHours = [];
+	const officeHours: IBusinessHourWorkHour[] = [];
 	days.forEach((day) => {
 		const officeHour = LivechatOfficeHour.findOne({ day });
 		if (officeHour) {
@@ -25,10 +25,10 @@ const migrateCollection = async (): Promise<void> => {
 		active: true,
 		type: LivechatBusinessHourTypes.DEFAULT,
 		ts: new Date(),
-		workHours: officeHours.map((officeHour) => ({
+		workHours: officeHours.map((officeHour): IBusinessHourWorkHour => ({
 			day: officeHour.day,
 			start: {
-				time: officeHour.start,
+				time: officeHour.start as any,
 				utc: {
 					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('dddd'),
 					time: moment(`${ officeHour.day }:${ officeHour.start }`, 'dddd:HH:mm').utc().format('HH:mm'),
@@ -39,7 +39,7 @@ const migrateCollection = async (): Promise<void> => {
 				},
 			},
 			finish: {
-				time: officeHour.finish,
+				time: officeHour.finish as any,
 				utc: {
 					dayOfWeek: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('dddd'),
 					time: moment(`${ officeHour.day }:${ officeHour.finish }`, 'dddd:HH:mm').utc().format('HH:mm'),
