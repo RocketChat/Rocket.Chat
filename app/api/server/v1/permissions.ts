@@ -9,7 +9,7 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 	get() {
 		const { updatedSince } = this.queryParams;
 
-		let updatedSinceDate: Date;
+		let updatedSinceDate: Date | undefined;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
@@ -17,14 +17,13 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 
-		let result;
-		Meteor.runAsUser(this.userId, () => { result = Meteor.call('permissions/get', updatedSinceDate); });
+		const result = Promise.await(Meteor.call('permissions/get', updatedSinceDate));
 
 		if (Array.isArray(result)) {
-			result = {
+			return API.v1.success({
 				update: result,
 				remove: [],
-			};
+			});
 		}
 
 		return API.v1.success(result);
@@ -76,7 +75,7 @@ API.v1.addRoute('permissions.update', { authRequired: true }, {
 			Permissions.createOrUpdate(element._id, element.roles);
 		});
 
-		const result = Meteor.runAsUser(this.userId, () => Meteor.call('permissions/get'));
+		const result = Promise.await(Meteor.call('permissions/get'));
 
 		return API.v1.success({
 			permissions: result,
