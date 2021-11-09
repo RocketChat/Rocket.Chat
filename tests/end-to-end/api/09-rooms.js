@@ -410,7 +410,7 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.all.keys(expectedKeys);
+					expect(res.body.room).to.include(expectedKeys);
 				})
 				.end(done);
 		});
@@ -424,7 +424,7 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('room').and.to.be.an('object');
-					expect(res.body.room).to.have.all.keys(expectedKeys);
+					expect(res.body.room).to.include(expectedKeys);
 				})
 				.end(done);
 		});
