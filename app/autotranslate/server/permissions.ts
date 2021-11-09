@@ -2,10 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { Permissions } from '../../models/server/raw';
 
-Meteor.startup(() => {
-	if (Permissions) {
-		if (!Permissions.findOne({ _id: 'auto-translate' })) {
-			Permissions.create('auto-translate', ['admin']);
-		}
+Meteor.startup(async () => {
+	if (!await Permissions.findOne({ _id: 'auto-translate' })) {
+		Permissions.create('auto-translate', ['admin']);
 	}
 });

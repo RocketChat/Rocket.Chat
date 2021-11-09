@@ -59,7 +59,6 @@ const migrateCollection = async (): Promise<void> => {
 		},
 	};
 	if (await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count() === 0) {
-		businessHour._id = new ObjectId().toHexString();
 		LivechatBusinessHours.insertOne(businessHour);
 	} else {
 		LivechatBusinessHours.update({ type: LivechatBusinessHourTypes.DEFAULT }, { $set: { ...businessHour } });
@@ -79,7 +78,7 @@ addMigration({
 	async up() {
 		await Settings.removeById('Livechat_enable_office_hours');
 		await Settings.removeById('Livechat_allow_online_agents_outside_office_hours');
-		const permission = Permissions.findOneById('view-livechat-officeHours');
+		const permission = await Permissions.findOneById('view-livechat-officeHours');
 		if (permission) {
 			await Permissions.update({ _id: 'view-livechat-business-hours' }, { $set: { roles: permission.roles } }, { upsert: true });
 			await Permissions.deleteOne({ _id: 'view-livechat-officeHours' });
