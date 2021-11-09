@@ -9,6 +9,7 @@ import { Info } from '../../../utils';
 import { Settings, Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -60,6 +61,9 @@ export class AppsRestApi {
 			return API.v1.failure();
 		};
 
+		this.api.addRoute('actionButtons', ...actionButtonsHandler(this));
+
+		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute('', { authRequired: true, permissionsRequired: ['manage-apps'] }, {
 			get() {
 				const baseUrl = orchestrator.getMarketplaceUrl();
