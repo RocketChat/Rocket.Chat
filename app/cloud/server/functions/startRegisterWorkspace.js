@@ -20,11 +20,13 @@ export function startRegisterWorkspace(resend = false) {
 
 	const regInfo = buildWorkspaceRegistrationData();
 
+	console.log('regInfo', regInfo);
+
 	const cloudUrl = settings.get('Cloud_Url');
 
 	let result;
 	try {
-		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace?resend=${ resend }`, {
+		result = HTTP.post(`${ cloudUrl }/api/v2/register/workspace/intent`, {
 			data: regInfo,
 		});
 	} catch (e) {
@@ -45,5 +47,5 @@ export function startRegisterWorkspace(resend = false) {
 
 	Settings.updateValueById('Cloud_Workspace_Id', data.id);
 
-	return true;
+	return data;
 }
