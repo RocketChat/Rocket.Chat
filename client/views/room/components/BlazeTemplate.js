@@ -35,4 +35,12 @@ const BlazeTemplate = ({ name, flexShrink, overflow, onClick, children, ...props
 	);
 };
 
-export default memo(BlazeTemplate);
+const propsAreEqual = (prevProps, nextProps) => {
+	if (prevProps.tabBar.openUserInfo === nextProps.tabBar.openUserInfo) {
+		return true;
+	}
+
+	return false;
+};
+
+export default memo(BlazeTemplate, propsAreEqual);
