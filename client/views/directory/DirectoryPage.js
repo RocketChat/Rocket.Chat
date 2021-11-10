@@ -26,7 +26,7 @@ function DirectoryPage() {
 		if (!tab || (tab === 'external' && !federationEnabled)) {
 			return directoryRoute.replace({ tab: defaultTab });
 		}
-	}, [routeName, directoryRoute, tab, federationEnabled, defaultTab]);
+	}, [routeName, directoryRoute, tab, federationEnabled, defaultTab, navRoute]);
 
 	const handleTabClick = useCallback((tab) => () => directoryRoute.push({ tab }), [directoryRoute]);
 
