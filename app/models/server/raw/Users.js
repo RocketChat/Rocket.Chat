@@ -277,14 +277,16 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	setLivechatStatus(userId, status) { // TODO: Create class Agent
+	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
+			...conditions,
 		};
 
 		const update = {
 			$set: {
 				statusLivechat: status,
+				...extraFields,
 			},
 		};
 
