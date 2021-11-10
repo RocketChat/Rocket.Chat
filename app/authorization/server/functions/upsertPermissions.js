@@ -152,8 +152,6 @@ export const upsertPermissions = () => {
 		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
 		{ _id: 'mobile-download-file', roles: ['user', 'admin'] },
-
-
 	];
 
 
