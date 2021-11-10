@@ -63,7 +63,7 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);
-		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
+		Promise.await(relinquishRoomOwnerships(user, chatSubscribedRooms, false));
 	}
 
 	if (active && !user.active) {
