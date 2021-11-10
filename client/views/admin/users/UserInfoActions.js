@@ -39,7 +39,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	const handleDeletedUser = () => {
 		setModal();
 		userRoute.push({});
-		onChange();
+		onChange('performed_delete_user_action');
 	};
 
 	const confirmOwnerChanges =
