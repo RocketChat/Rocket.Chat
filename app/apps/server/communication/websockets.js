@@ -185,7 +185,6 @@ export class AppServerNotifier {
 	}
 
 	async actionsChanged() {
-		this.engineStreamer.emit(AppEvents.ACTIONS_CHANGED);
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
 	}
 }
