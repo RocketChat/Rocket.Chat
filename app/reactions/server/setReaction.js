@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 
-import { Messages, EmojiCustom, Rooms } from '../../models/server';
+import { Messages, Rooms } from '../../models/server';
+import { EmojiCustom } from '../../models/server/raw';
 import { callbacks } from '../../callbacks/server';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
@@ -20,7 +21,7 @@ const removeUserReaction = (message, reaction, username) => {
 async function setReaction(room, user, message, reaction, shouldReact) {
 	reaction = `:${ reaction.replace(/:/g, '') }:`;
 
-	if (!emoji.list[reaction] && EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
+	if (!emoji.list[reaction] && await EmojiCustom.findByNameOrAlias(reaction).count() === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', { method: 'setReaction' });
 	}
 

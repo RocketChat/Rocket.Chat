@@ -1,15 +1,15 @@
 import { addMigration } from '../../lib/migrations';
-import Uploads from '../../../app/models/server/models/Uploads';
+import { Uploads } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 202,
-	up() {
-		Promise.await(Uploads.model.rawCollection().updateMany({
+	async up() {
+		await Uploads.updateMany({
 			type: 'audio/mp3',
 		}, {
 			$set: {
 				type: 'audio/mpeg',
 			},
-		}));
+		});
 	},
 });

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/interface-name-prefix */
+import 'meteor/meteor';
 
 declare module 'meteor/meteor' {
 	namespace Meteor {

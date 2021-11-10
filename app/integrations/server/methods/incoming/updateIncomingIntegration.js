@@ -3,13 +3,14 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import s from 'underscore.string';
 
-import { Integrations, Rooms, Users, Roles, Subscriptions } from '../../../../models';
-import { hasAllPermission, hasPermission } from '../../../../authorization';
+import { Rooms, Users, Subscriptions } from '../../../../models/server';
+import { Integrations, Roles } from '../../../../models/server/raw';
+import { hasAllPermission, hasPermission } from '../../../../authorization/server';
 
 const validChannelChars = ['@', '#'];
 
 Meteor.methods({
-	updateIncomingIntegration(integrationId, integration) {
+	async updateIncomingIntegration(integrationId, integration) {
 		if (!_.isString(integration.channel) || integration.channel.trim() === '') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', { method: 'updateIncomingIntegration' });
 		}
@@ -25,9 +26,9 @@ Meteor.methods({
 		let currentIntegration;
 
 		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
-			currentIntegration = Integrations.findOne(integrationId);
+			currentIntegration = await Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
-			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
+			currentIntegration = await Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateIncomingIntegration' });
 		}
@@ -43,14 +44,14 @@ Meteor.methods({
 
 				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 				integration.scriptError = undefined;
-				Integrations.update(integrationId, {
+				await Integrations.updateOne({ _id: integrationId }, {
 					$set: { scriptCompiled: integration.scriptCompiled },
 					$unset: { scriptError: 1 },
 				});
 			} catch (e) {
 				integration.scriptCompiled = undefined;
 				integration.scriptError = _.pick(e, 'name', 'message', 'stack');
-				Integrations.update(integrationId, {
+				await Integrations.updateOne({ _id: integrationId }, {
 					$set: {
 						scriptError: integration.scriptError,
 					},
@@ -100,9 +101,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', { method: 'updateIncomingIntegration' });
 		}
 
-		Roles.addUserRoles(user._id, 'bot');
+		await Roles.addUserRoles(user._id, 'bot');
 
-		Integrations.update(integrationId, {
+		await Integrations.updateOne({ _id: integrationId }, {
 			$set: {
 				enabled: integration.enabled,
 				name: integration.name,
@@ -117,6 +118,6 @@ Meteor.methods({
 			},
 		});
 
-		return Integrations.findOne(integrationId);
+		return Integrations.findOneById(integrationId);
 	},
 });

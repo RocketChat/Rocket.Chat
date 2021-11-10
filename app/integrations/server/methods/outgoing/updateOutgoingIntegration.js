@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../authorization';
-import { Integrations, Users } from '../../../../models';
+import { hasPermission } from '../../../../authorization/server';
+import { Users } from '../../../../models/server';
+import { Integrations } from '../../../../models/server/raw';
 import { integrations } from '../../../lib/rocketchat';
 
 Meteor.methods({
-	updateOutgoingIntegration(integrationId, integration) {
+	async updateOutgoingIntegration(integrationId, integration) {
 		integration = integrations.validateOutgoing(integration, this.userId);
 
 		if (!integration.token || integration.token.trim() === '') {
@@ -15,9 +16,9 @@ Meteor.methods({
 		let currentIntegration;
 
 		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
-			currentIntegration = Integrations.findOne(integrationId);
+			currentIntegration = await Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
-			currentIntegration = Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
+			currentIntegration = await Integrations.findOne({ _id: integrationId, '_createdBy._id': this.userId });
 		} else {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'updateOutgoingIntegration' });
 		}
@@ -26,18 +27,18 @@ Meteor.methods({
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
 		if (integration.scriptCompiled) {
-			Integrations.update(integrationId, {
+			await Integrations.updateOne({ _id: integrationId }, {
 				$set: { scriptCompiled: integration.scriptCompiled },
 				$unset: { scriptError: 1 },
 			});
 		} else {
-			Integrations.update(integrationId, {
+			await Integrations.updateOne({ _id: integrationId }, {
 				$set: { scriptError: integration.scriptError },
 				$unset: { scriptCompiled: 1 },
 			});
 		}
 
-		Integrations.update(integrationId, {
+		await Integrations.updateOne({ _id: integrationId }, {
 			$set: {
 				event: integration.event,
 				enabled: integration.enabled,
@@ -65,6 +66,6 @@ Meteor.methods({
 			},
 		});
 
-		return Integrations.findOne(integrationId);
+		return Integrations.findOneById(integrationId);
 	},
 });

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger, EmojiCustom } from '../../../../models/server';
+import { LivechatRooms, LivechatVisitors, LivechatDepartment, LivechatTrigger } from '../../../../models/server';
+import { EmojiCustom } from '../../../../models/server/raw';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../callbacks/server';
 import { normalizeAgent } from '../../lib/Helper';
@@ -86,12 +87,12 @@ export function normalizeHttpHeaderData(headers = {}) {
 	const httpHeaders = Object.assign({}, headers);
 	return { httpHeaders };
 }
-export function settings() {
+export async function settings() {
 	const initSettings = Livechat.getInitSettings();
 	const triggers = findTriggers();
 	const departments = findDepartments();
 	const sound = `${ Meteor.absoluteUrl() }sounds/chime.mp3`;
-	const emojis = EmojiCustom.find().fetch();
+	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
