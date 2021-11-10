@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import React, { FC } from 'react';
 
@@ -53,6 +53,14 @@ export const QuoteAttachment: FC<MessageQuoteAttachment> = ({
 							{...(messageLink ? { is: 'a', href: messageLink } : { color: 'hint' })}
 						>
 							{format(ts)}
+						</Box>
+						<Box
+							fontScale='c1'
+							mis='12px'
+							{...(messageLink && { is: 'a', href: messageLink, color: 'hint' })}
+						>
+							<Icon name='arrow-jump' size={16} />
+							Jump to message
 						</Box>
 					</Attachment.Author>
 					<MarkdownText parseEmoji variant='inline' content={text} />
