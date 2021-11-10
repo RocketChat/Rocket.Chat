@@ -65,7 +65,8 @@ describe('[Groups]', function() {
 		});
 
 		it('should create the encrypted room by default', async () => {
-			await updateSetting('E2E_Enabled_Default_PrivateRooms', true).then(async () => {
+			await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
+			try {
 				await request.post(api('groups.create'))
 					.set(credentials)
 					.send({
@@ -80,7 +81,9 @@ describe('[Groups]', function() {
 						expect(res.body).to.have.nested.property('group.msgs', 0);
 						expect(res.body).to.have.nested.property('group.encrypted', true);
 					});
-			});
+			} finally {
+				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
+			}
 		});
 	});
 	describe('[/groups.info]', () => {
