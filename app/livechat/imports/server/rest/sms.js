@@ -70,7 +70,10 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const SMSService = SMS.getService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { departmentName } = this.queryParams;
-		const targetDepartment = defineDepartment(departmentName || SMS.department);
+		let targetDepartment = defineDepartment(departmentName || SMS.department);
+		if (!targetDepartment) {
+			targetDepartment = defineDepartment(SMS.department);
+		}
 
 		const visitor = defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
