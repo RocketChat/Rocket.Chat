@@ -18,7 +18,7 @@ RUN apt update && \
 USER meteor
 WORKDIR /home/meteor
 
-COPY --from=0 /.meteor .meteor
+COPY --from=meteor-download /.meteor .meteor
 
 VOLUME [ "/home/meteor/.meteor/packages" ]
 
