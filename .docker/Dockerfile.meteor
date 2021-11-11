@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:focal as meteor-download
 
 ARG RELEASE
 
