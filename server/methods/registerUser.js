@@ -9,7 +9,7 @@ import { validateEmailDomain, passwordPolicy } from '../../app/lib';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 
 Meteor.methods({
-	registerUser(formData) {
+	async registerUser(formData) {
 		const AllowAnonymousRead = settings.get('Accounts_AllowAnonymousRead');
 		const AllowAnonymousWrite = settings.get('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get('Accounts_ManuallyApproveNewUsers');
@@ -45,7 +45,7 @@ Meteor.methods({
 			}
 
 			try {
-				validateInviteToken(formData.secretURL);
+				await validateInviteToken(formData.secretURL);
 			} catch (e) {
 				throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' });
 			}

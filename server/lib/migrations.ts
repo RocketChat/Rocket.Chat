@@ -135,7 +135,7 @@ function migrate(direction: 'up' | 'down', migration: IMigration): void {
 
 	log.startup(`Running ${ direction }() on version ${ migration.version }${ migration.name ? `(${ migration.name })` : '' }`);
 
-	migration[direction]?.(migration);
+	Promise.await(migration[direction]?.(migration));
 }
 
 

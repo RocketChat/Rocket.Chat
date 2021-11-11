@@ -1,12 +1,12 @@
 import {
-	Settings,
 	Users,
 } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
-function updateFieldMap() {
+async function updateFieldMap() {
 	const _id = 'SAML_Custom_Default_user_data_fieldmap';
-	const setting = Settings.findOne({ _id });
+	const setting = await Settings.findOne({ _id });
 	if (!setting || !setting.value) {
 		return;
 	}
@@ -19,7 +19,7 @@ function updateFieldMap() {
 	if (setting.value === '{"username":"username", "email":"email", "cn": "name"}') {
 		// include de eppn identifier if it was used
 		const value = `{"username":"username", "email":"email", "name": "cn"${ usedEppn ? ', "__identifier__": "eppn"' : '' }}`;
-		Settings.update({ _id }, {
+		await Settings.update({ _id }, {
 			$set: {
 				value,
 			},
@@ -90,7 +90,7 @@ function updateIdentifierLocation() {
 
 function setOldLogoutResponseTemplate() {
 	// For existing users, use a template compatible with the old SAML implementation instead of the default
-	Settings.upsert({
+	return Settings.update({
 		_id: 'SAML_Custom_Default_LogoutResponse_template',
 	}, {
 		$set: {
@@ -99,14 +99,16 @@ function setOldLogoutResponseTemplate() {
   <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
 </samlp:LogoutResponse>`,
 		},
+	}, {
+		upsert: true,
 	});
 }
 
 addMigration({
 	version: 194,
-	up() {
-		updateFieldMap();
-		updateIdentifierLocation();
-		setOldLogoutResponseTemplate();
+	async up() {
+		await updateFieldMap();
+		await updateIdentifierLocation();
+		await setOldLogoutResponseTemplate();
 	},
 });
