@@ -9,7 +9,7 @@ import { IBanner, BannerPlatform } from '../../../definition/IBanner';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins.js';
 
 export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<IBanner, '_id'> => {
-	const lng = settings.get('Language') || 'en';
+	const lng = settings.get<string>('Language') || 'en';
 
 	return {
 		platform: [BannerPlatform.Web],
@@ -39,9 +39,9 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 });
 
 export const notifyAdmins = Meteor.bindEnvironment((expireAt: Date) => {
-	sendMessagesToAdmins({
+	Promise.await(sendMessagesToAdmins({
 		msgs: ({ adminUser }: { adminUser: any }): any => ({
 			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', { date: moment(expireAt).format('YYYY-MM-DD'), lng: adminUser.language }),
 		}),
-	});
+	}));
 });

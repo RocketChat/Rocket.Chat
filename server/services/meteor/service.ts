@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Promise } from 'meteor/promise';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { UserPresenceMonitor, UserPresence } from 'meteor/konecty:user-presence';
 import { MongoInternals } from 'meteor/mongo';
@@ -50,7 +49,7 @@ type Callbacks = {
 
 let processOnChange: (diff: Record<string, any>, id: string) => void;
 // eslint-disable-next-line no-undef
-const disableOplog = Package['disable-oplog'];
+const disableOplog = !!(Package as any)['disable-oplog'];
 const serviceConfigCallbacks = new Set<Callbacks>();
 
 if (disableOplog) {
@@ -282,6 +281,9 @@ export class MeteorService extends ServiceClass implements IMeteor {
 	}
 
 	getRoutingManagerConfig(): IRoutingManagerConfig {
-		return RoutingManager.getConfig();
+		// return false if called before routing method is set
+		// this will cause that oplog events received on early stages of server startup
+		// won't be fired (at least, inquiry events)
+		return RoutingManager.isMethodSet() && RoutingManager.getConfig();
 	}
 }

@@ -37,7 +37,7 @@
 		"sodium-plus": "^0.9.0",
 		"underscore.string": "^3.3.5",
 		"uuid": "^7.0.3",
-		"ws": "^7.5.1"
+		"ws": "^7.5.5"
 	},
 	"devDependencies": {
 		"@types/cookie": "^0.4.1",
@@ -51,5 +51,9 @@
 		"pm2": "^5.1.1",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.3.5"
+	},
+	"volta": {
+		"node": "12.22.1",
+		"npm": "6.14.12"
 	}
 }

@@ -200,20 +200,34 @@ export function addSettings(): void {
 					enableQuery: { _id: 'LDAP_Enable', value: true },
 					invalidValue: false,
 				});
+
+				const enableQueryTeams = { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true };
+
 				this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
 					type: 'code',
-					enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
+					enableQuery: enableQueryTeams,
 					invalidValue: '{}',
 				});
 				this.add('LDAP_Validate_Teams_For_Each_Login', false, {
 					type: 'boolean',
-					enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
+					enableQuery: enableQueryTeams,
 					invalidValue: false,
 				});
-				this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))', {
+				this.add('LDAP_Teams_BaseDN', '', {
 					type: 'string',
-					enableQuery: { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true },
-					invalidValue: '(&(ou=*)(uniqueMember=uid=#{username},dc=example,dc=com))',
+					enableQuery: enableQueryTeams,
+					invalidValue: '',
+				});
+				this.add('LDAP_Teams_Name_Field', 'ou,cn', {
+					type: 'string',
+					enableQuery: enableQueryTeams,
+					invalidValue: '',
+				});
+
+				this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=#{userdn}))', {
+					type: 'string',
+					enableQuery: enableQueryTeams,
+					invalidValue: '',
 				});
 			});
 		});

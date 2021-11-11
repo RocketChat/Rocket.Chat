@@ -1,10 +1,11 @@
 import { addMigration } from '../../lib/migrations';
-import { Settings, Subscriptions, Users } from '../../../app/models/server';
+import { Subscriptions, Users } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 235,
-	up() {
-		Settings.removeById('Accounts_Default_User_Preferences_audioNotifications');
+	async up() {
+		await Settings.removeById('Accounts_Default_User_Preferences_audioNotifications');
 
 		// delete field from subscriptions
 		Subscriptions.update({

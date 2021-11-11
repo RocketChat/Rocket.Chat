@@ -42,7 +42,7 @@ export default () => {
 	if (update.exists) {
 		Settings.updateValueById('Update_LatestAvailableVersion', update.lastestVersion.version);
 
-		sendMessagesToAdmins({
+		Promise.await(sendMessagesToAdmins({
 			msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }` }],
 			banners: [{
 				id: `versionUpdate-${ update.lastestVersion.version }`.replace(/\./g, '_'),
@@ -52,11 +52,11 @@ export default () => {
 				textArguments: [update.lastestVersion.version],
 				link: update.lastestVersion.infoUrl,
 			}],
-		});
+		}));
 	}
 
 	if (alerts && alerts.length) {
-		sendMessagesToAdmins({
+		Promise.await(sendMessagesToAdmins({
 			msgs: ({ adminUser }) => alerts
 				.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`))
 				.map((alert) => ({
@@ -71,6 +71,6 @@ export default () => {
 				modifiers: alert.modifiers,
 				link: alert.infoUrl,
 			})),
-		});
+		}));
 	}
 };

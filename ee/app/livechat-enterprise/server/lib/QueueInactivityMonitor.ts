@@ -42,7 +42,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		});
 		this.createIndex();
 		this.user = Users.findOneById('rocket.cat');
-		const language = settings.get('Language') || 'en';
+		const language = settings.get<string>('Language') || 'en';
 		this.message = TAPi18n.__('Closed_automatically_chat_queued_too_long', { lng: language });
 		this.bindedCloseRoom = Meteor.bindEnvironment(this.closeRoom.bind(this));
 	}
