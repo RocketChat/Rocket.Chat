@@ -13,7 +13,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import UserInfo from '../../room/contextualBar/UserInfo';
 
-export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) => {
+export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, onDelete }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -39,7 +39,7 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange }) 
 	const handleDeletedUser = () => {
 		setModal();
 		userRoute.push({});
-		onChange('performed_delete_user_action');
+		onDelete();
 	};
 
 	const confirmOwnerChanges =

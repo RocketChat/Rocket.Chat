@@ -32,11 +32,13 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 		),
 	);
 
-	const onChange = useMutableCallback((performedAction = '') => {
+	const onChange = useMutableCallback(() => {
 		onReload();
-		if (performedAction !== 'performed_delete_user_action') {
-			reloadUserInfo();
-		}
+		reloadUserInfo();
+	});
+
+	const onDelete = useMutableCallback(() => {
+		onReload();
 	});
 
 	const user = useMemo(() => {
@@ -106,6 +108,7 @@ export function UserInfoWithData({ uid, username, onReload, ...props }) {
 						_id={data.user._id}
 						username={data.user.username}
 						onChange={onChange}
+						onDelete={onDelete}
 					/>
 				)
 			}
