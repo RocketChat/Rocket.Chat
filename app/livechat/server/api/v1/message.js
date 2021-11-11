@@ -108,7 +108,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			}
 
 			if (message.file) {
-				message = normalizeMessageFileUpload(message);
+				message = Promise.await(normalizeMessageFileUpload(message));
 			}
 
 			return API.v1.success({ message });
@@ -151,7 +151,7 @@ API.v1.addRoute('livechat/message/:_id', {
 			if (result) {
 				let message = Messages.findOneById(_id);
 				if (message.file) {
-					message = normalizeMessageFileUpload(message);
+					message = Promise.await(normalizeMessageFileUpload(message));
 				}
 
 				return API.v1.success({ message });
@@ -191,7 +191,7 @@ API.v1.addRoute('livechat/message/:_id', {
 				throw new Meteor.Error('invalid-message');
 			}
 
-			const result = Livechat.deleteMessage({ guest, message });
+			const result = Promise.await(Livechat.deleteMessage({ guest, message }));
 			if (result) {
 				return API.v1.success({
 					message: {
@@ -251,7 +251,7 @@ API.v1.addRoute('livechat/messages.history/:rid', {
 
 			const messages = loadMessageHistory({ userId: guest._id, rid, end, limit, ls, sort, offset, text })
 				.messages
-				.map(normalizeMessageFileUpload);
+				.map((...args) => Promise.await(normalizeMessageFileUpload(...args)));
 			return API.v1.success({ messages });
 		} catch (e) {
 			return API.v1.failure(e);

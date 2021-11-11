@@ -6,7 +6,7 @@ import { Messages } from '../../../models';
 import { deleteMessage } from '../functions';
 
 Meteor.methods({
-	deleteMessage(message) {
+	async deleteMessage(message) {
 		check(message, Match.ObjectIncluding({
 			_id: String,
 		}));

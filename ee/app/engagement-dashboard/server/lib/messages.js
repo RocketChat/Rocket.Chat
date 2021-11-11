@@ -1,9 +1,7 @@
 import moment from 'moment';
 
-import AnalyticsRaw from '../../../../../app/models/server/raw/Analytics';
 import { roomTypes } from '../../../../../app/utils';
-import { Messages } from '../../../../../app/models/server/raw';
-import { Analytics } from '../../../../../app/models/server';
+import { Messages, Analytics } from '../../../../../app/models/server/raw';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 
 export const handleMessagesSent = (message, room) => {
@@ -11,7 +9,7 @@ export const handleMessagesSent = (message, room) => {
 	if (!roomTypesToShow.includes(room.t)) {
 		return message;
 	}
-	Promise.await(AnalyticsRaw.saveMessageSent({
+	Promise.await(Analytics.saveMessageSent({
 		date: convertDateToInt(message.ts),
 		room,
 	}));
@@ -23,7 +21,7 @@ export const handleMessagesDeleted = (message, room) => {
 	if (!roomTypesToShow.includes(room.t)) {
 		return;
 	}
-	Promise.await(AnalyticsRaw.saveMessageDeleted({
+	Promise.await(Analytics.saveMessageDeleted({
 		date: convertDateToInt(message.ts),
 		room,
 	}));
@@ -31,7 +29,7 @@ export const handleMessagesDeleted = (message, room) => {
 };
 
 export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
-	const messagesFromAnalytics = await AnalyticsRaw.findByTypeBeforeDate({
+	const messagesFromAnalytics = await Analytics.findByTypeBeforeDate({
 		type: 'messages',
 		date: convertDateToInt(date),
 	}).toArray();
@@ -41,10 +39,10 @@ export const fillFirstDaysOfMessagesIfNeeded = async (date) => {
 			start: startOfPeriod,
 			end: date,
 		});
-		messages.forEach((message) => Analytics.insert({
+		await Promise.all(messages.map((message) => Analytics.insertOne({
 			...message,
 			date: parseInt(message.date),
-		}));
+		})));
 	}
 };
 
@@ -54,16 +52,16 @@ export const findWeeklyMessagesSentData = async ({ start, end }) => {
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	const currentPeriodMessages = await AnalyticsRaw.getMessagesSentTotalByDate({
+	const currentPeriodMessages = await Analytics.getMessagesSentTotalByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	});
-	const lastPeriodMessages = await AnalyticsRaw.getMessagesSentTotalByDate({
+	}).toArray();
+	const lastPeriodMessages = await Analytics.getMessagesSentTotalByDate({
 		start: convertDateToInt(startOfLastWeek),
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	});
+	}).toArray();
 	const yesterdayMessages = (currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
 	const todayMessages = (currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
@@ -82,10 +80,10 @@ export const findWeeklyMessagesSentData = async ({ start, end }) => {
 };
 
 export const findMessagesSentOrigin = async ({ start, end }) => {
-	const origins = await AnalyticsRaw.getMessagesOrigin({
+	const origins = await Analytics.getMessagesOrigin({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
-	});
+	}).toArray();
 	const roomTypesToShow = roomTypes.getTypesToShowOnDashboard();
 	const responseTypes = origins.map((origin) => origin.t);
 	const missingTypes = roomTypesToShow.filter((type) => !responseTypes.includes(type));
@@ -96,10 +94,10 @@ export const findMessagesSentOrigin = async ({ start, end }) => {
 };
 
 export const findTopFivePopularChannelsByMessageSentQuantity = async ({ start, end }) => {
-	const channels = await AnalyticsRaw.getMostPopularChannelsByMessagesSentQuantity({
+	const channels = await Analytics.getMostPopularChannelsByMessagesSentQuantity({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		options: { count: 5, sort: { messages: -1 } },
-	});
+	}).toArray();
 	return { channels };
 };
