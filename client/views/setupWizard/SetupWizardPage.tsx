@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 
-import { useMethod } from '../../contexts/ServerContext';
+import { useEndpoint, useMethod } from '../../contexts/ServerContext';
 import { useSessionDispatch } from '../../contexts/SessionContext';
 import { useSettingSetValue } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
@@ -19,7 +19,8 @@ type SetupWizardPageProps = {
 };
 
 const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElement => {
-	const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
+	const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
+	// const registerCloudWorkspace = useMethod('cloud:registerWorkspace');
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const { goToNextStep, setupWizardData, setSetupWizardData } = useSetupWizardContext();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -38,7 +39,7 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 		companyEmail,
 		password,
 		onRegistrationEmailSent,
-	}) => {
+	}): Promise<void> => {
 		await registerUser({ name: fullname, username, email: companyEmail, pass: password });
 		callbacks.run('userRegistered');
 
@@ -61,7 +62,6 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 
 	const handleRegisterAdminUser = async (): Promise<void> => {
 		const { fullname, username, companyEmail, password } = adminData;
-		console.log(adminData);
 
 		await registerAdminUser({
 			fullname,
@@ -74,18 +74,20 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 		});
 	};
 
-	const handleSelectServerType = ({ _agreement, _updates, registerType }) => {
+	const handleSelectServerType = async ({ _agreement, _updates, registerType }) => {
 		if (registerType !== 'registered') {
-			handleRegisterAdminUser();
-			return setShowSetupWizard('completed');
+			const result = await handleRegisterAdminUser();
+
+			if (result) {
+				return setShowSetupWizard('completed');
+			}
 		}
 
-		goToNextStep();
+		setShowSetupWizard('in_progress');
+		return goToNextStep();
 	};
 
-	const handleRegisterServer = async (data): Promise<void> => {
-		console.log(data);
-
+	const handleRegisterServer = async ({ email }): Promise<void> => {
 		try {
 			await handleRegisterAdminUser();
 		} catch (e) {
@@ -96,8 +98,13 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 		}
 
 		try {
-			const intentData = await registerCloudWorkspace();
-			setSetupWizardData((prevState) => ({ ...prevState, cloudRegistrationData: intentData }));
+			const intentData = await createRegistrationIntent();
+			setSetupWizardData((prevState) => ({
+				...prevState,
+				cloudRegistrationData: { ...intentData, cloudEmail: email },
+			}));
+
+			// setShowSetupWizard('completed');
 			goToNextStep();
 		} catch (e) {
 			console.log(e);

@@ -8,12 +8,11 @@ const CloudAccountConfirmation = (): ReactElement => {
 		goToPreviousStep,
 		setupWizardData: { cloudRegistrationData },
 	} = useSetupWizardContext();
-	console.log(cloudRegistrationData);
 
 	return (
 		<AwaitingConfirmationPage
-			emailAddress='test@mail.com'
-			securityCode={cloudRegistrationData.user_code}
+			emailAddress={cloudRegistrationData.cloudEmail}
+			securityCode={cloudRegistrationData.intentData.user_code}
 			onResendEmailRequest={() => undefined}
 			onChangeEmailRequest={goToPreviousStep}
 		/>

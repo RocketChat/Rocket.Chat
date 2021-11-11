@@ -14,11 +14,11 @@ export function buildWorkspaceRegistrationData() {
 
 	const firstUser = Users.getOldest({ name: 1, emails: 1 });
 	const contactName = firstUser && firstUser.name;
-	let contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
+	// let contactEmail = firstUser && firstUser.emails && firstUser.emails[0].address;
 
-	if (settings.get('Organization_Email')) {
-		contactEmail = settings.get('Organization_Email');
-	}
+	// if (settings.get('Organization_Email')) {
+	// 	contactEmail = settings.get('Organization_Email');
+	// }
 
 	const allowMarketing = settings.get('Allow_Marketing_Emails');
 
@@ -38,7 +38,7 @@ export function buildWorkspaceRegistrationData() {
 		workspaceId,
 		address,
 		contactName,
-		contactEmail,
+		// contactEmail,
 		seats,
 		allowMarketing,
 		accountName,
