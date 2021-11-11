@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useRouteParameter, useRoute } from '../../../contexts/RouterContext';
 import { useUserId } from '../../../contexts/UserContext';
 
-export const FINAL_STEP = 'FINAL';
-
-export const useStepRouting = () => {
+export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => {
 	const param = useRouteParameter('step');
 	const userId = useUserId();
 	const setupWizardRoute = useRoute('setup-wizard');
 
-	const [currentStep, setCurrentStep] = useState(() => {
-		if (param === FINAL_STEP) {
-			return FINAL_STEP;
+	const [currentStep, setCurrentStep] = useState<number>(() => {
+		if (!param) {
+			return 1;
 		}
 
 		const step = parseInt(param, 10);
-		if (Number.isFinite(step) && step >= 1) {
+		if (step && Number.isFinite(step) && step >= 1) {
 			return step;
 		}
 

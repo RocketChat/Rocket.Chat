@@ -45,7 +45,8 @@ export function startRegisterWorkspace(resend = false) {
 		return false;
 	}
 
-	Settings.updateValueById('Cloud_Workspace_Id', data.id);
+	// check why??
+	// Settings.updateValueById('Cloud_Workspace_Id', data.id);
 
 	return data;
 }

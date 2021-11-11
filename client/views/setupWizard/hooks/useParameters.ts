@@ -7,9 +7,10 @@ export const useParameters = (): {
 	settings: Array<string>;
 	canDeclineServerRegistration: boolean;
 } => {
-	const [loaded, setLoaded] = useState(false);
-	const [settings, setSettings] = useState([]);
-	const [canDeclineServerRegistration, setCapableOfDeclineServerRegistration] = useState(false);
+	const [loaded, setLoaded] = useState<boolean>(false);
+	const [settings, setSettings] = useState<Array<string>>([]);
+	const [canDeclineServerRegistration, setCapableOfDeclineServerRegistration] =
+		useState<boolean>(false);
 	const getSetupWizardParameters = useMethod('getSetupWizardParameters');
 
 	useEffect(() => {

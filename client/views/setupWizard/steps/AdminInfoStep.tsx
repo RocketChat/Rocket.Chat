@@ -21,13 +21,13 @@ type AdminInfoStepPayload = {
 };
 
 const AdminInfoStep = ({ step }: AdminInfoStepProps): ReactElement => {
-	const loginWithPassword = useLoginWithPassword();
-	const registerUser = useMethod('registerUser');
-	const defineUsername = useMethod('setUsername');
+	// const loginWithPassword = useLoginWithPassword();
+	// const registerUser = useMethod('registerUser');
+	// const defineUsername = useMethod('setUsername');
 
-	const setForceLogin = useSessionDispatch('forceLogin');
-	const callbacks = useCallbacks();
-	const dispatchToastMessage = useToastMessageDispatch();
+	// const setForceLogin = useSessionDispatch('forceLogin');
+	// const callbacks = useCallbacks();
+	// const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
 		setupWizardData: { adminData },
@@ -63,12 +63,12 @@ const AdminInfoStep = ({ step }: AdminInfoStepProps): ReactElement => {
 	// 	callbacks.run('usernameSet');
 	// };
 
-	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
-	const usernameRegExp = useMemo(
-		() => new RegExp(`^${regexpForUsernameValidation}$`),
-		[regexpForUsernameValidation],
-	);
-	const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
+	// const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
+	// const usernameRegExp = useMemo(
+	// 	() => new RegExp(`^${regexpForUsernameValidation}$`),
+	// 	[regexpForUsernameValidation],
+	// );
+	// const emailRegExp = useMemo(() => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+$/i, []);
 
 	// const [name, setName] = useState('');
 	// const [username, setUsername] = useState('');
@@ -83,7 +83,7 @@ const AdminInfoStep = ({ step }: AdminInfoStepProps): ReactElement => {
 	// 	[name, username, email, password],
 	// );
 
-	const [commiting, setCommiting] = useState(false);
+	// const [commiting, setCommiting] = useState(false);
 
 	// useEffect(() => {
 	// 	validateUsername(username && usernameRegExp.test(username));
@@ -108,7 +108,7 @@ const AdminInfoStep = ({ step }: AdminInfoStepProps): ReactElement => {
 		console.log(data);
 		setSetupWizardData((prevState) => ({ ...prevState, adminData: data }));
 
-		setCommiting(true);
+		// setCommiting(true);
 		goToNextStep();
 
 		// try {
