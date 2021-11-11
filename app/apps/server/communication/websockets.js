@@ -26,7 +26,7 @@ export class AppServerListener {
 		this.engineStreamer.on(AppEvents.APP_STATUS_CHANGE, this.onAppStatusUpdated.bind(this));
 		this.engineStreamer.on(AppEvents.APP_REMOVED, this.onAppRemoved.bind(this));
 		this.engineStreamer.on(AppEvents.APP_UPDATED, this.onAppUpdated.bind(this));
-		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppActionsChanged.bind(this));
+		this.engineStreamer.on(AppEvents.APP_ADDED, this.onAppAdded.bind(this));
 		this.engineStreamer.on(AppEvents.ACTIONS_CHANGED, this.onActionsChanged.bind(this));
 
 		this.engineStreamer.on(AppEvents.APP_SETTING_UPDATED, this.onAppSettingUpdated.bind(this));
