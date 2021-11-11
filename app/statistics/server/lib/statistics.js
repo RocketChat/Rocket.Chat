@@ -118,7 +118,7 @@ export const statistics = {
 		statistics.livechatEnabled = settings.get('Livechat	_enabled');
 
 		// Count and types of omnichannel rooms
-		statistics.omnichanelSources = _.reduce(Promise.await(RoomsRaw.allRoomSourcesCount().toArray()), (acc, curr) => {
+		statistics.omnichannelSources = _.reduce(Promise.await(RoomsRaw.allRoomSourcesCount().toArray()), (acc, curr) => {
 			acc.push({
 				id: curr._id.id,
 				alias: curr._id.alias,
