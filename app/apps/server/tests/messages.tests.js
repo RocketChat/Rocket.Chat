@@ -1,13 +1,11 @@
 import mock from 'mock-require';
-import chai from 'chai';
+import { expect } from 'chai';
 
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 import { appMessageMock, appMessageInvalidRoomMock } from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
-
-const { expect } = chai;
 
 mock('../../../models', './mocks/models');
 mock('meteor/random', {

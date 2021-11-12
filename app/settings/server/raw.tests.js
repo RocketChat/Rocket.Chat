@@ -1,4 +1,4 @@
-import chai, { expect } from 'chai';
+import { expect, spy } from 'chai';
 import rewire from 'rewire';
 
 describe('Raw Settings', () => {
@@ -6,13 +6,13 @@ describe('Raw Settings', () => {
 	const cache = new Map();
 
 	before('rewire deps', () => {
-		const spy = chai.spy(async (id) => {
+		const spied = spy(async (id) => {
 			if (id === '1') { return 'some-setting-value'; }
 			return null;
 		});
 
 		rawModule = rewire('./raw');
-		rawModule.__set__('setFromDB', spy);
+		rawModule.__set__('setFromDB', spied);
 		rawModule.__set__('cache', cache);
 	});
 

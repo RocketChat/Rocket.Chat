@@ -1,5 +1,5 @@
 import 'jsdom-global/register';
-import chai from 'chai';
+import { expect, spy } from 'chai';
 import { describe, it } from 'mocha';
 
 import { withBlobUrls } from '../../tests/utils/client/withBlobUrls';
@@ -7,13 +7,13 @@ import { download, downloadAs, downloadCsvAs, downloadJsonAs } from './download'
 
 describe('download', () => {
 	it('should work', () => {
-		const listener = chai.spy();
+		const listener = spy();
 		document.addEventListener('click', listener, false);
 
 		download('about:blank', 'blank');
 
 		document.removeEventListener('click', listener, false);
-		chai.expect(listener).to.have.been.called();
+		expect(listener).to.have.been.called();
 	});
 });
 
@@ -21,13 +21,13 @@ describe('downloadAs', () => {
 	withBlobUrls();
 
 	it('should work', () => {
-		const listener = chai.spy();
+		const listener = spy();
 		document.addEventListener('click', listener, false);
 
 		downloadAs({ data: [] }, 'blank');
 
 		document.removeEventListener('click', listener, false);
-		chai.expect(listener).to.have.been.called();
+		expect(listener).to.have.been.called();
 	});
 });
 
@@ -35,13 +35,13 @@ describe('downloadJsonAs', () => {
 	withBlobUrls();
 
 	it('should work', () => {
-		const listener = chai.spy();
+		const listener = spy();
 		document.addEventListener('click', listener, false);
 
 		downloadJsonAs({}, 'blank');
 
 		document.removeEventListener('click', listener, false);
-		chai.expect(listener).to.have.been.called();
+		expect(listener).to.have.been.called();
 	});
 });
 
@@ -49,7 +49,7 @@ describe('downloadCsvAs', () => {
 	withBlobUrls();
 
 	it('should work', () => {
-		const listener = chai.spy();
+		const listener = spy();
 		document.addEventListener('click', listener, false);
 
 		downloadCsvAs(
@@ -61,6 +61,6 @@ describe('downloadCsvAs', () => {
 		);
 
 		document.removeEventListener('click', listener, false);
-		chai.expect(listener).to.have.been.called();
+		expect(listener).to.have.been.called();
 	});
 });
