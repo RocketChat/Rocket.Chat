@@ -114,7 +114,7 @@ export const statistics = {
 		statistics.totalLivechatAgents = Users.findAgents().count();
 
 		// livechat enabled
-		statistics.livechatEnabled = settings.get('Livechat	_enabled');
+		statistics.livechatEnabled = settings.get('Livechat_enabled');
 
 		// Count and types of omnichannel rooms
 		statistics.omnichannelSources = _.reduce(Promise.await(RoomsRaw.allRoomSourcesCount().toArray()), (acc, curr) => {
