@@ -1,42 +1,82 @@
-import { Match, check } from 'meteor/check';
+import Ajv, { JSONSchemaType } from 'ajv';
 
 import { IRole, IUser } from '../../IUser';
 
-type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'scope' | 'description' | 'mandatory2fa'>>;
+const ajv = new Ajv();
 
-export const isRoleCreateProps = (props: any): props is RoleCreateProps => {
-	check(props, {
-		name: String,
-		scope: Match.Maybe(String),
-		description: Match.Maybe(String),
-		mandatory2fa: Match.Maybe(Boolean),
-	});
+type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' |'mandatory2fa' >>;
 
-	return true;
+const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
+			type: 'string',
+			enum: ['Users', 'Subscriptions'],
+			nullable: true,
+		},
+		mandatory2fa: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
 };
+
+export const isRoleCreateProps = ajv.compile(roleCreatePropsSchema);
 
 type RoleUpdateProps = { roleId: IRole['_id']; name: IRole['name'] } & Partial<RoleCreateProps>;
 
-export const isRoleUpdateProps = (props: any): props is RoleUpdateProps => {
-	check(props, {
-		roleId: String,
-		name: String,
-		scope: Match.Maybe(String),
-		description: Match.Maybe(String),
-		mandatory2fa: Match.Maybe(Boolean),
-	});
-	return true;
+const roleUpdatePropsSchema: JSONSchemaType<RoleUpdateProps> = {
+	type: 'object',
+	properties: {
+		roleId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		description: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
+			type: 'string',
+			enum: ['Users', 'Subscriptions'],
+			nullable: true,
+		},
+		mandatory2fa: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roleId', 'name'],
+	additionalProperties: false,
 };
+
+export const isRoleUpdateProps = ajv.compile(roleUpdatePropsSchema);
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
-export const isRoleDeleteProps = (props: any): props is RoleDeleteProps => {
-	check(props, {
-		roleId: String,
-	});
-	return true;
+const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
+	type: 'object',
+	properties: {
+		roleId: {
+			type: 'string',
+		},
+	},
+	required: ['roleId'],
+	additionalProperties: false,
 };
 
+export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
 	userName: string;
@@ -44,15 +84,26 @@ type RoleAddUserToRoleProps = {
 	roomId?: string;
 }
 
-export const isRoleAddUserToRoleProps = (props: any): props is RoleAddUserToRoleProps => {
-	check(props, {
-		roleName: String,
-		username: String,
-		roomId: Match.Maybe(String),
-	});
-	return true;
+const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
+	type: 'object',
+	properties: {
+		userName: {
+			type: 'string',
+		},
+		roleName: {
+			type: 'string',
+		},
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['userName', 'roleName'],
+	additionalProperties: false,
 };
 
+
+export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
@@ -60,15 +111,25 @@ type RoleRemoveUserFromRoleProps = {
 	roomId?: string;
 }
 
-export const isRoleRemoveUserFromRoleProps = (props: any): props is RoleRemoveUserFromRoleProps => {
-	check(props, {
-		roleName: String,
-		username: String,
-		roomId: Match.Maybe(String),
-	});
-	return true;
+const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+		roleName: {
+			type: 'string',
+		},
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['username', 'roleName'],
+	additionalProperties: false,
 };
 
+export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRolePropsSchema);
 
 type RoleSyncProps = {
 	updatedSince?: string;

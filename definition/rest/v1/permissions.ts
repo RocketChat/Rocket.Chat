@@ -1,22 +1,32 @@
-import { Match, check } from 'meteor/check';
+import Ajv, { JSONSchemaType } from 'ajv';
 
 import { IPermission } from '../../IPermission';
 
+const ajv = new Ajv();
 
 type PermissionsUpdateProps = { permissions: { _id: string; roles: string[] }[] };
 
-export const isBodyParamsValidPermissionUpdate = (bodyParams: object): bodyParams is PermissionsUpdateProps => {
-	check(bodyParams, {
-		permissions: [
-			Match.ObjectIncluding({
-				_id: String,
-				roles: [String],
-			}),
-		],
-	});
-	return true;
+const permissionUpdatePropsSchema: JSONSchemaType<PermissionsUpdateProps> = {
+	type: 'object',
+	properties: {
+		permissions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					roles: { type: 'array', items: { type: 'string' }, uniqueItems: true },
+				},
+				additionalProperties: false,
+				required: ['_id', 'roles'],
+			},
+		},
+	},
+	required: ['permissions'],
+	additionalProperties: false,
 };
 
+export const isBodyParamsValidPermissionUpdate = ajv.compile(permissionUpdatePropsSchema);
 
 export type PermissionsEndpoints = {
 	'permissions.listAll': {
