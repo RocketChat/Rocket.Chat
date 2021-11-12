@@ -119,7 +119,7 @@ const testCasesForOptions = (description, options) => {
 	});
 };
 
-describe.only('getURL', () => {
+describe('getURL', () => {
 	testCasesForOptions('getURL with no CDN, no PREFIX for http://localhost:3000/', {
 		_cdn_prefix: '',
 		_root_url_path_prefix: '',

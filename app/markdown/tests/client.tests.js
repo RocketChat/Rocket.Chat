@@ -435,7 +435,7 @@ describe('Filtered', function() {
 	describe('blockcodeFilter', () => testObject(blockcodeFiltered, filtered));
 });
 
-// describe.only('Marked', function() {
+// describe('Marked', function() {
 // 	describe('Bold', () => testObject(bold, marked));
 
 // 	describe('Italic', () => testObject(italic, marked));

@@ -4,6 +4,7 @@ module.exports = {
 	require: [
 		'ts-node/register',
 		'@babel/register',
+		'./tests/setup/chaiPlugins.ts',
 	],
 	reporter: 'spec',
 	ui: 'bdd',

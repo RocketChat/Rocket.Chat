@@ -1,9 +1,6 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai';
-import spies from 'chai-spies';
 import rewire from 'rewire';
-
-chai.use(spies);
 
 describe('Raw Settings', () => {
 	let rawModule;

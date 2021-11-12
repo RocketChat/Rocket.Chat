@@ -1,12 +1,9 @@
 import 'jsdom-global/register';
 import chai from 'chai';
-import chaiSpies from 'chai-spies';
 import { describe, it } from 'mocha';
 
 import { withBlobUrls } from '../../tests/utils/client/withBlobUrls';
 import { download, downloadAs, downloadCsvAs, downloadJsonAs } from './download';
-
-chai.use(chaiSpies);
 
 describe('download', () => {
 	it('should work', () => {

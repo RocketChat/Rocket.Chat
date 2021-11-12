@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-env mocha */
 import chai, { expect } from 'chai';
-import spies from 'chai-spies';
 
 import { Settings } from './settings.mocks';
 import { SettingsRegistry } from '../SettingsRegistry';
 import { CachedSettings } from '../CachedSettings';
-
-chai.use(spies);
 
 describe('Settings', () => {
 	beforeEach(() => {
