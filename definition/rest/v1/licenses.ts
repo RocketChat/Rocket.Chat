@@ -1,4 +1,4 @@
-import type { ILicense } from '../../../ee/app/license/server/license';
+import type { ILicense } from '../../../ee/app/license/definitions/ILicense';
 
 export type LicensesEndpoints = {
 	'licenses.get': {
