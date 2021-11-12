@@ -1,39 +1,12 @@
 import 'jsdom-global/register';
 import chai from 'chai';
 import chaiSpies from 'chai-spies';
-import { after, before, describe, it } from 'mocha';
+import { describe, it } from 'mocha';
 
+import { withBlobUrls } from '../../tests/utils/client/withBlobUrls';
 import { download, downloadAs, downloadCsvAs, downloadJsonAs } from './download';
 
 chai.use(chaiSpies);
-
-const withURL = (): void => {
-	let createObjectURL: typeof URL.createObjectURL;
-	let revokeObjectURL: typeof URL.revokeObjectURL;
-
-	before(() => {
-		const blobs = new Map<string, Blob>();
-
-		createObjectURL = window.URL.createObjectURL;
-		revokeObjectURL = window.URL.revokeObjectURL;
-
-		window.URL.createObjectURL = (blob: Blob): string => {
-			const uuid = Math.random().toString(36).slice(2);
-			const url = `blob://${uuid}`;
-			blobs.set(url, blob);
-			return url;
-		};
-
-		window.URL.revokeObjectURL = (url: string): void => {
-			blobs.delete(url);
-		};
-	});
-
-	after(() => {
-		window.URL.createObjectURL = createObjectURL;
-		window.URL.revokeObjectURL = revokeObjectURL;
-	});
-};
 
 describe('download', () => {
 	it('should work', () => {
@@ -48,7 +21,7 @@ describe('download', () => {
 });
 
 describe('downloadAs', () => {
-	withURL();
+	withBlobUrls();
 
 	it('should work', () => {
 		const listener = chai.spy();
@@ -62,7 +35,7 @@ describe('downloadAs', () => {
 });
 
 describe('downloadJsonAs', () => {
-	withURL();
+	withBlobUrls();
 
 	it('should work', () => {
 		const listener = chai.spy();
@@ -76,7 +49,7 @@ describe('downloadJsonAs', () => {
 });
 
 describe('downloadCsvAs', () => {
-	withURL();
+	withBlobUrls();
 
 	it('should work', () => {
 		const listener = chai.spy();
