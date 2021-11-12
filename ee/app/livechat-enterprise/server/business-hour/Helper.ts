@@ -10,7 +10,7 @@ import {
 import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '../../../../../definition/ILivechatBusinessHour';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
-	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { fields: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
+	const agentIdsWithDepartment = (await LivechatDepartmentAgents.find({}, { projection: { agentId: 1 } }).toArray()).map((dept: any) => dept.agentId);
 	const agentIdsWithoutDepartment = (await Users.findUsersInRolesWithQuery('livechat-agent', {
 		_id: { $nin: agentIdsWithDepartment },
 	}, { projection: { _id: 1 } }).toArray()).map((user: any) => user._id);

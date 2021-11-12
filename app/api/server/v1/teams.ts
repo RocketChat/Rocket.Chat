@@ -215,7 +215,13 @@ API.v1.addRoute('teams.listRoomsOfUser', { authRequired: true }, {
 		const { offset, count } = this.getPaginationItems();
 		const { teamId, teamName, userId, canUserDelete = false } = this.queryParams;
 
-		const team = await (teamId ? Team.getOneById(teamId) : Team.getOneByName(teamName));
+
+		if (!teamId && !teamName) {
+			return API.v1.failure('missing-teamId-or-teamName');
+		}
+
+		const team = await (teamId ? Team.getOneById(teamId) : Team.getOneByName(teamName!));
+
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}

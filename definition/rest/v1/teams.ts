@@ -2,6 +2,7 @@ import type { IRoom } from '../../IRoom';
 import type { ITeam, TEAM_TYPE } from '../../ITeam';
 import type { IUser } from '../../IUser';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { ITeamAutocompleteResult, ITeamMemberInfo, ITeamMemberParams } from '../../../server/sdk/types/ITeamService';
 
 type TeamsConvertToTeamsProps = {
@@ -72,7 +73,7 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.addRooms': {
-		POST: (params: { rooms: IRoom['_id'][]; teamId: string; teamName: string }) => ({ rooms: IRoom[] });
+		POST: (params: { rooms: IRoom['_id'][]; teamId: string } | { rooms: IRoom['_id'][]; teamName: string }) => ({ rooms: IRoom[] });
 	};
 
 	'teams.removeRoom': {
@@ -119,14 +120,18 @@ export type TeamsEndpoints = {
 	'teams.listRoomsOfUser': {
 		GET: (params: {
 			teamId: ITeam['_id'];
+			userId: IUser['_id'];
+			canUserDelete?: boolean;
+		} | {
 			teamName: ITeam['name'];
 			userId: IUser['_id'];
 			canUserDelete?: boolean;
-		}) => PaginatedResult & { rooms: IRoom[] };
+		}
+		) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 	'teams.listRooms': {
-		GET: (params: { teamId: string; teamName: string; filter?: string; type?: string }) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: PaginatedRequest & ({ teamId: string;} | { teamId: string }) & { filter?: string; type?: string }) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 
