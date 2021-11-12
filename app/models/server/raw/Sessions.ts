@@ -112,8 +112,18 @@ const getProjectionByFullDate = (): { day: string; month: string; year: string }
 });
 
 export const aggregates = {
-	dailySessionsOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): AggregationCursor<T> {
-		return collection.aggregate([{
+	dailySessionsOfYesterday(collection: Collection<T>, { year, month, day }: DestructuredDate): AggregationCursor<Pick<T, 'mostImportantRole' | 'userId' | 'day' | 'year' | 'month' | 'type'> & {
+		time: number;
+		sessions: number;
+		devices: T['device'][];
+		_computedAt: string;
+	}> {
+		return collection.aggregate<Pick<T, 'mostImportantRole' | 'userId' | 'day' | 'year' | 'month' | 'type'> & {
+			time: number;
+			sessions: number;
+			devices: T['device'][];
+			_computedAt: string;
+		}>([{
 			$match: {
 				userId: { $exists: true },
 				lastActivityAt: { $exists: true },
