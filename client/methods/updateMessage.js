@@ -5,7 +5,7 @@ import moment from 'moment';
 import _ from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../app/authorization/client';
-import { callbacks } from '../../app/callbacks/client';
+import { callbacks } from '../../app/callbacks/lib/callbacks';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
