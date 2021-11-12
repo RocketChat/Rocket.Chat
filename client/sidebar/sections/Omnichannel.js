@@ -3,12 +3,13 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { memo } from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
+import { useLayout } from '../../contexts/LayoutContext';
 import {
 	useOmnichannelShowQueueLink,
 	useOmnichannelAgentAvailable,
 	useOmnichannelQueueLink,
-	useOmnichannelDirectoryLink,
 } from '../../contexts/OmnichannelContext';
+import { useRoute } from '../../contexts/RouterContext';
 import { useMethod } from '../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
@@ -19,7 +20,8 @@ const OmnichannelSection = (props) => {
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const queueLink = useOmnichannelQueueLink();
-	const directoryLink = useOmnichannelDirectoryLink();
+	const { sidebar } = useLayout();
+	const directoryRoute = useRoute('omnichannel-directory');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const icon = {
@@ -42,6 +44,11 @@ const OmnichannelSection = (props) => {
 		}
 	});
 
+	const handleDirectory = useMutableCallback(() => {
+		sidebar.toggle();
+		directoryRoute.push({});
+	});
+
 	return (
 		<Sidebar.TopBar.ToolBox {...props}>
 			<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
@@ -51,7 +58,7 @@ const OmnichannelSection = (props) => {
 				)}
 				<Sidebar.TopBar.Action {...icon} onClick={handleStatusChange} />
 				{hasPermission(['view-omnichannel-contact-center']) && (
-					<Sidebar.TopBar.Action {...directoryIcon} href={directoryLink} is='a' />
+					<Sidebar.TopBar.Action {...directoryIcon} onClick={handleDirectory} />
 				)}
 			</Sidebar.TopBar.Actions>
 		</Sidebar.TopBar.ToolBox>
