@@ -1,15 +1,7 @@
 'use strict';
 
 module.exports = {
-	require: [
-		'@babel/register',
-		'regenerator-runtime/runtime',
-		'ts-node/register',
-		'./tests/setup/chaiPlugins.ts',
-	],
-	reporter: 'spec',
-	ui: 'bdd',
-	extension: ['js', 'ts'],
+	...require('./.mocharc.base.json'), // see https://github.com/mochajs/mocha/issues/3916
 	spec: [
 		'app/**/*.tests.js',
 		'app/**/*.tests.ts',

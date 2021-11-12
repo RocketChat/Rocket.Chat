@@ -1,0 +1,11 @@
+{
+	"require": [
+		"@babel/register",
+		"regenerator-runtime/runtime",
+		"ts-node/register",
+		"./tests/setup/chaiPlugins.ts"
+	],
+	"reporter": "spec",
+	"ui": "bdd",
+	"extension": "js,ts"
+}
