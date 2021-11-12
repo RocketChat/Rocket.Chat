@@ -1,8 +1,8 @@
-import 'jsdom-global/register';
+import '../../tests/mocks/web/register';
+
 import { expect, spy } from 'chai';
 import { describe, it } from 'mocha';
 
-import { withBlobUrls } from '../../tests/utils/client/withBlobUrls';
 import { download, downloadAs, downloadCsvAs, downloadJsonAs } from './download';
 
 describe('download', () => {
@@ -18,8 +18,6 @@ describe('download', () => {
 });
 
 describe('downloadAs', () => {
-	withBlobUrls();
-
 	it('should work', () => {
 		const listener = spy();
 		document.addEventListener('click', listener, false);
@@ -32,8 +30,6 @@ describe('downloadAs', () => {
 });
 
 describe('downloadJsonAs', () => {
-	withBlobUrls();
-
 	it('should work', () => {
 		const listener = spy();
 		document.addEventListener('click', listener, false);
@@ -46,8 +42,6 @@ describe('downloadJsonAs', () => {
 });
 
 describe('downloadCsvAs', () => {
-	withBlobUrls();
-
 	it('should work', () => {
 		const listener = spy();
 		document.addEventListener('click', listener, false);
