@@ -64,7 +64,6 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 }
 export const UserAction = new class {
-
 	addStream(rid: string): void {
 		if (rooms.get(rid)) {
 			return;
