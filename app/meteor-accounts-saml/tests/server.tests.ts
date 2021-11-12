@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 import chai from 'chai';
 
 import '../../lib/tests/server.mocks.js';

@@ -2,8 +2,9 @@
 
 module.exports = {
 	require: [
-		'ts-node/register',
 		'@babel/register',
+		'regenerator-runtime/runtime',
+		'ts-node/register',
 		'./tests/setup/chaiPlugins.ts',
 	],
 	reporter: 'spec',

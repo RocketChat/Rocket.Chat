@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import { expect } from 'chai';
 
 import { MentionsParser } from '../lib/MentionsParser';

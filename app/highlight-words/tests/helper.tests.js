@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 import { expect } from 'chai';
 
 import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../client/helper';

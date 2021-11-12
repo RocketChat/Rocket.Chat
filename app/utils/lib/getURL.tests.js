@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import { expect } from 'chai';
 import s from 'underscore.string';
 

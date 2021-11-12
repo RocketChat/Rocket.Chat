@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import './client.mocks.js';
 
 import { expect } from 'chai';
