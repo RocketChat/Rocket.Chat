@@ -4,12 +4,6 @@ import type { IUser } from '../../IUser';
 import { PaginatedResult } from '../helpers/PaginatedResult';
 import { ITeamAutocompleteResult, ITeamMemberInfo, ITeamMemberParams } from '../../../server/sdk/types/ITeamService';
 
-// check(this.bodyParams, Match.ObjectIncluding({
-// 	teamId: Match.Maybe(String),
-// 	teamName: Match.Maybe(String),
-// 	roomsToRemove: Match.Maybe([String]),
-// }));
-
 type TeamsConvertToTeamsProps = {
 	teamId?: string;
 	teamName?: string;
