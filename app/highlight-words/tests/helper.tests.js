@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 
 import 'babel-polyfill';
-import assert from 'assert';
+
+import { expect } from 'chai';
 
 import { highlightWords, getRegexHighlight, getRegexHighlightUrl } from '../client/helper';
 
@@ -14,7 +15,7 @@ describe('helper', () => {
 				urlRegex: getRegexHighlightUrl(highlight),
 			})));
 
-			assert.equal(res, 'here is some <span class="highlight-text">word</span>');
+			expect(res).to.be.equal('here is some <span class="highlight-text">word</span>');
 		});
 
 		describe('handles links', () => {
@@ -25,7 +26,7 @@ describe('helper', () => {
 					urlRegex: getRegexHighlightUrl(highlight),
 				})));
 
-				assert.equal(res, 'here we go https://somedomain.com/here-some.word/pulls more words after');
+				expect(res).to.be.equal('here we go https://somedomain.com/here-some.word/pulls more words after');
 			});
 
 			it('not highlighting two links', () => {
@@ -36,7 +37,7 @@ describe('helper', () => {
 					urlRegex: getRegexHighlightUrl(highlight),
 				})));
 
-				assert.equal(res, msg);
+				expect(res).to.be.equal(msg);
 			});
 
 			it('not highlighting link but keep words on message highlighted', () => {
@@ -46,7 +47,7 @@ describe('helper', () => {
 					urlRegex: getRegexHighlightUrl(highlight),
 				})));
 
-				assert.equal(res, 'here we go https://somedomain.com/here-some.foo/pulls more <span class="highlight-text">foo</span> after');
+				expect(res).to.be.equal('here we go https://somedomain.com/here-some.foo/pulls more <span class="highlight-text">foo</span> after');
 			});
 		});
 	});

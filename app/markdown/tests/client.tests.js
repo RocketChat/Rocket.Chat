@@ -1,8 +1,8 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
-import assert from 'assert';
-
 import './client.mocks.js';
+
+import { expect } from 'chai';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { original } from '../lib/parser/original/original';
@@ -375,7 +375,7 @@ const blockcodeFiltered = {
 	'Here```code```lies': 'Herecodelies',
 };
 
-const defaultObjectTest = (result, object, objectKey) => assert.equal(result.html, object[objectKey]);
+const defaultObjectTest = (result, object, objectKey) => expect(result.html).to.be.equal(object[objectKey]);
 
 const testObject = (object, parser = original, test = defaultObjectTest) => {
 	Object.keys(object).forEach((objectKey) => {

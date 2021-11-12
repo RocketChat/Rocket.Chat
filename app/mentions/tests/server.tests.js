@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import 'babel-polyfill';
-import assert from 'assert';
+import { expect } from 'chai';
 
 import MentionsServer from '../server/Mentions';
 
@@ -43,7 +43,7 @@ describe('Mention Server', () => {
 				};
 				const expected = [];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 		});
 		describe('for one user', () => {
@@ -69,7 +69,7 @@ describe('Mention Server', () => {
 					username: 'all',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 			it('should return "here"', () => {
 				const message = {
@@ -80,7 +80,7 @@ describe('Mention Server', () => {
 					username: 'here',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 			it('should return "rocket.cat"', () => {
 				const message = {
@@ -91,7 +91,7 @@ describe('Mention Server', () => {
 					username: 'rocket.cat',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 		});
 		describe('for two user', () => {
@@ -107,7 +107,7 @@ describe('Mention Server', () => {
 					username: 'here',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 			it('should return "here and rocket.cat"', () => {
 				const message = {
@@ -121,7 +121,7 @@ describe('Mention Server', () => {
 					username: 'rocket.cat',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 
 			it('should return "here, rocket.cat, jon"', () => {
@@ -139,7 +139,7 @@ describe('Mention Server', () => {
 					username: 'jon',
 				}];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 		});
 
@@ -150,7 +150,7 @@ describe('Mention Server', () => {
 				};
 				const expected = [];
 				const result = mention.getUsersByMentions(message);
-				assert.deepEqual(expected, result);
+				expect(expected).to.be.deep.equal(result);
 			});
 		});
 	});
@@ -164,7 +164,7 @@ describe('Mention Server', () => {
 				name: 'general',
 			}];
 			const result = mention.getChannelbyMentions(message);
-			assert.deepEqual(result, expected);
+			expect(result).to.be.deep.equal(expected);
 		});
 		it('should return nothing"', () => {
 			const message = {
@@ -172,7 +172,7 @@ describe('Mention Server', () => {
 			};
 			const expected = [];
 			const result = mention.getChannelbyMentions(message);
-			assert.deepEqual(result, expected);
+			expect(result).to.be.deep.equal(expected);
 		});
 	});
 	describe('execute', () => {
@@ -185,7 +185,7 @@ describe('Mention Server', () => {
 				name: 'general',
 			}];
 			const result = mention.getChannelbyMentions(message);
-			assert.deepEqual(result, expected);
+			expect(result).to.be.deep.equal(expected);
 		});
 		it('should return nothing"', () => {
 			const message = {
@@ -197,7 +197,7 @@ describe('Mention Server', () => {
 				channels: [],
 			};
 			const result = mention.execute(message);
-			assert.deepEqual(result, expected);
+			expect(result).to.be.deep.equal(expected);
 		});
 	});
 
@@ -207,13 +207,13 @@ describe('Mention Server', () => {
 			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.messageMaxAll = 4;
-					assert.deepEqual(mention.messageMaxAll, 4);
+					expect(mention.messageMaxAll).to.be.deep.equal(4);
 				});
 			});
 			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.messageMaxAll = () => 4;
-					assert.deepEqual(mention.messageMaxAll, 4);
+					expect(mention.messageMaxAll).to.be.deep.equal(4);
 				});
 			});
 		});
@@ -222,13 +222,13 @@ describe('Mention Server', () => {
 			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getUsers = 4;
-					assert.deepEqual(mention.getUsers(), 4);
+					expect(mention.getUsers()).to.be.deep.equal(4);
 				});
 			});
 			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getUsers = () => 4;
-					assert.deepEqual(mention.getUsers(), 4);
+					expect(mention.getUsers()).to.be.deep.equal(4);
 				});
 			});
 		});
@@ -237,13 +237,13 @@ describe('Mention Server', () => {
 			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getChannels = 4;
-					assert.deepEqual(mention.getChannels(), 4);
+					expect(mention.getChannels()).to.be.deep.equal(4);
 				});
 			});
 			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getChannels = () => 4;
-					assert.deepEqual(mention.getChannels(), 4);
+					expect(mention.getChannels()).to.be.deep.equal(4);
 				});
 			});
 		});
@@ -252,13 +252,13 @@ describe('Mention Server', () => {
 			describe('constant', () => {
 				it('should return the informed value', () => {
 					mention.getChannel = true;
-					assert.deepEqual(mention.getChannel(), true);
+					expect(mention.getChannel()).to.be.deep.equal(true);
 				});
 			});
 			describe('function', () => {
 				it('should return the informed value', () => {
 					mention.getChannel = () => true;
-					assert.deepEqual(mention.getChannel(), true);
+					expect(mention.getChannel()).to.be.deep.equal(true);
 				});
 			});
 		});
