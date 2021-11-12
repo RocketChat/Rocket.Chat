@@ -7,7 +7,7 @@ import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
-import { SystemLogger } from '../../logger/server';
+import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings';
 
 /**
@@ -28,7 +28,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		this.name = 'deepl-translate';
 		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
 		// Get the service provide API key.
-		settings.get('AutoTranslate_DeepLAPIKey', (key, value) => {
+		settings.watch('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
 		});
 	}

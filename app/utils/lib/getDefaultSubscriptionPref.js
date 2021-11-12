@@ -3,9 +3,8 @@ export const getDefaultSubscriptionPref = (userPref) => {
 
 	const {
 		desktopNotifications,
-		mobileNotifications,
+		pushNotifications,
 		emailNotificationMode,
-		audioNotifications,
 		highlights,
 	} = (userPref.settings && userPref.settings.preferences) || {};
 
@@ -18,19 +17,14 @@ export const getDefaultSubscriptionPref = (userPref) => {
 		subscription.desktopPrefOrigin = 'user';
 	}
 
-	if (mobileNotifications && mobileNotifications !== 'default') {
-		subscription.mobilePushNotifications = mobileNotifications;
+	if (pushNotifications && pushNotifications !== 'default') {
+		subscription.mobilePushNotifications = pushNotifications;
 		subscription.mobilePrefOrigin = 'user';
 	}
 
 	if (emailNotificationMode && emailNotificationMode !== 'default') {
 		subscription.emailNotifications = emailNotificationMode;
 		subscription.emailPrefOrigin = 'user';
-	}
-
-	if (audioNotifications && audioNotifications !== 'default') {
-		subscription.audioNotifications = audioNotifications;
-		subscription.audioPrefOrigin = 'user';
 	}
 
 	return subscription;

@@ -5,12 +5,12 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import s from 'underscore.string';
-import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { callbacks } from '../../../callbacks';
-import { t, handleError } from '../../../utils';
+import { t } from '../../../utils';
+import { handleError } from '../../../../client/lib/utils/handleError';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.loginForm.helpers({
 	userName() {
@@ -73,7 +73,7 @@ Template.loginForm.helpers({
 		return settings.get('Accounts_ManuallyApproveNewUsers');
 	},
 	typedEmail() {
-		return s.trim(Template.instance().typedEmail);
+		return Template.instance().typedEmail?.trim();
 	},
 });
 
@@ -86,23 +86,23 @@ Template.loginForm.events({
 		const state = instance.state.get();
 		if (formData) {
 			if (state === 'email-verification') {
-				Meteor.call('sendConfirmationEmail', s.trim(formData.email), () => {
+				Meteor.call('sendConfirmationEmail', formData.email?.trim(), () => {
 					instance.loading.set(false);
 					callbacks.run('userConfirmationEmailRequested');
-					toastr.success(t('We_have_sent_registration_email'));
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
 					return instance.state.set('login');
 				});
 				return;
 			}
 			if (state === 'forgot-password') {
-				Meteor.call('sendForgotPasswordEmail', s.trim(formData.email), (err) => {
+				Meteor.call('sendForgotPasswordEmail', formData.email?.trim(), (err) => {
 					if (err) {
 						handleError(err);
 						return instance.state.set('login');
 					}
 					instance.loading.set(false);
 					callbacks.run('userForgotPasswordEmailRequested');
-					toastr.success(t('If_this_email_is_registered'));
+					dispatchToastMessage({ type: 'success', message: t('If_this_email_is_registered') });
 					return instance.state.set('login');
 				});
 				return;
@@ -113,14 +113,14 @@ Template.loginForm.events({
 					instance.loading.set(false);
 					if (error != null) {
 						if (error.reason === 'Email already exists.') {
-							toastr.error(t('Email_already_exists'));
+							dispatchToastMessage({ type: 'error', message: t('Email_already_exists') });
 						} else {
 							handleError(error);
 						}
 						return;
 					}
 					callbacks.run('userRegistered');
-					return Meteor.loginWithPassword(s.trim(formData.email), formData.pass, function(error) {
+					return Meteor.loginWithPassword(formData.email?.trim(), formData.pass, function(error) {
 						if (error && error.error === 'error-invalid-email') {
 							return instance.state.set('wait-email-activation');
 						} if (error && error.error === 'error-user-is-not-activated') {
@@ -137,24 +137,29 @@ Template.loginForm.events({
 			if (settings.get('CROWD_Enable')) {
 				loginMethod = 'loginWithCrowd';
 			}
-			return Meteor[loginMethod](s.trim(formData.emailOrUsername), formData.pass, function(error) {
+			return Meteor[loginMethod](formData.emailOrUsername?.trim(), formData.pass, function(error) {
 				instance.loading.set(false);
 				if (error != null) {
-					if (error.error === 'error-user-is-not-activated') {
-						return toastr.error(t('Wait_activation_warning'));
-					} if (error.error === 'error-invalid-email') {
-						instance.typedEmail = formData.emailOrUsername;
-						return instance.state.set('email-verification');
-					} if (error.error === 'error-user-is-not-activated') {
-						toastr.error(t('Wait_activation_warning'));
-					} else if (error.error === 'error-app-user-is-not-allowed-to-login') {
-						toastr.error(t('App_user_not_allowed_to_login'));
-					} else if (error.error === 'error-login-blocked-for-ip') {
-						toastr.error(t('Error_login_blocked_for_ip'));
-					} else if (error.error === 'error-login-blocked-for-user') {
-						toastr.error(t('Error_login_blocked_for_user'));
-					} else {
-						return toastr.error(t('User_not_found_or_incorrect_password'));
+					switch (error.error) {
+						case 'error-user-is-not-activated':
+							return dispatchToastMessage({ type: 'error', message: t('Wait_activation_warning') });
+						case 'error-invalid-email':
+							instance.typedEmail = formData.emailOrUsername;
+							return instance.state.set('email-verification');
+						case 'error-app-user-is-not-allowed-to-login':
+							dispatchToastMessage({ type: 'error', message: t('App_user_not_allowed_to_login') });
+							break;
+						case 'error-login-blocked-for-ip':
+							dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_ip') });
+							break;
+						case 'error-login-blocked-for-user':
+							dispatchToastMessage({ type: 'error', message: t('Error_login_blocked_for_user') });
+							break;
+						case 'error-license-user-limit-reached':
+							dispatchToastMessage({ type: 'error', message: t('error-license-user-limit-reached') });
+							break;
+						default:
+							return dispatchToastMessage({ type: 'error', message: t('User_not_found_or_incorrect_password') });
 					}
 				}
 				Session.set('forceLogin', false);

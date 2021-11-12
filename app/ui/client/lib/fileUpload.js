@@ -3,10 +3,11 @@ import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 
 import { settings } from '../../../settings/client';
+import { UserAction, USER_ACTIVITIES } from '../index';
 import { fileUploadIsValidContentType, APIClient } from '../../../utils';
-import { prependReplies } from '../../../ui-utils';
 import { imperativeModal } from '../../../../client/lib/imperativeModal';
-import FileUploadModal from '../../../../client/components/modals/FileUploadModal';
+import FileUploadModal from '../../../../client/views/room/modals/FileUploadModal';
+import { prependReplies } from '../../../../client/lib/utils/prependReplies';
 
 export const uploadFileWithMessage = async (rid, tmid, { description, fileName, msg, file }) => {
 	const data = new FormData();
@@ -47,6 +48,9 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 			Session.set('uploading', uploads);
 		},
 	});
+	if (Session.get('uploading').length) {
+		UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+	}
 
 	Tracker.autorun((computation) => {
 		const isCanceling = Session.get(`uploading-cancel-${ upload.id }`);
@@ -65,13 +69,21 @@ export const uploadFileWithMessage = async (rid, tmid, { description, fileName, 
 	try {
 		await promise;
 		const uploads = Session.get('uploading') || [];
-		return Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+		const remainingUploads = Session.set('uploading', uploads.filter((u) => u.id !== upload.id));
+
+		if (!Session.get('uploading').length) {
+			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+		}
+		return remainingUploads;
 	} catch (error) {
 		const uploads = Session.get('uploading') || [];
 		uploads.filter((u) => u.id === upload.id).forEach((u) => {
 			u.error = (error.xhr && error.xhr.responseJSON && error.xhr.responseJSON.error) || error.message;
 			u.percentage = 0;
 		});
+		if (!uploads.length) {
+			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+		}
 		Session.set('uploading', uploads);
 	}
 };
@@ -119,7 +131,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				isValidContentType: file.file.type && fileUploadIsValidContentType(file.file.type),
+				invalidContentType: file.file.type && !fileUploadIsValidContentType(file.file.type),
 			},
 		});
 	};

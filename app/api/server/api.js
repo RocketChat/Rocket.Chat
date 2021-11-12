@@ -7,21 +7,15 @@ import { Restivus } from 'meteor/nimble:restivus';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { Logger } from '../../logger';
-import { settings } from '../../settings';
-import { metrics } from '../../metrics';
-import { hasPermission, hasAllPermission } from '../../authorization';
+import { Logger } from '../../../server/lib/logger/Logger';
+import { getRestPayload } from '../../../server/lib/logger/logPayloads';
+import { settings } from '../../settings/server';
+import { metrics } from '../../metrics/server';
+import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 
-const logger = new Logger('API', {});
-
-const {
-	LOG_REST_PAYLOAD = 'false',
-	LOG_REST_METHOD_PAYLOADS = 'false',
-} = process.env;
-
-const addPayloadToLog = LOG_REST_PAYLOAD !== 'false' || LOG_REST_METHOD_PAYLOADS !== 'false';
+const logger = new Logger('API');
 
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
@@ -134,8 +128,6 @@ export class APIClass extends Restivus {
 			body: result,
 		};
 
-		logger.debug('Success', result);
-
 		return result;
 	}
 
@@ -166,8 +158,6 @@ export class APIClass extends Restivus {
 			statusCode: 400,
 			body: result,
 		};
-
-		logger.debug('Failure', result);
 
 		return result;
 	}
@@ -359,10 +349,26 @@ export class APIClass extends Restivus {
 					});
 
 					this.requestIp = getRequestIP(this.request);
+
+					const startTime = Date.now();
+
+					const log = logger.logger.child({
+						method: this.request.method,
+						url: this.request.url,
+						userId: this.request.headers['x-user-id'],
+						userAgent: this.request.headers['user-agent'],
+						length: this.request.headers['content-length'],
+						host: this.request.headers.host,
+						referer: this.request.headers.referer,
+						remoteIP: this.requestIp,
+						...getRestPayload(this.request.body),
+					});
+
 					const objectForRateLimitMatch = {
 						IPAddr: this.requestIp,
 						route: `${ this.request.route }${ this.request.method.toLowerCase() }`,
 					};
+
 					let result;
 
 					const connection = {
@@ -397,24 +403,28 @@ export class APIClass extends Restivus {
 							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
 						}
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this));
-					} catch (e) {
-						logger.debug(`${ method } ${ route } threw an error:`, e.stack);
+						result = DDP._CurrentInvocation.withValue(invocation, () => originalAction.apply(this)) || API.v1.success();
 
+						log.http({
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
+					} catch (e) {
 						const apiMethod = {
 							'error-too-many-requests': 'tooManyRequests',
 							'error-unauthorized': 'unauthorized',
 						}[e.error] || 'failure';
 
 						result = API.v1[apiMethod](typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+
+						log.http({
+							err: e,
+							status: result.statusCode,
+							responseTime: Date.now() - startTime,
+						});
 					} finally {
 						delete Accounts._accountData[connection.id];
 					}
-
-					const dateTime = new Date().toISOString();
-					logger.info(() => `${ this.requestIp } - ${ this.userId } [${ dateTime }] "${ this.request.method } ${ this.request.url }" ${ result.statusCode } - "${ this.request.headers.referer }" "${ this.request.headers['user-agent'] }" | ${ addPayloadToLog ? JSON.stringify(this.request.body) : '' }`);
-
-					result = result || API.v1.success();
 
 					rocketchatRestApiEnd({
 						status: result.statusCode,
@@ -734,11 +744,11 @@ const createApis = function _createApis() {
 createApis();
 
 // register the API to be re-created once the CORS-setting changes.
-settings.get(/^(API_Enable_CORS|API_CORS_Origin)$/, () => {
+settings.watchMultiple(['API_Enable_CORS', 'API_CORS_Origin'], () => {
 	createApis();
 });
 
-settings.get('Accounts_CustomFields', (key, value) => {
+settings.watch('Accounts_CustomFields', (value) => {
 	if (!value) {
 		return API.v1.setLimitedCustomFields([]);
 	}
@@ -751,16 +761,16 @@ settings.get('Accounts_CustomFields', (key, value) => {
 	}
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Time_Default', (key, value) => {
+settings.watch('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 	defaultRateLimiterOptions.intervalTimeInMS = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default', (key, value) => {
+settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.get('Prometheus_API_User_Agent', (key, value) => {
+settings.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
 });

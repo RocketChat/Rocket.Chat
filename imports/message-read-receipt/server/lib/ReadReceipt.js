@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 
-import { ReadReceipts, Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models';
-import { settings } from '../../../../app/settings';
-import { roomTypes } from '../../../../app/utils';
-
-const rawReadReceipts = ReadReceipts.model.rawCollection();
+import { Subscriptions, Messages, Rooms, Users, LivechatVisitors } from '../../../../app/models/server';
+import { ReadReceipts } from '../../../../app/models/server/raw';
+import { settings } from '../../../../app/settings/server';
+import { roomTypes } from '../../../../app/utils/server';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list = {};
@@ -84,17 +84,21 @@ export const ReadReceipt = {
 			}
 
 			try {
-				await rawReadReceipts.insertMany(receipts);
+				await ReadReceipts.insertMany(receipts);
 			} catch (e) {
-				console.error('Error inserting read receipts per user');
+				SystemLogger.error('Error inserting read receipts per user');
 			}
 		}
 	},
 
-	getReceipts(message) {
-		return ReadReceipts.findByMessageId(message._id).map((receipt) => ({
+	async getReceipts(message) {
+		const receipts = await ReadReceipts.findByMessageId(message._id).toArray();
+
+		return receipts.map((receipt) => ({
 			...receipt,
-			user: receipt.token ? LivechatVisitors.getVisitorByToken(receipt.token, { fields: { username: 1, name: 1 } }) : Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+			user: receipt.token
+				? LivechatVisitors.getVisitorByToken(receipt.token, { fields: { username: 1, name: 1 } })
+				: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
 		}));
 	},
 };

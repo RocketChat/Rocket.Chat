@@ -3,12 +3,14 @@ import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 
 import { settings } from '../../../settings';
-import { Users, Invites } from '../../../models/server';
+import { Users } from '../../../models/server';
+import { Invites } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { api } from '../../../../server/sdk/api';
 import { checkUsernameAvailability, setUserAvatar, getAvatarSuggestionForUser } from '.';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const _setUsername = function(userId, u, fullUser) {
 	const username = s.trim(u);
@@ -44,7 +46,7 @@ export const _setUsername = function(userId, u, fullUser) {
 			});
 		}
 	} catch (e) {
-		console.error(e);
+		SystemLogger.error(e);
 	}
 	// Set new username*
 	Users.setUsername(user._id, username);
@@ -69,7 +71,7 @@ export const _setUsername = function(userId, u, fullUser) {
 
 	// If it's the first username and the user has an invite Token, then join the invite room
 	if (!previousUsername && user.inviteToken) {
-		const inviteData = Invites.findOneById(user.inviteToken);
+		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
 		if (inviteData && inviteData.rid) {
 			addUserToRoom(inviteData.rid, user);
 		}

@@ -74,7 +74,7 @@ export class TeamMemberRaw extends BaseRaw<T> {
 
 	findByUserIdAndTeamIds(userId: string, teamIds: Array<string>, options: FindOneOptions<T> = {}): Cursor<T> {
 		const query = {
-			'u._id': userId,
+			userId,
 			teamId: {
 				$in: teamIds,
 			},

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { memoizeDebounce } from './debounceByParams';
 import {
 	LivechatDepartment,
 	Users,
@@ -14,7 +15,8 @@ import { settings } from '../../../../../app/settings';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
-import { logger } from './logger';
+import { logger, helperLogger } from './logger';
+import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 
 export const getMaxNumberSimultaneousChat = ({ agentId, departmentId }) => {
 	if (departmentId) {
@@ -93,24 +95,37 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 };
 
 export const dispatchWaitingQueueStatus = async (department) => {
-	logger.helper.debug(`Updating statuses for queue ${ department || 'Public' }`);
+	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+		return;
+	}
+
+	helperLogger.debug(`Updating statuses for queue ${ department || 'Public' }`);
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({ department });
+
+	if (!queue.length) {
+		return;
+	}
+
 	const queueInfo = await getQueueInfo(department);
 	queue.forEach((inquiry) => {
 		dispatchInquiryPosition(inquiry, queueInfo);
 	});
 };
 
+// When dealing with lots of queued items we need to make sure to notify their position
+// but we don't need to notify _each_ change that takes place, just their final position
+export const debouncedDispatchWaitingQueueStatus = memoizeDebounce(dispatchWaitingQueueStatus, 1200);
+
 export const processWaitingQueue = async (department) => {
 	const queue = department || 'Public';
-	logger.helper.debug(`Processing items on queue ${ queue }`);
+	helperLogger.debug(`Processing items on queue ${ queue }`);
 	const inquiry = LivechatInquiry.getNextInquiryQueued(department);
 	if (!inquiry) {
-		logger.helper.debug(`No items to process on queue ${ queue }`);
+		helperLogger.debug(`No items to process on queue ${ queue }`);
 		return;
 	}
 
-	logger.helper.debug(`Processing inquiry ${ inquiry._id } from queue ${ queue }`);
+	helperLogger.debug(`Processing inquiry ${ inquiry._id } from queue ${ queue }`);
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
@@ -120,14 +135,11 @@ export const processWaitingQueue = async (department) => {
 
 	if (room && room.servedBy) {
 		const { _id: rid, servedBy: { _id: agentId } } = room;
-		logger.helper.debug(`Inquiry ${ inquiry._id } taken succesfully by agent ${ agentId }. Notifying`);
+		helperLogger.debug(`Inquiry ${ inquiry._id } taken successfully by agent ${ agentId }. Notifying`);
 		return setTimeout(() => {
 			propagateAgentDelegated(rid, agentId);
 		}, 1000);
 	}
-
-	const { departmentId } = room || {};
-	await dispatchWaitingQueueStatus(departmentId);
 };
 
 export const setPredictedVisitorAbandonmentTime = (room) => {
@@ -158,20 +170,31 @@ export const updatePredictedVisitorAbandonment = () => {
 	}
 };
 
+let queueTimeout;
+
+settings.get('Livechat_max_queue_wait_time', (value) => {
+	queueTimeout = value;
+});
+
 export const updateQueueInactivityTimeout = () => {
-	const queueAction = settings.get('Livechat_max_queue_wait_time_action');
-	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
-	if (!queueAction || queueAction === 'Nothing') {
-		logger.debug('QueueInactivityTimer: No action performed (disabled by setting)');
-		return LivechatInquiry.unsetEstimatedInactivityCloseTime();
+	if (queueTimeout <= 0) {
+		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
+		OmnichannelQueueInactivityMonitor.stop();
+		return;
 	}
 
 	logger.debug('QueueInactivityTimer: Updating estimated inactivity time for queued items');
-	LivechatInquiry.getQueuedInquiries().forEach((inq) => {
+	LivechatInquiry.getQueuedInquiries({ fields: { _updatedAt: 1 } }).forEach((inq) => {
 		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
-		return LivechatInquiry.setEstimatedInactivityCloseTime(inq._id, aggregatedDate);
+		try {
+			return OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, new Date(aggregatedDate.format()));
+		} catch (e) {
+			// this will usually happen if other instance attempts to re-create a job
+			logger.error({ err: e });
+		}
 	});
 };
+
 
 export const updateRoomPriorityHistory = (rid, user, priority) => {
 	const history = {
@@ -234,6 +257,10 @@ export const getLivechatQueueInfo = async (room) => {
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
+		return null;
+	}
+
+	if (!settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		return null;
 	}
 

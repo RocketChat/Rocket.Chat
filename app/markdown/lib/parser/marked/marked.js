@@ -4,7 +4,7 @@ import _marked from 'marked';
 import createDOMPurify from 'dompurify';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 
-import hljs from '../../hljs';
+import hljs, { register } from '../../hljs';
 import { getGlobalWindow } from '../../getGlobalWindow';
 
 const renderer = new _marked.Renderer();
@@ -76,6 +76,7 @@ const highlight = function(code, lang) {
 		return code;
 	}
 	try {
+		register(lang);
 		return hljs.highlight(lang, code).value;
 	} catch (e) {
 		// Unknown language

@@ -140,7 +140,7 @@ export class ResponseParser {
 			}
 		}
 
-		SAMLUtils.log(`NameID: ${ JSON.stringify(profile) }`);
+		SAMLUtils.log({ msg: 'NameID', profile });
 		return callback(null, profile, false);
 	}
 
@@ -176,9 +176,9 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function(err: Error, result: string) {
+			xmlenc.decrypt(encData, options, function(err, result) {
 				if (err) {
-					console.error(err);
+					SAMLUtils.error(err);
 				}
 
 				const document = new xmldom.DOMParser().parseFromString(result, 'text/xml');
@@ -318,9 +318,9 @@ export class ResponseParser {
 
 		if (typeof encSubject !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
-			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, function(err: Error, result: string) {
+			xmlenc.decrypt(encSubject.getElementsByTagNameNS('*', 'EncryptedData')[0], options, (err, result) => {
 				if (err) {
-					console.error(err);
+					SAMLUtils.error(err);
 				}
 				subject = new xmldom.DOMParser().parseFromString(result, 'text/xml');
 			});
@@ -342,7 +342,7 @@ export class ResponseParser {
 
 	private validateNotBeforeNotOnOrAfterAssertions(element: Element): boolean {
 		const sysnow = new Date();
-		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift;
+		const allowedclockdrift = this.serviceProviderOptions.allowedClockDrift || 0;
 
 		const now = new Date(sysnow.getTime() + allowedclockdrift);
 

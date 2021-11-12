@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { LivechatBusinessHours } from '../../../app/models/server/raw';
 import { LivechatBusinessHourTypes } from '../../../definition/ILivechatBusinessHour';
 
@@ -27,7 +27,7 @@ const updateBusinessHours = async () => {
 	});
 };
 
-Migrations.add({
+addMigration({
 	version: 197,
 	up() {
 		Promise.await(updateBusinessHours());

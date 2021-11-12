@@ -8,6 +8,7 @@ import {
 	IDepartment,
 } from '@rocket.chat/apps-engine/definition/livechat';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
@@ -18,6 +19,7 @@ import {
 	LivechatRooms,
 } from '../../../models/server';
 import { AppServerOrchestrator } from '../orchestrator';
+import { OmnichannelSourceType } from '../../../../definition/IRoom';
 
 export class AppLivechatBridge extends LivechatBridge {
 	// eslint-disable-next-line no-empty-function
@@ -44,7 +46,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
 			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 		});
 
 		return msg._id;
@@ -80,7 +88,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			agent: agentRoom,
 			rid: Random.id(),
-			roomInfo: undefined,
+			roomInfo: {
+				source: {
+					type: OmnichannelSourceType.APP,
+					id: appId,
+					alias: this.orch.getManager()?.getOneById(appId)?.getNameSlug(),
+				},
+			},
 			extraParams: undefined,
 		});
 
@@ -166,10 +180,22 @@ export class AppLivechatBridge extends LivechatBridge {
 			type,
 		};
 
+		let userId;
+		let transferredTo;
+
+		if (targetAgent?.id) {
+			transferredTo = Users.findOneAgentById(targetAgent.id, { fields: { _id: 1, username: 1, name: 1 } });
+			if (!transferredTo) {
+				throw new Error('Invalid target agent, cannot transfer');
+			}
+
+			userId = transferredTo._id;
+		}
+
 		return Livechat.transfer(
 			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
-			{ userId: targetAgent ? targetAgent.id : undefined, departmentId, transferredBy },
+			{ userId, departmentId, transferredBy, transferredTo },
 		);
 	}
 
@@ -220,6 +246,19 @@ export class AppLivechatBridge extends LivechatBridge {
 		const boundConverter = converter.convertDepartment.bind(converter);
 
 		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+	}
+
+	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
+		this.orch.debugLog(`The App ${ appId } is getting the transcript for livechat room ${ roomId }.`);
+		const messageConverter = this.orch.getConverters()?.get('messages');
+
+		if (!messageConverter) {
+			throw new Error('Could not get the message converter to process livechat room messages');
+		}
+
+		const boundMessageConverter = messageConverter.convertMessage.bind(messageConverter);
+
+		return Livechat.getRoomMessages({ rid: roomId }).map(boundMessageConverter);
 	}
 
 	protected async setCustomFields(data: { token: IVisitor['token']; key: string; value: string; overwrite: boolean }, appId: string): Promise<number> {

@@ -3,14 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { Uploads } from '../../../models/server';
-import { Rooms } from '../../../models/server/raw';
+import { Rooms, Uploads } from '../../../models/server/raw';
 import { callbacks } from '../../../callbacks/server';
 import { FileUpload } from '../lib/FileUpload';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
 import { MessageAttachment } from '../../../../definition/IMessage/MessageAttachment/MessageAttachment';
 import { FileAttachmentProps } from '../../../../definition/IMessage/MessageAttachment/Files/FileAttachmentProps';
 import { IUser } from '../../../../definition/IUser';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 Meteor.methods({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
@@ -34,7 +34,7 @@ Meteor.methods({
 			tmid: Match.Optional(String),
 		});
 
-		Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
+		await Uploads.updateFileComplete(file._id, user._id, _.omit(file, '_id'));
 
 		const fileUrl = FileUpload.getPath(`${ file._id }/${ encodeURI(file.name) }`);
 
@@ -82,7 +82,7 @@ Meteor.methods({
 					});
 				}
 			} catch (e) {
-				console.error(e);
+				SystemLogger.error(e);
 			}
 			attachments.push(attachment);
 		} else if (/^audio\/.+/.test(file.type)) {

@@ -11,7 +11,7 @@ import { settings } from '../../settings';
 import { modal } from '../../ui-utils';
 import { ChatSubscription } from '../../models';
 import { WEB_RTC_EVENTS } from '..';
-import { goToRoomById } from '../../../client/lib/goToRoomById';
+import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 
 class WebRTCTransportClass extends Emitter {
 	constructor(webrtcInstance) {

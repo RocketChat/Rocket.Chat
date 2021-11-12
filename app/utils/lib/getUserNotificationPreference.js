@@ -8,9 +8,8 @@ export const getUserNotificationPreference = (user, pref) => {
 
 	let preferenceKey;
 	switch (pref) {
-		case 'audio': preferenceKey = 'audioNotifications'; break;
 		case 'desktop': preferenceKey = 'desktopNotifications'; break;
-		case 'mobile': preferenceKey = 'mobileNotifications'; break;
+		case 'mobile': preferenceKey = 'pushNotifications'; break;
 		case 'email': preferenceKey = 'emailNotificationMode'; break;
 	}
 

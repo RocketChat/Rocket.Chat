@@ -11,6 +11,24 @@ export class UsersRaw extends BaseRaw {
 		};
 	}
 
+	addRolesByUserId(uid, roles) {
+		if (!Array.isArray(roles)) {
+			roles = [roles];
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+		}
+
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$addToSet: {
+				roles: { $each: roles },
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -138,6 +156,36 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	async findOneByLDAPId(id, attribute = undefined) {
+		const query = {
+			'services.ldap.id': id,
+		};
+
+		if (attribute) {
+			query['services.ldap.idAttribute'] = attribute;
+		}
+
+		return this.findOne(query);
+	}
+
+	findLDAPUsers(options) {
+		const query = { ldap: true };
+
+		return this.find(query, options);
+	}
+
+	findConnectedLDAPUsers(options) {
+		const query = {
+			ldap: true,
+			'services.resume.loginTokens': {
+				$exists: true,
+				$ne: [],
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	isUserInRole(userId, roleName) {
 		const query = {
 			_id: userId,
@@ -227,6 +275,22 @@ export class UsersRaw extends BaseRaw {
 				},
 			});
 		return result.value;
+	}
+
+	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) { // TODO: Create class Agent
+		const query = {
+			_id: userId,
+			...conditions,
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: status,
+				...extraFields,
+			},
+		};
+
+		return this.update(query, update);
 	}
 
 	async getAgentAndAmountOngoingChats(userId) {
@@ -587,6 +651,24 @@ export class UsersRaw extends BaseRaw {
 		return this.update(query, update, { multi: true });
 	}
 
+	setLivechatStatusActiveBasedOnBusinessHours(userId) {
+		const query = {
+			_id: userId,
+			openBusinessHours: {
+				$exists: true,
+				$not: { $size: 0 },
+			},
+		};
+
+		const update = {
+			$set: {
+				statusLivechat: 'available',
+			},
+		};
+
+		return this.update(query, update);
+	}
+
 	async isAgentWithinBusinessHours(agentId) {
 		return await this.find({
 			_id: agentId,
@@ -624,12 +706,12 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
-	removeResumeService(userId) {
+	unsetLoginTokens(userId) {
 		return this.col.updateOne({
 			_id: userId,
 		}, {
-			$unset: {
-				'services.resume': 1,
+			$set: {
+				'services.resume.loginTokens': [],
 			},
 		});
 	}
@@ -641,5 +723,32 @@ export class UsersRaw extends BaseRaw {
 		}, {
 			$pullAll: { __rooms: rids },
 		}, { multi: true });
+	}
+
+	removeRolesByUserId(uid, roles) {
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$pullAll: {
+				roles,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async isUserInRoleScope(uid) {
+		const query = {
+			_id: uid,
+		};
+
+		const options = {
+			fields: { _id: 1 },
+		};
+
+		const found = await this.findOne(query, options);
+		return !!found;
 	}
 }

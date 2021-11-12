@@ -1,5 +1,6 @@
 /* eslint-disable */
 import crypto from 'crypto';
+import { SystemLogger } from '../../../server/lib/logger/system';
 
 var BigBlueButtonApi, filterCustomParameters, include, noChecksumMethods,
 	__indexOf = [].indexOf || function (item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -7,15 +8,11 @@ var BigBlueButtonApi, filterCustomParameters, include, noChecksumMethods,
 BigBlueButtonApi = (function () {
 	function BigBlueButtonApi(url, salt, debug, opts) {
 		var _base;
-		if (debug == null) {
-			debug = false;
-		}
 		if (opts == null) {
 			opts = {};
 		}
 		this.url = url;
 		this.salt = salt;
-		this.debug = debug;
 		this.opts = opts;
 		if ((_base = this.opts).shaType == null) {
 			_base.shaType = 'sha1';
@@ -82,9 +79,7 @@ BigBlueButtonApi = (function () {
 		if (filter == null) {
 			filter = true;
 		}
-		if (this.debug) {
-			console.log("Generating URL for", method);
-		}
+		SystemLogger.debug("Generating URL for", method);
 		if (filter) {
 			params = this.filterParams(params, method);
 		} else {
@@ -132,9 +127,7 @@ BigBlueButtonApi = (function () {
 	BigBlueButtonApi.prototype.checksum = function (method, query) {
 		var c, shaObj, str;
 		query || (query = "");
-		if (this.debug) {
-			console.log("- Calculating the checksum using: '" + method + "', '" + query + "', '" + this.salt + "'");
-		}
+		SystemLogger.debug("- Calculating the checksum using: '" + method + "', '" + query + "', '" + this.salt + "'");
 		str = method + query + this.salt;
 		if (this.opts.shaType === 'sha256') {
 			shaObj = crypto.createHash('sha256', "TEXT")
@@ -143,9 +136,7 @@ BigBlueButtonApi = (function () {
 		}
 		shaObj.update(str);
 		c = shaObj.digest('hex');
-		if (this.debug) {
-			console.log("- Checksum calculated:", c);
-		}
+		SystemLogger.debug("- Checksum calculated:", c);
 		return c;
 	};
 

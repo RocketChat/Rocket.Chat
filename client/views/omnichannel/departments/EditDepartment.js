@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {
 	FieldGroup,
 	Field,
@@ -17,16 +16,15 @@ import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useState, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { isEmail } from '../../../../app/utils/client';
+import { isEmail } from '../../../../lib/utils/isEmail';
 import Page from '../../../components/Page';
 import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRoute } from '../../../contexts/RouterContext';
-import { useMethod } from '../../../contexts/ServerContext';
+import { useMethod, useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { formsSubscription } from '../additionalForms';
@@ -34,11 +32,7 @@ import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 
 function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const t = useTranslation();
-	const agentsRoute = useRoute('omnichannel-departments');
-	const eeForms = useSubscription(formsSubscription);
-	const initialAgents = useRef((data && data.agents) || []);
-
-	const router = useRoute('omnichannel-departments');
+	const departmentsRoute = useRoute('omnichannel-departments');
 
 	const {
 		useEeNumberInput = () => {},
@@ -46,7 +40,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useEeTextAreaInput = () => {},
 		useDepartmentForwarding = () => {},
 		useDepartmentBusinessHours = () => {},
-	} = eeForms;
+	} = useSubscription(formsSubscription);
+
+	const initialAgents = useRef((data && data.agents) || []);
 
 	const MaxChats = useEeNumberInput();
 	const VisitorInactivity = useEeNumberInput();
@@ -58,29 +54,23 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const { department } = data || { department: {} };
 
-	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
-	const [tagsText, setTagsText] = useState();
+	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
-		name: (department && department.name) || '',
-		email: (department && department.email) || '',
-		description: (department && department.description) || '',
-		enabled: !!(department && department.enabled),
-		maxNumberSimultaneousChat: (department && department.maxNumberSimultaneousChat) || undefined,
-		showOnRegistration: !!(department && department.showOnRegistration),
-		showOnOfflineForm: !!(department && department.showOnOfflineForm),
-		abandonedRoomsCloseCustomMessage:
-			(department && department.abandonedRoomsCloseCustomMessage) || '',
-		requestTagBeforeClosingChat: (department && department.requestTagBeforeClosingChat) || false,
-		offlineMessageChannelName: (department && department.offlineMessageChannelName) || '',
-		visitorInactivityTimeoutInSeconds:
-			(department && department.visitorInactivityTimeoutInSeconds) || undefined,
-		waitingQueueMessage: (department && department.waitingQueueMessage) || '',
+		name: department?.name || '',
+		email: department?.email || '',
+		description: department?.description || '',
+		enabled: !!department?.enabled,
+		maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat || undefined,
+		showOnRegistration: !!department?.showOnRegistration,
+		showOnOfflineForm: !!department?.showOnOfflineForm,
+		abandonedRoomsCloseCustomMessage: department?.abandonedRoomsCloseCustomMessage || '',
+		requestTagBeforeClosingChat: department?.requestTagBeforeClosingChat || false,
+		offlineMessageChannelName: department?.offlineMessageChannelName || '',
+		visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds || undefined,
+		waitingQueueMessage: department?.waitingQueueMessage || '',
 		departmentsAllowedToForward:
-			(allowedToForwardData &&
-				allowedToForwardData.departments &&
-				allowedToForwardData.departments.map((dep) => ({ label: dep.name, value: dep._id }))) ||
-			[],
+			allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
 	});
 	const {
 		handleName,
@@ -120,25 +110,27 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
 
 	const handleTagChipClick = (tag) => () => {
-		setTags((tags) => tags.filter((_tag) => _tag !== tag));
+		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
 	};
 
 	const handleTagTextSubmit = useMutableCallback(() => {
-		if (!tags.includes(tagsText)) {
-			setTags([...tags, tagsText]);
-			setTagsText('');
-		}
+		setTagsState((state) => {
+			const [tags, tagsText] = state;
+
+			if (tags.includes(tagsText)) {
+				return state;
+			}
+
+			return [[...tags, tagsText], ''];
+		});
 	});
 
-	const handleTagTextChange = useMutableCallback((e) => {
-		setTagsText(e.target.value);
-	});
+	const handleTagTextChange = (e) => {
+		setTagsState(([tags]) => [tags, e.target.value]);
+	};
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpointAction(
-		'POST',
-		`livechat/department/${id}/agents`,
-	);
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `livechat/department/${id}/agents`);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -201,8 +193,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward:
-				departmentsAllowedToForward && departmentsAllowedToForward.map((dep) => dep.value).join(),
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
 		};
 
 		const agentListPayload = {
@@ -223,20 +214,22 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		try {
 			if (id) {
 				await saveDepartmentInfo(id, payload, []);
-				await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
+					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+				}
 			} else {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
-			agentsRoute.push({});
+			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
 	const handleReturn = useMutableCallback(() => {
-		router.push({});
+		departmentsRoute.push({});
 	});
 
 	const invalidForm =
@@ -440,7 +433,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									</Button>
 								</Field.Row>
 								<Field.Hint>{t('Conversation_closing_tags_description')}</Field.Hint>
-								{tags && tags.length > 0 && (
+								{tags?.length > 0 && (
 									<Field.Row justifyContent='flex-start'>
 										{tags.map((tag, i) => (
 											<Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>
@@ -453,7 +446,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 						)}
 						{DepartmentBusinessHours && (
 							<Field>
-								<DepartmentBusinessHours bhId={department && department.businessHourId} />
+								<DepartmentBusinessHours bhId={department?.businessHourId} />
 							</Field>
 						)}
 						<Divider mb='x16' />

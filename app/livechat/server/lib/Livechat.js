@@ -40,6 +40,9 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Users as UsersRaw } from '../../../models/server/raw';
+
+const logger = new Logger('Livechat');
 
 const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 
@@ -47,12 +50,8 @@ export const Livechat = {
 	Analytics,
 	historyMonitorType: 'url',
 
-	logger: new Logger('Livechat', {
-		sections: {
-			webhook: 'Webhook',
-		},
-	}),
-
+	logger,
+	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -83,7 +82,9 @@ export const Livechat = {
 			}
 		}
 
-		return Livechat.checkOnlineAgents(department);
+		const agentsOnline = Livechat.checkOnlineAgents(department);
+		Livechat.logger.debug(`Are online agents ${ department ? `for department ${ department }` : '' }?: ${ agentsOnline }`);
+		return agentsOnline;
 	},
 
 	getNextAgent(department) {
@@ -221,7 +222,7 @@ export const Livechat = {
 		return true;
 	},
 
-	deleteMessage({ guest, message }) {
+	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -238,7 +239,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		deleteMessage(message, guest);
+		await deleteMessage(message, guest);
 
 		return true;
 	},
@@ -713,7 +714,7 @@ export const Livechat = {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', { method: 'livechat:returnRoomAsInquiry' });
 		}
 
@@ -732,11 +733,11 @@ export const Livechat = {
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (e) {
-			Livechat.logger.webhook.error(`Response error on ${ 11 - attempts } try ->`, e);
+			Livechat.webhookLogger.error(`Response error on ${ 11 - attempts } try ->`, e);
 			// try 10 times after 10 seconds each
-			Livechat.logger.webhook.warn('Will try again in 10 seconds ...');
+			(attempts - 1) && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
 			setTimeout(Meteor.bindEnvironment(function() {
-				Livechat.sendRequest(postData, callback, attempts--);
+				Livechat.sendRequest(postData, callback, attempts - 1);
 			}), 10000);
 		}
 	},
@@ -812,7 +813,7 @@ export const Livechat = {
 
 		if (addUserRoles(user._id, 'livechat-agent')) {
 			Users.setOperator(user._id, true);
-			this.setUserStatusLivechat(user._id, 'available');
+			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
 		}
 
@@ -882,6 +883,12 @@ export const Livechat = {
 
 	setUserStatusLivechat(userId, status) {
 		const user = Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	},
+
+	setUserStatusLivechatIf(userId, status, condition, fields) {
+		const user = Promise.await(UsersRaw.setLivechatStatusIf(userId, status, condition, fields));
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
@@ -1098,6 +1105,20 @@ export const Livechat = {
 		return true;
 	},
 
+	getRoomMessages({ rid }) {
+		check(rid, String);
+
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+
+		if (!isLivechat) {
+			throw new Meteor.Error('invalid-room');
+		}
+
+		const ignoredMessageTypes = ['livechat_navigation_history', 'livechat_transcript_history', 'command', 'livechat-close', 'livechat-started', 'livechat_video_call'];
+
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, { sort: { ts: 1 } }).fetch();
+	},
+
 	requestTranscript({ rid, email, subject, user }) {
 		check(rid, String);
 		check(email, String);
@@ -1259,6 +1280,6 @@ export const Livechat = {
 	},
 };
 
-settings.get('Livechat_history_monitor_type', (key, value) => {
+settings.watch('Livechat_history_monitor_type', (value) => {
 	Livechat.historyMonitorType = value;
 });

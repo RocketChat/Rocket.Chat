@@ -1,16 +1,16 @@
 import { ISectionBlock, BlockType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks';
 import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks/Objects';
 
-import { Migrations } from '../../../app/migrations/server';
+import { addMigration } from '../../lib/migrations';
 import { BannerPlatform } from '../../../definition/IBanner';
 import { Banner } from '../../sdk';
 import { settings } from '../../../app/settings/server';
-import { Settings } from '../../../app/models/server';
 import { isEnterprise } from '../../../ee/app/license/server';
+import { Settings } from '../../../app/models/server/raw';
 
-Migrations.add({
+addMigration({
 	version: 231,
-	up() {
+	async up() {
 		const LDAPEnabled = settings.get('LDAP_Enable');
 		const SAMLEnabled = settings.get('SAML_Custom_Default');
 
@@ -18,7 +18,7 @@ Migrations.add({
 			_id: { $in: [/^Accounts_OAuth_(Custom-)?([^-_]+)$/, 'Accounts_OAuth_GitHub_Enterprise'] },
 			value: true,
 		};
-		const CustomOauthEnabled = !!Settings.findOne(query);
+		const CustomOauthEnabled = !! await Settings.findOne(query);
 
 		const isAuthServiceEnabled = LDAPEnabled || SAMLEnabled || CustomOauthEnabled;
 

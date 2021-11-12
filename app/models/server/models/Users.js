@@ -9,12 +9,19 @@ import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server/functions/settings';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
-	status: {
-		$exists: true,
-		$ne: 'offline',
-	},
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
+	$or: [{
+		status: {
+			$exists: true,
+			$ne: 'offline',
+		},
+		roles: {
+			$ne: 'bot',
+		},
+	}, {
+		roles: 'bot',
+	}],
 	...extraFilters,
 	...settings.get('Livechat_enabled_when_agent_idle') === false && { statusConnection: { $ne: 'away' } },
 });
@@ -255,6 +262,7 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+				livechatStatusSystemModified: false,
 			},
 		};
 
@@ -354,7 +362,6 @@ export class Users extends Base {
 			},
 		};
 		const affectedRows = this.update(query, update);
-		console.log('[Mailer:Unsubscribe]', _id, createdAt, new Date(parseInt(createdAt)), affectedRows);
 		return affectedRows;
 	}
 
@@ -558,6 +565,17 @@ export class Users extends Base {
 
 		const query = {
 			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
 		};
 
 		return this.find(query, options);
@@ -872,12 +890,6 @@ export class Users extends Base {
 				$in: ['user', 'bot'],
 			},
 		};
-
-		return this.find(query, options);
-	}
-
-	findLDAPUsers(options) {
-		const query = { ldap: true };
 
 		return this.find(query, options);
 	}
@@ -1461,16 +1473,6 @@ export class Users extends Base {
 		return this.update({ _id }, update);
 	}
 
-	removeResumeService(_id) {
-		const update = {
-			$unset: {
-				'services.resume': '',
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
 	removeSamlServiceSession(_id) {
 		const update = {
 			$unset: {
@@ -1612,6 +1614,14 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	updateCustomFieldsById(userId, customFields) {
+		return this.update(userId, {
+			$set: {
+				customFields,
+			},
+		});
 	}
 }
 

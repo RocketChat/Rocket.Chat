@@ -1,28 +1,33 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import toastr from 'toastr';
 
-import { handleError } from '../../app/utils/client';
-import { ToastMessagesContext, ToastMessagePayload } from '../contexts/ToastMessagesContext';
-
-const dispatch = ({ type, message, title, options }: ToastMessagePayload): void => {
-	if (type === 'error' && typeof message === 'object') {
-		handleError(message);
-		return;
-	}
-
-	if (typeof message !== 'string') {
-		message = `[${message.name}] ${message.message}`;
-	}
-
-	toastr[type](message, title, options);
-};
+import { ToastMessagesContext } from '../contexts/ToastMessagesContext';
+import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';
+import { handleError } from '../lib/utils/handleError';
 
 const contextValue = {
-	dispatch,
+	dispatch: dispatchToastMessage,
 };
 
-const ToastMessagesProvider: FC = ({ children }) => (
-	<ToastMessagesContext.Provider children={children} value={contextValue} />
-);
+const ToastMessagesProvider: FC = ({ children }) => {
+	useEffect(
+		() =>
+			subscribeToToastMessages(({ type, message, title, options }) => {
+				if (type === 'error' && typeof message === 'object') {
+					handleError(message);
+					return;
+				}
+
+				if (typeof message !== 'string') {
+					message = `[${message.name}] ${message.message}`;
+				}
+
+				toastr[type](message, title, options);
+			}),
+		[],
+	);
+
+	return <ToastMessagesContext.Provider children={children} value={contextValue} />;
+};
 
 export default ToastMessagesProvider;
