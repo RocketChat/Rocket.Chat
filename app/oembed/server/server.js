@@ -10,7 +10,8 @@ import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
 
-import { OEmbedCache, Messages } from '../../models';
+import { Messages } from '../../models/server';
+import { OEmbedCache } from '../../models/server/raw';
 import { callbacks } from '../../callbacks';
 import { settings } from '../../settings';
 import { isURL } from '../../utils/lib/isURL';
@@ -214,8 +215,8 @@ OEmbed.getUrlMeta = function(url, withFragment) {
 	});
 };
 
-OEmbed.getUrlMetaWithCache = function(url, withFragment) {
-	const cache = OEmbedCache.findOneById(url);
+OEmbed.getUrlMetaWithCache = async function(url, withFragment) {
+	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache != null) {
 		return cache.data;
@@ -223,7 +224,7 @@ OEmbed.getUrlMetaWithCache = function(url, withFragment) {
 	const data = OEmbed.getUrlMeta(url, withFragment);
 	if (data != null) {
 		try {
-			OEmbedCache.createWithIdAndData(url, data);
+			await OEmbedCache.createWithIdAndData(url, data);
 		} catch (_error) {
 			SystemLogger.error('OEmbed duplicated record', url);
 		}
@@ -262,21 +263,21 @@ const getRelevantMetaTags = function(metaObj) {
 
 const insertMaxWidthInOembedHtml = (oembedHtml) => oembedHtml?.replace('iframe', 'iframe style=\"max-width: 100%;width:400px;height:225px\"');
 
-OEmbed.rocketUrlParser = function(message) {
+OEmbed.rocketUrlParser = async function(message) {
 	if (Array.isArray(message.urls)) {
-		let attachments = [];
+		const attachments = [];
 		let changed = false;
-		message.urls.forEach(function(item) {
+		for await (const item of message.urls) {
 			if (item.ignoreParse === true) {
 				return;
 			}
 			if (!isURL(item.url)) {
 				return;
 			}
-			const data = OEmbed.getUrlMetaWithCache(item.url);
+			const data = await OEmbed.getUrlMetaWithCache(item.url);
 			if (data != null) {
 				if (data.attachments) {
-					attachments = _.union(attachments, data.attachments);
+					attachments.push(...data.attachments);
 					return;
 				}
 				if (data.meta != null) {
@@ -291,7 +292,7 @@ OEmbed.rocketUrlParser = function(message) {
 				item.parsedUrl = data.parsedUrl;
 				changed = true;
 			}
-		});
+		}
 		if (attachments.length) {
 			Messages.setMessageAttachments(message._id, attachments);
 		}
@@ -304,7 +305,7 @@ OEmbed.rocketUrlParser = function(message) {
 
 settings.watch('API_Embed', function(value) {
 	if (value) {
-		return callbacks.add('afterSaveMessage', OEmbed.rocketUrlParser, callbacks.priority.LOW, 'API_Embed');
+		return callbacks.add('afterSaveMessage', (message) => Promise.await(OEmbed.rocketUrlParser(message)), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

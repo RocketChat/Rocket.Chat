@@ -1,4 +1,4 @@
-import { DocsPage, DocsContainer } from '@storybook/addon-docs/blocks';
+import { DocsPage, DocsContainer } from '@storybook/addon-docs';
 import { addDecorator, addParameters } from '@storybook/react';
 
 import { rocketChatDecorator } from './decorators';

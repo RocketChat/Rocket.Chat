@@ -35,7 +35,7 @@ API.v1.addRoute('livechat/video.call/:token', {
 				},
 			};
 			const { room } = getRoom({ guest, rid, roomInfo });
-			const config = settings();
+			const config = Promise.await(settings());
 			if (!config.theme || !config.theme.actionLinks) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}

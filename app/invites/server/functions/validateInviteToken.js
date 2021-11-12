@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Invites, Rooms } from '../../../models';
+import { Rooms } from '../../../models';
+import { Invites } from '../../../models/server/raw';
 
-export const validateInviteToken = (token) => {
+export const validateInviteToken = async (token) => {
 	if (!token || typeof token !== 'string') {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
 	}
 
-	const inviteData = Invites.findOneById(token);
+	const inviteData = await Invites.findOneById(token);
 	if (!inviteData) {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', { method: 'validateInviteToken', field: 'token' });
 	}

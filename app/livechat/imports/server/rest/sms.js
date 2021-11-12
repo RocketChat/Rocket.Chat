@@ -30,7 +30,7 @@ const defineDepartment = (idOrName) => {
 	return department && department._id;
 };
 
-const defineVisitor = (smsNumber) => {
+const defineVisitor = (smsNumber, targetDepartment) => {
 	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
@@ -45,9 +45,8 @@ const defineVisitor = (smsNumber) => {
 		});
 	}
 
-	const department = defineDepartment(SMS.department);
-	if (department) {
-		data.department = department;
+	if (targetDepartment) {
+		data.department = targetDepartment;
 	}
 
 	const id = Livechat.registerGuest(data);
@@ -70,10 +69,15 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = SMS.getService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
+		const { departmentName } = this.queryParams;
+		let targetDepartment = defineDepartment(departmentName || SMS.department);
+		if (!targetDepartment) {
+			targetDepartment = defineDepartment(SMS.department);
+		}
 
-		const visitor = defineVisitor(sms.from);
+		const visitor = defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
-		const room = LivechatRooms.findOneOpenByVisitorToken(token);
+		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
