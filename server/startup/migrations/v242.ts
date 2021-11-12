@@ -1,5 +1,6 @@
 import { addMigration } from '../../lib/migrations';
-import { LivechatInquiry, Settings } from '../../../app/models/server';
+import { LivechatInquiry } from '../../../app/models/server';
+import { Settings } from '../../../app/models/server/raw';
 
 function removeQueueTimeoutFromInquiries(): void {
 	LivechatInquiry.update({
@@ -8,23 +9,23 @@ function removeQueueTimeoutFromInquiries(): void {
 	}, { $unset: { estimatedInactivityCloseTimeAt: 1 } }, { multi: true });
 }
 
-function removeSetting(): void {
-	const oldSetting = Settings.findOneById('Livechat_max_queue_wait_time_action');
+async function removeSetting(): Promise<void> {
+	const oldSetting = await Settings.findOneById('Livechat_max_queue_wait_time_action');
 	if (!oldSetting) {
 		return;
 	}
 	const currentAction = oldSetting.value;
 
 	if (currentAction === 'Nothing') {
-		Settings.upsert({ _id: 'Livechat_max_queue_wait_time' }, { $set: { value: -1 } });
+		await Settings.update({ _id: 'Livechat_max_queue_wait_time' }, { $set: { value: -1 } }, { upsert: true });
 	}
-	Settings.removeById('Livechat_max_queue_wait_time_action');
+	await Settings.removeById('Livechat_max_queue_wait_time_action');
 }
 
 addMigration({
 	version: 242,
 	up() {
 		removeQueueTimeoutFromInquiries();
-		removeSetting();
+		return removeSetting();
 	},
 });

@@ -67032,6 +67032,116 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "4.1.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23607",
+          "title": "[FIX] App update flow failing in HA setups",
+          "userLogin": "d-gubert",
+          "description": "The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions",
+          "milestone": "4.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23627",
+          "title": "[FIX] LDAP users not being re-activated on login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23608",
+          "title": "[FIX] Advanced LDAP Sync Features",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "3.18.3": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.27.1",
+      "mongo_versions": [
+        "3.4",
+        "3.6",
+        "4.0",
+        "4.2"
+      ],
+      "pull_requests": []
+    },
+    "4.0.6": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.0",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": []
+    },
+    "4.1.2": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23487",
+          "title": "[FIX] Notifications are not being filtered",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;\r\n - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);\r\n - Rename 'mobileNotifications' user's preference to 'pushNotifications'.",
+          "milestone": "4.1.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23661",
+          "title": "[FIX] Performance issues when running Omnichannel job queue dispatcher",
+          "userLogin": "renatobecker",
+          "milestone": "4.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23587",
+          "title": "[FIX] Omnichannel status being changed on page refresh",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        }
+      ]
     }
   }
 }

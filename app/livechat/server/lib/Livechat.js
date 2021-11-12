@@ -40,6 +40,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { Users as UsersRaw } from '../../../models/server/raw';
 
 const logger = new Logger('Livechat');
 
@@ -221,7 +222,7 @@ export const Livechat = {
 		return true;
 	},
 
-	deleteMessage({ guest, message }) {
+	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -238,7 +239,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		deleteMessage(message, guest);
+		await deleteMessage(message, guest);
 
 		return true;
 	},
@@ -882,6 +883,12 @@ export const Livechat = {
 
 	setUserStatusLivechat(userId, status) {
 		const user = Users.setLivechatStatus(userId, status);
+		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+		return user;
+	},
+
+	setUserStatusLivechatIf(userId, status, condition, fields) {
+		const user = Promise.await(UsersRaw.setLivechatStatusIf(userId, status, condition, fields));
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},

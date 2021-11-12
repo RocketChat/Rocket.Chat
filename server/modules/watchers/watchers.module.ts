@@ -364,13 +364,13 @@ export function initWatchers(models: IModelsParam, broadcast: BroadcastCallback,
 		}
 	});
 
-	watch<IIntegration>(Integrations, async ({ clientAction, id, data }) => {
+	watch<IIntegration>(Integrations, async ({ clientAction, id, data: eventData }) => {
 		if (clientAction === 'removed') {
 			broadcast('watch.integrations', { clientAction, id, data: { _id: id } });
 			return;
 		}
 
-		data = data ?? await Integrations.findOneById(id);
+		const data = eventData ?? await Integrations.findOneById(id);
 		if (!data) {
 			return;
 		}

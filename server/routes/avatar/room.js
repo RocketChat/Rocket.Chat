@@ -7,17 +7,18 @@ import {
 	setCacheAndDispositionHeaders,
 } from './utils';
 import { FileUpload } from '../../../app/file-upload';
-import { Rooms, Avatars } from '../../../app/models/server';
+import { Rooms } from '../../../app/models/server';
+import { Avatars } from '../../../app/models/server/raw';
 import { roomTypes } from '../../../app/utils';
 
 
-const getRoomAvatar = (roomId) => {
+const getRoomAvatar = async (roomId) => {
 	const room = Rooms.findOneById(roomId, { fields: { t: 1, prid: 1, name: 1, fname: 1 } });
 	if (!room) {
 		return {};
 	}
 
-	const file = Avatars.findOneByRoomId(room._id);
+	const file = await Avatars.findOneByRoomId(room._id);
 
 	// if it is a discussion that doesn't have it's own avatar, returns the parent's room avatar
 	if (room.prid && !file) {
@@ -27,10 +28,10 @@ const getRoomAvatar = (roomId) => {
 	return { room, file };
 };
 
-export const roomAvatar = Meteor.bindEnvironment(function(req, res/* , next*/) {
+export const roomAvatar = Meteor.bindEnvironment(async function(req, res/* , next*/) {
 	const roomId = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
-	const { room, file } = getRoomAvatar(roomId);
+	const { room, file } = await getRoomAvatar(roomId);
 	if (!room) {
 		res.writeHead(404);
 		res.end();
