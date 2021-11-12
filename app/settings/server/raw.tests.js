@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import chai, { expect } from 'chai';
 import rewire from 'rewire';
 

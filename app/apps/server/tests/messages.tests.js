@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import 'babel-polyfill';
 import mock from 'mock-require';
 import chai from 'chai';

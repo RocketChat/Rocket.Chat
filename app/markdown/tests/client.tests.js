@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 import 'babel-polyfill';
 import './client.mocks.js';
 

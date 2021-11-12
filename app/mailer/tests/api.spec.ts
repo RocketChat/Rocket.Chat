@@ -1,5 +1,3 @@
-/* eslint-env mocha */
-
 import { expect } from 'chai';
 
 import { replaceVariables } from '../server/replaceVariables';

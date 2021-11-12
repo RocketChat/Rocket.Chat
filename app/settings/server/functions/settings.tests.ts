@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
 import chai, { expect } from 'chai';
 
 import { Settings } from './settings.mocks';
