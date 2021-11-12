@@ -8,8 +8,8 @@ import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
-import { Roles, Users, Settings } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users, Settings } from '../../../models/server';
+import { Roles, Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
 import {
@@ -25,16 +25,15 @@ Accounts.config({
 	forbidClientAccountCreation: true,
 });
 
-const updateMailConfig = _.debounce(() => {
-	Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
-
-	Accounts.emailTemplates.siteName = settings.get('Site_Name');
-
-	Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
-}, 1000);
 
 Meteor.startup(() => {
-	settings.get(/^(Accounts_LoginExpiration|Site_Name|From_Email)$/, updateMailConfig);
+	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
+		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
+
+		Accounts.emailTemplates.siteName = settings.get('Site_Name');
+
+		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+	});
 });
 
 Accounts.emailTemplates.userToActivate = {
@@ -187,8 +186,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-
-		Roles.findUsersInRole('admin').forEach((adminUser) => {
+		Promise.await(Roles.findUsersInRole('admin').toArray()).forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${ adminUser.name }<${ email.address }>`);

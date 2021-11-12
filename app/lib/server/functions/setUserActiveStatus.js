@@ -43,7 +43,7 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 
 	// Users without username can't do anything, so there is no need to check for owned rooms
 	if (user.username != null && !active) {
-		const userAdmin = Users.findOneAdmin(userId.count);
+		const userAdmin = Users.findOneAdmin(userId);
 		const adminsCount = Users.findActiveUsersInRoles(['admin']).count();
 		if (userAdmin && adminsCount === 1) {
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without an active admin is not allowed', {
@@ -63,7 +63,7 @@ export function setUserActiveStatus(userId, active, confirmRelinquish = false) {
 		}
 
 		closeOmnichannelConversations(user, livechatSubscribedRooms);
-		relinquishRoomOwnerships(user, chatSubscribedRooms, false);
+		Promise.await(relinquishRoomOwnerships(user, chatSubscribedRooms, false));
 	}
 
 	if (active && !user.active) {

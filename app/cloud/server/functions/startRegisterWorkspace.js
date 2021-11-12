@@ -2,23 +2,22 @@ import { HTTP } from 'meteor/http';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { Settings } from '../../../models';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-
-export function startRegisterWorkspace(resend = false) {
+export async function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
-		syncWorkspace(true);
+		await syncWorkspace(true);
 
 		return true;
 	}
 
-	settings.updateById('Register_Server', true);
+	Settings.updateValueById('Register_Server', true);
 
-	const regInfo = buildWorkspaceRegistrationData();
+	const regInfo = await buildWorkspaceRegistrationData();
 
 	const cloudUrl = settings.get('Cloud_Url');
 

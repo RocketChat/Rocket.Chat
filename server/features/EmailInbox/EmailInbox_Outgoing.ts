@@ -8,7 +8,8 @@ import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { IUser } from '../../../definition/IUser';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Uploads, Users } from '../../../app/models/server';
+import { Messages, Rooms, Users } from '../../../app/models/server';
+import { Uploads } from '../../../app/models/server/raw';
 import { Inbox, inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
@@ -19,7 +20,7 @@ const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\
 
 const user: IUser = Users.findOneById('rocket.cat');
 
-const language = settings.get('Language') || 'en';
+const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 const sendErrorReplyMessage = (error: string, options: any): void => {
@@ -81,7 +82,11 @@ slashCommands.add('sendEmailAttachment', (command: any, params: string) => {
 		});
 	}
 
-	const file = Uploads.findOneById(message.file._id);
+	const file = Promise.await(Uploads.findOneById(message.file._id));
+
+	if (!file) {
+		return;
+	}
 
 	FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
 		!_err && buffer && sendEmail(inbox, {

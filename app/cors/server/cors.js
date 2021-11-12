@@ -4,14 +4,13 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/server';
 import { Logger } from '../../logger';
 
 
 const logger = new Logger('CORS');
 
-
-settings.get('Enable_CSP', (_, enabled) => {
+settings.watch('Enable_CSP', (enabled) => {
 	WebAppInternals.setInlineScriptsAllowed(!enabled);
 });
 

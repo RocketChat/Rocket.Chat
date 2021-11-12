@@ -199,7 +199,8 @@ export const LivechatEnterprise = {
 	},
 };
 
-const RACE_TIMEOUT = 1000;
+const DEFAULT_RACE_TIMEOUT = 5000;
+let queueDelayTimeout = DEFAULT_RACE_TIMEOUT;
 
 const queueWorker = {
 	running: false,
@@ -242,25 +243,34 @@ const queueWorker = {
 		}
 
 		const queue = await this.nextQueue();
-		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ RACE_TIMEOUT }`);
+		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ queueDelayTimeout }`);
 
-		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
+		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	},
 
 	async checkQueue(queue) {
 		queueLogger.debug(`Processing items for queue ${ queue || 'Public' }`);
-		if (await OmnichannelQueue.lockQueue()) {
-			await processWaitingQueue(queue);
-			queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
-			await OmnichannelQueue.unlockQueue();
+		try {
+			if (await OmnichannelQueue.lockQueue()) {
+				await processWaitingQueue(queue);
+				queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
+				await OmnichannelQueue.unlockQueue();
+			} else {
+				queueLogger.debug('Queue locked. Waiting');
+			}
+		} catch (e) {
+			queueLogger.error({
+				msg: `Error processing queue ${ queue || 'public' }`,
+				err: e,
+			});
+		} finally {
+			this.execute();
 		}
-
-		this.execute();
 	},
 };
 
-let omnichannelIsEnabled = false;
 
+let omnichannelIsEnabled = false;
 function shouldQueueStart() {
 	if (!omnichannelIsEnabled) {
 		queueWorker.stop();
@@ -279,7 +289,11 @@ function shouldQueueStart() {
 
 RoutingManager.startQueue = shouldQueueStart;
 
-settings.get('Livechat_enabled', (_, value) => {
-	omnichannelIsEnabled = value;
+settings.watch('Livechat_enabled', (enabled) => {
+	omnichannelIsEnabled = enabled;
 	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+});
+
+settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {
+	queueDelayTimeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 });

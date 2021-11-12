@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization';
-import { Invites } from '../../../models';
+import { hasPermission } from '../../../authorization/server';
+import { Invites } from '../../../models/server/raw';
 
-export const listInvites = (userId) => {
+export const listInvites = async (userId) => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'listInvites' });
 	}
@@ -12,5 +12,5 @@ export const listInvites = (userId) => {
 		throw new Meteor.Error('not_authorized');
 	}
 
-	return Invites.find({}).fetch();
+	return Invites.find({}).toArray();
 };

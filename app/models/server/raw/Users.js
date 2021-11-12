@@ -11,6 +11,24 @@ export class UsersRaw extends BaseRaw {
 		};
 	}
 
+	addRolesByUserId(uid, roles) {
+		if (!Array.isArray(roles)) {
+			roles = [roles];
+			process.env.NODE_ENV === 'development' && console.warn('[WARN] Users.addRolesByUserId: roles should be an array');
+		}
+
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$addToSet: {
+				roles: { $each: roles },
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
 	findUsersInRoles(roles, scope, options) {
 		roles = [].concat(roles);
 
@@ -259,14 +277,16 @@ export class UsersRaw extends BaseRaw {
 		return result.value;
 	}
 
-	setLivechatStatus(userId, status) { // TODO: Create class Agent
+	setLivechatStatusIf(userId, status, conditions = {}, extraFields = {}) { // TODO: Create class Agent
 		const query = {
 			_id: userId,
+			...conditions,
 		};
 
 		const update = {
 			$set: {
 				statusLivechat: status,
+				...extraFields,
 			},
 		};
 
@@ -703,5 +723,32 @@ export class UsersRaw extends BaseRaw {
 		}, {
 			$pullAll: { __rooms: rids },
 		}, { multi: true });
+	}
+
+	removeRolesByUserId(uid, roles) {
+		const query = {
+			_id: uid,
+		};
+
+		const update = {
+			$pullAll: {
+				roles,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async isUserInRoleScope(uid) {
+		const query = {
+			_id: uid,
+		};
+
+		const options = {
+			fields: { _id: 1 },
+		};
+
+		const found = await this.findOne(query, options);
+		return !!found;
 	}
 }

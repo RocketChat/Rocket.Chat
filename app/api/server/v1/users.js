@@ -6,7 +6,7 @@ import _ from 'underscore';
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization';
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils';
 import {
 	validateCustomFields,
@@ -593,7 +593,7 @@ API.v1.addRoute('users.setPreferences', { authRequired: true }, {
 				unreadAlert: Match.Maybe(Boolean),
 				notificationsSoundVolume: Match.Maybe(Number),
 				desktopNotifications: Match.Maybe(String),
-				mobileNotifications: Match.Maybe(String),
+				pushNotifications: Match.Maybe(String),
 				enableAutoAway: Match.Maybe(Boolean),
 				highlights: Match.Maybe(Array),
 				desktopNotificationRequireInteraction: Match.Maybe(Boolean),

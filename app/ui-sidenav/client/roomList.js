@@ -152,6 +152,7 @@ const mergeSubRoom = (subscription) => {
 			announcement: 1,
 			broadcast: 1,
 			archived: 1,
+			avatarETag: 1,
 			retention: 1,
 			teamId: 1,
 			teamMain: 1,
@@ -171,6 +172,7 @@ const mergeSubRoom = (subscription) => {
 			livechatData: 1,
 			departmentId: 1,
 			source: 1,
+			queuedAt: 1,
 		},
 	};
 
@@ -186,6 +188,7 @@ const mergeSubRoom = (subscription) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -210,6 +213,7 @@ const mergeSubRoom = (subscription) => {
 		departmentId,
 		ts,
 		source,
+		queuedAt,
 	} = room;
 
 	subscription.lm = subscription.lr ? new Date(Math.max(subscription.lr, lastRoomUpdate)) : lastRoomUpdate;
@@ -222,6 +226,7 @@ const mergeSubRoom = (subscription) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -246,6 +251,7 @@ const mergeSubRoom = (subscription) => {
 		departmentId,
 		ts,
 		source,
+		queuedAt,
 	});
 };
 
@@ -263,6 +269,7 @@ const mergeRoomSub = (room) => {
 		announcement,
 		broadcast,
 		archived,
+		avatarETag,
 		retention,
 		lastMessage,
 		streamingOptions,
@@ -287,6 +294,7 @@ const mergeRoomSub = (room) => {
 		departmentId,
 		ts,
 		source,
+		queuedAt,
 	} = room;
 
 	Subscriptions.update({
@@ -300,6 +308,7 @@ const mergeRoomSub = (room) => {
 			announcement,
 			broadcast,
 			archived,
+			avatarETag,
 			retention,
 			uids,
 			usernames,
@@ -323,6 +332,7 @@ const mergeRoomSub = (room) => {
 			jitsiTimeout,
 			ts,
 			source,
+			queuedAt,
 			...getLowerCaseNames(room, sub.name, sub.fname),
 		},
 	});

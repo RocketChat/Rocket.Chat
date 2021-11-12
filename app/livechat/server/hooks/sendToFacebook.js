@@ -29,7 +29,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	}
 
 	if (message.file) {
-		message = normalizeMessageFileUpload(message);
+		message = Promise.await(normalizeMessageFileUpload(message));
 	}
 
 	OmniChannel.reply({
