@@ -213,7 +213,6 @@ export class SAMLUtils {
 		}
 
 		const parsedMap: IUserDataMap = {
-			customFields: new Map(),
 			attributeList: new Set(),
 			email: {
 				fieldName: 'email',
@@ -298,11 +297,10 @@ export class SAMLUtils {
 			if (attributeMap) {
 				if (spFieldName === 'email' || spFieldName === 'username' || spFieldName === 'name') {
 					parsedMap[spFieldName] = attributeMap;
-				} else {
-					parsedMap.customFields.set(spFieldName, attributeMap);
 				}
 			}
 		}
+
 
 		if (identifier) {
 			const defaultTypes = [
@@ -318,7 +316,6 @@ export class SAMLUtils {
 				parsedMap.attributeList.add(identifier);
 			}
 		}
-
 		return parsedMap;
 	}
 
@@ -413,7 +410,6 @@ export class SAMLUtils {
 	public static mapProfileToUserObject(profile: Record<string, any>): ISAMLUser {
 		const userDataMap = this.getUserDataMapping();
 		SAMLUtils.log('parsed userDataMap', userDataMap);
-		const { defaultUserRole = 'user' } = this.globalSettings;
 
 		if (userDataMap.identifier.type === 'custom') {
 			if (!userDataMap.identifier.attribute) {
@@ -432,7 +428,6 @@ export class SAMLUtils {
 			}
 			attributeList.set(attributeName, profile[attributeName]);
 		}
-
 		const email = this.getProfileValue(profile, userDataMap.email);
 		const profileUsername = this.getProfileValue(profile, userDataMap.username, true);
 		const name = this.getProfileValue(profile, userDataMap.name);
@@ -443,7 +438,6 @@ export class SAMLUtils {
 		}
 
 		const userObject: ISAMLUser = {
-			customFields: new Map(),
 			samlLogin: {
 				provider: this.relayState,
 				idp: profile.issuer,
@@ -452,7 +446,6 @@ export class SAMLUtils {
 			},
 			emailList: this.ensureArray<string>(email),
 			fullName: name || profile.displayName || profile.username,
-			roles: this.ensureArray<string>(defaultUserRole.split(',')),
 			eppn: profile.eppn,
 			attributeList,
 			identifier: userDataMap.identifier,
@@ -471,13 +464,6 @@ export class SAMLUtils {
 				userObject.channels = profile.channels;
 			} else {
 				userObject.channels = profile.channels.split(',');
-			}
-		}
-
-		for (const [fieldName, customField] of userDataMap.customFields) {
-			const value = this.getProfileValue(profile, customField);
-			if (value) {
-				userObject.customFields.set(fieldName, value);
 			}
 		}
 

@@ -11,9 +11,10 @@ import s from 'underscore.string';
 import moment from 'moment';
 
 import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib';
+import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import * as Models from '../../../models';
+import * as Models from '../../../models/server';
+import { Integrations } from '../../../models/server/raw';
 import { settings } from '../../../settings/server';
 
 const compiledScripts = {};
@@ -129,9 +130,10 @@ function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug(options);
 
-	const integrationToRemove = Models.Integrations.findOne({
-		urls: options.target_url,
-	});
+	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
+	if (!integrationToRemove) {
+		return API.v1.failure('integration-not-found');
+	}
 
 	Meteor.runAsUser(user._id, () => Meteor.call('deleteOutgoingIntegration', integrationToRemove._id));
 
@@ -239,7 +241,7 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues, this.integration);
+		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
@@ -373,10 +375,10 @@ const Api = new WebHookAPI({
 				}
 			}
 
-			this.integration = Models.Integrations.findOne({
+			this.integration = Promise.await(Integrations.findOne({
 				_id: this.request.params.integrationId,
 				token: decodeURIComponent(this.request.params.token),
-			});
+			}));
 
 			if (!this.integration) {
 				incomingLogger.info(`Invalid integration id ${ this.request.params.integrationId } or token ${ this.request.params.token }`);

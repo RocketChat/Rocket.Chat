@@ -6,6 +6,9 @@ export type TeamsEndpoints = {
 	'teams.addRooms': {
 		POST: (params: { rooms: IRoom['_id'][]; teamId: string }) => void;
 	};
+	'teams.info': {
+		GET: (params: { teamId: IRoom['teamId'] }) => { teamInfo: ITeam };
+	};
 	'teams.listRooms': {
 		GET: (params: {
 			teamId: ITeam['_id'];

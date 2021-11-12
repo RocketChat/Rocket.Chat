@@ -135,7 +135,7 @@ function migrate(direction: 'up' | 'down', migration: IMigration): void {
 
 	log.startup(`Running ${ direction }() on version ${ migration.version }${ migration.name ? `(${ migration.name })` : '' }`);
 
-	migration[direction]?.(migration);
+	Promise.await(migration[direction]?.(migration));
 }
 
 
@@ -270,3 +270,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 
 	return true;
 }
+
+export const onFreshInstall = getControl().version !== 0
+	? (): void => { /* noop */ }
+	: (fn: () => unknown): unknown => fn();

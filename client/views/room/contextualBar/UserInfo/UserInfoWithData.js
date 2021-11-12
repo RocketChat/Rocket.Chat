@@ -7,12 +7,15 @@ import UserCard from '../../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import VerticalBar from '../../../../components/VerticalBar';
 import { useRolesDescription } from '../../../../contexts/AuthorizationContext';
+import { useSession } from '../../../../contexts/SessionContext';
 import { useSetting } from '../../../../contexts/SettingsContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
+import { useWebRTC } from '../../hooks/useWebRTC';
 import UserInfo from './UserInfo';
+import UserWebRTCWithData from './UserWebRTC';
 import UserActions from './actions/UserActions';
 
 function UserInfoWithData({
@@ -27,10 +30,10 @@ function UserInfoWithData({
 	...props
 }) {
 	const t = useTranslation();
-
-	const getRoles = useRolesDescription();
-
 	const showRealNames = useSetting('UI_Use_Real_Name');
+	const getRoles = useRolesDescription();
+	const openedRoom = useSession('openedRoom');
+	const { showUserWebRTC } = useWebRTC(openedRoom);
 
 	const {
 		value,
@@ -43,6 +46,8 @@ function UserInfoWithData({
 			[uid, username],
 		),
 	);
+
+	const isLoading = state === AsyncStatePhase.LOADING;
 
 	const user = useMemo(() => {
 		const { user } = value || { user: {} };
@@ -59,9 +64,10 @@ function UserInfoWithData({
 			nickname,
 			canViewAllInfo,
 		} = user;
+
 		return {
 			_id,
-			name: showRealNames ? name : username,
+			name: showRealNames && name ? name : username,
 			username,
 			lastLogin,
 			roles:
@@ -85,28 +91,36 @@ function UserInfoWithData({
 		<>
 			<VerticalBar.Header>
 				{onClickBack && <VerticalBar.Back onClick={onClickBack} />}
+				{!onClickBack && <VerticalBar.Icon name='user' />}
 				<VerticalBar.Text>{t('User_Info')}</VerticalBar.Text>
 				{onClose && <VerticalBar.Close onClick={onClose} />}
 			</VerticalBar.Header>
 
-			{(error && (
+			{isLoading && (
+				<VerticalBar.Content>
+					<FormSkeleton />
+				</VerticalBar.Content>
+			)}
+
+			{error && (
 				<VerticalBar.Content>
 					<Box mbs='x16'>{t('User_not_found')}</Box>
 				</VerticalBar.Content>
-			)) ||
-				(state === AsyncStatePhase.LOADING && (
-					<VerticalBar.Content>
-						<FormSkeleton />
-					</VerticalBar.Content>
-				)) || (
-					<UserInfo
-						{...user}
-						data={user}
-						actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
-						{...props}
-						p='x24'
-					/>
-				)}
+			)}
+
+			{!isLoading && showUserWebRTC && (
+				<UserWebRTCWithData rid={openedRoom} peerName={user?.name} {...props} />
+			)}
+
+			{!isLoading && !error && !showUserWebRTC && (
+				<UserInfo
+					{...user}
+					data={user}
+					actions={<UserActions user={user} rid={rid} backToList={onClickBack} />}
+					{...props}
+					p='x24'
+				/>
+			)}
 		</>
 	);
 }

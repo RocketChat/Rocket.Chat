@@ -247,6 +247,10 @@ export class Settings extends Base {
 			}
 		}
 	}
+
+	insert(record, ...args) {
+		return super.insert({ createdAt: new Date(), ...record }, ...args);
+	}
 }
 
 export default new Settings('settings', true);

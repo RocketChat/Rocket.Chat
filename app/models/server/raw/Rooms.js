@@ -27,10 +27,8 @@ export class RoomsRaw extends BaseRaw {
 			{
 				$match: {
 					t: 'l',
-					closedAt: { $exists: true },
-					metrics: { $exists: true },
-					'metrics.chatDuration': { $exists: true },
 					...department && { departmentId: department },
+					closedAt: { $exists: true },
 				},
 			},
 			{ $sort: { closedAt: -1 } },

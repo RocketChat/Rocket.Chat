@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
 	dispatchAgentDelegated,
@@ -13,7 +12,7 @@ import {
 	allowAgentSkipQueue,
 } from './Helper';
 import { callbacks } from '../../../callbacks/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../../server/lib/logger/Logger';
 import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../apps/server';
 
@@ -23,9 +22,24 @@ export const RoutingManager = {
 	methodName: null,
 	methods: {},
 
-	setMethodName(name) {
+	startQueue() { // todo: move to eventemitter or middleware
+		// queue shouldn't start on CE
+	},
+
+	isMethodSet() {
+		return !!this.methodName;
+	},
+
+	setMethodNameAndStartQueue(name) {
 		logger.debug(`Changing default routing method from ${ this.methodName } to ${ name }`);
-		this.methodName = name;
+		if (!this.methods[name]) {
+			logger.warn(`Cannot change routing method to ${ name }. Selected Routing method does not exists. Defaulting to Manual_Selection`);
+			this.methodName = 'Manual_Selection';
+		} else {
+			this.methodName = name;
+		}
+
+		this.startQueue();
 	},
 
 	registerMethod(name, Method) {
@@ -217,7 +231,3 @@ export const RoutingManager = {
 		});
 	},
 };
-
-settings.get('Livechat_Routing_Method', function(key, value) {
-	RoutingManager.setMethodName(value);
-});

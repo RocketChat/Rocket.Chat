@@ -13,6 +13,10 @@ export const Meteor = {
 		on: () => {},
 		removeListener: () => {},
 	}),
+	StreamerCentral: {
+		on: () => {},
+		removeListener: () => {},
+	},
 	startup: () => {},
 	methods: () => {},
 	call: () => {},

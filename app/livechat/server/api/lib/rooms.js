@@ -9,6 +9,7 @@ export async function findRooms({
 	closedAt,
 	tags,
 	customFields,
+	onhold,
 	options: {
 		offset,
 		count,
@@ -25,6 +26,7 @@ export async function findRooms({
 		closedAt,
 		tags,
 		customFields,
+		onhold: ['t', 'true', '1'].includes(onhold),
 		options: {
 			sort: sort || { ts: -1 },
 			offset,

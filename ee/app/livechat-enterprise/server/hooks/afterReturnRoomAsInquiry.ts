@@ -12,7 +12,7 @@ const unsetPredictedVisitorAbandonment = ({ room }: { room: any }): void => {
 	(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(room._id);
 };
 
-settings.get('Livechat_abandoned_rooms_action', (_, value) => {
+settings.watch('Livechat_abandoned_rooms_action', (value) => {
 	if (!value || value === 'none') {
 		callbacks.remove('livechat:afterReturnRoomAsInquiry', 'livechat-after-return-room-as-inquiry');
 		return;

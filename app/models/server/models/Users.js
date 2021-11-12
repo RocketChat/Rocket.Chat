@@ -262,6 +262,7 @@ export class Users extends Base {
 		const update = {
 			$set: {
 				statusLivechat: status,
+				livechatStatusSystemModified: false,
 			},
 		};
 
@@ -564,6 +565,17 @@ export class Users extends Base {
 
 		const query = {
 			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
+	findActiveUsersInRoles(roles, scope, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
 		};
 
 		return this.find(query, options);
@@ -1602,6 +1614,14 @@ Find users to send a message by email if:
 		};
 
 		return this.find(query, options);
+	}
+
+	updateCustomFieldsById(userId, customFields) {
+		return this.update(userId, {
+			$set: {
+				customFields,
+			},
+		});
 	}
 }
 

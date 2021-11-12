@@ -40,6 +40,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const extraRoomInfo = callbacks.run('livechat.beforeRoom', roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
+	const newRoomAt = new Date();
 
 	logger.debug(`Creating livechat room for visitor ${ _id }`);
 
@@ -47,10 +48,10 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 		_id: rid,
 		msgs: 0,
 		usersCount: 1,
-		lm: new Date(),
+		lm: newRoomAt,
 		fname: name,
 		t: 'l',
-		ts: new Date(),
+		ts: newRoomAt,
 		departmentId,
 		v: {
 			_id,
@@ -67,6 +68,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 			type: OmnichannelSourceType.OTHER,
 			alias: 'unknown',
 		},
+		queuedAt: newRoomAt,
 	}, extraRoomInfo);
 
 	const roomId = Rooms.insert(room);
@@ -437,7 +439,9 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
-		RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+		// if chat is queued then we don't ignore the new servedBy agent bcs at this
+		// point the chat is not assigned to him/her and it is still in the queue
+		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
@@ -448,6 +452,8 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${ inquiry._id } as ready`);
 		LivechatInquiry.readyInquiry(inquiry._id);
+		LivechatRooms.removeAgentByRoomId(rid);
+		dispatchAgentDelegated(rid, null);
 		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 

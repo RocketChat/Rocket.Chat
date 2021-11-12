@@ -142,15 +142,21 @@ function validateUserData(userId, userData) {
 	}
 }
 
-function validateUserEditing(userId, userData) {
+/**
+ * Validate permissions to edit user fields
+ *
+ * @param {string} userId
+ * @param {{ _id: string, roles: string[], username: string, name: string, statusText: string, email: string, password: string}} userData
+ */
+export function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
 	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
 	const user = Users.findOneById(userData._id);
 
-	const isEditingUserRoles = (previousRoles, newRoles) => !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
-	const isEditingField = (previousValue, newValue) => newValue !== previousValue;
+	const isEditingUserRoles = (previousRoles, newRoles) => typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
+	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !hasPermission(userId, 'assign-roles')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
