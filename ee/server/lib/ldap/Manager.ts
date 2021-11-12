@@ -8,10 +8,10 @@ import type { IRole } from '../../../../definition/IRole';
 import { IImportUser } from '../../../../definition/IImportUser';
 import { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Roles, Rooms } from '../../../../app/models/server';
+import { Rooms } from '../../../../app/models/server';
 import {
 	Users as UsersRaw,
-	Roles as RolesRaw,
+	Roles,
 	Subscriptions as SubscriptionsRaw,
 } from '../../../../app/models/server/raw';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
@@ -191,7 +191,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = await RolesRaw.find({}, {
+		const roles = await Roles.find({}, {
 			fields: {
 				_updatedAt: 0,
 			},
@@ -224,7 +224,7 @@ export class LDAPEEManager extends LDAPManager {
 			logger.debug(`User role exists for mapping ${ ldapField } -> ${ roleName }`);
 
 			if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapField)) {
-				if (Roles.addUserRoles(user._id, roleName)) {
+				if (await Roles.addUserRoles(user._id, roleName)) {
 					this.broadcastRoleChange('added', roleName, user._id, username);
 				}
 				logger.debug(`Synced user group ${ roleName } from LDAP for ${ user.username }`);
@@ -235,7 +235,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			if (Roles.removeUserRoles(user._id, roleName)) {
+			if (await Roles.removeUserRoles(user._id, roleName)) {
 				this.broadcastRoleChange('removed', roleName, user._id, username);
 			}
 		}

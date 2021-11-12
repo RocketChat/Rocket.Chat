@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 

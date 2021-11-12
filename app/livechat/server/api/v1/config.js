@@ -17,7 +17,7 @@ API.v1.addRoute('livechat/config', {
 				return API.v1.success({ config: { enabled: false } });
 			}
 
-			const config = settings();
+			const config = Promise.await(settings());
 
 			const { token, department } = this.queryParams;
 			const status = Livechat.online(department);
