@@ -7,11 +7,11 @@ export type ImEndpoints = {
 		POST: (
 			params: (
 				| {
-						username: Exclude<IUser['username'], undefined>;
-				  }
+					username: Exclude<IUser['username'], undefined>;
+				}
 				| {
-						usernames: string;
-				  }
+					usernames: string;
+				}
 			) & {
 				excludeSelf?: boolean;
 			},

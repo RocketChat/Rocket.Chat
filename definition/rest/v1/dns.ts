@@ -5,8 +5,9 @@ export type DnsEndpoints = {
 		};
 	};
 	'dns.resolve.txt': {
-		GET: (params: { url: string }) => {
-			resolved: Record<string, string | number>;
+		POST: (params: { url: string }) => {
+			resolved: string;
+			// resolved: Record<string, string | number>;
 		};
 	};
 };

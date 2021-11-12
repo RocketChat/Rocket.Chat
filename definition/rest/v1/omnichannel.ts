@@ -49,7 +49,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/department/:_id': {
-		path: `livechat/department/${string}`;
+		path: `livechat/department/${ string }`;
 		GET: () => {
 			department: ILivechatDepartment;
 		};
@@ -138,7 +138,7 @@ export type OmnichannelEndpoints = {
 		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 	};
 	'canned-responses/:_id': {
-		path: `canned-responses/${string}`;
+		path: `canned-responses/${ string }`;
 		GET: () => {
 			cannedResponse: IOmnichannelCannedResponse;
 		};

@@ -7,9 +7,9 @@ export type LDAPEndpoints = {
 		};
 	};
 	'ldap.testSearch': {
-		POST: (params: { username: string }) => {
+		POST: (params: { username: string }) => ({
 			message: TranslationKey;
-		};
+		});
 	};
 	'ldap.syncNow': {
 		POST: () => {

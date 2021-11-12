@@ -63,7 +63,7 @@ export interface IRoom extends IRocketChatRecord {
 	muted?: string[];
 
 	usernames?: string[];
-	ts?: date;
+	ts?: Date;
 }
 
 export interface ICreatedRoom extends IRoom {
