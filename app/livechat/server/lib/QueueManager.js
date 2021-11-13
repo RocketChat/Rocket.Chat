@@ -7,7 +7,7 @@ import { callbacks } from '../../../callbacks/server';
 import { Logger } from '../../../../server/lib/logger/Logger';
 import { RoutingManager } from './RoutingManager';
 
-const logger = new Logger('QueueMananger');
+const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = (inquiry) => {
 	LivechatInquiry.queueInquiry(inquiry._id);

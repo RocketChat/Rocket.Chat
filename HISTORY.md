@@ -1,6 +1,62 @@
 
+# 4.1.2
+`2021-11-08  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- Notifications are not being filtered ([#23487](https://github.com/RocketChat/Rocket.Chat/pull/23487))
+
+  - Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;
+   - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);
+   - Rename 'mobileNotifications' user's preference to 'pushNotifications'.
+
+- Omnichannel status being changed on page refresh ([#23587](https://github.com/RocketChat/Rocket.Chat/pull/23587))
+
+- Performance issues when running Omnichannel job queue dispatcher ([#23661](https://github.com/RocketChat/Rocket.Chat/pull/23661))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@renatobecker](https://github.com/renatobecker)
+
+# 4.1.1
+`2021-11-05  ·  4 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `12.22.1`
+- NPM: `6.14.1`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+- Apps-Engine: `1.28.1`
+
+### 🐛 Bug fixes
+
+
+- Advanced LDAP Sync Features ([#23608](https://github.com/RocketChat/Rocket.Chat/pull/23608))
+
+- App update flow failing in HA setups ([#23607](https://github.com/RocketChat/Rocket.Chat/pull/23607))
+
+  The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions
+
+- LDAP users not being re-activated on login ([#23627](https://github.com/RocketChat/Rocket.Chat/pull/23627))
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@d-gubert](https://github.com/d-gubert)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 4.1.0
-`2021-10-27  ·  1 🎉  ·  4 🚀  ·  25 🐛  ·  38 🔍  ·  23 👩‍💻👨‍💻`
+`2021-10-28  ·  1 🎉  ·  4 🚀  ·  25 🐛  ·  38 🔍  ·  23 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.22.1`
@@ -6345,7 +6401,7 @@
 - [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.8.0
-`2020-11-14  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
+`2020-11-13  ·  14 🎉  ·  4 🚀  ·  40 🐛  ·  54 🔍  ·  30 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `12.18.4`

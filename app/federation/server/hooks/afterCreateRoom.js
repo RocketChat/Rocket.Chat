@@ -47,7 +47,7 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 	const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
 	// Dispatch the events
-	dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...addUserEvents]);
+	await dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...addUserEvents]);
 }
 
 async function afterCreateRoom(roomOwner, room) {

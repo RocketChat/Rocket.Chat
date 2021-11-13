@@ -41,7 +41,7 @@ async function afterCreateDirectRoom(room, extras) {
 		}));
 
 		// Dispatch the events
-		dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...events]);
+		await dispatchEvents(normalizedRoom.federation.domains, [genesisEvent, ...events]);
 	} catch (err) {
 		await deleteRoom(room._id);
 

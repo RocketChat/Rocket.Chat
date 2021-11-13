@@ -6,9 +6,10 @@ import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getUserCloudAccessToken } from '../../../cloud/server';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils';
-import { Settings, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { Settings } from '../../../models/server/raw';
 
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = () => ({
@@ -67,7 +68,7 @@ export class AppsRestApi {
 				// Gets the Apps from the marketplace
 				if (this.queryParams.marketplace) {
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -91,7 +92,7 @@ export class AppsRestApi {
 
 				if (this.queryParams.categories) {
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -187,7 +188,7 @@ export class AppsRestApi {
 					});
 
 					const marketplacePromise = new Promise((resolve, reject) => {
-						const token = getWorkspaceAccessToken();
+						const token = Promise.await(getWorkspaceAccessToken());
 
 						HTTP.get(`${ baseUrl }/v1/apps/${ this.bodyParams.appId }?appVersion=${ this.bodyParams.version }`, {
 							headers: {
@@ -307,7 +308,7 @@ export class AppsRestApi {
 				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				const headers = {};
-				const token = getWorkspaceAccessToken();
+				const token = Promise.await(getWorkspaceAccessToken());
 				if (token) {
 					headers.Authorization = `Bearer ${ token }`;
 				}
@@ -337,7 +338,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = {}; // DO NOT ATTACH THE FRAMEWORK/ENGINE VERSION HERE.
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -363,7 +364,7 @@ export class AppsRestApi {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 
 					const headers = getDefaultHeaders();
-					const token = getWorkspaceAccessToken();
+					const token = Promise.await(getWorkspaceAccessToken());
 					if (token) {
 						headers.Authorization = `Bearer ${ token }`;
 					}
@@ -507,12 +508,12 @@ export class AppsRestApi {
 				const baseUrl = orchestrator.getMarketplaceUrl();
 
 				const headers = getDefaultHeaders();
-				const token = getWorkspaceAccessToken();
+				const token = Promise.await(getWorkspaceAccessToken());
 				if (token) {
 					headers.Authorization = `Bearer ${ token }`;
 				}
 
-				const [workspaceIdSetting] = Settings.findById('Cloud_Workspace_Id').fetch();
+				const workspaceIdSetting = Promise.await(Settings.findOneById('Cloud_Workspace_Id'));
 
 				let result;
 				try {
