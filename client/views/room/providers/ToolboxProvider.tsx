@@ -84,7 +84,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 					open('room-info', username);
 					break;
 				case 'd':
-					if (room.uids.length > 2) {
+					if (room.uids && room.uids.length > 2) {
 						open('user-info-group', username);
 					} else {
 						open('user-info', username);
