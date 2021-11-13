@@ -6,22 +6,21 @@ import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { ITeamAutocompleteResult, ITeamMemberInfo, ITeamMemberParams } from '../../../server/sdk/types/ITeamService';
 
 type TeamsConvertToTeamsProps = {
-	teamId?: string;
-	teamName?: string;
 	roomsToRemove?: string[];
+} & ({ teamId: string } | { teamName: string })
 }
 
-type TeamsRemoveRoomsProps = { teamId: string; teamName: string; userId: IUser['_id']; rooms?: IRoom['_id'][] };
+type TeamsRemoveRoomsProps = ({ teamId: string } | { teamName: string }) & { userId: IUser['_id']; rooms?: IRoom['_id'][] };
 
-export const isTeamRemoveRoomsProps = (props: any): props is TeamsRemoveRoomsProps => props.teamId && props.teamName && props.userId;
+export const isTeamRemoveRoomsProps = (props: any): props is TeamsRemoveRoomsProps => (props.teamId || props.teamName) && props.userId;
 
-type TeamsUpdateMemberProps = { teamId: string; teamName: string; member: ITeamMemberParams }
+type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string }) & { member: ITeamMemberParams }
 
-export const isTeamsUpdateMemberProps = (props: any): props is TeamsUpdateMemberProps => props.teamId && props.teamName && props.member && props.member.userId && props.member.roles;
+export const isTeamsUpdateMemberProps = (props: any): props is TeamsUpdateMemberProps => (props.teamId || props.teamName) && props.member && props.member.userId && props.member.roles;
 
-type TeamsAddMembersProps = { teamId: string; teamName: string; members: ITeamMemberParams[] }
+type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & { members: ITeamMemberParams[] }
 
-export const isTeamsAddMembersProps = (props: any): props is TeamsAddMembersProps => props.teamId && props.teamName && Array.isArray(props.members) && props.members.length && props.members.every((member: any) => 'userId' in member && 'roles' in member);
+export const isTeamsAddMembersProps = (props: any): props is TeamsAddMembersProps => (props.teamId || props.teamName) && Array.isArray(props.members) && props.members.length && props.members.every((member: any) => 'userId' in member && 'roles' in member);
 
 export type TeamsEndpoints = {
 	'teams.list': {
@@ -77,15 +76,15 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.removeRoom': {
-		POST: (params: { roomId: IRoom['_id']; teamId: string; teamName: string }) => ({ room: IRoom });
+		POST: (params: TeamsRemoveRoomsProps) => ({ room: IRoom });
 	};
 
 	'teams.members': {
-		GET: (params: { teamId: string; teamName: string; status?: string[]; username?: string; name?: string }) => (PaginatedResult & { members: ITeamMemberInfo[] });
+		GET: (params: ({ teamId: string } | { teamName: string }) & { status?: string[]; username?: string; name?: string }) => (PaginatedResult & { members: ITeamMemberInfo[] });
 	};
 
 	'teams.addMembers': {
-		POST: (params: { teamId: string; teamName: string; members: ITeamMemberParams[] }) => void;
+		POST: (params: TeamsAddMembersProps) => void;
 	};
 
 	'teams.updateMember': {
@@ -93,16 +92,16 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.removeMember': {
-		POST: (params: { teamId: string; teamName: string; userId: IUser['_id']; rooms?: IRoom['_id'][] }) => void;
+		POST: (params: ({ teamId: string } | { teamName: string }) & { userId: IUser['_id']; rooms?: IRoom['_id'][] }) => void;
 	};
 
 	'teams.leave': {
-		POST: (params: { teamId: string; teamName: string; rooms?: IRoom['_id'][] }) => void;
+		POST: (params: ({ teamId: string } | { teamName: string }) & { rooms?: IRoom['_id'][] }) => void;
 	};
 
 
 	'teams.info': {
-		GET: (params: { teamId: string; teamName: string }) => ({ teamInfo: Partial<ITeam> });
+		GET: (params: ({ teamId: string } | { teamName: string }) & {}) => ({ teamInfo: Partial<ITeam> });
 	};
 
 	'teams.autocomplete': {
@@ -114,7 +113,7 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.delete': {
-		POST: (params: { teamId: string; teamName: string; roomsToRemove?: string[] }) => void;
+		POST: (params: ({ teamId: string } | { teamName: string }) & { roomsToRemove?: string[] }) => void;
 	};
 
 	'teams.listRoomsOfUser': {
