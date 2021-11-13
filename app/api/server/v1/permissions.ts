@@ -53,9 +53,11 @@ API.v1.addRoute('permissions.update', { authRequired: true }, {
 			return API.v1.failure('Invalid permission', 'error-invalid-permission');
 		}
 
-		const roles = await Roles.find({ _id: { $in: bodyParams.permissions.flatMap((p) => p.roles) } }).toArray();
+		const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
 
-		if (roles.length !== bodyParams.permissions.length) {
+		const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
+
+		if (roles.length !== roleKeys.length) {
 			return API.v1.failure('Invalid role', 'error-invalid-role');
 		}
 
