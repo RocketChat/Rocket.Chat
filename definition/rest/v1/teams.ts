@@ -7,8 +7,7 @@ import { ITeamAutocompleteResult, ITeamMemberInfo, ITeamMemberParams } from '../
 
 type TeamsConvertToTeamsProps = {
 	roomsToRemove?: string[];
-} & ({ teamId: string } | { teamName: string })
-}
+} & ({ teamId: string } | { teamName: string });
 
 type TeamsRemoveRoomsProps = ({ teamId: string } | { teamName: string }) & { userId: IUser['_id']; rooms?: IRoom['_id'][] };
 
