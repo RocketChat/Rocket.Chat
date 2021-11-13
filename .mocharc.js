@@ -9,4 +9,5 @@ module.exports = {
 		'server/**/*.tests.ts',
 		'client/**/*.spec.ts',
 	],
+	exit: true,
 };
