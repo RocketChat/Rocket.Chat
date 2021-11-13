@@ -79,7 +79,7 @@ const roleDeletePropsSchema: JSONSchemaType<RoleDeleteProps> = {
 export const isRoleDeleteProps = ajv.compile(roleDeletePropsSchema);
 
 type RoleAddUserToRoleProps = {
-	userName: string;
+	username: string;
 	roleName: string;
 	roomId?: string;
 }
@@ -87,7 +87,7 @@ type RoleAddUserToRoleProps = {
 const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 	type: 'object',
 	properties: {
-		userName: {
+		username: {
 			type: 'string',
 		},
 		roleName: {
@@ -98,7 +98,7 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 			nullable: true,
 		},
 	},
-	required: ['userName', 'roleName'],
+	required: ['username', 'roleName'],
 	additionalProperties: false,
 };
 
@@ -156,7 +156,7 @@ export type RolesEndpoints = {
 	};
 
 	'roles.addUserToRole': {
-		POST: (params: { roleId: string; userId: string }) => ({
+		POST: (params: RoleAddUserToRoleProps) => ({
 			role: IRole;
 		});
 	};

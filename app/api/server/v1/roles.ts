@@ -83,7 +83,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 API.v1.addRoute('roles.addUserToRole', { authRequired: true }, {
 	async post() {
 		if (!isRoleAddUserToRoleProps(this.bodyParams)) {
-			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
+			throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 		}
 
 		const user = this.getUserFromParams();
