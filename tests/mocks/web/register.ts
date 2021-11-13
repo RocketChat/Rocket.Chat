@@ -1,14 +1,22 @@
 import 'jsdom-global/register';
+import uuid from 'uuid';
 
-const blobs = new Map<string, Blob>();
+const urlByBlob = new WeakMap<Blob, string>();
+const blobByUrl = new Map<string, Blob>();
 
 window.URL.createObjectURL = (blob: Blob): string => {
-	const uuid = Math.random().toString(36).slice(2);
-	const url = `blob://${ uuid }`;
-	blobs.set(url, blob);
+	const url = urlByBlob.get(blob) ?? `blob://${ uuid.v4() }`;
+	urlByBlob.set(blob, url);
+	blobByUrl.set(url, blob);
 	return url;
 };
 
 window.URL.revokeObjectURL = (url: string): void => {
-	blobs.delete(url);
+	const blob = blobByUrl.get(url);
+	if (!blob) {
+		return;
+	}
+
+	urlByBlob.delete(blob);
+	blobByUrl.delete(url);
 };
