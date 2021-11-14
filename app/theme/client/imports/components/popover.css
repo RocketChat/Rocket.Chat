@@ -91,6 +91,22 @@
 		font-weight: 600;
 	}
 
+	&__wrapper {
+
+		padding-left: 16px ;
+				
+		&:hover {
+			border-radius: 2px;
+			background-color: #f7f8fa;
+		}
+
+	}
+
+	&__list {
+		margin-left: -16px;
+		width: 125%;
+	}
+
 	&__item {
 		display: flex;
 
@@ -108,6 +124,7 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
 
 		&--alert {
 			color: var(--rc-color-error);
