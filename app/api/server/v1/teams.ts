@@ -510,8 +510,8 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 		check(this.bodyParams, {
 			teamId: String,
 			data: {
-				name: String,
-				type: Number,
+				name: Match.Maybe(String),
+				type: Match.Maybe(Number),
 			},
 		});
 
