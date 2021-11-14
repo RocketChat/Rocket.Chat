@@ -451,7 +451,7 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 API.v1.addRoute('teams.delete', { authRequired: true }, {
 	async post() {
 		const { bodyParams } = this;
-		const { roomsToRemove } = this.bodyParams;
+		const { roomsToRemove = [] } = this.bodyParams;
 
 		if (!isTeamsDeleteProps(bodyParams)) {
 			return API.v1.failure('invalid-params', isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '));
@@ -461,10 +461,6 @@ API.v1.addRoute('teams.delete', { authRequired: true }, {
 			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
 			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
 		);
-
-		if (!roomsToRemove || !Array.isArray(roomsToRemove)) {
-			return API.v1.failure('The list of rooms to remove is invalid.');
-		}
 
 		if (!team) {
 			return API.v1.failure('Team not found.');
