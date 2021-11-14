@@ -1,7 +1,7 @@
 
 
 import type { IRoom } from '../../../IRoom';
-import type { ITeam, TEAM_TYPE } from '../../../ITeam';
+import type { ITeam } from '../../../ITeam';
 import type { IUser } from '../../../IUser';
 import { PaginatedResult } from '../../helpers/PaginatedResult';
 import { PaginatedRequest } from '../../helpers/PaginatedRequest';
@@ -13,6 +13,7 @@ import { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import { TeamsDeleteProps } from './TeamsDeleteProps';
 import { TeamsLeaveProps } from './TeamsLeaveProps';
+import { TeamsUpdateProps } from './TeamsUpdateProps';
 
 
 type TeamProps =
@@ -22,7 +23,8 @@ type TeamProps =
 	| TeamsAddMembersProps
 	| TeamsRemoveMemberProps
 	| TeamsDeleteProps
-	| TeamsLeaveProps;
+	| TeamsLeaveProps
+	| TeamsUpdateProps;
 
 export const isTeamPropsWithTeamName = <T extends TeamProps>(props: T): props is T & { teamName: string } => 'teamName' in props;
 
@@ -115,7 +117,7 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.update': {
-		POST: (params: { teamId: string; data: { name?: string; type?: TEAM_TYPE } }) => void;
+		POST: (params: TeamsUpdateProps) => void;
 	};
 
 	'teams.delete': {

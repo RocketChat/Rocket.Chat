@@ -17,6 +17,7 @@ import { isTeamsRemoveMemberProps } from '../../../../definition/rest/v1/teams/T
 import { isTeamsAddMembersProps } from '../../../../definition/rest/v1/teams/TeamsAddMembersProps';
 import { isTeamsDeleteProps } from '../../../../definition/rest/v1/teams/TeamsDeleteProps';
 import { isTeamsLeaveProps } from '../../../../definition/rest/v1/teams/TeamsLeaveProps';
+import { isTeamsUpdateProps } from '../../../../definition/rest/v1/teams/TeamsUpdateProps';
 
 API.v1.addRoute('teams.list', { authRequired: true }, {
 	async get() {
@@ -507,17 +508,18 @@ API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 
 API.v1.addRoute('teams.update', { authRequired: true }, {
 	async post() {
-		check(this.bodyParams, {
-			teamId: String,
-			data: {
-				name: Match.Maybe(String),
-				type: Match.Maybe(Number),
-			},
-		});
+		const { bodyParams } = this;
+		if (!isTeamsUpdateProps(bodyParams)) {
+			return API.v1.failure('invalid-params', isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '));
+		}
 
-		const { teamId, data } = this.bodyParams;
+		const { data } = bodyParams;
 
-		const team = teamId && await Team.getOneById(teamId);
+		const team = await (
+			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
+			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
+		);
+
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -526,7 +528,7 @@ API.v1.addRoute('teams.update', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		await Team.update(this.userId, teamId, { name: data.name, type: data.type });
+		await Team.update(this.userId, team._id, data);
 
 		return API.v1.success();
 	},
