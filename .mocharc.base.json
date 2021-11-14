@@ -7,5 +7,6 @@
 	],
 	"reporter": "spec",
 	"ui": "bdd",
-	"extension": "js,ts"
+	"extension": "js,ts,tsx",
+	"watch-extensions": "js,ts,tsx"
 }

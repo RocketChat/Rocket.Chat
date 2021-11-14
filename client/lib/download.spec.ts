@@ -1,5 +1,3 @@
-import '../../tests/mocks/web/register';
-
 import { expect, spy } from 'chai';
 import { describe, it } from 'mocha';
 

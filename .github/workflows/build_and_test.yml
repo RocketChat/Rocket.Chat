@@ -245,6 +245,9 @@ jobs:
     - name: Unit Test
       run: npm run testunit
 
+    - name: Unit Test (client)
+      run: npm run testunit-client
+
     - name: E2E Test
       env:
         TEST_MODE: "true"

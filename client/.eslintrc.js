@@ -133,5 +133,11 @@ module.exports = {
 				'react/no-multi-comp': 'off',
 			},
 		},
+		{
+			files: ['**/*.tests.js', '**/*.tests.ts', '**/*.spec.ts', '**/*.spec.tsx'],
+			env: {
+				mocha: true,
+			},
+		},
 	],
 };
