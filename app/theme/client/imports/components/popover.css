@@ -92,19 +92,17 @@
 	}
 
 	&__wrapper {
+		padding-left: 16px;
 
-		padding-left: 16px ;
-				
 		&:hover {
 			border-radius: 2px;
 			background-color: #f7f8fa;
 		}
-
 	}
 
 	&__list {
-		margin-left: -16px;
 		width: 125%;
+		margin-left: -16px;
 	}
 
 	&__item {
@@ -124,7 +122,6 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
-
 
 		&--alert {
 			color: var(--rc-color-error);
