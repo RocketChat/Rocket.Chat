@@ -40,9 +40,12 @@ Meteor.startup(() => {
 			},
 		};
 
+		const regex = /([^/]*$)/g;
 		const items = Array.from(document.querySelectorAll(className))
+			.filter((element) => element.src && element.naturalWidth && element.naturalHeight)
 			.map((element, i) => {
-				if (element === event.currentTarget) {
+				const isALinkFromFilesSection = event.currentTarget.href && element.src.match(regex)[0] === event.currentTarget.href.match(regex)[0];
+				if (element === event.currentTarget || isALinkFromFilesSection) {
 					galleryOptions.index = i;
 				}
 
@@ -50,7 +53,7 @@ Meteor.startup(() => {
 					src: element.src,
 					w: element.naturalWidth,
 					h: element.naturalHeight,
-					title: element.dataset.title || element.title,
+					title: element.title || element.dataset.title || element.src.match(regex)[0],
 					description: element.dataset.description,
 				};
 
