@@ -4,23 +4,10 @@ import { Users } from '../../../../app/models/server';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
+import { ILicense } from '../definitions/ILicense';
+import { ILicenseTag } from '../definitions/ILicenseTag';
 
 const EnterpriseLicenses = new EventEmitter();
-
-interface ILicenseTag {
-	name: string;
-	color: string;
-}
-
-export interface ILicense {
-	url: string;
-	expiry: string;
-	maxActiveUsers: number;
-	modules: string[];
-	maxGuestUsers: number;
-	maxRoomsPerGuest: number;
-	tag?: ILicenseTag;
-}
 
 export interface IValidLicense {
 	valid?: boolean;
