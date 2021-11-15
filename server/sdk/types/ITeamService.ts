@@ -47,11 +47,14 @@ export interface IListRoomsFilter {
 	allowPrivateTeam: boolean;
 }
 
-export interface ITeamUpdateData {
-	name: string;
-	type: TEAM_TYPE;
-	updateRoom?: boolean; // default is true
-}
+export type ITeamUpdateData =
+	{ updateRoom?: boolean } & ({
+		name: string;
+		type?: TEAM_TYPE;
+	} | {
+		name?: string;
+		type: TEAM_TYPE;
+	})
 
 export type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 

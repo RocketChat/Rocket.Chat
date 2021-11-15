@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { Permissions, Roles } from '../../../models/server/raw';
+import { IPermission } from '../../../../definition/IPermission';
+import { isBodyParamsValidPermissionUpdate } from '../../../../definition/rest/v1/permissions';
 
 API.v1.addRoute('permissions.listAll', { authRequired: true }, {
-	get() {
+	async get() {
 		const { updatedSince } = this.queryParams;
 
 		let updatedSinceDate: Date | undefined;
@@ -17,7 +18,10 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 			updatedSinceDate = new Date(updatedSince);
 		}
 
-		const result = Promise.await(Meteor.call('permissions/get', updatedSinceDate));
+		const result = await Meteor.call('permissions/get', updatedSinceDate) as {
+			update: IPermission[];
+			remove: IPermission[];
+		};
 
 		if (Array.isArray(result)) {
 			return API.v1.success({
@@ -31,51 +35,37 @@ API.v1.addRoute('permissions.listAll', { authRequired: true }, {
 });
 
 API.v1.addRoute('permissions.update', { authRequired: true }, {
-	post() {
+	async post() {
 		if (!hasPermission(this.userId, 'access-permissions')) {
 			return API.v1.failure('Editing permissions is not allowed', 'error-edit-permissions-not-allowed');
 		}
 
-		check(this.bodyParams, {
-			permissions: [
-				Match.ObjectIncluding({
-					_id: String,
-					roles: [String],
-				}),
-			],
-		});
+		const { bodyParams } = this;
 
-		let permissionNotFound = false;
-		let roleNotFound = false;
-		Object.keys(this.bodyParams.permissions).forEach((key) => {
-			const element = this.bodyParams.permissions[key];
+		if (!isBodyParamsValidPermissionUpdate(bodyParams)) {
+			return API.v1.failure('Invalid body params', 'error-invalid-body-params');
+		}
 
-			if (!Promise.await(Permissions.findOneById(element._id))) {
-				permissionNotFound = true;
-			}
+		const permissionKeys = bodyParams.permissions.map(({ _id }) => _id);
+		const permissions = await Permissions.find({ _id: { $in: permissionKeys } }).toArray();
 
-			Object.keys(element.roles).forEach((key) => {
-				const subElement = element.roles[key];
-
-				if (!Promise.await(Roles.findOneById(subElement))) {
-					roleNotFound = true;
-				}
-			});
-		});
-
-		if (permissionNotFound) {
+		if (permissions.length !== bodyParams.permissions.length) {
 			return API.v1.failure('Invalid permission', 'error-invalid-permission');
-		} if (roleNotFound) {
+		}
+
+		const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
+
+		const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
+
+		if (roles.length !== roleKeys.length) {
 			return API.v1.failure('Invalid role', 'error-invalid-role');
 		}
 
-		Object.keys(this.bodyParams.permissions).forEach((key) => {
-			const element = this.bodyParams.permissions[key];
+		for await (const permission of bodyParams.permissions) {
+			await Permissions.setRoles(permission._id, permission.roles);
+		}
 
-			Permissions.createOrUpdate(element._id, element.roles);
-		});
-
-		const result = Promise.await(Meteor.call('permissions/get'));
+		const result = await Meteor.call('permissions/get') as IPermission[];
 
 		return API.v1.success({
 			permissions: result,

@@ -697,7 +697,7 @@ API.v1.addRoute('chat.getSnippetedMessages', { authRequired: true }, {
 });
 
 API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
-	get() {
+	async get() {
 		const { roomId, text } = this.queryParams;
 		const { sort } = this.parseJsonQuery();
 		const { offset, count } = this.getPaginationItems();
@@ -705,7 +705,7 @@ API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 		if (!roomId) {
 			throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 		}
-		const messages = Promise.await(findDiscussionsFromRoom({
+		const messages = await findDiscussionsFromRoom({
 			uid: this.userId,
 			roomId,
 			text,
@@ -714,7 +714,7 @@ API.v1.addRoute('chat.getDiscussions', { authRequired: true }, {
 				count,
 				sort,
 			},
-		}));
+		});
 		return API.v1.success(messages);
 	},
 });

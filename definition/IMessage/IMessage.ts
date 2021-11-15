@@ -1,11 +1,11 @@
 import { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
 import { parser } from '@rocket.chat/message-parser';
 
-import { IRocketChatRecord } from '../IRocketChatRecord';
-import { IUser } from '../IUser';
-import { ChannelName, RoomID } from '../IRoom';
-import { MessageAttachment } from './MessageAttachment/MessageAttachment';
-import { FileProp } from './MessageAttachment/Files/FileProp';
+import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
+import type { ChannelName, RoomID } from '../IRoom';
+import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
+import type { FileProp } from './MessageAttachment/Files/FileProp';
 
 type MentionType = 'user' | 'team';
 
