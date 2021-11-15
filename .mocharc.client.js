@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * Mocha configuration for client-side unit and integration tests.
+ */
+
 const base = require('./.mocharc.base.json');
 
 /**
