@@ -7,6 +7,7 @@ module.exports = {
 	require: [
 		...base.require,
 		'./tests/mocks/client/register.ts',
+		'./tests/setup/cleanupTestingLibrary.ts',
 	],
 	spec: [
 		'client/**/*.spec.ts',
