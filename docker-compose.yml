@@ -34,7 +34,7 @@ services:
       - "traefik.http.routers.rocketchat.tls.certresolver=myresolver"
 
   mongo:
-    image: mongo:4.0
+    image: mongo:5.0
     restart: unless-stopped
     volumes:
       - ./data/db:/data/db
@@ -46,7 +46,7 @@ services:
   # this container's job is just run the command to initialize the replica set.
   # it will run the command and remove himself (it will not stay running)
   mongo-init-replica:
-    image: mongo:4.0
+    image: mongo:5.0
     command: >
       bash -c
         "for i in `seq 1 30`; do
