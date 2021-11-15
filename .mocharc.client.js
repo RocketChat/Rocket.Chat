@@ -24,7 +24,6 @@ module.exports = {
 		'./tests/setup/cleanupTestingLibrary.ts',
 	],
 	exit: false,
-	parallel: true,
 	slow: 200,
 	spec: [
 		'client/**/*.spec.ts',

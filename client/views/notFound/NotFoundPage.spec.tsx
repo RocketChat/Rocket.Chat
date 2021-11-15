@@ -1,4 +1,5 @@
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, waitFor, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { expect, spy } from 'chai';
 import React from 'react';
 
@@ -7,22 +8,35 @@ import NotFoundPage from './NotFoundPage';
 
 describe('views/notFound/NotFoundPage', () => {
 	it('should look good', async () => {
-		const { getByRole } = render(<NotFoundPage />);
+		render(<NotFoundPage />);
 
-		expect(getByRole('heading', { level: 1, name: 'Oops_page_not_found' })).to.be.visible;
+		expect(screen.getByRole('heading', { level: 1, name: 'Oops_page_not_found' })).to.exist;
 		expect(
-			getByRole('status', {
+			screen.getByRole('status', {
 				name: 'Sorry_page_you_requested_does_not_exist_or_was_deleted',
 			}),
-		).to.be.visible;
+		).to.exist;
+		expect(
+			screen.getByRole('button', { name: 'Return_to_previous_page' }),
+		).to.exist.and.to.not.match(':disabled');
+		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.exist.and.to.not.match(
+			':disabled',
+		);
+	});
+
+	it('should have correct tab order', () => {
+		render(<NotFoundPage />);
+
+		expect(document.body).to.have.focus;
+		userEvent.tab();
+		expect(screen.getByRole('button', { name: 'Return_to_previous_page' })).to.have.focus;
+		userEvent.tab();
+		expect(screen.getByRole('button', { name: 'Return_to_home' })).to.have.focus;
+		userEvent.tab();
+		expect(document.body).to.have.focus;
 	});
 
 	context('"Return to previous page" button', () => {
-		it('is visible', () => {
-			const { getByRole } = render(<NotFoundPage />);
-			expect(getByRole('button', { name: 'Return_to_previous_page' })).to.be.visible;
-		});
-
 		context('when clicked', () => {
 			const listener = spy();
 
@@ -36,10 +50,10 @@ describe('views/notFound/NotFoundPage', () => {
 			});
 
 			it('should go back on history', async () => {
-				const { getByRole } = render(<NotFoundPage />);
-				const button = getByRole('button', { name: 'Return_to_previous_page' });
+				render(<NotFoundPage />);
+				const button = screen.getByRole('button', { name: 'Return_to_previous_page' });
 
-				fireEvent.click(button);
+				userEvent.click(button);
 				await waitFor(() => expect(listener).to.have.been.called(), { timeout: 2000 });
 				expect(window.history.state).to.not.be.eq('404-page');
 			});
@@ -47,22 +61,17 @@ describe('views/notFound/NotFoundPage', () => {
 	});
 
 	context('"Return to home" button', () => {
-		it('is visible', () => {
-			const { getByRole } = render(<NotFoundPage />);
-			expect(getByRole('button', { name: 'Return_to_home' })).to.be.visible;
-		});
-
 		context('when clicked', () => {
 			it('should go back on history', async () => {
 				const pushRoute = spy();
-				const { getByRole } = render(
+				render(
 					<RouterContextMock pushRoute={pushRoute}>
 						<NotFoundPage />
 					</RouterContextMock>,
 				);
-				const button = getByRole('button', { name: 'Return_to_home' });
+				const button = screen.getByRole('button', { name: 'Return_to_home' });
 
-				fireEvent.click(button);
+				userEvent.click(button);
 				await waitFor(() => expect(pushRoute).to.have.been.called.with('home'));
 			});
 		});
