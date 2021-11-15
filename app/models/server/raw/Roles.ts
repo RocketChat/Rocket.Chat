@@ -17,12 +17,12 @@ export class RolesRaw extends BaseRaw<IRole> {
 	}
 
 
-	findByUpdatedDate<P>(updatedAfterDate: Date, options: FindOneOptions<P extends IRole ? IRole : P>): Cursor<P> | Cursor<IRole> {
+	findByUpdatedDate(updatedAfterDate: Date, options?: FindOneOptions<IRole>): Cursor<IRole> {
 		const query = {
 			_updatedAt: { $gte: new Date(updatedAfterDate) },
 		};
 
-		return this.find(query, options);
+		return options ? this.find(query, options) : this.find(query);
 	}
 
 
@@ -135,7 +135,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 		return this.findOne(query, options);
 	}
 
-	updateById(_id: IRole['_id'], name: IRole['name'], scope: IRole['scope'], description: IRole['description'], mandatory2fa: IRole['mandatory2fa']): Promise<UpdateWriteOpResult> {
+	updateById(_id: IRole['_id'], name: IRole['name'], scope: IRole['scope'], description: IRole['description'] = '', mandatory2fa: IRole['mandatory2fa'] = false): Promise<UpdateWriteOpResult> {
 		const queryData = {
 			name,
 			scope,
@@ -151,7 +151,7 @@ export class RolesRaw extends BaseRaw<IRole> {
 
 	findUsersInRole(name: IRole['name'], scope: string | undefined, options: WithoutProjection<FindOneOptions<IUser>>): Promise<Cursor<IUser>>;
 
-	findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P>>;
+	findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options: FindOneOptions<P extends IUser ? IUser : P>): Promise<Cursor<P extends IUser ? IUser : P>>;
 
 	async findUsersInRole<P>(name: IRole['name'], scope: string | undefined, options?: any | undefined): Promise<Cursor<IUser> | Cursor<P>> {
 		const role = await this.findOne({ name }, { scope: 1 } as FindOneOptions<IRole>);

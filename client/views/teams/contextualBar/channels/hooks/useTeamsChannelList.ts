@@ -41,9 +41,10 @@ export const useTeamsChannelList = (
 			});
 
 			return {
-				items: rooms.map(({ _updatedAt, lastMessage, lm, jitsiTimeout, ...room }) => ({
+				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, jitsiTimeout, ...room }) => ({
 					jitsiTimeout: new Date(jitsiTimeout),
 					...(lm && { lm: new Date(lm) }),
+					...(ts && { ts: new Date(ts) }),
 					_updatedAt: new Date(_updatedAt),
 					...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
 					...room,
