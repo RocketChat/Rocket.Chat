@@ -128,7 +128,7 @@
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"fast-glob": "^3.2.5",
 		"husky": "^7.0.1",
-		"i18next": "^20.3.2",
+		"i18next": "^21.4.2",
 		"jsdom-global": "3.0.2",
 		"mocha": "^9.0.0",
 		"mock-require": "^3.0.3",
