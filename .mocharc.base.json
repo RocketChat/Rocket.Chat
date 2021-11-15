@@ -1,12 +1,16 @@
 {
+	"ui": "bdd",
+	"reporter": "spec",
+	"extension": ["js", "ts", "tsx"],
 	"require": [
 		"@babel/register",
 		"regenerator-runtime/runtime",
 		"ts-node/register",
 		"./tests/setup/chaiPlugins.ts"
 	],
-	"reporter": "spec",
-	"ui": "bdd",
-	"extension": "js,ts,tsx",
-	"watch-extensions": "js,ts,tsx"
+	"watch-files": [
+		"./**/*.js",
+		"./**/*.ts",
+		"./**/*.tsx"
+	]
 }
