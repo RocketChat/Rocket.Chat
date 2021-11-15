@@ -618,6 +618,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Kontinuerlige lydvarsler for nytt livechat-rom",
   "Conversation": "Samtale",
   "Conversation_closed": "Samtalen avsluttet: __comment__.",
+  "Conversation_finished": "Samtalen er avsluttet",
   "Conversation_finished_message": "Samtalen avsluttet melding",
   "conversation_with_s": "samtalen med %s",
   "Convert_Ascii_Emojis": "Konverter ASCII til Emoji",

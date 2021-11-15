@@ -554,6 +554,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "การแจ้งเตือนเสียงอย่างต่อเนื่องสำหรับห้องสดใหม่",
   "Conversation": "การสนทนา",
   "Conversation_closed": "ปิดการสนทนา: __comment__",
+  "Conversation_finished": "การสนทนาเสร็จสิ้นแล้ว",
   "Conversation_finished_message": "การสนทนาข้อความเสร็จสิ้น",
   "conversation_with_s": "การสนทนากับ %s",
   "Convert_Ascii_Emojis": "แปลง ASCII เป็น Emoji",

@@ -555,6 +555,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Yeni livechat otağı üçün davamlı səs bildirişləri",
   "Conversation": "Söhbət",
   "Conversation_closed": "Söhbət bağlandı: __comment__.",
+  "Conversation_finished": "Söhbət başa çatdı",
   "Conversation_finished_message": "Söhbət sona çatdı",
   "conversation_with_s": "%s ilə söhbət",
   "Convert_Ascii_Emojis": "ASCII'yi Emoji'ye çevirmək",

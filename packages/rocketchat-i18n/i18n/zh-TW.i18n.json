@@ -3028,7 +3028,7 @@
   "Organization_Type": "組織類型",
   "Original": "原始的",
   "OS_Arch": "作業系統架構",
-  "OS_Cpus": "作業系統處理器數量",
+  "OS_Cpus": "處理器數量",
   "OS_Freemem": "作業系統可用記憶體",
   "OS_Loadavg": "作業系統平均負載",
   "OS_Platform": "作業系統平台",
