@@ -2,7 +2,7 @@ import { IRocketChatRecord } from './IRocketChatRecord';
 import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
-type RoomType = 'c' | 'd' | 'p' | 'l';
+export type RoomType = 'c' | 'd' | 'p' | 'l';
 
 export type RoomID = string;
 export type ChannelName = string;
