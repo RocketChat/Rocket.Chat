@@ -17,7 +17,6 @@ import './views/app/pageCustomContainer.html';
 import './views/app/roomSearch.html';
 import './views/app/secretURL.html';
 import './views/app/userSearch.html';
-import './views/app/photoswipe.html';
 import './views/cmsPage';
 import './views/404/roomNotFound';
 import './views/app/burger';
@@ -25,7 +24,7 @@ import './views/app/home';
 import './views/app/roomSearch';
 import './views/app/secretURL';
 import './views/app/invite';
-import './views/app/photoswipe';
+import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
 import './components/icon';
 import './components/table.html';
 import './components/table';
