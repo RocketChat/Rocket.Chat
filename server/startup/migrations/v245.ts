@@ -8,7 +8,6 @@ addMigration({
 		LivechatAgentActivity.tryDropIndex({ date: 1 });
 		LivechatAgentActivity.tryDropIndex({ agentId: 1 });
 
-		LivechatDepartmentAgents.tryDropIndex({ departmentId: 1 });
 		LivechatDepartmentAgents.tryDropIndex({ departmentEnabled: 1 });
 		LivechatDepartmentAgents.tryDropIndex({ agentId: 1 });
 

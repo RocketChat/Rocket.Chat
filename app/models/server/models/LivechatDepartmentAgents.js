@@ -11,6 +11,7 @@ export class LivechatDepartmentAgents extends Base {
 		super('livechat_department_agents');
 
 		this.tryEnsureIndex({ username: 1 });
+		this.tryEnsureIndex({ departmentId: 1 });
 		this.tryEnsureIndex({ agentId: 1, departmentId: 1 });
 
 		const collectionObj = this.model.rawCollection();
