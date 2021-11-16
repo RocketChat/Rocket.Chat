@@ -1,6 +1,6 @@
 import { Button, Box, Icon, Flex } from '@rocket.chat/fuselage';
 import { Meteor } from 'meteor/meteor';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, FC } from 'react';
 
 import { APIClient } from '../../../app/utils/client';
 import UserAvatar from '../../components/avatar/UserAvatar';
@@ -10,7 +10,7 @@ import PageLoading from '../root/PageLoading';
 import CallPage from './CallPage';
 import './styles.css';
 
-function MeetPage() {
+const MeetPage: FC = () => {
 	const [isRoomMember, setIsRoomMember] = useState(false);
 	const [status, setStatus] = useState(null);
 	const [visitorId, setVisitorId] = useState(null);
@@ -21,7 +21,8 @@ function MeetPage() {
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);
 
-	const isMobileDevice = () => window.innerWidth <= 450;
+	const isMobileDevice = (): boolean => window.innerWidth <= 450;
+	const closeCallTab = (): void => window.close();
 
 	const setupCallForVisitor = useCallback(async () => {
 		const room = await APIClient.v1.get(`/livechat/room?token=${visitorToken}&rid=${roomId}`);
@@ -52,7 +53,8 @@ function MeetPage() {
 
 	useEffect(() => {
 		if (visitorToken) {
-			return setupCallForVisitor();
+			setupCallForVisitor();
+			return;
 		}
 		setupCallForAgent();
 	}, [setupCallForAgent, setupCallForVisitor, visitorToken]);
@@ -62,9 +64,6 @@ function MeetPage() {
 	if (!isRoomMember) {
 		return <NotFoundPage></NotFoundPage>;
 	}
-	const closeCallTab = () => {
-		window.close();
-	};
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>
@@ -98,7 +97,7 @@ function MeetPage() {
 					</Box>
 					<Box
 						position='absolute'
-						zIndex='1'
+						zIndex={1}
 						style={{
 							top: isMobileDevice() ? '30%' : '20%',
 							display: 'flex',
@@ -155,6 +154,6 @@ function MeetPage() {
 			callStartTime={callStartTime}
 		/>
 	);
-}
+};
 
 export default MeetPage;
