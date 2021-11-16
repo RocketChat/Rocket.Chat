@@ -2,7 +2,7 @@ module.exports = {
 	root: true,
 	extends: ['@rocket.chat/eslint-config', 'prettier'],
 	parser: 'babel-eslint',
-	plugins: ['react', 'react-hooks', 'prettier'],
+	plugins: ['react', 'react-hooks', 'prettier', 'testing-library'],
 	rules: {
 		'import/named': 'error',
 		'import/order': [
@@ -131,6 +131,19 @@ module.exports = {
 			rules: {
 				'react/display-name': 'off',
 				'react/no-multi-comp': 'off',
+			},
+		},
+		{
+			files: ['**/*.tests.js', '**/*.tests.ts', '**/*.spec.ts', '**/*.spec.tsx'],
+			extends: ['plugin:testing-library/react'],
+			rules: {
+				'testing-library/no-await-sync-events': 'warn',
+				'testing-library/no-manual-cleanup': 'warn',
+				'testing-library/prefer-explicit-assert': 'warn',
+				'testing-library/prefer-user-event': 'warn',
+			},
+			env: {
+				mocha: true,
 			},
 		},
 	],

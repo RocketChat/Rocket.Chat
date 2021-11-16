@@ -144,6 +144,16 @@
           "version": "detect"
         }
       }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
+      }
     }
   ]
 }

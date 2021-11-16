@@ -1,13 +1,11 @@
 'use strict';
 
+/**
+ * Mocha configuration for REST API integration tests.
+ */
+
 module.exports = {
-	require: [
-		'babel-mocha-es6-compiler',
-		'babel-polyfill',
-	],
-	reporter: 'spec',
-	ui: 'bdd',
-	extension: 'js,ts',
+	...require('./.mocharc.base.json'), // see https://github.com/mochajs/mocha/issues/3916
 	timeout: 10000,
 	bail: true,
 	file: 'tests/end-to-end/teardown.js',
