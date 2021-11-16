@@ -9,7 +9,6 @@ export class LivechatRooms extends Base {
 	constructor(...args) {
 		super(...args);
 
-		// this.tryEnsureIndex({ open: 1 }, { sparse: true }); covered by compound index
 		this.tryEnsureIndex({ departmentId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.chatDuration': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'metrics.serviceTimeDuration': 1 }, { sparse: true });
@@ -17,7 +16,6 @@ export class LivechatRooms extends Base {
 		this.tryEnsureIndex({ 'omnichannel.predictedVisitorAbandonmentAt': 1 }, { sparse: true });
 		this.tryEnsureIndex({ closedAt: 1 }, { sparse: true });
 		this.tryEnsureIndex({ servedBy: 1 }, { sparse: true });
-		// this.tryEnsureIndex({ 'v.token': 1 }, { sparse: true }); covered by following index
 		this.tryEnsureIndex({ 'v.token': 1, 'email.thread': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'v._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ t: 1, departmentId: 1, closedAt: 1 }, { partialFilterExpression: { closedAt: { $exists: true } } });
