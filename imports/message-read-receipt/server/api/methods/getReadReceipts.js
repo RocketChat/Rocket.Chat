@@ -5,7 +5,7 @@ import { canAccessRoom } from '../../../../../app/authorization/server';
 import { ReadReceipt } from '../../lib/ReadReceipt';
 
 Meteor.methods({
-	getReadReceipts({ messageId }) {
+	async getReadReceipts({ messageId }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getReadReceipts' });
 		}

@@ -145,7 +145,7 @@ const getTeams = (user, searchTerm, sort, pagination) => {
 	};
 };
 
-const getUsers = (user, text, workspace, sort, pagination) => {
+const getUsers = async (user, text, workspace, sort, pagination) => {
 	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
 		return;
 	}
@@ -183,7 +183,7 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 
 	// Try to find federated users, when applicable
 	if (isFederationEnabled() && workspace === 'external' && text.indexOf('@') !== -1) {
-		const users = federationSearchUsers(text);
+		const users = await federationSearchUsers(text);
 
 		for (const user of users) {
 			if (results.find((e) => e._id === user._id)) { continue; }
@@ -208,7 +208,7 @@ const getUsers = (user, text, workspace, sort, pagination) => {
 };
 
 Meteor.methods({
-	browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+	async browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
 		const searchTerm = s.trim(escapeRegExp(text));
 
 		if (!['channels', 'users', 'teams'].includes(type) || !['asc', 'desc'].includes(sortDirection) || ((!page && page !== 0) && (!offset && offset !== 0))) {

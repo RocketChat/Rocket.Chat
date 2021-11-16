@@ -1,5 +1,6 @@
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions, Messages, Rooms, Roles } from '../../../models/server';
+import { Subscriptions, Messages, Rooms } from '../../../models/server';
+import { Roles } from '../../../models/server/raw';
 
 const bulkRoomCleanUp = (rids) => {
 	// no bulk deletion for files
@@ -12,11 +13,14 @@ const bulkRoomCleanUp = (rids) => {
 	]));
 };
 
-export const relinquishRoomOwnerships = function(userId, subscribedRooms, removeDirectMessages = true) {
+export const relinquishRoomOwnerships = async function(userId, subscribedRooms, removeDirectMessages = true) {
 	// change owners
-	subscribedRooms
-		.filter(({ shouldChangeOwner }) => shouldChangeOwner)
-		.forEach(({ newOwner, rid }) => Roles.addUserRoles(newOwner, ['owner'], rid));
+	const changeOwner = subscribedRooms
+		.filter(({ shouldChangeOwner }) => shouldChangeOwner);
+
+	for await (const { newOwner, rid } of changeOwner) {
+		await Roles.addUserRoles(newOwner, ['owner'], rid);
+	}
 
 	const roomIdsToRemove = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);
 

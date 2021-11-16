@@ -10,5 +10,5 @@ export interface IServerEvent {
 	t: IServerEventType;
 	ts: Date;
 	ip: string;
-	u?: Partial<IUser>;
+	u?: Partial<Pick<IUser, '_id' | 'username'>>;
 }

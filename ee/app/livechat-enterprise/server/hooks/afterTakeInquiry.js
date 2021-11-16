@@ -17,6 +17,6 @@ callbacks.add('livechat.afterTakeInquiry', async (inquiry) => {
 	const { department } = inquiry;
 	debouncedDispatchWaitingQueueStatus(department);
 
-	cbLogger.debug(`Statuses for queue ${ department || 'Public' } updated succesfully`);
+	cbLogger.debug(`Statuses for queue ${ department || 'Public' } updated successfully`);
 	return inquiry;
 }, callbacks.priority.MEDIUM, 'livechat-after-take-inquiry');

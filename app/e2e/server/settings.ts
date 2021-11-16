@@ -11,11 +11,13 @@ settingsRegistry.addGroup('E2E Encryption', function() {
 
 	this.add('E2E_Enabled_Default_DirectRooms', false, {
 		type: 'boolean',
+		public: true,
 		enableQuery: { _id: 'E2E_Enable', value: true },
 	});
 
 	this.add('E2E_Enabled_Default_PrivateRooms', false, {
 		type: 'boolean',
+		public: true,
 		enableQuery: { _id: 'E2E_Enable', value: true },
 	});
 });

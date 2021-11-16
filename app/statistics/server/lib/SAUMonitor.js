@@ -4,9 +4,9 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import UAParser from 'ua-parser-js';
 
 import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { Sessions } from '../../../models/server';
+import { Sessions } from '../../../models/server/raw';
+import { aggregates } from '../../../models/server/raw/Sessions';
 import { Logger } from '../../../logger';
-import { aggregates } from '../../../models/server/models/Sessions';
 import { getMostImportantRole } from './getMostImportantRole';
 
 const getDateObj = (dateTime = new Date()) => ({
@@ -32,7 +32,7 @@ export class SAUMonitorClass {
 		this._jobName = 'aggregate-sessions';
 	}
 
-	start(instanceId) {
+	async start(instanceId) {
 		if (this.isRunning()) {
 			return;
 		}
@@ -44,7 +44,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		this._startMonitoring(() => {
+		await this._startMonitoring(() => {
 			this._started = true;
 			logger.debug(`[start] - InstanceId: ${ this._instanceId }`);
 		});
@@ -70,12 +70,12 @@ export class SAUMonitorClass {
 		return this._started === true;
 	}
 
-	_startMonitoring(callback) {
+	async _startMonitoring(callback) {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
 			this._startSessionControl();
-			this._initActiveServerSessions();
+			await this._initActiveServerSessions();
 			this._startAggregation();
 			if (callback) {
 				callback();
@@ -94,8 +94,8 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		this._timer = Meteor.setInterval(() => {
-			this._updateActiveSessions();
+		this._timer = Meteor.setInterval(async () => {
+			await this._updateActiveSessions();
 		}, this._monitorTime);
 	}
 
@@ -110,8 +110,8 @@ export class SAUMonitorClass {
 			}
 			// this._handleSession(connection, getDateObj());
 
-			connection.onClose(() => {
-				Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
+			connection.onClose(async () => {
+				await Sessions.closeByInstanceIdAndSessionId(this._instanceId, connection.id);
 			});
 		});
 	}
@@ -121,7 +121,7 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		Accounts.onLogin((info) => {
+		Accounts.onLogin(async (info) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -132,11 +132,11 @@ export class SAUMonitorClass {
 
 			const loginAt = new Date();
 			const params = { userId, roles, mostImportantRole, loginAt, ...getDateObj() };
-			this._handleSession(info.connection, params);
+			await this._handleSession(info.connection, params);
 			this._updateConnectionInfo(info.connection.id, { loginAt });
 		});
 
-		Accounts.onLogout((info) => {
+		Accounts.onLogout(async (info) => {
 			if (!this.isRunning()) {
 				return;
 			}
@@ -144,17 +144,17 @@ export class SAUMonitorClass {
 			const sessionId = info.connection.id;
 			if (info.user) {
 				const userId = info.user._id;
-				Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
+				await Sessions.logoutByInstanceIdAndSessionIdAndUserId(this._instanceId, sessionId, userId);
 			}
 		});
 	}
 
-	_handleSession(connection, params) {
+	async _handleSession(connection, params) {
 		const data = this._getConnectionInfo(connection, params);
-		Sessions.createOrUpdate(data);
+		await Sessions.createOrUpdate(data);
 	}
 
-	_updateActiveSessions() {
+	async _updateActiveSessions() {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -167,8 +167,8 @@ export class SAUMonitorClass {
 			const beforeDateTime = new Date(this._today.year, this._today.month - 1, this._today.day, 23, 59, 59, 999);
 			const nextDateTime = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
 
-			const createSessions = (objects, ids) => {
-				Sessions.createBatch(objects);
+			const createSessions = async (objects, ids) => {
+				await Sessions.createBatch(objects);
 
 				Meteor.defer(() => {
 					Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, ids, { lastActivityAt: beforeDateTime });
@@ -180,8 +180,8 @@ export class SAUMonitorClass {
 		}
 
 		// Otherwise, just update the lastActivityAt field
-		this._applyAllServerSessionsIds((sessions) => {
-			Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: currentDateTime });
+		await this._applyAllServerSessionsIds(async (sessions) => {
+			await Sessions.updateActiveSessionsByDateAndInstanceIdAndIds({ year, month, day }, this._instanceId, sessions, { lastActivityAt: currentDateTime });
 		});
 	}
 
@@ -266,32 +266,38 @@ export class SAUMonitorClass {
 		};
 	}
 
-	_initActiveServerSessions() {
-		this._applyAllServerSessions((connectionHandle) => {
-			this._handleSession(connectionHandle, getDateObj());
+	async _initActiveServerSessions() {
+		await this._applyAllServerSessions(async (connectionHandle) => {
+			await this._handleSession(connectionHandle, getDateObj());
 		});
 	}
 
-	_applyAllServerSessions(callback) {
+	async _applyAllServerSessions(callback) {
 		if (!callback || typeof callback !== 'function') {
 			return;
 		}
 
 		const sessions = Object.values(Meteor.server.sessions).filter((session) => session.userId);
-		sessions.forEach((session) => {
-			callback(session.connectionHandle);
-		});
+		for await (const session of sessions) {
+			await callback(session.connectionHandle);
+		}
 	}
 
-	_applyAllServerSessionsIds(callback) {
+	async recursive(callback, sessionIds) {
+		await callback(sessionIds.splice(0, 500));
+
+		if (sessionIds.length) {
+			await this.recursive(callback, sessionIds);
+		}
+	}
+
+	async _applyAllServerSessionsIds(callback) {
 		if (!callback || typeof callback !== 'function') {
 			return;
 		}
 
 		const sessionIds = Object.values(Meteor.server.sessions).filter((session) => session.userId).map((s) => s.id);
-		while (sessionIds.length) {
-			callback(sessionIds.splice(0, 500));
-		}
+		await this.recursive(callback, sessionIds);
 	}
 
 	_updateConnectionInfo(sessionId, data = {}) {
@@ -315,8 +321,8 @@ export class SAUMonitorClass {
 			return Promise.all(arr.splice(0, limit).map((item) => {
 				ids.push(item.id);
 				return this._getConnectionInfo(item.connectionHandle, params);
-			})).then((data) => {
-				callback(data, ids);
+			})).then(async (data) => {
+				await callback(data, ids);
 				return batch(arr, limit);
 			}).catch((e) => {
 				logger.debug(`Error: ${ e.message }`);
@@ -333,13 +339,13 @@ export class SAUMonitorClass {
 		SyncedCron.add({
 			name: this._jobName,
 			schedule: (parser) => parser.text('at 2:00 am'),
-			job: () => {
-				this.aggregate();
+			job: async () => {
+				await this.aggregate();
 			},
 		});
 	}
 
-	aggregate() {
+	async aggregate() {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -357,16 +363,16 @@ export class SAUMonitorClass {
 			day: { $lte: yesterday.day },
 		};
 
-		aggregates.dailySessionsOfYesterday(Sessions.model.rawCollection(), yesterday).forEach(Meteor.bindEnvironment((record) => {
+		await aggregates.dailySessionsOfYesterday(Sessions.col, yesterday).forEach(async (record) => {
 			record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
-			Sessions.upsert({ _id: record._id }, record);
-		}));
+			await Sessions.updateOne({ _id: record._id }, record, { upsert: true });
+		});
 
-		Sessions.update(match, {
+		await Sessions.updateMany(match, {
 			$set: {
 				type: 'computed-session',
 				_computedAt: new Date(),
 			},
-		}, { multi: true });
+		});
 	}
 }

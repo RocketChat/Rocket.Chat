@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { EmojiCustom } from '../../../models/server';
+import { EmojiCustom } from '../../../models/server/raw';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { findEmojisCustom } from '../lib/emoji-custom';
@@ -19,15 +19,15 @@ API.v1.addRoute('emoji-custom.list', { authRequired: true }, {
 			}
 			return API.v1.success({
 				emojis: {
-					update: EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).fetch(),
-					remove: EmojiCustom.trashFindDeletedAfter(updatedSinceDate).fetch(),
+					update: Promise.await(EmojiCustom.find({ ...query, _updatedAt: { $gt: updatedSinceDate } }).toArray()),
+					remove: Promise.await(EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray()),
 				},
 			});
 		}
 
 		return API.v1.success({
 			emojis: {
-				update: EmojiCustom.find(query).fetch(),
+				update: Promise.await(EmojiCustom.find(query).toArray()),
 				remove: [],
 			},
 		});
@@ -88,7 +88,7 @@ API.v1.addRoute('emoji-custom.update', { authRequired: true }, {
 			throw new Meteor.Error('The required "_id" query param is missing.');
 		}
 
-		const emojiToUpdate = EmojiCustom.findOneById(fields._id);
+		const emojiToUpdate = Promise.await(EmojiCustom.findOneById(fields._id));
 		if (!emojiToUpdate) {
 			throw new Meteor.Error('Emoji not found.');
 		}

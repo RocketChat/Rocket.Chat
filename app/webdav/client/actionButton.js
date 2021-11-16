@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { t, getURL } from '../../utils';
-import { WebdavAccounts } from '../../models';
+import { WebdavAccounts } from '../../models/client';
 import { settings } from '../../settings';
 import { MessageAction, modal } from '../../ui-utils';
 import { messageArgs } from '../../ui-utils/client/lib/messageArgs';
