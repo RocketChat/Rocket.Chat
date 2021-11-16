@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Mocha configuration for general unit tests.
+ * Mocha configuration for unit tests for type guards.
  */
 
 const base = require('./.mocharc.base.json');
@@ -18,11 +18,12 @@ Object.assign(process.env, {
 
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
-	exit: true,
+	require: [
+		...base.require,
+	],
+	exit: false,
+	slow: 200,
 	spec: [
-		'app/**/*.spec.ts',
-		'app/**/*.tests.js',
-		'app/**/*.tests.ts',
-		'server/**/*.tests.ts',
+		'definition/**/*.spec.ts',
 	],
 };
