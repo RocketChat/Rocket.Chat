@@ -20,9 +20,11 @@ const logger = new Logger('API');
 const rateLimiterDictionary = {};
 export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	numRequestsAllowedUserRegistration: settings.get('API_Enable_Rate_Limiter_Limit_RegisterUser'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
 let prometheusAPIUserAgent = false;
+const registerUserRoute = '/api/v1/users.registerpost';
 
 export let API = {};
 
@@ -264,7 +266,10 @@ export class APIClass extends Restivus {
 					IPAddr: (input) => input,
 					route,
 				};
-				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
+
+				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule,
+					route === registerUserRoute ? rateLimiterOptions.numRequestsAllowedUserRegistration : rateLimiterOptions.numRequestsAllowed,
+					rateLimiterOptions.intervalTimeInMS);
 			});
 		};
 		routes
