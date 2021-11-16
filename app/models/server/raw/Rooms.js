@@ -3,6 +3,15 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw {
+	indexes=[
+		{
+			key: {
+				source: 1,
+			},
+			sparse: true,
+		},
+	];
+
 	findOneByRoomIdAndUserId(rid, uid, options = {}) {
 		const query = {
 			_id: rid,

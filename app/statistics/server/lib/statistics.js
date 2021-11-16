@@ -126,14 +126,6 @@ export const statistics = {
 			type,
 			count,
 		}));
-			acc.push({
-				id: curr._id.id,
-				alias: curr._id.alias,
-				type: curr._id.type,
-				count: curr.count,
-			});
-			return acc;
-		}, []);
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);
