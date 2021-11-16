@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Mocha configuration for client-side unit and integration tests.
+ * Mocha configuration for unit tests for type guards.
  */
 
 const base = require('./.mocharc.base.json');
