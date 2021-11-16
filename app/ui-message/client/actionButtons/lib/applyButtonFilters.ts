@@ -7,13 +7,13 @@ import { IUIActionButton, TemporaryRoomTypeFilter } from '@rocket.chat/apps-engi
 import { hasAtLeastOnePermission, hasPermission, hasRole } from '../../../../authorization/client';
 import { IRoom, RoomType } from '../../../../../definition/IRoom';
 
-export const applyAuthFilter = (button: IUIActionButton): boolean => {
+export const applyAuthFilter = (button: IUIActionButton, room?: IRoom): boolean => {
 	const { hasAllPermissions, hasOnePermission, hasAllRoles, hasOneRole } = button.when || {};
 
 	const hasAllPermissionsResult = hasAllPermissions ? hasPermission(hasAllPermissions) : true;
 	const hasOnePermissionResult = hasOnePermission ? hasAtLeastOnePermission(hasOnePermission) : true;
-	const hasAllRolesResult = hasAllRoles ? hasAllRoles.every((role) => hasRole(Meteor.userId(), role)) : true;
-	const hasOneRoleResult = hasOneRole ? hasRole(Meteor.userId(), hasOneRole) : true;
+	const hasAllRolesResult = hasAllRoles ? hasAllRoles.every((role) => hasRole(Meteor.userId(), role, room?._id)) : true;
+	const hasOneRoleResult = hasOneRole ? hasRole(Meteor.userId(), hasOneRole, room?._id) : true;
 
 	return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 };
@@ -33,5 +33,5 @@ export const applyRoomFilter = (button: IUIActionButton, room: IRoom): boolean =
 };
 
 export const applyButtonFilters = (button: IUIActionButton, room?: IRoom): boolean => {
-	return applyAuthFilter(button) && (!room || applyRoomFilter(button, room));
+	return applyAuthFilter(button, room) && (!room || applyRoomFilter(button, room));
 };
