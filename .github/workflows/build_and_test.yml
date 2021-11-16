@@ -242,6 +242,9 @@ jobs:
       run: |
         npm install
 
+    - name: Unit Test (definitions)
+      run: npm run testunit-definition
+
     - name: Unit Test
       run: npm run testunit
 

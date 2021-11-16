@@ -25,6 +25,5 @@ module.exports = {
 	slow: 200,
 	spec: [
 		'definition/**/*.spec.ts',
-		'definition/**/*.spec.tsx',
 	],
 };

@@ -31,6 +31,7 @@
 		"testapi": "mocha --config ./.mocharc.api.js",
 		"testunit": "mocha --config ./.mocharc.js",
 		"testunit-client": "mocha --config ./.mocharc.client.js",
+		"testunit-definition": "mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "mocha --watch --config ./.mocharc.js",
 		"test": "npm run testapi && npm run testui",
 		"translation-diff": "node .scripts/translationDiff.js",
