@@ -10,10 +10,11 @@ export class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
 
-		this.tryEnsureIndex({ departmentId: 1 });
-		this.tryEnsureIndex({ departmentEnabled: 1 });
-		this.tryEnsureIndex({ agentId: 1 });
+		// this.tryEnsureIndex({ departmentId: 1 }); prefer compound index
+		// this.tryEnsureIndex({ departmentEnabled: 1 }); index on an index with only 2 possible fields :(
+		// this.tryEnsureIndex({ agentId: 1 }); prefer compound index
 		this.tryEnsureIndex({ username: 1 });
+		this.tryEnsureIndex({ agentId: 1, departmentId: 1 });
 
 		const collectionObj = this.model.rawCollection();
 		this.findAndModify = Meteor.wrapAsync(collectionObj.findAndModify, collectionObj);

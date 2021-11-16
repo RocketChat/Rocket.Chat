@@ -5,12 +5,14 @@ export class LivechatInquiry extends Base {
 		super('livechat_inquiry');
 
 		this.tryEnsureIndex({ rid: 1 }); // room id corresponding to this inquiry
-		this.tryEnsureIndex({ name: 1 }); // name of the inquiry (client name for now)
-		this.tryEnsureIndex({ message: 1 }); // message sent by the client
+		// this.tryEnsureIndex({ name: 1 }); // name of the inquiry (client name for now)
+		// this.tryEnsureIndex({ message: 1 }); // message sent by the client
 		this.tryEnsureIndex({ ts: 1 }); // timestamp
-		this.tryEnsureIndex({ department: 1 });
-		this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
+		// this.tryEnsureIndex({ department: 1 });
+		// this.tryEnsureIndex({ status: 1 }); // 'ready', 'queued', 'taken'
 		this.tryEnsureIndex({ queueOrder: 1, estimatedWaitingTimeQueue: 1, estimatedServiceTimeAt: 1 });
+		this.tryEnsureIndex({ status: 1, department: 1 });
+		this.tryEnsureIndex({ 'v.token': 1, status: 1 });
 	}
 
 	findOneById(inquiryId) {
@@ -240,40 +242,6 @@ export class LivechatInquiry extends Base {
 
 		this.remove(query);
 	}
-
-	getUnnatendedQueueItems(date) {
-		const query = {
-			status: 'queued',
-			estimatedInactivityCloseTimeAt: { $lte: new Date(date) },
-		};
-		return this.find(query);
-	}
-
-	setEstimatedInactivityCloseTime(_id, date) {
-		return this.update({ _id }, {
-			$set: {
-				estimatedInactivityCloseTimeAt: new Date(date),
-			},
-		});
-	}
-
-	// This is a better solution, but update pipelines are not supported until version 4.2 of mongo
-	// leaving this here for when the time comes
-	/* updateEstimatedInactivityCloseTime(milisecondsToAdd) {
-		return this.model.rawCollection().updateMany(
-			{ status: 'queued' },
-			[{
-				// in case this field doesn't exists, set at the last time the item was modified (updatedAt)
-				$set: { estimatedInactivityCloseTimeAt: '$_updatedAt' },
-			}, {
-				$set: {
-					estimatedInactivityCloseTimeAt: {
-						$add: ['$estimatedInactivityCloseTimeAt', milisecondsToAdd],
-					},
-				},
-			}],
-		);
-	} */
 }
 
 export default new LivechatInquiry();

@@ -11,6 +11,7 @@ export class LivechatVisitors extends Base {
 
 		this.tryEnsureIndex({ token: 1 });
 		this.tryEnsureIndex({ 'phone.phoneNumber': 1 }, { sparse: true });
+		this.tryEnsureIndex({ 'visitorEmails.address': 1 }, { sparse: true });
 	}
 
 	/**
