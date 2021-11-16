@@ -4,7 +4,7 @@ import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { Messages, Rooms } from '../../../../models';
-import { settings as rcSettings } from '../../../../settings';
+import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { findGuest, getRoom, settings } from '../lib/livechat';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
@@ -92,7 +92,7 @@ API.v1.addRoute('livechat/webrtc.call', { authRequired: true }, {
 				throw new Meteor.Error('webRTC calling not enabled');
 			}
 
-			const config = settings();
+			const config = Promise.await(settings());
 			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
 				throw new Meteor.Error('invalid-livechat-config');
 			}
