@@ -414,6 +414,7 @@ export class RoomsRaw extends BaseRaw {
 					source: {
 						$exists: true,
 					},
+					t: 'l',
 				},
 			},
 			{
