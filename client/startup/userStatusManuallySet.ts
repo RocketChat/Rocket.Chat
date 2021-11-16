@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../app/callbacks/client';
+import { callbacks } from '../../app/callbacks/lib/callbacks';
 import { UserStatus } from '../../definition/UserStatus';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
