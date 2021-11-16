@@ -1,7 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Session } from 'meteor/session';
 import { debounce } from 'lodash';
 
 import { settings } from '../../../settings/client';
@@ -66,10 +64,6 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	performingUsers.set(rid, roomActivities);
 }
 export const UserAction = new class {
-	constructor() {
-		Tracker.autorun(() => Session.get('openedRoom') && this.addStream(Session.get('openedRoom')));
-	}
-
 	addStream(rid: string): void {
 		if (rooms.get(rid)) {
 			return;
