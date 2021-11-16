@@ -630,8 +630,9 @@ API.v1.addRoute('channels.messages', { authRequired: true }, {
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = hasPermission(this.userId, 'preview-c-room') || hasPermission(this.userId, 'view-c-room');
+		const isJoined = Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } });
 
-		if (findResult.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { fields: { _id: 1 } })) {
+		if (findResult.t === 'c' && !canAnonymous && !canPreview && !isJoined) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 		}
 
