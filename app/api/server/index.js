@@ -47,5 +47,6 @@ import './v1/teams';
 import './v1/voip/extensions';
 import './v1/voip/queues';
 import './v1/voip/server-config';
+import './v1/voip/omnichannel';
 
 export { API, APIClass, defaultRateLimiterOptions } from './api';

@@ -145,6 +145,9 @@ export const upsertPermissions = () => {
 		// allows to manage voip calls configuration
 		{ _id: 'manage-voip-call-settings', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'manage-voip-contact-center-settings', roles: ['livechat-manager', 'admin'] },
+		// allows agent-extension association.
+		{ _id: 'managage-agent-extension-association', roles: ['admin'] },
+		{ _id: 'query-agent-extension-association', roles: ['livechat-manager', 'admin', 'livechat-agent'] },
 		// allows to receive a voip call
 		{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
 

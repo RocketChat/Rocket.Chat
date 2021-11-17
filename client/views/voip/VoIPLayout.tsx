@@ -55,7 +55,6 @@ class VoIPLayout
 	 * Once we have final UI, this file will be deleted.
 	 */
 	private async apiVerificationRoutine(): Promise<void> {
-		/*
 		try {
 			this.logger.info('Executing voipServerConfig.callServer');
 			const output = await APIClient.v1.post(
@@ -89,7 +88,6 @@ class VoIPLayout
 		} catch (error) {
 			this.logger.error(`error ${error} in API voipServerConfig.management`);
 		}
-		*/
 		try {
 			this.logger.info('Executing connector.getVersion');
 			const list = await APIClient.v1.get('connector.getVersion');
@@ -149,12 +147,81 @@ class VoIPLayout
 		}
 
 		try {
+			this.logger.info('Executing connector.extension.getRegistrationInfo');
 			const userIdentity = await APIClient.v1.get('connector.extension.getRegistrationInfo', {
 				extension: '80000',
 			});
 			this.logger.info('list = ', JSON.stringify(userIdentity));
 		} catch (error) {
 			this.logger.error(`error ${error} in API connector.extension.getRegistrationInfo`);
+		}
+
+		try {
+			this.logger.info('Executing POST omnichannel.agent.extension');
+			const userIdentity = await APIClient.v1.post(
+				'omnichannel.agent.extension',
+				{},
+				{
+					username: 'amol.associate',
+					extension: '80001',
+				},
+			);
+			this.logger.info('list = ', JSON.stringify(userIdentity));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
+		}
+
+		try {
+			this.logger.info('Executing GET omnichannel.agent.extension');
+			const extension = await APIClient.v1.get('omnichannel.agent.extension', {
+				username: 'amol.associate',
+			});
+			this.logger.info('list = ', JSON.stringify(extension));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
+		}
+
+		/*
+		try {
+			this.logger.info('Executing delete omnichannel.agent.extension');
+			const result = await APIClient.v1.delete('omnichannel.agent.extension', {
+				username: 'amol.associate1',
+			});
+			this.logger.info('list = ', JSON.stringify(result));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
+		}
+		// Set it again for verifying methods below
+
+		try {
+			this.logger.info('Executing POST omnichannel.agent.extension');
+			const userIdentity = await APIClient.v1.post(
+				'omnichannel.agent.extension',
+				{},
+				{
+					username: 'amol.associate1',
+					extension: '80000',
+				},
+			);
+			this.logger.info('list = ', JSON.stringify(userIdentity));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
+		}
+		*/
+		try {
+			this.logger.info('Executing GET omnichannel.extension.free');
+			const extension = await APIClient.v1.get('omnichannel.extension.free');
+			this.logger.info('list = ', JSON.stringify(extension));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
+		}
+
+		try {
+			this.logger.info('Executing GET omnichannel.extension.allocated');
+			const extension = await APIClient.v1.get('omnichannel.extension.allocated');
+			this.logger.info('list = ', JSON.stringify(extension));
+		} catch (error) {
+			this.logger.error(`error ${error} in API agent.extension`);
 		}
 	}
 
