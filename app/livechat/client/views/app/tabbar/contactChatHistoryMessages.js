@@ -36,6 +36,12 @@ Template.contactChatHistoryMessages.helpers({
 	empty() {
 		return Template.instance().messages.get().length === 0;
 	},
+	hasError() {
+		return Template.instance().hasError.get();
+	},
+	error() {
+		return Template.instance().error.get();
+	},
 });
 
 Template.contactChatHistoryMessages.events({
@@ -72,15 +78,23 @@ Template.contactChatHistoryMessages.onCreated(function() {
 	this.searchTerm = new ReactiveVar('');
 	this.isLoading = new ReactiveVar(true);
 	this.limit = new ReactiveVar(MESSAGES_LIMIT);
+	this.hasError = new ReactiveVar(false);
+	this.error = new ReactiveVar(null);
 
 	this.loadMessages = async (url) => {
 		this.isLoading.set(true);
 		const offset = this.offset.get();
 
-		const { messages, total } = await APIClient.v1.get(url);
-		this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
-		this.hasMore.set(total > this.messages.get().length);
-		this.isLoading.set(false);
+		try {
+			const { messages, total } = await APIClient.v1.get(url);
+			this.messages.set(offset === 0 ? messages : this.messages.get().concat(messages));
+			this.hasMore.set(total > this.messages.get().length);
+		} catch (e) {
+			this.hasError.set(true);
+			this.error.set(e);
+		} finally {
+			this.isLoading.set(false);
+		}
 	};
 
 	this.autorun(() => {

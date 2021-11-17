@@ -5,6 +5,7 @@ import { API } from '../../../../api/server';
 import { LivechatRooms, Messages } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
+import { canAccessRoom } from '../../../../authorization/server';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -77,6 +78,10 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequi
 
 		if (!room) {
 			throw new Error('invalid-room');
+		}
+
+		if (!canAccessRoom(room, this.user)) {
+			throw new Error('not-allowed');
 		}
 
 		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
