@@ -69,8 +69,8 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 	post() {
 		const SMSService = SMS.getService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
-		const { departmentName } = this.queryParams;
-		let targetDepartment = defineDepartment(departmentName || SMS.department);
+		const { department } = this.queryParams;
+		let targetDepartment = defineDepartment(department || SMS.department);
 		if (!targetDepartment) {
 			targetDepartment = defineDepartment(SMS.department);
 		}
