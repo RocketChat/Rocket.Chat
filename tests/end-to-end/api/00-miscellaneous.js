@@ -43,8 +43,8 @@ describe('miscellaneous', function() {
 	});
 
 	it('/login', () => {
-		expect(credentials).to.have.property('X-Auth-Token').with.length.at.least(1);
-		expect(credentials).to.have.property('X-User-Id').with.length.at.least(1);
+		expect(credentials).to.have.property('X-Auth-Token').with.lengthOf.at.least(1);
+		expect(credentials).to.have.property('X-User-Id').with.lengthOf.at.least(1);
 	});
 
 	it('/login (wrapper username)', (done) => {

@@ -1,12 +1,12 @@
 import { WebApp } from 'meteor/webapp';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
-import { UserDataFiles } from '../../models';
+import { UserDataFiles } from '../../models/server/raw';
 import { DataExport } from './DataExport';
 import { settings } from '../../settings/server';
 
 
-WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {
+WebApp.connectHandlers.use(DataExport.getPath(), async function(req, res, next) {
 	const match = /^\/([^\/]+)/.exec(req.url);
 
 	if (!settings.get('UserData_EnableDownload')) {
@@ -16,7 +16,7 @@ WebApp.connectHandlers.use(DataExport.getPath(), function(req, res, next) {
 	}
 
 	if (match && match[1]) {
-		const file = UserDataFiles.findOneById(match[1]);
+		const file = await UserDataFiles.findOneById(match[1]);
 		if (file) {
 			if (!DataExport.requestCanAccessFiles(req, file.userId)) {
 				res.setHeader('Content-Type', 'text/html; charset=UTF-8');

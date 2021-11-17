@@ -1,12 +1,10 @@
 import moment from 'moment';
 
 import { ILoginAttempt } from '../ILoginAttempt';
-import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
-import { IServerEventType } from '../../../../definition/IServerEvent';
-import { IUser } from '../../../../definition/IUser';
+import { ServerEvents, Users, Rooms, Sessions } from '../../../models/server/raw';
+import { IServerEventType, IServerEvent } from '../../../../definition/IServerEvent';
 import { settings } from '../../../settings/server';
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
-import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';
 import { Logger } from '../../../logger/server';
@@ -52,7 +50,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 		return true;
 	}
 
-	const lastLogin = await Sessions.findLastLoginByIp(ip) as {loginAt?: Date} | undefined;
+	const lastLogin = await Sessions.findLastLoginByIp(ip);
 	let failedAttemptsSinceLastLogin;
 
 	if (!lastLogin || !lastLogin.loginAt) {
@@ -128,7 +126,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 };
 
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {
-	const user: Partial<IUser> = {
+	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
 		username: login.user?.username || login.methodArguments[0].user?.username,
 	};
@@ -142,10 +140,15 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 };
 
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
+	const user: IServerEvent['u'] = {
+		_id: login.user?._id,
+		username: login.user?.username || login.methodArguments[0].user?.username,
+	};
+
 	await ServerEvents.insertOne({
 		ip: getClientAddress(login.connection),
 		t: IServerEventType.LOGIN,
 		ts: new Date(),
-		u: login.user,
+		u: user,
 	});
 };

@@ -1,15 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import { OAuth2Server } from 'meteor/rocketchat:oauth2-server';
 
-import { OAuthApps, Users } from '../../../models';
+import { Users } from '../../../models/server';
+import { OAuthApps } from '../../../models/server/raw';
 import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
 	accessTokensCollectionName: 'rocketchat_oauth_access_tokens',
 	refreshTokensCollectionName: 'rocketchat_oauth_refresh_tokens',
 	authCodesCollectionName: 'rocketchat_oauth_auth_codes',
-	clientsCollection: OAuthApps.model,
+	// TODO: Remove workaround. Used to pass meteor collection reference to a package
+	clientsCollection: new Mongo.Collection(OAuthApps.col.collectionName),
 	debug: true,
 });
 

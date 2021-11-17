@@ -1,7 +1,8 @@
 import { addUserRoles, removeUserFromRoles } from '../../../../app/authorization/server';
-import { Roles, Rooms } from '../../../../app/models/server';
+import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
+import { Roles } from '../../../../app/models/server/raw';
 
 export const logger = new Logger('OAuth');
 
@@ -64,7 +65,7 @@ export class OAuthEEManager {
 		if (identity && roleClaimName) {
 			// Adding roles
 			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Roles.findOneByIdOrName(val));
+				roles = identity[roleClaimName].filter((val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)));
 			}
 		}
 
