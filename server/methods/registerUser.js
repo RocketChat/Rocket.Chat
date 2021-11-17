@@ -5,7 +5,7 @@ import s from 'underscore.string';
 
 import { Users } from '../../app/models';
 import { settings } from '../../app/settings';
-import { validateEmailDomain, passwordPolicy } from '../../app/lib';
+import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 
 Meteor.methods({
@@ -97,3 +97,9 @@ Meteor.methods({
 		return userId;
 	},
 });
+
+RateLimiter.limitMethod('registerUser',
+	settings.get('API_Enable_Rate_Limiter_Limit_RegisterUser'),
+	settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
+		userId() { return true; },
+	});
