@@ -264,7 +264,6 @@ export class APIClass extends Restivus {
 					IPAddr: (input) => input,
 					route,
 				};
-
 				rateLimiterDictionary[route].rateLimiter.addRule(rateLimitRule, rateLimiterOptions.numRequestsAllowed, rateLimiterOptions.intervalTimeInMS);
 			});
 		};
