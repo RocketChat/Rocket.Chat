@@ -1,4 +1,3 @@
-import { Promise } from 'meteor/promise';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
@@ -53,7 +52,7 @@ import { BannerPlatform } from '../../../../definition/IBanner';
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
-	get() {
+	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			platform: String,
 			bid: Match.Maybe(String),
@@ -68,7 +67,7 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 			throw new Meteor.Error('error-unknown-platform', 'Platform is unknown.');
 		}
 
-		const banners = Promise.await(Banner.getBannersForUser(this.userId, platform, bannerId));
+		const banners = await Banner.getBannersForUser(this.userId, platform, bannerId);
 
 		return API.v1.success({ banners });
 	},
@@ -120,13 +119,18 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute('banners/:id', { authRequired: true }, {
-	get() {
+API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/:id/banners
+	async get() {
 		check(this.urlParams, Match.ObjectIncluding({
 			id: String,
 		}));
 
+		check(this.queryParams, Match.ObjectIncluding({
+			platform: String,
+		}));
+
 		const { platform } = this.queryParams;
+
 		if (!platform) {
 			throw new Meteor.Error('error-missing-param', 'The required "platform" param is missing.');
 		}
@@ -136,7 +140,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, {
 			throw new Meteor.Error('error-missing-param', 'The required "id" param is missing.');
 		}
 
-		const banners = Promise.await(Banner.getBannersForUser(this.userId, platform, id));
+		const banners = await Banner.getBannersForUser(this.userId, platform, id);
 
 		return API.v1.success({ banners });
 	},
@@ -180,7 +184,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, {
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners', { authRequired: true }, {
-	get() {
+	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
 			platform: String,
 		}));
@@ -194,7 +198,7 @@ API.v1.addRoute('banners', { authRequired: true }, {
 			throw new Meteor.Error('error-unknown-platform', 'Platform is unknown.');
 		}
 
-		const banners = Promise.await(Banner.getBannersForUser(this.userId, platform));
+		const banners = await Banner.getBannersForUser(this.userId, platform);
 
 		return API.v1.success({ banners });
 	},
@@ -234,7 +238,7 @@ API.v1.addRoute('banners', { authRequired: true }, {
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
 API.v1.addRoute('banners.dismiss', { authRequired: true }, {
-	post() {
+	async post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			bannerId: String,
 		}));
@@ -245,7 +249,7 @@ API.v1.addRoute('banners.dismiss', { authRequired: true }, {
 			throw new Meteor.Error('error-missing-param', 'The required "bannerId" param is missing.');
 		}
 
-		Promise.await(Banner.dismiss(this.userId, bannerId));
+		await Banner.dismiss(this.userId, bannerId);
 		return API.v1.success();
 	},
 });

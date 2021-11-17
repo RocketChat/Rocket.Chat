@@ -3,11 +3,8 @@ import React, { FC } from 'react';
 
 import { Info as info, APIClient } from '../../app/utils/client';
 import { Serialized } from '../../definition/Serialized';
+import { Method, Params, Return, PathFor } from '../../definition/rest';
 import {
-	Method,
-	Params,
-	PathFor,
-	Return,
 	ServerContext,
 	ServerMethodName,
 	ServerMethodParameters,
@@ -61,18 +58,6 @@ const uploadToEndpoint = (endpoint: string, params: any, formData: any): Promise
 
 	return APIClient.v1.upload(endpoint, params, formData).promise;
 };
-
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		// eslint-disable-next-line @typescript-eslint/no-namespace
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: typeof Meteor.Streamer;
-			};
-		}
-	}
-}
 
 const getStream = (
 	streamName: string,

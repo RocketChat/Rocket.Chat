@@ -1,6 +1,8 @@
 import { settingsRegistry } from '../../../../app/settings/server';
 
-export const createSettings = () => {
+const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
+
+export const createSettings = (): void => {
 	settingsRegistry.add('Canned_Responses_Enable', true, {
 		group: 'Omnichannel',
 		section: 'Canned_Responses',
@@ -11,5 +13,6 @@ export const createSettings = () => {
 		modules: [
 			'canned-responses',
 		],
+		enableQuery: omnichannelEnabledQuery,
 	});
 };

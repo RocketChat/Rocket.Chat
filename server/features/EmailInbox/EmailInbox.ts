@@ -7,6 +7,7 @@ import { IMAPInterceptor } from '../../email/IMAPInterceptor';
 import { IEmailInbox } from '../../../definition/IEmailInbox';
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
+import { settings } from '../../../app/settings/server';
 
 export type Inbox = {
 	imap: IMAPInterceptor;
@@ -54,7 +55,7 @@ export async function configureEmailInboxes(): Promise<void> {
 			}
 
 			try {
-				await EmailMessageHistory.insertOne({ _id: email.messageId, email: emailInboxRecord.email });
+				await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
 				onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
 			} catch (e: any) {
 				// In case the email message history has been received by other instance..
@@ -81,5 +82,7 @@ export async function configureEmailInboxes(): Promise<void> {
 }
 
 Meteor.startup(() => {
-	configureEmailInboxes();
+	settings.watchOnce('Livechat_Routing_Method', (_) => {
+		configureEmailInboxes();
+	});
 });

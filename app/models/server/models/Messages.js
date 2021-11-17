@@ -246,6 +246,17 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
+	findVisibleByIds(ids, options) {
+		const query = {
+			_id: { $in: ids },
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findVisibleThreadByThreadId(tmid, options) {
 		const query = {
 			_hidden: {

@@ -710,8 +710,7 @@ describe('Meteor.methods', function() {
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
+					expect(data.error).to.have.a.property('error', 'error-invalid-room');
 				})
 				.end(done);
 		});

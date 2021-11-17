@@ -94,7 +94,8 @@ export interface IRole {
 	mandatory2fa?: boolean;
 	name: string;
 	protected: boolean;
-	scope?: string;
+	// scope?: string;
+	scope: 'Users' | 'Subscriptions';
 	_id: string;
 }
 
@@ -142,6 +143,12 @@ export interface IUser extends IRocketChatRecord {
 	defaultRoom?: string;
 	ldap?: boolean;
 }
+
+export interface IRegisterUser extends IUser {
+	username: string;
+	name: string;
+}
+export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;

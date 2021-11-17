@@ -27,10 +27,8 @@ export class RoomsRaw extends BaseRaw {
 			{
 				$match: {
 					t: 'l',
-					closedAt: { $exists: true },
-					metrics: { $exists: true },
-					'metrics.chatDuration': { $exists: true },
 					...department && { departmentId: department },
+					closedAt: { $exists: true },
 				},
 			},
 			{ $sort: { closedAt: -1 } },
@@ -398,5 +396,24 @@ export class RoomsRaw extends BaseRaw {
 
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
+	}
+
+	allRoomSourcesCount() {
+		return this.col.aggregate([
+			{
+				$match: {
+					source: {
+						$exists: true,
+					},
+					t: 'l',
+				},
+			},
+			{
+				$group: {
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+		]);
 	}
 }
