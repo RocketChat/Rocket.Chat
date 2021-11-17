@@ -56,7 +56,7 @@ export const AuditPageBase = ({
 			<Page.Header title={t('Message_auditing')} />
 			<Tabs>
 				<Tabs.Item selected={type === ''} onClick={useHandleType('')}>
-					{t('Channels')}
+					{t('Rooms')}
 				</Tabs.Item>
 				<Tabs.Item selected={type === 'u'} onClick={useHandleType('u')}>
 					{t('Users')}
