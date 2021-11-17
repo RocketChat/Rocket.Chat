@@ -20,7 +20,7 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 
 API.v1.addRoute('roles.sync', { authRequired: true }, {
 	async get() {
-		const { updatedSince } = this.queryParams;
+		const { updatedSince } = this.queryParams as any; // TODO
 
 		if (isNaN(Date.parse(updatedSince))) {
 			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
@@ -56,7 +56,7 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 			throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 
-		if (['Users', 'Subscriptions'].includes(roleData.scope) === false) {
+		if (['Users', 'Subscriptions'].includes(roleData.scope as string) === false) { // TODO
 			roleData.scope = 'Users';
 		}
 		const roleId = (await Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa)).insertedId;
@@ -239,7 +239,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 		const data = {
 			roleName: bodyParams.roleName,
 			username: bodyParams.username,
-			scope: this.bodyParams.scope,
+			scope: (bodyParams as any).scope, // TODO
 		};
 
 		if (!await hasPermissionAsync(this.userId, 'access-permissions')) {

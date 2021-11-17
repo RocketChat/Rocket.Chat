@@ -5,11 +5,16 @@ import { Method, Params, PathFor, Return } from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
-export const useEndpointActionExperimental = <M extends Method, P extends PathFor<M>>(
-	method: M,
-	path: P,
+export const useEndpointActionExperimental = <
+	TMethod extends Method,
+	TPath extends PathFor<TMethod>,
+>(
+	method: TMethod,
+	path: TPath,
 	successMessage?: string,
-): ((params: Serialized<Params<M, P>[0]>) => Promise<Serialized<Return<M, P>>>) => {
+): ((
+	params: Serialized<Params<TMethod, TPath>[0]>,
+) => Promise<Serialized<Return<TMethod, TPath>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 

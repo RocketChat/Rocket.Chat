@@ -54,7 +54,7 @@ import { BannerPlatform } from '../../../../definition/IBanner';
 API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 			bid: Match.Maybe(String),
 		}));
 
@@ -67,7 +67,7 @@ API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 			throw new Meteor.Error('error-unknown-platform', 'Platform is unknown.');
 		}
 
-		const banners = await Banner.getBannersForUser(this.userId, platform, bannerId);
+		const banners = await Banner.getBannersForUser(this.userId, platform, bannerId ?? undefined);
 
 		return API.v1.success({ banners });
 	},
@@ -126,7 +126,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
 		}));
 
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 		}));
 
 		const { platform } = this.queryParams;
@@ -186,7 +186,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
 API.v1.addRoute('banners', { authRequired: true }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 		}));
 
 		const { platform } = this.queryParams;
