@@ -477,6 +477,7 @@ Template.messageBox.events({
 			data: {
 				rid: this.rid,
 				tmid: this.tmid,
+				prid: this.subscription.prid,
 				messageBox: instance.firstNode,
 			},
 			activeElement: event.currentTarget,
@@ -494,6 +495,7 @@ Template.messageBox.events({
 					rid: this.rid,
 					tmid: this.tmid,
 					messageBox: instance.firstNode,
+					prid: this.subscription.prid,
 					event,
 				});
 			});
