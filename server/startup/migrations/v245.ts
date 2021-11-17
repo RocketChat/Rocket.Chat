@@ -1,5 +1,5 @@
 import { addMigration } from '../../lib/migrations';
-import { Permissions } from '../../../app/models/server';
+import { Permissions } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 245,
