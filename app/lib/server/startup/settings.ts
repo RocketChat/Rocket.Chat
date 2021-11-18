@@ -3006,6 +3006,10 @@ settingsRegistry.addGroup('Rate Limiter', function() {
 		this.add('API_Enable_Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 		this.add('API_Enable_Rate_Limiter_Limit_Time_Default', 60000, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 	});
+
+	this.section('Feature Limiting', function() {
+		this.add('API_Enable_Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+	});
 });
 
 settingsRegistry.addGroup('Troubleshoot', function() {

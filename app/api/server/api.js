@@ -22,6 +22,12 @@ export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
+
+export const userRegisterRateLimiterOptions = {
+	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+};
+
 let prometheusAPIUserAgent = false;
 
 export let API = {};
@@ -768,6 +774,11 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Time_Default', (value) => {
 
 settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
+	API.v1.reloadRoutesToRefreshRateLimiter();
+});
+
+settings.watch('API_Enable_Rate_Limiter_Limit_RegisterUser', (value) => {
+	userRegisterRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
