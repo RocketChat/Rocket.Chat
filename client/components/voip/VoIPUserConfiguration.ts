@@ -37,13 +37,9 @@ export interface VoIPUserConfiguration {
 	 * @defaultValue undefined
 	 */
 	iceServers?: Array<object>;
+}
 
-	/**
-	 * mediaElements to render local and remote stream
-	 * @defaultValue undefined
-	 */
-	mediaElements?: {
-		remoteStreamMediaElement?: HTMLMediaElement;
-		localStreamMediaElement?: HTMLMediaElement;
-	};
+export interface IMediaStreamRenderer {
+	localMediaElement?: HTMLMediaElement;
+	remoteMediaElement?: HTMLMediaElement;
 }
