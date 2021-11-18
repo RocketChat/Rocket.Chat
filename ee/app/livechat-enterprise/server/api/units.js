@@ -8,7 +8,7 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 		const { sort } = this.parseJsonQuery();
 		const { text } = this.queryParams;
 
-		return API.v1.success(this.deprecationWarning(Promise.await(findUnits({
+		const response = Promise.await(findUnits({
 			userId: this.userId,
 			text,
 			pagination: {
@@ -16,7 +16,9 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 				count,
 				sort,
 			},
-		}))));
+		}));
+
+		return API.v1.success(this.deprecationWarning({ response, endpoint: 'livechat/units.list' }));
 	},
 });
 
@@ -24,10 +26,12 @@ API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
 	get() {
 		const { unitId } = this.queryParams;
 
-		return API.v1.success(this.deprecationWarning(Promise.await(findUnitById({
+		const response = Promise.await(findUnitById({
 			userId: this.userId,
 			unitId,
-		}))));
+		}));
+
+		return API.v1.success(this.deprecationWarning({ response, endpoint: 'livechat/units.getOne' }));
 	},
 });
 

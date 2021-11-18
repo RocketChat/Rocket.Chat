@@ -17,7 +17,7 @@ export async function findMonitors({ userId, text, pagination: { offset, count, 
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,
@@ -44,7 +44,7 @@ export async function findMonitorByUsername({ userId, username }) {
 		throw new Error('error-not-authorized');
 	}
 	const user = await Users.findOne({ username }, {
-		fields: {
+		projection: {
 			username: 1,
 			name: 1,
 			status: 1,
