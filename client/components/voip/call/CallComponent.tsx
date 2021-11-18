@@ -20,11 +20,16 @@ const CallComponent: FC<CallComponentProps> = ({ data, callData, buttons }) => {
 	console.log(disabled, buttons);
 
 	return (
-		<Box is='footer' p='x16' width='auto'>
+		<Box is='footer' pb='x16' width='auto'>
 			<Header state={data.state} buttonList={buttons} calls={data.callsInQueue} />
 
 			{callInfoStates.includes(data.state) && (
-				<Box display='flex' opacity={disabled ? '0.4' : '1'}>
+				<Box
+					pi='x16'
+					display='flex'
+					justifyContent='space-between'
+					opacity={disabled ? '0.4' : '1'}
+				>
 					<CallerInfo callerData={callData} data={data} />
 					<CallControls state={data.state} disabled={disabled} />
 				</Box>

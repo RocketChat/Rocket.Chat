@@ -1,4 +1,4 @@
-import { Button, Icon } from '@rocket.chat/fuselage';
+import { ActionButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { ReactNode, useState } from 'react';
 
@@ -60,22 +60,19 @@ const renderButtons = (
 			const t = useTranslation();
 
 			return (
-				<Button
-					nude
+				<ActionButton
+					// Using Action Button instead of Sidebar.TopBar.ActionButton because TS issues on the icon prop
 					key={button.name}
-					mis={8}
-					mie={0}
-					borderWidth={0}
-					p={0}
+					nude
+					small
 					// TODO: find a way to use generic strings on the useTranslation types
 					title={t(button.label as 'Audio_settings')}
-					size={28}
 					onClick={
 						handlers.find((handler) => handler.id === button.name)?.handler || button.handler
 					}
-				>
-					<Icon color={active ? 'surface' : 'neutral-500-50'} size={24} name={button.icon} />
-				</Button>
+					icon={button.icon as 'phone'}
+					color={active ? 'surface' : 'neutral-500-50'}
+				></ActionButton>
 			);
 		});
 export const useButtonsList = (
