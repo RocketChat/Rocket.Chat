@@ -109,6 +109,7 @@ type RoleRemoveUserFromRoleProps = {
 	username: string;
 	roleName: string;
 	roomId?: string;
+	scope?: string;
 }
 
 const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
@@ -121,6 +122,10 @@ const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRolePr
 			type: 'string',
 		},
 		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		scope: {
 			type: 'string',
 			nullable: true,
 		},

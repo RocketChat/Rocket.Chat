@@ -97,10 +97,10 @@ declare class APIClass<TBasePath extends string = '/'> {
 		TSubPathPattern extends string
 	>(subpath: TSubPathPattern, operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>): void;
 
-	// addRoute<
-	// 	TSubPathPattern extends string,
-	// 	TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>
-	// >(subpaths: TSubPathPattern[], operations: Operations<TPathPattern>): void;
+	addRoute<
+		TSubPathPattern extends string,
+		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>
+	>(subpaths: TSubPathPattern[], operations: Operations<TPathPattern>): void;
 
 	addRoute<
 		TSubPathPattern extends string,
@@ -111,15 +111,15 @@ declare class APIClass<TBasePath extends string = '/'> {
 		operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>, TOptions>
 	): void;
 
-	// addRoute<
-	// 	TSubPathPattern extends string,
-	// 	TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
-	// 	TOptions extends Options
-	// >(
-	// 	subpaths: TSubPathPattern[],
-	// 	options: TOptions,
-	// 	operations: Operations<TPathPattern, TOptions>
-	// ): void;
+	addRoute<
+		TSubPathPattern extends string,
+		TPathPattern extends JoinPathPattern<TBasePath, TSubPathPattern>,
+		TOptions extends Options
+	>(
+		subpaths: TSubPathPattern[],
+		options: TOptions,
+		operations: Operations<TPathPattern, TOptions>
+	): void;
 
 	success<T>(result: T): SuccessResult<T>;
 

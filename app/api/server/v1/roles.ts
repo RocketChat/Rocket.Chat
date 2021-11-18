@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { check, Match } from 'meteor/check';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
@@ -20,11 +21,11 @@ API.v1.addRoute('roles.list', { authRequired: true }, {
 
 API.v1.addRoute('roles.sync', { authRequired: true }, {
 	async get() {
-		const { updatedSince } = this.queryParams as any; // TODO
+		check(this.queryParams, Match.ObjectIncluding({
+			updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
+		}));
 
-		if (isNaN(Date.parse(updatedSince))) {
-			throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-		}
+		const { updatedSince } = this.queryParams;
 
 		return API.v1.success({
 			roles: {
@@ -41,25 +42,23 @@ API.v1.addRoute('roles.create', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 		}
 
-		const roleData = {
-			name: this.bodyParams.name,
-			scope: this.bodyParams.scope,
-			description: this.bodyParams.description,
-			mandatory2fa: this.bodyParams.mandatory2fa,
-		};
+		const { name, scope, description, mandatory2fa } = this.bodyParams;
 
 		if (!await hasPermissionAsync(Meteor.userId(), 'access-permissions')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 		}
 
-		if (await Roles.findOneByIdOrName(roleData.name)) {
+		if (await Roles.findOneByIdOrName(name)) {
 			throw new Meteor.Error('error-duplicate-role-names-not-allowed', 'Role name already exists');
 		}
 
-		if (['Users', 'Subscriptions'].includes(roleData.scope as string) === false) { // TODO
-			roleData.scope = 'Users';
-		}
-		const roleId = (await Roles.createWithRandomId(roleData.name, roleData.scope, roleData.description, false, roleData.mandatory2fa)).insertedId;
+		const roleId = (await Roles.createWithRandomId(
+			name,
+			scope && ['Users', 'Subscriptions'].includes(scope) ? scope : 'Users',
+			description,
+			false,
+			mandatory2fa,
+		)).insertedId;
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -236,29 +235,25 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 		}
 
-		const data = {
-			roleName: bodyParams.roleName,
-			username: bodyParams.username,
-			scope: (bodyParams as any).scope, // TODO
-		};
+		const { roleName, username, scope } = bodyParams;
 
 		if (!await hasPermissionAsync(this.userId, 'access-permissions')) {
 			throw new Meteor.Error('error-not-allowed', 'Accessing permissions is not allowed');
 		}
 
-		const user = Users.findOneByUsername(data.username);
+		const user = Users.findOneByUsername(username);
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 		}
 
-		const role = await Roles.findOneByIdOrName(data.roleName);
+		const role = await Roles.findOneByIdOrName(roleName);
 
 		if (!role) {
 			throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
 		}
 
-		if (!await hasRoleAsync(user._id, role.name, data.scope)) {
+		if (!await hasRoleAsync(user._id, role.name, scope)) {
 			throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
 		}
 
@@ -269,7 +264,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 			}
 		}
 
-		await Roles.removeUserRoles(user._id, [role.name], data.scope);
+		await Roles.removeUserRoles(user._id, [role.name], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
 			api.broadcast('user.roleUpdate', {
@@ -279,7 +274,7 @@ API.v1.addRoute('roles.removeUserFromRole', { authRequired: true }, {
 					_id: user._id,
 					username: user.username,
 				},
-				scope: data.scope,
+				scope,
 			});
 		}
 
