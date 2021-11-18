@@ -22,11 +22,11 @@ import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
 import { ClientLogger } from '../../../lib/ClientLogger';
 import { CallState } from './Callstate';
-import { ICallEventDelegate } from './ICallEventDelegate';
+import { ICallEventDelegate, ICallerInfo } from './ICallEventDelegate';
 import { IConnectionDelegate } from './IConnectionDelegate';
 import { IRegisterHandlerDelegate } from './IRegisterHandlerDelegate';
 import { Operation } from './Operations';
-import { VoIPUserConfiguration } from './VoIPUserConfiguration';
+import { IMediaStreamRenderer, VoIPUserConfiguration } from './VoIPUserConfiguration';
 import Stream from './media/Stream';
 // User state is based on whether the User has sent an invite(UAC) or it
 // has received an invite (UAS)
@@ -35,6 +35,7 @@ enum UserState {
 	UAC,
 	UAS,
 }
+
 export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 	private connectionDelegate: IConnectionDelegate;
 
@@ -53,6 +54,8 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 	userAgent: UserAgent | undefined;
 
 	registerer: Registerer | undefined;
+
+	mediaStreamRendered?: IMediaStreamRenderer;
 
 	logger: ClientLogger;
 
@@ -93,12 +96,14 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 		cDelegate: IConnectionDelegate,
 		rDelegate: IRegisterHandlerDelegate,
 		cEventDelegate: ICallEventDelegate,
+		mediaRenderer?: IMediaStreamRenderer,
 	) {
 		this.config = config;
 		this.connectionDelegate = cDelegate;
 		this.registrationDelegate = rDelegate;
 		this.callEventDelegate = cEventDelegate;
 		this._userState = UserState.IDLE;
+		this.mediaStreamRendered = mediaRenderer;
 		this.logger = new ClientLogger('VoIPUser');
 	}
 
@@ -156,7 +161,12 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 			this._userState = UserState.UAS;
 			this.session = invitation;
 			this.setupSessionEventHandlers(invitation);
-			this.callEventDelegate.onIncomingCall?.(invitation.id);
+			const callerId: ICallerInfo = {
+				callerId: invitation.remoteIdentity.uri.user ? invitation.remoteIdentity.uri.user : '',
+				callerName: invitation.remoteIdentity.displayName,
+				host: invitation.remoteIdentity.uri.host,
+			};
+			this.callEventDelegate.onIncomingCall?.(callerId);
 		} else {
 			this.logger.warn('handleIncomingCall() Rejecting. Incorrect state', this.callState);
 			await invitation.reject();
@@ -245,7 +255,7 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 		}
 
 		this.remoteStream = new Stream(remoteStream);
-		const mediaElement = this.config.mediaElements?.remoteStreamMediaElement;
+		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
 
 		if (mediaElement) {
 			this.remoteStream.init(mediaElement);
@@ -265,7 +275,7 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 	 * Once initialized, it starts the userAgent.
 	 */
 
-	async init(): Promise<any> {
+	async init(): Promise<void> {
 		this.logger.debug('init()');
 		const sipUri = `sip:${this.config.authUserName}@${this.config.sipRegistrarHostnameOrIP}`;
 		this.logger.verbose('init() endpoint identity = ', sipUri);
@@ -327,7 +337,10 @@ export class VoIPUser implements UserAgentDelegate, OutgoingRequestDelegate {
 	 * @remarks
 	 */
 
-	async acceptCall(): Promise<void> {
+	async acceptCall(mediaRenderer?: IMediaStreamRenderer): Promise<void> {
+		if (mediaRenderer) {
+			this.mediaStreamRendered = mediaRenderer;
+		}
 		this.logger.info('acceptCall()');
 		// Call state must be in offer_received.
 		if (
