@@ -116,7 +116,7 @@ export class SettingsRaw extends BaseRaw<ISetting> {
 			filter._id = { $in: ids };
 		}
 
-		return this.find(filter, { fields: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } }) as any;
+		return this.find(filter, { projection: { _id: 1, value: 1, editor: 1, enterprise: 1, invalidValue: 1, modules: 1, requiredOnWizard: 1 } });
 	}
 
 	findSetupWizardSettings(): Cursor<ISetting> {

@@ -30,6 +30,10 @@ export class PermissionsRaw extends BaseRaw<IPermission> {
 		await this.update({ _id: permission, roles: { $ne: role } }, { $addToSet: { roles: role } });
 	}
 
+	async setRoles(permission: string, roles: string[]): Promise<void> {
+		await this.update({ _id: permission }, { $set: { roles } });
+	}
+
 	async removeRole(permission: string, role: string): Promise<void> {
 		await this.update({ _id: permission, roles: role }, { $pull: { roles: role } });
 	}
