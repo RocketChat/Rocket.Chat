@@ -17,7 +17,7 @@ import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { getStatistics as federationGetStatistics } from '../../../federation/server/functions/dashboard';
-import { NotificationQueue, Users as UsersRaw, Statistics, Sessions, Integrations, Uploads } from '../../../models/server/raw';
+import { NotificationQueue, Users as UsersRaw, Rooms as RoomsRaw, Statistics, Sessions, Integrations, Uploads } from '../../../models/server/raw';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { getAppsStatistics } from './getAppsStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
@@ -115,6 +115,17 @@ export const statistics = {
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
+
+		// Count and types of omnichannel rooms
+		statistics.omnichannelSources = Promise.await(RoomsRaw.allRoomSourcesCount().toArray()).map(({
+			_id: { id, alias, type },
+			count,
+		}) => ({
+			id,
+			alias,
+			type,
+			count,
+		}));
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(), function _countChannelMessages(num, room) { return num + room.msgs; }, 0);

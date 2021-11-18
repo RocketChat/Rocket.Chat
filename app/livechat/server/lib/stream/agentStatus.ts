@@ -2,6 +2,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { Livechat } from '../Livechat';
 import { settings } from '../../../../settings/server';
+import { Logger } from '../../../../logger/server';
+
+const logger = new Logger('AgentStatusWatcher');
 
 export let monitorAgents = false;
 let actionTimeout = 60000;
@@ -64,12 +67,19 @@ export const onlineAgents = {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
-		if (action === 'close') {
-			return Livechat.closeOpenChats(userId, comment);
-		}
+		try {
+			if (action === 'close') {
+				return Livechat.closeOpenChats(userId, comment);
+			}
 
-		if (action === 'forward') {
-			return Livechat.forwardOpenChats(userId);
+			if (action === 'forward') {
+				return Livechat.forwardOpenChats(userId);
+			}
+		} catch (e) {
+			logger.error({
+				msg: `Cannot perform action ${ action }`,
+				err: e,
+			});
 		}
 	}),
 };
