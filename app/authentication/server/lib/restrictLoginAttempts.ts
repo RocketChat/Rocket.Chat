@@ -5,7 +5,7 @@ import { ServerEvents, Users, Rooms } from '../../../models/server/raw';
 import { IServerEventType } from '../../../../definition/IServerEvent';
 import { IUser } from '../../../../definition/IUser';
 import { settings } from '../../../settings/server';
-import { addMinutesToADate } from '../../../utils/lib/date.helper';
+import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import Sessions from '../../../models/server/raw/Sessions';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions';

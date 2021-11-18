@@ -8,19 +8,14 @@ import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
 import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
-import { Permissions } from '../../models';
 import { settings } from '../../settings/server';
-
-if (Permissions) {
-	Permissions.create('manage-cloud', ['admin']);
-}
 
 const licenseCronName = 'Cloud Workspace Sync';
 
 Meteor.startup(function() {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
-	settings.get('Troubleshoot_Disable_Workspace_Sync', (key, value) => {
+	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
 		if (TroubleshootDisableWorkspaceSync === value) { return; }
 		TroubleshootDisableWorkspaceSync = value;
 

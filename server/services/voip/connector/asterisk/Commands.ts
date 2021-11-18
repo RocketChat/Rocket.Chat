@@ -7,4 +7,6 @@ export enum Commands {
 	'ping',
 	'extension_list',
 	'extension_info',
+	'queue_summary',
+	'queue_details',
 }

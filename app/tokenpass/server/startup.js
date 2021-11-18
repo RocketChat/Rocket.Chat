@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
 import { updateUserTokenpassBalances } from './functions/updateUserTokenpassBalances';
-import { settings } from '../../settings';
+import { settingsRegistry } from '../../settings/server';
 import { callbacks } from '../../callbacks';
 import { validateTokenAccess } from './roomAccessValidator.compatibility';
 import './roomAccessValidator.internalService';
 
-settings.addGroup('OAuth', function() {
+settingsRegistry.addGroup('OAuth', function() {
 	this.section('Tokenpass', function() {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Tokenpass',

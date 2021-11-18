@@ -3,12 +3,12 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import toastr from 'toastr';
 
 import { settings } from '../../../settings';
 import { Button } from '../../../ui';
 import { t } from '../../../utils';
 import { callbacks } from '../../../callbacks';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
 Template.username.onCreated(function() {
 	const self = this;
@@ -148,7 +148,7 @@ Template.username.events({
 
 		Meteor.call('saveCustomFields', formData, function(err) {
 			if (err != null) {
-				toastr.error(err.error);
+				dispatchToastMessage({ type: 'error', message: err.error });
 			}
 		});
 

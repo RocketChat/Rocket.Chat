@@ -69,4 +69,4 @@ const configure = _.debounce(function() {
 	WebdavUserDataFiles.store = FileUpload.configureUploadsStore('Webdav', WebdavUserDataFiles.name, config);
 }, 500);
 
-settings.get(/^FileUpload_Webdav_/, configure);
+settings.watchByRegex(/^FileUpload_Webdav_/, configure);

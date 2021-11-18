@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 
-import { process2faReturn } from '../../../2fa/client/callWithTwoFactorRequired';
+import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
 
 export const APIClient = {
