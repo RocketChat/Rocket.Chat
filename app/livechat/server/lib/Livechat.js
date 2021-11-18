@@ -598,7 +598,7 @@ export const Livechat = {
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
+			Promise.await(this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department }));
 		});
 	},
 
