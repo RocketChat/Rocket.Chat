@@ -1,11 +1,11 @@
 import { Box, Skeleton, Table } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import React, { ReactElement } from 'react';
 
 type GenericTableLoadingRowRowProps = {
 	cols: number;
 };
 
-export const GenericTableLoadingRow: FC<GenericTableLoadingRowRowProps> = ({ cols }) => (
+export const GenericTableLoadingRow = ({ cols }: GenericTableLoadingRowRowProps): ReactElement => (
 	<Table.Row>
 		<Table.Cell>
 			<Box display='flex'>

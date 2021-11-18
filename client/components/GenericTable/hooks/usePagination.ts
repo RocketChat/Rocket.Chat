@@ -17,7 +17,7 @@ export const usePagination = (): {
 
 	const itemsPerPageLabel = useItemsPerPageLabel();
 
-	const showingResultsLabel = useItemsPerPageLabel();
+	const showingResultsLabel = useShowingResultsLabel();
 
 	return {
 		itemsPerPage,
