@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { Box, Table } from '@rocket.chat/fuselage';
 import React, { forwardRef, ReactNode } from 'react';
 

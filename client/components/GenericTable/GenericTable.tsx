@@ -80,6 +80,8 @@ const GenericTable = forwardRef(function GenericTable<
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
 
+	const isLoading = !results;
+
 	return (
 		<>
 			{typeof renderFilter === 'function'
@@ -94,13 +96,13 @@ const GenericTable = forwardRef(function GenericTable<
 					<GenericTableV2 fixed={fixed} ref={ref}>
 						{header && <GenericTableHeader>{header}</GenericTableHeader>}
 						<GenericTableBody>
-							{!results && <GenericTableLoadingTable headerCells={headerCells} />}
-							{!!results &&
+							{isLoading && <GenericTableLoadingTable headerCells={headerCells} />}
+							{!isLoading &&
 								((RenderRow &&
-									results.map((props, index: number) => (
+									results?.map((props, index: number) => (
 										<RenderRow key={props._id || index} {...props} />
 									))) ||
-									(children && results.map(children)))}
+									(children && results?.map(children)))}
 						</GenericTableBody>
 					</GenericTableV2>
 					{pagination && (
