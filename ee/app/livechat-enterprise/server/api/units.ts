@@ -1,14 +1,15 @@
 import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { ILivechatBusinessUnit } from '../../../../../definition/ILivechatBusinessUnit';
 
 API.v1.addRoute('livechat/units.list', { authRequired: true }, {
-	get() {
+	async get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const { text } = this.queryParams;
 
-		const response = Promise.await(findUnits({
+		const response = await findUnits({
 			userId: this.userId,
 			text,
 			pagination: {
@@ -16,38 +17,37 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 				count,
 				sort,
 			},
-		}));
+		});
 
-		return API.v1.success(this.deprecationWarning({ response, endpoint: 'livechat/units.list' }));
+		return API.v1.success(response);
 	},
 });
 
 API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
-	get() {
-		const { unitId } = this.queryParams;
-
-		const response = Promise.await(findUnitById({
+	async get() {
+		const { id } = this.urlParams;
+		const { unit } = await findUnitById({
 			userId: this.userId,
-			unitId,
-		}));
+			unitId: id,
+		}) as { unit: ILivechatBusinessUnit };
 
-		return API.v1.success(this.deprecationWarning({ response, endpoint: 'livechat/units.getOne' }));
+		return API.v1.success(unit);
 	},
 });
 
 API.v1.addRoute('livechat/unitMonitors.list', { authRequired: true }, {
-	get() {
+	async get() {
 		const { unitId } = this.queryParams;
 
-		return API.v1.success(Promise.await(findUnitMonitors({
+		return API.v1.success(await findUnitMonitors({
 			userId: this.userId,
 			unitId,
-		})));
+		}));
 	},
 });
 
 API.v1.addRoute('livechat/units', { authRequired: true, permissionsRequired: ['manage-livechat-units'] }, {
-	get() {
+	async get() {
 		const { offset, count } = this.getPaginationItems();
 		const { sort } = this.parseJsonQuery();
 		const { text } = this.queryParams;
@@ -62,28 +62,29 @@ API.v1.addRoute('livechat/units', { authRequired: true, permissionsRequired: ['m
 			},
 		})));
 	},
-	post() {
-		const { unitData, unitMonitors, unitDepartments } = this.requestParams();
+	async post() {
+		const { unitData, unitMonitors, unitDepartments } = this.bodyParams?.();
 		return LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments);
 	},
 });
 
 API.v1.addRoute('livechat/units/:id', { authRequired: true, permissionsRequired: ['manage-livechat-units'] }, {
-	get() {
+	async get() {
 		const { id } = this.urlParams;
-
-		return API.v1.success(Promise.await(findUnitById({
+		const { unit } = await findUnitById({
 			userId: this.userId,
-			id,
-		})));
+			unitId: id,
+		}) as { unit: ILivechatBusinessUnit };
+
+		return API.v1.success(unit);
 	},
-	put() {
-		const { unitData, unitMonitors, unitDepartments } = this.requestParams();
+	async post() {
+		const { unitData, unitMonitors, unitDepartments } = this.bodyParams?.();
 		const { id } = this.urlParams;
 
 		return LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments);
 	},
-	delete() {
+	async delete() {
 		const { id } = this.urlParams;
 
 		return LivechatEnterprise.removeUnit(id);
