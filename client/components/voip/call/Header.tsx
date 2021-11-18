@@ -1,8 +1,7 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Sidebar, Box, Icon } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
 import { useTranslation } from '../../../contexts/TranslationContext';
-import CallToolBox from './CallToolBox';
 import { ButtonsList } from './hooks/useButtonsLists';
 
 const Header: FC<{
@@ -13,13 +12,18 @@ const Header: FC<{
 	const t = useTranslation();
 	const compactHeaderStates = ['incoming', 'current'];
 	return (
-		<Box>
+		<Sidebar.TopBar>
 			{compactHeaderStates.includes(state) && (
 				<Box mbe={8} textAlign='center' color='surface'>
 					{calls} {t('Calls_in_queue', calls)}
 				</Box>
 			)}
-			<CallToolBox state={state} buttonList={buttonList} />
+			<Box display='flex' justifyContent='space-between' m='x16'>
+				{/* <Sidebar.TopBar.ToolBox> */}
+				<Sidebar.TopBar.Title>{t('Phone_call')}</Sidebar.TopBar.Title>
+				<Sidebar.TopBar.Actions>{buttonList.buttons}</Sidebar.TopBar.Actions>
+				{/* </Sidebar.TopBar.ToolBox> */}
+			</Box>
 			{!compactHeaderStates.includes(state) && (
 				<Box
 					mbs={18}
@@ -36,7 +40,7 @@ const Header: FC<{
 					<Box fontSize={22}>{calls}</Box>
 				</Box>
 			)}
-		</Box>
+		</Sidebar.TopBar>
 	);
 };
 
