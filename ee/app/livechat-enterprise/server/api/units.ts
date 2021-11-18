@@ -1,4 +1,5 @@
 import { API } from '../../../../../app/api/server';
+import { deprecationWarning } from '../../../../../app/api/server/helpers/deprecationWarning';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
@@ -19,7 +20,7 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 			},
 		});
 
-		return API.v1.success(response);
+		return API.v1.success(deprecationWarning({ response, endpoint: 'livechat/units.list' }));
 	},
 });
 
@@ -31,7 +32,7 @@ API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
 			unitId: id,
 		}) as { unit: IOmnichannelBusinessUnit };
 
-		return API.v1.success(unit);
+		return API.v1.success(deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }));
 	},
 });
 
