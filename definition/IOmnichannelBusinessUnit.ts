@@ -1,4 +1,4 @@
-export interface ILivechatBusinessUnit {
+export interface IOmnichannelBusinessUnit {
 	_id: string;
 	name: string;
 	visibility: 'public' | 'private';

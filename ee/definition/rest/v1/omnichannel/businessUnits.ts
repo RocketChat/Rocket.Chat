@@ -1,4 +1,4 @@
-import { ILivechatBusinessUnit } from '../../../../../definition/ILivechatBusinessUnit';
+import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
 import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
 
 type WithPagination<T> = {
@@ -10,21 +10,21 @@ type WithPagination<T> = {
 
 export type OmnichannelBusinessUnitsEndpoints = {
 	'livechat/units.list': {
-		GET: () => (WithPagination<ILivechatBusinessUnit[]>);
+		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
 	};
 	'livechat/units.getOne': {
-		GET: () => (ILivechatBusinessUnit);
+		GET: () => (IOmnichannelBusinessUnit);
 	};
 	'livechat/unitMonitors.list': {
 		GET: () => ({ monitors: ILivechatMonitor[] });
 	};
 	'livechat/units': {
-		GET: () => (WithPagination<ILivechatBusinessUnit[]>);
-		POST: () => ILivechatBusinessUnit;
+		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
+		POST: () => IOmnichannelBusinessUnit;
 	};
 	'livechat/units/:id': {
-		GET: () => ILivechatBusinessUnit;
-		POST: () => ILivechatBusinessUnit;
+		GET: () => IOmnichannelBusinessUnit;
+		POST: () => IOmnichannelBusinessUnit;
 		DELETE: () => number;
 	};
 }

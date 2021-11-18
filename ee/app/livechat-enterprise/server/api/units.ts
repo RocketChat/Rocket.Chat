@@ -1,7 +1,7 @@
 import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import { ILivechatBusinessUnit } from '../../../../../definition/ILivechatBusinessUnit';
+import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
 
 API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 	async get() {
@@ -29,7 +29,7 @@ API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
 		const { unit } = await findUnitById({
 			userId: this.userId,
 			unitId: id,
-		}) as { unit: ILivechatBusinessUnit };
+		}) as { unit: IOmnichannelBusinessUnit };
 
 		return API.v1.success(unit);
 	},
@@ -74,7 +74,7 @@ API.v1.addRoute('livechat/units/:id', { authRequired: true, permissionsRequired:
 		const { unit } = await findUnitById({
 			userId: this.userId,
 			unitId: id,
-		}) as { unit: ILivechatBusinessUnit };
+		}) as { unit: IOmnichannelBusinessUnit };
 
 		return API.v1.success(unit);
 	},
