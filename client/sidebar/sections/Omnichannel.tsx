@@ -34,8 +34,8 @@ const OmnichannelSection = (props: typeof Box): ReactElement => {
 
 	const voipCallIcon = {
 		title: !registered ? t('Enable') : t('Disable'),
-		color: !registered ? 'success' : undefined,
-		icon: !registered ? 'phone' : 'phone-disabled',
+		color: registered ? 'success' : undefined,
+		icon: registered ? 'phone' : 'phone-disabled',
 	};
 
 	const availableIcon = {
