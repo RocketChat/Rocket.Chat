@@ -210,7 +210,7 @@ function PrepareImportPage() {
 
 			<Page.ScrollableContentWithShadow>
 				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
-					<Box is='h2' fontScale='p2'>
+					<Box is='h2' fontScale='p4'>
 						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
 					</Box>
 					{!isPreparing && (
@@ -235,7 +235,7 @@ function PrepareImportPage() {
 						{isPreparing && (
 							<>
 								{progressRate ? (
-									<Box display='flex' justifyContent='center' fontScale='p1'>
+									<Box display='flex' justifyContent='center' fontScale='p3'>
 										<Box
 											is='progress'
 											value={(progressRate * 10).toFixed(0)}

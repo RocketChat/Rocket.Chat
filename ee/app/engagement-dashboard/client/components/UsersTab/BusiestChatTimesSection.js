@@ -110,7 +110,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 									padding: 4,
 								},
 							}}
-							tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
+							tooltip={({ value }) => <Box fontScale='p4' color='alternative'>
 								{t('Value_users', { value })}
 							</Box>}
 						/>

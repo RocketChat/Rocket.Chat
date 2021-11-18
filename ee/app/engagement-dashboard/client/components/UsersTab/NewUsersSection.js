@@ -218,7 +218,7 @@ const NewUsersSection = ({ timezone }) => {
 											padding: 4,
 										},
 									}}
-									tooltip={({ value, indexValue }) => <Box fontScale='p2' color='alternative'>
+									tooltip={({ value, indexValue }) => <Box fontScale='p4' color='alternative'>
 										{t('Value_users', { value })}, {formatDate(indexValue)}
 									</Box>}
 								/>

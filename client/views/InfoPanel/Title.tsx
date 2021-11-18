@@ -12,7 +12,7 @@ const Title: FC<TitleProps> = ({ title, icon }) => (
 		title={title}
 		flexShrink={0}
 		alignItems='center'
-		fontScale='s2'
+		fontScale='h4'
 		color='default'
 		withTruncatedText
 	>

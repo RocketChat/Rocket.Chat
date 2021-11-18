@@ -239,7 +239,7 @@ const ActiveUsersSection = ({ timezone }) => {
 										<Box>
 											<Box>{formatDate(points[0].data.x)}</Box>
 											{points.map(({ serieId, data: { y: activeUsers } }) =>
-												<Box key={serieId} fontScale='p2'>
+												<Box key={serieId} fontScale='p4'>
 													<Box>{(serieId === 'dau' && t('DAU_value', { value: activeUsers }))
 													|| (serieId === 'wau' && t('WAU_value', { value: activeUsers }))
 													|| (serieId === 'mau' && t('MAU_value', { value: activeUsers }))}</Box>

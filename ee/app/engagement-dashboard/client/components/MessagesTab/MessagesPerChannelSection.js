@@ -149,7 +149,7 @@ const MessagesPerChannelSection = () => {
 																		},
 																	},
 																}}
-																tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
+																tooltip={({ value }) => <Box fontScale='p4' color='alternative'>
 																	{t('Value_messages', { value })}
 																</Box>}
 															/>
@@ -161,15 +161,15 @@ const MessagesPerChannelSection = () => {
 												<Margins block='neg-x4'>
 													<Box>
 														<Margins block='x4'>
-															<Box color='info' fontScale='p1'>
+															<Box color='info' fontScale='p3'>
 																<LegendSymbol color='#FFD031' />
 																{t('Private_Chats')}
 															</Box>
-															<Box color='info' fontScale='p1'>
+															<Box color='info' fontScale='p3'>
 																<LegendSymbol color='#2DE0A5' />
 																{t('Private_Channels')}
 															</Box>
-															<Box color='info' fontScale='p1'>
+															<Box color='info' fontScale='p3'>
 																<LegendSymbol color='#1D74F5' />
 																{t('Public_Channels')}
 															</Box>
@@ -185,9 +185,9 @@ const MessagesPerChannelSection = () => {
 						<Flex.Item grow={1} shrink={0} basis='0'>
 							<Box>
 								<Margins blockEnd='x16'>
-									{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
+									{table ? <Box fontScale='p3'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 								</Margins>
-								{table && !table.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
+								{table && !table.length && <Tile fontScale='p3' color='info' style={{ textAlign: 'center' }}>
 									{t('Not_enough_data')}
 								</Tile>}
 								{(!table || !!table.length) && <Table>

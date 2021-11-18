@@ -60,7 +60,7 @@ const EndToEnd = (props) => {
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
 			<Margins blockEnd='x8'>
-				<Box fontScale='s2'>{t('E2E_Encryption_Password_Change')}</Box>
+				<Box fontScale='h4'>{t('E2E_Encryption_Password_Change')}</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Encryption_Password_Explanation') }} />
 				<FieldGroup w='full'>
 					<Field>
@@ -91,7 +91,7 @@ const EndToEnd = (props) => {
 				<Button primary disabled={!canSave} onClick={saveNewPassword}>
 					{t('Save_changes')}
 				</Button>
-				<Box fontScale='s2' mbs='x16'>
+				<Box fontScale='h4' mbs='x16'>
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box dangerouslySetInnerHTML={{ __html: t('E2E_Reset_Key_Explanation') }} />

@@ -34,7 +34,7 @@ const SeatsCard = (): ReactElement | null => {
 							display='flex'
 							flexDirection='row'
 							justifyContent='center'
-							fontScale={isNearLimit ? 'p2' : 'p1'}
+							fontScale={isNearLimit ? 'p4' : 'p3'}
 						>
 							{!seatsCap ? (
 								<Skeleton variant='rect' width='x112' height='x112' />

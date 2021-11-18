@@ -170,7 +170,7 @@ const MessagesSentSection = () => {
 											},
 										},
 									}}
-									tooltip={({ value }) => <Box fontScale='p2' color='alternative'>
+									tooltip={({ value }) => <Box fontScale='p4' color='alternative'>
 										{t('Value_messages', { value })}
 									</Box>}
 								/>

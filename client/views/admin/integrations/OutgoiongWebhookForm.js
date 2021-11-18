@@ -382,7 +382,7 @@ export default function OutgoingWebhookForm({ formValues, formHandlers, append, 
 									<Field.Label>{t('Responding')}</Field.Label>
 									<Field.Hint>{t('Response_description_pre')}</Field.Hint>
 									<Field.Row>
-										<Box fontScale='p1' withRichContent flexGrow={1}>
+										<Box fontScale='p3' withRichContent flexGrow={1}>
 											<pre>
 												<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
 											</pre>

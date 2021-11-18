@@ -9,7 +9,7 @@ export function Section({
 	return <Box>
 		<Margins block='x24'>
 			<Box display='flex' alignItems='center' wrap='no-wrap'>
-				<Box flexGrow={1} fontScale='s2' color='default'>{title}</Box>
+				<Box flexGrow={1} fontScale='h4' color='default'>{title}</Box>
 				{filter && <Flex.Item grow={0}>
 					<Margins mi='x24'>
 						{filter}

@@ -90,7 +90,7 @@ const TableSection = () => {
 
 	return <Section filter={<><Select options={periodOptions} value={periodId} onChange={handlePeriodChange} /><ActionButton small mis='x16' disabled={!channels} onClick={downloadData} aria-label={t('Download_Info')} icon='download'/></>}>
 		<Box>
-			{channels && !channels.length && <Tile fontScale='p1' color='info' style={{ textAlign: 'center' }}>
+			{channels && !channels.length && <Tile fontScale='p3' color='info' style={{ textAlign: 'center' }}>
 				{t('No_data_found')}
 			</Tile>}
 			{(!channels || channels.length)
