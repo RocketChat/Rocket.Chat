@@ -3,8 +3,8 @@ import React, { FC } from 'react';
 
 import { GenericTableRow } from './GenericTableRow';
 
-export const GenericTableHeader: FC = ({ children }) => (
-	<Table.Head>
+export const GenericTableHeader: FC = ({ children, ...props }) => (
+	<Table.Head {...props}>
 		<GenericTableRow>{children}</GenericTableRow>
 	</Table.Head>
 );

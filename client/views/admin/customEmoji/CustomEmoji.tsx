@@ -43,8 +43,8 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 			() => ({
 				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
+				count: itemsPerPage,
+				offset: current,
 			}),
 			[text, itemsPerPage, current, sortBy, sortDirection],
 		),
@@ -78,8 +78,10 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 				<GenericTableBody>
 					{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={2} />}
 					{phase === AsyncStatePhase.RESOLVED &&
+						data &&
+						data.emojis &&
 						data.emojis.length > 0 &&
-						data.emojis.map((emojis) => (
+						data?.emojis.map((emojis) => (
 							<GenericTableRow
 								key={emojis._id}
 								onKeyDown={onClick(emojis._id)}
@@ -106,7 +108,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 				<Pagination
 					current={current}
 					itemsPerPage={itemsPerPage}
-					count={data.count}
+					count={data?.count || 0}
 					onSetItemsPerPage={onSetItemsPerPage}
 					onSetCurrent={onSetCurrent}
 					{...paginationProps}
