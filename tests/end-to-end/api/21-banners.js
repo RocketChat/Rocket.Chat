@@ -27,7 +27,6 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Match error: Missing key \'platform\'');
 				})
 				.end(done);
 		});
@@ -41,8 +40,6 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Platform is unknown. [error-unknown-platform]');
-					expect(res.body).to.have.property('errorType', 'error-unknown-platform');
 				})
 				.end(done);
 		});
@@ -56,8 +53,6 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The required "platform" param is missing. [error-missing-param]');
-					expect(res.body).to.have.property('errorType', 'error-missing-param');
 				})
 				.end(done);
 		});
@@ -112,8 +107,6 @@ describe('banners', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'The required "bannerId" param is missing. [error-missing-param]');
-					expect(res.body).to.have.property('errorType', 'error-missing-param');
 				})
 				.end(done);
 		});
