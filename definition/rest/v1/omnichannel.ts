@@ -54,6 +54,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/departments.by-unit/': {
+		path: `livechat/departments.by-unit/${ string }`;
 		GET: (params: { text: string; offset: number; count: number }) => {
 			departments: ILivechatDepartment[];
 			total: number;
