@@ -8,6 +8,7 @@ import type {
 	OperationParams,
 	MatchPathPattern,
 	OperationResult,
+	PathPattern,
 } from '../../../definition/rest';
 import {
 	ServerMethodFunction,
@@ -76,12 +77,16 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 	);
 };
 
+type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
+	params: void extends OperationParams<TMethod, TPathPattern>
+		? void
+		: Serialized<OperationParams<TMethod, TPathPattern>>,
+) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
+
 export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
 	method: TMethod,
 	path: TPath,
-): ((
-	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
-) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
+): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
 	const { callEndpoint } = useContext(ServerContext);
 
 	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);

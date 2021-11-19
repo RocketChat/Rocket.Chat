@@ -10,21 +10,37 @@ type WithPagination<T> = {
 
 export type OmnichannelBusinessUnitsEndpoints = {
 	'livechat/units.list': {
-		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
+		GET: (params: {
+			text: string;
+		}) => (WithPagination<IOmnichannelBusinessUnit[]>);
 	};
 	'livechat/units.getOne': {
-		GET: () => (IOmnichannelBusinessUnit);
+		GET: (params: {
+			unitId: string;
+		}) => (IOmnichannelBusinessUnit);
 	};
 	'livechat/unitMonitors.list': {
-		GET: () => ({ monitors: ILivechatMonitor[] });
+		GET: (params: {
+			unitId: string;
+		}) => ({ monitors: ILivechatMonitor[] });
 	};
 	'livechat/units': {
-		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
-		POST: () => IOmnichannelBusinessUnit;
+		GET: (params: {
+			text: string;
+		}) => (WithPagination<IOmnichannelBusinessUnit[]>);
+		POST: (params: {
+			unitData: unknown; // TODO
+			unitMonitors: unknown; // TODO
+			unitDepartments: unknown; // TODO
+		}) => IOmnichannelBusinessUnit;
 	};
 	'livechat/units/:id': {
 		GET: () => IOmnichannelBusinessUnit;
-		POST: () => IOmnichannelBusinessUnit;
+		POST: (params: {
+			unitData: unknown; // TODO
+			unitMonitors: unknown; // TODO
+			unitDepartments: unknown; // TODO
+		}) => IOmnichannelBusinessUnit;
 		DELETE: () => number;
 	};
 }

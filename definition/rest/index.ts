@@ -94,7 +94,7 @@ PathPattern,
 >;
 
 type GetParams<TOperation> = TOperation extends (...args: any) => any
-	? Parameters<TOperation>[0]
+	? Parameters<TOperation>[0] extends void ? void : Parameters<TOperation>[0]
 	: never
 
 type GetResult<TOperation> = TOperation extends (...args: any) => any

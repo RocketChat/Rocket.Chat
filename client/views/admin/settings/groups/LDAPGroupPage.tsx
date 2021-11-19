@@ -39,7 +39,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleTestConnectionButtonClick = async (): Promise<void> => {
 		try {
-			const { message } = await testConnection(undefined);
+			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -48,12 +48,12 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleSyncNowButtonClick = async (): Promise<void> => {
 		try {
-			await testConnection(undefined);
+			await testConnection();
 			const confirmSync = async (): Promise<void> => {
 				closeModal();
 
 				try {
-					const { message } = await syncNow(undefined);
+					const { message } = await syncNow();
 					dispatchToastMessage({ type: 'success', message: t(message) });
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -79,7 +79,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 
 	const handleSearchTestButtonClick = async (): Promise<void> => {
 		try {
-			await testConnection(undefined);
+			await testConnection();
 			let username = '';
 			const handleChangeUsername = (event: FormEvent<HTMLInputElement>): void => {
 				username = event.currentTarget.value;
