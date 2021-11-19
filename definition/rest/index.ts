@@ -1,7 +1,8 @@
 import type { EnterpriseEndpoints } from '../../ee/definition/rest';
-import type { ExtractKeys, ValueOf } from '../utils';
+import type { KeyOfEach } from '../utils';
 import type { AppsEndpoints } from './apps';
-import { BannersEndpoints } from './v1/banners';
+import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
+import type { BannersEndpoints } from './v1/banners';
 import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
@@ -11,20 +12,21 @@ import type { DnsEndpoints } from './v1/dns';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImEndpoints } from './v1/im';
-import { InstancesEndpoints } from './v1/instances';
+import type { InstancesEndpoints } from './v1/instances';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
-import { PermissionsEndpoints } from './v1/permissions';
-import { RolesEndpoints } from './v1/roles';
+import type { PermissionsEndpoints } from './v1/permissions';
+import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
-import { SettingsEndpoints } from './v1/settings';
+import type { SettingsEndpoints } from './v1/settings';
 import type { StatisticsEndpoints } from './v1/statistics';
 import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 
-type CommunityEndpoints = BannersEndpoints & ChatEndpoints &
+type CommunityEndpoints = BannersEndpoints &
+ChatEndpoints &
 ChannelsEndpoints &
 CloudEndpoints &
 CustomUserStatusEndpoints &
@@ -47,51 +49,76 @@ MiscEndpoints &
 PermissionsEndpoints &
 InstancesEndpoints;
 
-export type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
+type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 
-type Endpoint = UnionizeEndpoints<Endpoints>;
+type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
+	? OperationsByPathPatternAndMethod<TPathPattern>
+	: never;
 
-type UnionizeEndpoints<EE extends Endpoints> = ValueOf<
-{
-	[P in keyof EE]: UnionizeMethods<P, EE[P]>;
-}
+type OperationsByPathPatternAndMethod<
+	TPathPattern extends keyof Endpoints,
+	TMethod extends KeyOfEach<Endpoints[TPathPattern]> = KeyOfEach<Endpoints[TPathPattern]>
+> = TMethod extends any
+	? {
+		pathPattern: TPathPattern;
+		method: TMethod;
+		path: ReplacePlaceholders<TPathPattern>;
+		params: GetParams<Endpoints[TPathPattern][TMethod]>;
+		result: GetResult<Endpoints[TPathPattern][TMethod]>;
+	}
+	: never;
+
+type Operations = OperationsByPathPattern<keyof Endpoints>;
+
+export type PathPattern = Operations['pathPattern'];
+
+export type Method = Operations['method'];
+
+export type Path = Operations['path'];
+
+export type MethodFor<TPath extends Path> = TPath extends any
+	? Extract<Operations, { path: TPath }>['method']
+	: never;
+
+export type PathFor<TMethod extends Method> = TMethod extends any
+	? Extract<Operations, { method: TMethod }>['path']
+	: never;
+
+export type MatchPathPattern<TPath extends Path> = TPath extends any
+	? Extract<Operations, { path: TPath }>['pathPattern']
+	: never;
+
+export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
+PathPattern,
+`${ TBasePath }/${ TSubPathPattern }` | TSubPathPattern
 >;
 
-type ExtractOperations<OO, M extends keyof OO> = ExtractKeys<OO, M, (...args: any[]) => any>;
+type GetParams<TOperation> = TOperation extends (...args: any) => any
+	? Parameters<TOperation>[0] extends void ? void : Parameters<TOperation>[0]
+	: never
 
-type UnionizeMethods<P, OO> = ValueOf<
-{
-	[M in keyof OO as ExtractOperations<OO, M>]: (
-		method: M,
-		path: OO extends { path: string } ? OO['path'] : P,
-		...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
-	) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
-}
->;
+type GetResult<TOperation> = TOperation extends (...args: any) => any
+	? ReturnType<TOperation>
+	: never
 
-export type Method = Parameters<Endpoint>[0];
-export type Path = Parameters<Endpoint>[1];
-
-export type MethodFor<P extends Path> = P extends any
-	? Parameters<Extract<Endpoint, (method: any, path: P, ...params: any[]) => any>>[0]
-	: never;
-export type PathFor<M extends Method> = M extends any
-	? Parameters<Extract<Endpoint, (method: M, path: any, ...params: any[]) => any>>[1]
-	: never;
-
-type Operation<M extends Method, P extends PathFor<M>> = M extends any
-	? P extends any
-		? Extract<Endpoint, (method: M, path: P, ...params: any[]) => any>
-		: never
-	: never;
-
-type ExtractParams<Q> = Q extends [any, any]
-	? [undefined?]
-	: Q extends [any, any, any, ...any[]]
-		? [Q[2]]
+export type OperationParams<TMethod extends Method, TPathPattern extends PathPattern> =
+	TMethod extends keyof Endpoints[TPathPattern]
+		? GetParams<Endpoints[TPathPattern][TMethod]>
 		: never;
 
-export type Params<M extends Method, P extends PathFor<M>> = ExtractParams<
-Parameters<Operation<M, P>>
->;
-export type Return<M extends Method, P extends PathFor<M>> = ReturnType<Operation<M, P>>;
+export type OperationResult<TMethod extends Method, TPathPattern extends PathPattern> =
+	TMethod extends keyof Endpoints[TPathPattern]
+		? GetResult<Endpoints[TPathPattern][TMethod]>
+		: never;
+
+export type UrlParams<T extends string> = string extends T
+	? Record<string, string>
+	: T extends `${ infer _Start }:${ infer Param }/${ infer Rest }`
+		? { [k in Param | keyof UrlParams<Rest>]: string }
+		: T extends `${ infer _Start }:${ infer Param }`
+			? { [k in Param]: string }
+			: {};
+
+export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any
+	? keyof Endpoints[TPathPattern]
+	: never;

@@ -49,13 +49,17 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/department/:_id': {
-		path: `livechat/department/${ string }`;
 		GET: () => {
 			department: ILivechatDepartment;
 		};
 	};
-	'livechat/departments.by-unit/': {
-		path: `livechat/departments.by-unit/${ string }`;
+	'livechat/departments.by-unit/:id': {
+		GET: (params: { text: string; offset: number; count: number }) => {
+			departments: ILivechatDepartment[];
+			total: number;
+		};
+	};
+	'livechat/departments.available-by-unit/:id': {
 		GET: (params: { text: string; offset: number; count: number }) => {
 			departments: ILivechatDepartment[];
 			total: number;
@@ -139,7 +143,6 @@ export type OmnichannelEndpoints = {
 		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 	};
 	'canned-responses/:_id': {
-		path: `canned-responses/${ string }`;
 		GET: () => {
 			cannedResponse: IOmnichannelCannedResponse;
 		};
