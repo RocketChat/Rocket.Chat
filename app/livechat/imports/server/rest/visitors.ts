@@ -26,8 +26,6 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequi
 			throw new Error('not-allowed');
 		}
 
-		console.log(Messages);
-
 		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
 			sort: sort || { ts: -1 },
 			skip: offset,
