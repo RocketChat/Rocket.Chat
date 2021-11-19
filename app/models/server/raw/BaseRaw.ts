@@ -166,7 +166,7 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 
 	find(query: FilterQuery<T>, options: WithoutProjection<FindOneOptions<T>>): Cursor<ResultFields<T, C>>;
 
-	find<P>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
+	find<P = T>(query: FilterQuery<T>, options: FindOneOptions<P extends T ? T : P>): Cursor<P>;
 
 	find<P>(query: FilterQuery<T> | undefined = {}, options?: any): Cursor<P> | Cursor<T> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);

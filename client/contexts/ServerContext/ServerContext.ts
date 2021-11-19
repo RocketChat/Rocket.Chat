@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo } from 'react';
 
 import { IServerInfo } from '../../../definition/IServerInfo';
 import type { Serialized } from '../../../definition/Serialized';
-import type { PathFor, Params, Return, Method } from './endpoints';
+import type { PathFor, Params, Return, Method } from '../../../definition/rest';
 import {
 	ServerMethodFunction,
 	ServerMethodName,
