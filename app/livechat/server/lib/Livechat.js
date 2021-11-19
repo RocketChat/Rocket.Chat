@@ -1281,7 +1281,7 @@ export const Livechat = {
 	updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
-			return updateMessage({ _id: callId, msg: status, actionLinks: [], endTs: new Date() }, user);
+			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date() }, user);
 		}
 	},
 };
