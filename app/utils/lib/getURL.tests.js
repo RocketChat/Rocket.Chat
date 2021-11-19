@@ -1,7 +1,4 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-import assert from 'assert';
-
+import { expect } from 'chai';
 import s from 'underscore.string';
 
 import { _getURL } from './getURL';
@@ -12,17 +9,17 @@ const testPaths = (o, _processPath) => {
 		processPath = (path) => _processPath(o._root_url_path_prefix + path);
 	}
 
-	assert.equal(_getURL('', o), processPath(''));
-	assert.equal(_getURL('/', o), processPath(''));
-	assert.equal(_getURL('//', o), processPath(''));
-	assert.equal(_getURL('///', o), processPath(''));
-	assert.equal(_getURL('/channel', o), processPath('/channel'));
-	assert.equal(_getURL('/channel/', o), processPath('/channel'));
-	assert.equal(_getURL('/channel//', o), processPath('/channel'));
-	assert.equal(_getURL('/channel/123', o), processPath('/channel/123'));
-	assert.equal(_getURL('/channel/123/', o), processPath('/channel/123'));
-	assert.equal(_getURL('/channel/123?id=456&name=test', o), processPath('/channel/123?id=456&name=test'));
-	assert.equal(_getURL('/channel/123/?id=456&name=test', o), processPath('/channel/123?id=456&name=test'));
+	expect(_getURL('', o)).to.be.equal(processPath(''));
+	expect(_getURL('/', o)).to.be.equal(processPath(''));
+	expect(_getURL('//', o)).to.be.equal(processPath(''));
+	expect(_getURL('///', o)).to.be.equal(processPath(''));
+	expect(_getURL('/channel', o)).to.be.equal(processPath('/channel'));
+	expect(_getURL('/channel/', o)).to.be.equal(processPath('/channel'));
+	expect(_getURL('/channel//', o)).to.be.equal(processPath('/channel'));
+	expect(_getURL('/channel/123', o)).to.be.equal(processPath('/channel/123'));
+	expect(_getURL('/channel/123/', o)).to.be.equal(processPath('/channel/123'));
+	expect(_getURL('/channel/123?id=456&name=test', o)).to.be.equal(processPath('/channel/123?id=456&name=test'));
+	expect(_getURL('/channel/123/?id=456&name=test', o)).to.be.equal(processPath('/channel/123?id=456&name=test'));
 };
 
 const getCloudUrl = (_site_url, path) => {
@@ -119,7 +116,7 @@ const testCasesForOptions = (description, options) => {
 	});
 };
 
-describe.only('getURL', () => {
+describe('getURL', () => {
 	testCasesForOptions('getURL with no CDN, no PREFIX for http://localhost:3000/', {
 		_cdn_prefix: '',
 		_root_url_path_prefix: '',

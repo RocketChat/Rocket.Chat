@@ -3,11 +3,8 @@ import React, { FC } from 'react';
 
 import { Info as info, APIClient } from '../../app/utils/client';
 import { Serialized } from '../../definition/Serialized';
+import { Method, Params, Return, PathFor } from '../../definition/rest';
 import {
-	Method,
-	Params,
-	PathFor,
-	Return,
 	ServerContext,
 	ServerMethodName,
 	ServerMethodParameters,

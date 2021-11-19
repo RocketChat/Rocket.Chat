@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
-/* eslint-env mocha */
-import chai, { expect } from 'chai';
-import spies from 'chai-spies';
+import { expect, spy } from 'chai';
 
 import { Settings } from './settings.mocks';
 import { SettingsRegistry } from '../SettingsRegistry';
 import { CachedSettings } from '../CachedSettings';
-
-chai.use(spies);
 
 describe('Settings', () => {
 	beforeEach(() => {
@@ -306,8 +302,8 @@ describe('Settings', () => {
 		settings.initilized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		const spy = chai.spy();
-		const spy2 = chai.spy();
+		const spiedCallback1 = spy();
+		const spiedCallback2 = spy();
 
 		settingsRegistry.addGroup('group', function() {
 			this.section('section', function() {
@@ -317,27 +313,27 @@ describe('Settings', () => {
 			});
 		});
 
-		settings.watch('setting_callback', spy, { debounce: 10 });
-		settings.watchByRegex(/setting_callback/, spy2, { debounce: 10 });
+		settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
+		settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
 
 		setTimeout(() => {
-			expect(spy).to.have.been.called.exactly(1);
-			expect(spy2).to.have.been.called.exactly(1);
-			expect(spy).to.have.been.called.always.with('value1');
-			expect(spy2).to.have.been.called.always.with('setting_callback', 'value1');
+			expect(spiedCallback1).to.have.been.called.exactly(1);
+			expect(spiedCallback2).to.have.been.called.exactly(1);
+			expect(spiedCallback1).to.have.been.called.always.with('value1');
+			expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
 			done();
 		}, settings.getConfig({ debounce: 10 }).debounce);
 	});
 
 	it('should call `settings.watch` callback on setting changed registering before initialized', (done) => {
-		const spy = chai.spy();
-		const spy2 = chai.spy();
+		const spiedCallback1 = spy();
+		const spiedCallback2 = spy();
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		settings.watch('setting_callback', spy, { debounce: 1 });
-		settings.watchByRegex(/setting_callback/ig, spy2, { debounce: 1 });
+		settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
+		settings.watchByRegex(/setting_callback/ig, spiedCallback2, { debounce: 1 });
 
 		settings.initilized();
 		settingsRegistry.addGroup('group', function() {
@@ -350,10 +346,10 @@ describe('Settings', () => {
 		setTimeout(() => {
 			Settings.updateValueById('setting_callback', 'value3');
 			setTimeout(() => {
-				expect(spy).to.have.been.called.exactly(2);
-				expect(spy2).to.have.been.called.exactly(2);
-				expect(spy).to.have.been.called.with('value2');
-				expect(spy).to.have.been.called.with('value3');
+				expect(spiedCallback1).to.have.been.called.exactly(2);
+				expect(spiedCallback2).to.have.been.called.exactly(2);
+				expect(spiedCallback1).to.have.been.called.with('value2');
+				expect(spiedCallback1).to.have.been.called.with('value3');
 				done();
 			}, settings.getConfig({ debounce: 10 }).debounce);
 		}, settings.getConfig({ debounce: 10 }).debounce);

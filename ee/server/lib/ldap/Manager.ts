@@ -192,7 +192,7 @@ export class LDAPEEManager extends LDAPManager {
 		}
 
 		const roles = await Roles.find({}, {
-			fields: {
+			projection: {
 				_updatedAt: 0,
 			},
 		}).toArray() as Array<IRole>;

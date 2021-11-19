@@ -181,6 +181,23 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findRoomsByNameOrFnameStarting(name, options) {
+		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
+
+		const query = {
+			t: {
+				$in: ['c', 'p'],
+			},
+			$or: [{
+				name: nameRegex,
+			}, {
+				fname: nameRegex,
+			}],
+		};
+
+		return this.find(query, options);
+	}
+
 	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
 		const nameRegex = new RegExp(`^${ escapeRegExp(name).trim() }`, 'i');
 
@@ -396,5 +413,24 @@ export class RoomsRaw extends BaseRaw {
 
 	findOneByNameOrFname(name, options = {}) {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
+	}
+
+	allRoomSourcesCount() {
+		return this.col.aggregate([
+			{
+				$match: {
+					source: {
+						$exists: true,
+					},
+					t: 'l',
+				},
+			},
+			{
+				$group: {
+					_id: '$source',
+					count: { $sum: 1 },
+				},
+			},
+		]);
 	}
 }

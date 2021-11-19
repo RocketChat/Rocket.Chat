@@ -7,7 +7,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { LDAP } from '../../../../server/sdk';
 
 API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
-	post() {
+	async post() {
 		if (!this.userId) {
 			throw new Error('error-invalid-user');
 		}
@@ -21,20 +21,20 @@ API.v1.addRoute('ldap.testConnection', { authRequired: true }, {
 		}
 
 		try {
-			Promise.await(LDAP.testConnection());
+			await LDAP.testConnection();
 		} catch (error) {
 			SystemLogger.error(error);
 			throw new Error('Connection_failed');
 		}
 
 		return API.v1.success({
-			message: 'Connection_success',
+			message: 'Connection_success' as const,
 		});
 	},
 });
 
 API.v1.addRoute('ldap.testSearch', { authRequired: true }, {
-	post() {
+	async post() {
 		check(this.bodyParams, Match.ObjectIncluding({
 			username: String,
 		}));
@@ -51,10 +51,10 @@ API.v1.addRoute('ldap.testSearch', { authRequired: true }, {
 			throw new Error('LDAP_disabled');
 		}
 
-		Promise.await(LDAP.testSearch(this.bodyParams.username));
+		await LDAP.testSearch(this.bodyParams.username);
 
 		return API.v1.success({
-			message: 'LDAP_User_Found',
+			message: 'LDAP_User_Found' as const,
 		});
 	},
 });

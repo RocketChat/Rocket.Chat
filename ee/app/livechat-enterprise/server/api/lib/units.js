@@ -45,5 +45,9 @@ export async function findUnitById({ userId, unitId }) {
 	if (!await hasPermissionAsync(userId, 'manage-livechat-units')) {
 		throw new Error('error-not-authorized');
 	}
-	return LivechatUnit.findOneById(unitId);
+	const unit = LivechatUnit.findOneById(unitId);
+
+	return {
+		unit,
+	};
 }
