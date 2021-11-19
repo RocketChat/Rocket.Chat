@@ -1,5 +1,5 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedState, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import React, { FC } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -50,7 +50,7 @@ const AppsTable: FC<{
 		text,
 		current,
 		itemsPerPage,
-		sort: useDebouncedValue([sortBy, sortDirection], 200),
+		sortDirection,
 	});
 
 	return (

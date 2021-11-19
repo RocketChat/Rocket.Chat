@@ -12,18 +12,17 @@ export const useFilteredApps = ({
 		return (app: App): boolean => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
 	},
 	text,
-	sort: [, sortDirection],
+	sortDirection,
 	current,
 	categories = [],
 	itemsPerPage,
 }: {
 	filterFunction: (text: string) => (app: App) => boolean;
 	text: string;
-	sort: [string, 'asc' | 'desc'];
+	sortDirection: 'asc' | 'desc';
 	current: number;
 	itemsPerPage: number;
 	categories?: string[];
-	// apps: App[];
 }): [App[], number] => {
 	const { apps } = useContext(AppsContext);
 
