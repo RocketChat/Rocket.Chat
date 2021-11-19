@@ -2,7 +2,6 @@ import { API } from '../../../../../app/api/server';
 import { deprecationWarning } from '../../../../../app/api/server/helpers/deprecationWarning';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
-import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
 
 API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 	async get() {
@@ -26,11 +25,16 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 
 API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
 	async get() {
-		const { id } = this.urlParams;
-		const { unit } = await findUnitById({
+		const { id } = this.queryParams;
+
+		if (!id) {
+			return API.v1.failure('The "id" parameter is required');
+		}
+
+		const unit = await findUnitById({
 			userId: this.userId,
 			unitId: id,
-		}) as { unit: IOmnichannelBusinessUnit };
+		});
 
 		return API.v1.success(deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }));
 	},
@@ -40,10 +44,15 @@ API.v1.addRoute('livechat/unitMonitors.list', { authRequired: true }, {
 	async get() {
 		const { unitId } = this.queryParams;
 
-		return API.v1.success(await findUnitMonitors({
-			userId: this.userId,
-			unitId,
-		}));
+		if (!unitId) {
+			return API.v1.failure('The "unitId" parameter is required');
+		}
+		return API.v1.success({
+			monitors: await findUnitMonitors({
+				userId: this.userId,
+				unitId,
+			}),
+		});
 	},
 });
 
@@ -53,7 +62,7 @@ API.v1.addRoute('livechat/units', { authRequired: true, permissionsRequired: ['m
 		const { sort } = this.parseJsonQuery();
 		const { text } = this.queryParams;
 
-		return API.v1.success(Promise.await(findUnits({
+		return API.v1.success(await findUnits({
 			userId: this.userId,
 			text,
 			pagination: {
@@ -61,10 +70,10 @@ API.v1.addRoute('livechat/units', { authRequired: true, permissionsRequired: ['m
 				count,
 				sort,
 			},
-		})));
+		}));
 	},
 	async post() {
-		const { unitData, unitMonitors, unitDepartments } = this.bodyParams?.();
+		const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 		return LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments);
 	},
 });
@@ -72,15 +81,15 @@ API.v1.addRoute('livechat/units', { authRequired: true, permissionsRequired: ['m
 API.v1.addRoute('livechat/units/:id', { authRequired: true, permissionsRequired: ['manage-livechat-units'] }, {
 	async get() {
 		const { id } = this.urlParams;
-		const { unit } = await findUnitById({
+		const unit = await findUnitById({
 			userId: this.userId,
 			unitId: id,
-		}) as { unit: IOmnichannelBusinessUnit };
+		});
 
 		return API.v1.success(unit);
 	},
 	async post() {
-		const { unitData, unitMonitors, unitDepartments } = this.bodyParams?.();
+		const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 		const { id } = this.urlParams;
 
 		return LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments);
