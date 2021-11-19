@@ -7,7 +7,6 @@ API.v1.addRoute('livechat/business-hours.list', { authRequired: true }, {
 		const { sort } = this.parseJsonQuery();
 		const { name } = this.queryParams;
 
-		// @ts-ignore
 		return API.v1.success(await findBusinessHours(
 			this.userId,
 			{
