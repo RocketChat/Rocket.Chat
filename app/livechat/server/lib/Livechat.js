@@ -222,7 +222,7 @@ export const Livechat = {
 		return true;
 	},
 
-	deleteMessage({ guest, message }) {
+	async deleteMessage({ guest, message }) {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${ guest._id }`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
@@ -239,7 +239,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-action-not-allowed', 'Message deleting not allowed', { method: 'livechatDeleteMessage' });
 		}
 
-		deleteMessage(message, guest);
+		await deleteMessage(message, guest);
 
 		return true;
 	},
@@ -598,7 +598,7 @@ export const Livechat = {
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department });
+			Promise.await(this.transfer(room, guest, { roomId: room._id, transferredBy, departmentId: guest.department }));
 		});
 	},
 

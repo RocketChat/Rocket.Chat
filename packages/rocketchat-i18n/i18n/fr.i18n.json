@@ -2919,7 +2919,7 @@
   "Message_QuoteChainLimit": "Nombre maximum de citations enchaînées",
   "Message_Read_Receipt_Enabled": "Afficher les confirmations de lecture",
   "Message_Read_Receipt_Store_Users": "Reçus de lecture détaillés",
-  "Message_Read_Receipt_Store_Users_Description": "Affiche les conformations de lecture de chaque utilisateur",
+  "Message_Read_Receipt_Store_Users_Description": "Afficher les confirmations de lecture de chaque utilisateur",
   "Message_removed": "Message supprimé",
   "Message_sent_by_email": "Message envoyé par e-mail",
   "Message_ShowDeletedStatus": "Afficher le statut de suppression",

@@ -61,6 +61,9 @@ export interface IRoom extends IRocketChatRecord {
 
 	sysMes?: string[];
 	muted?: string[];
+
+	usernames?: string[];
+	ts?: Date;
 }
 
 export interface ICreatedRoom extends IRoom {
@@ -72,6 +75,8 @@ export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' |
 	uids: Array<string>;
 	usernames: Array<Username>;
 }
+
+export const isDirectMessageRoom = (room: Partial<IRoom>): room is IDirectMessageRoom => room.t === 'd';
 
 export enum OmnichannelSourceType {
 	WIDGET = 'widget',

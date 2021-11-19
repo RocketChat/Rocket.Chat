@@ -3,11 +3,12 @@ import { Random } from 'meteor/random';
 import _ from 'underscore';
 
 import { hasPermission } from '../../../../authorization';
-import { Users, OAuthApps } from '../../../../models';
+import { Users } from '../../../../models/server';
+import { OAuthApps } from '../../../../models/server/raw';
 import { parseUriList } from '../functions/parseUriList';
 
 Meteor.methods({
-	addOAuthApp(application) {
+	async addOAuthApp(application) {
 		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 		}
@@ -31,7 +32,7 @@ Meteor.methods({
 		application.clientSecret = Random.secret();
 		application._createdAt = new Date();
 		application._createdBy = Users.findOne(this.userId, { fields: { username: 1 } });
-		application._id = OAuthApps.insert(application);
+		application._id = (await OAuthApps.insertOne(application)).insertedId;
 		return application;
 	},
 });

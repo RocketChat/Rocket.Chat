@@ -72,7 +72,8 @@
       },
       "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "anti-trojan-source"
       ],
       "rules": {
         "func-call-spacing": "off",
@@ -122,7 +123,8 @@
         "@typescript-eslint/no-unused-vars": ["error", {
           "argsIgnorePattern": "^_",
           "ignoreRestSiblings": true
-        }]
+        }],
+        "anti-trojan-source/no-bidi": "error"
       },
       "env": {
         "browser": true,
@@ -143,6 +145,16 @@
         "react": {
           "version": "detect"
         }
+      }
+    },
+    {
+      "files": [
+        "**/*.tests.js",
+        "**/*.tests.ts",
+        "**/*.spec.ts"
+      ],
+      "env": {
+        "mocha": true
       }
     }
   ]
