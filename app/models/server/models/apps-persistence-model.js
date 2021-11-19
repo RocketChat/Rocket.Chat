@@ -4,7 +4,6 @@ export class AppsPersistenceModel extends Base {
 	constructor() {
 		super('apps_persistence');
 
-		this.tryEnsureIndex({ appId: 1 });
 		this.tryEnsureIndex({ appId: 1, associations: 1 });
 	}
 

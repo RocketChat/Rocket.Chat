@@ -68,4 +68,5 @@ import './v241';
 import './v242';
 import './v243';
 import './v244';
+import './v245';
 import './xrun';
