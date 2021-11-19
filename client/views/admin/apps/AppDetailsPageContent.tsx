@@ -11,10 +11,10 @@ import PriceDisplay from './PriceDisplay';
 import { App } from './types';
 
 type AppDetailsPageContentProps = {
-	data: App;
+	app: App;
 };
 
-const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
+const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ app }) => {
 	const t = useTranslation();
 
 	const {
@@ -30,7 +30,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 		iconFileContent,
 		installed,
 		bundledIn,
-	} = data;
+	} = app;
 
 	return (
 		<>
@@ -62,7 +62,7 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 							alignItems='center'
 							marginInline='neg-x8'
 						>
-							<AppStatus app={data} marginInline='x8' />
+							<AppStatus app={app} marginInline='x8' />
 							{!installed && (
 								<PriceDisplay
 									purchaseType={purchaseType}
@@ -73,21 +73,21 @@ const AppDetailsPageContent: FC<AppDetailsPageContentProps> = ({ data }) => {
 								/>
 							)}
 						</Box>
-						{installed && <AppMenu app={data} />}
+						{installed && <AppMenu app={app} />}
 					</Box>
 				</Box>
 			</Box>
 			<Divider />
 
-			{data.licenseValidation && (
+			{app.licenseValidation && (
 				<>
-					{Object.entries(data.licenseValidation.warnings).map(([key]) => (
+					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
 						<Callout key={key} type='warning'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
-					{Object.entries(data.licenseValidation.errors).map(([key]) => (
+					{Object.entries(app.licenseValidation.errors).map(([key]) => (
 						<Callout key={key} type='danger'>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>

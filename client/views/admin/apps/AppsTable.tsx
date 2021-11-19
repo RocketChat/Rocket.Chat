@@ -1,76 +1,91 @@
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { useState, FC, ReactNode } from 'react';
+import { Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedState, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import React, { FC } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import GenericTable from '../../../components/GenericTable';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+} from '../../../components/GenericTable';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import AppRow from './AppRow';
+import MarketplaceRow from './MarketplaceRow';
+import { filterAppsInstalled } from './helpers/filterAppsInstalled';
+import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { App } from './types';
 
-const filterFunction = (text: string): ((app: App) => boolean) => {
-	if (!text) {
-		return (app): boolean => app.installed;
-	}
-
-	return (app): boolean => app.installed && app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-};
-
-const AppsTable: FC = () => {
+const AppsTable: FC<{
+	isMarketplace: boolean;
+}> = ({ isMarketplace }) => {
 	const t = useTranslation();
 
-	const [ref, onMediumBreakpoint] = useResizeInlineBreakpoint([600], 200);
+	const [ref, onLargeBreakpoint, onMediumBreakpoint] = useResizeInlineBreakpoint(
+		[800, 600],
+		200,
+	) as [React.RefObject<HTMLElement>, boolean, boolean];
 
-	const [params, setParams] = useState(() => ({ text: '', current: 0, itemsPerPage: 25 }));
-	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(() => ['name', 'asc']);
+	const filterFunction = isMarketplace ? filterAppsMarketplace : filterAppsInstalled;
 
-	const { text, current, itemsPerPage } = params;
+	const Row = isMarketplace ? MarketplaceRow : AppRow;
+
+	const [text, setText] = useDebouncedState('', 500);
+
+	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
+
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination();
 
 	const [filteredApps, filteredAppsCount] = useFilteredApps({
 		filterFunction,
-		text: useDebouncedValue(text, 500),
+		text,
 		current,
 		itemsPerPage,
-		sort: useDebouncedValue(sort, 200),
+		sort: useDebouncedValue([sortBy, sortDirection], 200),
 	});
 
-	const [sortBy, sortDirection] = sort;
-
-	const handleHeaderCellClick = (id): void => {
-		setSort(([sortBy, sortDirection]) =>
-			sortBy === id ? [id, sortDirection === 'asc' ? 'desc' : 'asc'] : [id, 'asc'],
-		);
-	};
-
 	return (
-		<GenericTable
-			ref={ref}
-			header={
-				<>
-					<GenericTable.HeaderCell
+		<>
+			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} />
+			<GenericTable ref={ref}>
+				<GenericTableHeader>
+					<GenericTableHeaderCell
 						direction={sortDirection}
 						active={sortBy === 'name'}
 						sort='name'
 						width={onMediumBreakpoint ? 'x240' : 'x180'}
-						onClick={handleHeaderCellClick}
+						onClick={setSort}
 					>
 						{t('Name')}
-					</GenericTable.HeaderCell>
-					{onMediumBreakpoint && <GenericTable.HeaderCell>{t('Details')}</GenericTable.HeaderCell>}
-					<GenericTable.HeaderCell width='x160'>{t('Status')}</GenericTable.HeaderCell>
-				</>
-			}
-			results={filteredApps}
-			total={filteredAppsCount}
-			params={params}
-			setParams={setParams}
-			renderFilter={({ onChange, ...props }): ReactNode => (
-				<FilterByText placeholder={t('Search_Apps')} onChange={onChange} {...props} />
-			)}
-		>
-			{(props): ReactNode => <AppRow key={props.id} medium={onMediumBreakpoint} {...props} />}
-		</GenericTable>
+					</GenericTableHeaderCell>
+					{onMediumBreakpoint && <GenericTableHeaderCell>{t('Details')}</GenericTableHeaderCell>}
+					<GenericTableHeaderCell width='x160'>{t('Status')}</GenericTableHeaderCell>
+				</GenericTableHeader>
+				<GenericTableBody>
+					{filteredApps &&
+						filteredApps.map((app) => (
+							<Row key={app.id} large={onLargeBreakpoint} medium={onMediumBreakpoint} {...app} />
+						))}
+				</GenericTableBody>
+			</GenericTable>
+			<Pagination
+				current={current}
+				itemsPerPage={itemsPerPage}
+				count={filteredAppsCount}
+				onSetItemsPerPage={onSetItemsPerPage}
+				onSetCurrent={onSetCurrent}
+				{...paginationProps}
+			/>
+		</>
 	);
 };
 

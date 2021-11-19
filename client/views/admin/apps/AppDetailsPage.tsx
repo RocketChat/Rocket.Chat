@@ -1,5 +1,6 @@
+import { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { Button, ButtonGroup, Icon, Box, Throbber } from '@rocket.chat/fuselage';
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, FC } from 'react';
 
 import { Apps } from '../../../../app/apps/client/orchestrator';
 import Page from '../../../components/Page';
@@ -17,17 +18,18 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-	const settingsRef = useRef({});
+	const settingsRef = useRef<Record<string, ISetting['value']>>({});
 
 	const data = useAppInfo(id);
 
 	const [currentRouteName] = useCurrentRoute();
+	if (!currentRouteName) {
+		throw new Error('No current route name');
+	}
 	const router = useRoute(currentRouteName);
 	const handleReturn = (): void => router.push({});
 
-	const isLoading = Object.values(data).length === 0;
-
-	const { settings = {}, apis = {} } = data;
+	const { settings, apis } = { settings: {}, apis: [], ...data };
 
 	const showSettings = Object.values(settings).length;
 	const showApis = apis.length;
@@ -38,7 +40,7 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 		try {
 			await Apps.setAppSettings(
 				id,
-				Object.values(settings).map((value) => ({ ...value, value: current[value.id] })),
+				Object.values(settings).map((value) => ({ ...value, value: current && current[value.id] })),
 			);
 		} catch (e) {
 			handleAPIError(e);
@@ -62,10 +64,10 @@ const AppDetailsPage: FC<{ id: string }> = function AppDetailsPage({ id }) {
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
-					{isLoading && <LoadingDetails />}
-					{!isLoading && (
+					{!data && <LoadingDetails />}
+					{data && (
 						<>
-							<AppDetailsPageContent data={data} />
+							<AppDetailsPageContent app={data} />
 							{!!showApis && <APIsDisplay apis={apis} />}
 							{!!showSettings && (
 								<SettingsDisplay
