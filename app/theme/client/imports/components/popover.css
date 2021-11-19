@@ -42,7 +42,7 @@
 
 		max-height: 70%;
 
-		padding: var(--popover-padding);
+		padding: var(--popover-padding) 0;
 
 		animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
@@ -91,26 +91,12 @@
 		font-weight: 600;
 	}
 
-	&__wrapper {
-		padding-left: 16px;
-
-		&:hover {
-			border-radius: 2px;
-			background-color: #f7f8fa;
-		}
-	}
-
-	&__list {
-		width: 125%;
-		margin-left: -16px;
-	}
-
 	&__item {
 		display: flex;
 
 		width: 100%;
 
-		padding: 4px 0;
+		padding: 4px 12px;
 
 		cursor: pointer;
 
@@ -122,6 +108,10 @@
 
 		font-size: var(--popover-item-text-size);
 		align-items: center;
+
+		&:hover {
+			background-color: #f7f8fa;
+		}
 
 		&--alert {
 			color: var(--rc-color-error);
@@ -193,9 +183,9 @@
 	}
 
 	&__divider {
-		width: 100%;
+		width: 88%;
 		height: var(--popover-divider-height);
-		margin: 1rem 0;
+		margin: 1rem auto;
 
 		background: var(--popover-divider-color);
 
