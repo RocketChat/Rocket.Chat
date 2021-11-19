@@ -1,3 +1,4 @@
+import formatDistance from 'date-fns/formatDistance';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 
@@ -85,21 +86,13 @@ MessageTypes.registerType({
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
 	render(message) {
-		if (message.msg === 'ended' && message.endTs) {
-			const hh = parseInt(Math.abs(message.endTs - message.ts) / 36e5);
-			const mm = parseInt(Math.abs(message.endTs - message.ts) / 6e4) % 60;
-			const ss = parseInt(Math.abs(message.endTs - message.ts) / 1000) % 60;
-			let callDuration = '';
-			if (hh > 0) {
-				callDuration += `${ hh } hours ${ mm } minutes ${ ss } seconds.`;
-			} else if (mm > 0) {
-				callDuration += `${ mm } minutes ${ ss } seconds.`;
-			} else {
-				callDuration += `${ ss } seconds.`;
-			}
-			return TAPi18n.__('WebRTC_call_ended_message', { callDuration, endTime: moment(message.endTs).format('h:mm A') });
+		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
+			return TAPi18n.__('WebRTC_call_ended_message', {
+				callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
+				endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+			});
 		}
-		if (message.msg === 'declined' && message.endTs) {
+		if (message.msg === 'declined' && message.webRtcCallEndTs) {
 			return TAPi18n.__('WebRTC_call_declined_message');
 		}
 		return message.msg;
