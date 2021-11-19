@@ -1260,19 +1260,6 @@ export class Messages extends Base {
 		return this.find(query);
 	}
 
-	findLivechatClosedMessages(rid, options) {
-		return this.find(
-			{
-				rid,
-				$or: [
-					{ t: { $exists: false } },
-					{ t: 'livechat-close' },
-				],
-			},
-			options,
-		);
-	}
-
 	decreaseReplyCountById(_id, inc = -1) {
 		const query = { _id };
 		const update = {

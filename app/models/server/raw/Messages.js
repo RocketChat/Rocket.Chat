@@ -184,4 +184,17 @@ export class MessagesRaw extends BaseRaw {
 		}
 		return this.col.aggregate(params).toArray();
 	}
+
+	findLivechatClosedMessages(rid, options) {
+		return this.find(
+			{
+				rid,
+				$or: [
+					{ t: { $exists: false } },
+					{ t: 'livechat-close' },
+				],
+			},
+			options,
+		);
+	}
 }

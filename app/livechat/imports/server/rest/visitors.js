@@ -2,10 +2,7 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../../../api/server';
-import { LivechatRooms, Messages } from '../../../../models/server';
-import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { findVisitorInfo, findVisitedPages, findChatHistory, searchChats, findVisitorsToAutocomplete, findVisitorsByEmailOrPhoneOrNameOrUsername } from '../../../server/api/lib/visitors';
-import { canAccessRoom } from '../../../../authorization/server';
 
 API.v1.addRoute('livechat/visitors.info', { authRequired: true }, {
 	get() {
@@ -62,44 +59,6 @@ API.v1.addRoute('livechat/visitors.chatHistory/room/:roomId/visitor/:visitorId',
 		}));
 
 		return API.v1.success(history);
-	},
-});
-
-API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequired: ['view-l-room'] }, {
-	get() {
-		check(this.urlParams, {
-			rid: String,
-		});
-
-		const { offset, count } = this.getPaginationItems();
-		const { sort } = this.parseJsonQuery();
-
-		const room = LivechatRooms.findOneById(this.urlParams.rid);
-
-		if (!room) {
-			throw new Error('invalid-room');
-		}
-
-		if (!canAccessRoom(room, this.user)) {
-			throw new Error('not-allowed');
-		}
-
-		const cursor = Messages.findLivechatClosedMessages(this.urlParams.rid, {
-			sort: sort || { ts: -1 },
-			skip: offset,
-			limit: count,
-		});
-
-		const total = cursor.count();
-
-		const messages = cursor.fetch();
-
-		return API.v1.success({
-			messages: normalizeMessagesForUser(messages, this.userId),
-			offset,
-			count,
-			total,
-		});
 	},
 });
 
