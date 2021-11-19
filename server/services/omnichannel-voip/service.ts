@@ -35,7 +35,7 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		return {};
 	}
 
-	private async getAllocatedExtesionAllocationData(projections: any): Promise<any> {
+	private async getAllocatedExtesionAllocationData(projections: { [P in keyof IUser]: number }): Promise<Array<IUser>> {
 		const roles: string[] = ['livechat-agent', 'livechat-manager', 'admin'];
 		const options = {
 			sort: {
