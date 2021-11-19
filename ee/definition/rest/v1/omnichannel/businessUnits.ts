@@ -12,7 +12,7 @@ export type OmnichannelBusinessUnitsEndpoints = {
 	};
 	'livechat/units.getOne': {
 		GET: (params: {
-			id: string;
+			unitId: string;
 		}) => (IOmnichannelBusinessUnit);
 	};
 	'livechat/unitMonitors.list': {

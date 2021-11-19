@@ -25,15 +25,15 @@ API.v1.addRoute('livechat/units.list', { authRequired: true }, {
 
 API.v1.addRoute('livechat/units.getOne', { authRequired: true }, {
 	async get() {
-		const { id } = this.queryParams;
+		const { unitId } = this.queryParams;
 
-		if (!id) {
-			return API.v1.failure('The "id" parameter is required');
+		if (!unitId) {
+			return API.v1.failure('Missing "unitId" query parameter');
 		}
 
 		const unit = await findUnitById({
 			userId: this.userId,
-			unitId: id,
+			unitId,
 		});
 
 		return API.v1.success(deprecationWarning({ response: unit, endpoint: 'livechat/units.getOne' }));
