@@ -65,7 +65,7 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 			name: String,
 			type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
 			members: Match.Maybe([String]),
-			room: Match.Any,
+			room: Match.Maybe(Match.Any),
 			owner: Match.Maybe(String),
 		}));
 

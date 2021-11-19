@@ -1,5 +1,5 @@
 import type { EnterpriseEndpoints } from '../../ee/definition/rest';
-import type { ExtractKeys, ValueOf } from '../utils';
+import type { KeyOfEach } from '../utils';
 import type { AppsEndpoints } from './apps';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { BannersEndpoints } from './v1/banners';
@@ -49,57 +49,44 @@ MiscEndpoints &
 PermissionsEndpoints &
 InstancesEndpoints;
 
-export type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
+type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 
-type Endpoint = UnionizeEndpoints<Endpoints>;
-
-type UnionizeEndpoints<EE extends Endpoints> = ValueOf<
-{
-	[P in keyof EE as P extends string ? P : never]: UnionizeMethods<P extends string ? P : never, EE[P]>;
-}
->;
-
-type ExtractOperations<OO, M extends keyof OO> = ExtractKeys<OO, M, (...args: any[]) => any>;
-
-type UnionizeMethods<P extends string, OO> = ValueOf<
-{
-	[M in keyof OO as ExtractOperations<OO, M>]: (
-		method: M,
-		path: ReplacePlaceholders<P>,
-		...params: Parameters<Extract<OO[M], (...args: any[]) => any>>
-	) => ReturnType<Extract<OO[M], (...args: any[]) => any>>;
-}
->;
-
-export type Method = Parameters<Endpoint>[0];
-export type Path = Parameters<Endpoint>[1];
-
-export type MethodFor<P extends Path> = P extends any
-	? Parameters<Extract<Endpoint, (method: any, path: P, ...params: any[]) => any>>[0]
-	: never;
-export type PathFor<M extends Method> = M extends any
-	? Parameters<Extract<Endpoint, (method: M, path: any, ...params: any[]) => any>>[1]
+type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPattern extends any
+	? OperationsByPathPatternAndMethod<TPathPattern>
 	: never;
 
-type Operation<M extends Method, P extends PathFor<M>> = M extends any
-	? P extends any
-		? Extract<Endpoint, (method: M, path: P, ...params: any[]) => any>
-		: never
+type OperationsByPathPatternAndMethod<
+	TPathPattern extends keyof Endpoints,
+	TMethod extends KeyOfEach<Endpoints[TPathPattern]> = KeyOfEach<Endpoints[TPathPattern]>
+> = TMethod extends any
+	? {
+		pathPattern: TPathPattern;
+		method: TMethod;
+		path: ReplacePlaceholders<TPathPattern>;
+		params: GetParams<Endpoints[TPathPattern][TMethod]>;
+		result: GetResult<Endpoints[TPathPattern][TMethod]>;
+	}
 	: never;
 
-type ExtractParams<Q> = Q extends [any, any]
-	? [undefined?]
-	: Q extends [any, any, any, ...any[]]
-		? [Q[2]]
-		: never;
+type Operations = OperationsByPathPattern<keyof Endpoints>;
 
-export type Params<M extends Method, P extends PathFor<M>> = ExtractParams<
-Parameters<Operation<M, P>>
->;
-export type Return<M extends Method, P extends PathFor<M>> = ReturnType<Operation<M, P>>;
+export type PathPattern = Operations['pathPattern'];
 
+export type Method = Operations['method'];
 
-export type PathPattern = keyof Endpoints;
+export type Path = Operations['path'];
+
+export type MethodFor<TPath extends Path> = TPath extends any
+	? Extract<Operations, { path: TPath }>['method']
+	: never;
+
+export type PathFor<TMethod extends Method> = TMethod extends any
+	? Extract<Operations, { method: TMethod }>['path']
+	: never;
+
+export type MatchPathPattern<TPath extends Path> = TPath extends any
+	? Extract<Operations, { path: TPath }>['pathPattern']
+	: never;
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
 PathPattern,

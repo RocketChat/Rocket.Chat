@@ -1,7 +1,13 @@
 import { useCallback } from 'react';
 
 import { Serialized } from '../../definition/Serialized';
-import { Method, Params, PathFor, Return } from '../../definition/rest';
+import {
+	MatchPathPattern,
+	Method,
+	OperationParams,
+	OperationResult,
+	PathFor,
+} from '../../definition/rest';
 import { useEndpoint } from '../contexts/ServerContext';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 
@@ -13,8 +19,8 @@ export const useEndpointActionExperimental = <
 	path: TPath,
 	successMessage?: string,
 ): ((
-	params: Serialized<Params<TMethod, TPath>[0]>,
-) => Promise<Serialized<Return<TMethod, TPath>>>) => {
+	params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
 	const sendData = useEndpoint(method, path);
 	const dispatchToastMessage = useToastMessageDispatch();
 
