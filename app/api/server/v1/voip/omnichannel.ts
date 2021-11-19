@@ -8,7 +8,7 @@ import { LivechatVoip } from '../../../../../server/sdk';
 API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 	// Get the extensions associated with the agent passed as request params.
 	get() {
-		if (!hasPermission(this.userId, 'query-agent-extension-association')) {
+		if (!hasPermission(this.userId, 'view-agent-extension-association')) {
 			return API.v1.unauthorized();
 		}
 		check(this.requestParams(), Match.ObjectIncluding({
@@ -18,20 +18,20 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 			fields: { _id: 1 },
 		});
 		if (!user) {
-			return API.v1.notFound();
+			return API.v1.notFound('User not found');
 		}
 		const extension = Users.getExtension(user._id, {
 			fields: { _id: 1, username: 1, extension: 1 },
 		});
 		if (!extension) {
-			return API.v1.notFound();
+			return API.v1.notFound('Extension not found');
 		}
 		return API.v1.success(...extension);
 	},
 
 	// Create agent-extension association.
 	post() {
-		if (!hasPermission(this.userId, 'managage-agent-extension-association')) {
+		if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
 			return API.v1.unauthorized();
 		}
 		check(this.bodyParams, {
@@ -48,7 +48,7 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 		return API.v1.success();
 	},
 	delete() {
-		if (!hasPermission(this.userId, 'managage-agent-extension-association')) {
+		if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
 			return API.v1.unauthorized();
 		}
 		check(this.requestParams(), Match.ObjectIncluding({
@@ -66,29 +66,27 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 });
 
 // Get free extensions
-API.v1.addRoute('omnichannel.extension.free', { authRequired: true }, {
+API.v1.addRoute('omnichannel.extension.free', { authRequired: true,
+	permissionsRequired: ['manage-agent-extension-association'],
+}, {
 	get() {
-		if (!hasPermission(this.userId, 'managage-agent-extension-association')) {
-			return API.v1.unauthorized();
-		}
 		const extension = Promise.await(LivechatVoip.getAvailableExtensions());
 		if (!extension) {
 			return API.v1.notFound();
 		}
-		return API.v1.success(extension);
+		return API.v1.success({ extensions: extension.result });
 	},
 });
 
 // Get free extensions
-API.v1.addRoute('omnichannel.extension.allocated', { authRequired: true }, {
+API.v1.addRoute('omnichannel.extension.allocated', { authRequired: true,
+	permissionsRequired: ['manage-agent-extension-association'],
+}, {
 	get() {
-		if (!hasPermission(this.userId, 'managage-agent-extension-association')) {
-			return API.v1.unauthorized();
-		}
 		const association = Promise.await(LivechatVoip.getExtensionAllocationDetails());
 		if (!association) {
 			return API.v1.notFound();
 		}
-		return API.v1.success(association);
+		return API.v1.success({ allocations: association.result });
 	},
 });

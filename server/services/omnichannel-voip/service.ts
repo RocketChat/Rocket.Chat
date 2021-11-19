@@ -17,6 +17,7 @@ import { IAgentExtensionMap, IOmnichannelVoipServiceResult } from '../../../defi
  * Check this during the code review and after code review is done, delete this comment.
  */
 import { UsersRaw } from '../../../app/models/server/raw/Users';
+import { IUser } from '../../../definition/IUser';
 
 export class OmnichannelVoipService extends ServiceClass implements IOmnichannelVoipService {
 	protected name = 'omnichannel-voip';
@@ -31,42 +32,36 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		this.logger = new Logger('OmnichannelVoipService');
 	}
 
-	getConfiguration(): any {
-		return {};
-	}
-
-	private async getAllocatedExtesionAllocationData(projections: { [P in keyof IUser]: number }): Promise<Array<IUser>> {
+	private async getAllocatedExtesionAllocationData(projection: Partial<{ [P in keyof IUser]: number }>): Promise<Array<IUser>> {
 		const roles: string[] = ['livechat-agent', 'livechat-manager', 'admin'];
 		const options = {
 			sort: {
 				username: 1,
 			},
-			projection: {
-			},
+			projection,
 		};
-		options.projection = projections;
+
 		const query = {
 			extension: { $exists: true },
 		};
-		const data = await this.users.findUsersInRolesWithQuery(roles, query, options).toArray();
-		return data;
+		return this.users.findUsersInRolesWithQuery(roles, query, options).toArray();
+	}
+
+	getConfiguration(): any {
+		return {};
 	}
 
 	async getAvailableExtensions(): Promise<IOmnichannelVoipServiceResult> {
-		const allExtensions = Promise.await(Voip.getExtensionList()) as IVoipConnectorResult;
+		const allExtensions = await Voip.getExtensionList() as IVoipConnectorResult;
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 		});
 		const filtered = _.difference(_.pluck(allExtensions.result as IVoipExtensionBase [], 'extension'),
-			_.pluck(allocatedExtensions, 'extension'));
+			_.pluck(allocatedExtensions, 'extension')) as string[];
 		this.logger.debug({ msg: 'getAvailableExtensions()', found: filtered.length });
-		const result: IOmnichannelVoipServiceResult = {
+		return {
 			result: filtered,
 		};
-		this.logger.debug({ msg: 'getAvailableExtensions() result length ',
-			length: result.result.length,
-		});
-		return Promise.resolve(result);
 	}
 
 	async getExtensionAllocationDetails(): Promise<IOmnichannelVoipServiceResult> {
@@ -78,16 +73,12 @@ export class OmnichannelVoipService extends ServiceClass implements IOmnichannel
 		this.logger.debug({ msg: 'getExtensionAllocationDetails() all extension length ',
 			length: allocatedExtensions.length,
 		});
-		const result: IOmnichannelVoipServiceResult = {
-			result: _.map(allocatedExtensions, (user: any) => {
-				const agent: IAgentExtensionMap = {
-					_id: user._id,
-					agentName: user.username,
-					extension: user.extension,
-				};
-				return agent;
-			}),
-		};
-		return Promise.resolve(result);
+		return {
+			result: allocatedExtensions.map((user: any) => ({
+				_id: user._id,
+				agentName: user.username,
+				extension: user.extension,
+			} as IAgentExtensionMap)),
+		} as unknown as IOmnichannelVoipServiceResult;
 	}
 }
