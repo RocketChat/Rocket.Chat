@@ -778,7 +778,7 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 });
 
 settings.watch('API_Enable_Rate_Limiter_Limit_RegisterUser', (value) => {
-	userRegisterRateLimiterOptions.numRequestsAllowed = value;
+	rateLimiterDictionary['/api/v1/users.registerpost'].options.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
