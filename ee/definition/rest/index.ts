@@ -1,4 +1,4 @@
 import type { EngagementDashboardEndpoints } from './v1/engagementDashboard';
-import type { OmnichannelBusinessHoursEndpoints } from './v1/omnichannel/businessHours';
+import type { OmnichannelEndpoints } from './v1/omnichannel';
 
-export type EnterpriseEndpoints = EngagementDashboardEndpoints & OmnichannelBusinessHoursEndpoints;
+export type EnterpriseEndpoints = EngagementDashboardEndpoints & OmnichannelEndpoints;
