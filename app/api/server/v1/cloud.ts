@@ -32,7 +32,7 @@ API.v1.addRoute('cloud.manualRegister', { authRequired: true }, {
 });
 
 API.v1.addRoute('cloud.createRegistrationIntent', { authRequired: true }, {
-	post() {
+	async post() {
 		check(this.bodyParams, {
 			// cloudBlob: String,
 		});
@@ -41,7 +41,7 @@ API.v1.addRoute('cloud.createRegistrationIntent', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const intentData = startRegisterWorkspace();
+		const intentData = await startRegisterWorkspace();
 
 		if (intentData) {
 			return API.v1.success({ intentData });
@@ -52,17 +52,19 @@ API.v1.addRoute('cloud.createRegistrationIntent', { authRequired: true }, {
 });
 
 API.v1.addRoute('cloud.confirmationPoll', { authRequired: true }, {
-	get() {
+	async get() {
 		const { deviceCode } = this.queryParams;
 		// check(this.bodyParams, {
 		// 	// cloudBlob: String,
 		// });
+		console.log(deviceCode);
 
 		if (!hasPermission(this.userId, 'manage-cloud')) {
 			return API.v1.unauthorized();
 		}
 
-		const pollData = getConfirmationPoll(deviceCode);
+		const pollData = await getConfirmationPoll(deviceCode);
+		console.log('poolData', pollData);
 
 		if (pollData) {
 			return API.v1.success({ pollData });

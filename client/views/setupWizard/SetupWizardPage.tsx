@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
 
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { useEndpoint, useMethod } from '../../contexts/ServerContext';
 import { useSessionDispatch } from '../../contexts/SessionContext';
 import { useSettingSetValue } from '../../contexts/SettingsContext';
 import { useToastMessageDispatch } from '../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../contexts/TranslationContext';
-import { useLoginWithPassword } from '../../contexts/UserContext';
-import { useCallbacks } from '../../hooks/useCallbacks';
+import { useLoginWithPassword, useUserId } from '../../contexts/UserContext';
 import { useSetupWizardContext } from './contexts/SetupWizardContext';
 import AdminInfoStep from './steps/AdminInfoStep';
 import CloudAccountConfirmation from './steps/CloudAccountConfirmation';
@@ -26,7 +26,8 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 	const dispatchToastMessage = useToastMessageDispatch();
 	const registerUser = useMethod('registerUser');
 	const defineUsername = useMethod('setUsername');
-	const callbacks = useCallbacks();
+	const userId = useUserId();
+
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const t = useTranslation();
@@ -76,11 +77,8 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 
 	const handleSelectServerType = async ({ _agreement, _updates, registerType }) => {
 		if (registerType !== 'registered') {
-			const result = await handleRegisterAdminUser();
-
-			if (result) {
-				return setShowSetupWizard('completed');
-			}
+			await handleRegisterAdminUser();
+			return setShowSetupWizard('completed');
 		}
 
 		setShowSetupWizard('in_progress');
@@ -88,17 +86,21 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 	};
 
 	const handleRegisterServer = async ({ email }): Promise<void> => {
-		try {
-			await handleRegisterAdminUser();
-		} catch (e) {
-			return dispatchToastMessage({
-				type: 'error',
-				message: e,
-			});
+		if (!userId) {
+			try {
+				await handleRegisterAdminUser();
+			} catch (e) {
+				return dispatchToastMessage({
+					type: 'error',
+					message: e,
+				});
+			}
 		}
 
 		try {
 			const intentData = await createRegistrationIntent();
+			console.log(intentData);
+
 			setSetupWizardData((prevState) => ({
 				...prevState,
 				cloudRegistrationData: { ...intentData, cloudEmail: email },
@@ -106,6 +108,7 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 
 			// setShowSetupWizard('completed');
 			goToNextStep();
+			setShowSetupWizard('in_progress');
 		} catch (e) {
 			console.log(e);
 		}
@@ -130,68 +133,6 @@ const SetupWizardPage = ({ currentStep = 1 }: SetupWizardPageProps): ReactElemen
 	}
 
 	return <AdminInfoStep step={currentStep} />;
-
-	// return (
-	// 	<Box
-	// 		width='full'
-	// 		height='sh'
-	// 		display='flex'
-	// 		flexDirection={small ? 'column' : 'row'}
-	// 		alignItems='stretch'
-	// 		style={{ backgroundColor: 'var(--color-dark-05, #f1f2f4)' }}
-	// 		data-qa='setup-wizard'
-	// 	>
-	// 		{(currentStep === FINAL_STEP && <FinalStep />) || (
-	// 			<>
-	// 				<SideBar
-	// 					steps={[
-	// 						{
-	// 							step: 1,
-	// 							title: t('Admin_Info'),
-	// 						},
-	// 						{
-	// 							step: 2,
-	// 							title: t('Organization_Info'),
-	// 						},
-	// 						{
-	// 							step: 3,
-	// 							title: t('Server_Info'),
-	// 						},
-	// 						{
-	// 							step: 4,
-	// 							title: t('Register_Server'),
-	// 						},
-	// 					]}
-	// 					currentStep={currentStep}
-	// 				/>
-	// 				<Box flexGrow={1} flexShrink={1} minHeight='none' display='flex' flexDirection='column'>
-	// 					<ScrollableContentWrapper>
-	// 						<Margins all='x16'>
-	// 							<Tile is='section' flexGrow={1} flexShrink={1}>
-	// 								<AdminUserInformationStep
-	// 									step={1}
-	// 									title={t('Admin_Info')}
-	// 									active={currentStep === 1}
-	// 								/>
-	// 								<SettingsBasedStep
-	// 									step={2}
-	// 									title={t('Organization_Info')}
-	// 									active={currentStep === 2}
-	// 								/>
-	// 								<SettingsBasedStep step={3} title={t('Server_Info')} active={currentStep === 3} />
-	// 								<RegisterServerStep
-	// 									step={4}
-	// 									title={t('Register_Server')}
-	// 									active={currentStep === 4}
-	// 								/>
-	// 							</Tile>
-	// 						</Margins>
-	// 					</ScrollableContentWrapper>
-	// 				</Box>
-	// 			</>
-	// 		)}
-	// 	</Box>
-	// );
 };
 
 export default SetupWizardPage;

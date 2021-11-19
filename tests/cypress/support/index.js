@@ -19,7 +19,7 @@ import './commands';
 // Cypress.Cookies.debug(true);
 
 Cypress.Cookies.defaults({
-	whitelist: ['rc_uid', 'rc_token'],
+	preserve: ['rc_uid', 'rc_token'],
 });
 
 Cypress.LocalStorage.clear = function() {};

@@ -5,4 +5,7 @@ export type CloudEndpoints = {
 	'cloud.createRegistrationIntent': {
 		POST: () => any;
 	};
+	'cloud.confirmationPoll': {
+		GET: (params: { deviceCode: string; resend?: boolean }) => any;
+	};
 };

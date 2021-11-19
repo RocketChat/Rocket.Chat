@@ -40,6 +40,8 @@ export async function startRegisterWorkspace(resend = false) {
 
 	const { data } = result;
 
+	console.log(result);
+
 	if (!data) {
 		return false;
 	}

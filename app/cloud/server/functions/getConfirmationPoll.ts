@@ -8,7 +8,7 @@ import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 
-export function getConfirmationPoll(deviceCode, resend = false) {
+export async function getConfirmationPoll(deviceCode: string): Promise<void | boolean> {
 	// const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
 	// if ((workspaceRegistered && connectToCloud) || process.env.TEST_MODE) {
 	// 	syncWorkspace(true);
@@ -29,7 +29,7 @@ export function getConfirmationPoll(deviceCode, resend = false) {
 		result = HTTP.get(`${ cloudUrl }/api/v2/register/workspace/poll?token=${ deviceCode }`);
 	} catch (e) {
 		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${ e.response.data.error }`);
+			SystemLogger.error(`Failed to register with Rocket.Chat Cloud. ErrorCode: ${ e.response.data.error }`);
 		} else {
 			SystemLogger.error(e);
 		}
