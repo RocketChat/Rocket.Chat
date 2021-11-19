@@ -4,7 +4,7 @@ import _ from 'underscore';
 
 import { Settings } from '../../../models/server/raw';
 import { hasPermission } from '../../../authorization/server';
-import { API, ResultTypeEndpoints } from '../api';
+import { API, ResultFor } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { ISetting, ISettingColor, isSettingAction, isSettingColor } from '../../../../definition/ISetting';
@@ -126,7 +126,7 @@ API.v1.addRoute('settings/:_id', { authRequired: true }, {
 	},
 	post: {
 		twoFactorRequired: true,
-		async action(): Promise<ResultTypeEndpoints<'settings/:_id', true>['post']> {
+		async action(): Promise<ResultFor<'POST', 'settings/:_id'>> {
 			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
 				return API.v1.unauthorized();
 			}
