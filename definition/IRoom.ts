@@ -112,6 +112,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		ts: Date;
+		username: IUser['username'];
 	};
 	onHold?: boolean;
 	departmentId?: string;
@@ -126,6 +128,10 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+
+	ts: Date;
+	label?: string;
+	crmData?: any;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';

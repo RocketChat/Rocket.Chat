@@ -1,10 +1,8 @@
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
-import { IOmnichannelCannedResponse } from '../../IOmnichannelCannedResponse';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
-import { IUser } from '../../IUser';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -109,38 +107,6 @@ export type OmnichannelEndpoints = {
 			count: number;
 			offset: number;
 			total: number;
-		};
-	};
-	'canned-responses': {
-		GET: (params: {
-			shortcut?: string;
-			text?: string;
-			scope?: string;
-			createdBy?: IUser['username'];
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-			offset?: number;
-			count?: number;
-		}) => {
-			cannedResponses: IOmnichannelCannedResponse[];
-			count?: number;
-			offset?: number;
-			total: number;
-		};
-		POST: (params: {
-			_id?: IOmnichannelCannedResponse['_id'];
-			shortcut: string;
-			text: string;
-			scope: string;
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-		}) => void;
-		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
-	};
-	'canned-responses/:_id': {
-		path: `canned-responses/${ string }`;
-		GET: () => {
-			cannedResponse: IOmnichannelCannedResponse;
 		};
 	};
 };

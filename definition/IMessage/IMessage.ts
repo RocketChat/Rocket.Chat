@@ -48,6 +48,7 @@ export interface IMessage extends IRocketChatRecord {
 	channels?: Array<ChannelName>;
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	blocks?: MessageSurfaceLayout;
+	alias?: string;
 	md?: ReturnType<typeof parser>;
 
 	_hidden?: boolean;
@@ -72,4 +73,10 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
+
+	// email inbox fields
+	email?: {
+		references?: string[];
+		messageId?: string;
+	};
 }
