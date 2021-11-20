@@ -2,6 +2,7 @@ import { Match, check } from 'meteor/check';
 
 import { API } from '../api';
 import { Banner } from '../../../../server/sdk';
+import { BannerPlatform } from '../../../../definition/IBanner';
 
 /**
  * @deprecated
@@ -52,7 +53,7 @@ import { Banner } from '../../../../server/sdk';
 API.v1.addRoute('banners.getNew', { authRequired: true }, { // deprecated
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 			bid: Match.Maybe(String),
 		}));
 
@@ -116,7 +117,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
 			id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
 		}));
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 		}));
 
 		const { platform } = this.queryParams;
@@ -168,7 +169,7 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
 API.v1.addRoute('banners', { authRequired: true }, {
 	async get() {
 		check(this.queryParams, Match.ObjectIncluding({
-			platform: String,
+			platform: Match.OneOf(...Object.values(BannerPlatform)),
 		}));
 
 		const { platform } = this.queryParams;
