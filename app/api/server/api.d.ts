@@ -1,5 +1,7 @@
 import type { JoinPathPattern, Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '../../../definition/rest';
 import type { IUser } from '../../../definition/IUser';
+import { IMethodConnection } from '../../../definition/IMethodThisType';
+import { ITwoFactorOptions } from '../../2fa/server/code';
 
 type SuccessResult<T> = {
 	statusCode: 200;
@@ -41,9 +43,17 @@ type UnauthorizedResult<T> = {
 
 type Options = {
 	permissionsRequired?: string[];
-	twoFactorOptions?: unknown;
+	twoFactorOptions?: ITwoFactorOptions;
 	twoFactorRequired?: boolean;
 	authRequired?: boolean;
+	enterprise?: boolean;
+}
+
+type Request = {
+	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+	url: string;
+	headers: Record<string, string>;
+	body: any;
 }
 
 type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
@@ -93,6 +103,8 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
+	processTwoFactor({ userId, request, invocation, options, connection }: { userId: string; request: Request; invocation: {twoFactorChecked: boolean}; options: Options; connection: IMethodConnection }): void;
+
 	addRoute<
 		TSubPathPattern extends string
 	>(subpath: TSubPathPattern, operations: Operations<JoinPathPattern<TBasePath, TSubPathPattern>>): void;

@@ -276,7 +276,7 @@ export class APIClass extends Restivus {
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({ user: userId, code, method, options, connection });
+		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
@@ -400,7 +400,7 @@ export class APIClass extends Restivus {
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
 						if (_options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options, connection });
 						}
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
