@@ -103,7 +103,7 @@ type Operations<TPathPattern extends PathPattern, TOptions extends Options = {}>
 };
 
 declare class APIClass<TBasePath extends string = '/'> {
-	processTwoFactor({ userId, request, invocation, options, connection }: { userId: string; request: Request; invocation: {twoFactorChecked: boolean}; options: Options; connection: IMethodConnection }): void;
+	processTwoFactor({ userId, request, invocation, options, connection }: { userId: string; request: Request; invocation: {twoFactorChecked: boolean}; options?: Options; connection: IMethodConnection }): void;
 
 	addRoute<
 		TSubPathPattern extends string
