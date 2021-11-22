@@ -5,7 +5,7 @@ import { LDAPEE } from '../sdk';
 import { hasLicense } from '../../app/license/server/license';
 
 API.v1.addRoute('ldap.syncNow', { authRequired: true }, {
-	post() {
+	async post() {
 		if (!this.userId) {
 			throw new Error('error-invalid-user');
 		}
@@ -22,10 +22,10 @@ API.v1.addRoute('ldap.syncNow', { authRequired: true }, {
 			throw new Error('LDAP_disabled');
 		}
 
-		LDAPEE.sync();
+		await LDAPEE.sync();
 
 		return API.v1.success({
-			message: 'Sync_in_progress',
+			message: 'Sync_in_progress' as const,
 		});
 	},
 });

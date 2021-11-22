@@ -12,25 +12,25 @@ export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
 	room: ITeamCreateRoom;
-	members?: Array<string>; // list of user _ids
-	owner?: string; // the team owner. If not present, owner = requester
+	members?: Array<string> | null; // list of user _ids
+	owner?: string | null; // the team owner. If not present, owner = requester
 }
 
 export interface ITeamMemberParams {
 	userId: string;
-	roles?: Array<string>;
+	roles?: Array<string> | null;
 }
 
 export interface IUserInfo {
 	_id: string;
-	username?: string;
+	username?: string | null;
 	name: string;
 	status: string;
 }
 
 export interface ITeamMemberInfo {
 	user: IUserInfo;
-	roles?: string[];
+	roles?: string[] | null;
 	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
@@ -41,17 +41,20 @@ export interface ITeamInfo extends ITeam {
 }
 
 export interface IListRoomsFilter {
-	name: string;
+	name?: string;
 	isDefault: boolean;
 	getAllRooms: boolean;
 	allowPrivateTeam: boolean;
 }
 
-export interface ITeamUpdateData {
-	name: string;
-	type: TEAM_TYPE;
-	updateRoom?: boolean; // default is true
-}
+export type ITeamUpdateData =
+	{ updateRoom?: boolean } & ({
+		name: string;
+		type?: TEAM_TYPE;
+	} | {
+		name?: string;
+		type: TEAM_TYPE;
+	})
 
 export type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 

@@ -1,8 +1,15 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import { IServerInfo } from '../../../definition/IServerInfo';
+import type { IServerInfo } from '../../../definition/IServerInfo';
 import type { Serialized } from '../../../definition/Serialized';
-import type { PathFor, Params, Return, Method } from './endpoints';
+import type {
+	Method,
+	PathFor,
+	OperationParams,
+	MatchPathPattern,
+	OperationResult,
+	PathPattern,
+} from '../../../definition/rest';
 import {
 	ServerMethodFunction,
 	ServerMethodName,
@@ -18,11 +25,11 @@ type ServerContextValue = {
 		methodName: MethodName,
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
-	callEndpoint: <M extends Method, P extends PathFor<M>>(
-		method: M,
-		path: P,
-		params: Params<M, P>[0],
-	) => Promise<Serialized<Return<M, P>>>;
+	callEndpoint: <TMethod extends Method, TPath extends PathFor<TMethod>>(
+		method: TMethod,
+		path: TPath,
+		params: Serialized<OperationParams<TMethod, MatchPathPattern<TPath>>>,
+	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (
 		streamName: string,
@@ -70,10 +77,16 @@ export const useMethod = <MethodName extends keyof ServerMethods>(
 	);
 };
 
-export const useEndpoint = <M extends 'GET' | 'POST' | 'DELETE', P extends PathFor<M>>(
-	method: M,
-	path: P,
-): ((params: Params<M, P>[0]) => Promise<Serialized<Return<M, P>>>) => {
+type EndpointFunction<TMethod extends Method, TPathPattern extends PathPattern> = (
+	params: void extends OperationParams<TMethod, TPathPattern>
+		? void
+		: Serialized<OperationParams<TMethod, TPathPattern>>,
+) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
+
+export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
+	method: TMethod,
+	path: TPath,
+): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
 	const { callEndpoint } = useContext(ServerContext);
 
 	return useCallback((params) => callEndpoint(method, path, params), [callEndpoint, path, method]);

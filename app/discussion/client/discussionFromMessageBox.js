@@ -20,7 +20,7 @@ Meteor.startup(function() {
 				imperativeModal.open({
 					component: CreateDiscussion,
 					props: {
-						defaultParentRoom: data.rid,
+						defaultParentRoom: data.prid || data.rid,
 						onClose: imperativeModal.close,
 					},
 				});

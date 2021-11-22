@@ -5,12 +5,12 @@ import { InstanceStatus } from '../../../models/server/raw';
 import { IInstanceStatus } from '../../../../definition/IInstanceStatus';
 
 API.v1.addRoute('instances.get', { authRequired: true }, {
-	get() {
+	async get() {
 		if (!hasPermission(this.userId, 'view-statistics')) {
 			return API.v1.unauthorized();
 		}
 
-		const instances = Promise.await(InstanceStatus.find().toArray());
+		const instances = await InstanceStatus.find().toArray();
 
 		return API.v1.success({
 			instances: instances.map((instance: IInstanceStatus) => {
