@@ -5,9 +5,7 @@ import { PaginatedResult } from '../helpers/PaginatedResult';
 export type EmojiCustomEndpoints = {
 	'emoji-custom.all': {
 		GET: (
-			params: { query: string } & PaginatedRequest & {
-				sort: string; // {name: 'asc' | 'desc';}>;
-			}
+			params: PaginatedRequest<{ query: string }, 'name'>
 		) => {
 			emojis: ICustomEmojiDescriptor[];
 		} & PaginatedResult;

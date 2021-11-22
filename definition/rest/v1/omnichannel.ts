@@ -58,6 +58,12 @@ export type OmnichannelEndpoints = {
 			departments: ILivechatDepartment[];
 		}>;
 	};
+
+	'livechat/departments.by-unit/:id': {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
 	'livechat/custom-fields': {
 		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			customFields: [
