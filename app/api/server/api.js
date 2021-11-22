@@ -4,8 +4,8 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import { RateLimiter } from 'meteor/rate-limit';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -447,6 +447,14 @@ export class APIClass extends Restivus {
 		});
 	}
 
+	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
+		if (rateLimiterDictionary[route]) {
+			rateLimiterDictionary[route].options.numRequestsAllowed = numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
+			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
+			API.v1.reloadRoutesToRefreshRateLimiter();
+		}
+	}
+
 	_initAuth() {
 		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
@@ -770,6 +778,7 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
+
 
 settings.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
