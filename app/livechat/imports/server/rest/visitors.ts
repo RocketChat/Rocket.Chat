@@ -6,6 +6,7 @@ import { LivechatRooms } from '../../../../models/server';
 import { Messages } from '../../../../models/server/raw';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoom } from '../../../../authorization/server';
+import { IMessage } from '../../../../../definition/IMessage';
 
 API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequired: ['view-l-room'] }, {
 	async get() {
@@ -34,7 +35,7 @@ API.v1.addRoute('livechat/:rid/messages', { authRequired: true, permissionsRequi
 
 		const total = await cursor.count();
 
-		const messages = await cursor.toArray();
+		const messages = await cursor.toArray() as IMessage[];
 
 		return API.v1.success({
 			messages: normalizeMessagesForUser(messages, this.userId),
