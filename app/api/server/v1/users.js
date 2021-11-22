@@ -285,7 +285,7 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 
 API.v1.addRoute('users.register', { authRequired: false,
 	rateLimiterOptions: {
-		numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+		numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser'),
 		intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 	} }, {
 	post() {
