@@ -6,6 +6,7 @@ import { IOmnichannelCannedResponse } from '../../IOmnichannelCannedResponse';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
 import { IUser } from '../../IUser';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -26,25 +27,22 @@ export type OmnichannelEndpoints = {
 		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
 	'livechat/monitors.list': {
-		GET: (params: { text: string; offset: number; count: number }) => {
+		GET: (params: PaginatedRequest<{ text: string }>) => {
 			monitors: ILivechatMonitor[];
 			total: number;
 		};
 	};
 	'livechat/tags.list': {
-		GET: (params: { text: string; offset: number; count: number }) => {
+		GET: (params: PaginatedRequest<{ text: string }, 'name'>) => {
 			tags: ILivechatTag[];
 			total: number;
 		};
 	};
 	'livechat/department': {
-		GET: (params: {
+		GET: (params: PaginatedRequest<{
 			text: string;
-			offset?: number;
-			count?: number;
-			sort?: string;
 			onlyMyDepartments?: boolean;
-		}) => {
+		}>) => {
 			departments: ILivechatDepartment[];
 			total: number;
 		};
@@ -97,7 +95,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/:rid/messages': {
-		GET: (params: { query: string; sort?: string; offset?: number; count?: number }) => {
+		GET: (params: { query: string ; sort?: string } & PaginatedRequest) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;
@@ -105,7 +103,7 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'livechat/users/agent': {
-		GET: (params: { text?: string; offset?: number; count?: number; sort?: string }) => {
+		GET: (params: { text?: string; sort?: string } & PaginatedRequest) => {
 			users: {
 				_id: string;
 				emails: {
@@ -133,9 +131,7 @@ export type OmnichannelEndpoints = {
 			createdBy?: IUser['username'];
 			tags?: any;
 			departmentId?: ILivechatDepartment['_id'];
-			offset?: number;
-			count?: number;
-		}) => {
+		} & PaginatedRequest) => {
 			cannedResponses: IOmnichannelCannedResponse[];
 			count?: number;
 			offset?: number;
