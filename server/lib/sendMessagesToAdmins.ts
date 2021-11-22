@@ -16,7 +16,7 @@ const getData = (param: any[] | Function, adminUser: IUser): any[] => {
 	}
 
 	return result;
-}
+};
 
 export async function sendMessagesToAdmins({
 	fromId = 'rocket.cat',
