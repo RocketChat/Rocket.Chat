@@ -48,7 +48,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
-	const canDeleteDM = usePermission(type === 'd' && 'delete-d');
+	const canDeleteDM = usePermission('delete-d');
 
 	const canLeave = (() => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -197,12 +197,13 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					action: handleLeave,
 				},
 			}),
-			...(canDeleteDM && {
-				delete: {
-					label: { label: t('Delete'), icon: 'trash' },
-					action: handleDeleteDM,
-				},
-			}),
+			...(canDeleteDM &&
+				type === 'd' && {
+					delete: {
+						label: { label: t('Delete'), icon: 'trash' },
+						action: handleDeleteDM,
+					},
+				}),
 		}),
 		[
 			t,
@@ -216,6 +217,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			handleLeave,
 			handleDeleteDM,
 			canDeleteDM,
+			type,
 		],
 	);
 
