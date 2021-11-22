@@ -42,11 +42,13 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const unreadMessages = useMethod('unreadMessages');
 	const toggleFavorite = useMethod('toggleFavorite');
 	const leaveRoom = useMethod('leaveRoom');
+	const deleteRoom = useMethod('eraseRoom');
 
 	const isUnread = alert || unread || threadUnread;
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
+	const canDeleteDM = usePermission(type === 'd' && 'delete-d');
 
 	const canLeave = (() => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -146,6 +148,30 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		}
 	});
 
+	const handleDeleteDM = useMutableCallback(() => {
+		const onConfirm = async () => {
+			try {
+				await deleteRoom(rid);
+				router.push({});
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+			closeModal();
+		};
+
+		setModal(
+			<WarningModal
+				text={t('Delete_Room_Warning')}
+				confirmText={t('Yes_delete_it')}
+				close={closeModal}
+				cancel={closeModal}
+				cancelText={t('Cancel')}
+				confirm={onConfirm}
+			/>,
+		);
+	});
+
 	const menuOptions = useMemo(
 		() => ({
 			hideRoom: {
@@ -171,6 +197,12 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 					action: handleLeave,
 				},
 			}),
+			...(canDeleteDM && {
+				delete: {
+					label: { label: t('Delete'), icon: 'trash' },
+					action: handleDeleteDM,
+				},
+			}),
 		}),
 		[
 			t,
@@ -182,6 +214,8 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			handleToggleFavorite,
 			canLeave,
 			handleLeave,
+			handleDeleteDM,
+			canDeleteDM,
 		],
 	);
 
