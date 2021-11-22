@@ -2,10 +2,10 @@ import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
 import { IMessage } from '../../IMessage';
-import { PaginatedRequest } from '../helpers/PaginatedRequest';
-import { PaginatedResult } from '../helpers/PaginatedResult';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -36,10 +36,12 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 	'livechat/department': {
-		GET: (params: PaginatedRequest<{
-			text: string;
-			onlyMyDepartments?: boolean;
-		}>) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+				onlyMyDepartments?: boolean;
+			}>,
+		) => PaginatedResult<{
 			departments: ILivechatDepartment[];
 		}>;
 	};
