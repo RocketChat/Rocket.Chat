@@ -14,4 +14,4 @@ export type OmnichannelBusinessHoursEndpoints = {
 			total: number;
 		};
 	};
-}
+};

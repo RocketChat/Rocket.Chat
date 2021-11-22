@@ -30,7 +30,6 @@ export type OmnichannelCannedResponsesEndpoints = {
 		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
 	};
 	'canned-responses/:_id': {
-		path: `canned-responses/${ string }`;
 		GET: () => {
 			cannedResponse: IOmnichannelCannedResponse;
 		};

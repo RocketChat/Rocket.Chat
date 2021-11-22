@@ -1,12 +1,25 @@
 import { addMigration } from '../../lib/migrations';
-import { Apps } from '../../../app/apps/server/orchestrator';
+import { Settings } from '../../../app/models/server';
+import { settings } from '../../../app/settings/server';
 
 addMigration({
 	version: 246,
 	up() {
-		// we now have a compound index on appId + associations
-		// so we can use the index prefix instead of a separate index on appId
-		Apps.initialize();
-		return Apps._persistModel?.tryDropIndex({ appId: 1 });
+		const livechatVideoCallEnabled = settings.get('Livechat_videocall_enabled');
+		if (livechatVideoCallEnabled) {
+			Settings.upsert({ _id: 'Omnichannel_call_provider' }, {
+				$set: { value: 'Jitsi' },
+			});
+		}
+		Settings.removeById('Livechat_videocall_enabled');
+
+		const webRTCEnableChannel = settings.get('WebRTC_Enable_Channel');
+		const webRTCEnableDirect = settings.get('WebRTC_Enable_Direct');
+		const webRTCEnablePrivate = settings.get('WebRTC_Enable_Private');
+		if (webRTCEnableChannel || webRTCEnableDirect || webRTCEnablePrivate) {
+			Settings.upsert({ _id: 'WebRTC_Enabled' }, {
+				$set: { value: true },
+			});
+		}
 	},
 });

@@ -1,6 +1,11 @@
 declare module 'meteor/kadira:flow-router' {
 	import { Subscription } from 'meteor/meteor';
 
+	type Context = {
+		params: Record<string, string>;
+		queryParams: Record<string, string>;
+	};
+
 	type RouteOptions = {
 		name: string;
 		action?: (
@@ -13,13 +18,12 @@ declare module 'meteor/kadira:flow-router' {
 			params?: Record<string, string>,
 			queryParams?: Record<string, string>,
 		) => void;
-		triggersEnter?: unknown[];
-		triggersExit?: unknown[];
-	};
-
-	type Context = {
-		params: Record<string, string>;
-		queryParams: Record<string, string>;
+		triggersEnter?: ((
+			context: Context,
+			redirect: (pathDef: string) => void,
+			stop: () => void,
+		) => void)[];
+		triggersExit?: ((context: Context) => void)[];
 	};
 
 	class Route {

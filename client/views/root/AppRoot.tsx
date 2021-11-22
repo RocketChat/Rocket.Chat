@@ -1,5 +1,7 @@
 import React, { FC, lazy, Suspense } from 'react';
+import { QueryClientProvider } from 'react-query';
 
+import { queryClient } from '../../lib/queryClient';
 import PageLoading from './PageLoading';
 
 const ConnectionStatusBar = lazy(
@@ -13,10 +15,12 @@ const PortalsWrapper = lazy(() => import('./PortalsWrapper'));
 const AppRoot: FC = () => (
 	<Suspense fallback={<PageLoading />}>
 		<MeteorProvider>
-			<ConnectionStatusBar />
-			<BannerRegion />
-			<AppLayout />
-			<PortalsWrapper />
+			<QueryClientProvider client={queryClient}>
+				<ConnectionStatusBar />
+				<BannerRegion />
+				<AppLayout />
+				<PortalsWrapper />
+			</QueryClientProvider>
 		</MeteorProvider>
 	</Suspense>
 );
