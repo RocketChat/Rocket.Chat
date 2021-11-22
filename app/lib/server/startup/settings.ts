@@ -3007,7 +3007,7 @@ settingsRegistry.addGroup('Rate Limiter', function() {
 	});
 
 	this.section('Feature_Limiting', function() {
-		this.add('API_Enable_Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
+		this.add('Rate_Limiter_Limit_RegisterUser', 1, { type: 'int', enableQuery: { _id: 'API_Enable_Rate_Limiter', value: true } });
 	});
 });
 

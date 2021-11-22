@@ -99,7 +99,7 @@ Meteor.methods({
 });
 
 export const registerUserRuleId = RateLimiter.limitMethod('registerUser',
-	settings.get('API_Enable_Rate_Limiter_Limit_RegisterUser'),
+	settings.get('Rate_Limiter_Limit_RegisterUser'),
 	settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
 		userId() { return true; },
 	});
