@@ -3,7 +3,7 @@ import { settings } from '../../../app/settings/server';
 import { API } from '../../../app/api/server/api';
 import { LDAPEE } from '../sdk';
 
-API.v1.addRoute('ldap.syncNow', { authRequired: true, enterprise: true, twoFactorRequired: true }, {
+API.v1.addRoute('ldap.syncNow', { authRequired: true, twoFactorRequiredNonEnterprise: true }, {
 	async post() {
 		if (!this.userId) {
 			throw new Error('error-invalid-user');

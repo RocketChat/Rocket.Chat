@@ -41,13 +41,21 @@ type UnauthorizedResult<T> = {
 	};
 }
 
+export type NonEnterpriseTwoFactorOptions = {
+	authRequired: true;
+	twoFactorRequiredNonEnterprise: true;
+	twoFactorRequired: true;
+	permissionsRequired?: string[];
+	twoFactorOptions: ITwoFactorOptions;
+}
+
 type Options = {
 	permissionsRequired?: string[];
 	twoFactorOptions?: ITwoFactorOptions;
 	twoFactorRequired?: boolean;
 	authRequired?: boolean;
-	enterprise?: boolean;
-}
+	twoFactorRequiredNonEnterprise?: true;
+};
 
 type Request = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
