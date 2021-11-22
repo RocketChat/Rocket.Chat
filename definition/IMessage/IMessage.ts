@@ -73,10 +73,14 @@ export interface IMessage extends IRocketChatRecord {
 	file?: FileProp;
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
+}
 
+export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
 		references?: string[];
 		messageId?: string;
 	};
 }
+
+export const isIMessageInbox = (message: IMessage): message is IMessageInbox => 'email' in message;

@@ -131,7 +131,7 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 
 	ts: Date;
 	label?: string;
-	crmData?: any;
+	crmData?: unknown;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
