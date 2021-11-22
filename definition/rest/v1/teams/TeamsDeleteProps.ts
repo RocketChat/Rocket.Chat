@@ -2,7 +2,9 @@ import Ajv, { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv();
 
-export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & { roomsToRemove?: string[] };
+export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & {
+	roomsToRemove?: string[];
+};
 
 const teamsDeletePropsSchema: JSONSchemaType<TeamsDeleteProps> = {
 	oneOf: [

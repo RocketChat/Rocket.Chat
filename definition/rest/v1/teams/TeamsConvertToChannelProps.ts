@@ -1,6 +1,5 @@
 import Ajv, { JSONSchemaType } from 'ajv';
 
-
 const ajv = new Ajv();
 
 export type TeamsConvertToChannelProps = {
@@ -24,9 +23,7 @@ const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps>
 					type: 'string',
 				},
 			},
-			required: [
-				'teamId',
-			],
+			required: ['teamId'],
 			additionalProperties: false,
 		},
 		{
@@ -43,9 +40,7 @@ const teamsConvertToTeamsPropsSchema: JSONSchemaType<TeamsConvertToChannelProps>
 					type: 'string',
 				},
 			},
-			required: [
-				'teamName',
-			],
+			required: ['teamName'],
 			additionalProperties: false,
 		},
 	],

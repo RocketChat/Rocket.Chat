@@ -75,7 +75,7 @@ export class AnalyticsRaw extends BaseRaw<T> {
 	}
 
 	getMessagesOrigin({ start, end }: { start: IAnalytic['date']; end: IAnalytic['date'] }): AggregationCursor<{
-		t: 'message';
+		t: IRoom['t'];
 		messages: number;
 	}> {
 		const params = [
@@ -99,24 +99,16 @@ export class AnalyticsRaw extends BaseRaw<T> {
 				},
 			},
 		];
-		return this.col.aggregate<{
-			t: 'message';
-			messages: number;
-		}>(params);
+		return this.col.aggregate(params);
 	}
 
 	getMostPopularChannelsByMessagesSentQuantity({ start, end, options = {} }: { start: IAnalytic['date']; end: IAnalytic['date']; options?: { sort?: SortOptionObject<T>; count?: number } }): AggregationCursor<{
-		t: 'messages';
+		t: IRoom['t'];
 		name: string;
 		messages: number;
 		usernames: string[];
 	}> {
-		return this.col.aggregate<{
-			t: 'messages';
-			name: string;
-			messages: number;
-			usernames: string[];
-		}>([
+		return this.col.aggregate([
 			{
 				$match: {
 					type: 'messages',

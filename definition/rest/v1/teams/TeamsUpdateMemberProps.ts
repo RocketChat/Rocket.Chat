@@ -4,7 +4,9 @@ import { ITeamMemberParams } from '../../../../server/sdk/types/ITeamService';
 
 const ajv = new Ajv();
 
-export type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string }) & { member: ITeamMemberParams };
+export type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string }) & {
+	member: ITeamMemberParams;
+};
 
 const teamsUpdateMemberPropsSchema: JSONSchemaType<TeamsUpdateMemberProps> = {
 	oneOf: [

@@ -9,7 +9,6 @@ import { hasAtLeastOnePermission, hasPermission } from '../../../authorization/s
 import { Users } from '../../../models/server';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { IUser } from '../../../../definition/IUser';
-import { isTeamPropsWithTeamName, isTeamPropsWithTeamId } from '../../../../definition/rest/v1/teams';
 import { isTeamsConvertToChannelProps } from '../../../../definition/rest/v1/teams/TeamsConvertToChannelProps';
 import { isTeamsRemoveRoomProps } from '../../../../definition/rest/v1/teams/TeamsRemoveRoomProps';
 import { isTeamsUpdateMemberProps } from '../../../../definition/rest/v1/teams/TeamsUpdateMemberProps';
@@ -42,7 +41,7 @@ API.v1.addRoute('teams.listAll', { authRequired: true }, {
 			return API.v1.unauthorized();
 		}
 
-		const { offset, count } = this.getPaginationItems() as { offset: number; count: number };
+		const { offset, count } = this.getPaginationItems();
 
 		const { records, total } = await Team.listAll({ offset, count });
 
@@ -85,20 +84,27 @@ API.v1.addRoute('teams.create', { authRequired: true }, {
 	},
 });
 
+const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string }): Promise<ITeam | null> => {
+	if ('teamId' in params && params.teamId) {
+		return Team.getOneById<ITeam>(params.teamId);
+	}
+
+	if ('teamName' in params && params.teamName) {
+		return Team.getOneByName(params.teamName);
+	}
+
+	return null;
+};
+
 API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
 	async post() {
 		if (!isTeamsConvertToChannelProps(this.bodyParams)) {
 			return API.v1.failure('invalid-body-params', isTeamsConvertToChannelProps.errors?.map((e) => e.message).join('\n '));
 		}
 
-		const { bodyParams } = this;
+		const { roomsToRemove = [] } = this.bodyParams;
 
-		const { roomsToRemove = [] } = bodyParams;
-
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
+		const team = await getTeamByIdOrName(this.bodyParams);
 
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
@@ -125,18 +131,6 @@ API.v1.addRoute('teams.convertToChannel', { authRequired: true }, {
 		return API.v1.success();
 	},
 });
-
-const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string }): Promise<ITeam | null> => {
-	if ('teamId' in params && params.teamId) {
-		return Team.getOneById<ITeam>(params.teamId);
-	}
-
-	if ('teamName' in params && params.teamName) {
-		return Team.getOneByName(params.teamName);
-	}
-
-	return null;
-};
 
 API.v1.addRoute('teams.addRooms', { authRequired: true }, {
 	async post() {
@@ -365,11 +359,7 @@ API.v1.addRoute('teams.addMembers', { authRequired: true }, {
 		const { bodyParams } = this;
 		const { members } = bodyParams;
 
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
-
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -393,10 +383,7 @@ API.v1.addRoute('teams.updateMember', { authRequired: true }, {
 		const { bodyParams } = this;
 		const { member } = bodyParams;
 
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -420,11 +407,7 @@ API.v1.addRoute('teams.removeMember', { authRequired: true }, {
 		const { bodyParams } = this;
 		const { userId, rooms } = bodyParams;
 
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
-
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -461,15 +444,9 @@ API.v1.addRoute('teams.leave', { authRequired: true }, {
 			return API.v1.failure('invalid-params', isTeamsLeaveProps.errors?.map((e) => e.message).join('\n '));
 		}
 
-		const { bodyParams } = this;
+		const { rooms = [] } = this.bodyParams;
 
-		const { rooms = [] } = bodyParams;
-
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
-
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
@@ -512,20 +489,15 @@ API.v1.addRoute('teams.info', { authRequired: true }, {
 
 API.v1.addRoute('teams.delete', { authRequired: true }, {
 	async post() {
-		const { bodyParams } = this;
 		const { roomsToRemove = [] } = this.bodyParams;
 
-		if (!isTeamsDeleteProps(bodyParams)) {
+		if (!isTeamsDeleteProps(this.bodyParams)) {
 			return API.v1.failure('invalid-params', isTeamsDeleteProps.errors?.map((e) => e.message).join('\n '));
 		}
 
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
-
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
-			return API.v1.failure('Team not found.');
+			return API.v1.failure('team-does-not-exist');
 		}
 
 		if (!hasPermission(this.userId, 'delete-team', team.roomId)) {
@@ -573,18 +545,13 @@ API.v1.addRoute('teams.autocomplete', { authRequired: true }, {
 
 API.v1.addRoute('teams.update', { authRequired: true }, {
 	async post() {
-		const { bodyParams } = this;
-		if (!isTeamsUpdateProps(bodyParams)) {
+		if (!isTeamsUpdateProps(this.bodyParams)) {
 			return API.v1.failure('invalid-params', isTeamsUpdateProps.errors?.map((e) => e.message).join('\n '));
 		}
 
-		const { data } = bodyParams;
+		const { data } = this.bodyParams;
 
-		const team = await (
-			(isTeamPropsWithTeamId(bodyParams) && Team.getOneById(bodyParams.teamId))
-			|| (isTeamPropsWithTeamName(bodyParams) && Team.getOneByName(bodyParams.teamName))
-		);
-
+		const team = await getTeamByIdOrName(this.bodyParams);
 		if (!team) {
 			return API.v1.failure('team-does-not-exist');
 		}
