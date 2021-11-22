@@ -58,7 +58,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 				},
 			},
 		};
-		const params = [match] as any;
+		const params = [match] as object[];
 		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
@@ -115,13 +115,12 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
 				_id: 0,
 				username: '$_id.username',
 				availableTimeInSeconds: 1,
+				...fullReport && { serviceHistory: 1 },
 			},
-		} as any;
-		if (fullReport) {
-			project.$project.serviceHistory = 1;
-		}
+		};
+
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, lookup, unwind, group, project, sort] as any;
+		const params = [match, lookup, unwind, group, project, sort] as object[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
