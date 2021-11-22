@@ -30,6 +30,7 @@ export declare const APIClient: {
 		delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
 		get<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
 		post<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
+		put<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
 		upload<P, B, R = any>(
 			endpoint: string,
 			params?: Serialized<P>,
