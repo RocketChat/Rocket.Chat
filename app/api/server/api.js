@@ -778,7 +778,7 @@ settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
 
 	// reload rate limiter to REST API
-	if (rateLimiterDictionary[userRegisterRoute ]) {
+	if (rateLimiterDictionary[userRegisterRoute]) {
 		rateLimiterDictionary[userRegisterRoute].options.numRequestsAllowed = value;
 		API.v1.reloadRoutesToRefreshRateLimiter();
 	}
