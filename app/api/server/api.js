@@ -6,9 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
 import _ from 'underscore';
 import { RateLimiter } from 'meteor/rate-limit';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import { RateLimiter as CustomRateLimiter } from '../../lib';
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -16,7 +14,6 @@ import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
-import { registerUserRuleId } from '../../../server/methods/registerUser';
 
 const logger = new Logger('API');
 
@@ -450,6 +447,13 @@ export class APIClass extends Restivus {
 		});
 	}
 
+	updateRateLimiterDictionaryForRoute(route, value) {
+		if (rateLimiterDictionary[route]) {
+			rateLimiterDictionary[route].options.numRequestsAllowed = value;
+			API.v1.reloadRoutesToRefreshRateLimiter();
+		}
+	}
+
 	_initAuth() {
 		const loginCompatibility = (bodyParams, request) => {
 			// Grab the username or email that the user is logging in with
@@ -774,21 +778,6 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
 
-settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
-	const userRegisterRoute = '/api/v1/users.registerpost';
-
-	// reload rate limiter to REST API
-	if (rateLimiterDictionary[userRegisterRoute]) {
-		rateLimiterDictionary[userRegisterRoute].options.numRequestsAllowed = value;
-		API.v1.reloadRoutesToRefreshRateLimiter();
-	}
-
-	// remove old rate limiter rule and create a new one with the updated setting value
-	DDPRateLimiter.removeRule(registerUserRuleId);
-	registerUserRuleId = CustomRateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() { return true; },
-	});
-});
 
 settings.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
