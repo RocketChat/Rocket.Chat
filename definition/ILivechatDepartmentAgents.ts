@@ -4,4 +4,6 @@ export interface ILivechatDepartmentAgents {
 	departmentEnabled: boolean;
 	agentId: string;
 	username: string;
+	count: number;
+	order: number;
 }
