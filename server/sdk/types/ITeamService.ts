@@ -41,7 +41,7 @@ export interface ITeamInfo extends ITeam {
 }
 
 export interface IListRoomsFilter {
-	name: string;
+	name?: string;
 	isDefault: boolean;
 	getAllRooms: boolean;
 	allowPrivateTeam: boolean;
