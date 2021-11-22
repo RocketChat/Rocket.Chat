@@ -775,10 +775,13 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 });
 
 settings.watch('API_Enable_Rate_Limiter_Limit_RegisterUser', (value) => {
-	// reload rate limiter to REST API
 	const userRegisterRoute = '/api/v1/users.registerpost';
-	rateLimiterDictionary[userRegisterRoute].options.numRequestsAllowed = value;
-	API.v1.reloadRoutesToRefreshRateLimiter();
+
+	// reload rate limiter to REST API
+	if (rateLimiterDictionary[userRegisterRoute]) {
+		rateLimiterDictionary[userRegisterRoute].options.numRequestsAllowed = value;
+		API.v1.reloadRoutesToRefreshRateLimiter();
+	}
 
 	// remove old rate limiter rule and create a new one with the updated setting value
 	DDPRateLimiter.removeRule(registerUserRuleId);
