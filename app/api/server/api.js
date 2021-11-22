@@ -25,7 +25,6 @@ export const defaultRateLimiterOptions = {
 	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
-
 let prometheusAPIUserAgent = false;
 
 export let API = {};
@@ -208,10 +207,6 @@ export class APIClass extends Restivus {
 
 	getRateLimiter(route) {
 		return rateLimiterDictionary[route];
-	}
-
-	updateRegisterUserRateLimiter() {
-
 	}
 
 	shouldVerifyRateLimit(route, userId) {
