@@ -1,9 +1,11 @@
 import moment from 'moment';
+import { AggregationCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { ILivechatAgentActivity } from '../../../../definition/ILivechatAgentActivity';
 
-export class LivechatAgentActivityRaw extends BaseRaw {
-	findAllAverageAvailableServiceTime({ date, departmentId }) {
+export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> {
+	findAllAverageAvailableServiceTime({ date, departmentId }: { date: Date; departmentId: string }): Promise<ILivechatAgentActivity[]> {
 		const match = { $match: { date } };
 		const lookup = {
 			$lookup: {
@@ -56,7 +58,7 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 				},
 			},
 		};
-		const params = [match];
+		const params = [match] as object[];
 		if (departmentId && departmentId !== 'undefined') {
 			params.push(lookup);
 			params.push(unwind);
@@ -67,7 +69,19 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 		return this.col.aggregate(params).toArray();
 	}
 
-	findAvailableServiceTimeHistory({ start, end, fullReport, onlyCount = false, options = {} }) {
+	findAvailableServiceTimeHistory({
+		start,
+		end,
+		fullReport,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: string;
+		end: string;
+		fullReport: boolean;
+		onlyCount: boolean;
+		options: any;
+	}): AggregationCursor<ILivechatAgentActivity> {
 		const match = {
 			$match: {
 				date: {
@@ -101,13 +115,12 @@ export class LivechatAgentActivityRaw extends BaseRaw {
 				_id: 0,
 				username: '$_id.username',
 				availableTimeInSeconds: 1,
+				...fullReport && { serviceHistory: 1 },
 			},
 		};
-		if (fullReport) {
-			project.$project.serviceHistory = 1;
-		}
+
 		const sort = { $sort: options.sort || { username: 1 } };
-		const params = [match, lookup, unwind, group, project, sort];
+		const params = [match, lookup, unwind, group, project, sort] as object[];
 		if (onlyCount) {
 			params.push({ $count: 'total' });
 			return this.col.aggregate(params);
