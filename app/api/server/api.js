@@ -26,11 +26,6 @@ export const defaultRateLimiterOptions = {
 	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
 };
 
-export const userRegisterRateLimiterOptions = {
-	numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
-	intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
-};
-
 let prometheusAPIUserAgent = false;
 
 export let API = {};
@@ -213,6 +208,10 @@ export class APIClass extends Restivus {
 
 	getRateLimiter(route) {
 		return rateLimiterDictionary[route];
+	}
+
+	updateRegisterUserRateLimiter() {
+
 	}
 
 	shouldVerifyRateLimit(route, userId) {
@@ -782,7 +781,8 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 
 settings.watch('API_Enable_Rate_Limiter_Limit_RegisterUser', (value) => {
 	// reload rate limiter to REST API
-	rateLimiterDictionary['/api/v1/users.registerpost'].options.numRequestsAllowed = value;
+	const userRegisterRoute = '/api/v1/users.registerpost';
+	rateLimiterDictionary[userRegisterRoute].options.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 
 	// remove old rate limiter rule and create a new one with the updated setting value

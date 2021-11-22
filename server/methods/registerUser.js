@@ -8,6 +8,7 @@ import { settings } from '../../app/settings';
 import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib';
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 
+
 Meteor.methods({
 	async registerUser(formData) {
 		const AllowAnonymousRead = settings.get('Accounts_AllowAnonymousRead');

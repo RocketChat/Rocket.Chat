@@ -26,7 +26,6 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
-import { userRegisterRateLimiterOptions } from '..';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -284,7 +283,11 @@ API.v1.addRoute('users.list', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.register', { authRequired: false, rateLimiterOptions: userRegisterRateLimiterOptions }, {
+API.v1.addRoute('users.register', { authRequired: false,
+	rateLimiterOptions: {
+		numRequestsAllowed: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+		intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
+	} }, {
 	post() {
 		if (this.userId) {
 			return API.v1.failure('Logged in users can not register again.');
