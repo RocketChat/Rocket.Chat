@@ -111,7 +111,7 @@ export async function findVisitorsToAutocomplete({ userId, selector }) {
 	const { exceptions = [], conditions = {} } = selector;
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			name: 1,
 			username: 1,

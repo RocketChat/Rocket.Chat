@@ -1,12 +1,10 @@
 import { addMigration } from '../../lib/migrations';
-import { Apps } from '../../../app/apps/server/orchestrator';
+import { Permissions } from '../../../app/models/server/raw';
 
 addMigration({
 	version: 245,
 	up() {
-		// we now have a compound index on appId + associations
-		// so we can use the index prefix instead of a separate index on appId
-		Apps.initialize();
-		return Apps._persistModel?.tryDropIndex({ appId: 1 });
+		Permissions.create('mobile-download-file', ['user', 'admin']);
+		Permissions.create('mobile-upload-file', ['user', 'admin']);
 	},
 });
