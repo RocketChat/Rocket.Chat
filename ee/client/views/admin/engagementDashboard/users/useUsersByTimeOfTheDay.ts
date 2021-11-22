@@ -8,7 +8,7 @@ type UseUsersByTimeOfTheDayOptions = { period: Period['key']; utc: boolean };
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOptions) =>
 	useQuery(
-		['admin/engagement-dashboard/users/users-by-time-of-the-day', { period }],
+		['admin/engagement-dashboard/users/users-by-time-of-the-day', { period, utc }],
 		async () => {
 			const { start, end } = getPeriodRange(period, utc);
 
