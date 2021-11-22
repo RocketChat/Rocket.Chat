@@ -43,6 +43,7 @@ Meteor.methods({
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-avatar_field`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_claim`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_roles`),
+			Settings.removeById(`Accounts_OAuth_Custom-${ name }-roles_to_sync`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-merge_users`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-show_button`),
 			Settings.removeById(`Accounts_OAuth_Custom-${ name }-groups_claim`),
