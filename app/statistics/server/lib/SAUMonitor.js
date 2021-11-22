@@ -365,7 +365,7 @@ export class SAUMonitorClass {
 
 		await aggregates.dailySessionsOfYesterday(Sessions.col, yesterday).forEach(async (record) => {
 			record._id = `${ record.userId }-${ record.year }-${ record.month }-${ record.day }`;
-			await Sessions.updateOne({ _id: record._id }, record, { upsert: true });
+			await Sessions.updateOne({ _id: record._id }, { $set: record }, { upsert: true });
 		});
 
 		await Sessions.updateMany(match, {

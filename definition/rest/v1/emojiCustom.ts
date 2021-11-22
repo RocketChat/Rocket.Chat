@@ -6,8 +6,8 @@ export type EmojiCustomEndpoints = {
 	'emoji-custom.all': {
 		GET: (
 			params: { query: string } & PaginatedRequest & {
-				sort: string; // {name: 'asc' | 'desc';}>;
-			}
+					sort: string; // {name: 'asc' | 'desc';}>;
+				},
 		) => {
 			emojis: ICustomEmojiDescriptor[];
 		} & PaginatedResult;

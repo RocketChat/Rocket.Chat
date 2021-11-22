@@ -2,7 +2,7 @@ import { Serialized } from '../../../../definition/Serialized';
 
 export declare const APIClient: {
 	delete<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
-	get<P, R = any>(endpoint: string, params?: Serialized<P>): Promise<Serialized<R>>;
+	get<P, R = any>(endpoint: string, params?: void extends P ? void : Serialized<P>): Promise<Serialized<R>>;
 	post<P, B, R = any>(endpoint: string, params?: Serialized<P>, body?: B): Promise<Serialized<R>>;
 	upload<P, B, R = any>(
 		endpoint: string,
