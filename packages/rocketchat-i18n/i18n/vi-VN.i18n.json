@@ -546,6 +546,7 @@
   "Continuous_sound_notifications_for_new_livechat_room": "Thông báo âm thanh liên tục cho phòng livechat mới",
   "Conversation": "Cuộc hội thoại",
   "Conversation_closed": "Trò chuyện đóng lại: __comment__.",
+  "Conversation_finished": "Cuộc hội thoại đã kết thúc",
   "Conversation_finished_message": "Tin nhắn hoàn thành cuộc trò chuyện",
   "conversation_with_s": "cuộc trò chuyện với %s",
   "Convert_Ascii_Emojis": "Chuyển đổi ASCII sang Emoji",
