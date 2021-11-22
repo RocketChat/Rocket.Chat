@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { AggregationCursor, Cursor, FindOneOptions } from 'mongodb';
+import { AggregationCursor, Cursor, FilterQuery, FindOneOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 import { ILivechatVisitor } from '../../../../definition/ILivechatVisitor';
@@ -17,7 +17,9 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 		return this.find(query, { projection: { _id: 1 } });
 	}
 
-	findByNameRegexWithExceptionsAndConditions(searchTerm: string, exceptions: string[] = [], conditions: any = {}, options: any = {}): AggregationCursor<ILivechatVisitor> {
+	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(searchTerm: string, exceptions: string[] = [], conditions: FilterQuery<ILivechatVisitor> = {}, options: FindOneOptions<P extends ILivechatVisitor ? ILivechatVisitor : P> = {}): AggregationCursor<P & {
+		custom_name: string;
+	}> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}
@@ -34,25 +36,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> {
 			},
 		};
 
-		const { fields, sort, offset, count } = options;
+		const { projection, sort, skip, limit } = options;
 		const project = {
-			$project: {
+			$project: { // TODO: move this logic to client
 				// eslint-disable-next-line @typescript-eslint/camelcase
 				custom_name: { $concat: ['$username', ' - ', '$name'] },
-				...fields,
+				...projection,
 			},
 		};
 
 		const order = { $sort: sort || { name: 1 } };
-		const params = [match, project, order] as any[];
-
-		if (offset) {
-			params.push({ $skip: offset });
-		}
-
-		if (count) {
-			params.push({ $limit: count });
-		}
+		const params: Record<string, unknown>[] = [
+			match,
+			order,
+			skip && { $skip: skip },
+			limit && { $limit: limit },
+			project].filter(Boolean) as Record<string, unknown>[];
 
 		return this.col.aggregate(params);
 	}

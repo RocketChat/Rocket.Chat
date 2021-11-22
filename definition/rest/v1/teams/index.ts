@@ -1,19 +1,17 @@
-
-
 import type { IRoom } from '../../../IRoom';
 import type { ITeam } from '../../../ITeam';
 import type { IUser } from '../../../IUser';
-import { PaginatedResult } from '../../helpers/PaginatedResult';
-import { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ITeamAutocompleteResult, ITeamMemberInfo } from '../../../../server/sdk/types/ITeamService';
-import { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
-import { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
-import { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
-import { TeamsAddMembersProps } from './TeamsAddMembersProps';
-import { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
-import { TeamsDeleteProps } from './TeamsDeleteProps';
-import { TeamsLeaveProps } from './TeamsLeaveProps';
-import { TeamsUpdateProps } from './TeamsUpdateProps';
+import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '../../../../server/sdk/types/ITeamService';
+import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
+import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
+import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
+import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
+import type { TeamsDeleteProps } from './TeamsDeleteProps';
+import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsUpdateProps } from './TeamsUpdateProps';
 
 
 type TeamProps =
@@ -40,7 +38,7 @@ export type TeamsEndpoints = {
 	'teams.create': {
 		POST: (params: {
 			name: ITeam['name'];
-			type?: ITeam['type'];
+			type: ITeam['type'];
 			members?: IUser['_id'][];
 			room: {
 				id?: string;
@@ -138,7 +136,7 @@ export type TeamsEndpoints = {
 	};
 
 	'teams.listRooms': {
-		GET: (params: PaginatedRequest & ({ teamId: string } | { teamId: string }) & { filter?: string; type?: string }) => PaginatedResult & { rooms: IRoom[] };
+		GET: (params: PaginatedRequest & ({ teamId: string } | { teamName: string }) & { filter?: string; type?: string }) => PaginatedResult & { rooms: IRoom[] };
 	};
 
 

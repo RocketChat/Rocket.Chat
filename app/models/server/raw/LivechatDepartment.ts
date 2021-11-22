@@ -10,7 +10,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartmentRecord> {
 		return this.find(query, options);
 	}
 
-	findByNameRegexWithExceptionsAndConditions(searchTerm: string, exceptions: string[] = [], conditions: Partial<FilterQuery<ILivechatDepartmentRecord>> = {}, options: FindOneOptions<ILivechatDepartmentRecord> = {}): Cursor<ILivechatDepartmentRecord> {
+	findByNameRegexWithExceptionsAndConditions(searchTerm: string, exceptions: string[] = [], conditions: FilterQuery<ILivechatDepartmentRecord> = {}, options: FindOneOptions<ILivechatDepartmentRecord> = {}): Cursor<ILivechatDepartmentRecord> {
 		if (!Array.isArray(exceptions)) {
 			exceptions = [exceptions];
 		}

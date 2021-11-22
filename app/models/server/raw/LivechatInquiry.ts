@@ -4,22 +4,22 @@ import { BaseRaw } from './BaseRaw';
 import { ILivechatInquiryRecord, LivechatInquiryStatus } from '../../../../definition/IInquiry';
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> {
-	findOneQueuedByRoomId(rid: string): Promise<ILivechatInquiryRecord | null> {
+	findOneQueuedByRoomId(rid: string): Promise<ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED } | null> {
 		const query = {
 			rid,
 			status: LivechatInquiryStatus.QUEUED,
 		};
-		return this.findOne(query);
+		return this.findOne(query) as unknown as (Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>);
 	}
 
-	findOneByRoomId(rid: string, options: FindOneOptions<ILivechatInquiryRecord>): Promise<ILivechatInquiryRecord | null> {
+	findOneByRoomId<T = ILivechatInquiryRecord>(rid: string, options: FindOneOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord: T>): Promise<T | null> {
 		const query = {
 			rid,
 		};
 		return this.findOne(query, options);
 	}
 
-	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<any> {
+	getDistinctQueuedDepartments(options: MongoDistinctPreferences): Promise<string[]> {
 		return this.col.distinct('department', { status: LivechatInquiryStatus.QUEUED }, options);
 	}
 }
