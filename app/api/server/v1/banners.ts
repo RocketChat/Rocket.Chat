@@ -116,7 +116,6 @@ API.v1.addRoute('banners/:id', { authRequired: true }, { // TODO: move to users/
 		check(this.urlParams, Match.ObjectIncluding({
 			id: Match.Where((id: unknown): id is string => typeof id === 'string' && Boolean(id.trim())),
 		}));
-
 		check(this.queryParams, Match.ObjectIncluding({
 			platform: Match.OneOf(...Object.values(BannerPlatform)),
 		}));

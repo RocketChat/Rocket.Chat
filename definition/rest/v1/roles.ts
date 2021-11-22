@@ -4,7 +4,8 @@ import { IRole, IUser } from '../../IUser';
 
 const ajv = new Ajv();
 
-type RoleCreateProps = Pick<IRole, 'name'> & Partial<Pick<IRole, 'description' | 'scope' |'mandatory2fa' >>;
+type RoleCreateProps = Pick<IRole, 'name'> &
+	Partial<Pick<IRole, 'description' | 'scope' | 'mandatory2fa'>>;
 
 const roleCreatePropsSchema: JSONSchemaType<RoleCreateProps> = {
 	type: 'object',
@@ -82,7 +83,7 @@ type RoleAddUserToRoleProps = {
 	username: string;
 	roleName: string;
 	roomId?: string;
-}
+};
 
 const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 	type: 'object',
@@ -102,7 +103,6 @@ const roleAddUserToRolePropsSchema: JSONSchemaType<RoleAddUserToRoleProps> = {
 	additionalProperties: false,
 };
 
-
 export const isRoleAddUserToRoleProps = ajv.compile(roleAddUserToRolePropsSchema);
 
 type RoleRemoveUserFromRoleProps = {
@@ -110,7 +110,7 @@ type RoleRemoveUserFromRoleProps = {
 	roleName: string;
 	roomId?: string;
 	scope?: string;
-}
+};
 
 const roleRemoveUserFromRolePropsSchema: JSONSchemaType<RoleRemoveUserFromRoleProps> = {
 	type: 'object',
@@ -138,45 +138,45 @@ export const isRoleRemoveUserFromRoleProps = ajv.compile(roleRemoveUserFromRoleP
 
 type RoleSyncProps = {
 	updatedSince?: string;
-}
+};
 
 export type RolesEndpoints = {
 	'roles.list': {
-		GET: () => ({
+		GET: () => {
 			roles: IRole[];
-		});
+		};
 	};
 	'roles.sync': {
-		GET: (params: RoleSyncProps) => ({
+		GET: (params: RoleSyncProps) => {
 			roles: {
 				update: IRole[];
 				remove: IRole[];
 			};
-		});
+		};
 	};
 	'roles.create': {
-		POST: (params: RoleCreateProps) => ({
+		POST: (params: RoleCreateProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.addUserToRole': {
-		POST: (params: RoleAddUserToRoleProps) => ({
+		POST: (params: RoleAddUserToRoleProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.getUsersInRole': {
-		GET: (params: { roomId: string; role: string; offset: number; count: number }) => ({
+		GET: (params: { roomId: string; role: string; offset: number; count: number }) => {
 			users: IUser[];
 			total: number;
-		});
+		};
 	};
 
 	'roles.update': {
-		POST: (role: RoleUpdateProps) => ({
+		POST: (role: RoleUpdateProps) => {
 			role: IRole;
-		});
+		};
 	};
 
 	'roles.delete': {
@@ -184,8 +184,8 @@ export type RolesEndpoints = {
 	};
 
 	'roles.removeUserFromRole': {
-		POST: (props: RoleRemoveUserFromRoleProps) => ({
+		POST: (props: RoleRemoveUserFromRoleProps) => {
 			role: IRole;
-		});
+		};
 	};
 };

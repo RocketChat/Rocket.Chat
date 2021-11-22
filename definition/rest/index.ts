@@ -26,28 +26,28 @@ import type { TeamsEndpoints } from './v1/teams';
 import type { UsersEndpoints } from './v1/users';
 
 type CommunityEndpoints = BannersEndpoints &
-ChatEndpoints &
-ChannelsEndpoints &
-CloudEndpoints &
-CustomUserStatusEndpoints &
-DmEndpoints &
-DnsEndpoints &
-EmojiCustomEndpoints &
-GroupsEndpoints &
-ImEndpoints &
-LDAPEndpoints &
-RoomsEndpoints &
-RolesEndpoints &
-TeamsEndpoints &
-SettingsEndpoints &
-UsersEndpoints &
-AppsEndpoints &
-OmnichannelEndpoints &
-StatisticsEndpoints &
-LicensesEndpoints &
-MiscEndpoints &
-PermissionsEndpoints &
-InstancesEndpoints;
+	ChatEndpoints &
+	ChannelsEndpoints &
+	CloudEndpoints &
+	CustomUserStatusEndpoints &
+	DmEndpoints &
+	DnsEndpoints &
+	EmojiCustomEndpoints &
+	GroupsEndpoints &
+	ImEndpoints &
+	LDAPEndpoints &
+	RoomsEndpoints &
+	RolesEndpoints &
+	TeamsEndpoints &
+	SettingsEndpoints &
+	UsersEndpoints &
+	AppsEndpoints &
+	OmnichannelEndpoints &
+	StatisticsEndpoints &
+	LicensesEndpoints &
+	MiscEndpoints &
+	PermissionsEndpoints &
+	InstancesEndpoints;
 
 type Endpoints = CommunityEndpoints & EnterpriseEndpoints;
 
@@ -57,15 +57,15 @@ type OperationsByPathPattern<TPathPattern extends keyof Endpoints> = TPathPatter
 
 type OperationsByPathPatternAndMethod<
 	TPathPattern extends keyof Endpoints,
-	TMethod extends KeyOfEach<Endpoints[TPathPattern]> = KeyOfEach<Endpoints[TPathPattern]>
+	TMethod extends KeyOfEach<Endpoints[TPathPattern]> = KeyOfEach<Endpoints[TPathPattern]>,
 > = TMethod extends any
 	? {
-		pathPattern: TPathPattern;
-		method: TMethod;
-		path: ReplacePlaceholders<TPathPattern>;
-		params: GetParams<Endpoints[TPathPattern][TMethod]>;
-		result: GetResult<Endpoints[TPathPattern][TMethod]>;
-	}
+			pathPattern: TPathPattern;
+			method: TMethod;
+			path: ReplacePlaceholders<TPathPattern>;
+			params: GetParams<Endpoints[TPathPattern][TMethod]>;
+			result: GetResult<Endpoints[TPathPattern][TMethod]>;
+	  }
 	: never;
 
 type Operations = OperationsByPathPattern<keyof Endpoints>;
@@ -89,35 +89,41 @@ export type MatchPathPattern<TPath extends Path> = TPath extends any
 	: never;
 
 export type JoinPathPattern<TBasePath extends string, TSubPathPattern extends string> = Extract<
-PathPattern,
-`${ TBasePath }/${ TSubPathPattern }` | TSubPathPattern
+	PathPattern,
+	`${TBasePath}/${TSubPathPattern}` | TSubPathPattern
 >;
 
 type GetParams<TOperation> = TOperation extends (...args: any) => any
-	? Parameters<TOperation>[0] extends void ? void : Parameters<TOperation>[0]
-	: never
+	? Parameters<TOperation>[0] extends void
+		? void
+		: Parameters<TOperation>[0]
+	: never;
 
 type GetResult<TOperation> = TOperation extends (...args: any) => any
 	? ReturnType<TOperation>
-	: never
+	: never;
 
-export type OperationParams<TMethod extends Method, TPathPattern extends PathPattern> =
-	TMethod extends keyof Endpoints[TPathPattern]
-		? GetParams<Endpoints[TPathPattern][TMethod]>
-		: never;
+export type OperationParams<
+	TMethod extends Method,
+	TPathPattern extends PathPattern,
+> = TMethod extends keyof Endpoints[TPathPattern]
+	? GetParams<Endpoints[TPathPattern][TMethod]>
+	: never;
 
-export type OperationResult<TMethod extends Method, TPathPattern extends PathPattern> =
-	TMethod extends keyof Endpoints[TPathPattern]
-		? GetResult<Endpoints[TPathPattern][TMethod]>
-		: never;
+export type OperationResult<
+	TMethod extends Method,
+	TPathPattern extends PathPattern,
+> = TMethod extends keyof Endpoints[TPathPattern]
+	? GetResult<Endpoints[TPathPattern][TMethod]>
+	: never;
 
 export type UrlParams<T extends string> = string extends T
 	? Record<string, string>
-	: T extends `${ infer _Start }:${ infer Param }/${ infer Rest }`
-		? { [k in Param | keyof UrlParams<Rest>]: string }
-		: T extends `${ infer _Start }:${ infer Param }`
-			? { [k in Param]: string }
-			: {};
+	: T extends `${infer _Start}:${infer Param}/${infer Rest}`
+	? { [k in Param | keyof UrlParams<Rest>]: string }
+	: T extends `${infer _Start}:${infer Param}`
+	? { [k in Param]: string }
+	: {};
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any
 	? keyof Endpoints[TPathPattern]
