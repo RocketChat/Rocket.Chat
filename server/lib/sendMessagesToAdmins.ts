@@ -3,13 +3,20 @@ import { Roles, Users } from '../../app/models/server/raw';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
 import { IUser } from '../../definition/IUser';
+import { IMessage } from '../../definition/IMessage';
 
-const getData = (param: any[] | Function, adminUser: IUser): any[] => {
-	let result = param;
+type Banner = {
+	id: string;
+	priority: number;
+	title: string;
+	text: string;
+	textArguments?: string[];
+	modifiers: string[];
+	link: string;
+};
 
-	if (typeof param === 'function') {
-		result = param({ adminUser });
-	}
+const getData = <T>(param: T[] | Function, adminUser: IUser): T[] => {
+	const result = typeof param === 'function' ? param({ adminUser }) : param;
 
 	if (!Array.isArray(result)) {
 		return [result];
@@ -26,8 +33,8 @@ export async function sendMessagesToAdmins({
 }: {
 	fromId?: string;
 	checkFrom?: boolean;
-	msgs?: any[] | Function;
-	banners?: any[] | Function;
+	msgs?: Partial<IMessage>[] | Function;
+	banners?: Banner[] | Function;
 }): Promise<void> {
 	const fromUser = checkFrom ? await Users.findOneById(fromId, { projection: { _id: 1 } }) : true;
 
@@ -38,13 +45,13 @@ export async function sendMessagesToAdmins({
 			try {
 				const { rid } = createDirectMessage([adminUser.username], fromId);
 
-				getData(msgs, adminUser)
+				getData<Partial<IMessage>>(msgs, adminUser)
 					.forEach((msg) => executeSendMessage(fromId, Object.assign({ rid }, msg)));
 			} catch (error) {
 				SystemLogger.error(error);
 			}
 		}
 
-		await Promise.all(getData(banners, adminUser).map((banner) => Users.addBannerById(adminUser._id, banner)));
+		await Promise.all(getData<Banner>(banners, adminUser).map((banner) => Users.addBannerById(adminUser._id, banner)));
 	}
 }
