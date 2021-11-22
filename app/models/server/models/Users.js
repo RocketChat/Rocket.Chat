@@ -1623,43 +1623,6 @@ Find users to send a message by email if:
 			},
 		});
 	}
-
-	// Voip functions
-	findOneByAgentUsername(username, options) {
-		const query = { username, roles: 'livechat-agent' };
-
-		return this.findOne(query, options);
-	}
-
-	getExtension(userId, options) { // TODO: Create class Agent
-		const query = {
-			_id: userId,
-			extension: { $exists: true },
-		};
-		return this.find(query, options);
-	}
-
-	setExtension(userId, extension) { // TODO: Create class Agent
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$set: {
-				extension,
-			},
-		};
-		return this.update(query, update);
-	}
-
-	unsetExtension(userId) {
-		const update = {
-			$unset: {
-				extension: true,
-			},
-		};
-		return this.update(userId, update);
-	}
 }
 
 export default new Users(Meteor.users, true);

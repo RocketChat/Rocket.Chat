@@ -1,7 +1,7 @@
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
-import { Users } from '../../../../models/server/index';
+import { Users } from '../../../../models/server/raw/index';
 import { hasPermission } from '../../../../authorization/server/index';
 import { LivechatVoip } from '../../../../../server/sdk';
 
@@ -14,15 +14,19 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 		check(this.requestParams(), Match.ObjectIncluding({
 			username: String,
 		}));
-		const user = Users.findOneByAgentUsername(this.requestParams().username, {
-			fields: { _id: 1 },
-		});
+		const user = Promise.await(Users.findOneByAgentUsername(this.requestParams().username, {
+			projection: { _id: 1 },
+		}));
 		if (!user) {
 			return API.v1.notFound('User not found');
 		}
-		const extension = Users.getExtension(user._id, {
-			fields: { _id: 1, username: 1, extension: 1 },
-		});
+		const extension = Promise.await(Users.getExtension(user._id, {
+			projection: {
+				_id: 1,
+				username: 1,
+				extension: 1,
+			},
+		}).toArray());
 		if (!extension) {
 			return API.v1.notFound('Extension not found');
 		}
@@ -38,9 +42,12 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 			username: String,
 			extension: String,
 		});
-		const user = Users.findOneByAgentUsername(this.bodyParams.username, {
-			fields: { _id: 1, username: 1 },
-		});
+		const user = Promise.await(Users.findOneByAgentUsername(this.bodyParams.username, {
+			projection: {
+				_id: 1,
+				username: 1,
+			},
+		}));
 		if (!user) {
 			return API.v1.notFound();
 		}
@@ -54,9 +61,12 @@ API.v1.addRoute('omnichannel.agent.extension', { authRequired: true }, {
 		check(this.requestParams(), Match.ObjectIncluding({
 			username: String,
 		}));
-		const user = Users.findOneByAgentUsername(this.requestParams().username, {
-			fields: { _id: 1, username: 1 },
-		});
+		const user = Promise.await(Users.findOneByAgentUsername(this.requestParams().username, {
+			projection: {
+				_id: 1,
+				username: 1,
+			},
+		}));
 		if (!user) {
 			return API.v1.notFound();
 		}

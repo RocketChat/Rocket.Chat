@@ -162,7 +162,7 @@ const VoIPLayout: FC = () => {
 		try {
 			logger.info('Executing delete omnichannel.agent.extension');
 			const result = await APIClient.v1.delete('omnichannel.agent.extension', {
-				username: 'amol.associate1',
+				username: 'amol.associate',
 			});
 			logger.info('list = ', JSON.stringify(result));
 		} catch (error) {
