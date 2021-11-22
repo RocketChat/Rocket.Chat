@@ -71,7 +71,7 @@ export async function findDepartmentsToAutocomplete({ uid, selector, onlyMyDepar
 	let { conditions = {} } = selector;
 
 	const options = {
-		fields: {
+		projection: {
 			_id: 1,
 			name: 1,
 		},

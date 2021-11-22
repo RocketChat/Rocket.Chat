@@ -2,12 +2,10 @@ import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
 import { IMessage } from '../../IMessage';
-import { IOmnichannelCannedResponse } from '../../IOmnichannelCannedResponse';
-import { IOmnichannelRoom, IRoom } from '../../IRoom';
-import { ISetting } from '../../ISetting';
-import { IUser } from '../../IUser';
 import { PaginatedRequest } from '../helpers/PaginatedRequest';
 import { PaginatedResult } from '../helpers/PaginatedResult';
+import { IOmnichannelRoom, IRoom } from '../../IRoom';
+import { ISetting } from '../../ISetting';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -109,31 +107,5 @@ export type OmnichannelEndpoints = {
 				};
 			}[];
 		}>;
-	};
-	'canned-responses': {
-		GET: (params: {
-			shortcut?: string;
-			text?: string;
-			scope?: string;
-			createdBy?: IUser['username'];
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-		} & PaginatedRequest) => PaginatedResult<{
-			cannedResponses: IOmnichannelCannedResponse[];
-		}>;
-		POST: (params: {
-			_id?: IOmnichannelCannedResponse['_id'];
-			shortcut: string;
-			text: string;
-			scope: string;
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-		}) => void;
-		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
-	};
-	'canned-responses/:_id': {
-		GET: () => {
-			cannedResponse: IOmnichannelCannedResponse;
-		};
 	};
 };
