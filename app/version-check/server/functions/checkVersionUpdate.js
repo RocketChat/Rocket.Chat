@@ -7,6 +7,7 @@ import { Info } from '../../../utils';
 import { Users } from '../../../models';
 import logger from '../logger';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { Settings } from '../../../models/server';
 // import getNewUpdates from '../sampleUpdateData';
 
 export default () => {
@@ -39,9 +40,9 @@ export default () => {
 	});
 
 	if (update.exists) {
-		settings.updateById('Update_LatestAvailableVersion', update.lastestVersion.version);
+		Settings.updateValueById('Update_LatestAvailableVersion', update.lastestVersion.version);
 
-		sendMessagesToAdmins({
+		Promise.await(sendMessagesToAdmins({
 			msgs: ({ adminUser }) => [{ msg: `*${ TAPi18n.__('Update_your_RocketChat', adminUser.language) }*\n${ TAPi18n.__('New_version_available_(s)', update.lastestVersion.version, adminUser.language) }\n${ update.lastestVersion.infoUrl }` }],
 			banners: [{
 				id: `versionUpdate-${ update.lastestVersion.version }`.replace(/\./g, '_'),
@@ -51,11 +52,11 @@ export default () => {
 				textArguments: [update.lastestVersion.version],
 				link: update.lastestVersion.infoUrl,
 			}],
-		});
+		}));
 	}
 
 	if (alerts && alerts.length) {
-		sendMessagesToAdmins({
+		Promise.await(sendMessagesToAdmins({
 			msgs: ({ adminUser }) => alerts
 				.filter((alert) => !Users.bannerExistsById(adminUser._id, `alert-${ alert.id }`))
 				.map((alert) => ({
@@ -70,6 +71,6 @@ export default () => {
 				modifiers: alert.modifiers,
 				link: alert.infoUrl,
 			})),
-		});
+		}));
 	}
 };

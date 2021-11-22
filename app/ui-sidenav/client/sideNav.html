@@ -7,9 +7,7 @@
 			</div>
 		</div>
 		<div class="rooms-list sidebar--custom-colors" aria-label="{{_ "Channels"}}" role="region">
-			<div style="display: flex; flex: 1 1 auto;">
-				{{> sidebarChats }}
-			</div>
+			{{> sidebarChats }}
 		</div>
 		<div class="wrapper-unread">
 			<div class="unread-rooms background-primary-action-color color-primary-action-contrast bottom-unread-rooms hidden">
@@ -19,8 +17,7 @@
 		<div class="flex-nav animated-hidden">
 			{{> Template.dynamic template=flexTemplate data=flexData }}
 		</div>
-
-		<footer class="sidebar__footer">{{{footer}}}</footer>
+		{{> sidebarFooter}}
 	</aside>
 	<div class="sidebar-wrap"></div>
 </template>

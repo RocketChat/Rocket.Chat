@@ -1,6 +1,7 @@
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
+import MarkdownText from '../../../../../components/MarkdownText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
@@ -8,16 +9,8 @@ import InfoPanel from '../../../../InfoPanel';
 import RetentionPolicyCallout from '../../../../InfoPanel/RetentionPolicyCallout';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 
-function RoomInfo({
-	name,
-	fname,
-	description,
-	archived,
-	broadcast,
-	announcement,
-	topic,
-	type,
-	rid,
+const RoomInfo = ({
+	room,
 	icon,
 	retentionPolicy = {},
 	onClickBack,
@@ -29,14 +22,16 @@ function RoomInfo({
 	onClickMoveToTeam,
 	onClickConvertToTeam,
 	onClickEnterRoom,
-}) {
+}) => {
 	const t = useTranslation();
+	const { name, fname, description, topic, archived, broadcast, announcement } = room;
 
 	const {
 		retentionPolicyEnabled,
 		filesOnlyDefault,
 		excludePinnedDefault,
 		maxAgeDefault,
+		retentionEnabledDefault,
 	} = retentionPolicy;
 
 	const memoizedActions = useMemo(
@@ -65,7 +60,7 @@ function RoomInfo({
 			...(onClickMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
-					icon: 'team',
+					icon: 'team-arrow-right',
 					action: onClickMoveToTeam,
 				},
 			}),
@@ -148,7 +143,7 @@ function RoomInfo({
 			<VerticalBar.ScrollableContent p='x24'>
 				<InfoPanel flexGrow={1}>
 					<InfoPanel.Avatar>
-						<RoomAvatar size={'x332'} room={{ _id: rid, type, t: type }} />
+						<RoomAvatar size={'x332'} room={room} />
 					</InfoPanel.Avatar>
 
 					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
@@ -177,25 +172,31 @@ function RoomInfo({
 						{description && description !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{description}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={description} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{announcement && announcement !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{announcement}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={announcement} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
 						{topic && topic !== '' && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>{topic}</InfoPanel.Text>
+								<InfoPanel.Text withTruncatedText={false}>
+									<MarkdownText variant='inline' content={topic} />
+								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && (
+						{retentionPolicyEnabled && retentionEnabledDefault && (
 							<RetentionPolicyCallout
 								filesOnlyDefault={filesOnlyDefault}
 								excludePinnedDefault={excludePinnedDefault}
@@ -207,6 +208,6 @@ function RoomInfo({
 			</VerticalBar.ScrollableContent>
 		</>
 	);
-}
+};
 
 export default RoomInfo;

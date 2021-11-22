@@ -4,23 +4,10 @@ import { Users } from '../../../../app/models/server';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
+import { ILicense } from '../definitions/ILicense';
+import { ILicenseTag } from '../definitions/ILicenseTag';
 
 const EnterpriseLicenses = new EventEmitter();
-
-interface ILicenseTag {
-	name: string;
-	color: string;
-}
-
-export interface ILicense {
-	url: string;
-	expiry: string;
-	maxActiveUsers: number;
-	modules: string[];
-	maxGuestUsers: number;
-	maxRoomsPerGuest: number;
-	tag?: ILicenseTag;
-}
 
 export interface IValidLicense {
 	valid?: boolean;
@@ -28,6 +15,7 @@ export interface IValidLicense {
 }
 
 let maxGuestUsers = 0;
+let maxActiveUsers = 0;
 
 class LicenseClass {
 	private url: string|null = null;
@@ -78,10 +66,6 @@ class LicenseClass {
 				EnterpriseLicenses.emit(`invalid:${ module }`);
 			});
 		});
-	}
-
-	private _hasValidNumberOfActiveUsers(maxActiveUsers: number): boolean {
-		return Users.getActiveLocalUserCount() <= maxActiveUsers;
 	}
 
 	private _addTags(license: ILicense): void {
@@ -178,15 +162,12 @@ class LicenseClass {
 				return item;
 			}
 
-			if (license.maxActiveUsers && !this._hasValidNumberOfActiveUsers(license.maxActiveUsers)) {
-				item.valid = false;
-				console.error(`#### License error: over seats, max allowed ${ license.maxActiveUsers }, current active users ${ Users.getActiveLocalUserCount() }`);
-				this._invalidModules(license.modules);
-				return item;
-			}
-
 			if (license.maxGuestUsers > maxGuestUsers) {
 				maxGuestUsers = license.maxGuestUsers;
+			}
+
+			if (license.maxActiveUsers > maxActiveUsers) {
+				maxActiveUsers = license.maxActiveUsers;
 			}
 
 			this._validModules(license.modules);
@@ -201,6 +182,14 @@ class LicenseClass {
 
 		EnterpriseLicenses.emit('validate');
 		this.showLicenses();
+	}
+
+	canAddNewUser(): boolean {
+		if (!maxActiveUsers) {
+			return true;
+		}
+
+		return maxActiveUsers > Users.getActiveLocalUserCount();
 	}
 
 	showLicenses(): void {
@@ -286,6 +275,10 @@ export function getMaxGuestUsers(): number {
 	return maxGuestUsers;
 }
 
+export function getMaxActiveUsers(): number {
+	return maxActiveUsers;
+}
+
 export function getLicenses(): IValidLicense[] {
 	return License.getLicenses();
 }
@@ -296,6 +289,10 @@ export function getModules(): string[] {
 
 export function getTags(): ILicenseTag[] {
 	return License.getTags();
+}
+
+export function canAddNewUser(): boolean {
+	return License.canAddNewUser();
 }
 
 export function onLicense(feature: string, cb: (...args: any[]) => void): void {

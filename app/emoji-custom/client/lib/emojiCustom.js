@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { isSetNotNull } from './function-isSet';
 import { RoomManager } from '../../../ui-utils/client';
 import { emoji, EmojiPicker } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
 import { APIClient } from '../../../utils/client';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
 
 export const getEmojiUrlFromName = function(name, extension) {
 	Session.get;
@@ -25,8 +24,6 @@ export const getEmojiUrlFromName = function(name, extension) {
 	const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 	return `${ path }/emoji-custom/${ encodeURIComponent(name) }.${ extension }?_dc=${ random }`;
 };
-
-Blaze.registerHelper('emojiUrlFromName', getEmojiUrlFromName);
 
 export const deleteEmojiCustom = function(emojiData) {
 	delete emoji.list[`:${ emojiData.name }:`];

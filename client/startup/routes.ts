@@ -3,13 +3,17 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { lazy } from 'react';
-import toastr from 'toastr';
 
 import { KonchatNotification } from '../../app/ui/client';
-import { handleError } from '../../app/utils/client';
 import { IUser } from '../../definition/IUser';
 import { appLayout } from '../lib/appLayout';
 import { createTemplateForComponent } from '../lib/portals/createTemplateForComponent';
+import { dispatchToastMessage } from '../lib/toast';
+import { handleError } from '../lib/utils/handleError';
+
+const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
+const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
+const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 
 FlowRouter.wait();
 
@@ -60,7 +64,7 @@ FlowRouter.route('/home', {
 			(Meteor as any).loginWithSamlToken(token, (error?: any) => {
 				if (error) {
 					if (error.reason) {
-						toastr.error(error.reason);
+						dispatchToastMessage({ type: 'error', message: error.reason });
 					} else {
 						handleError(error);
 					}
@@ -88,7 +92,7 @@ FlowRouter.route('/directory/:tab?', {
 	},
 });
 
-FlowRouter.route('/omnichannel-directory/:tab?/:context?/:id?', {
+FlowRouter.route('/omnichannel-directory/:page?/:bar?/:id?/:tab?/:context?', {
 	name: 'omnichannel-directory',
 	action: () => {
 		const OmnichannelDirectoryPage = createTemplateForComponent(
@@ -161,7 +165,6 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		const SetupWizardRoute = lazy(() => import('../views/setupWizard/SetupWizardRoute'));
 		appLayout.render({ component: SetupWizardRoute });
 	},
 });
@@ -169,14 +172,12 @@ FlowRouter.route('/setup-wizard/:step?', {
 FlowRouter.route('/mailer/unsubscribe/:_id/:createdAt', {
 	name: 'mailer-unsubscribe',
 	action: () => {
-		const MailerUnsubscriptionPage = lazy(() => import('../views/mailer/MailerUnsubscriptionPage'));
 		appLayout.render({ component: MailerUnsubscriptionPage });
 	},
 });
 
 FlowRouter.notFound = {
 	action: (): void => {
-		const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 		appLayout.render({ component: NotFoundPage });
 	},
 };

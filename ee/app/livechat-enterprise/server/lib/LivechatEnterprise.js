@@ -5,12 +5,13 @@ import { Users } from '../../../../../app/models';
 import { LivechatInquiry, OmnichannelQueue } from '../../../../../app/models/server/raw';
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 import LivechatTag from '../../../models/server/models/LivechatTag';
-import { LivechatRooms, Subscriptions } from '../../../../../app/models/server';
+import { LivechatRooms, Subscriptions, Messages } from '../../../../../app/models/server';
 import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles, removeUserFromRoles } from '../../../../../app/authorization/server';
 import { processWaitingQueue, removePriorityFromRooms, updateInquiryQueuePriority, updatePriorityInquiries, updateRoomPriorityHistory } from './Helper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
+import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../app/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 
@@ -167,18 +168,22 @@ export const LivechatEnterprise = {
 		updateRoomPriorityHistory(roomId, user, priority);
 	},
 
-	placeRoomOnHold(room) {
+	placeRoomOnHold(room, comment, onHoldBy) {
+		logger.debug(`Attempting to place room ${ room._id } on hold by user ${ onHoldBy?._id }`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
+			logger.debug(`Room ${ roomId } invalid or already on hold. Skipping`);
 			return false;
 		}
 		LivechatRooms.setOnHold(roomId);
 		Subscriptions.setOnHold(roomId);
 
+		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
 			callbacks.run('livechat:afterOnHold', room);
 		});
 
+		logger.debug(`Room ${ room._id } set on hold succesfully`);
 		return true;
 	},
 
@@ -194,22 +199,28 @@ export const LivechatEnterprise = {
 	},
 };
 
-const RACE_TIMEOUT = 1000;
+const DEFAULT_RACE_TIMEOUT = 5000;
+let queueDelayTimeout = DEFAULT_RACE_TIMEOUT;
 
 const queueWorker = {
 	running: false,
 	queues: [],
 	async start() {
+		queueLogger.debug('Starting queue');
 		if (this.running) {
+			queueLogger.debug('Queue already running');
 			return;
 		}
 
-		await this.getActiveQueues();
+		const activeQueues = await this.getActiveQueues();
+		queueLogger.debug(`Active queues: ${ activeQueues.length }`);
+
 		await OmnichannelQueue.initQueue();
 		this.running = true;
 		return this.execute();
 	},
 	async stop() {
+		queueLogger.debug('Stopping queue');
 		this.running = false;
 		return OmnichannelQueue.stopQueue();
 	},
@@ -219,6 +230,7 @@ const queueWorker = {
 	},
 	async nextQueue() {
 		if (!this.queues.length) {
+			queueLogger.debug('No more registered queues. Refreshing');
 			this.queues = await this.getActiveQueues();
 		}
 
@@ -226,23 +238,62 @@ const queueWorker = {
 	},
 	async execute() {
 		if (!this.running) {
+			queueLogger.debug('Queue stopped. Cannot execute');
 			return;
 		}
 
 		const queue = await this.nextQueue();
-		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
+		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ queueDelayTimeout }`);
+
+		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	},
 
 	async checkQueue(queue) {
-		if (await OmnichannelQueue.lockQueue()) {
-			await processWaitingQueue(queue);
-			await OmnichannelQueue.unlockQueue();
+		queueLogger.debug(`Processing items for queue ${ queue || 'Public' }`);
+		try {
+			if (await OmnichannelQueue.lockQueue()) {
+				await processWaitingQueue(queue);
+				queueLogger.debug(`Queue ${ queue || 'Public' } processed. Unlocking`);
+				await OmnichannelQueue.unlockQueue();
+			} else {
+				queueLogger.debug('Queue locked. Waiting');
+			}
+		} catch (e) {
+			queueLogger.error({
+				msg: `Error processing queue ${ queue || 'public' }`,
+				err: e,
+			});
+		} finally {
+			this.execute();
 		}
-
-		this.execute();
 	},
 };
 
-settings.onload('Livechat_Routing_Method', function() {
-	RoutingManager.getConfig().autoAssignAgent ? queueWorker.start() : queueWorker.stop();
+
+let omnichannelIsEnabled = false;
+function shouldQueueStart() {
+	if (!omnichannelIsEnabled) {
+		queueWorker.stop();
+		return;
+	}
+
+	const routingSupportsAutoAssign = RoutingManager.getConfig().autoAssignAgent;
+	queueLogger.debug(`Routing method ${ RoutingManager.methodName } supports auto assignment: ${ routingSupportsAutoAssign }. ${
+		routingSupportsAutoAssign
+			? 'Starting'
+			: 'Stopping'
+	} queue`);
+
+	routingSupportsAutoAssign ? queueWorker.start() : queueWorker.stop();
+}
+
+RoutingManager.startQueue = shouldQueueStart;
+
+settings.watch('Livechat_enabled', (enabled) => {
+	omnichannelIsEnabled = enabled;
+	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+});
+
+settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {
+	queueDelayTimeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 });

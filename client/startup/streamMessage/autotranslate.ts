@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { settings } from '../../../app/settings/client';
 
 Meteor.startup(() => {

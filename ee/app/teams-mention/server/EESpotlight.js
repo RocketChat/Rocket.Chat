@@ -10,7 +10,11 @@ export const SpotlightEnterprise = {
 		});
 	},
 
-	_searchTeams(_, userId, { text, options, users }) {
+	_searchTeams(_, userId, { text, options, users, mentions }) {
+		if (!mentions) {
+			return users;
+		}
+
 		options.limit -= users.length;
 
 		if (options.limit <= 0) {

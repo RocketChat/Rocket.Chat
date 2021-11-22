@@ -4,7 +4,6 @@ import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { callbacks } from '../../callbacks';
-import { RoomManager } from '../../ui-utils';
 
 const testIfPathAreEquals = (oldPath = '', newPath = '') => oldPath.replace(/"/g, '') === newPath;
 export const roomExit = function() {
@@ -27,28 +26,7 @@ export const roomExit = function() {
 
 		// Session.set('lastOpenedRoom', Session.get('openedRoom'));
 		// Session.set('openedRoom', null);
-		RoomManager.openedRoom = null;
-
-		const mainNode = document.querySelector('.main-content');
-		if (mainNode == null) {
-			return;
-		}
-		return Array.from(mainNode.children).forEach((child) => {
-			if (child == null) {
-				return;
-			}
-			if (child.classList.contains('room-container')) {
-				const wrapper = child.querySelector('.messages-box > .wrapper');
-				if (wrapper) {
-					if (wrapper.scrollTop >= wrapper.scrollHeight - wrapper.clientHeight) {
-						child.oldScrollTop = 10e10;
-					} else {
-						child.oldScrollTop = wrapper.scrollTop;
-					}
-				}
-				// mainNode.removeChild(child);
-			}
-		});
+		// RoomManager.openedRoom = null;
 	});
 	if (typeof window.currentTracker !== 'undefined') {
 		window.currentTracker.stop();

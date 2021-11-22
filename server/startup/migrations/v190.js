@@ -1,11 +1,11 @@
-import { Migrations } from '../../../app/migrations';
+import { addMigration } from '../../lib/migrations';
 import { Settings, Subscriptions } from '../../../app/models/server/raw';
 
-Migrations.add({
+addMigration({
 	version: 190,
 	up() {
 		// Remove unused settings
-		Promise.await(Settings.col.deleteOne({ _id: 'Accounts_Default_User_Preferences_desktopNotificationDuration' }));
+		Promise.await(Settings.removeById('Accounts_Default_User_Preferences_desktopNotificationDuration'));
 		Promise.await(Subscriptions.col.updateMany({
 			desktopNotificationDuration: {
 				$exists: true,

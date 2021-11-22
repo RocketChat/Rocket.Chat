@@ -1,18 +1,4 @@
-/*
- * Markdown is a named function that will parse markdown syntax
- * @param {String} msg - The message html
- */
-import { Random } from 'meteor/random';
-
-const addAsToken = (message, html) => {
-	const token = `=!=${ Random.id() }=!=`;
-	message.tokens.push({
-		token,
-		text: html,
-	});
-
-	return token;
-};
+import { addAsToken, isToken, validateAllowedTokens } from './token';
 
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
@@ -32,6 +18,51 @@ const validateUrl = (url, message) => {
 		return false;
 	}
 };
+
+const endsWithWhitespace = (text) => text.substring(text.length - 1).match(/\s/);
+
+const getParseableMarkersCount = (start, end) => {
+	const usableMarkers = start.length > 1 ? 2 : 1;
+	return end.length - usableMarkers >= 0 ? usableMarkers : 1;
+};
+
+const getTextWrapper = (marker, tagName) => (textPrepend, wrappedText, textAppend) =>
+	`${ textPrepend }<span class="copyonly">${ marker }</span><${ tagName }>${ wrappedText }</${ tagName }><span class="copyonly">${ marker }</span>${ textAppend }`;
+
+const getRegexReplacer = (replaceFunction, getRegex) => (marker, tagName) => {
+	const wrapper = getTextWrapper(marker, tagName);
+	return (msg) => msg.replace(
+		getRegex(marker),
+		(...args) => replaceFunction(wrapper, ...args),
+	);
+};
+
+const getParserWithCustomMarker = getRegexReplacer(
+	(wrapper, match, p1, p2, p3) => {
+		if (endsWithWhitespace(p2)) {
+			return match;
+		}
+		const finalMarkerCount = getParseableMarkersCount(p1, p3);
+		return wrapper(p1.substring(finalMarkerCount), p2, p3.substring(finalMarkerCount));
+	},
+	(marker) => new RegExp(`(\\${ marker }+(?!\\s))([^\\${ marker }\\r\\n]+)(\\${ marker }+)`, 'gm'),
+);
+
+const parseBold = getParserWithCustomMarker('*', 'strong');
+
+const parseStrike = getParserWithCustomMarker('~', 'strike');
+
+const parseItalic = getRegexReplacer(
+	(wrapper, match, p1, p2, p3, p4, p5) => {
+		if (p1 || p5 || endsWithWhitespace(p3)) {
+			return match;
+		}
+
+		const finalMarkerCount = getParseableMarkersCount(p2, p4);
+		return wrapper(p2.substring(finalMarkerCount), p3, p4.substring(finalMarkerCount));
+	},
+	() => new RegExp('([^\\r\\n\\s~*_]){0,1}(\\_+(?!\\s))([^\\_\\r\\n]+)(\\_+)([^\\r\\n\\s]){0,1}', 'gm'),
+)('_', 'em');
 
 const parseNotEscaped = (message, {
 	supportSchemesForLink,
@@ -60,13 +91,13 @@ const parseNotEscaped = (message, {
 	}
 
 	// Support *text* to make bold
-	msg = msg.replace(/(|&gt;|[ >_~`])\*{1,2}([^\s^\*\r\n]+)\*{1,2}([<_~`]|\B|\b|$)/gm, '$1<span class="copyonly">*</span><strong>$2</strong><span class="copyonly">*</span>$3');
+	msg = parseBold(msg);
 
 	// Support _text_ to make italics
-	msg = msg.replace(/(^|&gt;|[ >*~`])\_{1,2}([^\s^\_\r\n]+)\_{1,2}([<*~`]|\B|\b|$)/gm, '$1<span class="copyonly">_</span><em>$2</em><span class="copyonly">_</span>$3');
+	msg = parseItalic(msg);
 
-	// Support ~text~ to strike through text
-	msg = msg.replace(/(^|&gt;|[ >_*`])\~{1,2}([^\s^~\r\n]+)\~{1,2}([<_*`]|\B|\b|$)/gm, '$1<span class="copyonly">~</span><strike>$2</strike><span class="copyonly">~</span>$3');
+	// // Support ~text~ to strike through text
+	msg = parseStrike(msg);
 
 	// Support for block quote
 	// >>>
@@ -89,10 +120,13 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		url = encodeURI(url);
 
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`);
+		return addAsToken(message, `<a data-title="${ url }" href="${ url }" title="${ title }" target="${ target }" rel="noopener noreferrer"><div class="inline-image" style="background-image: url(${ url });"></div></a>`, 'link');
 	});
 
 	// Support [Text](http://link)
@@ -100,12 +134,15 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
 		title = title.replace(/&amp;/g, '&');
 
 		const escapedUrl = encodeURI(url);
 
-		return addAsToken(message, `<a href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
+		return addAsToken(message, `<a data-title="${ escapedUrl }" href="${ escapedUrl }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 
 	// Support <http://link|Text>
@@ -113,9 +150,12 @@ const parseNotEscaped = (message, {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
+		if (isToken(title) && !validateAllowedTokens(message, title, ['bold', 'italic', 'strike'])) {
+			return match;
+		}
 		url = encodeURI(url);
 		const target = url.indexOf(rootUrl) === 0 ? '' : '_blank';
-		return addAsToken(message, `<a href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`);
+		return addAsToken(message, `<a data-title="${ url }" href="${ url }" target="${ target }" rel="noopener noreferrer">${ title }</a>`, 'link');
 	});
 	return msg;
 };

@@ -8,6 +8,7 @@ import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
@@ -20,7 +21,13 @@ export const roomTypeI18nMap = {
 	d: 'Direct',
 	p: 'Group',
 	discussion: 'Discussion',
-	team: 'Team',
+};
+
+const getRoomType = (room) => {
+	if (room.teamMain) {
+		return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
+	}
+	return roomTypeI18nMap[room.t];
 };
 
 const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) =>
@@ -34,6 +41,31 @@ const useQuery = ({ text, types, itemsPerPage, current }, [column, direction]) =
 		}),
 		[text, types, itemsPerPage, current, column, direction],
 	);
+
+const getRoomDisplayName = (room) =>
+	room.t === 'd' ? room.usernames.join(' x ') : roomTypes.getRoomName(room.t, room);
+
+const useDisplayData = (asyncState, sort) =>
+	useMemo(() => {
+		const { value = {}, phase } = asyncState;
+
+		if (phase === AsyncStatePhase.LOADING) {
+			return null;
+		}
+
+		if (sort[0] === 'name' && value.rooms) {
+			return value.rooms.sort((a, b) => {
+				const aName = getRoomDisplayName(a);
+				const bName = getRoomDisplayName(b);
+				if (aName === bName) {
+					return 0;
+				}
+				const result = aName < bName ? -1 : 1;
+				return sort[1] === 'asc' ? result : result * -1;
+			});
+		}
+		return value.rooms;
+	}, [asyncState, sort]);
 
 function RoomsTable() {
 	const t = useTranslation();
@@ -55,7 +87,9 @@ function RoomsTable() {
 
 	const query = useQuery(debouncedParams, debouncedSort);
 
-	const { value: data = {} } = useEndpointData('rooms.adminRooms', query);
+	const asyncState = useEndpointData('rooms.adminRooms', query);
+
+	const { value: data = {} } = asyncState;
 
 	const router = useRoute(routeName);
 
@@ -81,17 +115,7 @@ function RoomsTable() {
 		[sort],
 	);
 
-	if (sort[0] === 'name' && data.rooms) {
-		data.rooms = data.rooms.sort((a, b) => {
-			const aName = a.type === 'd' ? a.usernames.join(' x ') : roomTypes.getRoomName(a.t, a);
-			const bName = b.type === 'd' ? b.usernames.join(' x ') : roomTypes.getRoomName(b.t, b);
-			if (aName === bName) {
-				return 0;
-			}
-			const result = aName < bName ? -1 : 1;
-			return sort[1] === 'asc' ? result : result * -1;
-		});
-	}
+	const displayData = useDisplayData(asyncState, sort);
 
 	const header = useMemo(
 		() =>
@@ -167,22 +191,20 @@ function RoomsTable() {
 	);
 
 	const renderRow = useCallback(
-		({
-			_id,
-			name,
-			t: type,
-			usersCount,
-			msgs,
-			default: isDefault,
-			featured,
-			usernames,
-			...args
-		}) => {
-			const icon = roomTypes.getIcon({ t: type, usernames, ...args });
-			const roomName =
-				type === 'd'
-					? usernames.join(' x ')
-					: roomTypes.getRoomName(type, { name, type, _id, ...args });
+		(room) => {
+			const {
+				_id,
+				name,
+				t: type,
+				usersCount,
+				msgs,
+				default: isDefault,
+				featured,
+				usernames,
+				...args
+			} = room;
+			const icon = roomTypes.getIcon(room);
+			const roomName = getRoomDisplayName(room);
 
 			return (
 				<Table.Row
@@ -223,7 +245,7 @@ function RoomsTable() {
 					</Table.Cell>
 					<Table.Cell>
 						<Box color='hint' fontScale='p2' style={style}>
-							{t(roomTypeI18nMap[type])}
+							{t(getRoomType(room))}
 						</Box>
 						<Box mi='x4' />
 					</Table.Cell>
@@ -243,7 +265,7 @@ function RoomsTable() {
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data.rooms}
+			results={displayData}
 			total={data.total}
 			setParams={setParams}
 			params={params}

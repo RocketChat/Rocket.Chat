@@ -2,13 +2,13 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import GenericModal from '../../../../components/GenericModal';
 import { useSetModal } from '../../../../contexts/ModalContext';
-import { useMethod } from '../../../../contexts/ServerContext';
+import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
 import { useUserRoom } from '../../../../contexts/UserContext';
 import { useForm } from '../../../../hooks/useForm';
-import DialogPruneMessages from './DialogPruneMessages';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = function () {
@@ -43,13 +43,13 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 	const onClickClose = useMutableCallback(() => tabBar && tabBar.close());
 	const closeModal = useCallback(() => setModal(null), [setModal]);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const pruneMessages = useMethod('cleanRoomHistory');
+	const pruneMessages = useEndpoint('POST', 'rooms.cleanHistory');
 
 	const [fromDate, setFromDate] = useState(new Date('0001-01-01T00:00:00Z'));
 	const [toDate, setToDate] = useState(new Date('9999-12-31T23:59:59Z'));
 	const [callOutText, setCallOutText] = useState();
 	const [validateText, setValidateText] = useState();
-	const [count, setCount] = useState(0);
+	const [counter, setCounter] = useState(0);
 
 	const { values, handlers, reset } = useForm(initialValues);
 	const {
@@ -90,32 +90,32 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 
 	const handlePrune = useMutableCallback(async () => {
 		const limit = 2000;
-		let result;
 
 		try {
-			if (count === limit) {
+			if (counter === limit) {
 				return;
 			}
 
-			result = await pruneMessages({
+			const { count } = await pruneMessages({
 				roomId: rid,
 				latest: toDate,
 				oldest: fromDate,
 				inclusive,
 				limit,
 				excludePinned: pinned,
-				ignoreDiscussion: discussion,
 				filesOnly: attached,
-				fromUsers: users,
+				ignoreDiscussion: discussion,
 				ignoreThreads: threads,
+				users,
 			});
-			setCount(result);
 
-			if (result < 1) {
+			setCounter(count);
+
+			if (count < 1) {
 				throw new Error(t('No_messages_found_to_prune'));
 			}
 
-			dispatchToastMessage({ type: 'success', message: `${result} ${t('messages_pruned')}` });
+			dispatchToastMessage({ type: 'success', message: `${count} ${t('messages_pruned')}` });
 			closeModal();
 			reset();
 		} catch (error) {
@@ -126,13 +126,15 @@ const PruneMessagesWithData = ({ rid, tabBar }) => {
 
 	const handleModal = () => {
 		setModal(
-			<DialogPruneMessages
+			<GenericModal
+				variant='danger'
+				onClose={closeModal}
 				onCancel={closeModal}
-				onDelete={handlePrune}
-				deleteText={t('Yes_prune_them')}
+				onConfirm={handlePrune}
+				confirmText={t('Yes_prune_them')}
 			>
 				{t('Prune_Modal')}
-			</DialogPruneMessages>,
+			</GenericModal>,
 		);
 	};
 

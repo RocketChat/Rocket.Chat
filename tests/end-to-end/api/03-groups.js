@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 
@@ -43,7 +43,49 @@ describe('[Groups]', function() {
 			})
 			.end(done);
 	});
+	describe('/groups.create (encrypted)', () => {
+		it('should create a new encrypted group', async () => {
+			await request.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: `encrypted-${ apiPrivateChannelName }`,
+					extraData: {
+						encrypted: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group.name', `encrypted-${ apiPrivateChannelName }`);
+					expect(res.body).to.have.nested.property('group.t', 'p');
+					expect(res.body).to.have.nested.property('group.msgs', 0);
+					expect(res.body).to.have.nested.property('group.encrypted', true);
+				});
+		});
 
+		it('should create the encrypted room by default', async () => {
+			await updateSetting('E2E_Enabled_Default_PrivateRooms', true);
+			try {
+				await request.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `default-encrypted-${ apiPrivateChannelName }`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('group.name', `default-encrypted-${ apiPrivateChannelName }`);
+						expect(res.body).to.have.nested.property('group.t', 'p');
+						expect(res.body).to.have.nested.property('group.msgs', 0);
+						expect(res.body).to.have.nested.property('group.encrypted', true);
+					});
+			} finally {
+				await updateSetting('E2E_Enabled_Default_PrivateRooms', false);
+			}
+		});
+	});
 	describe('[/groups.info]', () => {
 		let testGroup = {};
 		let groupMessage = {};
@@ -177,7 +219,6 @@ describe('[Groups]', function() {
 
 	it('/groups.invite', async () => {
 		const roomInfo = await getRoomInfo(group._id);
-
 		return request.post(api('groups.invite'))
 			.set(credentials)
 			.send({
@@ -537,16 +578,105 @@ describe('[Groups]', function() {
 			.end(done);
 	});
 
-	it('/groups.online', (done) => {
-		request.get(api('groups.online'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('online').and.to.be.an('array');
-			})
-			.end(done);
+	describe('[/groups.online]', () => {
+		const createUserAndChannel = async (setAsOnline = true) => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+
+			if (setAsOnline) {
+				await request.post(api('users.setStatus'))
+					.set(testUserCredentials)
+					.send({
+						message: '',
+						status: 'online',
+					});
+			}
+
+			const roomName = `group-test-${ Date.now() }`;
+
+			const roomResponse = await createRoom({ name: roomName, type: 'p', members: [testUser.username], credentials: testUserCredentials });
+
+			return {
+				testUser,
+				testUserCredentials,
+				room: roomResponse.body.group,
+			};
+		};
+
+		it('should return an error if no query', () =>
+			request.get(api('groups.online'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an error if passing an empty query', () =>
+			request.get(api('groups.online'))
+				.set(credentials)
+				.query('query={}')
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid query');
+				}));
+
+		it('should return an array with online members', async () => {
+			const {
+				testUser,
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel();
+
+			const response = await request.get(api('groups.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`);
+
+			const { body } = response;
+
+			const expected = {
+				_id: testUser._id,
+				username: testUser.username,
+			};
+
+			expect(body.online).to.deep.include(expected);
+		});
+
+		it('should return an empty array if members are offline', async () => {
+			const {
+				testUserCredentials,
+				room,
+			} = await createUserAndChannel(false);
+
+			const response = await request.get(api('groups.online'))
+				.set(testUserCredentials)
+				.query(`query={"_id": "${ room._id }"}`);
+
+			const { body } = response;
+
+			expect(body.online).to.deep.equal([]);
+		});
+
+		it('should return an error if requesting user is not in group', async () => {
+			const outsider = await createUser();
+			const outsiderCredentials = await login(outsider.username, password);
+
+			const {
+				room,
+			} = await createUserAndChannel();
+
+			return request.get(api('groups.online'))
+				.set(outsiderCredentials)
+				.query(`query={"_id": "${ room._id }"}`)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				});
+		});
 	});
 
 	it('/groups.members', (done) => {

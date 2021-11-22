@@ -2,6 +2,7 @@ import fs from 'fs';
 import stream from 'stream';
 
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
@@ -13,9 +14,7 @@ import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 
 import { settings } from '../../../settings/server';
-import Uploads from '../../../models/server/models/Uploads';
-import UserDataFiles from '../../../models/server/models/UserDataFiles';
-import Avatars from '../../../models/server/models/Avatars';
+import { Avatars, UserDataFiles, Uploads } from '../../../models/server/raw';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Settings from '../../../models/server/models/Settings';
@@ -28,11 +27,12 @@ import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../apps/server';
 import { streamToBuffer } from './streamToBuffer';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.get('FileUpload_MaxFileSize', function(key, value) {
+settings.watch('FileUpload_MaxFileSize', function(value) {
 	try {
 		maxFileSize = parseInt(value);
 	} catch (e) {
@@ -40,6 +40,9 @@ settings.get('FileUpload_MaxFileSize', function(key, value) {
 	}
 });
 
+const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
+const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
+const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
 
 export const FileUpload = {
 	handlers: {},
@@ -58,7 +61,8 @@ export const FileUpload = {
 		}, options, FileUpload[`default${ type }`]()));
 	},
 
-	validateFileUpload({ file, content }) {
+	validateFileUpload(fileData) {
+		const { file = fileData, content = Buffer.from([]) } = fileData;
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
@@ -137,7 +141,7 @@ export const FileUpload = {
 
 	defaultUploads() {
 		return {
-			collection: Uploads.model,
+			collection: UploadsModel,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -159,7 +163,7 @@ export const FileUpload = {
 
 	defaultAvatars() {
 		return {
-			collection: Avatars.model,
+			collection: AvatarModel,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
@@ -174,7 +178,7 @@ export const FileUpload = {
 
 	defaultUserDataFiles() {
 		return {
-			collection: UserDataFiles.model,
+			collection: UserDataFilesModel,
 			getPath(file) {
 				return `${ settings.get('uniqueID') }/uploads/userData/${ file.userId }`;
 			},
@@ -234,7 +238,7 @@ export const FileUpload = {
 				.then(Meteor.bindEnvironment(({ data, info }) => {
 					fs.writeFile(tempFilePath, data, Meteor.bindEnvironment((err) => {
 						if (err != null) {
-							console.error(err);
+							SystemLogger.error(err);
 						}
 
 						this.getCollection().direct.update({ _id: file._id }, {
@@ -252,7 +256,7 @@ export const FileUpload = {
 	},
 
 	resizeImagePreview(file) {
-		file = Uploads.findOneById(file._id);
+		file = Promise.await(Uploads.findOneById(file._id));
 		file = FileUpload.addExtensionTo(file);
 		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
@@ -263,6 +267,45 @@ export const FileUpload = {
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
 		image.pipe(transformer);
 		return result;
+	},
+
+	createImageThumbnail(file) {
+		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
+			return;
+		}
+
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
+
+		if (file.identify.size && file.identify.size.height < height && file.identify.size.width < width) {
+			return;
+		}
+
+		file = Promise.await(Uploads.findOneById(file._id));
+		file = FileUpload.addExtensionTo(file);
+		const store = FileUpload.getStore('Uploads');
+		const image = store._store.getReadStream(file._id, file);
+
+		const transformer = sharp()
+			.resize({ width, height, fit: 'inside' });
+
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height } }) => ({ data, width, height }));
+		image.pipe(transformer);
+
+		return result;
+	},
+
+	uploadImageThumbnail(file, buffer, rid, userId) {
+		const store = FileUpload.getStore('Uploads');
+		const details = {
+			name: `thumb-${ file.name }`,
+			size: buffer.length,
+			type: file.type,
+			rid,
+			userId,
+		};
+
+		return store.insertSync(details, buffer);
 	},
 
 	uploadsOnValidate(file) {
@@ -277,7 +320,7 @@ export const FileUpload = {
 		const s = sharp(tmpFile);
 		s.metadata(Meteor.bindEnvironment((err, metadata) => {
 			if (err != null) {
-				console.error(err);
+				SystemLogger.error(err);
 				return fut.return();
 			}
 
@@ -304,7 +347,7 @@ export const FileUpload = {
 							}));
 						}));
 					})).catch((err) => {
-						console.error(err);
+						SystemLogger.error(err);
 						fut.return();
 					});
 			};
@@ -337,11 +380,11 @@ export const FileUpload = {
 		}
 		// update file record to match user's username
 		const user = Users.findOneById(file.userId);
-		const oldAvatar = Avatars.findOneByName(user.username);
+		const oldAvatar = Promise.await(Avatars.findOneByName(user.username));
 		if (oldAvatar) {
-			Avatars.deleteFile(oldAvatar._id);
+			Promise.await(Avatars.deleteFile(oldAvatar._id));
 		}
-		Avatars.updateFileNameById(file._id, user.username);
+		Promise.await(Avatars.updateFileNameById(file._id, user.username));
 		// console.log('upload finished ->', file);
 	},
 
@@ -391,7 +434,7 @@ export const FileUpload = {
 
 	getStoreByName(handlerName) {
 		if (this.handlers[handlerName] == null) {
-			console.error(`Upload handler "${ handlerName }" does not exists`);
+			SystemLogger.error(`Upload handler "${ handlerName }" does not exists`);
 		}
 		return this.handlers[handlerName];
 	},
@@ -420,6 +463,8 @@ export const FileUpload = {
 
 		store.copy(file, buffer);
 	},
+
+	getBufferSync: Meteor.wrapAsync((file, cb) => FileUpload.getBuffer(file, cb)),
 
 	copy(file, targetFile) {
 		const store = this.getStoreByName(file.store);
@@ -528,11 +573,11 @@ export class FileUploadClass {
 			this.store.delete(fileId);
 		}
 
-		return this.model.deleteFile(fileId);
+		return Promise.await(this.model.deleteFile(fileId));
 	}
 
 	deleteById(fileId) {
-		const file = this.model.findOneById(fileId);
+		const file = Promise.await(this.model.findOneById(fileId));
 
 		if (!file) {
 			return;
@@ -544,7 +589,7 @@ export class FileUploadClass {
 	}
 
 	deleteByName(fileName) {
-		const file = this.model.findOneByName(fileName);
+		const file = Promise.await(this.model.findOneByName(fileName));
 
 		if (!file) {
 			return;
@@ -557,7 +602,7 @@ export class FileUploadClass {
 
 
 	deleteByRoomId(rid) {
-		const file = this.model.findOneByRoomId(rid);
+		const file = Promise.await(this.model.findOneByRoomId(rid));
 
 		if (!file) {
 			return;

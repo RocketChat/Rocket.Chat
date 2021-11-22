@@ -78,7 +78,6 @@ export const Menu = () => (
 			clickable
 			title={title}
 			subtitle={subtitle}
-			w
 			titleIcon={<Box mi='x4'>{<Status.Online />}</Box>}
 			avatar={avatar}
 			menuOptions={{

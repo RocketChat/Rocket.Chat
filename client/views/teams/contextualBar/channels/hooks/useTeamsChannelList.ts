@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { getConfig } from '../../../../../../app/ui-utils/client/config';
 import { IRoom } from '../../../../../../definition/IRoom';
 import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../../../lib/lists/RecordList';
+import { getConfig } from '../../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
 type TeamsChannelListOptions = {
 	teamId: string;
@@ -34,16 +35,20 @@ export const useTeamsChannelList = (
 			const { rooms, total } = await apiEndPoint({
 				teamId: options.teamId,
 				offset: start,
-				count: end - start,
+				count: end,
 				filter: options.text,
 				type: options.type,
 			});
 
 			return {
-				items: rooms.map((rooms) => {
-					rooms._updatedAt = new Date(rooms._updatedAt);
-					return { ...rooms };
-				}),
+				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, jitsiTimeout, ...room }) => ({
+					jitsiTimeout: new Date(jitsiTimeout),
+					...(lm && { lm: new Date(lm) }),
+					...(ts && { ts: new Date(ts) }),
+					_updatedAt: new Date(_updatedAt),
+					...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
+					...room,
+				})),
 				itemCount: total,
 			};
 		},

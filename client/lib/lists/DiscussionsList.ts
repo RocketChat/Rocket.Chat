@@ -1,5 +1,6 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { IMessage } from '../../../definition/IMessage';
-import { escapeRegExp } from '../../../lib/escapeRegExp';
 import { MessageList } from './MessageList';
 
 type DiscussionMessage = Omit<IMessage, 'drid'> & Required<Pick<IMessage, 'drid'>>;
@@ -39,12 +40,7 @@ export class DiscussionsList extends MessageList {
 		}
 
 		if (this._options.text) {
-			const regex = new RegExp(
-				this._options.text
-					.split(/\s/g)
-					.map((text) => escapeRegExp(text))
-					.join('|'),
-			);
+			const regex = new RegExp(escapeRegExp(this._options.text), 'i');
 			if (!isDiscussionTextMatching(message, regex)) {
 				return false;
 			}

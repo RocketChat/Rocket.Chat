@@ -5,7 +5,7 @@ import React, { memo } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 
-const RoleHeader = ({ router, _id, description, ...props }) => {
+const RoleHeader = ({ router, _id, name, description, ...props }) => {
 	const onClick = useMutableCallback(() => {
 		router.push({
 			context: 'edit',
@@ -29,7 +29,7 @@ const RoleHeader = ({ router, _id, description, ...props }) => {
 				onClick={onClick}
 			>
 				<Margins inline='x2'>
-					<span>{description || _id}</span>
+					<span>{description || name}</span>
 					<Icon name='edit' size='x16' />
 				</Margins>
 			</Box>

@@ -1,6 +1,4 @@
-/* eslint-env mocha */
-import 'babel-polyfill';
-import assert from 'assert';
+import { expect } from 'chai';
 
 import './server.mocks.js';
 import { messageProperties } from '../lib/MessageProperties';
@@ -16,7 +14,7 @@ describe('Message Properties', () => {
 	describe('Check Message Length', () => {
 		Object.keys(messages).forEach((objectKey) => {
 			it('should treat emojis as single characters', () => {
-				assert.equal(messageProperties.length(objectKey), messages[objectKey]);
+				expect(messageProperties.length(objectKey)).to.be.equal(messages[objectKey]);
 			});
 		});
 	});

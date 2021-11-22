@@ -1,6 +1,7 @@
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
+import Metrics from '../../../../../components/Message/Metrics';
 import * as NotificationStatus from '../../../../../components/Message/NotificationStatus';
 import { followStyle, anchor } from '../../../../../components/Message/helpers/followSyle';
 import RawText from '../../../../../components/RawText';
@@ -56,43 +57,20 @@ export default memo(function Message({
 				<MessageTemplate.BodyClamp>
 					<RawText>{msg}</RawText>
 				</MessageTemplate.BodyClamp>
-				<Box mi='neg-x2' flexDirection='row' display='flex' alignItems='baseline' mbs='x8'>
-					<Box
-						display='flex'
-						alignItems='center'
-						is='span'
-						fontSize='x12'
-						color='neutral-700'
-						fontWeight='600'
-					>
-						<Icon name='thread' size='x20' mi='x2' />
-						{replies}
-					</Box>
-					<Box
-						display='flex'
-						alignItems='center'
-						is='span'
-						fontSize='x12'
-						color='neutral-700'
-						fontWeight='600'
-					>
-						<Icon name='user' size='x20' mi='x2' />
-						{participants}
-					</Box>
-					<Box
-						display='flex'
-						alignItems='center'
-						is='span'
-						fontSize='x12'
-						color='neutral-700'
-						fontWeight='600'
-						withTruncatedText
-						flexShrink={1}
-						mi='x2'
-					>
-						<Icon name='clock' size='x20' mi='x2' /> {formatDate(tlm)}{' '}
-					</Box>
-				</Box>
+				<Metrics color='neutral-600' mi='neg-x8'>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='thread' />
+						<Metrics.Item.Label>{replies}</Metrics.Item.Label>
+					</Metrics.Item>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='user' />
+						<Metrics.Item.Label>{participants}</Metrics.Item.Label>
+					</Metrics.Item>
+					<Metrics.Item>
+						<Metrics.Item.Icon name='clock' />
+						<Metrics.Item.Label>{formatDate(tlm)}</Metrics.Item.Label>
+					</Metrics.Item>
+				</Metrics>
 			</MessageTemplate.Container>
 			<MessageTemplate.Container alignItems='center'>
 				<Button

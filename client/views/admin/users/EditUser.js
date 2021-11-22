@@ -18,15 +18,15 @@ const getInitialValue = (data) => ({
 	status: data.status,
 	bio: data.bio ?? '',
 	nickname: data.nickname ?? '',
-	email: (data.emails && data.emails[0].address) || '',
-	verified: (data.emails && data.emails[0].verified) || false,
+	email: (data.emails && data.emails.length && data.emails[0].address) || '',
+	verified: (data.emails && data.emails.length && data.emails[0].verified) || false,
 	setRandomPassword: false,
 	requirePasswordChange: data.setRandomPassword || false,
 	customFields: data.customFields ?? {},
 	statusText: data.statusText ?? '',
 });
 
-function EditUser({ data, roles, ...props }) {
+function EditUser({ data, roles, onReload, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -138,16 +138,29 @@ function EditUser({ data, roles, ...props }) {
 			return false;
 		}
 
-		const result = await saveAction();
-		if (result.success) {
-			if (avatarObj) {
+		if (hasUnsavedChanges) {
+			const result = await saveAction();
+			if (result.success && avatarObj) {
 				await updateAvatar();
 			}
-			goToUser(data._id);
+		} else {
+			await updateAvatar();
 		}
-	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar, values, errors, validationKeys]);
+		onReload();
+		goToUser(data._id);
+	}, [
+		hasUnsavedChanges,
+		avatarObj,
+		data._id,
+		goToUser,
+		saveAction,
+		updateAvatar,
+		values,
+		errors,
+		validationKeys,
+	]);
 
-	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+	const availableRoles = roles.map(({ _id, name, description }) => [_id, description || name]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 

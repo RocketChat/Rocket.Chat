@@ -3,7 +3,8 @@ import { Random } from 'meteor/random';
 
 import { hasPermission } from '../../../authorization';
 import { Notifications } from '../../../notifications';
-import { Invites, Subscriptions, Rooms } from '../../../models/server';
+import { Subscriptions, Rooms } from '../../../models/server';
+import { Invites } from '../../../models/server/raw';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils/lib/getURL';
 import { roomTypes, RoomMemberActions } from '../../../utils/server';
@@ -23,7 +24,7 @@ function getInviteUrl(invite) {
 const possibleDays = [0, 1, 7, 15, 30];
 const possibleUses = [0, 1, 5, 10, 25, 50, 100];
 
-export const findOrCreateInvite = (userId, invite) => {
+export const findOrCreateInvite = async (userId, invite) => {
 	if (!userId || !invite) {
 		return false;
 	}
@@ -57,7 +58,7 @@ export const findOrCreateInvite = (userId, invite) => {
 	}
 
 	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
-	const existing = Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
+	const existing = await Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
 
 	// If an existing invite was found, return it's _id instead of creating a new one.
 	if (existing) {
@@ -86,7 +87,7 @@ export const findOrCreateInvite = (userId, invite) => {
 		uses: 0,
 	};
 
-	Invites.create(createInvite);
+	await Invites.insertOne(createInvite);
 	Notifications.notifyUser(userId, 'updateInvites', { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);

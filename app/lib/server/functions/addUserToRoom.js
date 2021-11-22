@@ -68,6 +68,8 @@ export const addUserToRoom = function(rid, user, inviter, silenced) {
 			});
 		} else if (room.prid) {
 			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, user, { ts: now });
+		} else if (room.teamMain) {
+			Messages.createUserJoinTeamWithRoomIdAndUser(rid, user, { ts: now });
 		} else {
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, { ts: now });
 		}

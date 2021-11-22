@@ -7,9 +7,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import archiver from 'archiver';
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 
 import { settings } from '../../settings/server';
-import { Subscriptions, Rooms, Users, Uploads, Messages, UserDataFiles, ExportOperations, Avatars } from '../../models/server';
+import { Subscriptions, Rooms, Users, Messages } from '../../models/server';
+import { Avatars, ExportOperations, UserDataFiles, Uploads } from '../../models/server/raw';
 import { FileUpload } from '../../file-upload/server';
 import { DataExport } from './DataExport';
 import * as Mailer from '../../mailer';
@@ -158,6 +160,9 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 			case 'ul':
 				messageObject.msg = TAPi18n.__('User_left');
 				break;
+			case 'ult':
+				messageObject.msg = TAPi18n.__('User_left_team');
+				break;
 			case 'au':
 				messageObject.msg = TAPi18n.__('User_added_by', { user_added: hideUserName(msg.msg, userData, usersMap), user_by: username });
 				break;
@@ -182,8 +187,8 @@ const getMessageData = function(msg, hideUsers, userData, usersMap) {
 	return messageObject;
 };
 
-export const copyFile = function(attachmentData, assetsPath) {
-	const file = Uploads.findOneById(attachmentData._id);
+export const copyFile = async function(attachmentData, assetsPath) {
+	const file = await Uploads.findOneById(attachmentData._id);
 	if (!file) {
 		return;
 	}
@@ -435,12 +440,12 @@ const generateUserFile = function(exportOperation, userData) {
 	}
 };
 
-const generateUserAvatarFile = function(exportOperation, userData) {
+const generateUserAvatarFile = async function(exportOperation, userData) {
 	if (!userData) {
 		return;
 	}
 
-	const file = Avatars.findOneByName(userData.username);
+	const file = await Avatars.findOneByName(userData.username);
 	if (!file) {
 		return;
 	}
@@ -474,7 +479,7 @@ const continueExportOperation = async function(exportOperation) {
 		}
 
 		if (!exportOperation.generatedAvatar) {
-			generateUserAvatarFile(exportOperation, exportOperation.userData);
+			await generateUserAvatarFile(exportOperation, exportOperation.userData);
 		}
 
 		if (exportOperation.status === 'exporting-rooms') {
@@ -504,12 +509,14 @@ const continueExportOperation = async function(exportOperation) {
 			}
 		}
 
-		if (exportOperation.status === 'downloading') {
-			exportOperation.fileList.forEach((attachmentData) => {
-				copyFile(attachmentData, exportOperation.assetsPath);
-			});
+		const generatedFileName = uuidv4();
 
-			const targetFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+		if (exportOperation.status === 'downloading') {
+			for await (const attachmentData of exportOperation.fileList) {
+				await copyFile(attachmentData, exportOperation.assetsPath);
+			}
+
+			const targetFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (await fsExists(targetFile)) {
 				await fsUnlink(targetFile);
 			}
@@ -520,7 +527,7 @@ const continueExportOperation = async function(exportOperation) {
 		if (exportOperation.status === 'compressing') {
 			createDir(zipFolder);
 
-			exportOperation.generatedFile = joinPath(zipFolder, `${ exportOperation.userId }.zip`);
+			exportOperation.generatedFile = joinPath(zipFolder, `${ generatedFileName }.zip`);
 			if (!await fsExists(exportOperation.generatedFile)) {
 				await makeZipFile(exportOperation.exportPath, exportOperation.generatedFile);
 			}
@@ -533,17 +540,17 @@ const continueExportOperation = async function(exportOperation) {
 			exportOperation.fileId = fileId;
 
 			exportOperation.status = 'completed';
-			ExportOperations.updateOperation(exportOperation);
+			await ExportOperations.updateOperation(exportOperation);
 		}
 
-		ExportOperations.updateOperation(exportOperation);
+		await ExportOperations.updateOperation(exportOperation);
 	} catch (e) {
 		console.error(e);
 	}
 };
 
 async function processDataDownloads() {
-	const operation = ExportOperations.findOnePending();
+	const operation = await ExportOperations.findOnePending();
 	if (!operation) {
 		return;
 	}
@@ -565,7 +572,7 @@ async function processDataDownloads() {
 	await ExportOperations.updateOperation(operation);
 
 	if (operation.status === 'completed') {
-		const file = operation.fileId ? UserDataFiles.findOneById(operation.fileId) : UserDataFiles.findLastFileByUser(operation.userId);
+		const file = operation.fileId ? await UserDataFiles.findOneById(operation.fileId) : await UserDataFiles.findLastFileByUser(operation.userId);
 		if (!file) {
 			return;
 		}
@@ -580,21 +587,19 @@ async function processDataDownloads() {
 const name = 'Generate download files for user data';
 
 Meteor.startup(function() {
-	Meteor.defer(function() {
-		let TroubleshootDisableDataExporterProcessor;
-		settings.get('Troubleshoot_Disable_Data_Exporter_Processor', (key, value) => {
-			if (TroubleshootDisableDataExporterProcessor === value) { return; }
-			TroubleshootDisableDataExporterProcessor = value;
+	let TroubleshootDisableDataExporterProcessor;
+	settings.watch('Troubleshoot_Disable_Data_Exporter_Processor', (value) => {
+		if (TroubleshootDisableDataExporterProcessor === value) { return; }
+		TroubleshootDisableDataExporterProcessor = value;
 
-			if (value) {
-				return SyncedCron.remove(name);
-			}
+		if (value) {
+			return SyncedCron.remove(name);
+		}
 
-			SyncedCron.add({
-				name,
-				schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
-				job: processDataDownloads,
-			});
+		SyncedCron.add({
+			name,
+			schedule: (parser) => parser.cron(`*/${ processingFrequency } * * * *`),
+			job: processDataDownloads,
 		});
 	});
 });

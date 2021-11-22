@@ -1,7 +1,5 @@
-import _ from 'underscore';
-
 import { FederationRoomEvents, Rooms } from '../../../models/server';
-import { logger } from '../lib/logger';
+import { clientLogger } from '../lib/logger';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -12,7 +10,7 @@ async function afterSetReaction(message, { user, reaction }) {
 	// If there are not federated users on this room, ignore it
 	if (!hasExternalDomain(room)) { return message; }
 
-	logger.client.debug(() => `afterSetReaction => message=${ JSON.stringify(_.pick(message, '_id', 'msg'), null, 2) } room=${ JSON.stringify(_.pick(room, '_id'), null, 2) } user=${ JSON.stringify(_.pick(user, 'username'), null, 2) } reaction=${ reaction }`);
+	clientLogger.debug({ msg: 'afterSetReaction', message, room, user, reaction });
 
 	// Create the event
 	const event = await FederationRoomEvents.createSetMessageReactionEvent(getFederationDomain(), room._id, message._id, user.username, reaction);

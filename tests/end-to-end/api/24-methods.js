@@ -710,8 +710,7 @@ describe('Meteor.methods', function() {
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('sanitizedError');
-					expect(data.error.sanitizedError).to.have.property('error', 400);
+					expect(data.error).to.have.a.property('error', 'error-invalid-room');
 				})
 				.end(done);
 		});
@@ -1476,6 +1475,258 @@ describe('Meteor.methods', function() {
 							expect(res.body.message.urls.length).to.be.equal(0);
 						})
 						.end(done);
+				});
+		});
+	});
+
+	describe('[@setUserActiveStatus]', () => {
+		let testUser;
+		let testUser2;
+		const testUserCredentials = {};
+		let dmId;
+		let dmTestId;
+
+		before('create test user', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username, roles: ['user'] })
+				.end((err, res) => {
+					testUser = res.body.user;
+					done();
+				});
+		});
+
+		before('create test user 2', (done) => {
+			const username = `user.test.${ Date.now() }`;
+			const email = `${ username }@rocket.chat`;
+			request.post(api('users.create'))
+				.set(credentials)
+				.send({ email, name: username, username, password: username, roles: ['user'] })
+				.end((err, res) => {
+					testUser2 = res.body.user;
+					done();
+				});
+		});
+
+		before('login testUser', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.end(done);
+		});
+
+		before('create direct conversation with user', (done) => {
+			request.post(methodCall('createDirectMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser.username],
+					}),
+				})
+				.end((err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmId = result.result.rid;
+					done();
+				});
+		});
+
+		before('create direct conversation between both users', (done) => {
+			request.post(methodCall('createDirectMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+					}),
+				})
+				.end((err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmTestId = result.result.rid;
+					done();
+				});
+		});
+
+		it('should deactivate a user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser._id, false, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should deactivate another user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser2._id, false, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should mark the direct conversation between admin=>testUser as readonly when user is deactivated', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(true);
+					done();
+				});
+		});
+
+		it('should activate a user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser._id, true, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should set readonly=false when user is activated (and the other side is also active)', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
+				});
+		});
+
+		it('should keep the direct conversation between testUser=>testUser2 as readonly when one of them is deactivated', (done) => {
+			request.post(api('login'))
+				.send({
+					user: testUser.username,
+					password: testUser.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testUserCredentials['X-Auth-Token'] = res.body.data.authToken;
+					testUserCredentials['X-User-Id'] = res.body.data.userId;
+				})
+				.then(() => {
+					request.post(methodCall('getRoomByTypeAndName'))
+						.set(testUserCredentials)
+						.send({
+							message: JSON.stringify({
+								method: 'getRoomByTypeAndName',
+								params: ['d', dmTestId],
+							}),
+						})
+						.end((err, res) => {
+							expect(res.body.success).to.equal(true);
+							const result = JSON.parse(res.body.message);
+							expect(result.result.ro).to.equal(true);
+							done();
+						});
+				})
+				.catch(done);
+		});
+
+		it('should activate another user', (done) => {
+			request.post(methodCall('setUserActiveStatus'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'setUserActiveStatus',
+						params: [testUser2._id, true, false],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body).to.have.property('success').that.is.an('boolean');
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.equal(true);
+					done();
+				});
+		});
+
+		it('should set readonly=false when both users are activated', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmTestId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
+				});
+		});
+
+		it('should keep readonly=true when user is activated (and the other side is deactivated)', (done) => {
+			request.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmTestId],
+					}),
+				})
+				.end((err, res) => {
+					expect(res.body.success).to.equal(true);
+					const result = JSON.parse(res.body.message);
+					expect(result.result.ro).to.equal(false);
+					done();
 				});
 		});
 	});

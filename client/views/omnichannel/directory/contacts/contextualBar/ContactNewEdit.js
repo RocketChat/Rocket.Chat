@@ -4,17 +4,17 @@ import React, { useState, useMemo } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
-import { isEmail } from '../../../../../../app/utils/client';
+import { isEmail } from '../../../../../../lib/utils/isEmail';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
-import { createToken } from '../../../../../components/helpers';
+import { useEndpoint } from '../../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useForm } from '../../../../../hooks/useForm';
+import { createToken } from '../../../../../lib/utils/createToken';
 import { formsSubscription } from '../../../additionalForms';
 import { FormSkeleton } from '../../Skeleton';
 
@@ -45,15 +45,18 @@ const getInitialValues = (data) => {
 	};
 };
 
-function ContactNewEdit({ id, data, reload, close }) {
+function ContactNewEdit({ id, data, close }) {
 	const t = useTranslation();
 
 	const canViewCustomFields = () =>
 		hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
-	const { values, handlers, hasUnsavedChanges: hasUnsavedChangesContact } = useForm(
-		getInitialValues(data),
-	);
+	const {
+		values,
+		handlers,
+		hasUnsavedChanges: hasUnsavedChangesContact,
+	} = useForm(getInitialValues(data));
+
 	const eeForms = useSubscription(formsSubscription);
 
 	const { useContactManager = () => {} } = eeForms;
@@ -104,15 +107,9 @@ function ContactNewEdit({ id, data, reload, close }) {
 		[allCustomFields],
 	);
 
-	const saveContact = useEndpointAction('POST', 'omnichannel/contact');
-	const emailAlreadyExistsAction = useEndpointAction(
-		'GET',
-		`omnichannel/contact.search?email=${email}`,
-	);
-	const phoneAlreadyExistsAction = useEndpointAction(
-		'GET',
-		`omnichannel/contact.search?phone=${phone}`,
-	);
+	const saveContact = useEndpoint('POST', 'omnichannel/contact');
+	const emailAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?email=${email}`);
+	const phoneAlreadyExistsAction = useEndpoint('GET', `omnichannel/contact.search?phone=${phone}`);
 
 	const checkEmailExists = useMutableCallback(async () => {
 		if (!isEmail(email)) {
@@ -182,7 +179,6 @@ function ContactNewEdit({ id, data, reload, close }) {
 		try {
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload && reload();
 			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

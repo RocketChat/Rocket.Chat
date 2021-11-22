@@ -15,7 +15,7 @@ const normalizeDefaultAgent = (agent) => {
 	return { agentId, username };
 };
 
-const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(username, { fields: { _id: 1, username: 1 } }));
+const getDefaultAgent = (username) => username && normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
 
 const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
@@ -49,7 +49,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	}
 
 	const { servedBy: { username: usernameByRoom } } = room;
-	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUsername(usernameByRoom, { fields: { _id: 1, username: 1 } }));
+	const lastRoomAgent = normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(usernameByRoom, { fields: { _id: 1, username: 1 } }));
 	return lastRoomAgent || defaultAgent;
 };
 
@@ -86,7 +86,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 
 	return inquiry;
 };
-settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
+settings.watch('Livechat_last_chatted_agent_routing', function(value) {
 	lastChattedAgentPreferred = value;
 	if (!lastChattedAgentPreferred) {
 		callbacks.remove('livechat.onMaxNumberSimultaneousChatsReached', 'livechat-on-max-number-simultaneous-chats-reached');
@@ -98,7 +98,7 @@ settings.get('Livechat_last_chatted_agent_routing', function(key, value) {
 	callbacks.add('livechat.onMaxNumberSimultaneousChatsReached', onMaxNumberSimultaneousChatsReached, callbacks.priority.MEDIUM, 'livechat-on-max-number-simultaneous-chats-reached');
 });
 
-settings.get('Omnichannel_contact_manager_routing', function(key, value) {
+settings.watch('Omnichannel_contact_manager_routing', function(value) {
 	contactManagerPreferred = value;
 });
 

@@ -4,7 +4,7 @@ import VerticalBar from '../../../../components/VerticalBar';
 import RoomMembers from './List/RoomMembers';
 
 export default {
-	title: 'components/RoomMembers',
+	title: 'room/contextualBar/RoomMembers',
 	component: RoomMembers,
 };
 

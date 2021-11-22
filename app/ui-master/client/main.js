@@ -5,31 +5,23 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { getUserPreference } from '../../utils/client';
-import { mainReady, Layout, iframeLogin } from '../../ui-utils';
+import { mainReady, iframeLogin } from '../../ui-utils';
 import { settings } from '../../settings';
 import { CachedChatSubscription, Roles, Users } from '../../models';
 import { CachedCollectionManager } from '../../ui-cached-collection';
 import { tooltip } from '../../ui/client/components/tooltip';
 import { callbacks } from '../../callbacks/client';
 import { isSyncReady } from '../../../client/lib/userData';
-
+import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import './main.html';
+import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
+import { isIOsDevice } from '../../../client/lib/utils/isIOsDevice';
 
-function executeCustomScript(script) {
-	eval(script);//eslint-disable-line
-}
 
-function customScriptsOnLogout() {
-	const script = settings.get('Custom_Script_On_Logout') || '';
-	if (script.trim()) {
-		executeCustomScript(script);
-	}
-}
-
-callbacks.add('afterLogoutCleanUp', () => customScriptsOnLogout(), callbacks.priority.LOW, 'custom-script-on-logout');
+callbacks.add('afterLogoutCleanUp', () => fireGlobalEvent('Custom_Script_On_Logout'), callbacks.priority.LOW, 'custom-script-on-logout');
 
 Template.main.helpers({
-	removeSidenav: () => Layout.isEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
+	removeSidenav: () => isLayoutEmbedded() && !/^\/admin/.test(FlowRouter.current().route.path),
 	logged: () => {
 		if (!!Meteor.userId() || (settings.get('Accounts_AllowAnonymousRead') === true && Session.get('forceLogin') !== true)) {
 			document.documentElement.classList.add('noscroll');
@@ -75,24 +67,19 @@ Template.main.helpers({
 		if (!user || (user.services.totp !== undefined && user.services.totp.enabled) || (user.services.email2fa !== undefined && user.services.email2fa.enabled)) {
 			return false;
 		}
+		const is2faEnabled = settings.get('Accounts_TwoFactorAuthentication_Enabled');
 
 		const mandatoryRole = Roles.findOne({ _id: { $in: user.roles }, mandatory2fa: true });
-		return mandatoryRole !== undefined;
+		return mandatoryRole !== undefined && is2faEnabled;
 	},
 	CustomScriptLoggedOut: () => {
-		const script = settings.get('Custom_Script_Logged_Out') || '';
-		if (script.trim()) {
-			executeCustomScript(script);
-		}
+		fireGlobalEvent('Custom_Script_Logged_Out');
 	},
 	CustomScriptLoggedIn: () => {
-		const script = settings.get('Custom_Script_Logged_In') || '';
-		if (script.trim()) {
-			executeCustomScript(script);
-		}
+		fireGlobalEvent('Custom_Script_Logged_In');
 	},
 	embeddedVersion: () => {
-		if (Layout.isEmbedded()) {
+		if (isLayoutEmbedded()) {
 			return 'embedded-view';
 		}
 	},
@@ -108,6 +95,15 @@ Template.main.onCreated(function() {
 });
 
 Template.main.onRendered(function() {
+	// iOS prevent click if elements matches hover
+	isIOsDevice && window.matchMedia('(hover: none)').matches && $(document.body).on('touchend', 'a', (e) => {
+		if (!e.target.matches(':hover')) {
+			return;
+		}
+
+		e.target.click();
+	});
+
 	Tracker.autorun(function() {
 		const userId = Meteor.userId();
 

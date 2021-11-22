@@ -3,12 +3,13 @@ import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
+import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../callbacks/server';
-import { Roles, Users, Settings } from '../../../models/server';
-import { Users as UsersRaw } from '../../../models/server/raw';
+import { Users, Settings } from '../../../models/server';
+import { Roles, Users as UsersRaw } from '../../../models/server/raw';
 import { addUserRoles } from '../../../authorization/server';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions';
 import {
@@ -17,23 +18,22 @@ import {
 } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { escapeHTML } from '../../../../lib/escapeHTML';
-import { escapeRegExp } from '../../../../lib/escapeRegExp';
+import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
+
 
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
 
-const updateMailConfig = _.debounce(() => {
-	Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
-
-	Accounts.emailTemplates.siteName = settings.get('Site_Name');
-
-	Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
-}, 1000);
 
 Meteor.startup(() => {
-	settings.get(/^(Accounts_LoginExpiration|Site_Name|From_Email)$/, updateMailConfig);
+	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
+		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
+
+		Accounts.emailTemplates.siteName = settings.get('Site_Name');
+
+		Accounts.emailTemplates.from = `${ settings.get('Site_Name') } <${ settings.get('From_Email') }>`;
+	});
 });
 
 Accounts.emailTemplates.userToActivate = {
@@ -186,8 +186,7 @@ Accounts.onCreateUser(function(options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-
-		Roles.findUsersInRole('admin').forEach((adminUser) => {
+		Promise.await(Roles.findUsersInRole('admin').toArray()).forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${ adminUser.name }<${ email.address }>`);
@@ -205,14 +204,17 @@ Accounts.onCreateUser(function(options, user = {}) {
 		Mailer.send(email);
 	}
 
+	callbacks.run('onCreateUser', options, user);
 	return user;
 });
 
 Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, options, user) {
-	let roles = [];
+	const noRoles = !user?.hasOwnProperty('globalRoles');
+
+	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
-		roles = roles.concat(user.globalRoles);
+		globalRoles.push(...user.globalRoles);
 	}
 
 	delete user.globalRoles;
@@ -220,9 +222,11 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 	if (user.services && !user.services.password) {
 		const defaultAuthServiceRoles = String(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles')).split(',');
 		if (defaultAuthServiceRoles.length > 0) {
-			roles = roles.concat(defaultAuthServiceRoles.map((s) => s.trim()));
+			globalRoles.push(...defaultAuthServiceRoles.map((s) => s.trim()));
 		}
 	}
+
+	const roles = getNewUserRoles(globalRoles);
 
 	if (!user.type) {
 		user.type = 'user';
@@ -270,7 +274,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function(insertUserDoc, 
 		}
 	}
 
-	if (roles.length === 0) {
+	if (noRoles || roles.length === 0) {
 		const hasAdmin = Users.findOne({
 			roles: 'admin',
 			type: 'user',

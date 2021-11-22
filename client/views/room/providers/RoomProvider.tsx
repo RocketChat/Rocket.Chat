@@ -1,8 +1,10 @@
-import React, { ReactNode, useContext, useMemo, memo } from 'react';
+import React, { ReactNode, useMemo, memo, useEffect } from 'react';
 
+import { UserAction } from '../../../../app/ui';
 import { roomTypes } from '../../../../app/utils/client';
 import { IRoom } from '../../../../definition/IRoom';
-import { useHandleRoom } from '../../../lib/RoomManager';
+import { useUserSubscription } from '../../../contexts/UserContext';
+import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import Skeleton from '../Room/Skeleton';
 import { RoomContext } from '../contexts/RoomContext';
@@ -13,18 +15,41 @@ export type Props = {
 	rid: IRoom['_id'];
 };
 
+const fields = {};
+
 const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 	const { phase, value: room } = useHandleRoom(rid);
+
+	const subscribed = Boolean(useUserSubscription(rid, fields));
 	const context = useMemo(() => {
 		if (!room) {
 			return null;
 		}
 		room._id = rid;
 		return {
+			subscribed,
 			rid,
 			room: { ...room, name: roomTypes.getRoomName(room.t, room) },
 		};
-	}, [room, rid]);
+	}, [room, rid, subscribed]);
+
+	useEffect(() => {
+		RoomManager.open(rid);
+		return (): void => {
+			RoomManager.back(rid);
+		};
+	}, [rid]);
+
+	useEffect(() => {
+		if (!subscribed) {
+			return (): void => undefined;
+		}
+
+		UserAction.addStream(rid);
+		return (): void => {
+			UserAction.cancel(rid);
+		};
+	}, [rid, subscribed]);
 
 	if (phase === AsyncStatePhase.LOADING || !room) {
 		return <Skeleton />;
@@ -36,6 +61,4 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		</RoomContext.Provider>
 	);
 };
-
-export const useRoom = (): undefined | IRoom => useContext(RoomContext)?.room;
 export default memo(RoomProvider);

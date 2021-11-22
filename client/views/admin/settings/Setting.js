@@ -87,6 +87,7 @@ function Setting({ className, settingId, sectionChanged }) {
 		i18nLabel,
 		i18nDescription,
 		alert,
+		invisible,
 	} = setting;
 
 	const label = (i18nLabel && t(i18nLabel)) || _id || t(_id);
@@ -95,10 +96,10 @@ function Setting({ className, settingId, sectionChanged }) {
 			t.has(i18nDescription) && <MarkdownText preserveHtml={true} content={t(i18nDescription)} />,
 		[i18nDescription, t],
 	);
-	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />, [
-		alert,
-		t,
-	]);
+	const callout = useMemo(
+		() => alert && <span dangerouslySetInnerHTML={{ __html: t(alert) }} />,
+		[alert, t],
+	);
 	const hasResetButton =
 		!disableReset &&
 		!readonly &&
@@ -122,6 +123,7 @@ function Setting({ className, settingId, sectionChanged }) {
 			onChangeValue={onChangeValue}
 			onChangeEditor={onChangeEditor}
 			onResetButtonClick={onResetButtonClick}
+			invisible={invisible}
 		/>
 	);
 }

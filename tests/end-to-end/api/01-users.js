@@ -12,6 +12,7 @@ import {
 	targetUser,
 	log,
 	wait,
+	reservedWords,
 } from '../../data/api-data.js';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user.js';
 import { imgURL } from '../../data/interactions.js';
@@ -156,6 +157,30 @@ describe('[Users]', function() {
 			});
 		});
 
+		function failCreateUser(name) {
+			it(`should not create a new user if username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email: `create_user_fail_${ apiEmail }`,
+						name: `create_user_fail_${ apiUsername }`,
+						username: name,
+						password,
+						active: true,
+						roles: ['user'],
+						joinDefaultChannels: true,
+						verified: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${ name } is blocked and can't be used! [error-blocked-username]`);
+					})
+					.end(done);
+			});
+		}
+
 		function failUserWithCustomField(field) {
 			it(`should not create a user if a custom field ${ field.reason }`, (done) => {
 				setCustomFields({ customFieldText }, (error) => {
@@ -196,6 +221,71 @@ describe('[Users]', function() {
 			{ name: 'customFieldText', value: '0123456789-0', reason: 'length is more than maxLength' },
 		].forEach((field) => {
 			failUserWithCustomField(field);
+		});
+
+		reservedWords.forEach((name) => {
+			failCreateUser(name);
+		});
+
+		describe('users default roles configuration', () => {
+			before(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user,admin');
+			});
+
+			after(async () => {
+				await updateSetting('Accounts_Registration_Users_Default_Roles', 'user');
+			});
+
+			it('should create a new user with default roles', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['user', 'admin']);
+					})
+					.end(done);
+			});
+
+			it('should create a new user with only the role provided', (done) => {
+				const username = `defaultUserRole_${ apiUsername }${ Date.now() }`;
+				const email = `defaultUserRole_${ apiEmail }${ Date.now() }`;
+
+				request.post(api('users.create'))
+					.set(credentials)
+					.send({
+						email,
+						name: username,
+						username,
+						password,
+						roles: ['guest'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.username', username);
+						expect(res.body).to.have.nested.property('user.emails[0].address', email);
+						expect(res.body).to.have.nested.property('user.active', true);
+						expect(res.body).to.have.nested.property('user.name', username);
+						expect(res.body.user.roles).to.have.members(['guest']);
+					})
+					.end(done);
+			});
 		});
 	});
 
@@ -253,7 +343,7 @@ describe('[Users]', function() {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('User not found.');
+					expect(res.body).to.have.property('error');
 				})
 				.end(done);
 		});
@@ -546,12 +636,15 @@ describe('[Users]', function() {
 			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
-			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
+			updateSetting('Accounts_AllowUserAvatarChange', true).then(() => {
+				updatePermission('edit-other-user-avatar', ['admin', 'user']).then(done);
+			});
 		});
 		after(async () => {
+			await updateSetting('Accounts_AllowUserAvatarChange', true);
 			await deleteUser(user);
 			user = undefined;
-			await updatePermission('edit-other-user-info', ['admin']);
+			await updatePermission('edit-other-user-avatar', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
@@ -564,7 +657,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+		it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(userCredentials)
 				.attach('image', imgURL)
@@ -576,7 +669,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+		it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request.post(api('users.setAvatar'))
 				.set(credentials)
 				.attach('image', imgURL)
@@ -588,8 +681,8 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it.skip('should prevent from updating someone else\'s avatar when the logged user has not the necessary permission(edit-other-user-info)', (done) => {
-			updatePermission('edit-other-user-info', []).then(() => {
+		it('should prevent from updating someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
+			updatePermission('edit-other-user-avatar', []).then(() => {
 				request.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
@@ -600,6 +693,22 @@ describe('[Users]', function() {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
+			});
+		});
+		it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
+			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
+				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+					request.post(api('users.setAvatar'))
+						.set(credentials)
+						.attach('image', imgURL)
+						.field({ userId: userCredentials['X-User-Id'] })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 	});
@@ -615,12 +724,15 @@ describe('[Users]', function() {
 			userCredentials = await login(user.username, password);
 		});
 		before((done) => {
-			updatePermission('edit-other-user-info', ['admin', 'user']).then(done);
+			updateSetting('Accounts_AllowUserAvatarChange', true).then(() => {
+				updatePermission('edit-other-user-avatar', ['admin', 'user']).then(done);
+			});
 		});
 		after(async () => {
+			await updateSetting('Accounts_AllowUserAvatarChange', true);
 			await deleteUser(user);
 			user = undefined;
-			await updatePermission('edit-other-user-info', ['admin']);
+			await updatePermission('edit-other-user-avatar', ['admin']);
 		});
 		it('should set the avatar of the logged user by a local image', (done) => {
 			request.post(api('users.setAvatar'))
@@ -646,7 +758,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+		it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request.post(api('users.resetAvatar'))
 				.set(userCredentials)
 				.send({
@@ -659,7 +771,7 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-info)', (done) => {
+		it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
 			request.post(api('users.resetAvatar'))
 				.set(credentials)
 				.send({
@@ -672,8 +784,8 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
-		it.skip('should prevent from resetting someone else\'s avatar when the logged user has not the necessary permission(edit-other-user-info)', (done) => {
-			updatePermission('edit-other-user-info', []).then(() => {
+		it('should prevent from resetting someone else\'s avatar when the logged user doesn\'t have the necessary permission(edit-other-user-avatar)', (done) => {
+			updatePermission('edit-other-user-avatar', []).then(() => {
 				request.post(api('users.resetAvatar'))
 					.set(userCredentials)
 					.send({
@@ -685,6 +797,23 @@ describe('[Users]', function() {
 						expect(res.body).to.have.property('success', false);
 					})
 					.end(done);
+			});
+		});
+		it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
+			updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
+				updatePermission('edit-other-user-avatar', ['admin']).then(() => {
+					request.post(api('users.resetAvatar'))
+						.set(credentials)
+						.send({
+							userId: userCredentials['X-User-Id'],
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						})
+						.end(done);
+				});
 			});
 		});
 	});
@@ -1073,6 +1202,30 @@ describe('[Users]', function() {
 					});
 			});
 		});
+
+		function failUpdateUser(name) {
+			it(`should not update an user if the new username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: targetUser._id,
+						data: {
+							username: name,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failUpdateUser(name);
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -1237,6 +1390,124 @@ describe('[Users]', function() {
 					expect(user).to.not.have.property('e2e');
 				})
 				.end(done);
+		});
+
+		function failUpdateUserOwnBasicInfo(name) {
+			it(`should not update an user's basic info if the new username is the reserved word ${ name }`, (done) => {
+				request.post(api('users.updateOwnBasicInfo'))
+					.set(credentials)
+					.send({
+						data: {
+							username: name,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
+					})
+					.end(done);
+			});
+		}
+
+		reservedWords.forEach((name) => {
+			failUpdateUserOwnBasicInfo(name);
+		});
+
+		it('should throw an error if not allowed to change real name', async () => {
+			await updateSetting('Accounts_AllowRealNameChange', false);
+
+			await request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						name: 'edited name',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await updateSetting('Accounts_AllowRealNameChange', true);
+		});
+
+		it('should throw an error if not allowed to change username', async () => {
+			await updateSetting('Accounts_AllowUsernameChange', false);
+
+			await request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						username: 'edited.user.name',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await updateSetting('Accounts_AllowUsernameChange', true);
+		});
+
+		it('should throw an error if not allowed to change statusText', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', false);
+
+			await request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						statusText: 'My custom status',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+		});
+
+		it('should throw an error if not allowed to change email', async () => {
+			await updateSetting('Accounts_AllowEmailChange', false);
+
+			await request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						email: 'changed@email.com',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await updateSetting('Accounts_AllowEmailChange', true);
+		});
+
+		it('should throw an error if not allowed to change password', async () => {
+			await updateSetting('Accounts_AllowPasswordChange', false);
+
+			await request.post(api('users.updateOwnBasicInfo'))
+				.set(credentials)
+				.send({
+					data: {
+						newPassword: 'MyNewPassw0rd',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await updateSetting('Accounts_AllowPasswordChange', true);
 		});
 	});
 
@@ -2700,13 +2971,14 @@ describe('[Users]', function() {
 
 	describe('[/users.setStatus]', () => {
 		let user;
-		before((done) => {
-			createUser()
-				.then((createdUser) => {
-					user = createdUser;
-					done();
-				});
+		before(async () => {
+			user = await createUser();
 		});
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+		});
+
 		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
 			updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
 				request.post(api('users.setStatus'))
@@ -2796,6 +3068,24 @@ describe('[Users]', function() {
 				})
 				.end(done);
 		});
+		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'offline',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+					expect(res.body.error).to.be.equal('Invisible status is disabled [error-status-not-allowed]');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
 	});
 
 	describe('[/users.removeOtherTokens]', () => {
@@ -2843,7 +3133,7 @@ describe('[Users]', function() {
 		});
 	});
 
-	describe('[/users.listTeams', () => {
+	describe('[/users.listTeams]', () => {
 		const teamName1 = `team-name-${ Date.now() }`;
 		const teamName2 = `team-name-2-${ Date.now() }`;
 		let testUser;
@@ -2933,7 +3223,7 @@ describe('[Users]', function() {
 		it('should list both channels', (done) => {
 			request.get(api('users.listTeams'))
 				.set(credentials)
-				.send({
+				.query({
 					userId: testUser._id,
 				})
 				.expect('Content-Type', 'application/json')
@@ -2948,6 +3238,58 @@ describe('[Users]', function() {
 					expect(teams[0].isOwner).to.not.be.eql(teams[1].isOwner);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/users.logout]', () => {
+		let user;
+		let otherUser;
+		before(async () => {
+			user = await createUser();
+			otherUser = await createUser();
+		});
+		after(async () => {
+			await deleteUser(user);
+			await deleteUser(otherUser);
+			user = undefined;
+		});
+
+		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
+			updatePermission('logout-other-user', []).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.send({ userId: otherUser._id })
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.end(done);
+				},
+			);
+		});
+
+		it('should logout other user', (done) => {
+			updatePermission('logout-other-user', ['admin']).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.send({ userId: otherUser._id })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end(done);
+				});
+		},
+		);
+
+		it('should logout the requester', (done) => {
+			updatePermission('logout-other-user', []).then(
+				() => {
+					request.post(api('users.logout'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.end(done);
+				},
+			);
 		});
 	});
 });

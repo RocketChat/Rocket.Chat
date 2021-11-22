@@ -1,5 +1,6 @@
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { escapeRegExp } from '../../../../../../lib/escapeRegExp';
 import LivechatTag from '../../../../models/server/raw/LivechatTag';
 
 export async function findTags({ userId, text, pagination: { offset, count, sort } }) {

@@ -12,8 +12,9 @@ import {
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import React, { useState, useEffect } from 'react';
 
-import { roomTypes, isEmail } from '../../../../../app/utils/client';
-import UserAutoCompleteMultiple from '../../../../../ee/client/audit/UserAutoCompleteMultiple';
+import { roomTypes } from '../../../../../app/utils/client';
+import { isEmail } from '../../../../../lib/utils/isEmail';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useEndpoint } from '../../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../../contexts/TranslationContext';
@@ -110,7 +111,7 @@ const MailExportForm = ({ onCancel, rid }) => {
 			await roomsExport({
 				rid,
 				type: 'email',
-				toUsers: [toUsers],
+				toUsers,
 				toEmails: additionalEmails.split(','),
 				subject,
 				messages: selectedMessages,

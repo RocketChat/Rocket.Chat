@@ -7,9 +7,10 @@ import { UserStatus } from '../../../../../components/UserStatus';
 import { useTranslation } from '../../../../../contexts/TranslationContext';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import Field from '../../../components/Field';
+import Info from '../../../components/Info';
+import Label from '../../../components/Label';
 import { FormSkeleton } from '../../Skeleton';
-import Info from './Info';
-import Label from './Label';
 
 const ContactField = ({ contact, room }) => {
 	const t = useTranslation();
@@ -17,9 +18,11 @@ const ContactField = ({ contact, room }) => {
 	const { fname, t: type } = room;
 	const avatarUrl = roomTypes.getConfig(type).getAvatarPath(room);
 
-	const { value: data, phase: state, error } = useEndpointData(
-		`livechat/visitors.info?visitorId=${contact._id}`,
-	);
+	const {
+		value: data,
+		phase: state,
+		error,
+	} = useEndpointData(`livechat/visitors.info?visitorId=${contact._id}`);
 
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
@@ -36,7 +39,7 @@ const ContactField = ({ contact, room }) => {
 	const displayName = name || username;
 
 	return (
-		<>
+		<Field>
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
@@ -47,7 +50,7 @@ const ContactField = ({ contact, room }) => {
 					</Box>
 				)}
 			</Info>
-		</>
+		</Field>
 	);
 };
 

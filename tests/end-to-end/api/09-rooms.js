@@ -59,7 +59,6 @@ describe('[Rooms]', function() {
 						emailNotifications: 'nothing',
 						audioNotificationValue: 'beep',
 						desktopNotifications: 'nothing',
-						audioNotifications: 'all',
 						mobilePushNotifications: 'mentions',
 					},
 				})
@@ -753,6 +752,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -768,6 +769,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -784,6 +787,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -801,6 +806,8 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('discussion').and.to.be.an('object');
+					expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+					expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${ testChannel.name }`);
 				})
 				.end(done);
 		});
@@ -868,32 +875,17 @@ describe('[Rooms]', function() {
 	});
 
 	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
-		it('should return an empty list when the user does not have the necessary permission', (done) => {
-			updatePermission('view-other-user-channels', []).then(() => {
-				request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
-					})
-					.end(done);
-			});
-		});
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('view-other-user-channels', ['admin']).then(() => {
-				request.get(api('rooms.autocomplete.channelAndPrivate'))
-					.set(credentials)
-					.query({})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('The \'selector\' param is required');
-					})
-					.end(done);
-			});
+			request.get(api('rooms.autocomplete.channelAndPrivate'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('The \'selector\' param is required');
+				})
+				.end(done);
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			request.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
@@ -927,6 +919,66 @@ describe('[Rooms]', function() {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
+	describe('[/rooms.autocomplete.adminRooms]', () => {
+		let testGroup;
+		const testGroupName = `channel.test.adminRoom${ Date.now() }-${ Math.random() }`;
+		const name = {
+			name: testGroupName,
+		};
+		before((done) => {
+			createRoom({ type: 'p', name: testGroupName })
+				.end((err, res) => {
+					testGroup = res.body.group;
+					request.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testGroup._id,
+							t_name: `${ testGroupName }-discussion`,
+						})
+						.end(done);
+				});
+		});
+		it('should return an error when the required parameter "selector" is not provided', (done) => {
+			updatePermission('can-audit', ['admin']).then(() => {
+				request.get(api('rooms.autocomplete.adminRooms'))
+					.set(credentials)
+					.query({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('The \'selector\' param is required');
+					})
+					.end(done);
+			});
+		});
+		it('should return the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.adminRooms?selector={}'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return FIX	 the rooms to fill auto complete', (done) => {
+			request.get(api('rooms.autocomplete.adminRooms?'))
+				.set(credentials)
+				.query({
+					selector: JSON.stringify(name),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body).to.have.property('items').that.have.lengthOf(2);
 				})
 				.end(done);
 		});
