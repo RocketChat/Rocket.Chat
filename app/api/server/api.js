@@ -447,9 +447,10 @@ export class APIClass extends Restivus {
 		});
 	}
 
-	updateRateLimiterDictionaryForRoute(route, value) {
+	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
 		if (rateLimiterDictionary[route]) {
-			rateLimiterDictionary[route].options.numRequestsAllowed = value;
+			rateLimiterDictionary[route].options.numRequestsAllowed = numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
+			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
 			API.v1.reloadRoutesToRefreshRateLimiter();
 		}
 	}

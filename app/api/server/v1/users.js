@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { Users as UsersRaw } from '../../../models/server/raw';
@@ -27,8 +26,6 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { Team } from '../../../../server/sdk';
-import { RateLimiter as CustomRateLimiter } from '../../../lib';
-import { registerUserRuleId } from '../../../../server/methods/registerUser';
 
 
 API.v1.addRoute('users.create', { authRequired: true }, {
@@ -957,10 +954,4 @@ settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
-
-	// remove old rate limiter rule and create a new one with the updated setting value
-	DDPRateLimiter.removeRule(registerUserRuleId);
-	registerUserRuleId = CustomRateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() { return true; },
-	});
 });
