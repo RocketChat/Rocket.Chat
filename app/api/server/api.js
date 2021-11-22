@@ -4,9 +4,11 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import { RateLimiter } from 'meteor/rate-limit';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
+import { RateLimiter as CustomRateLimiter } from '../../lib';
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -14,6 +16,7 @@ import { metrics } from '../../metrics/server';
 import { hasPermission, hasAllPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
+import { registerUserRuleId } from '../../../server/methods/registerUser';
 
 const logger = new Logger('API');
 
@@ -778,8 +781,15 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 });
 
 settings.watch('API_Enable_Rate_Limiter_Limit_RegisterUser', (value) => {
+	// reload rate limiter to REST API
 	rateLimiterDictionary['/api/v1/users.registerpost'].options.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
+
+	// remove old rate limiter rule and create a new one with the updated setting value
+	DDPRateLimiter.removeRule(registerUserRuleId);
+	registerUserRuleId = CustomRateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
+		userId() { return true; },
+	});
 });
 
 settings.watch('Prometheus_API_User_Agent', (value) => {
