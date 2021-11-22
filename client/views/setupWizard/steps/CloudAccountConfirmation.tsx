@@ -7,16 +7,17 @@ import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 const CloudAccountConfirmation = (): ReactElement => {
 	const {
 		goToPreviousStep,
-		setupWizardData: { cloudRegistrationData },
+		registerServer,
+		setupWizardData: { registrationData },
 	} = useSetupWizardContext();
 
 	const data = useEndpointData(
 		'cloud.confirmationPoll',
 		useMemo(
 			() => ({
-				deviceCode: cloudRegistrationData.intentData.device_code,
+				deviceCode: registrationData.device_code,
 			}),
-			[cloudRegistrationData.intentData.device_code],
+			[registrationData.device_code],
 		),
 	);
 
@@ -24,9 +25,11 @@ const CloudAccountConfirmation = (): ReactElement => {
 
 	return (
 		<AwaitingConfirmationPage
-			emailAddress={cloudRegistrationData.cloudEmail}
-			securityCode={cloudRegistrationData.intentData?.user_code}
-			onResendEmailRequest={() => undefined}
+			emailAddress={registrationData.cloudEmail}
+			securityCode={registrationData.user_code}
+			onResendEmailRequest={(): Promise<void> =>
+				registerServer({ email: registrationData.cloudEmail, resend: true })
+			}
 			onChangeEmailRequest={goToPreviousStep}
 		/>
 	);

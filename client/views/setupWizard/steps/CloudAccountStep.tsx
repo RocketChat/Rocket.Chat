@@ -1,21 +1,33 @@
 import { CloudAccountEmailPage } from '@rocket.chat/onboarding-ui';
 import React, { ReactElement } from 'react';
 
+// import { useEndpoint } from '../../../contexts/ServerContext';
+// import { useSettingSetValue } from '../../../contexts/SettingsContext';
+// import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
+// import { useUserId } from '../../../contexts/UserContext';
+// import type { HandleRegisterServer } from '../SetupWizardPage';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
-type CloudAccountStepProps = {
-	step: number;
-	handleRegisterServer: () => void;
-};
+const CloudAccountStep = (): ReactElement => {
+	const {
+		goToPreviousStep,
+		currentStep,
+		// setSetupWizardData,
+		// registerAdminUser,
+		// goToNextStep,
+		registerServer,
+		validateEmail,
+	} = useSetupWizardContext();
 
-const CloudAccountStep = ({ step, handleRegisterServer }: CloudAccountStepProps): ReactElement => {
-	const { goToPreviousStep } = useSetupWizardContext();
+	// const dispatchToastMessage = useToastMessageDispatch();
+	// const createRegistrationIntent = useEndpoint('POST', 'cloud.createRegistrationIntent');
 
 	return (
 		<CloudAccountEmailPage
-			currentStep={step}
+			currentStep={currentStep}
 			onBackButtonClick={goToPreviousStep}
-			onSubmit={handleRegisterServer}
+			onSubmit={registerServer}
+			validateEmail={validateEmail}
 			stepCount={4}
 		/>
 	);

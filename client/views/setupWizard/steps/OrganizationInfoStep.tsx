@@ -1,15 +1,11 @@
 import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
-import React, { ReactElement } from 'react';
+import React, { ComponentProps, ReactElement } from 'react';
 
 // import { useSettingsDispatch } from '../../../contexts/SettingsContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
-type OrganizationInfoStepProps = {
-	step: number;
-};
-
-const OrganizationInfoStep = ({ step }: OrganizationInfoStepProps): ReactElement => {
+const OrganizationInfoStep = (): ReactElement => {
 	const t = useTranslation();
 	// const dispatchSettings = useSettingsDispatch();
 
@@ -19,62 +15,36 @@ const OrganizationInfoStep = ({ step }: OrganizationInfoStepProps): ReactElement
 		settings,
 		goToPreviousStep,
 		goToNextStep,
+		currentStep,
 	} = useSetupWizardContext();
 
-	const filteredSettings = settings.filter(({ _id }) =>
-		['Organization_Name', 'Organization_Type', 'Industry', 'Country', 'Size'].includes(_id),
-	);
-
-	const countryOptions = filteredSettings
-		.filter(({ _id }) => _id === 'Country')[0]
+	const countryOptions = settings
+		.find(({ _id }) => _id === 'Country')
 		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
 
-	const organizationTypeOptions = filteredSettings
-		.filter(({ _id }) => _id === 'Organization_Type')[0]
+	const organizationTypeOptions = settings
+		.find(({ _id }) => _id === 'Organization_Type')
 		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
 
-	const organizationIndustryOptions = filteredSettings
-		.filter(({ _id }) => _id === 'Industry')[0]
+	const organizationIndustryOptions = settings
+		.find(({ _id }) => _id === 'Industry')
 		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
 
-	const organizationSizeOptions = filteredSettings
-		.filter(({ _id }) => _id === 'Size')[0]
+	const organizationSizeOptions = settings
+		.find(({ _id }) => _id === 'Size')
 		.values.map(({ i18nLabel, key }) => [key, t(i18nLabel)]);
 
-	// useEffect(() => {
-	// 	resetFields(
-	// 		settings
-	// 			.filter(({ wizard }) => wizard.step === step)
-	// 			.filter(({ type }) => ['string', 'select', 'language', 'boolean'].includes(type))
-	// 			.sort(({ wizard: { order: a } }, { wizard: { order: b } }) => a - b)
-	// 			.map(({ value, ...field }) => ({ ...field, value: value != null ? value : '' })),
-	// 	);
-	// }, [settings, currentStep, step, resetFields]);
-
-	const handleBackClick = (): void => {
-		goToPreviousStep();
-	};
-
-	const handleSubmit = async (data): Promise<void> => {
+	const handleSubmit: ComponentProps<typeof OrganizationInfoPage>['onSubmit'] = async (data) => {
 		setSetupWizardData((prevState) => ({ ...prevState, organizationData: data }));
 		goToNextStep();
-
-		// try {
-		// 	await dispatchSettings(fields.map(({ _id, value }) => ({ _id, value })));
-		// 	goToNextStep();
-		// } catch (error) {
-		// 	dispatchToastMessage({ type: 'error', message: error });
-		// } finally {
-		// 	setCommiting(false);
-		// }
 	};
 
 	return (
 		<OrganizationInfoPage
 			initialValues={organizationData}
 			onSubmit={handleSubmit}
-			onBackButtonClick={handleBackClick}
-			currentStep={step}
+			onBackButtonClick={goToPreviousStep}
+			currentStep={currentStep}
 			stepCount={4}
 			organizationTypeOptions={organizationTypeOptions}
 			organizationIndustryOptions={organizationIndustryOptions}
