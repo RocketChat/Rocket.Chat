@@ -4,8 +4,8 @@ import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
-import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
+import { RateLimiter } from 'meteor/rate-limit';
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -276,7 +276,7 @@ export class APIClass extends Restivus {
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({ user: userId, code, method, options, connection });
+		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
@@ -400,7 +400,7 @@ export class APIClass extends Restivus {
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
 						if (_options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options.twoFactorOptions, connection });
+							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options, connection });
 						}
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
@@ -445,6 +445,14 @@ export class APIClass extends Restivus {
 
 			super.addRoute(route, options, endpoints);
 		});
+	}
+
+	updateRateLimiterDictionaryForRoute(route, numRequestsAllowed, intervalTimeInMS) {
+		if (rateLimiterDictionary[route]) {
+			rateLimiterDictionary[route].options.numRequestsAllowed = numRequestsAllowed ?? rateLimiterDictionary[route].options.numRequestsAllowed;
+			rateLimiterDictionary[route].options.intervalTimeInMS = intervalTimeInMS ?? rateLimiterDictionary[route].options.intervalTimeInMS;
+			API.v1.reloadRoutesToRefreshRateLimiter();
+		}
 	}
 
 	_initAuth() {
@@ -770,6 +778,7 @@ settings.watch('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) => {
 	defaultRateLimiterOptions.numRequestsAllowed = value;
 	API.v1.reloadRoutesToRefreshRateLimiter();
 });
+
 
 settings.watch('Prometheus_API_User_Agent', (value) => {
 	prometheusAPIUserAgent = value;
