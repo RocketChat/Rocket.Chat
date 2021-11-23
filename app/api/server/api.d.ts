@@ -53,11 +53,11 @@ type Options = {
 	permissionsRequired?: string[];
 	authRequired?: boolean;
 	forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-} & ({
+} | {
 	authRequired: true;
 	twoFactorRequired: true;
 	twoFactorOptions?: ITwoFactorOptions;
-} | {})
+}
 
 type Request = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
