@@ -2,9 +2,9 @@ import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
-	version: 248,
+	version: 249,
 	async up() {
-		return Settings.update({
+		await Settings.updateOne({
 			_id: 'Industry',
 			value: 'blockchain',
 		}, {
