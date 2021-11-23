@@ -1676,10 +1676,6 @@ settingsRegistry.addGroup('Setup_Wizard', function() {
 					i18nLabel: 'Aerospace_and_Defense',
 				},
 				{
-					key: 'blockchain',
-					i18nLabel: 'Blockchain',
-				},
-				{
 					key: 'consulting',
 					i18nLabel: 'Consulting',
 				},
