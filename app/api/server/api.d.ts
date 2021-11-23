@@ -43,7 +43,7 @@ type UnauthorizedResult<T> = {
 
 export type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
-	twoFactorRequiredNonEnterprise: true;
+	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
 	permissionsRequired?: string[];
 	twoFactorOptions: ITwoFactorOptions;
@@ -51,11 +51,13 @@ export type NonEnterpriseTwoFactorOptions = {
 
 type Options = {
 	permissionsRequired?: string[];
-	twoFactorOptions?: ITwoFactorOptions;
-	twoFactorRequired?: boolean;
 	authRequired?: boolean;
-	twoFactorRequiredNonEnterprise?: true;
-};
+	forceTwoFactorAuthenticationForNonEnterprise?: boolean;
+} | {
+	authRequired: true;
+	twoFactorRequired: true;
+	twoFactorOptions?: ITwoFactorOptions;
+}
 
 type Request = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
