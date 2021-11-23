@@ -67142,6 +67142,554 @@
           ]
         }
       ]
+    },
+    "4.2.0-rc.0": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23769",
+          "title": "Chore: Update settings.ts",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23565",
+          "title": "[FIX] Registration not possible when any user is blocked for multiple failed logins",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23770",
+          "title": "Regression: Fix sendMessagesToAdmins not in Fiber",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23771",
+          "title": "Chore: Remove duplicated 'name' key from rate limiter logs",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23761",
+          "title": "[NEW] Enable LDAP manual sync to deployments without EE license",
+          "userLogin": "rodrigok",
+          "description": "Open the Enterprise LDAP API that executes background sync to be used without any Enterprise License and enforce 2FA requirements.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "rodrigok",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23732",
+          "title": "[NEW] Rate limiting for user registering",
+          "userLogin": "ostjen",
+          "milestone": "4.2.0",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23675",
+          "title": "Chore: add index on appId + associations for apps_persistence collection",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23768",
+          "title": "Chore: Bump Rocket.Chat@livechat to 1.10",
+          "userLogin": "KevLehman",
+          "milestone": "4.2.0",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23766",
+          "title": "[IMPROVE] Improve the add user drop down for add a user in create channel modal for UserAutoCompleteMultiple",
+          "userLogin": "dougfabris",
+          "description": "Seeing only the name of the person you are not adding is not practical in my opinion because two people can have the same name. Moreover, you can't see the username of the person you want to add in the dropdown. So I changed that and created another selection of users to show the username as well. I made this change so that it would appear in the key place for creating a room and adding a user.\r\n\r\nBefore:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287805-faac8d00-a150-11eb-871f-147ab011ced0.mp4\r\n\r\n\r\nAfter:\r\n\r\nhttps://user-images.githubusercontent.com/45966964/115287664-d2249300-a150-11eb-8cf6-0e04730b425d.mp4",
+          "milestone": "4.2.0",
+          "contributors": [
+            "Jeanstaquet",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23533",
+          "title": "[FIX] New specific endpoint for contactChatHistoryMessages with right permissions",
+          "userLogin": "tiagoevanp",
+          "description": "Anyone with 'View Omnichannel Rooms' permission can see the History Messages.",
+          "milestone": "4.2.0",
+          "contributors": [
+            "tiagoevanp",
+            "web-flow",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23588",
+          "title": "[FIX][ENTERPRISE] OAuth \"Merge Roles\" removes roles from users",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix OAuth \"Merge Roles\": the \"Merge Roles\" option now synchronize only the roles described in the \"**Roles to Sync**\" setting available in each Custom OAuth settings' group (instead of replacing users' roles by their OAuth roles);\r\n- Fix \"Merge Roles\" and \"Channel Mapping\" not being performed/updated on OAuth login.",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23547",
+          "title": "[IMPROVE] Engagement Dashboard",
+          "userLogin": "tassoevan",
+          "description": "- Adds helpers `onToggledFeature` for server and client code to handle license activation/deactivation without server restart;\r\n- Replaces usage of `useEndpointData` with `useQuery` (from [React Query](https://react-query.tanstack.com/));\r\n- Introduces `view-engagement-dashboard` permission.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23004",
+          "title": "[NEW] Audio and Video calling in Livechat",
+          "userLogin": "murtaza98",
+          "contributors": [
+            "dhruvjain99",
+            "murtaza98",
+            "Deepak-learner"
+          ]
+        },
+        {
+          "pr": "23758",
+          "title": "Chore: Type omnichannel models",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23737",
+          "title": "[NEW] Allow registering by REG_TOKEN environment variable",
+          "userLogin": "geekgonecrazy",
+          "description": "You can provide the REG_TOKEN environment variable containing a registration token and it will automatically register to your cloud account.  This simplifies the registration flow",
+          "contributors": [
+            "geekgonecrazy"
+          ]
+        },
+        {
+          "pr": "23686",
+          "title": "[NEW] Permission for download/uploading files on mobile",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen"
+          ]
+        },
+        {
+          "pr": "23735",
+          "title": "[IMPROVE] Stricter API types",
+          "userLogin": "tassoevan",
+          "description": "It:\r\n- Adds stricter types for `API`;\r\n- Enables types for `urlParams`;\r\n- Removes mandatory passage of `undefined` payload on client;\r\n- Corrects some regressions;\r\n- Reassures my belief in TypeScript supremacy.",
+          "contributors": [
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23757",
+          "title": "Regression:  Units endpoint to TS",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23750",
+          "title": "[NEW] REST endpoints to manage Omnichannel Business Units",
+          "userLogin": "KevLehman",
+          "description": "Basic documentation about endpoints can be found at https://www.postman.com/kaleman960/workspace/rocketchat-public-api/request/3865466-71502450-8c8f-42b4-8954-1cd3d01fcb0c",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23738",
+          "title": "[FIX] Autofocus on search input in admin",
+          "userLogin": "gabriellsh",
+          "description": "Removed \"generic\" autofocus on sidenav template.",
+          "contributors": [
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23745",
+          "title": "Chore: Generic Table ",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23739",
+          "title": "[FIX] Await promise to handle error when attempting to transfer a room",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23673",
+          "title": "[FIX][ENTERPRISE] Private rooms and discussions can't be audited",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add Private rooms (groups) and Discussions to the Message Auditing (Channels) autocomplete;\r\n- Update \"Channels\" tab name to \"Rooms\".",
+          "contributors": [
+            "matheusbsilva137",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "23734",
+          "title": "[FIX] Missing user roles in edit user tab",
+          "userLogin": "dougfabris",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23733",
+          "title": "[FIX] Discussions created inside discussions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23694",
+          "title": "[NEW] Allow Omnichannel statistics to be collected.",
+          "userLogin": "cauefcr",
+          "description": "This PR adds the possibility for business stakeholders to see what is actually being used of the Omnichannel integrations.",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23725",
+          "title": "[IMPROVE] Re-naming department query param for Twilio",
+          "userLogin": "murtaza98",
+          "description": "Since the endpoint supports both, department ID and department Name, so we're renaming it to reflect the same. `departmentName` -> `department`",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23468",
+          "title": "[FIX]  Fixed E2E default room settings not being honoured",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "TheDigitalEagle",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23659",
+          "title": "[FIX] broken avatar preview when changing avatar",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23705",
+          "title": "[FIX] Prevent UserAction.addStream without Subscription",
+          "userLogin": "tiagoevanp",
+          "description": "When you take an Omnichannel chat from queue, the guest's typing information will appear.",
+          "contributors": [
+            "ggazzo",
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23499",
+          "title": "[FIX] PhotoSwipe crashing on show",
+          "userLogin": "tassoevan",
+          "description": "Waits for initial content to load before showing it.",
+          "contributors": [
+            "tassoevan",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23695",
+          "title": "Chore: add `no-bidi` rule",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23711",
+          "title": "[FIX] Fix typo in FR translation",
+          "userLogin": "Cormoran96",
+          "contributors": [
+            "Cormoran96"
+          ]
+        },
+        {
+          "pr": "23706",
+          "title": "Chore: Mocha testing configuration",
+          "userLogin": "tassoevan",
+          "description": "We've been writing integration tests for the REST API quite regularly, but we can't say the same for UI-related modules. This PR is based on the assumption that _improving the developer experience on writing tests_ would increase our coverage and promote the adoption even for newcomers.\r\n\r\nHere as summary of the proposal:\r\n\r\n- Change Mocha configuration files:\r\n  - Add a base configuration (`.mocharc.base.json`);\r\n  - Rename the configuration for REST API tests (`mocha_end_to_end.opts.js -> .mocharc.api.js`);\r\n  - Add a configuration for client modules (`.mocharc.client.js`);\r\n  - Enable ESLint for them.\r\n- Add a Mocha test command exclusive for client modules (`npm run testunit-client`);\r\n- Enable fast watch mode:\r\n  - Configure `ts-node` to only transpile code (skip type checking);\r\n  - Define a list of files to be watched.\r\n- Configure `mocha` environment on ESLint only for test files (required when using Mocha's globals);\r\n- Adopt Chai as our assertion library:\r\n  - Unify the setup of Chai plugins (`chai-spies`, `chai-datetime`, `chai-dom`);\r\n  - Replace `assert` with `chai`;\r\n  - Replace `chai.expect` with `expect`.\r\n- Enable integration tests with React components:\r\n  - Enable JSX support on our default Babel configuration;\r\n  - Adopt [testing library](https://testing-library.com/).",
+          "contributors": [
+            "tassoevan",
+            "KevLehman",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23701",
+          "title": "Chore: Api definitions",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23703",
+          "title": "[FIX][ENTERPRISE] Replace all occurrences of a placeholder on string instead of just first one",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23641",
+          "title": "[FIX] Omnichannel webhooks can't be saved",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari"
+          ]
+        },
+        {
+          "pr": "23595",
+          "title": "[FIX] Omnichannel business hours page breaking navigation",
+          "userLogin": "Aman-Maheshwari",
+          "contributors": [
+            "Aman-Maheshwari",
+            "tiagoevanp",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23626",
+          "title": "[IMPROVE] Allow override of default department for SMS Livechat sessions",
+          "userLogin": "bhardwajaditya",
+          "contributors": [
+            "bhardwajaditya"
+          ]
+        },
+        {
+          "pr": "23691",
+          "title": "[FIX] Omnichannel contact center navigation",
+          "userLogin": "tiagoevanp",
+          "description": "Derives from: https://github.com/RocketChat/Rocket.Chat/pull/23656\r\n\r\nThis PR includes a different approach to solving navigation problems following the same code structure and UI definitions of other \"ActionButtons\" components in Sidebar.",
+          "contributors": [
+            "tiagoevanp"
+          ]
+        },
+        {
+          "pr": "23692",
+          "title": "Regression: Improve AggregationCursor types",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "23696",
+          "title": "Chore: Remove useCallbacks",
+          "userLogin": "tassoevan",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23387",
+          "title": "[IMPROVE] Reduce complexity in some functions",
+          "userLogin": "tassoevan",
+          "description": "Overhauls all places where eslint's `complexity` rule is disabled.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23633",
+          "title": "Chore: Convert Fiber models to async Step 1",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23389",
+          "title": "[NEW] Permissions for interacting with Omnichannel Contact Center",
+          "userLogin": "cauefcr",
+          "description": "Adds a new permission, one that allows for control over user access to Omnichannel Contact Center,",
+          "contributors": [
+            null,
+            "cauefcr",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23587",
+          "title": "[FIX] Omnichannel status being changed on page refresh",
+          "userLogin": "KevLehman",
+          "milestone": "4.1.2",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23661",
+          "title": "[FIX] Performance issues when running Omnichannel job queue dispatcher",
+          "userLogin": "renatobecker",
+          "milestone": "4.1.2",
+          "contributors": [
+            "renatobecker"
+          ]
+        },
+        {
+          "pr": "23608",
+          "title": "[FIX] Advanced LDAP Sync Features",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23627",
+          "title": "[FIX] LDAP users not being re-activated on login",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "4.1.1",
+          "contributors": [
+            "pierre-lehnen-rc"
+          ]
+        },
+        {
+          "pr": "23576",
+          "title": "[FIX] \"to users\" not working in export message",
+          "userLogin": "ostjen",
+          "contributors": [
+            "ostjen",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "23607",
+          "title": "[FIX] App update flow failing in HA setups",
+          "userLogin": "d-gubert",
+          "description": "The flow for app updates is broken in specific scenarios with HA setups. Here we change the method calls in the Apps-Engine to avoid race conditions",
+          "milestone": "4.1.1",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23566",
+          "title": "[FIX] Apps scheduler \"losing\" jobs after server restart",
+          "userLogin": "d-gubert",
+          "description": "If a job is scheduled and the server restarted, said job won't be executed, giving the impression it's been lost.\r\n\r\nWhat happens is that the scheduler is only started when some app tries to schedule an app - if that happens, all jobs that are \"late\" will be executed; if that doesn't happen, no job will run.\r\n\r\nThis PR starts the apps scheduler right after all apps have been loaded",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "23603",
+          "title": "i18n: Language update from LingoHub 🤖 on 2021-11-01Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            null,
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23498",
+          "title": "[NEW] Show on-hold metrics on analytics pages and current chats",
+          "userLogin": "KevLehman",
+          "contributors": [
+            "KevLehman"
+          ]
+        },
+        {
+          "pr": "23452",
+          "title": "Chore: Rearrange module typings",
+          "userLogin": "tassoevan",
+          "description": "- Move all external module declarations (definitions and augmentations) to `/definition/externals`;\r\n- ~Symlink some modules on `/definition/externals` to `/ee/server/services/definition/externals`~ Share types with `/ee/server/services`;\r\n- Use TypeScript as server code entrypoint.",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "23487",
+          "title": "[FIX] Notifications are not being filtered",
+          "userLogin": "matheusbsilva137",
+          "description": "- Add a migration to update the `Accounts_Default_User_Preferences_pushNotifications` setting's value to the `Accounts_Default_User_Preferences_mobileNotifications` setting's value;\r\n - Remove the `Accounts_Default_User_Preferences_mobileNotifications` setting (replaced by `Accounts_Default_User_Preferences_pushNotifications`);\r\n - Rename 'mobileNotifications' user's preference to 'pushNotifications'.",
+          "milestone": "4.1.2",
+          "contributors": [
+            "matheusbsilva137"
+          ]
+        },
+        {
+          "pr": "23542",
+          "title": "[IMPROVE] MKP12 - New UI - Merge Apps and Marketplace Tabs and Content",
+          "userLogin": "rique223",
+          "description": "Merged the Marketplace and Apps page into a single page with a tabs component that changes between Markeplace and installed apps.\r\n![page merging](https://user-images.githubusercontent.com/43561537/138516558-f86d62e6-1a5c-4817-a229-a1b876323960.gif)",
+          "contributors": [
+            "ggazzo",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "23586",
+          "title": "Merge master into develop & Set version to 4.2.0-develop",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow"
+          ]
+        }
+      ]
     }
   }
 }
