@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 
 import NotAuthorizedPage from '../../../components/NotAuthorizedPage';
 import PageSkeleton from '../../../components/PageSkeleton';
@@ -11,7 +11,7 @@ import AppLogsPage from './AppLogsPage';
 import AppsPage from './AppsPage';
 import AppsProvider from './AppsProvider';
 
-const AppsRoute = () => {
+const AppsRoute: FC = () => {
 	const [isLoading, setLoading] = useState(true);
 	const canViewAppsAndMarketplace = usePermission('manage-apps');
 	const isAppsEngineEnabled = useMethod('apps/is-enabled');
@@ -20,7 +20,7 @@ const AppsRoute = () => {
 	useEffect(() => {
 		let mounted = true;
 
-		const initialize = async () => {
+		const initialize = async (): Promise<void> => {
 			if (!canViewAppsAndMarketplace) {
 				return;
 			}
@@ -39,17 +39,17 @@ const AppsRoute = () => {
 
 		initialize();
 
-		return () => {
+		return (): void => {
 			mounted = false;
 		};
 	}, [canViewAppsAndMarketplace, isAppsEngineEnabled, appsWhatIsItRoute]);
 
 	const context = useRouteParameter('context');
 
-	const isMarketPlace = !context;
+	const isMarketplace = !context;
 
 	const id = useRouteParameter('id');
-	const version = useRouteParameter('version');
+	// const version = useRouteParameter('version');
 
 	if (!canViewAppsAndMarketplace) {
 		return <NotAuthorizedPage />;
@@ -61,10 +61,8 @@ const AppsRoute = () => {
 
 	return (
 		<AppsProvider>
-			{((!context || context === 'installed') && (
-				<AppsPage isMarketPlace={isMarketPlace} context={context} />
-			)) ||
-				(context === 'details' && <AppDetailsPage id={id} marketplaceVersion={version} />) ||
+			{((!context || context === 'installed') && <AppsPage isMarketplace={isMarketplace} />) ||
+				(context === 'details' && id && <AppDetailsPage id={id} />) ||
 				(context === 'logs' && <AppLogsPage id={id} />) ||
 				(context === 'install' && <AppInstallPage />)}
 		</AppsProvider>

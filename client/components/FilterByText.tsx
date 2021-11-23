@@ -14,6 +14,7 @@ type FilterByTextPropsWithButton = FilterByTextProps & {
 	textButton: string;
 	onButtonClick: () => void;
 };
+
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 

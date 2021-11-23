@@ -2,7 +2,6 @@ import i18next from 'i18next';
 import React, { PropsWithChildren, ReactElement } from 'react';
 
 import { TranslationContext, TranslationContextValue } from '../../client/contexts/TranslationContext';
-import ServerProvider from '../../client/providers/ServerProvider';
 
 let contextValue: TranslationContextValue;
 
@@ -63,9 +62,7 @@ function TranslationProviderMock({ children }: PropsWithChildren<{}>): ReactElem
 }
 
 export function MeteorProviderMock({ children }: PropsWithChildren<{}>): ReactElement {
-	return <ServerProvider>
-		<TranslationProviderMock>
-			{children}
-		</TranslationProviderMock>
-	</ServerProvider>;
+	return <TranslationProviderMock>
+		{children}
+	</TranslationProviderMock>;
 }

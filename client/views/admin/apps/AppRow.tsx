@@ -10,6 +10,7 @@ import { App } from './types';
 
 type AppRowProps = App & {
 	medium: boolean;
+	large: boolean;
 };
 
 const AppRow: FC<AppRowProps> = ({ medium, ...props }) => {

@@ -1,3 +1,4 @@
+import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { Box, Divider } from '@rocket.chat/fuselage';
 import React, { FC } from 'react';
 
@@ -6,12 +7,7 @@ import { useTranslation } from '../../../contexts/TranslationContext';
 import { apiCurlGetter } from './helpers';
 
 type APIsDisplayProps = {
-	apis: {
-		path: string;
-		computedPath: string;
-		methods: unknown[];
-		examples: Record<string, unknown>;
-	}[];
+	apis: IApiEndpointMetadata[];
 };
 
 const APIsDisplay: FC<APIsDisplayProps> = ({ apis }) => {

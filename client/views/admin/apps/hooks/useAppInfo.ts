@@ -1,7 +1,10 @@
+import { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
+import { AppSettingsManager } from '@rocket.chat/apps-engine/server/managers/AppSettingsManager';
 import { useState, useEffect, useContext } from 'react';
 
 import { Apps } from '../../../../../app/apps/client/orchestrator';
 import { AppsContext } from '../AppsContext';
+import { AppInfo } from '../definitions/AppInfo';
 import { handleAPIError } from '../helpers';
 import { App } from '../types';
 
@@ -25,7 +28,10 @@ const getBundledIn = async (appId: string, appVersion: string): Promise<App['bun
 	}
 };
 
-const getSettings = async (appId: string, installed: boolean): Promise<Record<string, unknown>> => {
+const getSettings = async (
+	appId: string,
+	installed: boolean,
+): Promise<ReturnType<AppSettingsManager['getAppSettings']>> => {
 	if (!installed) {
 		return {};
 	}
@@ -38,30 +44,23 @@ const getSettings = async (appId: string, installed: boolean): Promise<Record<st
 	}
 };
 
-const getApis = async (appId: string, installed: boolean): Promise<Record<string, unknown>> => {
+const getApis = async (appId: string, installed: boolean): Promise<Array<IApiEndpointMetadata>> => {
 	if (!installed) {
-		return {};
+		return [];
 	}
 
 	try {
 		return Apps.getAppApis(appId);
 	} catch (e) {
 		handleAPIError(e);
-		return {};
+		return [];
 	}
 };
 
-type AppInfo = Partial<
-	App & {
-		settings: Record<string, unknown>;
-		apis: Record<string, unknown>;
-	}
->;
-
-export const useAppInfo = (appId: string): AppInfo => {
+export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const { apps } = useContext(AppsContext);
 
-	const [appData, setAppData] = useState({});
+	const [appData, setAppData] = useState<AppInfo>();
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
