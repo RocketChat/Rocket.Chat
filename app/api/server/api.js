@@ -273,6 +273,9 @@ export class APIClass extends Restivus {
 	}
 
 	processTwoFactor({ userId, request, invocation, options, connection }) {
+		if (!options.twoFactorRequired) {
+			return;
+		}
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
@@ -399,9 +402,7 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						if (_options.twoFactorRequired) {
-							api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options, connection });
-						}
+						api.processTwoFactor({ userId: this.userId, request: this.request, invocation, options: _options, connection });
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
