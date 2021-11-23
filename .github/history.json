@@ -67690,6 +67690,38 @@
           ]
         }
       ]
+    },
+    "4.2.0-rc.1": {
+      "node_version": "12.22.1",
+      "npm_version": "6.14.1",
+      "apps_engine_version": "1.28.1",
+      "mongo_versions": [
+        "3.6",
+        "4.0",
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "23778",
+          "title": "Regression: Fix incorrect API path for livechat calls",
+          "userLogin": "murtaza98",
+          "milestone": "4.2.0",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "23775",
+          "title": "Regression: Fix LDAP sync route",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo",
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   }
 }
