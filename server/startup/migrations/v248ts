@@ -1,0 +1,16 @@
+import { Settings } from '../../../app/models/server/raw';
+import { addMigration } from '../../lib/migrations';
+
+addMigration({
+	version: 248,
+	async up() {
+		return Settings.update({
+			_id: 'Industry',
+			value: 'blockchain',
+		}, {
+			$set: {
+				value: 'other',
+			},
+		});
+	},
+});
