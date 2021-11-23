@@ -27,12 +27,12 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
+import { AsyncStatePhase } from '../../../lib/asyncState';
 import AppRow from './AppRow';
 import MarketplaceRow from './MarketplaceRow';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { AsyncStatePhase } from '/client/lib/asyncState';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
