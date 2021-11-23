@@ -42,7 +42,7 @@ const UsersByTimeOfTheDaySection = ({
 					: moment(data.end).diff(data.start, 'days') - 1,
 			},
 			(_, i) =>
-				moment(data.start)
+				(utc ? moment.utc(data.start) : moment(data.start))
 					.endOf('day')
 					.add(utc ? i : i + 1, 'days'),
 		);
