@@ -8,6 +8,7 @@ type VariantType = 'danger' | 'warning' | 'info' | 'success';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
+	children?: ReactNode;
 	cancelText?: string;
 	confirmText?: string;
 	title?: string | ReactElement;

@@ -1,28 +1,27 @@
 import { Table } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 
+import { IInvite } from '../../../../definition/IInvite';
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import InviteRow from './InviteRow';
 
-function InvitesPage() {
+const InvitesPage = (): ReactElement => {
 	const t = useTranslation();
-
-	const [invites, setInvites] = useState([]);
-
+	const [invites, setInvites] = useState<Array<IInvite>>([]);
 	const listInvites = useEndpoint('GET', 'listInvites');
 
 	useEffect(() => {
-		const loadInvites = async () => {
+		const loadInvites = async (): Promise<void> => {
 			const result = (await listInvites()) || [];
 
-			const invites = result.map((data) => ({
+			const invites = result.map((data: IInvite) => ({
 				...data,
 				createdAt: new Date(data.createdAt),
-				expires: data.expires ? new Date(data.expires) : '',
+				expires: data.expires ? new Date(data.expires) : null,
 			}));
 
 			setInvites(invites);
@@ -31,8 +30,8 @@ function InvitesPage() {
 		loadInvites();
 	}, [listInvites]);
 
-	const handleInviteRemove = (_id) => {
-		setInvites((invites = []) => invites.filter((invite) => invite._id !== _id));
+	const handleInviteRemove = (_id: IInvite['_id']): void => {
+		setInvites((invites) => invites.filter((invite) => invite._id !== _id));
 	};
 
 	const notSmall = useMediaQuery('(min-width: 768px)');
@@ -67,13 +66,13 @@ function InvitesPage() {
 							<Table.Cell is='th' />
 						</>
 					}
-					renderRow={(invite) => (
+					renderRow={(invite: IInvite): ReactElement => (
 						<InviteRow key={invite._id} {...invite} onRemove={handleInviteRemove} />
 					)}
 				/>
 			</Page.Content>
 		</Page>
 	);
-}
+};
 
 export default InvitesPage;

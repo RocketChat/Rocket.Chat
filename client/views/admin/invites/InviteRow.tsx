@@ -1,25 +1,43 @@
 import { Button, Icon, Table, Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import moment from 'moment';
-import React from 'react';
+import React, { ReactElement, MouseEvent } from 'react';
 
-import { useModal } from '../../../contexts/ModalContext';
+import { IInvite } from '../../../../definition/IInvite';
+import GenericModal from '../../../components/GenericModal';
 import { useEndpoint } from '../../../contexts/ServerContext';
 import { useToastMessageDispatch } from '../../../contexts/ToastMessagesContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { imperativeModal } from '../../../lib/imperativeModal';
 
-function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
+type InviteRowProps = IInvite & {
+	onRemove: (_id: IInvite['_id']) => void;
+};
+
+const InviteRow = ({
+	_id,
+	createdAt,
+	expires,
+	days,
+	uses,
+	maxUses,
+	onRemove,
+}: InviteRowProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
-	const modal = useModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-
 	const removeInvite = useEndpoint('DELETE', `removeInvite/${_id}`);
 
-	const daysToExpire = ({ expires, days }) => {
+	const daysToExpire = ({
+		expires,
+		days,
+	}: {
+		expires: IInvite['expires'];
+		days: IInvite['days'];
+	}): string => {
 		if (days > 0) {
-			if (expires < Date.now()) {
+			if (expires && expires.getTime() < new Date().getTime()) {
 				return t('Expired');
 			}
 
@@ -29,7 +47,13 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 		return t('Never');
 	};
 
-	const maxUsesLeft = ({ maxUses, uses }) => {
+	const maxUsesLeft = ({
+		maxUses,
+		uses,
+	}: {
+		maxUses: IInvite['maxUses'];
+		uses: IInvite['uses'];
+	}): number | string => {
 		if (maxUses > 0) {
 			if (uses >= maxUses) {
 				return 0;
@@ -41,34 +65,32 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 		return t('Unlimited');
 	};
 
-	const handleRemoveButtonClick = async (event) => {
+	const handleRemoveButtonClick = async (event: MouseEvent<HTMLElement>): Promise<void> => {
 		event.stopPropagation();
 
-		modal.open(
-			{
-				// TODO REFACTOR
-				text: t('Are_you_sure_you_want_to_delete_this_record'),
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#DD6B55',
-				confirmButtonText: t('Yes'),
-				cancelButtonText: t('No'),
-				closeOnConfirm: true,
-				html: false,
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				title: t('Are_you_sure'),
+				children: t('Are_you_sure_you_want_to_delete_this_record'),
+				variant: 'danger',
+				confirmText: t('Yes'),
+				cancelText: t('No'),
+				onClose: imperativeModal.close,
+				onCancel: imperativeModal.close,
+				onConfirm: async (): Promise<void> => {
+					try {
+						await removeInvite();
+						onRemove && onRemove(_id);
+						dispatchToastMessage({ type: 'success', message: t('Invite_removed') });
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
+					} finally {
+						imperativeModal.close();
+					}
+				},
 			},
-			async (confirmed) => {
-				if (!confirmed) {
-					return;
-				}
-
-				try {
-					await removeInvite();
-					onRemove && onRemove(_id);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			},
-		);
+		});
 	};
 
 	const notSmall = useMediaQuery('(min-width: 768px)');
@@ -95,6 +117,6 @@ function InviteRow({ _id, createdAt, expires, days, uses, maxUses, onRemove }) {
 			</Table.Cell>
 		</Table.Row>
 	);
-}
+};
 
 export default InviteRow;
