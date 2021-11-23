@@ -215,16 +215,47 @@ export class BaseRaw<T, C extends DefaultFields<T> = undefined> implements IBase
 	}
 
 	removeById(_id: string): Promise<DeleteWriteOpResultObject> {
-		const query: object = { _id };
-		return this.col.deleteOne(query);
+		return this.deleteOne({ _id } as FilterQuery<T>);
 	}
 
-	deleteOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject> {
-		return this.col.deleteOne(filter, options);
+	async deleteOne(filter: FilterQuery<T>, options?: CommonOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteWriteOpResultObject> {
+		if (!this.trash) {
+			this.col.deleteOne(filter, options);
+		}
+
+		const doc = await this.findOne(filter);
+
+		const { _id, ...record } = doc;
+
+		record._deletedAt = new Date();
+		record.__collection__ = this.name;
+
+		await this.trash?.updateOne({ _id }, { $set: { ...record } }, { upsert: true });
+
+		return this.col.deleteOne({ _id }, options);
 	}
 
-	deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject> {
-		return this.col.deleteMany(filter, options);
+	async deleteMany(filter: FilterQuery<T>, options?: CommonOptions): Promise<DeleteWriteOpResultObject> {
+		// return this.col.deleteMany(filter, options);
+		if (!this.trash) {
+			this.col.deleteMany(filter, options);
+		}
+
+		const cursor = this.find(filter);
+
+		const ids: string[] = [];
+		for await (const doc of cursor) {
+			const { _id, ...record } = doc;
+
+			ids.push(_id);
+
+			record._deletedAt = new Date();
+			record.__collection__ = this.name;
+
+			await this.trash?.updateOne({ _id }, { $set: { ...record } }, { upsert: true });
+		}
+
+		return this.col.deleteMany({ _id: { $in: ids } }, options);
 	}
 
 
