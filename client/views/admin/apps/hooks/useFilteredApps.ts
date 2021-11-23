@@ -1,42 +1,48 @@
 import { useContext } from 'react';
-
 import { AppsContext } from '../AppsContext';
 import { App } from '../types';
-
+import { AsyncState, AsyncStatePhase } from '/client/lib/asyncState';
+// TODO: memoize app list if props don't change
 export const useFilteredApps = ({
-	filterFunction = (text: string): ((app: App) => boolean) => {
-		if (!text) {
-			return (): boolean => true;
-		}
-		return (app: App): boolean => app.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-	},
+	filterFunction = () => true,
 	text,
 	sort: [, sortDirection],
 	current,
 	itemsPerPage,
 }: {
-	filterFunction: (text: string) => (app: App) => boolean;
+	filterFunction: (app: App) => boolean;
 	text: string;
 	sort: [string, 'asc' | 'desc'];
 	current: number;
 	itemsPerPage: number;
-	apps: App[];
-}): [App[] | null, number] => {
+	categories?: string[];
+}): AsyncState<{ items: App[]; total: number; count: number }> => {
 	const { apps } = useContext(AppsContext);
 
-	if (!Array.isArray(apps) || apps.length === 0) {
-		return [null, 0];
-	}
+	return useMemo(() => {
+		if (!Array.isArray(apps) || apps.length === 0) {
+			return { phase: AsyncStatePhase.LOADING, error: undefined };
+		}
 
-	const filtered = apps.filter(filterFunction(text));
-	if (sortDirection === 'desc') {
-		filtered.reverse();
-	}
+		const result = apps.filter(filterFunction);
 
-	const total = filtered.length;
-	const start = current > total ? 0 : current;
-	const end = current + itemsPerPage;
-	const slice = filtered.slice(start, end);
+		const filtered = result
+			.filter((app) => filterAppByCategories(app, categories))
+			.filter(({ name }) => name.toLowerCase().indexOf(text.toLowerCase()) > -1);
 
-	return [slice, total];
+		if (sortDirection === 'desc') {
+			filtered.reverse();
+		}
+
+		const total = filtered.length;
+		const start = current > total ? 0 : current;
+		const end = current + itemsPerPage;
+		const slice = filtered.slice(start, end);
+
+		return {
+			phase: AsyncStatePhase.RESOLVED,
+			error: undefined,
+			value: { items: slice, total: result.length, count: slice.length },
+		};
+	}, [apps, categories, current, filterFunction, itemsPerPage, sortDirection, text]);
 };
