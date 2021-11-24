@@ -42,7 +42,7 @@ const CustomEmoji: FC<CustomEmojiProps> = function CustomEmoji({ onClick, reload
 		useMemo(
 			() => ({
 				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
-				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
+				sort: `{ ${sortBy}: ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
 			}),

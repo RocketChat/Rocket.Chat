@@ -34,6 +34,7 @@ const ADMIN_PERMISSIONS = [
 	'manage-incoming-integrations',
 	'manage-own-outgoing-integrations',
 	'manage-own-incoming-integrations',
+	'view-engagement-dashboard',
 ];
 
 const style = {

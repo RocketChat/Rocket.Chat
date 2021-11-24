@@ -751,4 +751,21 @@ export class UsersRaw extends BaseRaw {
 		const found = await this.findOne(query, options);
 		return !!found;
 	}
+
+	addBannerById(_id, banner) {
+		const query = {
+			_id,
+			[`banners.${ banner.id }.read`]: {
+				$ne: true,
+			},
+		};
+
+		const update = {
+			$set: {
+				[`banners.${ banner.id }`]: banner,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
 }

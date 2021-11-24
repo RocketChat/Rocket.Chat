@@ -99,14 +99,6 @@ export interface IRole {
 	_id: string;
 }
 
-export interface IDailyActiveUsers {
-	usersList: string[];
-	users: number;
-	day: number;
-	month: number;
-	year: number;
-}
-
 export interface IUser extends IRocketChatRecord {
 	_id: string;
 	createdAt: Date;

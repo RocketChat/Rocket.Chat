@@ -1,30 +1,34 @@
-import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
 import { ILivechatMonitor } from '../../../../../definition/ILivechatMonitor';
-
-type WithPagination<T> = {
-	units: T;
-	count: number;
-	offset: number;
-	total: number;
-}
+import { IOmnichannelBusinessUnit } from '../../../../../definition/IOmnichannelBusinessUnit';
+import { PaginatedResult } from '../../../../../definition/rest/helpers/PaginatedResult';
 
 export type OmnichannelBusinessUnitsEndpoints = {
 	'livechat/units.list': {
-		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
+		GET: (params: { text: string }) => PaginatedResult & {
+			units: IOmnichannelBusinessUnit[];
+		};
 	};
 	'livechat/units.getOne': {
-		GET: () => (IOmnichannelBusinessUnit);
+		GET: (params: { unitId: string }) => IOmnichannelBusinessUnit;
 	};
 	'livechat/unitMonitors.list': {
-		GET: () => ({ monitors: ILivechatMonitor[] });
+		GET: (params: { unitId: string }) => { monitors: ILivechatMonitor[] };
 	};
 	'livechat/units': {
-		GET: () => (WithPagination<IOmnichannelBusinessUnit[]>);
-		POST: () => IOmnichannelBusinessUnit;
+		GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
+		POST: (params: {
+			unitData: string;
+			unitMonitors: string;
+			unitDepartments: string;
+		}) => IOmnichannelBusinessUnit;
 	};
 	'livechat/units/:id': {
 		GET: () => IOmnichannelBusinessUnit;
-		POST: () => IOmnichannelBusinessUnit;
+		POST: (params: {
+			unitData: string;
+			unitMonitors: string;
+			unitDepartments: string;
+		}) => IOmnichannelBusinessUnit;
 		DELETE: () => number;
 	};
-}
+};

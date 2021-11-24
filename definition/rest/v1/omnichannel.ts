@@ -1,10 +1,11 @@
 import { ILivechatDepartment } from '../../ILivechatDepartment';
 import { ILivechatMonitor } from '../../ILivechatMonitor';
 import { ILivechatTag } from '../../ILivechatTag';
-import { IOmnichannelCannedResponse } from '../../IOmnichannelCannedResponse';
+import { IMessage } from '../../IMessage';
 import { IOmnichannelRoom, IRoom } from '../../IRoom';
 import { ISetting } from '../../ISetting';
-import { IUser } from '../../IUser';
+import { PaginatedRequest } from '../helpers/PaginatedRequest';
+import { PaginatedResult } from '../helpers/PaginatedResult';
 
 export type OmnichannelEndpoints = {
 	'livechat/appearance': {
@@ -25,50 +26,55 @@ export type OmnichannelEndpoints = {
 		POST: (params: { roomId: IRoom['_id'] }) => void;
 	};
 	'livechat/monitors.list': {
-		GET: (params: { text: string; offset: number; count: number }) => {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			monitors: ILivechatMonitor[];
-			total: number;
-		};
+		}>;
 	};
 	'livechat/tags.list': {
-		GET: (params: { text: string; offset: number; count: number }) => {
+		GET: (params: PaginatedRequest<{ text: string }, 'name'>) => PaginatedResult<{
 			tags: ILivechatTag[];
-			total: number;
-		};
+		}>;
 	};
 	'livechat/department': {
-		GET: (params: {
-			text: string;
-			offset?: number;
-			count?: number;
-			sort?: string;
-			onlyMyDepartments?: boolean;
-		}) => {
+		GET: (
+			params: PaginatedRequest<{
+				text: string;
+				onlyMyDepartments?: boolean;
+			}>,
+		) => PaginatedResult<{
 			departments: ILivechatDepartment[];
-			total: number;
-		};
+		}>;
 	};
 	'livechat/department/:_id': {
-		path: `livechat/department/${ string }`;
 		GET: () => {
 			department: ILivechatDepartment;
 		};
 	};
-	'livechat/departments.by-unit/': {
-		GET: (params: { text: string; offset: number; count: number }) => {
+	'livechat/departments.available-by-unit/:id': {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			departments: ILivechatDepartment[];
-			total: number;
-		};
+		}>;
+	};
+	'livechat/departments.by-unit/': {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
+	};
+
+	'livechat/departments.by-unit/:id': {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
+			departments: ILivechatDepartment[];
+		}>;
 	};
 	'livechat/custom-fields': {
-		GET: () => {
+		GET: (params: PaginatedRequest<{ text: string }>) => PaginatedResult<{
 			customFields: [
 				{
 					_id: string;
 					label: string;
 				},
 			];
-		};
+		}>;
 	};
 	'livechat/rooms': {
 		GET: (params: {
@@ -83,15 +89,17 @@ export type OmnichannelEndpoints = {
 			current: number;
 			itemsPerPage: number;
 			tags: string[];
-		}) => {
+		}) => PaginatedResult<{
 			rooms: IOmnichannelRoom[];
-			count: number;
-			offset: number;
-			total: number;
-		};
+		}>;
+	};
+	'livechat/:rid/messages': {
+		GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+			messages: IMessage[];
+		}>;
 	};
 	'livechat/users/agent': {
-		GET: (params: { text?: string; offset?: number; count?: number; sort?: string }) => {
+		GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult<{
 			users: {
 				_id: string;
 				emails: {
@@ -106,41 +114,6 @@ export type OmnichannelEndpoints = {
 					maxNumberSimultaneousChat: number;
 				};
 			}[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'canned-responses': {
-		GET: (params: {
-			shortcut?: string;
-			text?: string;
-			scope?: string;
-			createdBy?: IUser['username'];
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-			offset?: number;
-			count?: number;
-		}) => {
-			cannedResponses: IOmnichannelCannedResponse[];
-			count?: number;
-			offset?: number;
-			total: number;
-		};
-		POST: (params: {
-			_id?: IOmnichannelCannedResponse['_id'];
-			shortcut: string;
-			text: string;
-			scope: string;
-			tags?: any;
-			departmentId?: ILivechatDepartment['_id'];
-		}) => void;
-		DELETE: (params: { _id: IOmnichannelCannedResponse['_id'] }) => void;
-	};
-	'canned-responses/:_id': {
-		path: `canned-responses/${ string }`;
-		GET: () => {
-			cannedResponse: IOmnichannelCannedResponse;
-		};
+		}>;
 	};
 };

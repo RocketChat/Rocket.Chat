@@ -3,6 +3,7 @@ import { IMessage } from './IMessage';
 import { IUser, Username } from './IUser';
 
 type RoomType = 'c' | 'd' | 'p' | 'l';
+type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -32,6 +33,11 @@ export interface IRoom extends IRocketChatRecord {
 	lm?: Date;
 	usersCount: number;
 	jitsiTimeout: Date;
+	callStatus?: CallStatus;
+	webRtcCallStartTime?: Date;
+	servedBy?: {
+		_id: string;
+	};
 
 	streamingOptions?: {
 		id?: string;
@@ -112,6 +118,8 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	transcriptRequest?: IRequestTranscript;
 	servedBy?: {
 		_id: string;
+		ts: Date;
+		username: IUser['username'];
 	};
 	onHold?: boolean;
 	departmentId?: string;
@@ -126,6 +134,10 @@ export interface IOmnichannelRoom extends Omit<IRoom, 'default' | 'featured' | '
 	priorityId: any;
 	livechatData: any;
 	queuedAt?: Date;
+
+	ts: Date;
+	label?: string;
+	crmData?: unknown;
 }
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
