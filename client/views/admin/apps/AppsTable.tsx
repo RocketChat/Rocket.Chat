@@ -25,6 +25,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
@@ -33,7 +34,6 @@ import MarketplaceRow from './MarketplaceRow';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useFilteredApps } from './hooks/useFilteredApps';
-import { useRoute } from '/client/contexts/RouterContext';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
