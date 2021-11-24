@@ -84,11 +84,8 @@ export const UserInfoActions = ({ username, _id, isActive, isAdmin, onChange, on
 
 			const result = await deleteUserEndpoint(deleteUserQuery);
 			if (result.success) {
-				setModal(
-					<GenericModal variant='success' onClose={handleDeletedUser} onConfirm={handleDeletedUser}>
-						{t('User_has_been_deleted')}
-					</GenericModal>,
-				);
+				handleDeletedUser();
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
 			} else {
 				setModal();
 			}
