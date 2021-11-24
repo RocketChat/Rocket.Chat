@@ -1,5 +1,18 @@
+export type BundleFeature =
+	| 'auditing'
+	| 'canned-responses'
+	| 'ldap-enterprise'
+	| 'livechat-enterprise'
+	| 'omnichannel-mobile-enterprise'
+	| 'engagement-dashboard'
+	| 'push-privacy'
+	| 'scalability'
+	| 'teams-mention'
+	| 'saml-enterprise'
+	| 'oauth-enterprise';
+
 interface IBundle {
-	[key: string]: string[];
+	[key: string]: BundleFeature[];
 }
 
 const bundles: IBundle = {

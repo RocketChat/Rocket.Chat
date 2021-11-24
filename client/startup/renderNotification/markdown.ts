@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../app/callbacks/client';
+import { callbacks } from '../../../app/callbacks/lib/callbacks';
 import { settings } from '../../../app/settings/client';
 
 Meteor.startup(() => {

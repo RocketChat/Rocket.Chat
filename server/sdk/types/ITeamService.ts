@@ -12,25 +12,25 @@ export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
 	room: ITeamCreateRoom;
-	members?: Array<string>; // list of user _ids
-	owner?: string; // the team owner. If not present, owner = requester
+	members?: Array<string> | null; // list of user _ids
+	owner?: string | null; // the team owner. If not present, owner = requester
 }
 
 export interface ITeamMemberParams {
 	userId: string;
-	roles?: Array<string>;
+	roles?: Array<string> | null;
 }
 
 export interface IUserInfo {
 	_id: string;
-	username?: string;
+	username?: string | null;
 	name: string;
 	status: string;
 }
 
 export interface ITeamMemberInfo {
 	user: IUserInfo;
-	roles?: string[];
+	roles?: string[] | null;
 	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
@@ -41,17 +41,20 @@ export interface ITeamInfo extends ITeam {
 }
 
 export interface IListRoomsFilter {
-	name: string;
+	name?: string;
 	isDefault: boolean;
 	getAllRooms: boolean;
 	allowPrivateTeam: boolean;
 }
 
-export interface ITeamUpdateData {
-	name: string;
-	type: TEAM_TYPE;
-	updateRoom?: boolean; // default is true
-}
+export type ITeamUpdateData =
+	{ updateRoom?: boolean } & ({
+		name: string;
+		type?: TEAM_TYPE;
+	} | {
+		name?: string;
+		type: TEAM_TYPE;
+	})
 
 export type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -70,12 +73,14 @@ export interface ITeamService {
 	members(uid: string, teamId: string, canSeeAll: boolean, options?: IPaginationOptions, queryOptions?: FilterQuery<IUser>): Promise<IRecordsWithTotal<ITeamMemberInfo>>;
 	addMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<void>;
 	updateMember(teamId: string, members: ITeamMemberParams): Promise<void>;
+	removeMember(teamId: string, userId: string): Promise<void>;
 	removeMembers(uid: string, teamId: string, members: Array<ITeamMemberParams>): Promise<boolean>;
 	getInfoByName(teamName: string): Promise<Partial<ITeam> | null>;
 	getInfoById(teamId: string): Promise<Partial<ITeam> | null>;
 	deleteById(teamId: string): Promise<boolean>;
 	deleteByName(teamName: string): Promise<boolean>;
 	unsetTeamIdOfRooms(teamId: string): void;
+	getOneById(teamId: string, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneById<P>(teamId: string, options?: FindOneOptions<P extends ITeam ? ITeam: P>): Promise<ITeam| P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOneOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
@@ -89,4 +94,5 @@ export interface ITeamService {
 	insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void>;
 	removeAllMembersFromTeam(teamId: string): Promise<void>;
+	removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
 }

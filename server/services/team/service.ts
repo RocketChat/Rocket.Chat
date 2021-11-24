@@ -59,10 +59,12 @@ export class TeamService extends ServiceClass implements ITeamService {
 		super();
 
 		this.RoomsModel = new RoomsRaw(db.collection('rocketchat_room'));
-		this.SubscriptionsModel = new SubscriptionsRaw(db.collection('rocketchat_subscription'));
+		this.Users = new UsersRaw(db.collection('users'));
+		this.SubscriptionsModel = new SubscriptionsRaw(db.collection('rocketchat_subscription'), {
+			Users: this.Users,
+		});
 		this.TeamModel = new TeamRaw(db.collection('rocketchat_team'));
 		this.TeamMembersModel = new TeamMemberRaw(db.collection('rocketchat_team_member'));
-		this.Users = new UsersRaw(db.collection('users'));
 		this.MessagesModel = new MessagesRaw(db.collection('rocketchat_message'));
 	}
 

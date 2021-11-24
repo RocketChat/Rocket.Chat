@@ -199,7 +199,8 @@ export const LivechatEnterprise = {
 	},
 };
 
-const RACE_TIMEOUT = 1000;
+const DEFAULT_RACE_TIMEOUT = 5000;
+let queueDelayTimeout = DEFAULT_RACE_TIMEOUT;
 
 const queueWorker = {
 	running: false,
@@ -242,9 +243,9 @@ const queueWorker = {
 		}
 
 		const queue = await this.nextQueue();
-		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ RACE_TIMEOUT }`);
+		queueLogger.debug(`Executing queue ${ queue || 'Public' } with timeout of ${ queueDelayTimeout }`);
 
-		setTimeout(this.checkQueue.bind(this, queue), RACE_TIMEOUT);
+		setTimeout(this.checkQueue.bind(this, queue), queueDelayTimeout);
 	},
 
 	async checkQueue(queue) {
@@ -291,4 +292,8 @@ RoutingManager.startQueue = shouldQueueStart;
 settings.watch('Livechat_enabled', (enabled) => {
 	omnichannelIsEnabled = enabled;
 	omnichannelIsEnabled && RoutingManager.isMethodSet() ? shouldQueueStart() : queueWorker.stop();
+});
+
+settings.watch('Omnichannel_queue_delay_timeout', (timeout) => {
+	queueDelayTimeout = timeout < 1 ? DEFAULT_RACE_TIMEOUT : timeout * 1000;
 });

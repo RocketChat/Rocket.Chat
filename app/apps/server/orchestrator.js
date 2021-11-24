@@ -158,7 +158,8 @@ export class AppServerOrchestrator {
 
 		return this._manager.load()
 			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${ affs.length } Apps!`))
-			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err));
+			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err))
+			.then(() => this.getBridges().getSchedulerBridge().startScheduler());
 	}
 
 	async unload() {

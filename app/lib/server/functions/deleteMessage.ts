@@ -2,14 +2,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { Messages, Uploads, Rooms } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
+import { Uploads } from '../../../models/server/raw';
 import { Notifications } from '../../../notifications/server';
 import { callbacks } from '../../../callbacks/server';
 import { Apps } from '../../../apps/server';
 import { IMessage } from '../../../../definition/IMessage';
 import { IUser } from '../../../../definition/IUser';
 
-export const deleteMessage = function(message: IMessage, user: IUser): void {
+export const deleteMessage = async function(message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
@@ -36,9 +37,9 @@ export const deleteMessage = function(message: IMessage, user: IUser): void {
 			Messages.setHiddenById(message._id, true);
 		}
 
-		files.forEach((file) => {
-			file?._id && Uploads.update(file._id, { $set: { _hidden: true } });
-		});
+		for await (const file of files) {
+			file?._id && await Uploads.update({ _id: file._id }, { $set: { _hidden: true } });
+		}
 	} else {
 		if (!showDeletedStatus) {
 			Messages.removeById(message._id);

@@ -108,10 +108,9 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-const callback = (message, name) => (reply, input) => {
+const callback = (msg, name) => (reply, input) => {
 	if (reply.allowed === false) {
-		logger.info('DDP RATE LIMIT:', message);
-		logger.info({ ...reply, ...input });
+		logger.info({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
 			limit_name: name,
 			user_id: input.userId,

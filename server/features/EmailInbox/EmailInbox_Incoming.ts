@@ -27,7 +27,7 @@ type FileAttachment = {
 	video_size?: string;
 }
 
-const language = settings.get('Language') || 'en';
+const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 function getGuestByEmail(email: string, name: string, department?: string): any {

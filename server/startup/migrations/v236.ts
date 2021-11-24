@@ -1,13 +1,13 @@
+import { Settings } from '../../../app/models/server/raw';
 import { addMigration } from '../../lib/migrations';
-import { Settings } from '../../../app/models/server';
 
 addMigration({
 	version: 236,
-	up() {
-		Settings.removeById('Canned Responses');
-		Settings.removeById('Canned_Responses');
+	async up() {
+		await Settings.removeById('Canned Responses');
+		await Settings.removeById('Canned_Responses');
 
-		Settings.upsert(
+		await Settings.update(
 			{
 				_id: 'Canned_Responses_Enable',
 			},
@@ -15,6 +15,9 @@ addMigration({
 				$set: {
 					group: 'Omnichannel',
 				},
+			},
+			{
+				upsert: true,
 			},
 		);
 	},
