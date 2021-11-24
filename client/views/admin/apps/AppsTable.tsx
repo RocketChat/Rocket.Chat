@@ -33,6 +33,7 @@ import MarketplaceRow from './MarketplaceRow';
 import { filterAppsInstalled } from './helpers/filterAppsInstalled';
 import { filterAppsMarketplace } from './helpers/filterAppsMarketplace';
 import { useFilteredApps } from './hooks/useFilteredApps';
+import { useRoute } from '/client/contexts/RouterContext';
 
 const AppsTable: FC<{
 	isMarketplace: boolean;
@@ -43,6 +44,8 @@ const AppsTable: FC<{
 		[800, 600],
 		200,
 	) as [React.RefObject<HTMLElement>, boolean, boolean];
+
+	const marketplaceRoute = useRoute('admin-marketplace');
 
 	const filterFunction = isMarketplace ? filterAppsMarketplace : filterAppsInstalled;
 
@@ -159,7 +162,9 @@ const AppsTable: FC<{
 								Explore the Marketplace to find awesome apps for Rocket.Chat
 							</FallbackSubtitle>
 							<FallbackActions>
-								<FallbackAction>Explore Marketplace</FallbackAction>
+								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									Explore Marketplace
+								</FallbackAction>
 							</FallbackActions>
 						</Fallback>
 					</Box>
@@ -184,7 +189,9 @@ const AppsTable: FC<{
 								</FallbackSuggestionText>
 							</FallbackSuggestion>
 							<FallbackActions>
-								<FallbackAction>Search on Marketplace</FallbackAction>
+								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									Search on Marketplace
+								</FallbackAction>
 							</FallbackActions>
 						</Fallback>
 					</Box>
