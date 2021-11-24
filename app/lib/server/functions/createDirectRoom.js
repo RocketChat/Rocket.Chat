@@ -89,16 +89,15 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),
 		});
 	} else {
-		members.forEach((member) => {
+		const membersWithPreferences = Users.find({}, { username: 1, 'settings.preferences': 1 });
+		membersWithPreferences.forEach((member) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
-			const memberWithPreferences = Users.findOneByUsername(member.username, { fields: { username: 1, 'settings.preferences': 1 } });
-
 			Subscriptions.upsert({ rid, 'u._id': member._id }, {
 				...options.creator === member._id && { $set: { open: true } },
 				$setOnInsert: generateSubscription(
 					getFname(otherMembers),
 					getName(otherMembers),
-					memberWithPreferences,
+					member,
 					{
 						...options.subscriptionExtra,
 						...options.creator !== member._id && { open: members.length > 2 },
