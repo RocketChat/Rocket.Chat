@@ -8,6 +8,7 @@ import {
 	directMessage,
 	apiUsername,
 	apiEmail,
+	methodCall,
 } from '../../data/api-data.js';
 import { password, adminUsername } from '../../data/user.js';
 import { deleteRoom } from '../../data/rooms.helper';
@@ -481,19 +482,27 @@ describe('[Direct Messages]', function() {
 	});
 
 	describe('/im.create', () => {
+		let user;
+		let userCredentials;
 		let otherUser;
 		let roomId;
+		let userPrefRoomId;
 
 		before(async () => {
+			user = await createUser();
 			otherUser = await createUser();
+			userCredentials = await login(user.username, password);
 		});
 
 		after(async () => {
 			if (roomId) {
 				await deleteRoom({ type: 'd', roomId });
+				await deleteRoom({ type: 'd', userPrefRoomId });
 			}
 			await deleteUser(otherUser);
+			await deleteUser(user);
 			otherUser = undefined;
+			user = undefined;
 		});
 
 		it('creates a DM between two other parties (including self)', (done) => {
@@ -545,6 +554,53 @@ describe('[Direct Messages]', function() {
 					expect(res.body.room).to.have.property('usernames').and.to.have.members([adminUsername]);
 				})
 				.end(done);
+		});
+
+		it('should create dm with correct notification preferences', () => {
+			it('should save user preferences', (done) => {
+				request.post(methodCall('saveUserPreferences'))
+					.set(userCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'saveUserPreferences',
+							params: [{ emailNotificationMode: 'nothing' }],
+						}),
+					})
+					.end(done);
+			});
+
+			it('should create a DM', (done) => {
+				request.post(api('im.create'))
+					.set(userCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').and.to.be.an('object');
+						expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+						roomId = res.body.room._id;
+					})
+					.end(done);
+			});
+
+			it('should return the right user notification preferences in the dm', (done) => {
+				request.get(api('subscriptions.getOne'))
+					.set(userCredentials)
+					.query({
+						roomId: userPrefRoomId._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('subscription').and.to.be.an('object');
+						expect(res.body).to.have.nested.property('subscription.emailNotifications').and.to.be.equal('nothing');
+					})
+					.end(done);
+			});
 		});
 	});
 

@@ -6,7 +6,7 @@ import { callbacks } from '../../../callbacks/server';
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
-import { Users } from '../../../models';
+import { Users } from '../../../models/server/raw';
 
 const generateSubscription = (fname, name, user, extra) => ({
 	alert: false,
@@ -89,7 +89,8 @@ export const createDirectRoom = function(members, roomExtraData = {}, options = 
 			$setOnInsert: generateSubscription(members[0].name || members[0].username, members[0].username, members[0], { ...options.subscriptionExtra }),
 		});
 	} else {
-		const membersWithPreferences = Users.find({}, { username: 1, 'settings.preferences': 1 });
+		const memberIds = members.map((member) => member._id);
+		const membersWithPreferences = Users.find({ _id: { $in: memberIds } }, { username: 1, 'settings.preferences': 1 });
 		membersWithPreferences.forEach((member) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
 			Subscriptions.upsert({ rid, 'u._id': member._id }, {
