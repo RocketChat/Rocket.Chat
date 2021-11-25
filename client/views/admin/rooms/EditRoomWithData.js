@@ -5,7 +5,7 @@ import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditRoom from './EditRoom';
 
-function EditRoomWithData({ rid }) {
+function EditRoomWithData({ rid, onReload }) {
 	const {
 		value: data = {},
 		phase: state,
@@ -33,7 +33,7 @@ function EditRoomWithData({ rid }) {
 		return error.message;
 	}
 
-	return <EditRoom room={{ type: data.t, ...data }} onChange={reload} />;
+	return <EditRoom room={{ type: data.t, ...data }} onChange={reload} onReload={onReload} />;
 }
 
 export default EditRoomWithData;

@@ -18,6 +18,7 @@ import VerticalBar from '../../../components/VerticalBar';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
 import { usePermission } from '../../../contexts/AuthorizationContext';
 import { useSetModal } from '../../../contexts/ModalContext';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useMethod } from '../../../contexts/ServerContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useEndpointActionExperimental } from '../../../hooks/useEndpointActionExperimental';
@@ -40,13 +41,12 @@ const getInitialValues = (room) => ({
 	roomAvatar: undefined,
 });
 
-function EditRoom({ room, onChange }) {
+function EditRoom({ room, onChange, onReload }) {
 	const t = useTranslation();
 
 	const [deleted, setDeleted] = useState(false);
 
 	const setModal = useSetModal();
-
 	const { values, handlers, hasUnsavedChanges, reset } = useForm(getInitialValues(room));
 
 	const [
@@ -100,6 +100,8 @@ function EditRoom({ room, onChange }) {
 
 	const changeArchivation = archived !== !!room.archived;
 
+	const roomsRoute = useRoute('admin-rooms');
+
 	const canDelete = usePermission(`delete-${room.t}`);
 
 	const archiveSelector = room.archived ? 'unarchive' : 'archive';
@@ -152,6 +154,8 @@ function EditRoom({ room, onChange }) {
 			await deleteRoom(room._id);
 			onCancel();
 			setDeleted(true);
+			onReload();
+			roomsRoute.push({});
 		};
 
 		setModal(
