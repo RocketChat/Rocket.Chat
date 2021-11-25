@@ -25,6 +25,7 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
+import { useRoute } from '../../../contexts/RouterContext';
 import { useTranslation } from '../../../contexts/TranslationContext';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
@@ -43,6 +44,8 @@ const AppsTable: FC<{
 		[800, 600],
 		200,
 	) as [React.RefObject<HTMLElement>, boolean, boolean];
+
+	const marketplaceRoute = useRoute('admin-marketplace');
 
 	const filterFunction = isMarketplace ? filterAppsMarketplace : filterAppsInstalled;
 
@@ -164,7 +167,9 @@ const AppsTable: FC<{
 								Explore the Marketplace to find awesome apps for Rocket.Chat
 							</FallbackSubtitle>
 							<FallbackActions>
-								<FallbackAction>Explore Marketplace</FallbackAction>
+								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									Explore Marketplace
+								</FallbackAction>
 							</FallbackActions>
 						</Fallback>
 					</Box>
@@ -189,7 +194,9 @@ const AppsTable: FC<{
 								</FallbackSuggestionText>
 							</FallbackSuggestion>
 							<FallbackActions>
-								<FallbackAction>Search on Marketplace</FallbackAction>
+								<FallbackAction onClick={(): void => marketplaceRoute.push({ context: '' })}>
+									Search on Marketplace
+								</FallbackAction>
 							</FallbackActions>
 						</Fallback>
 					</Box>
