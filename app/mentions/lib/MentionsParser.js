@@ -108,13 +108,14 @@ export class MentionsParser {
 				(m) => filterUser(m) || filterTeam(m),
 			);
 
-			const teamMentionHtml =	mentionObj.type === 'team' || this.useRealName
-				? mentionObj.name
-				: mentionObj.username;
+			const teamMentionHtml = () =>
+				(mentionObj.type === 'team' || this.useRealName
+					? mentionObj.name
+					: mentionObj.username);
 
 			const label = temp
 				? mention && escapeHTML(mention)
-				: mentionObj && escapeHTML(teamMentionHtml);
+				: mentionObj && escapeHTML(teamMentionHtml());
 
 			if (!label) {
 				return match;
