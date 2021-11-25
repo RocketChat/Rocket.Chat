@@ -1,6 +1,7 @@
 import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
 import { addAction, deleteAction } from '../../../../client/views/room/lib/Toolbox';
+import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${ appId }/${ actionId }`;
@@ -13,6 +14,12 @@ export const onAdded = (button: IUIActionButton): void => void addAction(getIdFo
 	// Filters were applied in the applyButtonFilters function
 	// if the code made it this far, the button should be shown
 	groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
+	action: (): Promise<any> => triggerActionButtonAction({
+		rid: room._id,
+		actionId: button.actionId,
+		appId: button.appId,
+		payload: { context: button.context },
+	}),
 } : null));
 
 export const onRemoved = (button: IUIActionButton): boolean => deleteAction(getIdForActionButton(button));

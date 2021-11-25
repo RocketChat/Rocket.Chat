@@ -1,6 +1,7 @@
 import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 
-import { MessageAction } from '../../../ui-utils/client';
+import { MessageAction, messageArgs } from '../../../ui-utils/client';
+import { triggerActionButtonAction } from '../ActionManager';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${ appId }/${ actionId }`;
@@ -15,7 +16,14 @@ export const onAdded = (button: IUIActionButton): void => void MessageAction.add
 		return applyButtonFilters(button, room);
 	},
 	async action() {
-		console.log('Not implemented');
+		const { msg } = messageArgs(this);
+		triggerActionButtonAction({
+			rid: msg.rid,
+			mid: msg._id,
+			actionId: button.actionId,
+			appId: button.appId,
+			payload: { context: button.context },
+		});
 	},
 });
 

@@ -4,6 +4,7 @@ import { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import { Rooms } from '../../../models/client';
 import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
+import { triggerActionButtonAction } from '../ActionManager';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${ appId }/${ actionId }`;
 
@@ -17,7 +18,12 @@ export const onAdded = (button: IUIActionButton): void => void messageBox.action
 		return applyButtonFilters(button, Rooms.findOne(Session.get('openedRoom')));
 	},
 	action() {
-		console.log('Not implemented');
+		triggerActionButtonAction({
+			rid: Session.get('openedRoom'),
+			actionId: button.actionId,
+			appId: button.appId,
+			payload: { context: button.context },
+		});
 	},
 });
 
